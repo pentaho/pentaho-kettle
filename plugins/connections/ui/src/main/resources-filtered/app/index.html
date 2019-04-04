@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
+  <meta charset="UTF-8">
+  <title>VFS Connection Dialog</title>
+  <!-- Requesting webcontext.js one level above to workaround the filter on PDI issue (BACKLOG-17885) -->
+  <!-- Remove '../' when not needed -->
+  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css">
+  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/global.css">
+  <script type="text/javascript" src="../webcontext.js?requireJsOnly=true"></script>
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+  <script>
+    (function () {
+      "use strict";
+
+      // overrides just for this app
+      require.config({
+        paths: {
+          "pentaho": "/@pentaho/di-core-ui@${project.version}/pentaho",
+          "css": "/require-css@${require-css.version}/css",
+          "text": "/requirejs-text@${requirejs-text.version}/text"
+        }
+      });
+
+      require(["pentaho/di/plugin/connections"], function (app) {
+          app.bootstrap(document);
+      });
+    }(window));
+  </script>
+</head>
+<body>
+  <script>
+    (function() {
+      var stopEvents = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      };
+
+      /*
+       * Block context menu event
+       */
+      document.body.addEventListener("contextmenu", function(event) {
+        if(event.srcElement.tagName !== "INPUT") {
+          return stopEvents(event);
+        }
+      });
+
+      /*
+       * Block mousedown if user has shift pressed
+       */
+      document.body.addEventListener("mousedown", function(event) {
+        if(event.shiftKey) {
+          return stopEvents(event);
+        }
+      });
+
+      /*
+       * Block zoom and mouse navigation events
+       */
+      document.body.addEventListener("wheel", function(event) {
+        if (event.ctrlKey || event.shiftKey) {
+          return stopEvents(event);
+        }
+      });
+
+      /**
+       * Block some key down events to navigation, reload and zoom content
+       */
+      document.body.addEventListener("keydown", function(event) {
+        var arrowNavigation = (event.altKey || event.metaKey) && (event.keyCode === 37 || event.keyCode === 39); // ALT+left arrow; ALT+right arrow; cmd+left arrow; cmd+right arrow
+        var backNavigation = event.shiftKey && event.keyCode === 8 ||
+          event.keyCode === 8 && event.srcElement.tagName !== "INPUT" && event.srcElement.tagName !== "TEXTAREA"; // backspace (except input/textarea tags); SHIFT+backspace
+        var reloadContent = event.ctrlKey && event.keyCode === 116 || (event.ctrlKey || event.metaKey) && event.keyCode === 82 || event.keyCode === 116; // CTRL+F5; CTRL+r; cmd+r; F5
+        var zoomContent = event.ctrlKey && (event.keyCode === 107 || event.keyCode === 109 || event.keyCode === 187 || event.keyCode === 189); // CTRL++; CTRL+-
+
+        if (arrowNavigation || backNavigation || reloadContent || zoomContent) {
+          return stopEvents(event);
+        }
+      });
+    })();
+  </script>
+  <div ui-view class="transition"></div>
+</body>
+</html>

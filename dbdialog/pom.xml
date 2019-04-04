@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>pentaho-kettle</groupId>
+  <artifactId>kettle-dbdialog</artifactId>
+  <version>8.3.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>PDI DB Dialog</name>
+
+  <parent>
+    <groupId>org.pentaho.di</groupId>
+    <artifactId>pdi</artifactId>
+    <version>8.3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <powermock.version>1.6.3</powermock.version>
+  </properties>
+
+  <dependencies>
+    <!-- Kettle dependencies -->
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-engine</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Pentaho (non-Kettle) dependencies -->
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-swt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-swing</artifactId>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-core</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Third-party (external) dependencies -->
+    <dependency>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+    </dependency>
+  </dependencies>
+</project>

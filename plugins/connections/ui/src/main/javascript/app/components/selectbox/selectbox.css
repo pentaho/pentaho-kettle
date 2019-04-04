@@ -1,0 +1,59 @@
+selectbox {
+  text-align: left;
+  position: relative;
+  cursor: pointer;
+}
+
+selectbox .select {
+  width: 100%;
+}
+
+selectbox .select > div {
+  float: left;
+  width: 100%;
+  margin-right: 6px;
+  position:relative;
+}
+
+selectbox .selected_value {
+  padding: 0 0 0 10px;
+  border:1px solid #cbcbcb;
+  border-radius: 5px;
+  height: 34px;
+  line-height: 34px;
+  background-image: url('../../img/chevron_down.svg');
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+selectbox .options {
+  top: 35px;
+  position: absolute;
+  width: 100%;
+  border: 1px solid #cbcbcb;
+  background-color: #ffffff;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+selectbox .options > li {
+  padding: 5px;
+}
+
+selectbox .options > li:hover {
+  background-color: #355EA3;
+  color: #ffffff;
+}
+
+selectbox ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+selectbox:after {
+  content: "";
+  display: table;
+  clear: both;
+}

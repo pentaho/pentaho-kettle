@@ -2,17 +2,80 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.pentaho</groupId>
-    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>1.2.5</version>
-  </parent>
-  <groupId>pentaho-kettle</groupId>
-  <artifactId>plugins</artifactId>
-  <version>7.1-SNAPSHOT</version>
+
+  <groupId>org.pentaho.di.plugins</groupId>
+  <artifactId>pdi-plugins</artifactId>
+  <version>8.3.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <modules>
-    <module>repositories-plugin</module>
-    <module>meta-inject-plugin</module>
-  </modules>
+
+  <name>PDI Plugins</name>
+
+  <parent>
+    <groupId>org.pentaho.di</groupId>
+    <artifactId>pdi</artifactId>
+    <version>8.3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <!-- Test running configuration -->
+    <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
+    <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>lowdeps</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>log4j</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>highdeps</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>core</module>
+        <module>core-ui</module>
+        <module>file-open-save</module>
+        <module>connections</module>
+        <module>get-fields</module>
+        <module>repositories</module>
+        <module>meta-inject</module>
+        <module>engine-configuration</module>
+        <module>get-previous-row-field</module>
+        <module>aggregate-rows</module>
+        <module>elasticsearch-bulk-insert</module>
+        <module>google-analytics</module>
+        <module>gp-bulk-loader</module>
+        <module>pentaho-googledrive-vfs</module>
+        <module>hl7</module>
+        <module>drools</module>
+        <module>dummy</module>
+        <module>json</module>
+        <module>s3csvinput</module>
+        <module>sap</module>
+        <module>shapefilereader</module>
+        <module>gpload</module>
+        <module>openerp</module>
+        <module>palo</module>
+        <module>version-checker</module>
+        <module>lucid-db-streaming-loader</module>
+        <module>salesforce</module>
+        <module>pur</module>
+        <module>ms-access</module>
+        <module>xml</module>
+        <module>streaming</module>
+      </modules>
+    </profile>
+
+  </profiles>
 </project>

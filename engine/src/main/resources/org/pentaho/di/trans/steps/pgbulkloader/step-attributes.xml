@@ -1,0 +1,108 @@
+<attributes>
+<!--
+    <attribute id="CONNECTION">
+        <xmlcode>connection</xmlcode>
+        <repcode>id_connection</repcode>
+        <description>BaseStepDialog.Connection.Label</description>
+        <tooltip/>
+        <valuetype>None</valuetype>
+        <parentid/>
+    </attribute>
+-->
+    <attribute id="SCHEMA">
+        <xmlcode>schema</xmlcode>
+        <repcode>schema</repcode>
+        <description>PGBulkLoaderDialog.TargetSchema.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="TABLE">
+        <xmlcode>table</xmlcode>
+        <repcode>table</repcode>
+        <description>PGBulkLoaderDialog.TargetTable.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid></parentid>
+    </attribute>
+    <attribute id="LOADACTION">
+        <xmlcode>load_action</xmlcode>
+        <repcode>load_action</repcode>
+        <description>PGBulkLoaderDialog.LoadAction.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid></parentid>
+    </attribute>
+    <attribute id="DBNAMEOVERRIDE">
+        <xmlcode>dbname_override</xmlcode>
+        <repcode>dbname_override</repcode>
+        <description>PGBulkLoaderDialog.DbNameOverride.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid></parentid>
+    </attribute>
+    <attribute id="ENCLOSURE">
+        <xmlcode>enclosure</xmlcode>
+        <repcode>enclosure</repcode>
+        <description>PGBulkLoaderDialog.Enclosure.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="DELIMITER">
+        <xmlcode>delimiter</xmlcode>
+        <repcode>delimiter</repcode>
+        <description>PGBulkLoaderDialog.Delimiter.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="STOPONERROR">
+        <xmlcode>stop_on_error</xmlcode>
+        <repcode>stop_on_error</repcode>
+        <description>PGBulkLoaderDialog.StopOnError.Label</description>
+        <tooltip/>
+        <valuetype>Boolean</valuetype>
+        <parentid></parentid>
+    </attribute>
+    <attribute id="MAPPINGS">
+        <xmlcode>mapping</xmlcode>
+        <repcode/>
+        <description>PGBulkLoaderDialog.Fields.Label</description>
+        <tooltip/>
+        <valuetype>None</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="MAPPING">
+        <xmlcode>mapping</xmlcode>
+        <repcode/>
+        <description>PGBulkLoaderDialog.Fields.Label</description>
+        <tooltip/>
+        <valuetype>None</valuetype>
+        <parentid>MAPPINGS</parentid>
+    </attribute>
+    <attribute id="STREAMNAME">
+        <xmlcode>stream_name</xmlcode>
+        <repcode>stream_name</repcode>
+        <description>PGBulkLoaderDialog.ColumnInfo.StreamField</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid>MAPPING</parentid>
+    </attribute>
+    <attribute id="FIELDNAME">
+        <xmlcode>field_name</xmlcode>
+        <repcode>field_name</repcode>
+        <description>PGBulkLoaderDialog.ColumnInfo.TableField</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid>MAPPING</parentid>
+    </attribute>
+    <attribute id="DATEMASK">
+        <xmlcode>date_mask</xmlcode>
+        <repcode>date_mask</repcode>
+        <description>PGBulkLoaderDialog.ColumnInfo.DateMask</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid>MAPPING</parentid>
+    </attribute>
+</attributes>

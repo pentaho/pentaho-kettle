@@ -1,0 +1,49 @@
+.error-message-icon {
+  width: 32px;
+  height: 28px;
+  float: left;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.error-message {
+  border: 1px solid #f3E085;
+  background-color: #fcf8e3;
+  width: 580px;
+  height: 63px;
+  border-radius: 5px;
+  position: absolute;
+  top: -63px;
+  left: 23px;
+  opacity: 0;
+  z-index: 1000;
+}
+
+.error-message-text {
+  width: 460px;
+  float: left;
+  margin-top: 13px;
+  margin-left: 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.error-message-close {
+  width: 12px;
+  height: 12px;
+  float: right;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.error-caution {
+  background-image: url("../../../img/caution.svg");
+  width: 32px;
+  height: 28px;
+}
+
+.error-close {
+  background-image: url("../../../img/close_notif.svg");
+  width: 12px;
+  height: 12px;
+}

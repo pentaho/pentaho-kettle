@@ -1,0 +1,82 @@
+<loading ng-show="vm.loading" show-text="false"></loading>
+<div id="filesWrapper" class="filesWrapper" selected-file="vm.selectedFile" search-value="vm.search" resize-files="vm.files">
+  <div id="headerWrapper" class="headerWrapper">
+    <table class="headerTable">
+      <thead>
+      <tr>
+        <th class="nameCell" ng-click="vm.sortFiles(vm._name)">
+          <div class="headerLabel">
+            {{::vm.nameHeader}}
+          </div>
+          <div class="sortWrapper">
+            <div class="sort"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._name,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._name}"></div>
+          </div>
+        </th>
+        <th class="typeCell" ng-click="vm.sortFiles(vm._type)">
+          <div class="headerLabel">
+            {{::vm.typeHeader}}
+          </div>
+          <div class="sortWrapper">
+            <div class="sort"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._type,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._type}"></div>
+          </div>
+        </th>
+        <th class="dateCell" ng-click="vm.sortFiles(vm._date)">
+          <div class="headerLabel">
+            {{::vm.modifiedHeader}}
+          </div>
+          <div class="sortWrapper">
+            <div class="sort"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._date,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._date}"></div>
+          </div>
+        </th>
+      </tr>
+      </thead>
+    </table>
+  </div>
+  <div ng-hide="vm.loading" id="bodyWrapper" class="bodyWrapper">
+    <table id="filesTableBody" ng-class="{searchTable: vm.search}">
+      <tbody>
+      <tr ng-repeat="file in vm.files | orderBy: file: vm.sortReverse: vm.compareFiles "
+          ng-if="!file.hidden"
+          ng-click="vm.selectFile(file)"
+          ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
+          ng-class="{selected: vm.selectedFile === file}"
+          ng-hide="file.inResult === false && vm.search.length > 0"
+          title="{{file.name}}&#013;{{file.path}}">
+        <td class="nameCell">
+          <div class="fileTypeIcon"
+               ng-class="{'file-trans': file.type === 'transformation',
+                          'file-job': file.type === 'job',
+                          'file-folder': file.type === 'folder'}"></div>
+          <div class="fileName">
+            <edit value="file.name"
+                  editing="file.editing"
+                  on-error="vm.onError()"
+                  on-complete="vm.rename(file, current, previous, errorCallback)"
+                  auto="file.autoEdit"
+                  on-start="vm.onStart(file)"
+                  new="file.new"></edit>
+          </div>
+          <div class="fileLocation">
+            {{file.path}}
+          </div>
+        </td>
+        <td class="typeCell">
+          <div class="fileType">
+            {{file.type}}
+          </div>
+        </td>
+        <td class="dateCell">
+          <div class="fileModified">
+            <span>{{file.date | date: 'MM/dd/yy hh:mm a'}}</span>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

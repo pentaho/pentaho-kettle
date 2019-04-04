@@ -1,0 +1,41 @@
+<resize-folders/>
+<div ng-if="!vm.state.is('selectFolder')" class="folder recents empty"
+     ng-class="{selected: vm.showRecents}"
+     ng-click="vm.selectFolder(null)"
+     ng-style="{width: vm.width === 0 ? 'auto' : vm.width + 'px'}">
+  <div class="folderArrowWrapper">
+    <div class="folderArrow"></div>
+  </div>
+  <div class="folderImage"></div>
+  <div class="folderName">
+    Recents
+  </div>
+</div>
+<script type="text/ng-template" id="tree_item.html">
+  <div ng-if="!folder.hidden" id="{{folder.path}}"
+      class="folder"
+      ng-click="vm.selectFolder(folder)"
+      ng-dblclick="vm.selectAndOpenFolder(folder)"
+      ng-class="{home: folder.path === '/home',
+                 public: folder.path === '/public',
+                 selected: folder === vm.selectedFolder,
+                 empty: folder.hasChildren === false,
+                 opened: folder.open === true}"
+    ng-style="{paddingLeft: indent + 'px', width: vm.width === 0 ? 'auto' : vm.width - indent + 'px'}">
+    <div class="folderArrowWrapper" ng-click="vm.openFolder(folder); $event.stopPropagation();">
+      <div class="folderArrow"></div>
+    </div>
+    <div class="folderImage"
+        ng-class="{loading: folder.loading}"></div>
+    <div class="folderName">
+      {{folder.name}}
+    </div>
+  </div>
+  <div ng-show="folder.open">
+    <div ng-repeat="folder in folder.children | orderBy: folder : false : vm.compareFolders"
+        ng-include="'tree_item.html'"
+        ng-init="indent=indent+25"
+        ng-if="folder.type=='folder'"></div>
+  </div>
+</script>
+<div ng-repeat="folder in vm.getTree() | orderBy: folder : false : vm.compareFolders" ng-include="'tree_item.html'" ng-init="indent=0" ng-if="folder.name != '' && !folder.hidden"></div>

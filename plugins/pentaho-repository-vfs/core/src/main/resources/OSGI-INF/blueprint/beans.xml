@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
+	xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs" default-timeout="20000">
+
+	<bean id="repositoryVfsProvider" scope="singleton"
+		class="org.pentaho.repositoryvfs.vfs.RepositoryVfsProvider">
+		<argument ref="repositoryConnectController" />
+	</bean>
+
+	<reference id="repositoryConnectController"
+		interface="org.pentaho.di.ui.repo.IConnectedRepositoryInstance" availability="optional" />
+
+	<bean id="RepositoryVfsKettleLifecycleListener"
+		class="org.pentaho.repositoryvfs.lifecycle.RepositoryVfsKettleLifecycleListener">
+		<pen:di-plugin type="org.pentaho.di.core.plugins.LifecyclePluginType" />
+	</bean>
+</blueprint>

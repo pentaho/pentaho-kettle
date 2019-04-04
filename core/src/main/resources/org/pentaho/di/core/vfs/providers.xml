@@ -1,0 +1,107 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<providers>
+    <default-provider class-name="org.apache.commons.vfs2.provider.url.UrlFileProvider">
+    </default-provider>
+    <provider class-name="org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider">
+        <scheme name="file"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.zip.ZipFileProvider">
+        <scheme name="zip"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.tar.TarFileProvider">
+        <scheme name="tar"/>
+        <if-available class-name="org.apache.commons.compress.archivers.tar.TarArchiveOutputStream"/>
+    </provider>
+
+    <provider class-name="org.apache.commons.vfs2.provider.bzip2.Bzip2FileProvider">
+        <scheme name="bz2"/>
+        <if-available class-name="org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.gzip.GzipFileProvider">
+        <scheme name="gz"/>
+    </provider>
+
+    <provider class-name="org.apache.commons.vfs2.provider.jar.JarFileProvider">
+        <scheme name="jar"/>
+        <scheme name="sar"/>
+        <scheme name="ear"/>
+        <scheme name="par"/>
+        <scheme name="ejb3"/>
+        <scheme name="war"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.temp.TemporaryFileProvider">
+        <scheme name="tmp"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.ftp.FtpFileProvider">
+        <scheme name="ftp"/>
+        <if-available class-name="org.apache.commons.net.ftp.FTPFile"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.ftps.FtpsFileProvider">
+        <scheme name="ftps"/>
+        <if-available class-name="org.apache.commons.net.ftp.FTPFile"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider">
+        <scheme name="http"/>
+        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider">
+        <scheme name="https"/>
+        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
+    </provider>
+
+    <!-- Custom Sftp provider -->
+    <provider class-name="org.pentaho.di.core.vfs.SftpFileSystemWindowsProvider">
+        <scheme name="sftp"/>
+        <if-available class-name="javax.crypto.Cipher"/>
+        <if-available class-name="com.jcraft.jsch.JSch"/>
+    </provider>
+
+    <provider class-name="org.apache.commons.vfs2.provider.res.ResourceFileProvider">
+        <scheme name="res"/>
+    </provider>
+        <provider class-name="org.apache.commons.vfs2.provider.webdav.WebdavFileProvider">
+        <scheme name="webdav"/>
+        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
+        <if-available class-name="org.apache.jackrabbit.webdav.client.methods.DavMethod"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.tar.TarFileProvider">
+        <scheme name="tgz"/>
+        <if-available scheme="gz"/>
+        <if-available scheme="tar"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.tar.TarFileProvider">
+        <scheme name="tbz2"/>
+        <if-available scheme="bz2"/>
+        <if-available scheme="tar"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.ram.RamFileProvider">
+        <scheme name="ram"/>
+    </provider>
+
+    <extension-map extension="zip" scheme="zip"/>
+    <extension-map extension="tar" scheme="tar"/>
+    <mime-type-map mime-type="application/zip" scheme="zip"/>
+    <mime-type-map mime-type="application/x-tar" scheme="tar"/>
+    <mime-type-map mime-type="application/x-gzip" scheme="gz"/>
+    <extension-map extension="jar" scheme="jar"/>
+    <extension-map extension="bz2" scheme="bz2"/>
+    <extension-map extension="gz" scheme="gz"/>
+    <extension-map extension="tgz" scheme="tar"/>
+    <extension-map extension="tbz2" scheme="tar"/>
+
+</providers>

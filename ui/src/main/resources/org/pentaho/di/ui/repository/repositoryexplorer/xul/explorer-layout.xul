@@ -1,0 +1,342 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window id="repository-explorer-window" title="Dev Repository Window" orient="vertical"
+  height="600" width="800"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:pen="http://www.pentaho.org/2008/xul"
+  onload="mainController.init()">
+
+	<dialog id="repository-explorer-dialog"
+		title="${RepositoryExplorerDialog.Title}"
+		resizable="true"
+	    height="600" width="800"
+		appicon="ui/images/spoon.ico"
+		buttons="accept"
+		buttonalign="end"
+		buttonlabelaccept="${Dialog.Close}"
+		ondialogaccept="mainController.closeDialog()">
+
+		<menupopup id="folderContextMenu">
+			<menuitem id="folder-context-create" label="${RepositoryExplorerDialog.ContextMenu.NewFolder}" command="browseController.createFolder()"/>
+			<menuitem id="folder-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
+			<menuitem id="folder-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameFolder()"/>
+			<menuitem id="folder-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteFolder()"/>
+			<menuseparator/>
+			<menuitem id="folder-context-export" label="${RepositoryExplorerDialog.ContextMenu.Export}" command="browseController.exportFolder()"/>
+		</menupopup>
+
+		<menupopup id="fileContextMenu">
+			<menuitem id="folder-context-create" label="${RepositoryExplorerDialog.ContextMenu.NewFolder}" command="browseController.createFolder()"/>
+			<menuitem id="file-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
+			<menuitem id="file-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameContent()"/>
+			<menuitem id="file-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteContent()"/>
+			<!--
+			<menuitem id="file-context-lock" type="checkbox" label="${RepositoryExplorerDialog.ContextMenu.Lock}" command="browseController.lockContent()"/>
+			<menuitem id="file-context-locknotes" label="${RepositoryExplorerDialog.ContextMenu.LockNotes}" command="browseController.viewLockNote()"/>
+			-->
+		</menupopup>
+
+		<tabbox id="repositoryExplorerTabs" flex="1">
+
+			<tabs id="repository-tab-set">
+				<tab id="browse-tab" label="${RepositoryExplorerDialog.Tabs.Browse}" />
+				<tab id="connections-tab" label="${RepositoryExplorerDialog.Tabs.Connections}" onclick="connectionsController.tabClicked()" />
+				<tab id="slaves-tab" label="${RepositoryExplorerDialog.Tabs.Slaves}" onclick="slavesController.tabClicked()" />
+				<tab id="partitions-tab" label="${RepositoryExplorerDialog.Tabs.Partitions}" onclick="partitionsController.tabClicked()" />
+				<tab id="clusters-tab" label="${RepositoryExplorerDialog.Tabs.Clusters}" onclick="clustersController.tabClicked()" />
+			</tabs>
+
+			<tabpanels id="repository-panels-set" flex="1">
+
+				<!--
+					###############################################################################
+				-->
+				<!--
+					BROWSE TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+
+				<tabpanel id="browse-tab">
+							<splitter flex="1" orient="HORIZONTAL">
+								<vbox flex="1">
+									<hbox>
+										<label id="folder-label" value="${RepositoryExplorerDialog.BrowseTab.Label}" />
+										<label id="spacer-label" flex="1" />
+										<button id="folder-expand-all" image="${ExpandAll16_image}" onclick="browseController.expandAllFolders()"
+											context="folderContextMenu" />
+										<button id="folder-collapse-all" image="${CollapseAll16_image}"  onclick="browseController.collapseAllFolders()" />
+									</hbox>
+
+									<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu"
+									ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()"
+									pen:drageffect="move" pen:preserveexpandedstate="true" pen:preserveselection="true" command="browseController.onDoubleClick()"
+                  toggle="browseController.onToggle()">
+										<treecols>
+											<treecol flex="1" label="" primary="true" pen:binding="name"
+												pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded" />
+										</treecols>
+										<treechildren>
+											<treeitem container="true" open="true">
+												<treerow>
+													<treecell label="" />
+												</treerow>
+												<treechildren></treechildren>
+											</treeitem>
+										</treechildren>
+									</tree>
+								</vbox>
+								<vbox flex="4">
+                  <deck id="browse-tab-right-panel-deck" flex="1">
+  									<splitter flex="1" orient="VERTICAL">
+                                      <vbox flex="4">
+										<hbox id="file-table-tools"/>
+  										<tree id="file-table" flex="1" hidecolumnpicker="true"
+  											enableColumnDrag="true" context="fileContextMenu"
+  											ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()"
+  											pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
+  											<treecols>
+  												<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}"
+  													pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image"
+  													pen:comparatorbinding="comparator"/>
+  												<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}"
+  													pen:binding="type" />
+  												<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}"
+  													pen:binding="formatModifiedDate" pen:comparatorbinding="dateComparator"/>
+  											</treecols>
+  											<treechildren />
+  										</tree>
+										</vbox>
+  										<vbox flex="3" id="revision-box" visible="false"/>
+  								  </splitter>
+                  </deck>
+						 		</vbox>
+                            </splitter>
+				</tabpanel>
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - BROWSE TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - CONNECTIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+
+				<tabpanel id="connections">
+					<hbox flex="1">
+						<vbox flex="1">
+							<splitter flex="1" orient="VERTICAL">
+								<vbox flex="4">
+									<!-- Connection list tool pane -->
+									<hbox height="20px">
+										<label value="${RepositoryExplorerDialog.ConnectionsTab.Label}"/>
+										<label id="spacer-label" flex="1" />
+										<button id="connections-edit" image="${Edit_image}" pen:disabledimage="${Disabled_Edit_image}" onclick="connectionsController.editConnection()"/>
+										<button id="connections-new" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="connectionsController.createConnection()"/>
+										<button id="connections-remove" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="connectionsController.removeConnection()" />
+									</hbox>
+									<!-- Connection list -->
+									<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+										<treecols>
+											<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="displayName" pen:childrenbinding="children" sortActive="true" sortDirection="ASCENDING"/>
+											<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}" pen:binding="type"/>
+											<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}" pen:binding="dateModified"/>
+										</treecols>
+										<treechildren/>
+									</tree>
+								</vbox>
+								<vbox flex="3" id="conn-addl-info-box" visible="false"/>
+							</splitter>
+						</vbox>
+					</hbox>
+				</tabpanel>
+
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - CONNECTIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - SLAVES TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+
+				<tabpanel id="slaves">
+					<hbox flex="1">
+						<vbox flex="1">
+							<!-- Slaves list tool pane -->
+							<hbox>
+								<label value="${RepositoryExplorerDialog.SlavesTab.Label}"/>
+								<label id="spacer-label" flex="1" />
+								<button id="slaves-edit" image="${Edit_image}" pen:disabledimage="${Disabled_Edit_image}" onclick="slavesController.editSlave()"/>
+								<button id="slaves-new" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="slavesController.createSlave()"/>
+								<button id="slaves-remove" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="slavesController.removeSlave()" />
+							</hbox>
+							<!-- Slaves list -->
+							<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+								<treecols>
+									<treecol id="name-col" flex="4" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+									<treecol id="host-col" flex="4" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Host}" pen:binding="host"/>
+									<treecol id="port-col" flex="2" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Port}" pen:binding="port"/>
+									<treecol id="master-col" flex="1" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Master}" pen:binding="master"/>
+								</treecols>
+								<treechildren/>
+							</tree>
+						</vbox>
+					</hbox>
+				</tabpanel>
+
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - SLAVES TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - PARTITIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+				<tabpanel id="partitions">
+					<hbox flex="1">
+					<vbox flex="1">
+						<!-- Partition list tool pane -->
+						<hbox>
+							<label value="${RepositoryExplorerDialog.PartitionsTab.Label}"/>
+							<label id="spacer-label" flex="1" />
+							<button id="partitions-edit" image="${Edit_image}" pen:disabledimage="${Disabled_Edit_image}" onclick="partitionsController.editPartition()"/>
+							<button id="partitions-new" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="partitionsController.createPartition()"/>
+							<button id="partitions-remove" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="partitionsController.removePartition()" />
+						</hbox>
+						<!-- Partition list -->
+						<tree id="partitions-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</vbox>
+					</hbox>
+				</tabpanel>
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - PARTITIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+
+
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - CLUSTERS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+				<tabpanel id="clusters">
+					<hbox flex="1">
+					<vbox flex="1">
+						<!-- Cluster list tool pane -->
+						<hbox>
+							<label value="${RepositoryExplorerDialog.ClustersTab.Label}"/>
+							<label id="spacer-label" flex="1" />
+							<button id="clusters-edit" image="${Edit_image}" pen:disabledimage="${Disabled_Edit_image}" onclick="clustersController.editCluster()"/>
+							<button id="clusters-new" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="clustersController.createCluster()"/>
+							<button id="clusters-remove" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="clustersController.removeCluster()" />
+						</hbox>
+						<!-- Cluster list -->
+						<tree id="clusters-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.ClustersTab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+								<treecol id="servers-col" flex="4" label="${RepositoryExplorerDialog.ClustersTab.TableColumn.Servers}" pen:binding="serverList"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</vbox>
+					</hbox>
+				</tabpanel>
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - CLUSTERS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+
+			</tabpanels>
+
+		</tabbox>
+
+  <!--  ###############################################################################   -->
+  <!--     ADD USER DIALOG: Dialog to add/edit/manage user                                -->
+  <!--  ###############################################################################   -->
+    <dialog id="add-user-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
+    		ondialogaccept="iSecurityController.saveUser()"
+    		ondialogcancel="iSecurityController.cancelAddUserDialog()"
+    		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}"
+    		appicon="ui/images/spoon.ico"
+    		resizable="true"
+    		height="260" width="350">
+       <vbox>
+			<label value="${AddUserDialog.UserName}" />
+			<hbox id="user-name-box">
+				<textbox id="user-name" flex="1" multiline="false"/>
+			</hbox>
+			<label value="${AddUserDialog.Password}"/>
+			<hbox id="user-password-box">
+				<textbox id="user-password" flex="1" type="password" multiline="false"/>
+			</hbox>
+			<label value="${AddUserDialog.Description}"/>
+			<hbox id="user-description-box">
+				<textbox id="user-description" flex="1" multiline="false"/>
+			</hbox>
+      </vbox>
+      <vbox id="role-to-user-box" flex="1"/>
+  </dialog>
+
+  <dialog id="wait-dialog" title="${LazilyInitializedController.Wait.Title}" width="220" height="40">
+    <hbox>
+      <label id="wait-dialog" value="${LazilyInitializedController.Wait.Message}"/>
+    </hbox>
+  </dialog>
+
+	</dialog>
+
+</window>

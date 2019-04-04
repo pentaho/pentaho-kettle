@@ -1,0 +1,40 @@
+<div class="header">
+  <div class="headerText floatLeft">
+    {{::vm.selectFields}}
+  </div>
+  <search placeholder="::vm.searchPlaceHolder"
+          on-search="vm.doSearch(searchValue)"
+          live-search="true">
+  </search>
+</div>
+<div class="middle">
+  <div class="fields">
+    <message ng-if="vm.showMessage"
+             title="vm.messageTitle"
+             message="vm.messageMessage"
+             show-text="vm.showMessageText"
+             show-spinner="vm.showSpinner">
+    </message>
+    <div ng-if="!vm.showMessage" class="jsonOutput" resize>
+      <tree content="vm.tree" paths="vm.paths" on-selection="vm.onSelection(count)"></tree>
+    </div>
+  </div>
+</div>
+<div class="bottom">
+  <div class="clearSelection">
+    <a href ng-click="vm.clearSelection()" ng-disabled="vm.isClearDisabled"
+       ng-class="{clearDisabled: vm.isClearDisabled}">{{::vm.clearSelectionLabel}}</a>
+  </div>
+  <div class="buttons">
+    <button class="secondary" ng-click="vm.cancel()">
+      <span>
+        {{::vm.cancelLabel}}
+      </span>
+    </button>
+    <button class="primary" ng-click="vm.ok()">
+      <span>
+        {{::vm.okLabel}}
+      </span>
+    </button>
+  </div>
+</div>

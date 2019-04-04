@@ -1,0 +1,40 @@
+<div class="main_div" style="padding-top:40px;">
+  <div style="margin-bottom: 22px;">
+    <div class="success"></div>
+  </div>
+  <div class="title_text margin_bottom_30">
+    {{::vm.congratulationsLabel}}
+  </div>
+  <div class="primary_text">
+    <div class="margin_bottom_80" ng-if="vm.connection.edit">{{::vm.readyEdit}}</div>
+    <div class="margin_bottom_80" ng-if="!vm.connection.edit">{{::vm.readyCreate}}</div>
+    <div class="margin_bottom_30">{{::vm.question}}</div>
+    <div class="margin_bottom_30" ng-if="!vm.connection.connected">
+      <button class="same_width primary" type="button" ng-click="vm.onConnect()">
+        <span>
+          {{::vm.connectNow}}
+        </span>
+      </button>
+    </div>
+    <div>
+      <button class="same_width primary" type="button" ng-click="vm.onManage()">
+        <span>
+          {{::vm.manageConnections}}
+        </span>
+      </button>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <help></help>
+      <button class="right secondary" type="button" ng-click="vm.onClose()">
+        <span>
+          {{::vm.finishLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

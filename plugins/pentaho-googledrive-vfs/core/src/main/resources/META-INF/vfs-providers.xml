@@ -1,0 +1,5 @@
+<providers>
+    <provider class-name="org.pentaho.googledrive.vfs.GoogleDriveFileProvider">
+        <scheme name="googledrive"/>
+    </provider>
+</providers>

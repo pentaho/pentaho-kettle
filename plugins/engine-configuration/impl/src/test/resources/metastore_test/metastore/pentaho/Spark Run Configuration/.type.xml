@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data-type>
+  <name>Spark Run Configuration</name>
+  <description>Defines an spark run configuration</description>
+</data-type>

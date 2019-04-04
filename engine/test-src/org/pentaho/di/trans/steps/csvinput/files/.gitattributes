@@ -1,3 +1,0 @@
-*.csv text eol=crlf
-*.gz binary
-*.bz2 binary

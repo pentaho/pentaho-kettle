@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!--===========================================================================
+HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
+
+Copyright 2002 - 2017 Hitachi Vantara. All rights reserved.
+
+NOTICE: All information including source code contained herein is, and
+remains the sole property of Hitachi Vantara and its licensors. The intellectual
+and technical concepts contained herein are proprietary and confidential
+to, and are trade secrets of Hitachi Vantara and may be covered by U.S. and foreign
+patents, or patents in process, and are protected by trade secret and
+copyright laws. The receipt or possession of this source code and/or related
+information does not convey or imply any rights to reproduce, disclose or
+distribute its contents, or to manufacture, use, or sell anything that it
+may describe, in whole or in part. Any reproduction, modification, distribution,
+or public display of this information without the express written authorization
+from Hitachi Vantara is strictly prohibited and in violation of applicable laws and
+international treaties. Access to the source code contained herein is strictly
+prohibited to anyone except those individuals and entities who have executed
+confidentiality and non-disclosure agreements or other agreements with Hitachi Vantara,
+explicitly covering such access.
+============================================================================-->
+<overlay 
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul">
+    <!--  ###############################################################################   -->
+    <!--     REVISION CONTEXT MENU: Context menu for opening and restoring a revision       -->
+    <!--  ###############################################################################   -->    
+  
+  	<dialog id="repository-explorer-dialog">
+		<menupopup id="revisionContextMenu">
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Open}" command="revisionController.openRevision()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Restore}" command="revisionController.restoreRevision()"/>
+			<!-- <menuitem label="Delete" /> -->
+		</menupopup>
+    </dialog>
+    
+    <!--  ###############################################################################   -->
+    <!--     REVISION VBOX: Vbox for revision                                               -->
+    <!--  ###############################################################################   -->    
+    
+	<vbox flex="1"  id="revision-box" visible="true">
+		<hbox>
+			<label id="revision-label" value="" />
+			<label id="spacer-label" flex="1" />
+			<button id="revision-restore" image="${Restore_image}" onclick="revisionController.restoreRevision()" tooltiptext="${RepositoryExplorerDialog.Buttons.Restore}"/>
+			<button id="revision-open" image="${Open_image}" onclick="revisionController.openRevision()" tooltiptext="${RepositoryExplorerDialog.Buttons.Open}" />
+			<!-- <button id="revision-remove" image="${Remove_image}"  />  -->
+		</hbox>
+
+							<tabbox id="file-properties-tabs" flex="1">
+								<tabs>
+									<tab id="history" label="${RepositoryExplorerDialog.Tab.VersionHistory}" />
+									<tab id="permission" label="${RepositoryExplorerDialog.Tab.Acl}" />
+								</tabs>
+								<tabpanels flex="1">
+									<tabpanel id="history-tab">
+										<vbox id="history-box" flex="1">
+											<tree id="revision-table" flex="1" hidecolumnpicker="true"
+												enableColumnDrag="true" context="revisionContextMenu" treeLines="false">
+												<treecols>
+													<treecol id="revision-label-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Label}"
+														pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
+													<treecol id="revision-date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.DateCreated}"
+														pen:binding="formatCreationDate" context="revisionContextMenu" />
+													<treecol id="revision-comment-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Comment}"
+														pen:binding="comment" />
+													<treecol id="revision-user-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.User}"
+														pen:binding="login" />
+												</treecols>
+												<treechildren />
+											</tree>
+										</vbox>
+								    </tabpanel>	
+									<tabpanel id="acl-tab">
+										<deck id="acl-deck"  flex="1">
+											<vbox id="no-acl-box" flex="1">
+												<label value="${AclTab.NoAcl}"/> 
+											</vbox>
+											<vbox id="acl-box" flex="1"/>
+										</deck>
+									</tabpanel>
+								</tabpanels>
+							</tabbox>
+  	</vbox>
+</overlay>					

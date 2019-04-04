@@ -1,0 +1,18 @@
+<div>
+  <script type="text/ng-template" id="node.html">
+    <div class="node" ng-style="{paddingLeft: indent + 'px'}"  ng-if="node.hidden!==true">
+      <div class="item" ng-class="{disabled: node.disabled}">
+        <div class="chevron" ng-class="{open: node.open}" ng-click="vm.toggle(node)" ng-if="vm.hasChevron(node)">&nbsp;</div>
+        <div class="checkbox"><input ng-disabled="node.disabled" type="checkbox" ng-model="node.checked" ng-change="vm.checkboxSelect(node)"></div>
+        <div class="key" ng-if="node.key">{{node.key}}:</div>
+        <div class="value">{{ node | output }}</div>
+      </div>
+    </div>
+    <div ng-if="node.open">
+      <div ng-if="node.children" ng-repeat="value in node.children">
+        <div ng-include="'node.html'" ng-init="node=value;indent=indent+22"></div>
+      </div>
+    </div>
+  </script>
+  <div ng-if="vm.content" ng-include="'node.html'" ng-init="node=vm.content;indent=30"></div>
+</div>

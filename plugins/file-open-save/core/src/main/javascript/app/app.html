@@ -1,0 +1,116 @@
+<error ng-show="vm.showError"
+       error-type="vm.errorType"
+       error-file="vm.file"
+       error-folder="vm.file === null ? vm.folder : vm.file"
+       on-error-confirm="vm.confirmError()"
+       on-error-cancel="vm.cancelError()"
+       key></error>
+<loading ng-show="vm.loading" title="vm.loadingTitle" message="vm.loadingMessage"></loading>
+<div class="dialogWrapper noselect" ng-class="[vm.state.current.name, {hasError : vm.showError}]" ng-hide="vm.loading">
+  <div class="header">
+    <div class="headerTop">
+      <div class="headerTitle headerText">
+        {{::vm.headerTitle}}
+      </div>
+      <search
+          placeholder="vm.getPlaceholder()"
+          on-search="vm.doSearch(searchValue)"
+          on-blur="vm.storeRecentSearch()"
+          autofill="vm.recentSearches"
+          search-value="vm.searchString"
+          searching="vm.searching"></search>
+    </div>
+
+    <div class="headerBottom">
+      <div ng-show="vm.searchString">
+        <div class="breadcrumbSection searchResults">
+          {{vm.getSelectedFolderName()}}
+        </div>
+      </div>
+      <div ng-hide="vm.searchString" class="breadcrumbSection">
+        <breadcrumb path="vm.folder.path"
+            include-root="vm.includeRoot"
+            on-select="vm.selectFolderByPath(selectedPath)">
+        </breadcrumb>
+      </div>
+      <div class="addDelete" ng-if="vm.state.is('save') || vm.state.is('selectFolder')">
+        <input type="button" class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDisabled()"/>
+        <input type="button" class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}" ng-disabled="vm.deleteDisabled()"/>
+      </div>
+    </div>
+  </div>
+  <div id="middle" class="middle">
+    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder" scroll-to-folder did-delete="vm.didDeleteFolder">
+      <folder auto-expand="vm.autoExpand"
+              on-select="vm.selectFolder(selectedFolder)"
+              show-recents="vm.showRecents"
+              selected-folder="vm.folder"
+              ng-class="{dark: vm.file !== null}"
+              tree="vm.tree"></folder>
+    </div>
+
+    <div class="fileArea"
+         ng-class="{recentsView: vm.showRecents && !vm.showMessage,
+                    scrolling: vm.recentsHasScrollBar,
+                    hasMessage: vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage}">
+      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">
+        {{vm.fileAreaMessage}}
+      </div>
+      <card ng-if="vm.isShowRecents()"
+            recent-files="vm.recentFiles"
+            folder="vm.folder"
+            on-click="vm.selectFile(file)"
+            on-select="vm.highlightFile(selectedFile)"
+            selected-file="vm.file"
+            resize-cards="vm.showRecents"></card>
+      <files search="vm.searchString"
+             ng-show="!vm.showMessage && !vm.showRecents"
+             folder="vm.folder"
+             files="vm.getFiles()"
+             selected-file="vm.file"
+             on-click="vm.selectFile(file)"
+             on-select="vm.highlightFile(selectedFile)"
+             on-error="vm.renameError(errorType, file)"
+             on-rename="vm.updateDirectories(file, oldPath, newPath)"
+             on-edit-start="vm.onEditStart()"
+             on-edit-complete="vm.onEditComplete()"
+             loading="vm.fileLoading"></files>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="fileNameEntry" ng-show="vm.state.is('save')">
+      <div class="fileNameEntryLabel">
+        <label for="fileNameEntryTextBox">
+          {{::vm.saveFileNameLabel}}
+        </label>
+      </div>
+      <input id="fileNameEntryTextBox"
+             type="text"
+             class="fileNameEntryTextBox"
+             ng-model="vm.fileToSave" focus/>
+    </div>
+    <div class="buttons">
+      <button class="secondary" ng-click="vm.cancel()">
+        <span>
+          {{::vm.cancelButton}}
+        </span>
+      </button>
+      <button class="primary" ng-if="vm.state.is('selectFolder')" ng-click="vm.okClicked()" ng-disabled="!vm.file">
+        <span>
+          {{::vm.okButton}}
+        </span>
+      </button>
+      <button class="primary" ng-if="vm.state.is('open')" ng-click="vm.openClicked()" ng-disabled="!vm.file">
+        <span>
+          {{::vm.openButton}}
+        </span>
+      </button>
+      <button class="primary" ng-if="vm.state.is('save')" ng-click="vm.saveClicked()" ng-disabled="vm.isSaveEnabled()">
+        <span>
+          {{::vm.saveButton}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

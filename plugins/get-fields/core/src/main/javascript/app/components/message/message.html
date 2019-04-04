@@ -1,0 +1,11 @@
+<div class="message">
+  <div class="icon" ng-if="vm.showSpinner"></div>
+  <div class="text" ng-if="(vm.title || vm.message) && vm.showText">
+    <div class="title" ng-class="{messageNoSpinner : !vm.showSpinner}">
+      {{vm.title}}
+    </div>
+    <div class="messageTxt">
+      {{vm.message}}
+    </div>
+  </div>
+</div>

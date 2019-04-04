@@ -1,0 +1,7 @@
+    <annotations>  <annotation>    <name>c44cc4ed-9647-44f2-b1d9-0523c01f0c94</name>
+    <field>HiddenField</field>
+    <type>CREATE_ATTRIBUTE</type>
+     <properties>        <property>           <name>hidden</name>
+           <value><![CDATA[true]]></value>        </property>    </properties>         </annotation>  <sharedDimension>N</sharedDimension>
+  <description/>
+</annotations>

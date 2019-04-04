@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<t1> <t4 v="a">  </t4>
+
+  <t2><t3>oo
+
+ 
+  </t3></t2>
+
+<t5/>   <!-- comment -->
+  <t6/>
+<t7   a="b"     c="d"/>
+</t1>

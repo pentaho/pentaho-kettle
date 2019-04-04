@@ -1,0 +1,34 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+  <id>get-previous-row-field</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <baseDirectory>get-previous-row-field</baseDirectory>
+  <files>
+    <file>
+      <source>${project.basedir}/src/main/resources/version.xml</source>
+      <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${project.basedir}/src/main/resources/PRV.svg</source>
+    </file>
+  </files>
+  <fileSets>
+    <fileSet>
+      <outputDirectory>lib</outputDirectory>
+      <excludes>
+        <exclude>*/**</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <includes>
+        <include>org.pentaho.di.plugins:get-previous-row-field-core:jar</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>

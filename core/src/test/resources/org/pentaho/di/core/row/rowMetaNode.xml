@@ -1,0 +1,39 @@
+<row-meta><value-meta><type>Date</type>
+  <storagetype>normal</storagetype>
+  <name>testDate</name>
+  <length>-1</length>
+  <precision>-1</precision>
+  <comments/>
+  <conversion_Mask/>
+  <decimal_symbol/>
+  <grouping_symbol/>
+  <currency_symbol/>
+  <trim_type>none</trim_type>
+  <case_insensitive>N</case_insensitive>
+  <collator_disabled>Y</collator_disabled>
+  <collator_strength>0</collator_strength>
+  <sort_descending>N</sort_descending>
+  <output_padding>N</output_padding>
+  <date_format_lenient>N</date_format_lenient>
+  <date_format_locale>en_US</date_format_locale>
+  <lenient_string_to_number>N</lenient_string_to_number>
+</value-meta><value-meta><type>Timestamp</type>
+  <storagetype>normal</storagetype>
+  <name>testTimestamp</name>
+  <length>-1</length>
+  <precision>-1</precision>
+  <comments/>
+  <conversion_Mask>yyyy/MM/dd HH:mm:ss.000000000</conversion_Mask>
+  <decimal_symbol/>
+  <grouping_symbol/>
+  <currency_symbol/>
+  <trim_type>none</trim_type>
+  <case_insensitive>N</case_insensitive>
+  <collator_disabled>Y</collator_disabled>
+  <collator_strength>0</collator_strength>
+  <sort_descending>N</sort_descending>
+  <output_padding>N</output_padding>
+  <date_format_lenient>N</date_format_lenient>
+  <date_format_locale>en_US</date_format_locale>
+  <lenient_string_to_number>N</lenient_string_to_number>
+</value-meta></row-meta>

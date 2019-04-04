@@ -13,7 +13,7 @@
 
   <description>DEPRECATED. Load data into LucidDB by using their bulk load command in streaming mode. (Doesn't work on Windows!)</description>
   <author>Pentaho</author>
-  <forum_url>forums.pentaho.com/forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
+  <forum_url>https://community.hds.com/community/products-and-solutions/pentaho/data-integration</forum_url>
   <license_name>Apache License 2.0</license_name>
   <license_text>For more details see:
     http://www.apache.org/licenses/LICENSE-2.0.html</license_text>

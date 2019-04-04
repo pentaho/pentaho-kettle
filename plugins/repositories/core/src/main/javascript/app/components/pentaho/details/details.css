@@ -1,0 +1,12 @@
+#pentaho_details {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+input:disabled {
+  background-color: #f2f2f2;
+  border-color: #e6e6e6;
+  color: #999999;
+}

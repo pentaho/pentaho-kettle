@@ -1,0 +1,104 @@
+/*!
+ * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
+ *
+ * Copyright 2017 Hitachi Vantara. All rights reserved.
+ *
+ * NOTICE: All information including source code contained herein is, and
+ * remains the sole property of Hitachi Vantara and its licensors. The intellectual
+ * and technical concepts contained herein are proprietary and confidential
+ * to, and are trade secrets of Hitachi Vantara and may be covered by U.S. and foreign
+ * patents, or patents in process, and are protected by trade secret and
+ * copyright laws. The receipt or possession of this source code and/or related
+ * information does not convey or imply any rights to reproduce, disclose or
+ * distribute its contents, or to manufacture, use, or sell anything that it
+ * may describe, in whole or in part. Any reproduction, modification, distribution,
+ * or public display of this information without the express written authorization
+ * from Hitachi Vantara is strictly prohibited and in violation of applicable laws and
+ * international treaties. Access to the source code contained herein is strictly
+ * prohibited to anyone except those individuals and entities who have executed
+ * confidentiality and non-disclosure agreements or other agreements with Hitachi Vantara,
+ * explicitly covering such access.
+ */
+
+/* CARDS */
+card .card {
+  background-color: #FDFDFD;
+  border: 1px solid #E4E4E4;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  white-space: nowrap;
+  height: 86px;
+  width: 284px;
+  margin: 20px 0 0 20px;
+  cursor: pointer;
+  padding: 20px;
+  outline: 0 none;
+  float: left;
+}
+
+card .card:hover {
+  background-color: #E6EFF6;
+  border: 1px solid #E6EFF6;
+}
+
+card .card.selected,
+card .card.selected .cardDate {
+  color: #FFF;
+  background-color: #005DA6;
+  border: 1px solid #005DA6;
+}
+
+card .cardMiddle {
+  width: 100%;
+  height: 100%;
+}
+
+card .cardMiddle .cardTypeIcon {
+  height: 100%;
+  width: 32px;
+  float: right;
+}
+
+card .card.cardTrans .cardMiddle .cardTypeIcon {
+  background: url("../../img/trans_large.svg") no-repeat left center;
+}
+
+card .card.cardJob .cardMiddle .cardTypeIcon {
+  background: url("../../img/job_large.svg") no-repeat left center;
+}
+
+card .card.selected .cardMiddle .cardTypeIcon {
+  background-position: right center;
+}
+
+card .cardTitleAndDate {
+  float: left;
+  max-width: 200px;
+  margin-top: -1px;
+}
+
+card .cardTitle {
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 20px;
+}
+
+card .cardDate {
+  color: #999;
+  line-height: 17px;
+}
+
+card .bottomSpacer {
+  height: 20px;
+  width: calc(100% + 20px);
+  float: left;
+}

@@ -1,0 +1,276 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Welcome!</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="fonts/opensans/style.css">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <style>
+        /* FONTS */
+
+        @font-face {
+            font-family: icomoon;
+            font-style: normal;
+            font-weight: 400;
+            src: url('fonts/icomoon.eot');
+            src: url('fonts/icomoon.eot?#iefix') format('embedded-opentype'), url('fonts/icomoon.woff') format('woff'), url('fonts/icomoon.ttf') format('truetype'), url('fonts/icomoon.svg#icomoon') format('svg');
+        }
+
+        [class^="icon-"],
+        [class*=" icon-"] {
+            /* use !important to prevent issues with browser extensions that change fonts */
+            font-family: 'icomoon' !important;
+            speak: none;
+            font-style: normal;
+            font-weight: normal;
+            font-variant: normal;
+            text-transform: none;
+            line-height: 1;
+            /* Better Font Rendering =========== */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .icon-arrow-right:before {
+            content: "\e8e7";
+        }
+        /* MEDIA QUERIES */
+
+        @media screen and (max-width: 992px) {
+            body {
+                min-width: 920px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                width: 920px;
+            }
+        }
+
+        body {
+            font-family: 'OpenSansRegular', sans-serif;
+            margin: 0;
+            padding: 34px 0;
+            border-top: 4px solid #005DA6;
+            /* min-width: 992px; */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body a.external.arrow:hover::after,
+        body a.external.arrow:hover,
+        body a:hover,
+        body a:hover:after {
+            color: #0F2B5B;
+            text-transform: none;
+        }
+
+        h2 {
+            font-family: 'OpenSansLight', sans-serif;
+            text-align: center;
+            font-size: 28px;
+            margin-top: 20px;
+            margin-bottom: 1em;
+            color: #000;
+            margin: 2rem 0 .5rem;
+            padding: 0;
+            -webkit-margin-before: 0;
+            -webkit-margin-after: 0;
+            -webkit-margin-start: 0;
+            -webkit-margin-end: 0;
+        }
+
+        .ui-button-icon,
+        .ui-button-icon:visited,
+        a,
+        a:visited,
+        a:focus,
+        a:active {
+            color: #005DA6;
+            text-decoration: none;
+        }
+        /* CARDS  */
+
+        a.card-link {
+            color: #005DA6;
+            text-decoration: none;
+            display: block;
+            line-height: 30px;
+        }
+
+        .cards-container {
+            padding: 40px 20px 0;
+        }
+
+        .card-content {
+            border-radius: .125em;
+            box-sizing: border-box;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .card-title {
+            display: block;
+            font-family: 'OpenSansLight', sans-serif;
+            color: #414141;
+            font-size: 1.75em;
+            font-weight: 300;
+            text-transform: uppercase;
+            margin: 0 0 15px;
+        }
+
+        .card-description {
+            background: #F5F6F7;
+            -webkit-transition: background-color .1s ease-out;
+            -moz-transition: background-color .1s ease-out;
+            -o-transition: background-color .1s ease-out;
+            transition: background-color .1s ease-out;
+            padding: 2em;
+            min-height: 330px;
+        }
+
+        .card-description hr {
+            border-color: #ccc;
+        }
+
+        .card-description img {
+            margin: 1em 0 2em;
+            height: 60px;
+        }
+        /* EXTRAS BAR */
+
+        .h-extras-bar {
+            /* display: flex; */
+            border-bottom: 1px solid #ccc;
+            border-top: 1px solid #ccc;
+            padding: 30px 0 25px;
+            margin-top: 3em;
+        }
+
+        .h-extras-bar .extras-container span {
+            display: block;
+            font-size: 1.175em;
+            font-weight: 500;
+        }
+
+        .h-extras-bar,
+        .p-extras-bar {
+            margin: 3em 0 0;
+        }
+
+        .h-extras-bar .extras-container a {
+            font-size: 1em;
+        }
+
+        .h-extras-bar .extras-container a:hover {
+            text-decoration: none;
+        }
+
+        .h-extras-bar .extras-container img {
+            float: left;
+            width: auto;
+            height: 40px;
+            margin: 0 20px 10px 0 !important;
+        }
+
+        .h-extras-bar .extras-container {
+            display: inline-block;
+        }
+
+        .h-extras-bar .extras-container .extras {
+            margin: 0 auto;
+            text-align: left;
+            white-space: nowrap;
+            max-width: 215px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <h2>Welcome to Pentaho Data Integration</h2>
+        </div>
+    </div>
+    <div class="container cards-container">
+        <div class="row">
+
+
+            <div class="col-xs-3 card-content">
+                <div class="card-description">
+                    <img alt="Work" class="internal" src="assets/open.svg">
+                    <div class="card-title">Work</div>
+                    <hr/>
+                    <a href="#" onclick="javascript:openFileFunction(); return false;" class="card-link">Open files</a>
+                    <a href="#" onclick="javascript:newTransFunction(); return false;" class="card-link">New transformation</a>
+                    <a href="#" onclick="javascript:newJobFunction(); return false;" class="card-link">New job</a>
+                </div>
+            </div>
+            <div class="col-xs-3 card-content">
+                <div class="card-description">
+                    <img alt="Learn" class="internal" src="assets/learn.svg">
+                    <div class="card-title">Learn</div>
+                    <hr/>
+                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/8.2/Products/Data_Integration'); return false;" class="card-link">Documentation</a>
+                    <a href="#" onclick="javascript:openURL('http://www.pentaho.com/evaluation-path#data-integration'); return false;" class="card-link">Watch tutorials</a>
+                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/8.2/Whats_New'); return false;" class="card-link">Release notes</a>
+                </div>
+            </div>
+            <div class="col-xs-3 card-content">
+                <div class="card-description">
+                    <img alt="Extend" class="internal" src="assets/extend.svg">
+                    <div class="card-title">Extend</div>
+                    <hr/>
+                    <a href="#" onclick="javascript:genericFunction('openMarketplace'); return false;" class="card-link">Marketplace</a>
+                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/8.2/Developer_Center/PDI/Extend'); return false;" class="card-link">Build plugins</a>
+                </div>
+            </div>
+            <div class="col-xs-3 card-content">
+                <div class="card-description">
+                    <img alt="Upgrade" class="internal" src="assets/upgrade.svg">
+                    <div class="card-title">Upgrade</div>
+                    <hr/>
+                    <a href="#" onclick="javascript:openURL('https://www.hitachivantara.com/en-us/products/big-data-integration-analytics/pentaho-data-integration.html'); return false;" class="card-link">Enterprise Edition</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="container">
+        <div class="row h-extras-bar">
+            <div class="col-xs-4 extras-container">
+                <div class="extras">
+                    <img class="internal" alt="Community" src="assets/community_small.svg">
+                    <span>Community</span>
+                    <a href="#" onclick="javascript:openURL('https://community.hitachivantara.com/community/products-and-solutions/pentaho/pages/home'); return false;" class="arrow">Join the discussion<i class="icon-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="col-xs-4 extras-container">
+                <div class="extras">
+                    <img class="internal" alt="Pentaho Forums" src="assets/forums_small.svg">
+                    <span>Pentaho Forums</span>
+                    <a href="#" onclick="javascript:openURL('https://community.hitachivantara.com/community/products-and-solutions/pentaho/content'); return false;" class="arrow">Join the discussion<i class="icon-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="col-xs-4 extras-container">
+                <div class="extras">
+                    <img class="internal" alt="hitachivantara.com" src="assets/pentahosite_small.svg">
+                    <span>hitachivantara.com</span>
+                    <a href="#" onclick="javascript:openURL('https://www.hitachivantara.com/go/pentaho.html'); return false;" class="arrow">Visit us<i class="icon-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
