@@ -86,10 +86,18 @@ public class LabeledControl {
     return control;
   }
 
-  @SuppressWarnings( "WeakerAccess" )
-  public void attachBelow( Control prevControl ) {
-    label.setLayoutData( new FormDataBuilder().left( 0, MARGIN ).top( prevControl, MARGIN ).result() );
-    control
+
+  /**
+   * Attaches this LabeledControl below control.  If null, attaches to the top of the container.
+   */
+  @SuppressWarnings ( "WeakerAccess" )
+  public void attachBelow( Control control ) {
+    if ( control == null ) {
+      label.setLayoutData( new FormDataBuilder().left( 0, MARGIN ).top( 0, MARGIN ).result() );
+    } else {
+      label.setLayoutData( new FormDataBuilder().left( 0, MARGIN ).top( control, MARGIN ).result() );
+    }
+    this.control
       .setLayoutData(
         new FormDataBuilder()
           .left( 0, MARGIN )
@@ -97,11 +105,11 @@ public class LabeledControl {
           .width( controlWidth ).result() );
   }
 
-
   public static class Series {
     private final List<LabeledControl> labeledControlSequence;
     private final Control prevControl;
     private final Map<Control, LabeledControl> lookup;
+    private final Composite parent;
 
     /**
      * Creates a series of LabeledControls, managing vertical layout between each.
@@ -112,15 +120,16 @@ public class LabeledControl {
      * @param controlWidths The widths of each control in the series.
      * @param props         PropsUI to apply.
      */
-    public Series( Control prevControl, List<String> labelTexts, List<Control> controls, List<Integer> controlWidths,
+    public Series( Composite parent, Control prevControl, List<String> labelTexts, List<Control> controls, List<Integer> controlWidths,
                    PropsUI props ) {
       Preconditions.checkState( labelTexts.size() == controls.size()
         && labelTexts.size() == controlWidths.size() );
       this.prevControl = prevControl;
+      this.parent = parent;
 
       labeledControlSequence = IntStream.range( 0, labelTexts.size() )
         .mapToObj( i -> new LabeledControl(
-          prevControl.getParent(), labelTexts.get( i ), controls.get( i ), controlWidths.get( i ), props ) )
+          parent, labelTexts.get( i ), controls.get( i ), controlWidths.get( i ), props ) )
         .collect( Collectors.toList() );
 
       lookup = labeledControlSequence.stream().collect( Collectors.toMap( LabeledControl::control, lc -> lc ) );
@@ -128,7 +137,7 @@ public class LabeledControl {
     }
 
 
-    @SuppressWarnings( "WeakerAccess" )
+    @SuppressWarnings ( {"WeakerAccess", "unused"} )
     public void hideAll() {
       labeledControlSequence.forEach( this::hideLabeledControl );
       layout();
@@ -142,6 +151,11 @@ public class LabeledControl {
     public void show( Control control ) {
       showLabeledControl( lookup.get( control ) );
       layout();
+    }
+
+    @SuppressWarnings ( "unused" )
+    public boolean containsControl( Control control ) {
+      return lookup.containsKey( control );
     }
 
     private void showLabeledControl( LabeledControl lc ) {
@@ -164,7 +178,7 @@ public class LabeledControl {
           next = labeledControl.control;
         }
       }
-      prevControl.getParent().layout();
+      parent.layout();
     }
 
   }
