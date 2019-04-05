@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -409,6 +409,7 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
   public OutputStream fos;
 
   public RowMetaInterface outputRowMeta;
+  public RowMetaInterface inputRowMeta;
 
   public byte[] binarySeparator;
   public byte[] binaryEnclosure;

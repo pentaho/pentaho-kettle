@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,24 +22,31 @@
 
 package org.pentaho.di.trans.steps.concatfields;
 
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
-
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * User: Dzmitry Stsiapanau Date: 2/11/14 Time: 11:00 AM
@@ -49,10 +56,12 @@ public class ConcatFieldsTest {
   private class ConcatFieldsHandler extends ConcatFields {
 
     private Object[] row;
+    private boolean useSuperHeader = false;
 
     public ConcatFieldsHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-                                TransMeta transMeta, Trans trans ) {
+        TransMeta transMeta, Trans trans, boolean useSuperHeader ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+      this.useSuperHeader = useSuperHeader;
     }
 
     /**
@@ -69,12 +78,20 @@ public class ConcatFieldsTest {
     }
 
     @Override
+    protected void initOutput() throws KettleException {
+
+    }
+
+    @Override
     protected Object[] putRowFastDataDump( Object[] r ) throws KettleStepException {
       return null;
     }
 
     @Override
     protected boolean writeHeader() {
+      if ( useSuperHeader ) {
+        return super.writeHeader();
+      }
       return true;
     }
 
@@ -92,10 +109,10 @@ public class ConcatFieldsTest {
   @Before
   public void setUp() throws Exception {
     stepMockHelper =
-      new StepMockHelper<ConcatFieldsMeta, ConcatFieldsData>( "CONCAT FIELDS TEST", ConcatFieldsMeta.class,
-        ConcatFieldsData.class );
+        new StepMockHelper<ConcatFieldsMeta, ConcatFieldsData>( "CONCAT FIELDS TEST", ConcatFieldsMeta.class,
+            ConcatFieldsData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-      stepMockHelper.logChannelInterface );
+        stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -107,8 +124,8 @@ public class ConcatFieldsTest {
   @Test
   public void testPrepareOutputRow() throws Exception {
     ConcatFieldsHandler concatFields =
-      new ConcatFieldsHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
-        stepMockHelper.transMeta, stepMockHelper.trans );
+        new ConcatFieldsHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
+            stepMockHelper.transMeta, stepMockHelper.trans, false );
     Object[] row = new Object[] { "one", "two" };
     String[] fieldNames = new String[] { "one", "two" };
     concatFields.setRow( row );
@@ -122,13 +139,56 @@ public class ConcatFieldsTest {
     when( stepMockHelper.processRowsStepMetaInterface.isFileNameInField() ).thenReturn( Boolean.FALSE );
     when( stepMockHelper.processRowsStepMetaInterface.isHeaderEnabled() ).thenReturn( Boolean.TRUE );
     when( stepMockHelper.processRowsStepMetaInterface.isRemoveSelectedFields() ).thenReturn( Boolean.TRUE );
+
+    stepMockHelper.processRowsStepMetaInterface.setDoNotOpenNewFileInit( true );
     concatFields.setInputRowMeta( inputRowMeta );
     try {
       concatFields.processRow( stepMockHelper.processRowsStepMetaInterface,
-        stepMockHelper.processRowsStepDataInterface );
+          stepMockHelper.processRowsStepDataInterface );
       concatFields.prepareOutputRow( row );
     } catch ( NullPointerException npe ) {
       fail( "NullPointerException issue PDI-8870 still reproduced " );
     }
+  }
+
+  @Test
+  public void testWriteHeaderWithoutFields() throws Exception {
+    // A test for PDI-17902
+    ConcatFieldsHandler concatFields =
+        new ConcatFieldsHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
+            stepMockHelper.transMeta, stepMockHelper.trans, true );
+    Object[] row = new Object[] { "one", "two" };
+    concatFields.setRow( row );
+    RowMetaInterface inputRowMeta = new RowMeta();
+    inputRowMeta.addValueMeta( new ValueMetaString( "one" ) );
+    inputRowMeta.addValueMeta( new ValueMetaString( "two" ) );
+    when( stepMockHelper.processRowsStepMetaInterface.getOutputFields() ).thenReturn( new TextFileField[0] );
+    when( stepMockHelper.processRowsStepMetaInterface.isFastDump() ).thenReturn( Boolean.TRUE );
+    when( stepMockHelper.processRowsStepMetaInterface.isFileAppended() ).thenReturn( Boolean.FALSE );
+    when( stepMockHelper.processRowsStepMetaInterface.isFileNameInField() ).thenReturn( Boolean.FALSE );
+    when( stepMockHelper.processRowsStepMetaInterface.isHeaderEnabled() ).thenReturn( Boolean.TRUE );
+    when( stepMockHelper.processRowsStepMetaInterface.isRemoveSelectedFields() ).thenReturn( Boolean.TRUE );
+    when( stepMockHelper.processRowsStepMetaInterface.getSeparator() ).thenReturn( ";" );
+
+    doCallRealMethod().when( stepMockHelper.processRowsStepMetaInterface ).setTargetFieldName( any( String.class ) );
+    when( stepMockHelper.processRowsStepMetaInterface.getTargetFieldName() ).thenCallRealMethod();
+
+    doCallRealMethod().when( stepMockHelper.processRowsStepMetaInterface ).getFields(
+        any( RowMetaInterface.class ), any( String.class ), any(), any( StepMeta.class ),
+        any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+
+    stepMockHelper.processRowsStepMetaInterface.setTargetFieldName( "target_result" );
+
+    concatFields.setInputRowMeta( inputRowMeta );
+    concatFields.init( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
+    concatFields.processRow( stepMockHelper.processRowsStepMetaInterface,
+        stepMockHelper.processRowsStepDataInterface );
+    concatFields.prepareOutputRow( row );
+
+    String headerString =
+        new String( ( (ConcatFieldsOutputStream) stepMockHelper.processRowsStepDataInterface.writer ).read() );
+
+    Assert.assertEquals( "one;two", headerString );
+
   }
 }

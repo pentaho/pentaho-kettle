@@ -445,7 +445,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     Object[] row = getRow(); // This also waits for a row to be finished.
 
     if ( row != null  && first ) {
-      data.outputRowMeta = getInputRowMeta().clone();
+      data.inputRowMeta = getInputRowMeta();
+      data.outputRowMeta = data.inputRowMeta.clone();
     }
 
     if ( first ) {
@@ -742,6 +743,10 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
         data.writer.write( data.binaryNewline );
       } else if ( r != null ) {
+        //PDI-17902 - Concat Fields changes the output row meta, only input rows are desired
+        if ( data.inputRowMeta != null ) {
+          r = data.inputRowMeta;
+        }
         // Just put all field names in the header/footer
         for ( int i = 0; i < r.size(); i++ ) {
           if ( i > 0 && data.binarySeparator.length > 0 ) {
