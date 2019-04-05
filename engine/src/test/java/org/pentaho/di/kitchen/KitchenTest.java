@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -216,7 +216,7 @@ public class KitchenTest {
 
       Result result = Kitchen.getCommandExecutor().getResult();
       assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
 
     } finally {
       // sanitize
@@ -264,7 +264,7 @@ public class KitchenTest {
 
       Result result = Kitchen.getCommandExecutor().getResult();
       assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
 
     } finally {
       // sanitize
