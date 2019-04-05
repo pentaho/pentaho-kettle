@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,13 +23,16 @@
 package org.pentaho.di.base;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.Utils;
@@ -84,8 +87,8 @@ public abstract class AbstractBaseCommandExecutor {
                                               String processingEndAfterLongMsgTkn, String processingEndAfterLongerMsgTkn,
                                               String processingEndAfterLongestMsgTkn ) {
 
-    String begin = getDateFormat().format( start ).toString();
-    String end = getDateFormat().format( stop ).toString();
+    String begin = getDateFormat().format( start );
+    String end = getDateFormat().format( stop );
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), startStopMsgTkn, begin, end ) );
 
@@ -156,8 +159,33 @@ public abstract class AbstractBaseCommandExecutor {
     return repsinfo;
   }
 
+  protected RepositoryDirectoryInterface loadRepositoryDirectory( Repository repository, String dirName, String noRepoProvidedMsgTkn,
+                                                                  String allocateAndConnectRepoMsgTkn, String cannotFindDirMsgTkn ) throws KettleException {
+
+    if ( repository == null ) {
+      System.out.println( BaseMessages.getString( getPkgClazz(), noRepoProvidedMsgTkn ) );
+      return null;
+    }
+
+    RepositoryDirectoryInterface directory;
+
+    // Default is the root directory
+    logDebug( allocateAndConnectRepoMsgTkn );
+    directory = repository.loadRepositoryDirectoryTree();
+
+    if ( !StringUtils.isEmpty( dirName ) ) {
+
+      directory = directory.findDirectory( dirName ); // Find the directory name if one is specified...
+
+      if ( directory == null ) {
+        System.out.println( BaseMessages.getString( getPkgClazz(), cannotFindDirMsgTkn, "" + dirName ) );
+      }
+    }
+    return directory;
+  }
+
   public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
-                                                     final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+                                                     final RepositoryOperation... operations ) throws KettleException {
 
     Repository rep = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
     rep.init( repositoryMeta );
@@ -189,6 +217,17 @@ public abstract class AbstractBaseCommandExecutor {
     } else {
       System.out.println( "Parameter: " + name + "=" + Const.NVL( value, "" ) + ", default=" + defaultValue + " : " + Const.NVL( description, "" ) );
     }
+  }
+
+  protected String[] convert( Map<String, String> map ) {
+
+    List<String> list = new ArrayList<>();
+
+    if ( map != null ) {
+      map.keySet().forEach( key -> list.add( key + "=" + map.get( key ) ) );
+    }
+
+    return list.toArray( new String[] {} );
   }
 
   public boolean isEnabled( final String value ) {

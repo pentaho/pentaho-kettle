@@ -216,7 +216,7 @@ public class KitchenTest {
 
       Result result = Kitchen.getCommandExecutor().getResult();
       assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
 
     } finally {
       // sanitize
@@ -264,7 +264,7 @@ public class KitchenTest {
 
       Result result = Kitchen.getCommandExecutor().getResult();
       assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
 
     } finally {
       // sanitize

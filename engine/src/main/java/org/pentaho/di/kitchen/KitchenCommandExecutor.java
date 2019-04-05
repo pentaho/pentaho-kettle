@@ -44,11 +44,8 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.i18n.BaseMessages;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -110,16 +107,24 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
           RepositoryMeta repositoryMeta = loadRepositoryConnection( params.getRepoName(), "Kitchen.Log.LoadingRep", "Kitchen.Error.NoRepDefinied", "Kitchen.Log.FindingRep" );
 
+          logDebug( "Kitchen.Log.CheckUserPass" );
           repository = establishRepositoryConnection( repositoryMeta, params.getRepoUsername(), params.getRepoPassword(), RepositoryOperation.EXECUTE_JOB );
 
-          job = executeRepositoryBasedCommand( repository, repositoryMeta, params.getInputDir(), params.getInputFile(), params.getListRepoFiles(), params.getListRepoDirs() );
+          // Is the command a request to output some repo-related information ( list directories, export repo content, ... ) ?
+          // If so, nothing else is needed ( other than executing the actual requested operation )
+          if ( isEnabled( params.getListRepoFiles() ) || isEnabled( params.getListRepoDirs() ) ) {
+            executeRepositoryBasedCommand( repository, params.getInputDir(), params.getListRepoFiles(), params.getListRepoDirs() );
+            return exitWithStatus( CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
+          }
+
+          job = loadJobFromRepository( repository, params.getInputDir(), params.getInputFile() );
         }
 
-        // Try to load if from file anyway.
-        if ( !Utils.isEmpty( params.getLocalFile() ) && job == null ) {
+        // Try to load if from file
+        if ( job == null ) {
 
           // Try to load the job from file, even if it failed to load from the repository
-          job = executeFilesystemBasedCommand( params.getLocalInitialDir(), params.getLocalFile() );
+          job = loadJobFromFilesystem( params.getLocalInitialDir(), params.getLocalFile() );
         }
 
       } else if ( isEnabled( params.getListRepos() ) ) {
@@ -246,64 +251,55 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     return CommandExecutorCodes.Kitchen.KETTLE_VERSION_PRINT.getCode();
   }
 
-  public Job executeRepositoryBasedCommand( Repository repository, RepositoryMeta repositoryMeta, final String dirName,
-                                            final String jobName, final String listJobs, final String listDirs ) throws Exception {
+  protected void executeRepositoryBasedCommand( Repository repository, final String dirName, final String listJobs, final String listDirs ) throws Exception {
 
-    if ( repository != null && repositoryMeta != null  ) {
-      // Define and connect to the repository...
-      logDebug( "Kitchen.Log.Alocate&ConnectRep" );
+    RepositoryDirectoryInterface directory = loadRepositoryDirectory( repository, dirName, "Kitchen.Error.NoRepProvided",
+            "Kitchen.Log.Alocate&ConnectRep", "Kitchen.Error.CanNotFindSuppliedDirectory" );
 
-      RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree(); // Default = root
-
-      // Add the IMetaStore of the repository to our delegation
-      if ( repository.getMetaStore() != null && getMetaStore() != null ) {
-        getMetaStore().addMetaStore( repository.getMetaStore() );
-      }
-
-      // Find the directory name if one is specified...
-      if ( !Utils.isEmpty( dirName ) ) {
-        directory = directory.findDirectory( dirName );
-      }
-
-      if ( directory != null ) {
-
-        // Check username, password
-        logDebug( "Kitchen.Log.CheckUserPass" );
-
-        // Load a job
-        if ( !Utils.isEmpty( jobName ) ) {
-
-          logDebug(  "Kitchen.Log.LoadingJobInfo" );
-          blockAndThrow( getKettleInit() );
-          JobMeta jobMeta = repository.loadJob( jobName, directory, null, null ); // reads last version
-          logDebug(  "Kitchen.Log.AllocateJob" );
-
-          return new Job( repository, jobMeta );
-
-        } else if ( isEnabled( listJobs ) ) {
-
-          printRepositoryStoredJobs( repository, directory ); // List the jobs in the repository
-
-        } else if ( isEnabled( listDirs ) ) {
-
-          printRepositoryDirectories( repository, directory ); // List the directories in the repository
-        }
-
-      } else {
-        System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.CanNotFindSuppliedDirectory", dirName + "" ) );
-        repositoryMeta = null;
-      }
-
-    } else {
-      System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.NoRepProvided" ) );
+    if ( directory == null ) {
+      return; // not much we can do here
     }
 
-    return null;
+    if ( isEnabled( listJobs ) ) {
+      printRepositoryStoredJobs( repository, directory ); // List the jobs in the repository
+
+    } else if ( isEnabled( listDirs ) ) {
+      printRepositoryDirectories( repository, directory ); // List the directories in the repository
+    }
   }
 
-  public Job executeFilesystemBasedCommand( final String initialDir, final String filename ) throws Exception {
+  public Job loadJobFromRepository( Repository repository, String dirName, String jobName ) throws Exception {
+
+    if ( Utils.isEmpty( jobName ) ) {
+      System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
+      return null;
+    }
+
+    RepositoryDirectoryInterface directory = loadRepositoryDirectory( repository, dirName, "Kitchen.Error.NoRepProvided",
+            "Kitchen.Log.Alocate&ConnectRep", "Kitchen.Error.CanNotFindSuppliedDirectory" );
+
+    if ( directory == null ) {
+      return null; // not much we can do here
+    }
+
+    // Add the IMetaStore of the repository to our delegation
+    if ( repository.getMetaStore() != null && getMetaStore() != null ) {
+      getMetaStore().addMetaStore( repository.getMetaStore() );
+    }
+
+    // Load a job
+    logDebug(  "Kitchen.Log.LoadingJobInfo" );
+    blockAndThrow( getKettleInit() );
+    JobMeta jobMeta = repository.loadJob( jobName, directory, null, null ); // reads last version
+    logDebug(  "Kitchen.Log.AllocateJob" );
+
+    return new Job( repository, jobMeta );
+  }
+
+  public Job loadJobFromFilesystem( final String initialDir, final String filename ) throws Exception {
 
     if ( Utils.isEmpty( filename ) ) {
+      System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
       return null;
     }
 
@@ -374,16 +370,5 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
   public void setKettleInit( Future<KettleException> kettleInit ) {
     this.kettleInit = kettleInit;
-  }
-
-  protected String[] convert( Map<String, String> map ) {
-
-    List<String> list = new ArrayList<>();
-
-    if ( map != null ) {
-      map.keySet().forEach( key -> list.add( key + "=" + map.get( key ) ) );
-    }
-
-    return list.toArray( new String[] {} );
   }
 }

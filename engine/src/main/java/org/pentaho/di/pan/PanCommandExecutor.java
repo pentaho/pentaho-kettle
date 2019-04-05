@@ -57,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
@@ -109,19 +108,26 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
           }
 
           // In case we use a repository...
-          // some commands are to load a Trans from the repo; others are merely to print some repo-related information
+          // some commands are to load a Trans from the repo; others are merely to output some repo-related information
           RepositoryMeta repositoryMeta = loadRepositoryConnection( p.getRepoName(), "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined", "Pan.Log.FindingRep" );
 
+          logDebug( "Pan.Log.CheckSuppliedUserPass" );
           repository = establishRepositoryConnection( repositoryMeta, p.getRepoUsername(), p.getRepoPassword(), RepositoryOperation.EXECUTE_TRANSFORMATION );
 
-          trans = executeRepositoryBasedCommand( repository, repositoryMeta, p.getInputDir(), p.getInputFile(), p.getListRepoFiles(), p.getListRepoDirs(), p.getExportRepo() );
-        }
+          // Is the command a request to output some repo-related information ( list directories, export repo content, ... ) ?
+          // If so, nothing else is needed ( other than executing the actual requested operation )
+          if ( isEnabled( p.getListRepoFiles() ) || isEnabled( p.getListRepoDirs() ) || !Utils.isEmpty( p.getExportRepo() ) ) {
+            executeRepositoryBasedCommand( repository, p.getInputDir(), p.getListRepoFiles(), p.getListRepoDirs(), p.getExportRepo() );
+            return exitWithStatus( CommandExecutorCodes.Pan.SUCCESS.getCode() );
+          }
 
+          trans = loadTransFromRepository( repository, p.getInputDir(), p.getInputFile() );
+        }
 
         // Try to load the transformation from file, even if it failed to load from the repository
         // You could implement some fail-over mechanism this way.
         if ( trans == null ) {
-          trans = executeFilesystemBasedCommand( p.getLocalInitialDir(), p.getLocalFile(),  p.getLocalJarFile() );
+          trans = loadTransFromFilesystem( p.getLocalInitialDir(), p.getLocalFile(), p.getLocalJarFile() );
         }
 
       }
@@ -267,78 +273,60 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     return CommandExecutorCodes.Pan.KETTLE_VERSION_PRINT.getCode();
   }
 
-  public Trans executeRepositoryBasedCommand( Repository repository, RepositoryMeta repositoryMeta, final String dirName,
-                                              final String transName, final String listTrans, final String listDirs, final String exportRepo ) throws Exception {
+  protected void executeRepositoryBasedCommand( Repository repository, String dirName, String listTrans, String listDirs, String exportRepo ) throws Exception {
 
-    try {
+    RepositoryDirectoryInterface directory = loadRepositoryDirectory( repository, dirName, "Pan.Error.NoRepProvided",
+                "Pan.Log.Allocate&ConnectRep", "Pan.Error.CanNotFindSpecifiedDirectory" );
 
-      if ( repository != null && repositoryMeta != null ) {
-        // Define and connect to the repository...
-        logDebug( "Pan.Log.Allocate&ConnectRep" );
-
-        // Default is the root directory
-        RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree();
-
-        // Add the IMetaStore of the repository to our delegation
-        if ( repository.getMetaStore() != null && getMetaStore() != null ) {
-          getMetaStore().addMetaStore( repository.getMetaStore() );
-        }
-
-        // Find the directory name if one is specified...
-        if ( !Utils.isEmpty( dirName ) ) {
-          directory = directory.findDirectory( dirName );
-        }
-
-        if ( directory != null ) {
-          // Check username, password
-          logDebug( "Pan.Log.CheckSuppliedUserPass" );
-
-          // transname is not empty ? then command it to load a transformation
-          if ( !Utils.isEmpty( transName ) ) {
-
-            logDebug( "Pan.Log.LoadTransInfo" );
-            TransMeta transMeta = repository.loadTransformation( transName, directory, null, true, null );
-
-            logDebug( "Pan.Log.AllocateTrans" );
-            Trans trans = new Trans( transMeta );
-            trans.setRepository( repository );
-            trans.setMetaStore( getMetaStore() );
-
-            return trans; // return transformation loaded from the repo
-
-          } else if ( isEnabled( listTrans ) ) {
-
-            printRepositoryStoredTransformations( repository, directory ); // List the transformations in the repository
-
-          } else if ( isEnabled( listDirs ) ) {
-
-            printRepositoryDirectories( repository, directory ); // List the directories in the repository
-
-          } else if ( !Utils.isEmpty( exportRepo ) ) {
-
-            // Export the repository
-            System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.ExportingObjectsRepToFile", "" + exportRepo ) );
-            repository.getExporter().exportAllObjects( null, exportRepo, directory, "all" );
-            System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.FinishedExportObjectsRepToFile", "" + exportRepo ) );
-
-          } else {
-            System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.NoTransNameSupplied" ) );
-          }
-        } else {
-          System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotFindSpecifiedDirectory", "" + dirName ) );
-        }
-      } else {
-        System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.NoRepProvided" ) );
-      }
-
-    } catch ( Exception e ) {
-      getLog().logError( e.getMessage() );
+    if ( directory == null ) {
+      return; // not much we can do here
     }
 
-    return null;
+    if ( isEnabled( listTrans ) ) {
+      printRepositoryStoredTransformations( repository, directory ); // List the transformations in the repository
+
+    } else if ( isEnabled( listDirs ) ) {
+      printRepositoryDirectories( repository, directory ); // List the directories in the repository
+
+    } else if ( !Utils.isEmpty( exportRepo ) ) {
+      // Export the repository
+      System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.ExportingObjectsRepToFile", "" + exportRepo ) );
+      repository.getExporter().exportAllObjects( null, exportRepo, directory, "all" );
+      System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.FinishedExportObjectsRepToFile", "" + exportRepo ) );
+    }
   }
 
-  public Trans executeFilesystemBasedCommand( final String initialDir, final String filename, final String jarFilename ) throws Exception {
+  public Trans loadTransFromRepository( Repository repository, String dirName, String transName ) throws Exception {
+
+    if ( Utils.isEmpty( transName ) ) {
+      System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.NoTransNameSupplied" ) );
+      return null;
+    }
+
+    RepositoryDirectoryInterface directory = loadRepositoryDirectory( repository, dirName, "Pan.Error.NoRepProvided",
+            "Pan.Log.Allocate&ConnectRep", "Pan.Error.CanNotFindSpecifiedDirectory" );
+
+    if ( directory == null ) {
+      return null; // not much we can do here
+    }
+
+    // Add the IMetaStore of the repository to our delegation
+    if ( repository.getMetaStore() != null && getMetaStore() != null ) {
+      getMetaStore().addMetaStore( repository.getMetaStore() );
+    }
+
+    logDebug( "Pan.Log.LoadTransInfo" );
+    TransMeta transMeta = repository.loadTransformation( transName, directory, null, true, null );
+
+    logDebug( "Pan.Log.AllocateTrans" );
+    Trans trans = new Trans( transMeta );
+    trans.setRepository( repository );
+    trans.setMetaStore( getMetaStore() );
+
+    return trans; // return transformation loaded from the repo
+  }
+
+  public Trans loadTransFromFilesystem( final String initialDir, final String filename, final String jarFilename ) throws Exception {
 
     Trans trans = null;
 
@@ -355,7 +343,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       logDebug( "Pan.Log.LoadingTransXML", "" + filepath );
       TransMeta transMeta = new TransMeta( filepath );
       trans = new Trans( transMeta );
-
     }
 
     if ( !Utils.isEmpty( jarFilename ) ) {
@@ -468,17 +455,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         }
       }
     }
-  }
-
-  protected String[] convert( Map<String, String> map ) {
-
-    List<String> list = new ArrayList<>();
-
-    if ( map != null ) {
-      map.keySet().forEach( key -> list.add( key + "=" + map.get( key ) ) );
-    }
-
-    return list.toArray( new String[] {} );
   }
 }
 
