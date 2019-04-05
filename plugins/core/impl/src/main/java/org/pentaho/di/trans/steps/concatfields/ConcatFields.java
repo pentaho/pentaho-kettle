@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,7 +68,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     if ( r != null && first ) {
       first = false;
 
-      data.outputRowMeta = getInputRowMeta().clone();
+      data.inputRowMeta = getInputRowMeta();
+      data.outputRowMeta = data.inputRowMeta.clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
