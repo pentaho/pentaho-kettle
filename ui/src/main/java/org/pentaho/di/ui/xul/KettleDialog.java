@@ -45,7 +45,7 @@ public class KettleDialog extends SwtDialog {
   }
 
   @Override protected Shell getParentShell( XulComponent parent ) {
-    if ( parent == null ) {
+    if ( parent == null && Spoon.getInstance() != null ) {
       return Spoon.getInstance().getShell();
     }
     return super.getParentShell( parent );
