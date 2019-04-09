@@ -370,6 +370,10 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       }
     }
 
+    if ( trans != null ) {
+      trans.setMetaStore( getMetaStore() );
+    }
+
     return trans;
   }
 

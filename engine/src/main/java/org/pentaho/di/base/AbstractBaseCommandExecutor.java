@@ -159,7 +159,7 @@ public abstract class AbstractBaseCommandExecutor {
     return repsinfo;
   }
 
-  protected RepositoryDirectoryInterface loadRepositoryDirectory( Repository repository, String dirName, String noRepoProvidedMsgTkn,
+  public RepositoryDirectoryInterface loadRepositoryDirectory( Repository repository, String dirName, String noRepoProvidedMsgTkn,
                                                                   String allocateAndConnectRepoMsgTkn, String cannotFindDirMsgTkn ) throws KettleException {
 
     if ( repository == null ) {
