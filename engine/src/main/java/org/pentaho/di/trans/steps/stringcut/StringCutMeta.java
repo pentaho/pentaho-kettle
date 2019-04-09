@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,8 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -54,16 +56,21 @@ import org.w3c.dom.Node;
  * @author Samatar Hassan
  * @since 30 September 2008
  */
+@InjectionSupported( localizationPrefix = "StringCutMeta.Injection.", groups = { "FIELDS" } )
 public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "FIELD_IN_STREAM", group = "FIELDS" )
   private String[] fieldInStream;
 
+  @Injection( name = "FIELD_OUT_STREAM", group = "FIELDS" )
   private String[] fieldOutStream;
 
+  @Injection( name = "CUT_FROM", group = "FIELDS" )
   private String[] cutFrom;
 
+  @Injection( name = "CUT_TO", group = "FIELDS" )
   private String[] cutTo;
 
   public StringCutMeta() {
