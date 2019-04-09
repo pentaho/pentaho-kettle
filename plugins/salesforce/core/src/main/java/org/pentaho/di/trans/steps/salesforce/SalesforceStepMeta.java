@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -49,21 +50,27 @@ public abstract class SalesforceStepMeta extends BaseStepMeta implements StepMet
   private static Class<?> PKG = SalesforceStepMeta.class;
 
   /** The Salesforce Target URL */
+  @Injection( name = "SALESFORCE_URL" )
   private String targetURL;
 
   /** The userName */
+  @Injection( name = "SALESFORCE_USERNAME" )
   private String username;
 
   /** The password */
+  @Injection( name = "SALESFORCE_PASSWORD" )
   private String password;
 
   /** The time out */
+  @Injection( name = "TIME_OUT" )
   private String timeout;
 
   /** The connection compression */
+  @Injection( name = "USE_COMPRESSION" )
   private boolean compression;
 
   /** The Salesforce module */
+  @Injection( name = "MODULE" )
   private String module;
 
   public String getXML() {

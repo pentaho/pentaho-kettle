@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.salesforceinput;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -56,17 +57,38 @@ public class SalesforceInputField implements Cloneable {
     BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Right" ),
     BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Both" ) };
 
+  @Injection( name = "NAME", group = "FIELDS" )
   private String name;
+
+  @Injection( name = "FIELD", group = "FIELDS" )
   private String field;
+
   private int type;
+
+  @Injection( name = "LENGTH", group = "FIELDS" )
   private int length;
+
+  @Injection( name = "FORMAT", group = "FIELDS" )
   private String format;
+
   private int trimtype;
+
+  @Injection( name = "PRECISION", group = "FIELDS" )
   private int precision;
+
+  @Injection( name = "CURRENCY", group = "FIELDS" )
   private String currencySymbol;
+
+  @Injection( name = "DECIMAL", group = "FIELDS" )
   private String decimalSymbol;
+
+  @Injection( name = "GROUP", group = "FIELDS" )
   private String groupSymbol;
+
+  @Injection( name = "REPEAT", group = "FIELDS" )
   private boolean repeat;
+
+  @Injection( name = "ISIDLOOKUP", group = "FIELDS" )
   private boolean idlookup;
 
   private String[] samples;
@@ -129,36 +151,36 @@ public class SalesforceInputField implements Cloneable {
     setRepeated( !"N".equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, int fieldNr ) throws KettleException {
-    setName( rep.getStepAttributeString( id_step, fieldNr, "field_name" ) );
-    setField( rep.getStepAttributeString( id_step, fieldNr, "field_attribut" ) );
-    setIdLookup( rep.getStepAttributeBoolean( id_step, fieldNr, "field_idlookup" ) );
-    setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, fieldNr, "field_type" ) ) );
-    setFormat( rep.getStepAttributeString( id_step, fieldNr, "field_format" ) );
-    setCurrencySymbol( rep.getStepAttributeString( id_step, fieldNr, "field_currency" ) );
-    setDecimalSymbol( rep.getStepAttributeString( id_step, fieldNr, "field_decimal" ) );
-    setGroupSymbol( rep.getStepAttributeString( id_step, fieldNr, "field_group" ) );
-    setLength( (int) rep.getStepAttributeInteger( id_step, fieldNr, "field_length" ) );
-    setPrecision( (int) rep.getStepAttributeInteger( id_step, fieldNr, "field_precision" ) );
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, int fieldNr ) throws KettleException {
+    setName( rep.getStepAttributeString( idStep, fieldNr, "field_name" ) );
+    setField( rep.getStepAttributeString( idStep, fieldNr, "field_attribut" ) );
+    setIdLookup( rep.getStepAttributeBoolean( idStep, fieldNr, "field_idlookup" ) );
+    setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( idStep, fieldNr, "field_type" ) ) );
+    setFormat( rep.getStepAttributeString( idStep, fieldNr, "field_format" ) );
+    setCurrencySymbol( rep.getStepAttributeString( idStep, fieldNr, "field_currency" ) );
+    setDecimalSymbol( rep.getStepAttributeString( idStep, fieldNr, "field_decimal" ) );
+    setGroupSymbol( rep.getStepAttributeString( idStep, fieldNr, "field_group" ) );
+    setLength( (int) rep.getStepAttributeInteger( idStep, fieldNr, "field_length" ) );
+    setPrecision( (int) rep.getStepAttributeInteger( idStep, fieldNr, "field_precision" ) );
     setTrimType( SalesforceInputField.getTrimTypeByCode( rep.getStepAttributeString(
-      id_step, fieldNr, "field_trim_type" ) ) );
-    setRepeated( rep.getStepAttributeBoolean( id_step, fieldNr, "field_repeat" ) );
+      idStep, fieldNr, "field_trim_type" ) ) );
+    setRepeated( rep.getStepAttributeBoolean( idStep, fieldNr, "field_repeat" ) );
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation,
-      ObjectId id_step, int fieldNr ) throws KettleException {
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_name", getName() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_attribut", getField() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_idlookup", isIdLookup() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_type", getTypeDesc() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_format", getFormat() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_currency", getCurrencySymbol() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_decimal", getDecimalSymbol() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_group", getGroupSymbol() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_length", getLength() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_precision", getPrecision() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_trim_type", getTrimTypeCode() );
-    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_repeat", isRepeated() );
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation,
+      ObjectId idStep, int fieldNr ) throws KettleException {
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_name", getName() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_attribut", getField() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_idlookup", isIdLookup() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_type", getTypeDesc() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_format", getFormat() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_currency", getCurrencySymbol() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_decimal", getDecimalSymbol() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_group", getGroupSymbol() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_length", getLength() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_precision", getPrecision() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_trim_type", getTrimTypeCode() );
+    rep.saveStepAttribute( idTransformation, idStep, fieldNr, "field_repeat", isRepeated() );
   }
 
   public static final int getTrimTypeByCode( String tt ) {
@@ -184,7 +206,7 @@ public class SalesforceInputField implements Cloneable {
         return i;
       }
     }
-    return 0;
+    return SalesforceInputField.getTrimTypeByCode( tt );
   }
 
   public static final String getTrimTypeCode( int i ) {
@@ -203,9 +225,7 @@ public class SalesforceInputField implements Cloneable {
 
   public Object clone() {
     try {
-      SalesforceInputField retval = (SalesforceInputField) super.clone();
-
-      return retval;
+      return (SalesforceInputField) super.clone();
     } catch ( CloneNotSupportedException e ) {
       return null;
     }
@@ -247,6 +267,11 @@ public class SalesforceInputField implements Cloneable {
     this.type = type;
   }
 
+  @Injection( name = "TYPE", group = "FIELDS" )
+  public void setType( String typeDesc ) {
+    this.type = ValueMetaFactory.getIdForValueMeta( typeDesc );
+  }
+
   public String getFormat() {
     return format;
   }
@@ -279,28 +304,33 @@ public class SalesforceInputField implements Cloneable {
     this.trimtype = trimtype;
   }
 
+  @Injection( name = "TRIM_TYPE", group = "FIELDS" )
+  public void setTrimTypeDesc( String trimTypeDesc ) {
+    this.trimtype = SalesforceInputField.getTrimTypeByDesc( trimTypeDesc );
+  }
+
   public String getGroupSymbol() {
     return groupSymbol;
   }
 
-  public void setGroupSymbol( String group_symbol ) {
-    this.groupSymbol = group_symbol;
+  public void setGroupSymbol( String groupSymbol ) {
+    this.groupSymbol = groupSymbol;
   }
 
   public String getDecimalSymbol() {
     return decimalSymbol;
   }
 
-  public void setDecimalSymbol( String decimal_symbol ) {
-    this.decimalSymbol = decimal_symbol;
+  public void setDecimalSymbol( String decimalSymbol ) {
+    this.decimalSymbol = decimalSymbol;
   }
 
   public String getCurrencySymbol() {
     return currencySymbol;
   }
 
-  public void setCurrencySymbol( String currency_symbol ) {
-    this.currencySymbol = currency_symbol;
+  public void setCurrencySymbol( String currencySymbol ) {
+    this.currencySymbol = currencySymbol;
   }
 
   public int getPrecision() {
