@@ -76,7 +76,7 @@
     <cglib-nodep.version>2.2</cglib-nodep.version>
     <nekohtml.version>1.9.15</nekohtml.version>
     <js.version>1.7R3</js.version>
-    <mail.version>1.4.7</mail.version>
+    <mail.version>1.6.1</mail.version>
     <mstor.version>0.9.13</mstor.version>
     <snappy-java.version>1.1.0</snappy-java.version>
     <commons-cli.version>1.2</commons-cli.version>
@@ -727,8 +727,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
       <version>${mail.version}</version>
     </dependency>
     <dependency>
