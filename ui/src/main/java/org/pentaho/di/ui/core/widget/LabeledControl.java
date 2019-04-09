@@ -68,6 +68,8 @@ public class LabeledControl {
   private final Control control;
   private boolean visible = true;
 
+  private static final int SPACING = 15;
+
   private LabeledControl( Composite parentComp, String labelText, Control control, int controlWidth, PropsUI props ) {
     label = new Label( parentComp, SWT.RIGHT );
     label.setText( labelText );
@@ -95,7 +97,7 @@ public class LabeledControl {
     if ( control == null ) {
       label.setLayoutData( new FormDataBuilder().left( 0, MARGIN ).top( 0, MARGIN ).result() );
     } else {
-      label.setLayoutData( new FormDataBuilder().left( 0, MARGIN ).top( control, MARGIN ).result() );
+      label.setLayoutData( new FormDataBuilder().left( 0, MARGIN ).top( control, SPACING ).result() );
     }
     this.control
       .setLayoutData(
