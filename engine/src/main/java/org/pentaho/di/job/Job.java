@@ -405,6 +405,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, this );
         jobMeta.disposeEmbeddedMetastoreProvider();
+        log.logDebug( BaseMessages.getString( PKG, "Job.Log.DisposeEmbeddedMetastore" ) );
 
         fireJobFinishListeners();
 
