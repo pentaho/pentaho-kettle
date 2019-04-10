@@ -547,7 +547,7 @@ public class ParseMailInputTest {
     return fields;
   }
 
-  private Enumeration<?> getEnum( Header[] headers ) {
+  private Enumeration<Header> getEnum( Header[] headers ) {
     return Collections.enumeration( Arrays.asList( headers ) );
   }
 }
