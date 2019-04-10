@@ -1436,6 +1436,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         display.dispose();
       } catch ( SWTException e ) {
         // dispose errors
+      } catch ( NullPointerException  e ) {
+        // fixes NPE on Mac OS
       }
     }
   }
