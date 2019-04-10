@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -46,6 +47,7 @@ public class JobEntryJobRunnerTest {
 
   private JobEntryJobRunner jobRunner;
   private Job mockJob;
+  private JobMeta mockJobMeta;
   private Result mockResult;
   private LogChannelInterface mockLog;
   private Job parentJob;
@@ -53,6 +55,7 @@ public class JobEntryJobRunnerTest {
   @Before
   public void setUp() throws Exception {
     mockJob = mock( Job.class );
+    mockJobMeta = mock( JobMeta.class );
     mockResult = mock( Result.class );
     mockLog = mock( LogChannelInterface.class );
     jobRunner = new JobEntryJobRunner( mockJob, mockResult, 0, mockLog );
@@ -66,6 +69,7 @@ public class JobEntryJobRunnerTest {
     jobRunner.run();
     when( mockJob.isStopped() ).thenReturn( false );
     when( mockJob.getParentJob() ).thenReturn( null );
+    when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
     jobRunner.run();
     when( parentJob.isStopped() ).thenReturn( true );
     when( mockJob.getParentJob() ).thenReturn( parentJob );
@@ -131,6 +135,7 @@ public class JobEntryJobRunnerTest {
   public void testRunWithException() throws Exception {
     when( mockJob.isStopped() ).thenReturn( false );
     when( mockJob.getParentJob() ).thenReturn( parentJob );
+    when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
     when( parentJob.isStopped() ).thenReturn( false );
     doThrow( KettleException.class ).when( mockJob ).execute( anyInt(), any( Result.class ) );
     jobRunner.run();
