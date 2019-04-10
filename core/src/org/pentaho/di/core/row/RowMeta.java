@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -859,7 +859,7 @@ public class RowMeta implements RowMetaInterface {
         buffer.append( getString( row, i ) );
         buffer.append( "]" );
       }
-      return buffer.toString();
+      return buffer.toString().equals( "" ) ? "No data in row" : buffer.toString();
     } finally {
       lock.readLock().unlock();
     }
