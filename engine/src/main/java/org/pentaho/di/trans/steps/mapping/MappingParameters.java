@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.mapping;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -47,12 +48,15 @@ public class MappingParameters implements Cloneable {
   private static final String XML_VARIABLES_TAG = "variablemapping";
 
   /** The name of the variable to set in the sub-transformation */
+  @Injection( name = "NAME", group = "PARAMETERS" )
   private String[] variable;
 
   /** This is a simple String with optionally variables in them **/
+  @Injection( name = "VALUE", group = "PARAMETERS" )
   private String[] input;
 
   /** This flag causes the sub-transformation to inherit all variables from the parent */
+  @Injection( name = "INHERIT_VARIABLES", group = "PARAMETERS" )
   private boolean inheritingAllVariables;
 
   public MappingParameters() {
