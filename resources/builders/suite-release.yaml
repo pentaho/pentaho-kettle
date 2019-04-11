@@ -845,16 +845,6 @@ jobGroups:
 
   4600:
 
-     - jobID           :  foundry-scale-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dpentaho-scale -Deula-wrap
-       versionProperty :  worker-nodes.version
-       root            :  foundry
-       testable        :  false
-
-  4700:
-
      - jobID           :  installers
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
        scmBranch       :  ${DEFAULT_BRANCH}
