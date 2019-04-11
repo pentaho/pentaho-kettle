@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -83,8 +83,11 @@ public class Abort extends BaseStep implements StepInterface {
         //
         // Here we abort!!
         //
+        String rowData = getInputRowMeta().getString( r );
+        rowData = rowData.equals( "" ) ? "No data in row" : rowData;
+
         logError( BaseMessages.getString(
-          PKG, "Abort.Log.Wrote.AbortRow", Long.toString( nrInputRows ), getInputRowMeta().getString( r ) ) );
+          PKG, "Abort.Log.Wrote.AbortRow", Long.toString( nrInputRows ), rowData ) );
 
         String message = environmentSubstitute( meta.getMessage() );
         if ( message == null || message.length() == 0 ) {
