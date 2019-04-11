@@ -36,11 +36,11 @@ public class TransParams extends Params {
                         String inputFile, String listRepoFiles, String listRepoDirs, String exportRepo, String localFile,
                         String localJarFile, String localInitialDir, String listRepos, String safeMode, String metrics,
                         String listFileParams, String logLevel, String maxLogLines, String maxLogTimeout, String logFile,
-                        String oldLogFile, String version, String resultSetStepName, String resultSetCopyNumber, NamedParams namedParams ) {
+                        String oldLogFile, String version, String resultSetStepName, String resultSetCopyNumber, String base64Zip, NamedParams namedParams ) {
 
         super( blockRepoConns, repoName, repoUsername, trustRepoUser, repoPassword, inputDir, inputFile, listRepoFiles, listRepoDirs, exportRepo,
                 localFile, localJarFile, localInitialDir, listRepos, safeMode, metrics, listFileParams, logLevel, maxLogLines,
-                maxLogTimeout, logFile, oldLogFile, version, resultSetStepName, resultSetCopyNumber, namedParams, null );
+                maxLogTimeout, logFile, oldLogFile, version, resultSetStepName, resultSetCopyNumber, base64Zip, namedParams, null );
   }
 
   @Override
@@ -74,6 +74,7 @@ public class TransParams extends Params {
     arguments.putIfAbsent(  KettleConstants.VERSION, getVersion() );
     arguments.putIfAbsent(  KettleConstants.RESULT_SET_STEP_NAME, getResultSetStepName() );
     arguments.putIfAbsent(  KettleConstants.RESULT_SET_COPY_NUMBER, getResultSetCopyNumber() );
+    arguments.putIfAbsent(  KettleConstants.BASE64_ZIP, getBase64Zip() );
 
     if ( getParams() != null && !getParams().isEmpty() ) {
 
