@@ -32,6 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.util.Utils;
@@ -257,32 +258,33 @@ public class Kitchen {
         }
       }
 
-      JobParams jobParams = new JobParams(
-              optionNorep.toString(),
-              optionRepname.toString(),
-              optionUsername.toString(),
-              optionTrustUser.toString(),
-              optionPassword.toString(),
-              optionDirname.toString(),
-              optionJobname.toString(),
-              optionListjobs.toString(),
-              optionListdir.toString(),
-              optionExport.toString(),
-              optionFilename.toString(),
-              "",
-              initialDir.toString(),
-              optionListrep.toString(),
-              optionListParam.toString(),
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              optionParams,
-              customOptions );
+      Params jobParams = ( new Params.Builder() )
+              .blockRepoConns( optionNorep.toString() )
+              .repoName( optionRepname.toString() )
+              .repoUsername( optionUsername.toString() )
+              .trustRepoUser( optionTrustUser.toString() )
+              .repoPassword( optionPassword.toString() )
+              .inputDir( optionDirname.toString() )
+              .inputFile( optionJobname.toString() )
+              .listRepoFiles( optionListjobs.toString() )
+              .listRepoDirs( optionListdir.toString() )
+              .exportRepo( optionExport.toString() )
+              .localFile( optionFilename.toString() )
+              .localJarFile( "" )
+              .localInitialDir( initialDir.toString() )
+              .listRepos( optionListrep.toString() )
+              .listFileParams( optionListParam.toString() )
+              .logLevel( "" )
+              .maxLogLines( "" )
+              .maxLogTimeout( "" )
+              .logFile( "" )
+              .oldLogFile( "" )
+              .version( "" )
+              .resultSetStepName( "" )
+              .resultSetCopyNumber( "" )
+              .namedParams( optionParams )
+              .customNamedParams( customOptions )
+              .build();
 
       result = getCommandExecutor().execute( jobParams );
 

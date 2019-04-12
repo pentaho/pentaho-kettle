@@ -213,10 +213,4 @@ public interface IParams extends Serializable {
    * @return namedParams custom parameters to be passed into the executing file
    */
   NamedParams getCustomNamedParams();
-
-  /**
-   *
-   * @return a Map<String, String> with the param name and its value
-   */
-  Map<String, String> asMap();
 }

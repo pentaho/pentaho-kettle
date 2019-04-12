@@ -24,6 +24,8 @@ package org.pentaho.di.kitchen;
 
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.base.KettleConstants;
+import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -67,7 +69,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     setKettleInit( kettleInit );
   }
 
-  public Result execute( JobParams params ) throws Throwable {
+  public Result execute( Params params ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Starting" ) );
 
@@ -159,7 +161,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         System.out.println( message );
 
         // Setting the list parameters option will make kitchen exit below in the parameters section
-        ( (JobParams) params ).setListFileParams( YES );
+        ( params ).setListFileParams( YES );
       } catch ( Exception e ) {
         System.out.println( Const.getStackTracker( e ) );
         return exitWithStatus( CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR.getCode() );
@@ -171,7 +173,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     try {
 
       // Set the command line arguments on the job ...
-      job.setArguments( convert( params.asMap() ) );
+      job.setArguments( convert( KettleConstants.toJobMap( params ) ) );
       job.initializeVariablesFrom( null );
       job.setLogLevel( getLog().getLogLevel() );
       job.getJobMeta().setInternalKettleVariables( job );

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.util.Utils;
@@ -240,34 +241,35 @@ public class Pan {
         }
       }
 
-      TransParams transParams = new TransParams(
-              optionNorep.toString(),
-              optionRepname.toString(),
-              optionUsername.toString(),
-              optionTrustUser.toString(),
-              optionPassword.toString(),
-              optionDirname.toString(),
-              optionTransname.toString(),
-              optionListtrans.toString(),
-              optionListdir.toString(),
-              optionExprep.toString(),
-              optionFilename.toString(),
-              optionJarFilename.toString(),
-              initialDir.toString(),
-              optionListrep.toString(),
-              optionSafemode.toString(),
-              optionMetrics.toString(),
-              optionListParam.toString(),
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              optionResultSetStepName.toString(),
-              optionResultSetCopyNumber.toString(),
-              optionBase64Zip.toString(),
-              optionParams );
+      Params transParams = ( new Params.Builder() )
+              .blockRepoConns( optionNorep.toString() )
+              .repoName( optionRepname.toString() )
+              .repoUsername( optionUsername.toString() )
+              .trustRepoUser( optionTrustUser.toString() )
+              .repoPassword( optionPassword.toString() )
+              .inputDir( optionDirname.toString() )
+              .inputFile( optionTransname.toString() )
+              .listRepoFiles( optionListtrans.toString() )
+              .listRepoDirs( optionListdir.toString() )
+              .exportRepo( optionExprep.toString() )
+              .localFile( optionFilename.toString() )
+              .localJarFile( optionJarFilename.toString() )
+              .localInitialDir( initialDir.toString() )
+              .listRepos( optionListrep.toString() )
+              .safeMode( optionSafemode.toString() )
+              .metrics( optionMetrics.toString() )
+              .listFileParams( optionListParam.toString() )
+              .logLevel( "" )
+              .maxLogLines( "" )
+              .maxLogTimeout( "" )
+              .logFile( "" )
+              .oldLogFile( "" )
+              .version( "" )
+              .resultSetStepName( optionResultSetStepName.toString() )
+              .resultSetCopyNumber( optionResultSetCopyNumber.toString() )
+              .base64Zip( optionBase64Zip.toString() )
+              .namedParams( optionParams )
+              .build();
 
       Result result = getCommandExecutor().execute( transParams );
 
