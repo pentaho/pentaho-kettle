@@ -187,6 +187,11 @@ public interface IParams extends Serializable {
 
 
   /**
+   * @return the BASE64 representation of the zipped ETL work item
+   */
+  String getBase64Zip();
+
+  /**
    * @return params parameters to be passed into the executing file
    */
   Map<String, String> getParams();

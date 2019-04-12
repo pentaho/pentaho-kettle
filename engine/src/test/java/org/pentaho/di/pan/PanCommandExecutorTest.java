@@ -79,7 +79,7 @@ public class PanCommandExecutorTest {
             .thenReturn( directoryInterface );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
-    when( panCommandExecutor.loadTransFromFilesystem( anyString(), anyString(), anyString() ) ).thenCallRealMethod();
+    when( panCommandExecutor.loadTransFromFilesystem( anyString(), anyString(), anyString(), anyString() ) ).thenCallRealMethod();
     when( panCommandExecutor.loadTransFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
   }
 
@@ -123,7 +123,7 @@ public class PanCommandExecutorTest {
 
     String fullPath = getClass().getResource( SAMPLE_KTR ).getPath();
 
-    Trans trans = panCommandExecutor.loadTransFromFilesystem( "", fullPath, "" );
+    Trans trans = panCommandExecutor.loadTransFromFilesystem( "", fullPath, "", "" );
     assertNotNull( trans );
     assertNotNull( trans.getMetaStore() );
     assertTrue( trans.getMetaStore() instanceof DelegatingMetaStore );
