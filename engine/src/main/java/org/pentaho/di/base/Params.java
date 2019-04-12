@@ -58,6 +58,7 @@ public abstract class Params implements IParams {
   private String version;
   private String resultSetStepName;
   private String resultSetCopyNumber;
+  private String base64Zip;
   private NamedParams namedParams;
   private NamedParams customNamedParams;
 
@@ -65,7 +66,7 @@ public abstract class Params implements IParams {
                    String inputFile, String listRepoFiles, String listRepoDirs, String exportRepo, String localFile,
                    String localJarFile, String localInitialDir, String listRepos, String safeMode, String metrics,
                    String listFileParams, String logLevel, String maxLogLines, String maxLogTimeout, String logFile,
-                   String oldLogFile, String version, String resultSetStepName, String resultSetCopyNumber, NamedParams params,
+                   String oldLogFile, String version, String resultSetStepName, String resultSetCopyNumber, String base64Zip, NamedParams params,
                    NamedParams customNamedParams ) {
 
     setUuid( java.util.UUID.randomUUID().toString() );
@@ -95,6 +96,7 @@ public abstract class Params implements IParams {
     setVersion( version );
     setResultSetStepName( resultSetStepName );
     setResultSetCopyNumber( NumberUtils.isNumber( resultSetCopyNumber ) ? resultSetCopyNumber : "0" /* default */ );
+    setBase64Zip( base64Zip );
     setNamedParams( params );
     setNamedCustomParams( customNamedParams );
   }
@@ -332,6 +334,15 @@ public abstract class Params implements IParams {
 
   public void setResultSetCopyNumber( String resultSetCopyNumber ) {
     this.resultSetCopyNumber = resultSetCopyNumber;
+  }
+
+  @Override
+  public String getBase64Zip() {
+    return base64Zip;
+  }
+
+  public void setBase64Zip( String base64Zip ) {
+    this.base64Zip = base64Zip;
   }
 
   @Override
