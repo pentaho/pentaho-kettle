@@ -60,6 +60,5 @@ public class KettleConstants {
   public static final String MAX_LOG_TIMEOUT = "maxlogtimeout";
   public static final String RESULT_SET_STEP_NAME = "stepname";
   public static final String RESULT_SET_COPY_NUMBER = "copynum";
-  public static final String BASE64_ZIP = "base64zip";
 
 }

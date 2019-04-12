@@ -22,12 +22,8 @@
 
 package org.pentaho.di.base;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -236,28 +232,6 @@ public abstract class AbstractBaseCommandExecutor {
 
   public boolean isEnabled( final String value ) {
     return YES.equalsIgnoreCase( value ) || Boolean.parseBoolean( value ); // both are NPE safe, both are case-insensitive
-  }
-
-  /**
-   * Decodes the provided base64String into the specified filePath. Parent directories must already exist.
-   *
-   * @param base64String String BASE64 representation of a file
-   * @param filePath     String The path to which the base64String is to be decoded
-   * @return File the newly created File
-   */
-  protected File decodeBase64StringToFile( String base64String, String filePath ) throws IOException {
-    //Decode base64String to byte[]
-    byte[] decodedBytes = Base64.getDecoder().decode( base64String );
-    File file = new File( filePath );
-
-    //Try-with-resources, write to file, ensure fos is always closed
-    try ( FileOutputStream fos = new FileOutputStream( file ) ) {
-      fos.write( decodedBytes );
-    } catch ( IOException e ) {
-      throw e;
-    }
-
-    return file;
   }
 
   public LogChannelInterface getLog() {
