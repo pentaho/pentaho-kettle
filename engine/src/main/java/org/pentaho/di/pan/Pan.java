@@ -75,7 +75,6 @@ public class Pan {
     StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
     StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
     StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
-    StringBuilder optionBase64Zip;
 
     NamedParams optionParams = new NamedParamsDefault();
 
@@ -152,9 +151,6 @@ public class Pan {
           new StringBuilder(), false, true ),
         new CommandLineOption(
           "copynum", "ResultSetCopyNumber", optionResultSetCopyNumber =
-          new StringBuilder(), false, true ),
-        new CommandLineOption(
-          "zip", "Base64Zip", optionBase64Zip =
           new StringBuilder(), false, true ),
         new CommandLineOption(
           "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
@@ -266,7 +262,6 @@ public class Pan {
               "",
               optionResultSetStepName.toString(),
               optionResultSetCopyNumber.toString(),
-              optionBase64Zip.toString(),
               optionParams );
 
       Result result = getCommandExecutor().execute( transParams );

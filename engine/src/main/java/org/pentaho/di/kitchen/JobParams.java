@@ -40,7 +40,7 @@ public class JobParams extends Params {
 
       super( blockRepoConns, repoName, repoUsername, trustRepoUser, repoPassword, inputDir, inputFile, listRepoFiles, listRepoDirs, exportRepo,
                 localFile, localJarFile, localInitialDir, listRepos, null, null, listFileParams, logLevel, maxLogLines,
-                maxLogTimeout, logFile, oldLogFile, version, resultSetStepName, resultSetCopyNumber, null, namedParams, customParams );
+                maxLogTimeout, logFile, oldLogFile, version, resultSetStepName, resultSetCopyNumber, namedParams, customParams );
   }
 
   @Override

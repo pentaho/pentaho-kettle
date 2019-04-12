@@ -52,8 +52,6 @@ import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -129,7 +127,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         // Try to load the transformation from file, even if it failed to load from the repository
         // You could implement some fail-over mechanism this way.
         if ( trans == null ) {
-          trans = loadTransFromFilesystem( p.getLocalInitialDir(), p.getLocalFile(), p.getLocalJarFile(), p.getBase64Zip() );
+          trans = loadTransFromFilesystem( p.getLocalInitialDir(), p.getLocalFile(), p.getLocalJarFile() );
         }
 
       }
@@ -328,28 +326,9 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     return trans; // return transformation loaded from the repo
   }
 
-  public Trans loadTransFromFilesystem( String initialDir, String filename, String jarFilename, String base64Zip )
-    throws Exception {
+  public Trans loadTransFromFilesystem( final String initialDir, final String filename, final String jarFilename ) throws Exception {
 
     Trans trans = null;
-
-    if ( !Utils.isEmpty( base64Zip ) ) {
-      //expected form of filename "*.ktr"
-      String zipPath = Const.getUserHomeDirectory() + File.separator + java.util.UUID.randomUUID().toString() + ".zip";
-      filename = "zip:file:" + File.separator + File.separator + zipPath + "!" + filename;
-      File zipFile;
-
-      //responsibly attempt to write to file
-      try {
-        zipFile = decodeBase64StringToFile( base64Zip, zipPath );
-      } catch ( IOException e ) {
-        getLog().logError( e.toString() + "\n" );
-        e.printStackTrace();
-        return null;
-      }
-
-      zipFile.deleteOnExit();
-    }
 
     // Try to load the transformation from file
     if ( !Utils.isEmpty( filename ) ) {
