@@ -154,6 +154,11 @@ public class S3CsvInputMetaNewInjectionTest extends BaseMetadataInjectionTest<S3
         return meta.getInputFields()[0].getFormat();
       }
     } );
+    check( "LIST_OBJECTS", new BooleanGetter() {
+      public boolean get() {
+        return meta.isListObjects();
+      }
+    } );
     skipPropertyTest( "INPUT_REPEAT" );
     skipPropertyTest( "INPUT_IGNORE" );
   }

@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -100,6 +101,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
 
   private boolean isReceivingInput;
   private Button wRunningInParallel;
+  private Button wListObjects;
 
   public S3CsvInputDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
@@ -451,6 +453,24 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     wRunningInParallel.setLayoutData( fdRunningInParallel );
     lastControl = wRunningInParallel;
 
+    // list objects?
+    //
+    Label wlListObjects = new Label( shell, SWT.RIGHT );
+    wlListObjects.setText( Messages.getString( "S3CsvInputDialog.ListObjects.Label" ) ); //$NON-NLS-1$
+    props.setLook( wlListObjects );
+    FormData fdlListObjects = new FormData();
+    fdlListObjects.top = new FormAttachment( lastControl, margin );
+    fdlListObjects.left = new FormAttachment( 0, 0 );
+    fdlListObjects.right = new FormAttachment( middle, -margin );
+    wlListObjects.setLayoutData( fdlListObjects );
+    wListObjects = new Button( shell, SWT.CHECK );
+    props.setLook( wListObjects );
+    FormData fdListObjects = new FormData();
+    fdListObjects.top = new FormAttachment( lastControl, margin );
+    fdListObjects.left = new FormAttachment( middle, 0 );
+    wListObjects.setLayoutData( fdListObjects );
+    lastControl = wListObjects;
+
     // Some buttons first, so that the dialog scales nicely...
     //
     wOK = new Button( shell, SWT.PUSH );
@@ -684,6 +704,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     wLazyConversion.setSelection( inputMeta.isLazyConversionActive() );
     wHeaderPresent.setSelection( inputMeta.isHeaderPresent() );
     wRunningInParallel.setSelection( inputMeta.isRunningInParallel() );
+    wListObjects.setSelection( inputMeta.isListObjects() );
     wRowNumField.setText( Const.NVL( inputMeta.getRowNumField(), "" ) );
 
     for ( int i = 0; i < inputMeta.getInputFields().length; i++ ) {
@@ -733,6 +754,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     inputMeta.setHeaderPresent( wHeaderPresent.getSelection() );
     inputMeta.setRowNumField( wRowNumField.getText() );
     inputMeta.setRunningInParallel( wRunningInParallel.getSelection() );
+    inputMeta.setListObjects( wListObjects.getSelection() );
 
     int nrNonEmptyFields = wFields.nrNonEmpty();
     inputMeta.allocate( nrNonEmptyFields );
@@ -798,6 +820,14 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
       int samples = end.open();
       if ( samples < 0 ) {
         return;
+      }
+
+      // Get the first key from the listing when using the filename as a prefix
+      if ( meta.isListObjects() ) {
+        ListObjectsV2Result listObjectsV2Result = s3ObjProvider.listObjectsV2( s3bucket, filename );
+        if ( !listObjectsV2Result.getObjectSummaries().isEmpty() ) {
+          filename = listObjectsV2Result.getObjectSummaries().get( 0 ).getKey();
+        }
       }
 
       // Only get the first lines, not the complete file

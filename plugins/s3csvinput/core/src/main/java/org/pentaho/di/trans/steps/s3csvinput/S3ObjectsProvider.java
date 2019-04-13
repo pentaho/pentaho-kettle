@@ -27,10 +27,12 @@ import java.util.List;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 
 public class S3ObjectsProvider {
   private AmazonS3 s3Client;
@@ -182,4 +184,38 @@ public class S3ObjectsProvider {
   public long getS3ObjectContentLenght( Bucket bucket, String objectKey ) throws SdkClientException {
     return getS3ObjectDetails( bucket, objectKey ).getContentLength();
   }
+
+  /**
+   * Returns the object listing that match a specified prefix
+   *
+   * @param bucket
+   *          the bucket containing the objects
+   * @param prefix
+   *          the prefix used to filter
+   * @return
+   */
+  public ListObjectsV2Result listObjectsV2( Bucket bucket, String prefix ) {
+    return listObjectsV2( bucket, prefix, null );
+  }
+
+  /**
+   * Returns the object listing that match a specified prefix
+   *
+   * @param bucket
+   *          the bucket containing the objects
+   * @param prefix
+   *          the prefix used to filter
+   * @param continuationToken
+   *          token to continue
+   * @return
+   */
+  public ListObjectsV2Result listObjectsV2( Bucket bucket, String prefix, String continuationToken ) {
+    ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
+            .withBucketName( bucket.getName() )
+            .withPrefix( prefix )
+            .withMaxKeys( 1000 )
+            .withContinuationToken( continuationToken );
+    return s3Client.listObjectsV2( listObjectsV2Request );
+  }
+
 }

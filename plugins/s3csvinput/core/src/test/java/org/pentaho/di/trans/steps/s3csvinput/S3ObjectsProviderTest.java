@@ -25,11 +25,7 @@ package org.pentaho.di.trans.steps.s3csvinput;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -65,6 +61,7 @@ public class S3ObjectsProviderTest {
   private static final String[] TEST_USER_BUCKETS_NAMES = { BUCKET1_NAME, BUCKET2_NAME, BUCKET3_NAME };
   private static final String[] EXPECTED_BUCKETS_NAMES = TEST_USER_BUCKETS_NAMES;
   private static ObjectListing bucket2Objects, bucket3Objects;
+  private static ListObjectsV2Result bucket2ObjectsFile1Prefix;
   private static S3Object testObject;
   private static AWSCredentials testUserCredentials;
   private S3ObjectsProvider provider;
@@ -94,6 +91,17 @@ public class S3ObjectsProviderTest {
     return mockObjectListing;
   }
 
+  private static ListObjectsV2Result generateTestS3ObjectsFile1PrefixInBucket( Bucket bucket ) throws Exception {
+    List<S3ObjectSummary> objectSummary;
+    objectSummary = IntStream.of(1, 10).mapToObj( i -> buildObjectSummary( bucket.getName(), "file" + i, "DataString" + i ) )
+            .collect( Collectors.toList() );
+
+    ListObjectsV2Result listObjectsV2Result = mock( ListObjectsV2Result.class );
+    when( listObjectsV2Result.isTruncated() ).thenReturn( true );
+    when( listObjectsV2Result.getObjectSummaries() ).thenReturn( objectSummary );
+    return listObjectsV2Result;
+  }
+
   private static S3ObjectSummary buildObjectSummary( String bucketName, String key, String dataString ) {
     S3ObjectSummary s3ObjectSummary = new S3ObjectSummary();
     s3ObjectSummary.setKey( key );
@@ -116,6 +124,7 @@ public class S3ObjectsProviderTest {
   @Before public void setUp() throws Exception {
     bucket2Objects = generateTestS3ObjectsInBucket( BUCKET2, false );
     bucket3Objects = generateTestS3ObjectsInBucket( BUCKET3, true );
+    bucket2ObjectsFile1Prefix = generateTestS3ObjectsFile1PrefixInBucket( BUCKET2 );
     testObject = buildS3Object( BUCKET1, "tests3Object", "TestString" );
     s3ClientMock = getS3ClientMock( testUserCredentials );
     provider = new S3ObjectsProvider( s3ClientMock );
@@ -172,11 +181,18 @@ public class S3ObjectsProviderTest {
     assertEquals( testObject.getObjectMetadata().getContentLength(), actual );
   }
 
+  @Test public void testListS3ObjectsInBucket() throws Exception {
+    ListObjectsV2Result actual = provider.listObjectsV2( BUCKET2, "file1" );
+    assertEquals( 2, actual.getObjectSummaries().size() );
+  }
+
   private AmazonS3 getS3ClientMock( AWSCredentials credentials ) throws Exception {
     AmazonS3 s3Client = mock( AmazonS3.class );
     when( s3Client.listBuckets() ).thenReturn( generateTestBuckets( TEST_USER_BUCKETS_NAMES ) );
     // BUCKET2 - not empty bucket
     when( s3Client.listObjects( BUCKET2.getName() ) ).thenReturn( bucket2Objects );
+    // BUCKET2 - not empty bucket with prefix
+    when( s3Client.listObjectsV2( any( ListObjectsV2Request.class ) ) ).thenReturn( bucket2ObjectsFile1Prefix );
     // BUCKET3 - empty bucket
     when( s3Client.listObjects( BUCKET3.getName() ) ).thenReturn( bucket3Objects );
 

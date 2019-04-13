@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -70,6 +72,9 @@ public class S3CsvInput extends BaseStep implements StepInterface {
         // We're expecting the list of filenames from the previous step(s)...
         //
         getFilenamesFromPreviousSteps();
+      } else if ( meta.isListObjects() && data.filenames.length > 0 ) {
+        getFilenamesFromObjectListing();
+
       }
 
       // We only run in parallel if we have at least one file to process
@@ -128,6 +133,23 @@ public class S3CsvInput extends BaseStep implements StepInterface {
     }
 
     return true;
+  }
+
+  private void getFilenamesFromObjectListing() {
+    List<String> newFilenames = new ArrayList<>();
+    ListObjectsV2Result listObjectsV2Result;
+    String continuationToken = null;
+
+    do {
+      listObjectsV2Result = new S3ObjectsProvider( data.s3Client ).listObjectsV2( data.s3bucket, data.filenames[0], continuationToken );
+      for ( S3ObjectSummary s3ObjectSummary : listObjectsV2Result.getObjectSummaries() ) {
+        newFilenames.add( s3ObjectSummary.getKey() );
+      }
+      continuationToken = listObjectsV2Result.getNextContinuationToken();
+
+    } while ( listObjectsV2Result.isTruncated() );
+
+    data.filenames = newFilenames.toArray( new String[ 0 ] );
   }
 
 
