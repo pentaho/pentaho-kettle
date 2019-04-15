@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -345,29 +345,29 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           out.print( "<tr onMouseEnter=\"mouseEnterFunction( this, '" + trClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + trClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + trClass + "' )\" "
-              + "id=\"cellTableRow" + i + "\" class=\"" + trClass + "\">" );
+              + "id=\"cellTableRow_" + i + "\" class=\"" + trClass + "\">" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableFirstCell" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">" + name + "</td>" );
+              + "id=\"cellTableFirstCell_" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">" + name + "</td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">" + id + "</td>" );
+              + "id=\"cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">" + id + "</td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableCellStatus" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+              + "id=\"cellTableCellStatus_" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
           String dateStr = XMLHandler.date2string( trans.getLogDate() );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">"
+              + "id=\"cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">"
               + ( trans.getLogDate() == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) ) ) + "</td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableLastCell" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
+              + "id=\"cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table></table>" );
@@ -430,29 +430,29 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           out.print( "<tr onMouseEnter=\"mouseEnterFunction( this, '" + trClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + trClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + trClass + "' )\" "
-              + "id=\"j-cellTableRow" + i + "\" class=\"cellTableCell " + trClass + "\">" );
+              + "id=\"j-cellTableRow_" + i + "\" class=\"cellTableCell " + trClass + "\">" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableFirstCell" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">" + name + "</a></td>" );
+              + "id=\"j-cellTableFirstCell_" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">" + name + "</a></td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableCell" + i + "\" class=\"cellTableCell " + tdClass +  "\">" + id + "</td>" );
+              + "id=\"j-cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass +  "\">" + id + "</td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+              + "id=\"j-cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
           String dateStr = XMLHandler.date2string( job.getLogDate() );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">"
+              + "id=\"j-cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">"
               + ( job.getLogDate() == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) ) ) + "</td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableLastCell" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
+              + "id=\"j-cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table></table>" );
@@ -575,12 +575,12 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         BaseMessages.getString( PKG, "GetStatusServlet.StartJob.Title" ),
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartJob.Success.Body" ) + "'",
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartJob.Failure.Body" ) + "'" ) );
-      out.println( "} else if ( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 && document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Running') {" );
+      out.println( "} else if ( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 && document.getElementById( 'cellTableCellStatus_' + selectedTransRowIndex ).innerHTML == 'Running') {" );
       out.println( setupAjaxCall( setupTransURI( convertContextPath( PauseTransServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.PauseTrans.Title" ),
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.PauseTrans.Success.Body" ) + "'",
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.PauseTrans.Failure.Body" ) + "'" ) );
-      out.println( "} else if( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 && document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Paused') {" );
+      out.println( "} else if( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 && document.getElementById( 'cellTableCellStatus_' + selectedTransRowIndex ).innerHTML == 'Paused') {" );
       out.println( setupAjaxCall( setupTransURI( convertContextPath( PauseTransServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans.Title" ),
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans.Success.Body" ) + "'",
@@ -655,13 +655,13 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
       out.println( "window.location.replace( '"
           + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "'"
-          + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
-          + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
+          + " + '?name=' + document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerHTML );" );
       out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
       out.println( "window.location.replace( '"
           + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "'"
-          + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
-          + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
+          + " + '?name=' + document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerHTML );" );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );
@@ -683,10 +683,11 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       // OnClick function for table element
       out.println( "function clickFunction( element, tableClass ) {" );
       out.println( "var prefix = element.id.startsWith( 'j-' ) ? 'j-' : '';" );
+      out.println( "var rowNum = getRowNum( element.id );" );
       out.println( "if( tableClass.endsWith( 'Row' ) ) {" );
       out.println( "element.className='cellTableRow ' + tableClass + ' cellTableSelectedRow';" );
       out.println( "} else {" );
-      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableFirstColumn ' + tableClass + ' cellTableSelectedRowCell';" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell_' + rowNum ).className='cellTableCell cellTableFirstColumn ' + tableClass + ' cellTableSelectedRowCell';" );
       out.println( "element.className='cellTableCell ' + tableClass + ' cellTableSelectedRowCell';" );
       out.println( "}" );
       out.println( "if( element.id.startsWith( 'j-' ) ) {" );
@@ -694,29 +695,29 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "document.getElementById( \"j-stop\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"j-view\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"j-close\" ).classList.remove( \"toolbar-button-disabled\" )" );
-      out.println( "if( selectedJobRowIndex != -1 && element.id.charAt( element.id.length - 1 ) != selectedJobRowIndex ) {" );
-      out.println( "document.getElementById( prefix + 'cellTableRow' + selectedJobRowIndex ).className='cellTableRow ' + tableClass;" );
-      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + selectedJobRowIndex ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
-      out.println( "document.getElementById( prefix + 'cellTableCell' + selectedJobRowIndex ).className='cellTableCell ' + tableClass;" );
-      out.println( "document.getElementById( prefix + 'cellTableLastCell' + selectedJobRowIndex ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
+      out.println( "if( selectedJobRowIndex != -1 && rowNum != selectedJobRowIndex ) {" );
+      out.println( "document.getElementById( prefix + 'cellTableRow_' + selectedJobRowIndex ).className='cellTableRow ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell_' + selectedJobRowIndex ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableCell_' + selectedJobRowIndex ).className='cellTableCell ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableLastCell_' + selectedJobRowIndex ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
       out.println( "}" );
-      out.println( "selectedJobRowIndex = element.id.charAt( element.id.length - 1 );" );
+      out.println( "selectedJobRowIndex = rowNum;" );
       out.println( "} else {" );
       out.println( "document.getElementById( \"pause\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"stop\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"cleanup\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"view\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"close\" ).classList.remove( \"toolbar-button-disabled\" )" );
-      out.println( "if( selectedTransRowIndex != -1 && element.id.charAt( element.id.length - 1 ) != selectedTransRowIndex ) {" );
-      out.println( "document.getElementById( prefix + 'cellTableRow' + selectedTransRowIndex ).className='cellTableRow ' + tableClass;" );
-      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + selectedTransRowIndex ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
-      out.println( "document.getElementById( prefix + 'cellTableCell' + selectedTransRowIndex ).className='cellTableCell ' + tableClass;" );
-      out.println( "document.getElementById( prefix + 'cellTableLastCell' + selectedTransRowIndex ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
+      out.println( "if( selectedTransRowIndex != -1 && rowNum != selectedTransRowIndex ) {" );
+      out.println( "document.getElementById( prefix + 'cellTableRow_' + selectedTransRowIndex ).className='cellTableRow ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell_' + selectedTransRowIndex ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableCell_' + selectedTransRowIndex ).className='cellTableCell ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableLastCell_' + selectedTransRowIndex ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
       out.println( "}" );
-      out.println( "selectedTransRowIndex = element.id.charAt( element.id.length - 1 );" );
-      out.println( "if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Running' ) {" );
+      out.println( "selectedTransRowIndex = rowNum;" );
+      out.println( "if( document.getElementById( 'cellTableCellStatus_' + selectedTransRowIndex ).innerHTML == 'Running' ) {" );
       out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/pause.svg\"/ title=\"Pause transformation\">';" );
-      out.println( "} else if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Paused' ) {" );
+      out.println( "} else if( document.getElementById( 'cellTableCellStatus_' + selectedTransRowIndex ).innerHTML == 'Paused' ) {" );
       out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/pause.svg\" title=\"Resume transformation\"/>';" );
       out.println( "}" );
       out.println( "}" );
@@ -741,18 +742,19 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       // OnMouseEnter function
       out.println( "function mouseEnterFunction( element, tableClass ) {" );
       out.println( "var prefix = '';" );
+      out.println( "var rowNum = getRowNum( element.id );" );
       out.println( "var selectedIndex = selectedTransRowIndex;" );
       out.println( "if( element.id.startsWith( 'j-' ) ) {" );
       out.println( "prefix = 'j-';" );
       out.println( "selectedIndex = selectedJobRowIndex;" );
       out.println( "}" );
-      out.println( "if( element.id.charAt( element.id.length - 1 ) != selectedIndex ) {" );
+      out.println( "if( rowNum != selectedIndex ) {" );
       out.println( "if( tableClass.endsWith( 'Row' ) ) {" );
       out.println( "element.className='cellTableRow ' + tableClass + ' cellTableHoveredRow';" );
       out.println( "} else {" );
-      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableFirstColumn ' + tableClass + ' cellTableHoveredRowCell';" );
-      out.println( "document.getElementById( prefix + 'cellTableCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell ' + tableClass + ' cellTableHoveredRowCell';" );
-      out.println( "document.getElementById( prefix + 'cellTableLastCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableLastColumn ' + tableClass + ' cellTableHoveredRowCell';" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell_' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableFirstColumn ' + tableClass + ' cellTableHoveredRowCell';" );
+      out.println( "document.getElementById( prefix + 'cellTableCell_' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell ' + tableClass + ' cellTableHoveredRowCell';" );
+      out.println( "document.getElementById( prefix + 'cellTableLastCell_' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableLastColumn ' + tableClass + ' cellTableHoveredRowCell';" );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );
@@ -760,18 +762,19 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       // OnMouseLeave function
       out.println( "function mouseLeaveFunction( element, tableClass ) {" );
       out.println( "var prefix = '';" );
+      out.println( "var rowNum = getRowNum( element.id );" );
       out.println( "var selectedIndex = selectedTransRowIndex;" );
       out.println( "if( element.id.startsWith( 'j-' ) ) {" );
       out.println( "prefix = 'j-';" );
       out.println( "selectedIndex = selectedJobRowIndex;" );
       out.println( "}" );
-      out.println( "if( element.id.charAt( element.id.length - 1 ) != selectedIndex ) {" );
+      out.println( "if( rowNum != selectedIndex ) {" );
       out.println( "if( tableClass.endsWith( 'Row' ) ) {" );
       out.println( "element.className='cellTableRow ' + tableClass;" );
       out.println( "} else {" );
-      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
-      out.println( "document.getElementById( prefix + 'cellTableCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell ' + tableClass;" );
-      out.println( "document.getElementById( prefix + 'cellTableLastCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell_' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableCell_' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableLastCell_' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );
@@ -815,6 +818,10 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Failure.Body" ) + "'" ) );
       out.println( "    }" );
       out.println( "  }" );
+      out.println( "}" );
+
+      out.println( "function getRowNum( id ) {" );
+      out.println( "  return id.substring( id.indexOf('_') + 1, id.length);" );
       out.println( "}" );
 
       out.println( "</script>" );
@@ -913,13 +920,13 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
   private String setupTransURI( String context ) {
     return "'" + context + "'"
-      + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
-      + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML";
+      + " + '?name=' + document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex ).innerHTML"
+      + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerHTML";
   }
 
   private String setupJobURI( String context ) {
     return "'" + context + "'"
-      + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
-      + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML";
+      + " + '?name=' + document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex ).innerHTML"
+      + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerHTML";
   }
 }
