@@ -98,5 +98,9 @@ public class OtherConnectionDetailsProvider implements VFSConnectionProvider<Oth
   @Override public boolean test( OtherConnectionDetails connectionDetails ) {
     return true;
   }
+
+  @Override public OtherConnectionDetails prepare( OtherConnectionDetails connectionDetails ) {
+    return connectionDetails;
+  }
 }
 
