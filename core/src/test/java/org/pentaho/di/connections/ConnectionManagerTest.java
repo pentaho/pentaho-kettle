@@ -201,7 +201,7 @@ public class ConnectionManagerTest {
     description = "Defines the connection details for a test vfs connection" )
   public static class TestConnectionDetails implements ConnectionDetails {
 
-    private static String TYPE = "TEST";
+    private static String TYPE = "test";
 
     private String name;
     private String description;
@@ -279,6 +279,10 @@ public class ConnectionManagerTest {
 
     @Override public boolean test( TestConnectionDetails connectionDetails ) {
       return true;
+    }
+
+    @Override public TestConnectionDetails prepare( TestConnectionDetails connectionDetails ) {
+      return connectionDetails;
     }
   }
 

@@ -46,10 +46,8 @@ define([
             $state.go("success", {data: vm.data});
           });
         }, function (response) {
-          dataService.createConnection(vm.data.model).then(function () {
-            vm.data.isSaved = true;
-            $state.go("failure", {data: vm.data});
-          });
+          vm.data.isSaved = false;
+          $state.go("failure", {data: vm.data});
         });
       }, 1000);
     }

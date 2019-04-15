@@ -39,4 +39,6 @@ public interface ConnectionProvider<T extends ConnectionDetails> {
   List<T> getConnectionDetails();
 
   boolean test( T connectionDetails );
+
+  T prepare( T connectionDetails );
 }

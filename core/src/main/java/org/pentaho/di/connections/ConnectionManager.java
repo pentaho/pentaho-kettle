@@ -87,6 +87,14 @@ public class ConnectionManager {
 
   @SuppressWarnings( "unchecked" )
   public <T extends ConnectionDetails> boolean save( T connectionDetails ) {
+    if ( connectionDetails.getType() == null ) {
+      return false;
+    }
+    ConnectionProvider<T> connectionProvider =
+      (ConnectionProvider<T>) connectionProviders.get( connectionDetails.getType() );
+    if ( connectionProvider.prepare( connectionDetails ) == null ) {
+      return false;
+    }
     try {
       getMetaStoreFactory( (Class<T>) connectionDetails.getClass() ).saveElement( connectionDetails );
       if ( !nameCache.contains( connectionDetails.getName() ) ) {
