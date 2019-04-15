@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -47,8 +48,12 @@ import org.pentaho.di.ui.trans.step.BaseStreamingDialog;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BINARY;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_STRING;
+import static org.pentaho.di.core.row.ValueMetaInterface.getTypeDescription;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.AUTOMATIC_RECONNECT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CLEAN_SESSION;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CONNECTION_TIMEOUT;
@@ -309,13 +314,16 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     TableItem messageItem = fieldsTable.getTable().getItem( 0 );
     messageItem.setText( 1, BaseMessages.getString( PKG, "MQTTConsumerDialog.InputName.Message" ) );
     messageItem.setText( 2, mqttMeta.getMsgOutputName() );
-    messageItem.setText( 3, "String" );
+    messageItem.setText( 3, getTypeDescription( mqttMeta.messageDataType ) );
 
     TableItem topicItem = fieldsTable.getTable().getItem( 1 );
     topicItem.setText( 1, BaseMessages.getString( PKG, "MQTTConsumerDialog.InputName.Topic" ) );
     topicItem.setText( 2, mqttMeta.getTopicOutputName() );
-    topicItem.setText( 3, "String" );
+    topicItem.setText( 3, getTypeDescription( TYPE_STRING ) );
   }
+
+  private static String[] messageTypes =
+    Stream.of( TYPE_BINARY, TYPE_STRING ).map( ValueMetaInterface::getTypeDescription ).toArray( String[]::new );
 
   private ColumnInfo[] getFieldColumns() {
     ColumnInfo referenceName = new ColumnInfo( BaseMessages.getString( PKG, "MQTTConsumerDialog.Column.Ref" ),
@@ -325,7 +333,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
       ColumnInfo.COLUMN_TYPE_TEXT, false, false );
 
     ColumnInfo type = new ColumnInfo( BaseMessages.getString( PKG, "MQTTConsumerDialog.Column.Type" ),
-      ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+      ColumnInfo.COLUMN_TYPE_CCOMBO, messageTypes, false );
 
     return new ColumnInfo[] { referenceName, name, type };
   }
@@ -345,6 +353,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     mqttMeta.setPassword( securityLayout.getPassword() );
     mqttMeta.setUseSsl( securityLayout.useSsl() );
     mqttMeta.setSslConfig( securityLayout.sslConfig() );
+    mqttMeta.messageDataType = ValueMetaInterface.getTypeCode( fieldsTable.getTable().getItem( 0 ).getText( 3 ) );
 
     optionsLayout.retrieveOptions()
       .forEach( option -> {

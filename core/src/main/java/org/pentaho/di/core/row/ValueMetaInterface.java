@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -226,6 +227,10 @@ public interface ValueMetaInterface extends Cloneable {
     } catch ( Exception e ) {
       return "unknown/illegal";
     }
+  }
+
+  static int getTypeCode( String desc ) {
+    return Arrays.asList( typeCodes ).indexOf( desc );
   }
 
   /**

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,7 @@ import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -225,6 +226,7 @@ public class BaseStreamStepMetaTest {
     meta.setBatchDuration( "1000" );
     meta.setBatchSize( "100" );
     meta.setTransformationPath( "aPath" );
+    meta.messageDataType = ValueMetaInterface.TYPE_BINARY;
     testRoundTrip( meta );
   }
 
@@ -358,5 +360,6 @@ public class BaseStreamStepMetaTest {
     assertThat( startingMeta.getParallelism(), equalTo( metaToRoundTrip.getParallelism() ) );
 
     assertThat( startingMeta.stuff, equalTo( metaToRoundTrip.stuff ) );
+    assertThat( startingMeta.messageDataType, equalTo( metaToRoundTrip.messageDataType ) );
   }
 }
