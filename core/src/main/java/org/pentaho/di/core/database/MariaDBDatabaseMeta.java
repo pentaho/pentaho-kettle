@@ -21,21 +21,22 @@
  ******************************************************************************/
 package org.pentaho.di.core.database;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Set;
 
 import org.pentaho.di.core.Const;
 
 import com.google.common.collect.Sets;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 
 public class MariaDBDatabaseMeta extends MySQLDatabaseMeta {
   private static final Set<String> SHORT_MESSAGE_EXCEPTIONS = Sets.newHashSet( "org.mariadb.jdbc.internal.stream.MaxAllowedPacketException" );
 
-
-
   @Override public String[] getUsedLibraries() {
     return new String[] { "mariadb-java-client-1.4.6.jar" };
   }
-
 
   @Override public String getDriverClass() {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
@@ -62,4 +63,26 @@ public class MariaDBDatabaseMeta extends MySQLDatabaseMeta {
     return !( cause != null && SHORT_MESSAGE_EXCEPTIONS.contains( cause.getClass().getName() ) );
   }
 
+  /**
+   * Returns the column name for a MariaDB field.
+   *
+   * @param dbMetaData
+   * @param rsMetaData
+   * @param index
+   * @return The column label.
+   * @throws KettleDatabaseException
+   */
+  @Override public String getLegacyColumnName( DatabaseMetaData dbMetaData, ResultSetMetaData rsMetaData, int index ) throws KettleDatabaseException {
+    String columnName;
+
+    try {
+      columnName = rsMetaData.getColumnLabel( index );
+    } catch ( SQLException sqlException ) {
+      throw new KettleDatabaseException( "Something went wrong trying to get the legacy column name", sqlException );
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException( "Something unexpected went wrong trying to get the legacy column name", e );
+    }
+
+    return columnName;
+  }
 }

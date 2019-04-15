@@ -721,11 +721,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    */
   public void cancelQuery() throws KettleDatabaseException {
-    // Canceling statements only if we're not streaming results on MySQL with
-    // the v3 driver
-    //
-    if ( databaseMeta.isMySQLVariant()
-      && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
+    // Canceling statements only if we're not streaming results on MySQL with the v3 driver
+    if ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
       return;
     }
 
@@ -2646,26 +2643,24 @@ public class Database implements VariableSpace, LoggingObjectInterface {
                                                   boolean lazyConversion )
     throws KettleDatabaseException, SQLException {
     // TODO If we do lazy conversion, we need to find out about the encoding
-    //
 
     // Extract the name from the result set meta data...
-    //
-    String name;
-    if ( databaseMeta.isMySQLVariant() && getDatabaseMetaData().getDriverMajorVersion() > 3 ) {
-      name = new String( rm.getColumnLabel( i ) );
-    } else {
-      name = new String( rm.getColumnName( i ) );
+
+    String name = null;
+
+    if ( databaseMeta.isMySQLVariant() ) {
+      name = databaseMeta.getDatabaseInterface().getLegacyColumnName( getDatabaseMetaData(), rm, i );
     }
 
     // Check the name, sometimes it's empty.
-    //
+
     if ( Utils.isEmpty( name ) || Const.onlySpaces( name ) ) {
       name = "Field" + ( i + 1 );
     }
 
     // Ask all the value meta types if they want to handle the SQL type.
     // The first to reply something gets the job...
-    //
+
     ValueMetaInterface valueMeta = null;
     for ( ValueMetaInterface valueMetaClass : valueMetaPluginClasses ) {
       ValueMetaInterface v =

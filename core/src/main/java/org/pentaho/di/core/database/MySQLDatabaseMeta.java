@@ -24,9 +24,13 @@ package org.pentaho.di.core.database;
 
 import com.google.common.collect.Sets;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Utils;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Set;
 
 /**
@@ -479,5 +483,28 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public int getMaxTextFieldLength() {
     return Integer.MAX_VALUE;
+  }
+
+  /**
+   * Returns the column name for a MySQL field checking if the driver major version is "greater than" or "lower or equal" to 3.
+   *
+   * @param dbMetaData
+   * @param rsMetaData
+   * @param index
+   * @return The column label if version is greater than 3 or the column name if version is lower or equal to 3.
+   * @throws KettleDatabaseException
+   */
+  public String getLegacyColumnName( DatabaseMetaData dbMetaData, ResultSetMetaData rsMetaData, int index ) throws KettleDatabaseException {
+    String columnName;
+
+    try {
+      columnName = dbMetaData.getDriverMajorVersion() > 3 ? rsMetaData.getColumnLabel( index ) : rsMetaData.getColumnName( index );
+    } catch ( SQLException sqlException ) {
+      throw new KettleDatabaseException( "Something went wrong trying to get the legacy column name", sqlException );
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException( "Something unexpected went wrong trying to get the legacy column name", e );
+    }
+
+    return columnName;
   }
 }

@@ -26,8 +26,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.mockito.BDDMockito.*;
+
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -38,16 +43,59 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
+import java.sql.*;
+
 public class MySQLDatabaseMetaTest {
   MySQLDatabaseMeta nativeMeta, odbcMeta;
 
+  private DatabaseMetaData databaseMetaData;
+
+  private ResultSetMetaData resultSetMetaData, resultSetMetaDataException;
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
   @Before
-  public void setupBefore() {
+  public void setupBefore() throws Exception {
     nativeMeta = new MySQLDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
+
     odbcMeta = new MySQLDatabaseMeta();
     odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
 
+    databaseMetaData = mock( DatabaseMetaData.class );
+
+    resultSetMetaData = mock( ResultSetMetaData.class );
+
+    given( resultSetMetaData.getColumnLabel( 1 ) ).willReturn( "NUMBER" );
+    given( resultSetMetaData.getColumnLabel( 2 ) ).willReturn( "NAME" );
+    given( resultSetMetaData.getColumnLabel( 3 ) ).willReturn( "LAST_NAME" );
+    given( resultSetMetaData.getColumnLabel( 4 ) ).willReturn( "FIRST_NAME" );
+    given( resultSetMetaData.getColumnLabel( 5 ) ).willReturn( "DB" );
+    given( resultSetMetaData.getColumnLabel( 6 ) ).willReturn( "NoAliasText" );
+
+    given( resultSetMetaData.getColumnName( 1 ) ).willReturn( "CUSTOMERNUMBER" );
+    given( resultSetMetaData.getColumnName( 2 ) ).willReturn( "CUSTOMERNAME" );
+    given( resultSetMetaData.getColumnName( 3 ) ).willReturn( "CONTACTLASTNAME" );
+    given( resultSetMetaData.getColumnName( 4 ) ).willReturn( "CONTACTFIRSTNAME" );
+    given( resultSetMetaData.getColumnName( 5 ) ).willReturn( "MySQL" );
+    given( resultSetMetaData.getColumnName( 6 ) ).willReturn( "NoAliasText" );
+
+    resultSetMetaDataException = mock( ResultSetMetaData.class );
+
+    when( resultSetMetaDataException.getColumnLabel( 1 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnLabel( 2 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnLabel( 3 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnLabel( 4 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnLabel( 5 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnLabel( 6 ) ).thenThrow( new SQLException() );
+
+    when( resultSetMetaDataException.getColumnName( 1 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnName( 2 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnName( 3 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnName( 4 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnName( 5 ) ).thenThrow( new SQLException() );
+    when( resultSetMetaDataException.getColumnName( 6 ) ).thenThrow( new SQLException() );
   }
 
   @Test
@@ -223,4 +271,59 @@ public class MySQLDatabaseMetaTest {
     assertEquals( "insert into FOO(FOOKEY, FOOVERSION) values (1, 1)", nativeMeta.getSQLInsertAutoIncUnknownDimensionRow( "FOO", "FOOKEY", "FOOVERSION" ) );
   }
 
+  @Test
+  public void testGetLegacyColumnNameDriverGreaterThanThree() {
+    given( databaseMetaData.getDriverMajorVersion() ).willReturn( 5 );
+
+    MySQLDatabaseMeta mySQLDatabaseMeta = new MySQLDatabaseMeta();
+
+    try {
+      assertEquals( "NUMBER", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 1 ) );
+      assertEquals( "NAME", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 2 ) );
+      assertEquals( "LAST_NAME", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 3 ) );
+      assertEquals( "FIRST_NAME", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 4 ) );
+      assertEquals( "DB", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 5 ) );
+      assertEquals( "NoAliasText", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 6 ) );
+    }
+    catch (Exception e) {
+
+    }
+  }
+
+  @Test
+  public void testGetLegacyColumnNameDriverLessOrEqualToThree() {
+    given( databaseMetaData.getDriverMajorVersion() ).willReturn( 3 );
+
+    MySQLDatabaseMeta mySQLDatabaseMeta = new MySQLDatabaseMeta();
+
+    try {
+      assertEquals( "CUSTOMERNUMBER", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 1 ) );
+      assertEquals( "CUSTOMERNAME", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 2 ) );
+      assertEquals( "CONTACTLASTNAME", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 3 ) );
+      assertEquals( "CONTACTFIRSTNAME", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 4 ) );
+      assertEquals( "MySQL", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 5 ) );
+      assertEquals( "NoAliasText", mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaData, 6 ) );
+    }
+    catch (Exception e) {
+
+    }
+  }
+
+  @Test
+  public void testGetLegacyColumnNameNullParametersException() throws Exception {
+    MySQLDatabaseMeta mySQLDatabaseMeta = new MySQLDatabaseMeta();
+
+    expectedException.expect( Exception.class );
+
+    mySQLDatabaseMeta.getLegacyColumnName( null, null, 1 );
+  }
+
+  @Test
+  public void testGetLegacyColumnNameDatabaseException() throws Exception {
+    MySQLDatabaseMeta mySQLDatabaseMeta = new MySQLDatabaseMeta();
+
+    expectedException.expect( KettleDatabaseException.class );
+
+    mySQLDatabaseMeta.getLegacyColumnName( databaseMetaData, resultSetMetaDataException, 1 );
+  }
 }
