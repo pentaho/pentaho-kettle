@@ -28,7 +28,11 @@ import static org.junit.Assert.assertNotNull;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -629,4 +633,168 @@ public class TextFileOutputTest {
     textFileOutput.writeRow( rowMeta, rows );
     Mockito.verify( textFileOutput.data.writer ).write( testString.getBytes( outputEncode ) );
   }
+
+  /**
+   * Test for writeRowToFile not to call #initFileStreamWriter() if a variable is set.
+   * Performance issue discovered, that previous implementation called #initFileStreamWriter() for every invocation of
+   * #processRow() and thus #writeToFile().
+   * see BACKLOG-28333 for more information.
+   */
+  @Test
+  public void testWriteRowToFile_NoinitFileStreamWriter() throws Exception {
+
+    // SETUP
+    textFileOutput =
+      new TextFileOutputTestHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
+        stepMockHelper.transMeta,
+        stepMockHelper.trans );
+    TextFileOutputMeta mockTFOMeta = Mockito.mock(TextFileOutputMeta.class);
+    Mockito.when(mockTFOMeta.isServletOutput()).thenReturn( false );
+    Path tempDirWithPrefix = Files.createTempDirectory("pdi-textFileOutputTest");
+    Mockito.when(mockTFOMeta.getFileName()).thenReturn( tempDirWithPrefix.toString() + "/wtf.txt" );
+    textFileOutput.meta = mockTFOMeta;
+
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = " ".getBytes();
+    data.binaryEnclosure = "\"".getBytes();
+    data.binaryNewline = "\n".getBytes();
+    textFileOutput.data = data;
+
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "name" ) );
+    data.outputRowMeta = rowMeta;
+
+    OutputStream originalWriter = Mockito.mock( BufferedOutputStream.class );
+
+    // variable set
+    textFileOutput.data.writer = originalWriter;
+
+    // EXECUTE
+    textFileOutput.writeRowTo( this.row2 );
+
+    // VERIFY
+    assertEquals( originalWriter, textFileOutput.data.writer );
+  }
+
+  /**
+   * Test for writeRowToFile not to call #initFileStreamWriter() if a variable is set.
+   * Normal behavior, if not set, call #initFileStreamWriter.
+   * see BACKLOG-28333 for more information.
+   */
+  @Test
+  public void testWriteRowToFile_initFileStreamWriter() throws Exception {
+
+    // SETUP
+    textFileOutput =
+      new TextFileOutputTestHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
+        stepMockHelper.transMeta,
+        stepMockHelper.trans );
+
+    TextFileOutputMeta mockTFOMeta = Mockito.mock(TextFileOutputMeta.class);
+    Mockito.when(mockTFOMeta.isServletOutput()).thenReturn( false );
+    Path tempDirWithPrefix = Files.createTempDirectory("pdi-textFileOutputTest");
+    Mockito.when(mockTFOMeta.getFileName()).thenReturn( tempDirWithPrefix.toString() + "/wtf.txt" );
+    textFileOutput.meta = mockTFOMeta;
+
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = " ".getBytes();
+    data.binaryEnclosure = "\"".getBytes();
+    data.binaryNewline = "\n".getBytes();
+    textFileOutput.data = data;
+
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "name" ) );
+    data.outputRowMeta = rowMeta;
+
+    // variable not set
+    textFileOutput.data.writer = null;
+
+    // EXECUTE
+    textFileOutput.writeRowTo( this.row2 );
+
+    // VERIFY
+    assertNotNull( textFileOutput.data.writer );
+  }
+
+  /**
+   * Test for writeRowToFile not to call #initServletStreamWriter() if a variable is set.
+   * Performance issue discovered, that previous implementation called #initServletStreamWriter() for every invocation of
+   * #processRow() and thus #writeToFile()
+   * see BACKLOG-28333 for more information.
+   */
+  @Test
+  public void testWriteRowToFile_NoinitServletStreamWriter() throws Exception {
+
+    // SETUP
+    textFileOutput =
+      new TextFileOutputTestHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
+        stepMockHelper.transMeta,
+        stepMockHelper.trans );
+    TextFileOutputMeta mockTFOMeta = Mockito.mock(TextFileOutputMeta.class);
+    Mockito.when(mockTFOMeta.isServletOutput()).thenReturn( true );
+    textFileOutput.meta = mockTFOMeta;
+
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = " ".getBytes();
+    data.binaryEnclosure = "\"".getBytes();
+    data.binaryNewline = "\n".getBytes();
+    textFileOutput.data = data;
+
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "name" ) );
+    data.outputRowMeta = rowMeta;
+
+    OutputStream originalWriter = Mockito.mock( BufferedOutputStream.class );
+
+    // variable set
+    textFileOutput.data.writer = originalWriter;
+
+    // EXECUTE
+    textFileOutput.writeRowTo( this.row2 );
+
+    // VERIFY
+    assertEquals( originalWriter, textFileOutput.data.writer );
+  }
+
+  /**
+   * Test for writeRowToFile not to call #initFileStreamWriter() if a variable is set.
+   * Normal behavior, if not set, call #initFileStreamWriter.
+   * see BACKLOG-28333 for more information.
+   */
+  @Test
+  public void testWriteRowToFile_initServletStreamWriter() throws Exception {
+
+    // SETUP
+    textFileOutput =
+      new TextFileOutputTestHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
+        stepMockHelper.transMeta,
+        stepMockHelper.trans );
+
+    TextFileOutputMeta mockTFOMeta = Mockito.mock(TextFileOutputMeta.class);
+    Mockito.when(mockTFOMeta.isServletOutput()).thenReturn( true );
+    textFileOutput.meta = mockTFOMeta;
+
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = " ".getBytes();
+    data.binaryEnclosure = "\"".getBytes();
+    data.binaryNewline = "\n".getBytes();
+    textFileOutput.data = data;
+
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "name" ) );
+    data.outputRowMeta = rowMeta;
+    data.binaryEnclosure = "enclosure".getBytes();
+
+    Mockito.when(textFileOutput.getTrans().getServletPrintWriter()).thenReturn( Mockito.mock( PrintWriter.class ) );
+
+    // variable not set
+    textFileOutput.data.writer = null;
+
+    // EXECUTE
+    textFileOutput.writeRowTo( this.row2 );
+
+    // VERIFY
+    assertNotNull( textFileOutput.data.writer );
+  }
+
 }
