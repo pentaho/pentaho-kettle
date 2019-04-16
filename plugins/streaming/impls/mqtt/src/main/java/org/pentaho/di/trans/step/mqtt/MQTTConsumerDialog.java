@@ -335,6 +335,10 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     ColumnInfo type = new ColumnInfo( BaseMessages.getString( PKG, "MQTTConsumerDialog.Column.Type" ),
       ColumnInfo.COLUMN_TYPE_CCOMBO, messageTypes, false );
 
+    type.setDisabledListener(
+      rowNumber -> !BaseMessages.getString( PKG, "MQTTConsumerDialog.InputName.Message" )
+        .equals( fieldsTable.getTable().getItem( rowNumber ).getText( 1 ) ) );
+
     return new ColumnInfo[] { referenceName, name, type };
   }
 
