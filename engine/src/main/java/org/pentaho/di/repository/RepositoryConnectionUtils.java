@@ -26,7 +26,6 @@ import org.pentaho.di.core.logging.LoggingBuffer;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.platform.api.engine.ActionExecutionException;
 
 import java.io.ByteArrayInputStream;
 
@@ -43,19 +42,18 @@ public class RepositoryConnectionUtils {
    * Connects to the PDI repository. If the  system settings "SINGLE_DI_SERVER_INSTANCE" is set, it will connect to
    * repository using the embedded repository.xml otherwise it will connect to repository with the given name.
    *
-   * @param  String RepositoryName
-   * @param  boolean Checking if the property "singleDiServerInstance" in PentahoSystems is set
-   * @param String Repo user name
-   * @param String Fully qualified server Url used for connecting to the repository
-   * @param LoggingBuffer
+   * @param   repositoryName RepositoryName
+   * @param   isSingleDiServerInstance Checking if the property "singleDiServerInstance" in PentahoSystems is set
+   * @param   userName Repo user name
+   * @param   fullyQualifiedServerUrl Fully qualified server Url used for connecting to the repository
+   * @param   logBuffer
    * @return  Repository
-   * @throws KettleException
-   * @throws KettleSecurityException
-   * @throws ActionExecutionException
+   * @throws  KettleException
+   * @throws  KettleSecurityException
    */
   public static Repository connectToRepository( final String repositoryName, boolean isSingleDiServerInstance,
              String userName, String fullyQualifiedServerUrl, LoggingBuffer logBuffer ) throws KettleSecurityException,
-             KettleException, ActionExecutionException {
+             KettleException {
 
     if ( logger.isDebugEnabled() ) {
       logger.debug( "Creating Meta-repository" );
@@ -83,7 +81,7 @@ public class RepositoryConnectionUtils {
         repositoriesMeta.readData(); // Read from the default $HOME/.kettle/repositories.xml file.
       }
     } catch ( Exception e ) {
-      throw new ActionExecutionException( BaseMessages.getString(
+      throw new KettleException( BaseMessages.getString(
         "RepositoryConnectionUtils.ERROR_0018_META_REPOSITORY_NOT_POPULATED" ), e ); //$NON-NLS-1$
     }
 
@@ -101,7 +99,7 @@ public class RepositoryConnectionUtils {
 
 
     } catch ( Exception e ) {
-      throw new ActionExecutionException( BaseMessages.getString( PKG,
+      throw new KettleException( BaseMessages.getString( PKG,
         "RepositoryConnectionUtils.ERROR_0004_REPOSITORY_NOT_FOUND", repositoryName ), e ); // $NON-NLS-1$
     }
 
@@ -109,7 +107,7 @@ public class RepositoryConnectionUtils {
       if ( logger.isDebugEnabled() && logBuffer != null ) {
         logger.debug( logBuffer.getBuffer().toString() );
       }
-      throw new ActionExecutionException( BaseMessages.getString( PKG,
+      throw new KettleException( BaseMessages.getString( PKG,
         "RepositoryConnectionUtils.ERROR_0004_REPOSITORY_NOT_FOUND", repositoryName ) ); //$NON-NLS-1$
     }
 
@@ -124,7 +122,7 @@ public class RepositoryConnectionUtils {
       repository.init( repositoryMeta );
 
     } catch ( Exception e ) {
-      throw new ActionExecutionException( BaseMessages.getString(
+      throw new KettleException( BaseMessages.getString(
         "RepositoryConnectionUtils.ERROR_0016_COULD_NOT_GET_REPOSITORY_INSTANCE" ), e ); // $NON-NLS-1$
     }
 
