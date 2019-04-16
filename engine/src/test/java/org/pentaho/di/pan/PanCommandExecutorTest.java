@@ -22,15 +22,20 @@
 
 package org.pentaho.di.pan;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
+
+import java.io.File;
+import java.util.Base64;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -54,7 +59,7 @@ public class PanCommandExecutorTest {
   private IMetaStore fsMetaStore;
   private IMetaStore repoMetaStore;
   private RepositoryDirectoryInterface directoryInterface;
-  private PanCommandExecutor panCommandExecutor;
+  private MockedPanCommandExecutor mockedPanCommandExecutor;
 
   @Before
   public void setUp() throws Exception {
@@ -63,7 +68,7 @@ public class PanCommandExecutorTest {
     fsMetaStore = mock( IMetaStore.class );
     repoMetaStore = mock( IMetaStore.class );
     directoryInterface = mock( RepositoryDirectoryInterface.class );
-    panCommandExecutor = mock( PanCommandExecutor.class );
+    mockedPanCommandExecutor = mock( MockedPanCommandExecutor.class );
 
     // mock actions from Metastore
     when( fsMetaStore.getName() ).thenReturn( FS_METASTORE_NAME );
@@ -74,13 +79,14 @@ public class PanCommandExecutorTest {
     when( repository.getMetaStore() ).thenReturn( repoMetaStore );
 
     // mock actions from PanCommandExecutor
-    when( panCommandExecutor.getMetaStore() ).thenReturn( metastore );
-    when( panCommandExecutor.loadRepositoryDirectory( anyObject(), anyString(), anyString(), anyString(), anyString() ) )
+    when( mockedPanCommandExecutor.getMetaStore() ).thenReturn( metastore );
+    when( mockedPanCommandExecutor.loadRepositoryDirectory( anyObject(), anyString(), anyString(), anyString(), anyString() ) )
             .thenReturn( directoryInterface );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
-    when( panCommandExecutor.loadTransFromFilesystem( anyString(), anyString(), anyString(), anyString() ) ).thenCallRealMethod();
-    when( panCommandExecutor.loadTransFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
+    when( mockedPanCommandExecutor.loadTransFromFilesystem( anyString(), anyString(), anyString(), anyString() ) ).thenCallRealMethod();
+    when( mockedPanCommandExecutor.loadTransFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
+    when( mockedPanCommandExecutor.decodeBase64StringToFile( anyString(), anyString() ) ).thenCallRealMethod();
   }
 
   @After
@@ -90,7 +96,7 @@ public class PanCommandExecutorTest {
     fsMetaStore = null;
     repoMetaStore = null;
     directoryInterface = null;
-    panCommandExecutor = null;
+    mockedPanCommandExecutor = null;
   }
 
   @Test
@@ -101,7 +107,7 @@ public class PanCommandExecutorTest {
     when( repository.loadTransformation( anyString(), anyObject(), anyObject(), anyBoolean(), anyString() ) ).thenReturn( t );
 
     // test
-    Trans trans = panCommandExecutor.loadTransFromRepository( repository, "", SAMPLE_KTR );
+    Trans trans = mockedPanCommandExecutor.loadTransFromRepository( repository, "", SAMPLE_KTR );
     assertNotNull( trans );
     assertNotNull( trans.getMetaStore() );
     assertTrue( trans.getMetaStore() instanceof DelegatingMetaStore );
@@ -123,7 +129,7 @@ public class PanCommandExecutorTest {
 
     String fullPath = getClass().getResource( SAMPLE_KTR ).getPath();
 
-    Trans trans = panCommandExecutor.loadTransFromFilesystem( "", fullPath, "", "" );
+    Trans trans = mockedPanCommandExecutor.loadTransFromFilesystem( "", fullPath, "", "" );
     assertNotNull( trans );
     assertNotNull( trans.getMetaStore() );
     assertTrue( trans.getMetaStore() instanceof DelegatingMetaStore );
@@ -139,5 +145,14 @@ public class PanCommandExecutorTest {
                 return false;
               }
             } ) );
+  }
+
+  @Test
+  public void testFilesystemBase64Zip() throws Exception {
+    String fileName = "test.ktr";
+    File zipFile = new File( getClass().getResource( "testKtrArchive.zip" ).toURI() );
+    String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
+    Trans trans = mockedPanCommandExecutor.loadTransFromFilesystem( Const.getDIHomeDirectory(), fileName, "", base64Zip );
+    assertNotNull( trans );
   }
 }
