@@ -29,6 +29,7 @@ import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.serialization.Sensitive;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -200,7 +201,7 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
   @Override
   public RowMeta getRowMeta( String origin, VariableSpace space ) {
     RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaString( msgOutputName ) );
+    rowMeta.addValueMeta( new ValueMetaBase( msgOutputName, messageDataType ) );
     rowMeta.addValueMeta( new ValueMetaString( topicOutputName ) );
     return rowMeta;
   }

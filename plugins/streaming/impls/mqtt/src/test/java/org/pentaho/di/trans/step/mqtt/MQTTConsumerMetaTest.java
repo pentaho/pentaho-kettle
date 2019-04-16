@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -286,6 +287,15 @@ public class MQTTConsumerMetaTest {
         .getString( PKG, "MQTTMeta.CheckResult.NotABoolean",
           BaseMessages.getString( PKG, "MQTTDialog.Options." + AUTOMATIC_RECONNECT ) ),
       remarks.get( 5 ).getText() );
+  }
+
+  @Test
+  public void rowMetaUsesMessageDataType() {
+    MQTTConsumerMeta meta = new MQTTConsumerMeta();
+    meta.messageDataType = ValueMetaInterface.TYPE_BINARY;
+    assertEquals( ValueMetaInterface.TYPE_BINARY, meta.getRowMeta( "", new Variables() ).getValueMeta( 0 ).getType() );
+    meta.messageDataType = ValueMetaInterface.TYPE_STRING;
+    assertEquals( ValueMetaInterface.TYPE_STRING, meta.getRowMeta( "", new Variables() ).getValueMeta( 0 ).getType() );
   }
 
   private void metaMatchesTestMetaFields( MQTTConsumerMeta consumerMeta ) {
