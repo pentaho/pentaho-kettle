@@ -35,6 +35,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Base64;
 
 import static org.junit.Assert.assertEquals;
@@ -154,5 +155,20 @@ public class PanCommandExecutorTest {
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
     Trans trans = mockedPanCommandExecutor.loadTransFromFilesystem( Const.getDIHomeDirectory(), fileName, "", base64Zip );
     assertNotNull( trans );
+  }
+
+  /**
+   * Inner class, used solely for the purpose of raising methods visibility ( so that we are able to test those )
+   */
+  private class MockedPanCommandExecutor extends PanCommandExecutor {
+
+    public MockedPanCommandExecutor( Class<?> pkgClazz ) {
+      super( pkgClazz );
+    }
+
+    @Override
+    public File decodeBase64StringToFile( String base64String, String filePath ) throws IOException {
+      return super.decodeBase64StringToFile( base64String, filePath );
+    }
   }
 }
