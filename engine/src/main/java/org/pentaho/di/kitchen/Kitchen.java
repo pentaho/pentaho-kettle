@@ -52,10 +52,8 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
-import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
 
@@ -113,9 +111,6 @@ public class Kitchen {
     DelegatingMetaStore metaStore = new DelegatingMetaStore();
     metaStore.addMetaStore( MetaStoreConst.openLocalPentahoMetaStore() );
     metaStore.setActiveMetaStoreName( metaStore.getName() );
-
-    RepositoryMeta repositoryMeta = null;
-    Job job = null;
 
     StringBuilder optionRepname, optionUsername, optionTrustUser, optionPassword, optionJobname, optionDirname, initialDir;
     StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;

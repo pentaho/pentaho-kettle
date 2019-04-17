@@ -42,7 +42,6 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.kitchen.Kitchen;
-import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
@@ -66,9 +65,6 @@ public class Pan {
         args.add( a[i] );
       }
     }
-
-    RepositoryMeta repositoryMeta = null;
-    Trans trans = null;
 
     // The options:
     StringBuilder optionRepname, optionUsername, optionTrustUser,  optionPassword, optionTransname, optionDirname;

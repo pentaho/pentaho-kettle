@@ -105,132 +105,132 @@ public class Params implements IParams {
       this.uuid = uuid;
     }
 
-    public Builder blockRepoConns(String blockRepoConns) {
+    public Builder blockRepoConns( String blockRepoConns ) {
       this.blockRepoConns = blockRepoConns;
       return this;
     }
 
-    public Builder repoName(String repoName) {
+    public Builder repoName( String repoName ) {
       this.repoName = repoName;
       return this;
     }
 
-    public Builder repoUsername(String repoUsername) {
+    public Builder repoUsername( String repoUsername ) {
       this.repoUsername = repoUsername;
       return this;
     }
 
-    public Builder trustRepoUser(String trustRepoUser) {
+    public Builder trustRepoUser( String trustRepoUser ) {
       this.trustRepoUser = trustRepoUser;
       return this;
     }
 
-    public Builder repoPassword(String repoPassword) {
+    public Builder repoPassword( String repoPassword ) {
       this.repoPassword = repoPassword;
       return this;
     }
 
-    public Builder inputDir(String inputDir) {
+    public Builder inputDir( String inputDir ) {
       this.inputDir = inputDir;
       return this;
     }
 
-    public Builder inputFile(String inputFile) {
+    public Builder inputFile( String inputFile ) {
       this.inputFile = inputFile;
       return this;
     }
 
-    public Builder listRepoFiles(String listRepoFiles) {
+    public Builder listRepoFiles( String listRepoFiles ) {
       this.listRepoFiles = listRepoFiles;
       return this;
     }
 
-    public Builder listRepoDirs(String listRepoDirs) {
+    public Builder listRepoDirs( String listRepoDirs ) {
       this.listRepoDirs = listRepoDirs;
       return this;
     }
 
-    public Builder exportRepo(String exportRepo) {
+    public Builder exportRepo( String exportRepo ) {
       this.exportRepo = exportRepo;
       return this;
     }
 
-    public Builder localFile(String localFile) {
+    public Builder localFile( String localFile ) {
       this.localFile = localFile;
       return this;
     }
 
-    public Builder localJarFile(String localJarFile) {
+    public Builder localJarFile( String localJarFile ) {
       this.localJarFile = localJarFile;
       return this;
     }
 
-    public Builder localInitialDir(String localInitialDir) {
+    public Builder localInitialDir( String localInitialDir ) {
       this.localInitialDir = localInitialDir;
       return this;
     }
 
-    public Builder listRepos(String listRepos) {
+    public Builder listRepos( String listRepos ) {
       this.listRepos = listRepos;
       return this;
     }
 
-    public Builder safeMode(String safeMode) {
+    public Builder safeMode( String safeMode ) {
       this.safeMode = safeMode;
       return this;
     }
 
-    public Builder metrics(String metrics) {
+    public Builder metrics( String metrics ) {
       this.metrics = metrics;
       return this;
     }
 
-    public Builder listFileParams(String listFileParams) {
+    public Builder listFileParams( String listFileParams ) {
       this.listFileParams = listFileParams;
       return this;
     }
 
-    public Builder logLevel(String logLevel) {
+    public Builder logLevel( String logLevel ) {
       this.logLevel = logLevel;
       return this;
     }
 
-    public Builder maxLogLines(String maxLogLines) {
+    public Builder maxLogLines( String maxLogLines ) {
       this.maxLogLines = maxLogLines;
       return this;
     }
 
-    public Builder maxLogTimeout(String maxLogTimeout) {
+    public Builder maxLogTimeout( String maxLogTimeout ) {
       this.maxLogTimeout = maxLogTimeout;
       return this;
     }
 
-    public Builder logFile(String logFile) {
+    public Builder logFile( String logFile ) {
       this.logFile = logFile;
       return this;
     }
 
-    public Builder oldLogFile(String oldLogFile) {
+    public Builder oldLogFile( String oldLogFile ) {
       this.oldLogFile = oldLogFile;
       return this;
     }
 
-    public Builder version(String version) {
+    public Builder version( String version ) {
       this.version = version;
       return this;
     }
 
-    public Builder resultSetStepName(String resultSetStepName) {
+    public Builder resultSetStepName( String resultSetStepName ) {
       this.resultSetStepName = resultSetStepName;
       return this;
     }
 
-    public Builder resultSetCopyNumber(String resultSetCopyNumber) {
+    public Builder resultSetCopyNumber( String resultSetCopyNumber ) {
       this.resultSetCopyNumber = resultSetCopyNumber;
       return this;
     }
 
-    public Builder base64Zip(String base64Zip) {
+    public Builder base64Zip( String base64Zip ) {
       this.base64Zip = base64Zip;
       return this;
     }
@@ -240,7 +240,7 @@ public class Params implements IParams {
       return this;
     }
 
-    public Builder customNamedParams(NamedParams customNamedParams) {
+    public Builder customNamedParams( NamedParams customNamedParams ) {
       this.customNamedParams = customNamedParams;
       return this;
     }

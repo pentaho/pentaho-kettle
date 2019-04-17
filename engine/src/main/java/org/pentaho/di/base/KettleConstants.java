@@ -113,7 +113,7 @@ public class KettleConstants {
     return arguments;
   }
 
-  public static Map<String, String> toTransMap( Params params) {
+  public static Map<String, String> toTransMap( Params params ) {
 
     Map<String, String> arguments = new HashMap<>();
 
