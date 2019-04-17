@@ -30,8 +30,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.injection.InjectionDeep;
-import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Utils;
@@ -78,18 +76,14 @@ import java.util.List;
  * @author Matt
  *
  */
-@InjectionSupported( localizationPrefix = "SimpleMappingMeta.Injection.", groups = { "PARAMETERS", "INPUTS" } )
+
 public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface,
   ISubTransAwareMeta {
 
   private static Class<?> PKG = SimpleMappingMeta.class; // for i18n purposes, needed by Translator2!!
 
-  @InjectionDeep
   private MappingIODefinition inputMapping;
-
   private MappingIODefinition outputMapping;
-
-  @InjectionDeep
   private MappingParameters mappingParameters;
 
   /*
