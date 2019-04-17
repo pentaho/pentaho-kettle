@@ -56,7 +56,7 @@ node('non-master') {
         }
       }
 
-      if (params.BUILD_SERVICEPACK  && !params.NOOP) {
+      if (params.BUILD_SERVICEPACK && !params.NOOP) {
         stage('Service Pack') {
           stage('Aggregation Designer') {
             job.trigger('service-pack-installers-aggregation-designer', suiteParameters)
@@ -87,6 +87,16 @@ node('non-master') {
             job.trigger('deployment-sculptor-sp', suiteParameters)
           }
         }
+      }
+
+      if (params.BUILD_UPGRADE_PATH && !params.NOOP) {
+        stage('Upgrade Path') {
+          job.trigger('upgrade-path-installers-pentaho-server', suiteParameters)
+        }
+
+        //stage('Deployment (UP)') {
+        //  job.trigger('deployment-sculptor-sp', suiteParameters)
+        //}
       }
     }
     
