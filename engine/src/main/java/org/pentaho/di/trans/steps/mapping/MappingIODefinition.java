@@ -27,8 +27,6 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.injection.Injection;
-import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -56,12 +54,10 @@ public class MappingIODefinition implements Cloneable {
 
   private String description;
 
-  @InjectionDeep()
   private List<MappingValueRename> valueRenames;
 
   private boolean mainDataPath;
 
-  @Injection( name = "UPDATE_MAPPED_FIELD_NAMES_DOWNSTREAM", group = "INPUTS" )
   private boolean renamingOnOutput;
 
   /**

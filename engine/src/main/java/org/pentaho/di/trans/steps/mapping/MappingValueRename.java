@@ -22,14 +22,8 @@
 
 package org.pentaho.di.trans.steps.mapping;
 
-import org.pentaho.di.core.injection.Injection;
-
 public class MappingValueRename implements Cloneable {
-
-  @Injection( name = "FIELD_NAME_FROM_SOURCE_STEP", group = "INPUTS" )
   private String sourceValueName;
-
-  @Injection( name = "FIELD_NAME_TO_MAPPING_INPUT_STEP", group = "INPUTS" )
   private String targetValueName;
 
   /**
@@ -40,10 +34,6 @@ public class MappingValueRename implements Cloneable {
     super();
     this.sourceValueName = sourceValueName;
     this.targetValueName = targetValueName;
-  }
-
-  // for testing injection purpose
-  public MappingValueRename( ) {
   }
 
   @Override
