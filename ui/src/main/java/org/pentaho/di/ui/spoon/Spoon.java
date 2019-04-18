@@ -728,7 +728,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     StringBuilder optionLogLevel = getCommandLineOption( options, "level" ).getArgument();
 
     // Set default Locale:
-    Locale.setDefault( Const.DEFAULT_LOCALE );
+    Locale.setDefault( LanguageChoice.getInstance().getDefaultLocale() );
 
     if ( !Utils.isEmpty( optionLogFile ) ) {
       fileLoggingEventListener = new FileLoggingEventListener( optionLogFile.toString(), true );
