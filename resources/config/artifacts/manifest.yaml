@@ -54,9 +54,13 @@ ee:
         - pentaho-big-data-ee-mapr520-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-mapr60-package-${pentaho-hadoop-shims.version}-dist.zip
     upgrade:
+        - PentahoServer-UP-${platform.version}-Linux.zip
+        - PentahoServer-UP-${platform.version}-Mac.zip
+        - PentahoServer-UP-${platform.version}-Windows.zip
         - pentaho-upgrade-utility-${platform.version}-ba.zip
         - pentaho-upgrade-utility-${platform.version}-pdi.zip
         - pentaho-upgrade-utility-${platform.version}-pentaho.zip
+
 
 #CE Stuff
 ce:

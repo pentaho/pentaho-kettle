@@ -94,9 +94,9 @@ node('non-master') {
           job.trigger('upgrade-path-installers-pentaho-server', suiteParameters)
         }
 
-        //stage('Deployment (UP)') {
-        //  job.trigger('deployment-sculptor-sp', suiteParameters)
-        //}
+        stage('Deployment (UP)') {
+          job.trigger('deployment-sculptor-sp', suiteParameters)
+        }
       }
     }
     
