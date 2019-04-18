@@ -114,7 +114,7 @@ public class Kitchen {
 
     StringBuilder optionRepname, optionUsername, optionTrustUser, optionPassword, optionJobname, optionDirname, initialDir;
     StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
-    StringBuilder optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
+    StringBuilder optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport, optionBase64Zip;
     NamedParams optionParams = new NamedParamsDefault();
     NamedParams customOptions = new NamedParamsDefault();
 
@@ -180,6 +180,7 @@ public class Kitchen {
         new CommandLineOption(
           "initialDir", null, initialDir =
           new StringBuilder(), false, true ),
+        new CommandLineOption( "zip", "Base64Zip", optionBase64Zip = new StringBuilder(), false, true ),
         new CommandLineOption(
           "custom", BaseMessages.getString( PKG, "Kitchen.ComdLine.Custom" ), customOptions, false ),
         maxLogLinesOption, maxLogTimeoutOption, };
@@ -277,6 +278,7 @@ public class Kitchen {
               .version( "" )
               .resultSetStepName( "" )
               .resultSetCopyNumber( "" )
+              .base64Zip( optionBase64Zip.toString() )
               .namedParams( optionParams )
               .customNamedParams( customOptions )
               .build();
