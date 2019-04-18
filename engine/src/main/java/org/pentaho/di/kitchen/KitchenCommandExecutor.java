@@ -46,6 +46,8 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.i18n.BaseMessages;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
@@ -126,7 +128,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         if ( job == null ) {
 
           // Try to load the job from file, even if it failed to load from the repository
-          job = loadJobFromFilesystem( params.getLocalInitialDir(), params.getLocalFile() );
+          job = loadJobFromFilesystem( params.getLocalInitialDir(), params.getLocalFile(), params.getBase64Zip() );
         }
 
       } else if ( isEnabled( params.getListRepos() ) ) {
@@ -298,11 +300,29 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     return new Job( repository, jobMeta );
   }
 
-  public Job loadJobFromFilesystem( final String initialDir, final String filename ) throws Exception {
+  public Job loadJobFromFilesystem( String initialDir, String filename, String base64Zip ) throws Exception {
 
     if ( Utils.isEmpty( filename ) ) {
       System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
       return null;
+    }
+
+    if ( !Utils.isEmpty( base64Zip ) ) {
+      //expected form of filename "*.kjb"
+      String zipPath = Const.getUserHomeDirectory() + File.separator + java.util.UUID.randomUUID().toString() + ".zip";
+      filename = "zip:file:" + File.separator + File.separator + zipPath + "!" + filename;
+      File zipFile;
+
+      //responsibly attempt to write to file
+      try {
+        zipFile = decodeBase64StringToFile( base64Zip, zipPath );
+      } catch ( IOException e ) {
+        getLog().logError( e.toString() + "\n" );
+        e.printStackTrace();
+        return null;
+      }
+
+      zipFile.deleteOnExit();
     }
 
     blockAndThrow( getKettleInit() );
