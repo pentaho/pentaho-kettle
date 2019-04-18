@@ -41,7 +41,7 @@ define([
       vm.message = i18n.get('connections.creating.message');
       $timeout(function() {
         dataService.testConnection(vm.data.model).then(function (response) {
-          dataService.createConnection(vm.data.model).then(function () {
+          dataService.createConnection(vm.data.model, vm.data.name).then(function () {
             vm.data.isSaved = true;
             $state.go("success", {data: vm.data});
           });

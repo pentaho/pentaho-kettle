@@ -85,9 +85,10 @@ public class ConnectionEndpoints {
   @PUT
   @Path( "/connection" )
   @Consumes( { APPLICATION_JSON } )
-  public Response createConnection( ConnectionDetails connectionDetails ) {
+  public Response createConnection( ConnectionDetails connectionDetails, @QueryParam( "name" ) String name ) {
     boolean saved = connectionManager.save( connectionDetails );
     if ( saved ) {
+      connectionManager.delete( name );
       spoonSupplier.get().getShell().getDisplay().asyncExec( () -> spoonSupplier.get().refreshTree(
         ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
       return Response.ok().build();

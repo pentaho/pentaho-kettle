@@ -62,8 +62,8 @@ define(
         return helperService.httpGet([baseUrl, "connection", type].join("/"));
       }
 
-      function createConnection(connection) {
-        return helperService.httpPut([baseUrl, "connection"].join("/"), connection);
+      function createConnection(connection, name) {
+        return helperService.httpPut([baseUrl, "connection"].join("/") + "?name=" + name, connection);
       }
 
       function testConnection(connection) {
