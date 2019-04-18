@@ -22,6 +22,9 @@
 
 package org.pentaho.di.base;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class KettleConstants {
 
   /**
@@ -61,5 +64,97 @@ public class KettleConstants {
   public static final String RESULT_SET_STEP_NAME = "stepname";
   public static final String RESULT_SET_COPY_NUMBER = "copynum";
   public static final String BASE64_ZIP = "base64zip";
+
+  public static Map<String, String> toJobMap( Params params ) {
+
+    Map<String, String> arguments = new HashMap<>();
+
+    arguments.putIfAbsent( "uuid", params.getUuid() );
+    arguments.putIfAbsent( KettleConstants.REPO, params.getRepoName() );
+    arguments.putIfAbsent( KettleConstants.NO_REPO, params.getBlockRepoConns() );
+    arguments.putIfAbsent( KettleConstants.USER, params.getRepoUsername() );
+    arguments.putIfAbsent( KettleConstants.TRUST_USER, params.getTrustRepoUser() );
+    arguments.putIfAbsent( KettleConstants.PASS, params.getRepoPassword() );
+    arguments.putIfAbsent( KettleConstants.DIR, params.getInputDir() );
+    arguments.putIfAbsent( KettleConstants.FILE, params.getLocalFile() );
+    arguments.putIfAbsent( KettleConstants.JARFILE, params.getLocalJarFile() );
+    arguments.putIfAbsent( KettleConstants.JOB, params.getInputFile() );
+    arguments.putIfAbsent( KettleConstants.LIST_JOBS, params.getListRepoFiles() );
+    arguments.putIfAbsent( KettleConstants.LIST_DIRS, params.getListRepoDirs() );
+    arguments.putIfAbsent( KettleConstants.EXPORT_REPO_JOB, params.getExportRepo() );
+    arguments.putIfAbsent( KettleConstants.INITIAL_DIR, params.getLocalInitialDir() );
+    arguments.putIfAbsent( KettleConstants.LIST_REPOS, params.getListRepos() );
+    arguments.putIfAbsent( KettleConstants.SAFEMODE, params.getSafeMode() );
+    arguments.putIfAbsent( KettleConstants.METRICS, params.getMetrics() );
+    arguments.putIfAbsent( KettleConstants.LIST_PARAMS, params.getListFileParams() );
+    arguments.putIfAbsent( KettleConstants.LEVEL, params.getLogLevel() );
+    arguments.putIfAbsent( KettleConstants.MAX_LOG_LINES, params.getMaxLogLines() );
+    arguments.putIfAbsent( KettleConstants.MAX_LOG_TIMEOUT, params.getMaxLogTimeout() );
+    arguments.putIfAbsent( KettleConstants.LOGFILE, params.getLogFile() );
+    arguments.putIfAbsent( KettleConstants.LOG, params.getOldLogFile() );
+    arguments.putIfAbsent( KettleConstants.VERSION, params.getVersion() );
+    arguments.putIfAbsent( KettleConstants.RESULT_SET_STEP_NAME, params.getResultSetStepName() );
+    arguments.putIfAbsent( KettleConstants.RESULT_SET_COPY_NUMBER, params.getResultSetCopyNumber() );
+
+    if ( params.getParams() != null && !params.getParams().isEmpty() ) {
+
+      params.getParams().keySet().stream().forEach( paramKey -> {
+        arguments.putIfAbsent( ( KettleConstants.PARAM + ":" + paramKey ), params.getParams().get( paramKey ) );
+      } );
+    }
+
+    if ( params.getCustomParams() != null && !params.getCustomParams().isEmpty() ) {
+
+      params.getCustomParams().keySet().stream().forEach( paramKey -> {
+        arguments.putIfAbsent( ( KettleConstants.CUSTOM + ":" + paramKey ), params.getParams().get( paramKey ) );
+      } );
+    }
+
+    return arguments;
+  }
+
+  public static Map<String, String> toTransMap( Params params ) {
+
+    Map<String, String> arguments = new HashMap<>();
+
+    arguments.putIfAbsent(  "uuid", params.getUuid() );
+    arguments.putIfAbsent(  KettleConstants.REPO, params.getRepoName() );
+    arguments.putIfAbsent(  KettleConstants.NO_REPO, params.getBlockRepoConns() );
+    arguments.putIfAbsent(  KettleConstants.USER, params.getRepoUsername() );
+    arguments.putIfAbsent(  KettleConstants.TRUST_USER, params.getTrustRepoUser() );
+    arguments.putIfAbsent(  KettleConstants.PASS, params.getRepoPassword() );
+    arguments.putIfAbsent(  KettleConstants.DIR, params.getInputDir() );
+    arguments.putIfAbsent(  KettleConstants.FILE, params.getLocalFile() );
+    arguments.putIfAbsent(  KettleConstants.JARFILE, params.getLocalJarFile() );
+    arguments.putIfAbsent(  KettleConstants.TRANS, params.getInputFile() );
+    arguments.putIfAbsent(  KettleConstants.LIST_TRANS, params.getListRepoFiles() );
+    arguments.putIfAbsent(  KettleConstants.LIST_DIRS, params.getListRepoDirs() );
+    arguments.putIfAbsent(  KettleConstants.EXPORT_REPO_TRANS, params.getExportRepo() );
+    arguments.putIfAbsent(  KettleConstants.INITIAL_DIR, params.getLocalInitialDir() );
+    arguments.putIfAbsent(  KettleConstants.LIST_REPOS, params.getListRepos() );
+    arguments.putIfAbsent(  KettleConstants.SAFEMODE, params.getSafeMode() );
+    arguments.putIfAbsent(  KettleConstants.METRICS, params.getMetrics() );
+    arguments.putIfAbsent(  KettleConstants.LIST_PARAMS, params.getListFileParams() );
+    arguments.putIfAbsent(  KettleConstants.LEVEL, params.getLogLevel() );
+    arguments.putIfAbsent(  KettleConstants.MAX_LOG_LINES, params.getMaxLogLines() );
+    arguments.putIfAbsent(  KettleConstants.MAX_LOG_TIMEOUT, params.getMaxLogTimeout() );
+    arguments.putIfAbsent(  KettleConstants.LOGFILE, params.getLogFile() );
+    arguments.putIfAbsent(  KettleConstants.LOG, params.getOldLogFile() );
+    arguments.putIfAbsent(  KettleConstants.VERSION, params.getVersion() );
+    arguments.putIfAbsent(  KettleConstants.RESULT_SET_STEP_NAME, params.getResultSetStepName() );
+    arguments.putIfAbsent(  KettleConstants.RESULT_SET_COPY_NUMBER, params.getResultSetCopyNumber() );
+    arguments.putIfAbsent(  KettleConstants.BASE64_ZIP, params.getBase64Zip() );
+
+    if ( params.getParams() != null && !params.getParams().isEmpty() ) {
+
+      params.getParams().keySet().stream().forEach( paramKey -> {
+        arguments.putIfAbsent(  ( KettleConstants.PARAM + ":" + paramKey ), params.getParams().get( paramKey ) );
+      } );
+    }
+
+    // KTRs do not use customParams
+
+    return arguments;
+  }
 
 }

@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
 
-public abstract class Params implements IParams {
+public class Params implements IParams {
 
   private String uuid;
   private String repoName;
@@ -62,47 +62,223 @@ public abstract class Params implements IParams {
   private NamedParams namedParams;
   private NamedParams customNamedParams;
 
-  public Params( String blockRepoConns, String repoName, String repoUsername, String trustRepoUser, String repoPassword, String inputDir,
-                   String inputFile, String listRepoFiles, String listRepoDirs, String exportRepo, String localFile,
-                   String localJarFile, String localInitialDir, String listRepos, String safeMode, String metrics,
-                   String listFileParams, String logLevel, String maxLogLines, String maxLogTimeout, String logFile,
-                   String oldLogFile, String version, String resultSetStepName, String resultSetCopyNumber, String base64Zip, NamedParams params,
-                   NamedParams customNamedParams ) {
+  private Params() {
 
-    setUuid( java.util.UUID.randomUUID().toString() );
-
-    setBlockRepoConns( blockRepoConns );
-    setRepoName( repoName );
-    setRepoUsername( repoUsername );
-    setTrustRepoUser( trustRepoUser );
-    setRepoPassword( repoPassword );
-    setInputDir( inputDir );
-    setInputFile( inputFile );
-    setListRepoFiles( listRepoFiles );
-    setListRepoDirs( listRepoDirs );
-    setExportRepo( exportRepo );
-    setLocalFile( localFile );
-    setLocalJarFile( localJarFile );
-    setLocalInitialDir( localInitialDir );
-    setListRepos( listRepos );
-    setSafeMode( safeMode );
-    setMetrics( metrics );
-    setListFileParams( listFileParams );
-    setLogLevel( logLevel );
-    setMaxLogLines( maxLogLines );
-    setMaxLogTimeout( maxLogTimeout );
-    setLogFile( logFile );
-    setOldLogFile( oldLogFile );
-    setVersion( version );
-    setResultSetStepName( resultSetStepName );
-    setResultSetCopyNumber( NumberUtils.isNumber( resultSetCopyNumber ) ? resultSetCopyNumber : "0" /* default */ );
-    setBase64Zip( base64Zip );
-    setNamedParams( params );
-    setNamedCustomParams( customNamedParams );
   }
 
-  @Override
-  public abstract Map<String, String> asMap();
+  public static class Builder {
+    private String uuid;
+    private String repoName;
+    private String blockRepoConns;
+    private String repoUsername;
+    private String trustRepoUser;
+    private String repoPassword;
+    private String inputDir;
+    private String inputFile;
+    private String listRepoFiles;
+    private String listRepoDirs;
+    private String exportRepo;
+    private String localFile;
+    private String localJarFile;
+    private String localInitialDir;
+    private String listRepos;
+    private String safeMode;
+    private String metrics;
+    private String listFileParams;
+    private String logLevel;
+    private String maxLogLines;
+    private String maxLogTimeout;
+    private String logFile;
+    private String oldLogFile;
+    private String version;
+    private String resultSetStepName;
+    private String resultSetCopyNumber;
+    private String base64Zip;
+    private NamedParams namedParams;
+    private NamedParams customNamedParams;
+
+    public Builder() {
+      this( java.util.UUID.randomUUID().toString() );
+    }
+
+    public Builder( String  uuid ) {
+      this.uuid = uuid;
+    }
+
+    public Builder blockRepoConns( String blockRepoConns ) {
+      this.blockRepoConns = blockRepoConns;
+      return this;
+    }
+
+    public Builder repoName( String repoName ) {
+      this.repoName = repoName;
+      return this;
+    }
+
+    public Builder repoUsername( String repoUsername ) {
+      this.repoUsername = repoUsername;
+      return this;
+    }
+
+    public Builder trustRepoUser( String trustRepoUser ) {
+      this.trustRepoUser = trustRepoUser;
+      return this;
+    }
+
+    public Builder repoPassword( String repoPassword ) {
+      this.repoPassword = repoPassword;
+      return this;
+    }
+
+    public Builder inputDir( String inputDir ) {
+      this.inputDir = inputDir;
+      return this;
+    }
+
+    public Builder inputFile( String inputFile ) {
+      this.inputFile = inputFile;
+      return this;
+    }
+
+    public Builder listRepoFiles( String listRepoFiles ) {
+      this.listRepoFiles = listRepoFiles;
+      return this;
+    }
+
+    public Builder listRepoDirs( String listRepoDirs ) {
+      this.listRepoDirs = listRepoDirs;
+      return this;
+    }
+
+    public Builder exportRepo( String exportRepo ) {
+      this.exportRepo = exportRepo;
+      return this;
+    }
+
+    public Builder localFile( String localFile ) {
+      this.localFile = localFile;
+      return this;
+    }
+
+    public Builder localJarFile( String localJarFile ) {
+      this.localJarFile = localJarFile;
+      return this;
+    }
+
+    public Builder localInitialDir( String localInitialDir ) {
+      this.localInitialDir = localInitialDir;
+      return this;
+    }
+
+    public Builder listRepos( String listRepos ) {
+      this.listRepos = listRepos;
+      return this;
+    }
+
+    public Builder safeMode( String safeMode ) {
+      this.safeMode = safeMode;
+      return this;
+    }
+
+    public Builder metrics( String metrics ) {
+      this.metrics = metrics;
+      return this;
+    }
+
+    public Builder listFileParams( String listFileParams ) {
+      this.listFileParams = listFileParams;
+      return this;
+    }
+
+    public Builder logLevel( String logLevel ) {
+      this.logLevel = logLevel;
+      return this;
+    }
+
+    public Builder maxLogLines( String maxLogLines ) {
+      this.maxLogLines = maxLogLines;
+      return this;
+    }
+
+    public Builder maxLogTimeout( String maxLogTimeout ) {
+      this.maxLogTimeout = maxLogTimeout;
+      return this;
+    }
+
+    public Builder logFile( String logFile ) {
+      this.logFile = logFile;
+      return this;
+    }
+
+    public Builder oldLogFile( String oldLogFile ) {
+      this.oldLogFile = oldLogFile;
+      return this;
+    }
+
+    public Builder version( String version ) {
+      this.version = version;
+      return this;
+    }
+
+    public Builder resultSetStepName( String resultSetStepName ) {
+      this.resultSetStepName = resultSetStepName;
+      return this;
+    }
+
+    public Builder resultSetCopyNumber( String resultSetCopyNumber ) {
+      this.resultSetCopyNumber = resultSetCopyNumber;
+      return this;
+    }
+
+    public Builder base64Zip( String base64Zip ) {
+      this.base64Zip = base64Zip;
+      return this;
+    }
+
+    public Builder namedParams( NamedParams namedParams ) {
+      this.namedParams = namedParams;
+      return this;
+    }
+
+    public Builder customNamedParams( NamedParams customNamedParams ) {
+      this.customNamedParams = customNamedParams;
+      return this;
+    }
+
+    public Params build() {
+      Params params = new Params();
+      params.blockRepoConns = blockRepoConns;
+      params.repoName = repoName;
+      params.repoUsername = repoUsername;
+      params.trustRepoUser = trustRepoUser;
+      params.repoPassword = repoPassword;
+      params.inputDir = inputDir;
+      params.inputFile = inputFile;
+      params.listRepoFiles = listRepoFiles;
+      params.listRepoDirs = listRepoDirs;
+      params.exportRepo = exportRepo;
+      params.localFile = localFile;
+      params.localJarFile = localJarFile;
+      params.localInitialDir = localInitialDir;
+      params.listRepos = listRepos;
+      params.safeMode = safeMode;
+      params.metrics = metrics;
+      params.listFileParams = listFileParams;
+      params.logLevel = logLevel;
+      params.maxLogLines = maxLogLines;
+      params.maxLogTimeout = maxLogTimeout;
+      params.logFile = logFile;
+      params.oldLogFile = oldLogFile;
+      params.version = version;
+      params.resultSetStepName = resultSetStepName;
+      params.resultSetCopyNumber = NumberUtils.isNumber( resultSetCopyNumber ) ? resultSetCopyNumber : "0" /* default */;
+      params.base64Zip = base64Zip;
+      params.namedParams = namedParams;
+      params.customNamedParams = customNamedParams;
+
+      return params;
+    }
+  }
 
   @Override
   public String getUuid() {
@@ -378,8 +554,8 @@ public abstract class Params implements IParams {
     return customNamedParams;
   }
 
-  public void setNamedCustomParams( NamedParams customParams ) {
-    this.customNamedParams = customParams;
+  public void setCustomNamedParams( NamedParams customNamedParams ) {
+    this.customNamedParams = customNamedParams;
   }
 
   @Override
