@@ -39,6 +39,8 @@ define([
     vm.validateName = validateName;
     vm.resetErrorMsg = resetErrorMsg;
     vm.type = null;
+    vm.name = "";
+    var loaded = false;
 
     function onInit() {
       vm.connectionName = i18n.get('connections.intro.connectionName');
@@ -49,6 +51,7 @@ define([
       if ($stateParams.data) {
         vm.data = $stateParams.data;
         vm.title = vm.data.state === "edit" ? i18n.get('connections.intro.edit.label') : i18n.get('connections.intro.new.label');
+        vm.name = vm.data.model.name;
         vm.type = vm.data.model.type;
         vm.next = vm.data.model.type + "step1";
       } else {
@@ -69,19 +72,33 @@ define([
       if (connection) {
         vm.title = i18n.get('connections.intro.edit.label');
         dataService.getConnection(connection).then(function (res) {
-          var model = res.data;
-          vm.type = model.type;
-          vm.data.model = model;
-          vm.next = vm.data.model.type + "step1";
-          vm.data.state = "edit";
-          vm.data.isSaved = true;
+          loaded = true;
+          if (res.data !== "") {
+            setDialogTitle(vm.title);
+            var model = res.data;
+            vm.type = model.type;
+            vm.data.model = model;
+            vm.next = vm.data.model.type + "step1";
+            vm.data.state = "edit";
+            vm.data.isSaved = true;
+            vm.name = vm.data.model.name;
+          } else {
+            vm.title = i18n.get('connections.intro.new.label');
+            setDialogTitle(vm.title);
+          }
         });
+      } else {
+        loaded = true;
       }
+      setDialogTitle(vm.title);
     }
 
     function resetErrorMsg() {
-      vm.data.state = "new";
-      vm.title = i18n.get('connections.intro.new.label');
+      if (!vm.data.isSaved) {
+        vm.data.state = "new";
+        vm.title = i18n.get('connections.intro.new.label');
+        setDialogTitle(vm.title);
+      }
       vm.errorMessage = null;
     }
 
@@ -103,18 +120,23 @@ define([
     function validateName() {
       return $q(function(resolve, reject) {
         if (vm.data.state === "edit" || vm.data.isSaved) {
+          if (vm.name !== vm.data.model.name) {
+            vm.data.name = vm.data.model.name;
+            vm.data.model.name = vm.name;
+          }
           resolve(true);
         } else {
-          dataService.exists(vm.data.model.name).then(function (res) {
-            console.log(res);
+          dataService.exists(vm.name).then(function (res) {
             var isValid = !res.data;
             if (!isValid) {
               vm.errorMessage = {
                 type: "error",
                 text: i18n.get('connections.intro.name.error', {
-                  name: vm.data.model.name
+                  name: vm.name
                 })
               }
+            } else {
+              vm.data.model.name = vm.name;
             }
             resolve(isValid);
           });
@@ -123,7 +145,17 @@ define([
     }
 
     function canNext() {
-      return vm.data.model && vm.data.model.type && vm.data.model.name;
+      return vm.data.model && vm.data.model.type && vm.name;
+    }
+
+    function setDialogTitle(title) {
+      if (loaded === true) {
+        try {
+          setTitle(title);
+        } catch (e) {
+          console.log(title);
+        }
+      }
     }
   }
 

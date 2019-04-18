@@ -78,6 +78,13 @@ public class ConnectionDialog extends ThinDialog {
       }
     };
 
+    new BrowserFunction( browser, "setTitle" ) {
+      @Override public Object function( Object[] arguments ) {
+        dialog.setText( (String) arguments[ 0 ] );
+        return true;
+      }
+    };
+
     new BrowserFunction( browser, "browse" ) {
       @Override public Object function( Object[] arguments ) {
         FileDialog dialog = new FileDialog( getParent().getShell(), SWT.OPEN );
