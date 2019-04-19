@@ -1,55 +1,50 @@
 # optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
 buildProperties:
-        # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
-        # These are understood by the shared pipeline libraries:
-        BUILD_PLAN_ID                  : 8.3 Suite Release
+  # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
+  # These are understood by the shared pipeline libraries:
+  BUILD_PLAN_ID                  : 8.3 Suite Release
 
-        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
-        BUILD_RETRIES                  : 3
-        ATTACH_LOGS                    : false
-        USE_MINION_JOBS                : true
-        MINION_POLL_CRON_INTERVAL      :
-        JOB_ITEM_DEFAULTS              :
-          dockerImage                  : jenkins-build/maven-oracle-jdk-8
+  MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
+  BUILD_RETRIES                  : 3
+  ATTACH_LOGS                    : false
+  USE_MINION_JOBS                : true
+  MINION_POLL_CRON_INTERVAL      :
+  JOB_ITEM_DEFAULTS              :
+    dockerImage                  : jenkins-build/maven-oracle-jdk-8
 
-        # Maven
-        MAVEN_DEFAULT_DIRECTIVES       : clean deploy
-        MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-8.3-qat
-        MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus.pentaho.org/content/repositories/private-8.3-qat
-        ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
+  # Maven
+  MAVEN_DEFAULT_DIRECTIVES       : clean deploy
+  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-8.3-qat
+  MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus.pentaho.org/content/repositories/private-8.3-qat
+  ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
 
-        # Version based control properties
-        RUN_VERSIONING                 : true
-        RELEASE_VERSION                : 8.3.0.0
-        DEPLOYMENT_FOLDER              : 8.3-QAT
-        RELEASE_MODE                   : true
-        DEFAULT_BRANCH                 : master
-        SUITE_BUILD_RESOURCES_BRANCH   : 8.3.0.0
-        SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
-        JENKINS_FOLDER_NAME            : "8.3"
+  # Version based control properties
+  RUN_VERSIONING                 : true
+  RELEASE_VERSION                : 8.3.0.0
+  DEPLOYMENT_FOLDER              : 8.3-QAT
+  RELEASE_MODE                   : true
+  DEFAULT_BRANCH                 : master
+  SUITE_BUILD_RESOURCES_BRANCH   : 8.3.0.0
+  SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
+  JENKINS_FOLDER_NAME            : "8.3"
 
-        # We need to override this until this pipeline is the nightly
-        BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
+  # We need to override this until this pipeline is the nightly
+  BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
 
-        # Tagging
-        CREATE_TAG                     : true
-        TAG_NAME                       : ${RELEASE_VERSION}-RC
+  # Tagging
+  CREATE_TAG                     : true
+  TAG_NAME                       : ${RELEASE_VERSION}-RC
 
-        # Slack Reporting
-        SLACK_INTEGRATION              : true
-        SLACK_CHANNEL                  : 'buildteam-alerts'
-        BUILD_SLACK_CHANNEL            : 'buildteam-alerts'
+  # Slack Reporting
+  SLACK_INTEGRATION              : true
+  SLACK_CHANNEL                  : 'buildteam-alerts'
+  BUILD_SLACK_CHANNEL            : 'buildteam-alerts'
 
-        # SP specific parameters
-        PREVIOUS_RELEASE_VERSION       : ""
-        SP_RELEASE_VERSION             : ""
-        DO_AUTO_PATCH                  : false
+  # SP specific parameters
+  PREVIOUS_RELEASE_VERSION       : ""
+  SP_RELEASE_VERSION             : ""
+  DO_AUTO_PATCH                  : false
 
-        # Installers specific parameters
-        INSTALLER_NIX                  : -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common
-        INSTALLER_OSX                  : -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common
-        INSTALLER_WIN                  : -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common
-        INSTALLER_PROPS                : ${INSTALLER_NIX} ${INSTALLER_OSX} ${INSTALLER_WIN} -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
 
 jobGroups:
   # Always required

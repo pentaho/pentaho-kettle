@@ -1,23 +1,21 @@
 # optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
 buildProperties:
-        # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
-        # These are understood by the shared pipeline libraries:
-        BUILD_PLAN_ID                  : Master Suite Snapshot Build
-        USE_MINION_JOBS                : true
-        MAVEN_DEFAULT_DIRECTIVES       : clean deploy
-        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e
-        MAVEN_PUBLIC_SNAPSHOT_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-8.3-snapshot
-        MAVEN_PRIVATE_SNAPSHOT_REPO_URL : https://nexus.pentaho.org/content/repositories/private-8.3-snapshot
+  # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
+  # These are understood by the shared pipeline libraries:
+  BUILD_PLAN_ID                  : Master Suite Snapshot Build
+  USE_MINION_JOBS                : true
+  MAVEN_DEFAULT_DIRECTIVES       : clean deploy
+  MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e
+  MAVEN_PUBLIC_SNAPSHOT_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-8.3-snapshot
+  MAVEN_PRIVATE_SNAPSHOT_REPO_URL : https://nexus.pentaho.org/content/repositories/private-8.3-snapshot
 
-        JOB_ITEM_DEFAULTS              :
-          dockerImage                  : jenkins-build/maven-oracle-jdk-8
+  JOB_ITEM_DEFAULTS              :
+    dockerImage                  : jenkins-build/maven-oracle-jdk-8
 
-        # Installers specific parameters
-        INSTALLER_NIX                  : -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common
-        INSTALLER_OSX                  : -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common
-        INSTALLER_WIN                  : -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common
-        INSTALLER_PROPS                : ${INSTALLER_NIX} ${INSTALLER_OSX} ${INSTALLER_WIN} -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
-
+  # SP specific parameters
+  PREVIOUS_RELEASE_VERSION       : ""
+  SP_RELEASE_VERSION             : 201904
+  DO_AUTO_PATCH                  : false
 
 jobGroups:
   # Always required
