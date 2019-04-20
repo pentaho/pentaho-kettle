@@ -17,7 +17,7 @@
         </div>
       </div>
     </div>
-    <div class="margin_bottom_15" ng-repeat="section in vm.data.sections">
+    <div class="margin_bottom_15" ng-repeat="section in vm.summary">
       <div class="section_header">
         <label class="margin_bottom_5 block text_left">{{section.title}}</label>
         <div class="edit" ng-click="vm.onEditClick(section.editLink)"></div>
@@ -25,7 +25,9 @@
       <div class="group_holder">
         <div class="group" ng-repeat="(key, value) in section.mapping">
           <div class="label">{{section.mapping[key]}}</div>
-          <div class="value" title="{{vm.data.model[key]}}">{{vm.data.model[key]}}</div>
+          <div class="value" title="{{vm.data.model[key]}}">
+            {{section.filters[key]?section.filters[key](vm.data.model[key]):vm.data.model[key]}}
+          </div>
         </div>
       </div>
     </div>
@@ -41,5 +43,5 @@
       </div>
     </div>
   </div>
-  <controls data="vm.data" finish="'creating'"></controls>
+  <controls data="vm.data" buttons="vm.buttons"></controls>
 </div>

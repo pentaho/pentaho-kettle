@@ -60,12 +60,14 @@ define([
 
     var deps = ['ui.router', 'ngAnimate'];
     var types = [];
+    var summaries = [];
     plugins.map(function (item) {
       deps.push(item.name);
       types.push({
         value: item.scheme,
         label: item.label
-      })
+      });
+      summaries[item.scheme] = item.summary;
     });
 
     function vfsTypeProvider() {
@@ -75,6 +77,16 @@ define([
 
       return {
         $get: getTypes
+      }
+    }
+
+    function vfsSummaryProvider() {
+      function getSummaries() {
+        return summaries;
+      }
+
+      return {
+        $get: getSummaries
       }
     }
 
@@ -94,6 +106,7 @@ define([
         .service(dataService.name, dataService.factory)
         .animation(appAnimation.class, appAnimation.factory)
         .provider('vfsTypes', vfsTypeProvider)
+        .provider('vfsSummaries', vfsSummaryProvider)
         .config(appConfig);
   }
 

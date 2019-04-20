@@ -24,16 +24,8 @@ define([
 
   var options = {
     bindings: {
-      apply: "<",
-      test: "<",
-      back: "<",
-      next: "<",
-      finish: "<",
-      close: "<",
-      data: "<",
-      canNext: "<",
-      onApply: "&",
-      nextValidation: "<"
+      buttons: "<",
+      data: "<"
     },
     controllerAs: "vm",
     template: template,
@@ -44,67 +36,32 @@ define([
 
   function controlsController($state) {
     var vm = this;
-    vm.onBack = onBack;
-    vm.onNext = onNext;
-    vm.onFinish = onFinish;
-    vm.onClose = onClose;
-    vm.onTestClick = onTestClick;
-    vm.onApply = onApply;
     vm.$onInit = onInit;
-    vm.isTesting = false;
+    vm.getRightButtons = getRightButtons;
+    vm.getMiddleButtons = getMiddleButtons;
 
     function onInit() {
-      vm.backLabel = i18n.get('connections.controls.backLabel');
-      vm.nextLabel = i18n.get('connections.controls.nextLabel');
-      vm.finishLabel = i18n.get('connections.controls.finishLabel');
-      vm.closeLabel = i18n.get('connections.controls.closeLabel');
-      vm.testLabel = i18n.get('connections.controls.testLabel');
-      vm.applyLabel = i18n.get('connections.controls.applyLabel');
+
     }
 
-    function onApply() {
-      if (vm.nextValidation) {
-        vm.nextValidation().then(function(isValid) {
-          if (isValid) {
-            $state.go("summary", {data: vm.data, transition: "slideLeft"});
+    function getButtonsByPosition(position) {
+      var buttons = [];
+      if (vm.buttons) {
+        for (var i = 0; i < vm.buttons.length; i++) {
+          if (vm.buttons[i].position === position) {
+            buttons.push(vm.buttons[i]);
           }
-        });
-      } else {
-        $state.go("summary", {data: vm.data, transition: "slideLeft"});
+        }
       }
+      return buttons;
     }
 
-    function onBack() {
-      $state.go(vm.back, {data: vm.data, transition: "slideRight"});
+    function getRightButtons() {
+      return getButtonsByPosition("right");
     }
 
-    function onNext() {
-      if (vm.nextValidation) {
-        vm.nextValidation().then(function(isValid) {
-          if (isValid) {
-            $state.go(vm.next, {data: vm.data, transition: "slideLeft"});
-          }
-        });
-      } else {
-        $state.go(vm.next, {data: vm.data, transition: "slideLeft"});
-      }
-    }
-
-    function onFinish() {
-      $state.go(vm.finish, {data: vm.data, transition: "slideLeft"});
-    }
-
-    function onClose() {
-      close();
-    }
-
-    function onTestClick() {
-      vm.isTesting = true;
-      vm.test().then(function() {
-        vm.isTesting = false;
-      }, function() {
-        vm.isTesting = false;
-      });
+    function getMiddleButtons() {
+      return getButtonsByPosition("middle");
     }
   }
 

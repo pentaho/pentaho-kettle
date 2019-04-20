@@ -34,19 +34,18 @@ define([
   function creatingController($state, $timeout, $stateParams, dataService) {
     var vm = this;
     vm.$onInit = onInit;
-    vm.data = $stateParams.data;
 
     function onInit() {
+      vm.data = $stateParams.data;
+
       vm.almostDone = i18n.get('connections.creating.almostdone.label');
-      vm.message = i18n.get('connections.creating.message');
+      vm.message = vm.data.isSaved === true ? i18n.get('connections.updating.message') : i18n.get('connections.creating.message');
       $timeout(function() {
         dataService.testConnection(vm.data.model).then(function (response) {
           dataService.createConnection(vm.data.model, vm.data.name).then(function () {
-            vm.data.isSaved = true;
             $state.go("success", {data: vm.data});
           });
         }, function (response) {
-          vm.data.isSaved = false;
           $state.go("failure", {data: vm.data});
         });
       }, 1000);

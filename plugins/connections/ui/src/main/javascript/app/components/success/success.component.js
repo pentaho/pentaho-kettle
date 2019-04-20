@@ -39,13 +39,14 @@ define([
 
     function onInit() {
       vm.data = $stateParams.data;
-
       vm.congratulationsLabel = i18n.get('connections.final.congratulationsLabel');
-      vm.ready = vm.data.edit ? i18n.get('connections.final.readyUpdated') : i18n.get('connections.final.readyCreate');
+      vm.ready = !vm.data.isSaved ? i18n.get('connections.final.readyCreate') : i18n.get('connections.final.readyUpdated');
       vm.question = i18n.get('connections.final.question');
       vm.createNewConnection = i18n.get('connections.final.createNewConnection');
       vm.editConnection = i18n.get('connections.final.editConnection');
       vm.closeLabel = i18n.get('connections.final.closeLabel');
+      vm.data.isSaved = true;
+      vm.buttons = getButtons();
     }
 
     function onCreateNew() {
@@ -54,7 +55,27 @@ define([
 
     function onEditConnection() {
       vm.data.state = "edit";
-      $state.go("intro", {data: vm.data});
+      setDialogTitle(i18n.get('connections.intro.edit.label'));
+      $state.go(vm.data.model.type + "step1", {data: vm.data, transition: "slideRight"});
+    }
+
+    function getButtons() {
+      return [{
+        label: i18n.get('connections.controls.closeLabel'),
+        class: "primary",
+        position: "right",
+        onClick: function() {
+          close();
+        }
+      }];
+    }
+
+    function setDialogTitle(title) {
+      try {
+        setTitle(title);
+      } catch (e) {
+        console.log(title);
+      }
     }
   }
 

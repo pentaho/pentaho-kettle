@@ -34,7 +34,6 @@ define([
   function introController($location, $state, $q, $stateParams, dataService, vfsTypes, $timeout) {
     var vm = this;
     vm.$onInit = onInit;
-    vm.canNext = canNext;
     vm.onSelect = onSelect;
     vm.validateName = validateName;
     vm.resetErrorMsg = resetErrorMsg;
@@ -50,7 +49,9 @@ define([
 
       if ($stateParams.data) {
         vm.data = $stateParams.data;
-        vm.title = vm.data.state === "edit" ? i18n.get('connections.intro.edit.label') : i18n.get('connections.intro.new.label');
+        vm.title = vm.data.isSaved === true
+            ? i18n.get('connections.intro.edit.label')
+            : i18n.get('connections.intro.new.label');
         vm.name = vm.data.model.name;
         vm.type = vm.data.model.type;
         vm.next = vm.data.model.type + "step1";
@@ -91,6 +92,8 @@ define([
         loaded = true;
       }
       setDialogTitle(vm.title);
+
+      vm.buttons = getButtons();
     }
 
     function resetErrorMsg() {
@@ -144,10 +147,6 @@ define([
       });
     }
 
-    function canNext() {
-      return vm.data.model && vm.data.model.type && vm.name;
-    }
-
     function setDialogTitle(title) {
       if (loaded === true) {
         try {
@@ -156,6 +155,24 @@ define([
           console.log(title);
         }
       }
+    }
+
+    function getButtons() {
+      return [{
+            label: vm.data.state === "modify" ? i18n.get('connections.controls.applyLabel') : i18n.get('connections.controls.nextLabel'),
+            class: "primary",
+            isDisabled: function() {
+              return !vm.data.model || !vm.data.model.type || !vm.name;
+            },
+            position: "right",
+            onClick: function() {
+              validateName().then(function(isValid) {
+                if (isValid) {
+                  $state.go(vm.data.state === "modify" ? 'summary' : vm.next, {data: vm.data, transition: "slideLeft"});
+                }
+              });
+            }
+          }];
     }
   }
 
