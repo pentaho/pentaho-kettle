@@ -37,18 +37,10 @@ define(
        * @returns {Object} The callbacks for animation
        */
       function factory($rootScope, $state) {
-        var transition = $state.current.name === "connecting" ? "fade" : "slideLeft";
-        var transitions = {};
+        var transition = $state.params.transition;
         $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams) {
           if (toParams.transition) {
             transition = toParams.transition;
-          } else {
-            var next = transitions[fromState.name + "->" + toState.name];
-            if (next) {
-              transition = next;
-            } else {
-              transition = "slideLeft";
-            }
           }
         });
 
