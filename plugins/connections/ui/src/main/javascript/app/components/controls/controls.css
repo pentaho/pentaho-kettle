@@ -23,17 +23,16 @@
   width: 33%;
 }
 
-.bottom .middlePane button {
-  margin: auto;
-}
-
 .bottom .rightPane {
   float: right;
   width: 33%;
 }
 
+.bottom .rightPane>button {
+  margin-left: 10px;
+}
 
-.testing .loading-icon {
+.waiting .loading-icon {
   height: 34px;
   width: 34px;
   background-size: 34px 34px;

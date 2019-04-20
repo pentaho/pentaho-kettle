@@ -50,5 +50,7 @@
 }
 
 summary .middle_div {
+  height: 400px;
   width: 480px;
+  overflow: auto;
 }
