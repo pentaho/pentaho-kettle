@@ -26,14 +26,13 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.job.Job;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Base64;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -41,17 +40,18 @@ import static org.mockito.Mockito.when;
 
 public class KitchenCommandExecutorTest {
 
-  private MockedKitchenCommandExecutor mockedKitchenCommandExecutor;
+  private KitchenCommandExecutor mockedKitchenCommandExecutor;
 
   @Before
   public void setUp() throws Exception {
 
-    mockedKitchenCommandExecutor = mock( MockedKitchenCommandExecutor.class );
+    mockedKitchenCommandExecutor = mock( KitchenCommandExecutor.class );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
-    when( mockedKitchenCommandExecutor.loadJobFromFilesystem( anyString(), anyString(), anyString() ) ).thenCallRealMethod();
+    when( mockedKitchenCommandExecutor.loadJobFromFilesystem( anyString(), anyString(), anyObject() ) ).thenCallRealMethod();
     when( mockedKitchenCommandExecutor.loadJobFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
-    when( mockedKitchenCommandExecutor.decodeBase64StringToFile( anyString(), anyString() ) ).thenCallRealMethod();
+    when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyBoolean() ) ).thenCallRealMethod();
+    when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyString() ) ).thenCallRealMethod();
   }
 
   @After
@@ -64,22 +64,7 @@ public class KitchenCommandExecutorTest {
     String fileName = "hello-world.kjb";
     File zipFile = new File( getClass().getResource( "testKjbArchive.zip" ).toURI() );
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
-    Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( Const.getDIHomeDirectory(), fileName, base64Zip );
+    Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( null, fileName, base64Zip );
     assertNotNull( job );
-  }
-
-  /**
-   * Inner class, used solely for the purpose of raising methods visibility ( so that we are able to test those )
-   */
-  private class MockedKitchenCommandExecutor extends KitchenCommandExecutor {
-
-    public MockedKitchenCommandExecutor( Class<?> pkgClazz ) {
-      super( pkgClazz );
-    }
-
-    @Override
-    public File decodeBase64StringToFile( String base64String, String filePath ) throws IOException {
-      return super.decodeBase64StringToFile( base64String, filePath );
-    }
   }
 }
