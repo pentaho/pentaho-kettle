@@ -47,7 +47,6 @@ import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
