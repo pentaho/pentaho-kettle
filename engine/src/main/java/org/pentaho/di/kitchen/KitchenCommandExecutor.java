@@ -47,7 +47,7 @@ import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
@@ -300,29 +300,17 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     return new Job( repository, jobMeta );
   }
 
-  public Job loadJobFromFilesystem( String initialDir, String filename, String base64Zip ) throws Exception {
+  public Job loadJobFromFilesystem( String initialDir, String filename, Serializable base64Zip ) throws Exception {
 
     if ( Utils.isEmpty( filename ) ) {
       System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
       return null;
     }
 
-    if ( !Utils.isEmpty( base64Zip ) ) {
-      //expected form of filename "*.kjb"
-      String zipPath = Const.getUserHomeDirectory() + File.separator + java.util.UUID.randomUUID().toString() + ".zip";
-      filename = "zip:file:" + File.separator + File.separator + zipPath + "!" + filename;
-      File zipFile;
-
-      //responsibly attempt to write to file
-      try {
-        zipFile = decodeBase64StringToFile( base64Zip, zipPath );
-      } catch ( IOException e ) {
-        getLog().logError( e.toString() + "\n" );
-        e.printStackTrace();
-        return null;
-      }
-
-      zipFile.deleteOnExit();
+    File zip;
+    if ( base64Zip != null && ( zip = decodeBase64ToZipFile( base64Zip, true ) ) != null ) {
+      // update filename to a meaningful, 'ETL-file-within-zip' syntax
+      filename = "zip:file:" + File.separator + File.separator + zip.getAbsolutePath() + "!" + filename;
     }
 
     blockAndThrow( getKettleInit() );
