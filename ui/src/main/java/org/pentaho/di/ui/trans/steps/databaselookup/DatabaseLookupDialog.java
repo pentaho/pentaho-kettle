@@ -373,82 +373,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     fdKey.left = new FormAttachment( 0, 0 );
     fdKey.top = new FormAttachment( wlKey, margin );
     fdKey.right = new FormAttachment( 100, 0 );
-    fdKey.bottom = new FormAttachment( wlKey, 250 );
+    fdKey.bottom = new FormAttachment( wlKey, 190 );
     wKey.setLayoutData( fdKey );
-
-    // THE BUTTONS
-    wOK = new Button( shell, SWT.PUSH );
-    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
-    wGet = new Button( shell, SWT.PUSH );
-    wGet.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.GetFields.Button" ) );
-    wGetLU = new Button( shell, SWT.PUSH );
-    wGetLU.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.GetLookupFields.Button" ) );
-    wCancel = new Button( shell, SWT.PUSH );
-    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
-
-    setButtonPositions( new Button[] { wOK, wCancel, wGet, wGetLU }, margin, null );
-
-    // OderBy line
-    wlOrderBy = new Label( shell, SWT.RIGHT );
-    wlOrderBy.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.Orderby.Label" ) );
-    props.setLook( wlOrderBy );
-    fdlOrderBy = new FormData();
-    fdlOrderBy.left = new FormAttachment( 0, 0 );
-    fdlOrderBy.right = new FormAttachment( middle, -margin );
-    fdlOrderBy.bottom = new FormAttachment( wOK, -2 * margin );
-    wlOrderBy.setLayoutData( fdlOrderBy );
-    wOrderBy = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wOrderBy );
-    fdOrderBy = new FormData();
-    fdOrderBy.left = new FormAttachment( middle, 0 );
-    fdOrderBy.bottom = new FormAttachment( wOK, -2 * margin );
-    fdOrderBy.right = new FormAttachment( 100, 0 );
-    wOrderBy.setLayoutData( fdOrderBy );
-    wOrderBy.addModifyListener( lsMod );
-
-    // FailMultiple?
-    wlFailMultiple = new Label( shell, SWT.RIGHT );
-    wlFailMultiple.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.FailMultiple.Label" ) );
-    props.setLook( wlFailMultiple );
-    fdlFailMultiple = new FormData();
-    fdlFailMultiple.left = new FormAttachment( 0, 0 );
-    fdlFailMultiple.right = new FormAttachment( middle, -margin );
-    fdlFailMultiple.bottom = new FormAttachment( wOrderBy, -margin );
-    wlFailMultiple.setLayoutData( fdlFailMultiple );
-    wFailMultiple = new Button( shell, SWT.CHECK );
-    props.setLook( wFailMultiple );
-    fdFailMultiple = new FormData();
-    fdFailMultiple.left = new FormAttachment( middle, 0 );
-    fdFailMultiple.bottom = new FormAttachment( wOrderBy, -margin );
-    wFailMultiple.setLayoutData( fdFailMultiple );
-    wFailMultiple.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
-        enableFields();
-      }
-    } );
-
-    // EatRows?
-    wlEatRows = new Label( shell, SWT.RIGHT );
-    wlEatRows.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.EatRows.Label" ) );
-    props.setLook( wlEatRows );
-    fdlEatRows = new FormData();
-    fdlEatRows.left = new FormAttachment( 0, 0 );
-    fdlEatRows.right = new FormAttachment( middle, -margin );
-    fdlEatRows.bottom = new FormAttachment( wFailMultiple, -margin );
-    wlEatRows.setLayoutData( fdlEatRows );
-    wEatRows = new Button( shell, SWT.CHECK );
-    props.setLook( wEatRows );
-    fdEatRows = new FormData();
-    fdEatRows.left = new FormAttachment( middle, 0 );
-    fdEatRows.bottom = new FormAttachment( wFailMultiple, -margin );
-    wEatRows.setLayoutData( fdEatRows );
-    wEatRows.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
-        enableFields();
-      }
-    } );
 
     // THE UPDATE/INSERT TABLE
     wlReturn = new Label( shell, SWT.NONE );
@@ -490,8 +416,82 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     fdReturn.left = new FormAttachment( 0, 0 );
     fdReturn.top = new FormAttachment( wlReturn, margin );
     fdReturn.right = new FormAttachment( 100, 0 );
-    fdReturn.bottom = new FormAttachment( wEatRows, -margin );
+    fdReturn.bottom = new FormAttachment( wlReturn, 190 );
     wReturn.setLayoutData( fdReturn );
+
+    // EatRows?
+    wlEatRows = new Label( shell, SWT.RIGHT );
+    wlEatRows.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.EatRows.Label" ) );
+    props.setLook( wlEatRows );
+    fdlEatRows = new FormData();
+    fdlEatRows.left = new FormAttachment( 0, 0 );
+    fdlEatRows.top = new FormAttachment( wReturn, margin );
+    fdlEatRows.right = new FormAttachment( middle, -margin );
+    wlEatRows.setLayoutData( fdlEatRows );
+    wEatRows = new Button( shell, SWT.CHECK );
+    props.setLook( wEatRows );
+    fdEatRows = new FormData();
+    fdEatRows.left = new FormAttachment( middle, 0 );
+    fdEatRows.top = new FormAttachment( wReturn, margin );
+    wEatRows.setLayoutData( fdEatRows );
+    wEatRows.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+        enableFields();
+      }
+    } );
+
+    // FailMultiple?
+    wlFailMultiple = new Label( shell, SWT.RIGHT );
+    wlFailMultiple.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.FailMultiple.Label" ) );
+    props.setLook( wlFailMultiple );
+    fdlFailMultiple = new FormData();
+    fdlFailMultiple.left = new FormAttachment( 0, 0 );
+    fdlFailMultiple.top = new FormAttachment( wEatRows, margin );
+    fdlFailMultiple.right = new FormAttachment( middle, -margin );
+    wlFailMultiple.setLayoutData( fdlFailMultiple );
+    wFailMultiple = new Button( shell, SWT.CHECK );
+    props.setLook( wFailMultiple );
+    fdFailMultiple = new FormData();
+    fdFailMultiple.left = new FormAttachment( middle, 0 );
+    fdFailMultiple.top = new FormAttachment( wEatRows, margin );
+    wFailMultiple.setLayoutData( fdFailMultiple );
+    wFailMultiple.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+        enableFields();
+      }
+    } );
+
+    // OderBy line
+    wlOrderBy = new Label( shell, SWT.RIGHT );
+    wlOrderBy.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.Orderby.Label" ) );
+    props.setLook( wlOrderBy );
+    fdlOrderBy = new FormData();
+    fdlOrderBy.left = new FormAttachment( 0, 0 );
+    fdlOrderBy.top = new FormAttachment( wFailMultiple, margin );
+    fdlOrderBy.right = new FormAttachment( middle, -margin );
+    wlOrderBy.setLayoutData( fdlOrderBy );
+    wOrderBy = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wOrderBy );
+    fdOrderBy = new FormData();
+    fdOrderBy.left = new FormAttachment( middle, 0 );
+    fdOrderBy.top = new FormAttachment( wFailMultiple, margin );
+    fdOrderBy.right = new FormAttachment( 100, 0 );
+    wOrderBy.setLayoutData( fdOrderBy );
+    wOrderBy.addModifyListener( lsMod );
+
+    // THE BUTTONS
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wGet = new Button( shell, SWT.PUSH );
+    wGet.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.GetFields.Button" ) );
+    wGetLU = new Button( shell, SWT.PUSH );
+    wGetLU.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.GetLookupFields.Button" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+
+    setButtonPositions( new Button[] { wOK, wCancel, wGet, wGetLU }, margin, wOrderBy );
 
     // Add listeners
     lsOK = new Listener() {
