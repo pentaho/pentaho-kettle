@@ -22,17 +22,29 @@
 
 package org.pentaho.di.connections.vfs;
 
-import org.apache.commons.vfs2.FileSystemOptions;
-import org.pentaho.di.connections.ConnectionProvider;
+import org.pentaho.di.connections.ConnectionManager;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-/**
- * Created by bmorrise on 2/3/19.
- */
-public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends ConnectionProvider<T> {
-  FileSystemOptions getOpts( T vfsConnectionDetails );
-  List<VFSRoot> getLocations( T vfsConnectionDetails );
-  String getProtocol( T vfsConnectionDetails );
-  String sanitizeName( String string );
+public abstract class BaseVFSConnectionProvider<T extends VFSConnectionDetails> implements VFSConnectionProvider<T> {
+
+  private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
+
+  @Override public List<String> getNames() {
+    return connectionManagerSupplier.get().getNamesByType( getClass() );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  @Override public List<T> getConnectionDetails() {
+    return (List<T>) connectionManagerSupplier.get().getConnectionDetailsByScheme( getKey() );
+  }
+
+  @Override public T prepare( T connectionDetails ) {
+    return connectionDetails;
+  }
+
+  @Override public String sanitizeName( String string ) {
+    return string;
+  }
 }

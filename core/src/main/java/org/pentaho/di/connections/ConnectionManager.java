@@ -185,6 +185,17 @@ public class ConnectionManager {
     return detailNames;
   }
 
+  public List<String> getNamesByKey( String key ) {
+    List<String> detailNames = new ArrayList<>();
+    List<ConnectionProvider<? extends ConnectionDetails>> providers =
+      Collections.list( connectionProviders.elements() ).stream()
+        .filter( connectionProvider -> connectionProvider.getKey().equals( key ) ).collect( Collectors.toList() );
+    for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
+      detailNames.addAll( getNames( provider ) );
+    }
+    return detailNames;
+  }
+
   public ConnectionDetails getConnectionDetails( String key, String name ) {
     ConnectionProvider<? extends ConnectionDetails> connectionProvider = getConnectionProvider( key );
     if ( connectionProvider != null ) {

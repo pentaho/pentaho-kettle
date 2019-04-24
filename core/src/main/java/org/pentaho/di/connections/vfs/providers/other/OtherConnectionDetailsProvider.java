@@ -26,20 +26,16 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
-import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.vfs.VFSConnectionProvider;
+import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSRoot;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Created by bmorrise on 2/3/19.
  */
-public class OtherConnectionDetailsProvider implements VFSConnectionProvider<OtherConnectionDetails> {
-
-  private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
+public class OtherConnectionDetailsProvider extends BaseVFSConnectionProvider<OtherConnectionDetails> {
 
   public static final String NAME = "Other";
   public static final String SCHEME = "other";
@@ -72,15 +68,6 @@ public class OtherConnectionDetailsProvider implements VFSConnectionProvider<Oth
     return Collections.singletonList( new VFSRoot( location, null ) );
   }
 
-  @Override public List<String> getNames() {
-    return connectionManagerSupplier.get().getNamesByType( getClass() );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  @Override public List<OtherConnectionDetails> getConnectionDetails() {
-    return (List<OtherConnectionDetails>) connectionManagerSupplier.get().getConnectionDetailsByScheme( getKey() );
-  }
-
   @Override
   public String getName() {
     return NAME;
@@ -91,16 +78,12 @@ public class OtherConnectionDetailsProvider implements VFSConnectionProvider<Oth
     return SCHEME;
   }
 
-  @Override public String getProtocol( OtherConnectionDetails vfsConnectionDetails ) {
-    return vfsConnectionDetails.getProtocol();
+  @Override public String getProtocol( OtherConnectionDetails otherConnectionDetails ) {
+    return otherConnectionDetails.getProtocol();
   }
 
   @Override public boolean test( OtherConnectionDetails connectionDetails ) {
     return true;
-  }
-
-  @Override public OtherConnectionDetails prepare( OtherConnectionDetails connectionDetails ) {
-    return connectionDetails;
   }
 }
 
