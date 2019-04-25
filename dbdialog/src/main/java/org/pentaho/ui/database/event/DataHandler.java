@@ -1215,7 +1215,7 @@ public class DataHandler extends AbstractXulEventHandler {
     }
   }
 
-  private void getConnectionSpecificInfo( DatabaseMeta meta ) {
+  protected void getConnectionSpecificInfo( DatabaseMeta meta ) {
     // Hostname:
     if ( hostNameBox != null ) {
       meta.setHostname( hostNameBox.getValue() );
@@ -1333,7 +1333,7 @@ public class DataHandler extends AbstractXulEventHandler {
     }
   }
 
-  private void setConnectionSpecificInfo( DatabaseMeta meta ) {
+  protected void setConnectionSpecificInfo( DatabaseMeta meta ) {
 
     getControls();
 

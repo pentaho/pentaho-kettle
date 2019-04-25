@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,11 +21,18 @@
  ******************************************************************************/
 package org.pentaho.di.core.database;
 
+import static org.pentaho.di.core.util.Utils.isEmpty;
+
 /**
  * @author mbatchelor
  *
  */
 public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
+
+  public static final String IAM_ROLE = "iamRole";
+  public static final String AWS_ACCESS_KEY_ID = "awsAccessKeyId";
+  public static final String AWS_ACCESS_KEY = "awsAccessKey";
+  public static final String AUTHENTICATION_METHOD = "awsAuthenticationMethod";
 
   public RedshiftDatabaseMeta() {
     addExtraOption( "REDSHIFT", "tcpKeepAlive", "true" );
@@ -89,5 +96,33 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
   @Override
   public String[] getUsedLibraries() {
     return new String[] { "RedshiftJDBC4_1.0.10.1010.jar" };
+  }
+
+  public String getIamRole() {
+    return getParamIfSet( IAM_ROLE, getAttributes().getProperty( IAM_ROLE ) );
+  }
+
+  public String getAwsAccessKeyId() {
+    return getParamIfSet( AWS_ACCESS_KEY_ID, getAttributes().getProperty( AWS_ACCESS_KEY_ID ) );
+  }
+
+  public String getAwsAccessKey() {
+    return getParamIfSet( AWS_ACCESS_KEY, getAttributes().getProperty( AWS_ACCESS_KEY ) );
+  }
+
+  public String getAwsAuthenticationMethod() {
+    return getParamIfSet( AUTHENTICATION_METHOD, getAttributes().getProperty( AUTHENTICATION_METHOD ) );
+  }
+
+  @Override
+  public String getXulOverlayFile() {
+    return "redshift";
+  }
+
+  private String getParamIfSet( String param, String val ) {
+    if ( !isEmpty( val ) ) {
+      return "&" + param + "=" + val;
+    }
+    return "";
   }
 }
