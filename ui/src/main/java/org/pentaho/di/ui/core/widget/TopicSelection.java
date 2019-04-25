@@ -37,7 +37,9 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
+import static org.pentaho.di.core.Const.MARGIN;
 import static org.pentaho.di.ui.core.WidgetUtils.createFieldDropDown;
 
 public class TopicSelection extends Composite {
@@ -49,14 +51,17 @@ public class TopicSelection extends Composite {
   private final boolean topicInField;
   private final String topicGroupLabel;
   private final String fieldTopicLabel;
+  private final String fieldTopicErrorToolTip;
   private final String textTopicLabel;
   private final String textTopicRadioLabel;
   private final String fieldTopicRadioLabel;
+  private final boolean displayTopicErrorIcon;
 
   private Group wTopicGroup;
   private Button wTopicFromField;
   private Button wTopicFromText;
   private Label wlTopic;
+  private Label wlConnectionError;
 
   //use TextVar or ComboVar based on the boolean value
   private boolean isTopicTextCombo;
@@ -74,10 +79,12 @@ public class TopicSelection extends Composite {
     this.topicInField = builder.topicInField;
     this.topicGroupLabel = builder.topicGroupLabel;
     this.fieldTopicLabel = builder.fieldTopicLabel;
+    this.fieldTopicErrorToolTip = builder.fieldTopicErrorToolTip;
     this.textTopicLabel = builder.textTopicLabel;
     this.textTopicRadioLabel = builder.textTopicRadioLabel;
     this.fieldTopicRadioLabel = builder.fieldTopicRadioLabel;
     this.isTopicTextCombo = builder.isTopicTextCombo;
+    this.displayTopicErrorIcon = builder.displayTopicErrorIcon;
 
     layoutUI();
   }
@@ -129,8 +136,24 @@ public class TopicSelection extends Composite {
     separator.setLayoutData( new FormDataBuilder().top().left( wTopicFromField, 15 ).bottom().result() );
 
     wlTopic = new Label( wTopicGroup, SWT.LEFT );
-    wlTopic.setLayoutData( new FormDataBuilder().top().left( separator, 15 ).right().result() );
     props.setLook( wlTopic );
+
+    if ( displayTopicErrorIcon ) {
+      //Connection Error Icon label
+      wlTopic.setLayoutData( new FormDataBuilder().top().left( separator, 15 ).result() );
+
+      wlConnectionError = new Label( wTopicGroup, SWT.LEFT );
+      wlConnectionError.setToolTipText( fieldTopicErrorToolTip );
+      wlConnectionError.setImage( SwtSvgImageUtil.getImage(
+        this.getDisplay(), getClass().getClassLoader(), "error.svg", ConstUI.SMALL_ICON_SIZE,
+        ConstUI.SMALL_ICON_SIZE ) );
+      props.setLook( wlConnectionError );
+
+      wlConnectionError.setLayoutData( new FormDataBuilder().top().left( wlTopic, MARGIN ).result() );
+      wlConnectionError.setVisible( false );
+    } else {
+      wlTopic.setLayoutData( new FormDataBuilder().top().left( separator, 15 ).right().result() );
+    }
 
     FormData fdTopic = new FormDataBuilder().top( wlTopic ).left( separator, 15 ).right().result();
 
@@ -159,6 +182,9 @@ public class TopicSelection extends Composite {
       wlTopic.setText( fieldTopicLabel );
       wTopicTextCombo.setVisible( false );
       wTopicText.setVisible( false );
+      if ( displayTopicErrorIcon ) {
+        wlConnectionError.setVisible( false );
+      }
     } else {
       wlTopic.setText( textTopicLabel );
       toggleTopicTextComboVisible( isTopicTextCombo );
@@ -172,6 +198,9 @@ public class TopicSelection extends Composite {
   public void toggleTopicTextComboVisible( boolean isComboVisible ) {
     //ignore toggle if the topic is set to come from a field
     if ( !wTopicFromField.getSelection() ) {
+      if ( displayTopicErrorIcon ) {
+        wlConnectionError.setVisible( !isComboVisible );
+      }
       wTopicTextCombo.setVisible( isComboVisible );
       wTopicText.setVisible( !isComboVisible );
     }
@@ -230,6 +259,10 @@ public class TopicSelection extends Composite {
     return wTopicTextCombo;
   }
 
+  public TextVar getTopicTextComponent() {
+    return wTopicText;
+  }
+
   /**
    * Builder class for TopicSelection
    */
@@ -243,10 +276,12 @@ public class TopicSelection extends Composite {
     private boolean topicInField;
     private String topicGroupLabel;
     private String fieldTopicLabel;
+    private String fieldTopicErrorToolTip;
     private String textTopicLabel;
     private String textTopicRadioLabel;
     private String fieldTopicRadioLabel;
     private boolean isTopicTextCombo;
+    private boolean displayTopicErrorIcon = false;
 
     public Builder setComposite( Composite composite ) {
       this.composite = composite;
@@ -295,6 +330,16 @@ public class TopicSelection extends Composite {
 
     public Builder setTextTopicLabel( String textTopicLabel ) {
       this.textTopicLabel = textTopicLabel;
+      return this;
+    }
+
+    public Builder setFieldTopicErrorToolTip( String fieldTopicErrorToolTip ) {
+      this.fieldTopicErrorToolTip = fieldTopicErrorToolTip;
+      return this;
+    }
+
+    public Builder isDisplayTopicErrorIcon( boolean displayTopicErrorIcon ) {
+      this.displayTopicErrorIcon = displayTopicErrorIcon;
       return this;
     }
 
