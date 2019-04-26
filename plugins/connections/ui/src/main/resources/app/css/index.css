@@ -10,6 +10,7 @@ body {
 
 .main_div {
   padding: 30px;
+  min-width: 545px;
 }
 
 .middle_div {

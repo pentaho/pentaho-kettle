@@ -119,7 +119,7 @@ define([
   }
 
   return {
-    name: "summary",
+    name: "connectionSummary",
     options: options
   };
 
