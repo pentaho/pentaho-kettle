@@ -803,7 +803,7 @@ jobGroups:
      - jobID           :  foundry-workers-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  clean deploy -Deula-wrap
+       directives      :  clean deploy -Deula-wrap -DscmBranch=${DEFAULT_BRANCH}
        versionProperty :  worker-nodes.version
        root            :  foundry
        archivable      :  true
