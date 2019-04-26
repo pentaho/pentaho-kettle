@@ -37,6 +37,7 @@ define([
     vm.onSelect = onSelect;
     vm.validateName = validateName;
     vm.resetErrorMsg = resetErrorMsg;
+    vm.checkConnectionName = checkConnectionName;
     vm.type = null;
     vm.name = "";
     var loaded = false;
@@ -118,6 +119,11 @@ define([
           vm.data.isSaved = false;
         });
       }
+    }
+
+    function checkConnectionName() {
+      vm.resetErrorMsg();
+      vm.name = vm.name.replace(/[^\w\s]/g,'');
     }
 
     function validateName() {
