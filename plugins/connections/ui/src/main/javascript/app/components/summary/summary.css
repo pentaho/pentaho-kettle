@@ -49,8 +49,20 @@
   clear: both;
 }
 
-summary .middle_div {
-  height: 400px;
-  width: 480px;
+connection-summary .main_div {
+  height: calc(100% - 140px);
+  display: flex;
+  flex-direction: column;
+}
+
+connection-summary .overflow-container {
+  flex: 1;
   overflow: auto;
+}
+
+connection-summary .middle_div {
+  width: 480px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
