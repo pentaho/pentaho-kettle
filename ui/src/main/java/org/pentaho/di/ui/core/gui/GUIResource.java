@@ -2749,4 +2749,28 @@ public class GUIResource {
   public SwtUniversalImage getCandidateArrow() {
     return candidateArrow;
   }
+
+
+  /**
+   * @return an Image containing the given text
+   * with color as foreground (e.g. {@link SWT#COLOR_RED})
+   */
+  @SuppressWarnings ( "unused" )
+  public Image getTextImage( String text, int color ) {
+    //Use a temp image and gc to figure out the size of the text
+    Image tempImage = new Image( display, 400, 400 );
+    GC tempGC = new GC( tempImage );
+    Point textSize = tempGC.textExtent( text );
+    tempGC.dispose();
+    tempImage.dispose();
+
+    //Draw an image with red text for the tab text
+    Image image = new Image( display, textSize.x, textSize.y );
+    GC gc = new GC( image );
+    gc.setForeground( display.getSystemColor( color ) );
+    gc.drawText( text, 0, 0, true );
+    gc.dispose();
+
+    return image;
+  }
 }
