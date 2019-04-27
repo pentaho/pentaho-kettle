@@ -24,7 +24,6 @@
     <kettle-drools5-plugin.version>${project.version}</kettle-drools5-plugin.version>
     <kettle-gpload-plugin.version>${project.version}</kettle-gpload-plugin.version>
     <kettle-hl7-plugin.version>${project.version}</kettle-hl7-plugin.version>
-    <kettle-openerp-plugin.version>${project.version}</kettle-openerp-plugin.version>
     <kettle-palo-plugin.version>${project.version}</kettle-palo-plugin.version>
     <kettle5-log4j-plugin.version>${project.version}</kettle5-log4j-plugin.version>
     <pdi-google-analytics-plugin.version>8.3.0.0-SNAPSHOT</pdi-google-analytics-plugin.version>
@@ -134,18 +133,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>kettle-hl7-plugin</artifactId>
       <version>${kettle-hl7-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>kettle-openerp-plugin</artifactId>
-      <version>${kettle-openerp-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
