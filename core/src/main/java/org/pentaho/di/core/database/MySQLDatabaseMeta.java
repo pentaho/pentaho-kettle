@@ -23,9 +23,15 @@
 package org.pentaho.di.core.database;
 
 import com.google.common.collect.Sets;
+
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
+
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSetMetaData;
 
 import java.util.Set;
 
@@ -37,6 +43,7 @@ import java.util.Set;
  */
 
 public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+  private static final Class<?> PKG = MySQLDatabaseMeta.class;
 
   private static final int VARCHAR_LIMIT = 65_535;
 
@@ -479,5 +486,30 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public int getMaxTextFieldLength() {
     return Integer.MAX_VALUE;
+  }
+
+  /**
+   * Returns the column name for a MySQL field checking if the driver major version is "greater than" or "lower or equal" to 3.
+   *
+   * @param dbMetaData
+   * @param rsMetaData
+   * @param index
+   * @return The column label if version is greater than 3 or the column name if version is lower or equal to 3.
+   * @throws KettleDatabaseException
+   */
+  public String getLegacyColumnName( DatabaseMetaData dbMetaData, ResultSetMetaData rsMetaData, int index ) throws KettleDatabaseException {
+    if ( dbMetaData == null ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "MySQLDatabaseMeta.Exception.LegacyColumnNameNoDBMetaDataException" ) );
+    }
+
+    if ( rsMetaData == null ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "MySQLDatabaseMeta.Exception.LegacyColumnNameNoRSMetaDataException" ) );
+    }
+
+    try {
+      return dbMetaData.getDriverMajorVersion() > 3 ? rsMetaData.getColumnLabel( index ) : rsMetaData.getColumnName( index );
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException( String.format( "%s: %s", BaseMessages.getString( PKG, "MySQLDatabaseMeta.Exception.LegacyColumnNameException" ), e.getMessage() ), e );
+    }
   }
 }
