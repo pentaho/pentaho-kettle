@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,19 @@
 
 package org.pentaho.di.trans.steps.orabulkloader;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -72,9 +77,10 @@ public class OraBulkDataOutput {
         os = sqlldrProcess.getOutputStream();
       } else {
         // Else open the data file filled in.
-        String dataFile = meta.getDataFile();
-        dataFile = space.environmentSubstitute( dataFile );
-
+        String dataFilePath = getFilename( getFileObject( space.environmentSubstitute( meta.getDataFile() ), space ) );
+        File dataFile = new File( dataFilePath );
+        // Make sure the parent directory exists
+        dataFile.getParentFile().mkdirs();
         os = new FileOutputStream( dataFile, false );
       }
 
@@ -220,5 +226,15 @@ public class OraBulkDataOutput {
     } catch ( IOException e ) {
       throw new KettleException( "IO exception occured: " + e.getMessage(), e );
     }
+  }
+
+  @VisibleForTesting
+  String getFilename( FileObject fileObject ) {
+    return KettleVFS.getFilename( fileObject );
+  }
+
+  @VisibleForTesting
+  FileObject getFileObject( String vfsFilename, VariableSpace space ) throws KettleFileException {
+    return KettleVFS.getFileObject( vfsFilename, space );
   }
 }
