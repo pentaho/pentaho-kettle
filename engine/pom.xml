@@ -55,7 +55,6 @@
     <poi.version>3.17</poi.version>
     <commons-collections4.version>4.1</commons-collections4.version>
     <xmlbeans.version>2.6.0</xmlbeans.version>
-    <postgresql.version>42.1.1</postgresql.version>
     <rome.version>1.0</rome.version>
     <SassyReader.version>0.5</SassyReader.version>
     <saxon.version>9.1.0.8</saxon.version>
@@ -488,7 +487,6 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>${postgresql.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
