@@ -441,7 +441,7 @@
     <server/>
     <type>H2</type>
     <access>JNDI</access>
-    <database>SampleData</database>
+    <database>SampleDataAdmin</database>
     <port>1521</port>
     <username/>
     <password>Encrypted </password>
