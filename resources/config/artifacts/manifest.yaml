@@ -46,7 +46,7 @@ ee:
         - pentaho-big-data-ee-cdh512-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-cdh513-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-cdh514-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-big-data-ee-cdh601-package-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-big-data-ee-cdh61-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-emr511-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-hdp25-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-hdp26-package-${pentaho-hadoop-shims.version}-dist.zip
@@ -80,7 +80,7 @@ ce:
         - pentaho-hadoop-shims-cdh512-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-cdh513-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-cdh514-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-cdh601-package-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-cdh61-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-emr59-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-emr511-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-hdi35-package-${pentaho-hadoop-shims.version}-dist.zip
