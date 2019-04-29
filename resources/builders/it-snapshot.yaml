@@ -10,6 +10,7 @@ buildProperties:
         JOB_ITEM_DEFAULTS              :
           archivable                   : false
         PARALLEL_UNIT_TESTS_CHUNKSIZE  : 110
+        MINION_POLL_CRON_INTERVAL      :
 
 jobGroups:
   # Always required
