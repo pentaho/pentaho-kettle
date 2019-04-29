@@ -56,7 +56,7 @@ define([
     function onEditConnection() {
       vm.data.state = "edit";
       setDialogTitle(i18n.get('connections.intro.edit.label'));
-      $state.go(vm.data.model.type + "step1", {data: vm.data, transition: "slideRight"});
+      $state.go("summary", {data: vm.data, transition: "slideRight"});
     }
 
     function getButtons() {
