@@ -1,3 +1,3 @@
-library(identifier: "jenkins-shared-libraries@20190409-0", changelog: false)
+library(identifier: "jenkins-shared-libraries@20190429-0", changelog: false)
 
 defaultPipeline()
