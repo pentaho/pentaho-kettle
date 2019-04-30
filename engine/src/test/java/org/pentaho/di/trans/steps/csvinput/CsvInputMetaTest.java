@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,9 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -43,6 +46,11 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.TextFileInputFieldValidator;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class CsvInputMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
@@ -112,11 +120,57 @@ public class CsvInputMetaTest implements InitializerInterface<StepMetaInterface>
     final CsvInputMeta clone = (CsvInputMeta) original.clone();
     // verify that the clone and its input fields are "equal" to the originals, but not the same objects
     Assert.assertNotSame( original, clone );
-    Assert.assertEquals( original.getDelimiter(), clone.getDelimiter() );
-    Assert.assertEquals( original.getEnclosure(), clone.getEnclosure() );
+    assertEquals( original.getDelimiter(), clone.getDelimiter() );
+    assertEquals( original.getEnclosure(), clone.getEnclosure() );
 
     Assert.assertNotSame( original.getInputFields(), clone.getInputFields() );
     Assert.assertNotSame( original.getInputFields()[ 0 ], clone.getInputFields()[ 0 ] );
-    Assert.assertEquals( original.getInputFields()[ 0 ].getName(), clone.getInputFields()[ 0 ].getName() );
+    assertEquals( original.getInputFields()[ 0 ].getName(), clone.getInputFields()[ 0 ].getName() );
+  }
+
+  /**
+   * [PDI-17655] Testing to verify that the trimming methods ensure the Text Fields are trimmed appropriately.
+   */
+  @Test
+  public void testMetaTextTrim() throws KettleException {
+    String expectedFormat = "#";
+    String expectedCurrency = "$";
+    String expectedDecimal = ".";
+    String expectedGroup = ",";
+    String badFormat = " " + expectedFormat + " ";
+    String badCurrency = " " + expectedCurrency + " ";
+    String badDecimal = " " + expectedDecimal + " ";
+    String badGroup = " " + expectedGroup + " ";
+
+    TextFileInputField textFileInputField = new TextFileInputField();
+    textFileInputField.setName( "testInputField" );
+    textFileInputField.setFormat( badFormat );
+    textFileInputField.setCurrencySymbol( badCurrency );
+    textFileInputField.setDecimalSymbol( badDecimal );
+    textFileInputField.setGroupSymbol( badGroup );
+    TextFileInputField[] inputFields = { textFileInputField };
+
+    CsvInputMeta csvInputMeta = new CsvInputMeta();
+    csvInputMeta.setInputFields( inputFields );
+    RowMetaInterface rowMeta = new RowMeta();
+
+    VariableSpace space = mock( VariableSpace.class );
+
+    doReturn( null ).when( space ).environmentSubstitute( anyString() );
+
+    csvInputMeta.getFields( rowMeta, "CSV Test Step",
+      null, null, space, null, null );
+
+    // Verify the CsvInputMeta was trimmed and updated
+    assertEquals( expectedFormat, csvInputMeta.getInputFields()[0].getFormat() );
+    assertEquals( expectedCurrency, csvInputMeta.getInputFields()[0].getCurrencySymbol() );
+    assertEquals( expectedDecimal, csvInputMeta.getInputFields()[0].getDecimalSymbol() );
+    assertEquals( expectedGroup, csvInputMeta.getInputFields()[0].getGroupSymbol() );
+
+    // Verify that the RowMeta that was created also has the updated trimmed values
+    assertEquals( expectedFormat, rowMeta.getValueMeta( 0 ).getConversionMask() );
+    assertEquals( expectedCurrency, rowMeta.getValueMeta( 0 ).getCurrencySymbol() );
+    assertEquals( expectedDecimal, rowMeta.getValueMeta( 0 ).getDecimalSymbol() );
+    assertEquals( expectedGroup, rowMeta.getValueMeta( 0 ).getGroupingSymbol() );
   }
 }
