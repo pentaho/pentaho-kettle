@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1199,16 +1199,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               trans.stopAll();
               result.setNrErrors( 1 );
             }
-            Result newResult = trans.getResult();
-
-            result.clear(); // clear only the numbers, NOT the files or rows.
-            result.add( newResult );
-
-            // Set the result rows too, if any ...
-            if ( !Utils.isEmpty( newResult.getRows() ) ) {
-              result.setRows( newResult.getRows() );
-            }
-
+            updateResult( result );
             if ( setLogfile ) {
               ResultFile resultFile =
                 new ResultFile(
@@ -1260,6 +1251,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
 
     return result;
+  }
+
+  protected void updateResult( Result result ) {
+    Result newResult = trans.getResult();
+    result.clear(); // clear only the numbers, NOT the files or rows.
+    result.add( newResult );
+    result.setRows( newResult.getRows() );
   }
 
   /**
