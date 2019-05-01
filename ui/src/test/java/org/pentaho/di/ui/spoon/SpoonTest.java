@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
@@ -783,7 +784,7 @@ public class SpoonTest {
     String fileName = "fileName";
 
     setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true );
-    verify( spoon ).openFile( fileName, true );
+    verify( spoon ).openFile( fileName, null, true );
   }
 
   @Test
@@ -792,7 +793,7 @@ public class SpoonTest {
     String fileName = "fileName";
 
     setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true );
-    verify( spoon ).openFile( fileName, false );
+    verify( spoon ).openFile( fileName, null, false );
   }
 
   @Test
@@ -810,7 +811,7 @@ public class SpoonTest {
     String fileName = "fileName";
 
     setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, false );
-    verify( spoon ).openFile( fileName, false );
+    verify( spoon ).openFile( fileName, null, false );
   }
 
   @Test
@@ -829,7 +830,7 @@ public class SpoonTest {
     String fileName = "fileName";
 
     setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true, true );
-    verify( spoon ).openFile( fileName, true );
+    verify( spoon ).openFile( fileName, null, true );
   }
 
   @Test
@@ -838,7 +839,7 @@ public class SpoonTest {
     String fileName = "fileName";
 
     setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true, true );
-    verify( spoon ).openFile( fileName, false );
+    verify( spoon ).openFile( fileName, null, false );
   }
 
   @Test
@@ -856,7 +857,7 @@ public class SpoonTest {
     String fileName = "fileName";
 
     setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, false, true );
-    verify( spoon ).openFile( fileName, false );
+    verify( spoon ).openFile( fileName, null, false );
   }
 
   @Test

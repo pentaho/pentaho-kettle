@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -925,7 +925,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
         tabEntry =
           new TabMapEntry(
             tabItem, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory(), versionLabel,
-            jobGraph, ObjectType.JOB_GRAPH );
+            jobGraph, ObjectType.JOB_GRAPH, jobMeta.getVariable( Spoon.CONNECTION ) );
         tabEntry.setShowingLocation( showLocation );
 
         spoon.delegates.tabs.addTab( tabEntry );

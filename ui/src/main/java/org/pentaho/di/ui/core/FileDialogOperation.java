@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2019 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.pentaho.di.repository.RepositoryObjectInterface;
 public class FileDialogOperation {
 
   public static String SELECT_FOLDER = "selectFolder";
+  public static String SELECT_FILE = "selectFile";
   public static String OPEN = "open";
   public static String SAVE = "save";
   public static String ORIGIN_SPOON = "spoon";
@@ -40,6 +41,9 @@ public class FileDialogOperation {
   private String title;
   private String filename;
   private String fileType;
+  private String path;
+  private String connection;
+  private String provider;
 
   public FileDialogOperation( String command ) {
     this.command = command;
@@ -120,5 +124,30 @@ public class FileDialogOperation {
 
   public void setFileType( String fileType ) {
     this.fileType = fileType;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath( String path ) {
+    this.path = path;
+  }
+
+  public String getConnection() {
+    return connection;
+  }
+
+  public void setConnection( String connection ) {
+    this.connection = connection;
+  }
+
+
+  public String getProvider() {
+    return provider;
+  }
+
+  public void setProvider( String provider ) {
+    this.provider = provider;
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,18 @@
 
 package org.pentaho.di.ui.spoon;
 
-import java.util.Locale;
-
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.w3c.dom.Node;
 
+import java.util.Locale;
+
 public interface FileListener {
 
   public boolean open( Node transNode, String fname, boolean importfile ) throws KettleMissingPluginsException;
+
+  public boolean open( Node transNode, String fname, String connection, boolean importfile )
+    throws KettleMissingPluginsException;
 
   public boolean save( EngineMetaInterface meta, String fname, boolean isExport );
 
