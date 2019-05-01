@@ -116,6 +116,7 @@ public enum KettleExtensionPoint {
     SpoonPopupMenuExtension( "SpoonPopupMenuExtension", "Pop up menu extension for the view tree" ),
     SpoonTreeDelegateExtension( "SpoonTreeDelegateExtension", "During the SpoonTreeDelegate execution" ),
     SpoonOpenSaveRepository( "SpoonOpenSaveRepository", "Open the repository browser" ),
+    SpoonOpenSaveNew( "SpoonOpenSaveNew", "Open the new file browser" ),
     SpoonBrowserFunction( "SpoonBrowserFunction", "Generic browser function handler" ),
     GetFieldsExtension( "GetFieldsExtension", "Get Fields dialog" ),
 
