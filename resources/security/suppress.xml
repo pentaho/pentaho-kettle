@@ -1646,21 +1646,21 @@
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: cde-core-impl-8.3.0.0-SNAPSHOT.jar
+   file name: cde-core-impl-9.0.0.0-SNAPSHOT.jar
    ]]></notes>
    <gav regex="true">^org\.pentaho\.ctools:cde-core-impl:.*$</gav>
    <cve>CVE-1999-0713</cve>
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: cde-core-impl-8.3.0.0-SNAPSHOT.jar
+   file name: cde-core-impl-9.0.0.0-SNAPSHOT.jar
    ]]></notes>
    <gav regex="true">^org\.pentaho\.ctools:cde-core-impl:.*$</gav>
    <cve>CVE-1999-0690</cve>
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: cde-core-impl-8.3.0.0-SNAPSHOT.jar
+   file name: cde-core-impl-9.0.0.0-SNAPSHOT.jar
    ]]></notes>
    <gav regex="true">^org\.pentaho\.ctools:cde-core-impl:.*$</gav>
    <cve>CVE-1999-0112</cve>

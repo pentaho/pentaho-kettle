@@ -6,8 +6,8 @@ buildProperties:
   USE_MINION_JOBS                : true
   MAVEN_DEFAULT_DIRECTIVES       : clean deploy
   MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e
-  MAVEN_PUBLIC_SNAPSHOT_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-8.3-snapshot
-  MAVEN_PRIVATE_SNAPSHOT_REPO_URL : https://nexus.pentaho.org/content/repositories/private-8.3-snapshot
+  MAVEN_PUBLIC_SNAPSHOT_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-9.0-snapshot
+  MAVEN_PRIVATE_SNAPSHOT_REPO_URL : https://nexus.pentaho.org/content/repositories/private-9.0-snapshot
 
   JOB_ITEM_DEFAULTS              :
     dockerImage                  : jenkins-build/maven-oracle-jdk-8

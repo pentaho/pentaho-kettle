@@ -2,7 +2,7 @@
 buildProperties:
   # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
   # These are understood by the shared pipeline libraries:
-  BUILD_PLAN_ID                  : 8.3 Suite Release
+  BUILD_PLAN_ID                  : 9.0 Suite Release
 
   MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
   BUILD_RETRIES                  : 3
@@ -14,19 +14,19 @@ buildProperties:
 
   # Maven
   MAVEN_DEFAULT_DIRECTIVES       : clean deploy
-  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-8.3-qat
-  MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus.pentaho.org/content/repositories/private-8.3-qat
+  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-9.0-qat
+  MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus.pentaho.org/content/repositories/private-9.0-qat
   ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
 
   # Version based control properties
   RUN_VERSIONING                 : true
-  RELEASE_VERSION                : 8.3.0.0
-  DEPLOYMENT_FOLDER              : 8.3-QAT
+  RELEASE_VERSION                : 9.0.0.0
+  DEPLOYMENT_FOLDER              : 9.0-QAT
   RELEASE_MODE                   : true
   DEFAULT_BRANCH                 : master
-  SUITE_BUILD_RESOURCES_BRANCH   : 8.3.0.0
+  SUITE_BUILD_RESOURCES_BRANCH   : 9.0.0.0
   SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
-  JENKINS_FOLDER_NAME            : "8.3"
+  JENKINS_FOLDER_NAME            : "9.0"
 
   # We need to override this until this pipeline is the nightly
   BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
@@ -42,7 +42,7 @@ buildProperties:
 
   # SP specific parameters
   PREVIOUS_RELEASE_VERSION       : ""
-  SP_RELEASE_VERSION             : "201904"
+  SP_RELEASE_VERSION             : "201905"
   DO_AUTO_PATCH                  : false
 
 
