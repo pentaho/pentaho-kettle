@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,14 +24,14 @@ package org.pentaho.di.ui.core.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.CloseWindowListener;
-import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
@@ -65,16 +65,21 @@ public class ThinDialog extends Dialog {
     dialog.setSize( width, height );
     dialog.setLayout( new FillLayout() );
 
+    dialog.addListener( SWT.Traverse, new Listener() {
+      public void handleEvent( Event e ) {
+        if ( e.detail == SWT.TRAVERSE_ESCAPE ) {
+          e.doit = false;
+        }
+      }
+    } );
+
     try {
       browser = new Browser( dialog, SWT.NONE );
       browser.setUrl( url );
-      browser.addCloseWindowListener( new CloseWindowListener() {
-        @Override
-        public void close( WindowEvent event ) {
-          Browser browser = (Browser) event.widget;
-          Shell shell = browser.getShell();
-          shell.close();
-        }
+      browser.addCloseWindowListener( event -> {
+        Browser browser = (Browser) event.widget;
+        Shell shell = browser.getShell();
+        shell.close();
       } );
     } catch ( Exception e ) {
       MessageBox messageBox = new MessageBox( dialog, SWT.ICON_ERROR | SWT.OK );
@@ -90,6 +95,6 @@ public class ThinDialog extends Dialog {
     Rectangle shellBounds = getParent().getBounds();
     Point dialogSize = dialog.getSize();
     dialog.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y
-        + ( shellBounds.height - dialogSize.y ) / 2 );
+      + ( shellBounds.height - dialogSize.y ) / 2 );
   }
 }

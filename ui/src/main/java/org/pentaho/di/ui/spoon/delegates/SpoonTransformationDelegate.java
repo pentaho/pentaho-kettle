@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -206,7 +206,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
         tabEntry =
             new TabMapEntry( tabItem, transMeta.getFilename(), transMeta.getName(), transMeta.getRepositoryDirectory(),
-                versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH );
+                versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH, transMeta.getVariable( Spoon.CONNECTION ) );
         tabEntry.setShowingLocation( showLocation );
 
         spoon.delegates.tabs.addTab( tabEntry );

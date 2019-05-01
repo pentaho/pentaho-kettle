@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ public class LastUsedFile {
   private String repositoryName;
   private Date lastOpened;
   private String username;
+  private String connection;
 
   private boolean opened;
   private int openItemTypes;
@@ -65,7 +66,7 @@ public class LastUsedFile {
    */
   public LastUsedFile( String fileType, String filename, String directory, boolean sourceRepository,
     String repositoryName, boolean opened, int openItemTypes ) {
-    this( fileType, filename, directory, sourceRepository, repositoryName, null, opened, openItemTypes, null );
+    this( fileType, filename, directory, sourceRepository, repositoryName, null, opened, openItemTypes, null, null );
   }
 
   /**
@@ -80,7 +81,7 @@ public class LastUsedFile {
    * @param openItemTypes
    */
   public LastUsedFile( String fileType, String filename, String directory, boolean sourceRepository,
-    String repositoryName, String username, boolean opened, int openItemTypes, Date lastOpened ) {
+    String repositoryName, String username, boolean opened, int openItemTypes, Date lastOpened, String connection ) {
     this.fileType = fileType;
     this.filename = filename;
     this.directory = directory;
@@ -90,6 +91,7 @@ public class LastUsedFile {
     this.opened = opened;
     this.openItemTypes = openItemTypes;
     this.lastOpened = lastOpened == null ? new Date() : lastOpened;
+    this.connection = connection;
   }
 
   public String toString() {
@@ -262,5 +264,13 @@ public class LastUsedFile {
 
   public void setUsername( String username ) {
     this.username = username;
+  }
+
+  public String getConnection() {
+    return connection;
+  }
+
+  public void setConnection( String connection ) {
+    this.connection = connection;
   }
 }
