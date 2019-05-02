@@ -6,7 +6,7 @@
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -427,10 +427,10 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014&#x2f;03&#x2f;03 20&#x3a;39&#x3a;02.031</created_date>
+    <created_date>2014/03/03 20:39:02.031</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2007&#x2f;10&#x2f;17 17&#x3a;37&#x3a;14.842</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2007/10/17 17:37:14.842</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
@@ -458,26 +458,41 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-   <typefield>type</typefield>
-    <fields>      <field>        <name>c01</name>
+    <typefield>type</typefield>
+    <fields>
+      <field>
+        <name>c01</name>
         <value>t1</value>
         <norm>code</norm>
-        </field>      <field>        <name>v01</name>
+      </field>
+      <field>
+        <name>v01</name>
         <value>t1</value>
         <norm>value</norm>
-        </field>      <field>        <name>c02</name>
+      </field>
+      <field>
+        <name>c02</name>
         <value>t2</value>
         <norm>code</norm>
-        </field>      <field>        <name>v02</name>
+      </field>
+      <field>
+        <name>v02</name>
         <value>t2</value>
         <norm>value</norm>
-        </field>      <field>        <name>c03</name>
+      </field>
+      <field>
+        <name>c03</name>
         <value>t3</value>
         <norm>code</norm>
-        </field>      <field>        <name>v03</name>
+      </field>
+      <field>
+        <name>v03</name>
         <value>t3</value>
         <norm>value</norm>
-        </field>      </fields>    <cluster_schema/>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -489,8 +504,7 @@
       <yloc>149</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Row denormaliser</name>
     <type>Denormaliser</type>
@@ -502,56 +516,57 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-      <key_field>code</key_field>
-      <group>
-        <field>
-          <name>id</name>
-          </field>
-        </group>
-      <fields>
-        <field>
-          <field_name>value</field_name>
-          <key_value> 1</key_value>
-          <target_name>colour</target_name>
-          <target_type>String</target_type>
-          <target_format/>
-          <target_length>10</target_length>
-          <target_precision>-1</target_precision>
-          <target_decimal_symbol/>
-          <target_grouping_symbol/>
-          <target_currency_symbol/>
-          <target_null_string/>
-          <target_aggregation_type>-</target_aggregation_type>
-          </field>
-        <field>
-          <field_name>value</field_name>
-          <key_value> 2</key_value>
-          <target_name>size</target_name>
-          <target_type>String</target_type>
-          <target_format/>
-          <target_length>10</target_length>
-          <target_precision>-1</target_precision>
-          <target_decimal_symbol/>
-          <target_grouping_symbol/>
-          <target_currency_symbol/>
-          <target_null_string/>
-          <target_aggregation_type>-</target_aggregation_type>
-          </field>
-        <field>
-          <field_name>value</field_name>
-          <key_value> 3</key_value>
-          <target_name>price</target_name>
-          <target_type>String</target_type>
-          <target_format/>
-          <target_length>10</target_length>
-          <target_precision>-1</target_precision>
-          <target_decimal_symbol/>
-          <target_grouping_symbol/>
-          <target_currency_symbol/>
-          <target_null_string/>
-          <target_aggregation_type>-</target_aggregation_type>
-          </field>
-        </fields>
+    <key_field>code</key_field>
+    <group>
+      <field>
+        <name>id</name>
+      </field>
+    </group>
+    <fields>
+      <field>
+        <field_name>value</field_name>
+        <key_value>1</key_value>
+        <target_name>colour</target_name>
+        <target_type>String</target_type>
+        <target_format/>
+        <target_length>10</target_length>
+        <target_precision>-1</target_precision>
+        <target_decimal_symbol/>
+        <target_grouping_symbol/>
+        <target_currency_symbol/>
+        <target_null_string/>
+        <target_aggregation_type>-</target_aggregation_type>
+      </field>
+      <field>
+        <field_name>value</field_name>
+        <key_value>2</key_value>
+        <target_name>size</target_name>
+        <target_type>String</target_type>
+        <target_format/>
+        <target_length>10</target_length>
+        <target_precision>-1</target_precision>
+        <target_decimal_symbol/>
+        <target_grouping_symbol/>
+        <target_currency_symbol/>
+        <target_null_string/>
+        <target_aggregation_type>-</target_aggregation_type>
+      </field>
+      <field>
+        <field_name>value</field_name>
+        <key_value>3</key_value>
+        <target_name>price</target_name>
+        <target_type>String</target_type>
+        <target_format/>
+        <target_length>10</target_length>
+        <target_precision>-1</target_precision>
+        <target_decimal_symbol/>
+        <target_grouping_symbol/>
+        <target_currency_symbol/>
+        <target_null_string/>
+        <target_aggregation_type>-</target_aggregation_type>
+      </field>
+    </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -564,8 +579,7 @@
       <yloc>149</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Text file input</name>
     <type>TextFileInput</type>
@@ -581,8 +595,8 @@
     <passing_through_fields>N</passing_through_fields>
     <accept_field/>
     <accept_stepname/>
-    <separator>&#x3b;</separator>
-    <enclosure>&#x22;</enclosure>
+    <separator>;</separator>
+    <enclosure>"</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
     <escapechar/>
     <header>Y</header>
@@ -602,9 +616,10 @@
     <rownum_field/>
     <format>Unix</format>
     <encoding/>
+    <length/>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;coded-data.txt</name>
+      <name>${Internal.Transformation.Filename.Directory}/files/coded-data.txt</name>
       <filemask/>
       <exclude_filemask/>
       <file_required/>
@@ -619,7 +634,7 @@
         <name>id</name>
         <type>Integer</type>
         <format/>
-        <currency>&#x20ac;</currency>
+        <currency>€</currency>
         <decimal>,</decimal>
         <group>.</group>
         <nullif>-</nullif>
@@ -634,7 +649,7 @@
         <name>c01</name>
         <type>Integer</type>
         <format/>
-        <currency>&#x20ac;</currency>
+        <currency>€</currency>
         <decimal>,</decimal>
         <group>.</group>
         <nullif>-</nullif>
@@ -649,7 +664,7 @@
         <name>c02</name>
         <type>Integer</type>
         <format/>
-        <currency>&#x20ac;</currency>
+        <currency>€</currency>
         <decimal>,</decimal>
         <group>.</group>
         <nullif>-</nullif>
@@ -664,7 +679,7 @@
         <name>c03</name>
         <type>Integer</type>
         <format/>
-        <currency>&#x20ac;</currency>
+        <currency>€</currency>
         <decimal>,</decimal>
         <group>.</group>
         <nullif>-</nullif>
@@ -746,6 +761,7 @@
     <rootUriNameFieldName/>
     <extensionFieldName/>
     <sizeFieldName/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -758,11 +774,26 @@
       <yloc>148</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes>
+    <group>
+      <name>METASTORE.NamedClusters</name>
+      <attribute>
+        <key>NamedCluster</key>
+        <value>{"namespace":"NamedClusters","id":"NamedCluster","name":"NamedCluster","description":"A NamedCluster","metaStoreName":null}</value>
+      </attribute>
+    </group>
+    <group>
+      <name>{"_":"Embedded MetaStore Elements","namespace":"NamedClusters","type":"NamedCluster"}</name>
+      <attribute>
+        <key>8020</key>
+        <value>{"children":[{"children":[],"id":"hdfsPassword","value":"cGFzc3dvcmQ="},{"children":[],"id":"oozieUrl","value":"http://hdp30secn3.pentaho.net:11000/oozie"},{"children":[],"id":"mapr","value":"N"},{"children":[],"id":"useGateway","value":"N"},{"children":[],"id":"lastModifiedDate","value":"1553698971921"},{"children":[],"id":"jobTrackerHost","value":"hdp30secn1.pentaho.net"},{"children":[],"id":"zooKeeperHost","value":"hdp30secn1.pentaho.net"},{"children":[],"id":"shimIdentifier","value":null},{"children":[],"id":"gatewayUrl","value":null},{"children":[],"id":"jobTrackerPort","value":"8032"},{"children":[],"id":"zooKeeperPort","value":"2181"},{"children":[],"id":"name","value":"8020"},{"children":[],"id":"hdfsPort","value":"8020"},{"children":[],"id":"hdfsUsername","value":"user"},{"children":[],"id":"gatewayPassword","value":null},{"children":[],"id":"kafkaBootstrapServers","value":null},{"children":[],"id":"storageScheme","value":"hdfs"},{"children":[],"id":"hdfsHost","value":"hdp30secn1.pentaho.net"},{"children":[],"id":"gatewayUsername","value":null}],"id":"8020","value":null,"name":"8020","owner":null,"ownerPermissionsList":[]}</value>
+      </attribute>
+    </group>
+  </attributes>
 </transformation>
