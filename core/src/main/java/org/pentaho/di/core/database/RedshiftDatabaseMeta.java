@@ -36,6 +36,7 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
 
   public RedshiftDatabaseMeta() {
     addExtraOption( "REDSHIFT", "tcpKeepAlive", "true" );
+    addExtraOption( "REDSHIFT", "loginTimeout", "10" );
   }
 
   @Override
