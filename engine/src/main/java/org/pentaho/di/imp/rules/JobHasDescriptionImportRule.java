@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,19 +55,16 @@ public class JobHasDescriptionImportRule extends BaseImportRule implements Impor
   @Override
   public List<ImportValidationFeedback> verifyRule( Object subject ) {
 
-    List<ImportValidationFeedback> feedback = new ArrayList<ImportValidationFeedback>();
+    List<ImportValidationFeedback> feedback = new ArrayList<>();
 
-    if ( !isEnabled() ) {
-      return feedback;
-    }
-    if ( !( subject instanceof JobMeta ) ) {
+    if ( !isEnabled() || !( subject instanceof JobMeta ) ) {
       return feedback;
     }
 
-    JobMeta transMeta = (JobMeta) subject;
-    String description = transMeta.getDescription();
+    JobMeta jobMeta = (JobMeta) subject;
+    String description = jobMeta.getDescription();
 
-    if ( description != null && description.length() > minLength ) {
+    if ( null != description && minLength <= description.length() ) {
       feedback.add( new ImportValidationFeedback(
         this, ImportValidationResultType.APPROVAL, "A description is present" ) );
     } else {
@@ -113,5 +110,4 @@ public class JobHasDescriptionImportRule extends BaseImportRule implements Impor
 
     minLength = Const.toInt( XMLHandler.getTagValue( ruleNode, "min_length" ), 0 );
   }
-
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
@@ -56,24 +55,21 @@ public class TransformationHasDescriptionImportRule extends BaseImportRule imple
   @Override
   public List<ImportValidationFeedback> verifyRule( Object subject ) {
 
-    List<ImportValidationFeedback> feedback = new ArrayList<ImportValidationFeedback>();
+    List<ImportValidationFeedback> feedback = new ArrayList<>();
 
-    if ( !isEnabled() ) {
-      return feedback;
-    }
-    if ( !( subject instanceof TransMeta ) ) {
+    if ( !isEnabled() || !( subject instanceof TransMeta ) ) {
       return feedback;
     }
 
     TransMeta transMeta = (TransMeta) subject;
     String description = transMeta.getDescription();
 
-    if ( Utils.isEmpty( description ) || ( minLength > 0 && description.length() < minLength ) ) {
-      feedback.add( new ImportValidationFeedback(
-        this, ImportValidationResultType.ERROR, "A description is not present or is too short." ) );
-    } else {
+    if ( null != description && minLength <= description.length() ) {
       feedback.add( new ImportValidationFeedback(
         this, ImportValidationResultType.APPROVAL, "A description is present" ) );
+    } else {
+      feedback.add( new ImportValidationFeedback(
+        this, ImportValidationResultType.ERROR, "A description is not present or is too short." ) );
     }
 
     return feedback;
@@ -114,5 +110,4 @@ public class TransformationHasDescriptionImportRule extends BaseImportRule imple
 
     minLength = Const.toInt( XMLHandler.getTagValue( ruleNode, "min_length" ), 0 );
   }
-
 }
