@@ -1,0 +1,30 @@
+{
+  "name": "@pentaho/di-plugin-file-open-save-new",
+  "version": "${project.version}",
+  "description": "${project.description}",
+  "paths": {
+    "pentaho/di/plugin/fileOpenSaveNew": "/"
+  },
+  "packages": [
+    {
+      "name": "pentaho/di/plugin/fileOpenSaveNew",
+      "main": "app.module.js"
+    }
+  ],
+  "dependencies": {
+    "angular": "${angular.version}",
+    "angular-ui-router": "${angular-ui-router.version}",
+    "angular-i18n": "${angular-i18n.version}",
+    "require-css": "${require-css.version}",
+    "requirejs-text": "${requirejs-text.version}",
+    "dojo": "${dojo.version}"
+  },
+  "config": {
+    "pentaho/modules": {
+      "IPenFileService": {"base": null, "isAbstract": true},
+      "pentaho/di/plugin/fileOpenSaveNew/services/vfs.service": {"type": "IPenFileService"},
+      "pentaho/di/plugin/fileOpenSaveNew/services/local.service": {"type": "IPenFileService"},
+      "pentaho/di/plugin/fileOpenSaveNew/services/repository.service": {"type": "IPenFileService"}
+    }
+  }
+}
