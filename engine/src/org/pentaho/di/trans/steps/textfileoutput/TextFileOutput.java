@@ -407,8 +407,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     if ( row != null ) {
       String filename = getOutputFileName( meta.isFileNameInField() ? row : null );
       boolean isWriteHeader = isWriteHeader( filename );
-      initFileStreamWriter( filename );
-
+      if ( data.writer == null ) {
+        initFileStreamWriter( filename );
+      }
       first = false;
 
       if ( isWriteHeader ) {
