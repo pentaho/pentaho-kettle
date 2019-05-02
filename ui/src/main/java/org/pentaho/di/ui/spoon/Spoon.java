@@ -4740,7 +4740,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( listener != null ) {
         try {
           String connection = variableSpace != null ? variableSpace.getVariable( CONNECTION ) : null;
-          loaded = listener.open( root, filename, connection, importfile );
+          if ( listener instanceof ConnectionListener ) {
+            loaded = ( (ConnectionListener) listener ).open( root, filename, connection, importfile );
+          } else {
+            loaded = listener.open( root, filename, importfile );
+          }
         } catch ( KettleMissingPluginsException e ) {
           log.logError( e.getMessage(), e );
         }
