@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,27 +22,10 @@
 
 package org.pentaho.di.ui.spoon;
 
-import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.w3c.dom.Node;
 
-import java.util.Locale;
-
-public interface FileListener {
-
-  public boolean open( Node transNode, String fname, boolean importfile ) throws KettleMissingPluginsException;
-
-  public boolean save( EngineMetaInterface meta, String fname, boolean isExport );
-
-  public void syncMetaName( EngineMetaInterface meta, String name );
-
-  public boolean accepts( String fileName );
-
-  public boolean acceptsXml( String nodeName );
-
-  public String[] getSupportedExtensions();
-
-  public String[] getFileTypeDisplayNames( Locale locale );
-
-  public String getRootNodeName();
+public interface ConnectionListener {
+  boolean open( Node transNode, String fname, String connection, boolean importfile )
+    throws KettleMissingPluginsException;
 }
