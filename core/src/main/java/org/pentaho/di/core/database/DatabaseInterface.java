@@ -22,7 +22,9 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -1241,4 +1243,16 @@ public interface DatabaseInterface extends Cloneable {
     return "";
   }
 
+  /**
+   * Allows to get the column name for JDBC drivers with different behavior for aliases depending on the connector version.
+   *
+   * @param dbMetaData
+   * @param rsMetaData
+   * @param index
+   * @return empty if the database doesn't support the legacy column name feature
+   * @throws KettleDatabaseException
+   */
+  default String getLegacyColumnName( DatabaseMetaData dbMetaData, ResultSetMetaData rsMetaData, int index ) throws KettleDatabaseException {
+    return "";
+  }
 }
