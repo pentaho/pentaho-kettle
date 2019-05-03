@@ -76,7 +76,7 @@ public class Splash {
   private Color versionWarningBackgroundColor;
   private Color versionWarningForegroundColor;
 
-  private int licFontSize = 8;
+  private int licFontSize = 12;
 
   private static Class<?> PKG = Splash.class; // for i18n purposes, needed by Translator2!!
 
@@ -98,7 +98,7 @@ public class Splash {
     // "exclamation.png"
     exclamation_image = loadAsResource( display, BasePropertyHandler.getProperty( "exclamation_image" ) );
 
-    verFont = new Font( display, "Helvetica", 11, SWT.BOLD );
+    verFont = new Font( display, "Helvetica", 14, SWT.BOLD );
     licFont = new Font( display, "Helvetica", licFontSize, SWT.NORMAL );
     devWarningFont = new Font( display, "Helvetica", 10, SWT.NORMAL );
 
@@ -141,7 +141,7 @@ public class Splash {
         }
         e.gc.setFont( verFont );
         e.gc.setForeground( new Color( display, 65, 65, 65 ) );
-        e.gc.drawText( fullVersionText, 290, 205, true );
+        e.gc.drawText( fullVersionText, 290, 162, true );
 
         String inputStringDate = BuildVersion.getInstance().getBuildDate();
         String outputStringDate = "";
@@ -176,16 +176,16 @@ public class Splash {
         e.gc.setForeground( new Color( display, 65, 65, 65 ) );
 
         // if the text will not fit the allowed space
-        while ( !willLicenseTextFit( licenseText, e.gc ) ) {
-          licFontSize--;
-          if ( licFont != null ) {
-            licFont.dispose();
-          }
-          licFont = new Font( e.display, "Helvetica", licFontSize, SWT.NORMAL );
-          e.gc.setFont( licFont );
-        }
+        //        while ( !willLicenseTextFit( licenseText, e.gc ) ) {
+        //          licFontSize--;
+        //          if ( licFont != null ) {
+        //            licFont.dispose();
+        //          }
+        //          licFont = new Font( e.display, "Helvetica", licFontSize, SWT.NORMAL );
+        //          e.gc.setFont( licFont );
+        //        }
 
-        e.gc.drawText( licenseText, 290, 275, true );
+        e.gc.drawText( licenseText, 290, 225, true );
 
         String version = buildVersion;
         // If this is a Milestone or RC release, warn the user
@@ -202,8 +202,9 @@ public class Splash {
         String buildDate = BaseMessages.getString( PKG, "SplashDialog.BuildDate" ) + " " + outputStringDate;
         // use the same font/size as the license text
         e.gc.setForeground( new Color( display, 65, 65, 65 ) );
-        e.gc.drawText( version, 290, 235, true );
-        e.gc.drawText( buildDate, 290, 250, true );
+        e.gc.setFont( new Font( display, "Helvetica", 10, SWT.NORMAL ) );
+        e.gc.drawText( version, 290, 182, true );
+        e.gc.drawText( buildDate, 290, 198, true );
       }
     } );
 
