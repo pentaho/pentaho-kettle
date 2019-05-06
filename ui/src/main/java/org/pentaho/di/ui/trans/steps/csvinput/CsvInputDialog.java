@@ -127,6 +127,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
   private Button wRunningInParallel;
   private Button wNewlinePossible;
   private ComboVar wEncoding;
+  private CCombo wFormat;
 
   private boolean gotEncodings = false;
 
@@ -486,6 +487,30 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     } );
     lastControl = wNewlinePossible;
 
+    // Format
+    Label wlFormat = new Label( shell, SWT.RIGHT );
+    wlFormat.setText( BaseMessages.getString( PKG, inputMeta.getDescription( "FORMAT" ) ) );
+    props.setLook( wlFormat );
+    FormData fdlFormat = new FormData();
+    fdlFormat.top = new FormAttachment( lastControl, margin );
+    fdlFormat.left = new FormAttachment( 0, 0 );
+    fdlFormat.right = new FormAttachment( middle, -margin );
+    wlFormat.setLayoutData( fdlFormat );
+    wFormat = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
+    wFormat.setText( BaseMessages.getString( PKG, inputMeta.getDescription( "FORMAT" ) ) );
+    props.setLook( wFormat );
+    wFormat.add( "DOS" );
+    wFormat.add( "Unix" );
+    wFormat.add( "mixed" );
+    wFormat.select( 2 );
+    wFormat.addModifyListener( lsMod );
+    FormData fdFormat = new FormData();
+    fdFormat.top = new FormAttachment( lastControl, margin );
+    fdFormat.left = new FormAttachment( middle, 0 );
+    fdFormat.right = new FormAttachment( 100, 0 );
+    wFormat.setLayoutData( fdFormat );
+    lastControl = wFormat;
+
     // Encoding
     Label wlEncoding = new Label( shell, SWT.RIGHT );
     wlEncoding.setText( BaseMessages.getString( PKG, inputMeta.getDescription( "ENCODING" ) ) );
@@ -780,6 +805,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     wNewlinePossible.setSelection( inputMeta.isNewlinePossibleInFields() );
     wRowNumField.setText( Const.NVL( inputMeta.getRowNumField(), "" ) );
     wAddResult.setSelection( inputMeta.isAddResultFile() );
+    wFormat.setText( Const.NVL( inputMeta.getFileFormat(), "" ) );
     wEncoding.setText( Const.NVL( inputMeta.getEncoding(), "" ) );
 
     final List<String> lowerCaseNewFieldNames = newFieldNames == null ? new ArrayList()
@@ -836,6 +862,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     inputMeta.setAddResultFile( wAddResult.getSelection() );
     inputMeta.setRunningInParallel( wRunningInParallel.getSelection() );
     inputMeta.setNewlinePossibleInFields( wNewlinePossible.getSelection() );
+    inputMeta.setFileFormat( wFormat.getText() );
     inputMeta.setEncoding( wEncoding.getText() );
 
     int nrNonEmptyFields = wFields.nrNonEmpty();
