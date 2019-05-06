@@ -18,6 +18,7 @@ package com.pentaho.repository.importexport;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
@@ -35,7 +36,12 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -105,5 +111,70 @@ public class StreamToTransNodeConverterTest {
       return;
     }
     fail();
+  }
+
+  @Test
+  public void filterPrivateDatabasesWithOnePrivateDatabaseTest() {
+    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
+    TransMeta transMeta = new TransMeta(  );
+    transMeta.setDatabases( getDummyDatabases() );
+    Set<String> privateDatabases = new HashSet<>(  );
+    privateDatabases.add( "database2" );
+    transMeta.setPrivateDatabases( privateDatabases );
+    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
+    assertEquals( 1, transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
+  }
+
+  @Test
+  public void filterPrivateDatabasesWithOnePrivateDatabaseAndOneInUseTest() {
+    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
+    TransMeta transMeta = spy( TransMeta.class );
+    transMeta.setDatabases( getDummyDatabases() );
+    Set<String> privateDatabases = new HashSet<>(  );
+    privateDatabases.add( "database2" );
+    transMeta.setPrivateDatabases( privateDatabases );
+    when( transMeta.isDatabaseConnectionUsed( getDummyDatabases().get( 0 ) ) ).thenReturn( true );
+    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
+    assertEquals( 2, transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
+  }
+
+  @Test
+  public void filterPrivateDatabasesWithOneInUseTest() {
+    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
+    TransMeta transMeta = spy( TransMeta.class );
+    transMeta.setDatabases( getDummyDatabases() );
+    transMeta.setPrivateDatabases( new HashSet<>(  ) );
+    when( transMeta.isDatabaseConnectionUsed( getDummyDatabases().get( 0 ) ) ).thenReturn( true );
+    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
+    assertEquals( 1, transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
+  }
+
+  @Test
+  public void filterPrivateDatabasesNoPrivateDatabaseTest() {
+    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
+    TransMeta transMeta = new TransMeta(  );
+    transMeta.setDatabases( getDummyDatabases() );
+    transMeta.setPrivateDatabases( new HashSet<>(  ) );
+    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
+    assertEquals( 0, transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
+  }
+
+  @Test
+  public void filterPrivateDatabasesNullPrivateDatabaseTest() {
+    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
+    TransMeta transMeta = new TransMeta(  );
+    transMeta.setDatabases( getDummyDatabases() );
+    transMeta.setPrivateDatabases( null );
+    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
+    assertEquals( transMeta.getDatabases().size(), transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
+  }
+
+  private List<DatabaseMeta> getDummyDatabases() {
+    List<DatabaseMeta> databases = new ArrayList<>(  );
+    databases.add( new DatabaseMeta( "database1", "Oracle", "Native", "", "", "", "", "" ) );
+    databases.add( new DatabaseMeta( "database2", "Oracle", "Native", "", "", "", "", "" ) );
+    databases.add( new DatabaseMeta( "database3", "Oracle", "Native", "", "", "", "", "" ) );
+    databases.add( new DatabaseMeta( "database4", "Oracle", "Native", "", "", "", "", "" ) );
+    return databases;
   }
 }
