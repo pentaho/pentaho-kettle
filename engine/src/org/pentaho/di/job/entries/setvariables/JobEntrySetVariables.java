@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -251,10 +251,13 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
             PKG, "JobEntrySetVariables.Error.UnableReadPropertiesFile", realFilename ) );
         }
       }
-      for ( int i = 0; i < variableName.length; i++ ) {
-        variables.add( variableName[i] );
-        variableValues.add( variableValue[i] );
-        variableTypes.add( variableType[i] );
+
+      if ( variableName != null ) {
+        for ( int i = 0; i < variableName.length; i++ ) {
+          variables.add( variableName[i] );
+          variableValues.add( variableValue[i] );
+          variableTypes.add( variableType[i] );
+        }
       }
 
       // if parentJob exists - clear/reset all entrySetVariables before applying the actual ones
