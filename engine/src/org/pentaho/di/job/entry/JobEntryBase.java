@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.CheckResultInterface;
@@ -1511,7 +1512,14 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    */
   public void setEntryStepSetVariable( String variableName, String variableValue ) {
-    entryStepSetVariablesMap.put( variableName, variableValue );
+    // ConcurrentHashMap does not allow null keys and null values.
+    if ( variableName != null ) {
+      if ( variableValue != null ) {
+        entryStepSetVariablesMap.put( variableName, variableValue );
+      } else {
+        entryStepSetVariablesMap.put( variableName, StringUtils.EMPTY );
+      }
+    }
   }
 
   /**

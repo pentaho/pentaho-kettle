@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -90,7 +90,6 @@ public class JobEntrySetVariablesTest {
   public void testASCIIText() throws Exception {
     // properties file with native2ascii
     entry.setFilename( "test-src/org/pentaho/di/job/entries/setvariables/ASCIIText.properties" );
-    entry.setVariableName( new String[] {} ); // For absence of null check in execute method
     entry.setReplaceVars( true );
     Result result = entry.execute( new Result(), 0 );
     assertTrue( "Result should be true", result.getResult() );
@@ -103,7 +102,6 @@ public class JobEntrySetVariablesTest {
   public void testUTF8Text() throws Exception {
     // properties files without native2ascii
     entry.setFilename( "test-src/org/pentaho/di/job/entries/setvariables/UTF8Text.properties" );
-    entry.setVariableName( new String[] {} ); // For absence of null check in execute method
     entry.setReplaceVars( true );
     Result result = entry.execute( new Result(), 0 );
     assertTrue( "Result should be true", result.getResult() );
@@ -117,7 +115,6 @@ public class JobEntrySetVariablesTest {
     // properties files without native2ascii
     String propertiesFilename = "test-src/org/pentaho/di/job/entries/setvariables/UTF8Text.properties";
     entry.setFilename( propertiesFilename );
-    entry.setVariableName( new String[] {} ); // For absence of null check in execute method
     entry.setReplaceVars( true );
     Result result = entry.execute( new Result(), 0 );
     assertTrue( "Result should be true", result.getResult() );
@@ -139,7 +136,6 @@ public class JobEntrySetVariablesTest {
 
   @Test
   public void testParentJobVariablesExecutingFilePropertiesThatChangesVariablesAndParameters() throws Exception {
-    entry.setVariableName( new String[] {} ); // For absence of null check in execute method
     entry.setReplaceVars( true );
     entry.setFileVariableType( 1 );
 
@@ -192,10 +188,22 @@ public class JobEntrySetVariablesTest {
     List<SlaveServer> slaveServers = mock( List.class );
     Repository repository = mock( Repository.class );
     IMetaStore metaStore = mock( IMetaStore.class );
-    entry.loadXML( getEntryNode( "nullVariable", null ), databases, slaveServers, repository, metaStore );
+    entry.loadXML( getEntryNode( "nullVariable", null, "JVM" ), databases, slaveServers, repository, metaStore );
     Result result = entry.execute( new Result(), 0 );
     assertTrue( "Result should be true", result.getResult() );
     assertNull( System.getProperty( "nullVariable" )  );
+  }
+
+  @Test
+  public void testJobEntrySetVariablesExecute_VARIABLE_TYPE_CURRENT_JOB_NullVariable() throws Exception {
+    List<DatabaseMeta> databases = mock( List.class );
+    List<SlaveServer> slaveServers = mock( List.class );
+    Repository repository = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    entry.loadXML( getEntryNode( "nullVariable", null, "CURRENT_JOB" ), databases, slaveServers, repository, metaStore );
+    Result result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+    assertNull( entry.getVariable( "nullVariable" )  );
   }
 
   @Test
@@ -204,15 +212,28 @@ public class JobEntrySetVariablesTest {
     List<SlaveServer> slaveServers = mock( List.class );
     Repository repository = mock( Repository.class );
     IMetaStore metaStore = mock( IMetaStore.class );
-    entry.loadXML( getEntryNode( "variableNotNull", "someValue" ), databases, slaveServers, repository, metaStore );
+    entry.loadXML( getEntryNode( "variableNotNull", "someValue", "JVM" ), databases, slaveServers, repository, metaStore );
     assertNull( System.getProperty( "variableNotNull" )  );
     Result result = entry.execute( new Result(), 0 );
     assertTrue( "Result should be true", result.getResult() );
     assertEquals( "someValue", System.getProperty( "variableNotNull" ) );
   }
 
+  @Test
+  public void testJobEntrySetVariablesExecute_VARIABLE_TYPE_CURRENT_JOB_VariableNotNull() throws Exception {
+    List<DatabaseMeta> databases = mock( List.class );
+    List<SlaveServer> slaveServers = mock( List.class );
+    Repository repository = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    entry.loadXML( getEntryNode( "variableNotNull", "someValue", "CURRENT_JOB" ), databases, slaveServers, repository, metaStore );
+    assertNull( System.getProperty( "variableNotNull" )  );
+    Result result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+    assertEquals( "someValue", entry.getVariable( "variableNotNull" ) );
+  }
+
   //prepare xml for use
-  public Node getEntryNode( String variable_name, String variable_value )
+  public Node getEntryNode( String variable_name, String variable_value, String variable_type )
     throws ParserConfigurationException, SAXException, IOException {
     StringBuilder sb = new StringBuilder();
     sb.append( XMLHandler.openTag( "job" ) );
@@ -221,6 +242,10 @@ public class JobEntrySetVariablesTest {
     sb.append( "      " ).append( XMLHandler.addTagValue( "variable_name", variable_name ) );
     if ( variable_value != null ) {
       sb.append( "      " ).append( XMLHandler.addTagValue( "variable_value", variable_value ) );
+    }
+    if ( variable_type != null ) {
+      sb.append( "          " ).append(
+        XMLHandler.addTagValue( "variable_type", variable_type ) );
     }
     sb.append( "      " ).append( XMLHandler.closeTag( "field" ) );
     sb.append( "      " ).append( XMLHandler.closeTag( "fields" ) );
