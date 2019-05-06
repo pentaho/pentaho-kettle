@@ -208,6 +208,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.vfs.KettleVfsDelegatingResolver;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -711,7 +712,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     StringBuilder optionLogLevel = getCommandLineOption( options, "level" ).getArgument();
 
     // Set default Locale:
-    Locale.setDefault( Const.DEFAULT_LOCALE );
+    Locale.setDefault( LanguageChoice.getInstance().getDefaultLocale() );
 
     if ( !Utils.isEmpty( optionLogFile ) ) {
       fileLoggingEventListener = new FileLoggingEventListener( optionLogFile.toString(), true );
