@@ -261,6 +261,7 @@ jobGroups:
      - jobID           :  metaverse-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-metaverse.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += \install
        versionProperty :  pentaho-metaverse.version
        archiveMatcher  :  NONE
 
