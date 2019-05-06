@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -707,5 +707,14 @@ public class TransMetaTest {
     transMetaTest.setInternalEntryCurrentDirectory();
 
     assertEquals( "Original value defined at run execution", transMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void findPreviousStepsNullMeta( ) {
+    TransMeta transMeta = new TransMeta( new Variables() );
+    List<StepMeta> result = transMeta.findPreviousSteps( null, false );
+
+    assertThat( 0, equalTo( result.size() ) );
+    assertThat( result, equalTo( new ArrayList<>() ) );
   }
 }
