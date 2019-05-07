@@ -298,6 +298,13 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-plugins-ee.version
        root            :  data-integration/plugins
+       
+     - jobID           :  pdi-client-assembly-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
+       versionProperty :  pdi.version
+       root            :  data-integration
 
      - jobID           :  camel-components
        scmUrl          :  https://github.com/pentaho/pentaho-camel-components.git
