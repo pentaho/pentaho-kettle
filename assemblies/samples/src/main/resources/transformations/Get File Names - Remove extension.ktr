@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>Get File Names - Remove extention</name>
+    <name>Get File Names - Remove extension</name>
     <description/>
     <extended_description/>
     <trans_version/>
