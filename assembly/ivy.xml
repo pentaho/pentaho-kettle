@@ -221,8 +221,8 @@
 
 
     <!-- Third-party JDBC dependencies -->
-    <dependency org="org.apache.derby"     name="derby"                 rev="10.2.1.6"      transitive="false"/>
-    <dependency org="org.apache.derby"     name="derbyclient"           rev="10.2.1.6"      transitive="false"/>
+    <dependency org="org.apache.derby"     name="derby"                 rev="10.14.2.0"      transitive="false"/>
+    <dependency org="org.apache.derby"     name="derbyclient"           rev="10.14.2.0"      transitive="false"/>
     <dependency org="com.h2database"       name="h2"                    rev="1.2.131"       transitive="false"/>
     <dependency org="org.hsqldb"           name="hsqldb"                rev="2.3.2"         transitive="false"/>
     <dependency org="infobright"           name="infobright-core"       rev="3.4"           transitive="false"/>
