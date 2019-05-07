@@ -132,9 +132,20 @@ public class PluginRegistry {
       if ( naturalOrder != null ) {
         int idx1 = Const.indexOfString( s1, naturalOrder );
         int idx2 = Const.indexOfString( s2, naturalOrder );
-        return idx1 - idx2;
+        // See PDI-17581, allows custom categories from plugins since TreeSet uses Comparator equality
+        if ( idx1 > -1 && idx2 > -1 ) {
+          // both items are in the natural ordering
+          return idx1 - idx2;
+        } else if ( idx1 > -1 ) {
+          // only the first item is in the natural ordering
+          return -1;
+        } else if ( idx2 > -1 ) {
+          // the second item is in the natural ordering
+          return 1;
+        }
       }
-      return 0;
+      // There is no natural ordering, or neither element being compared is in it
+      return String.CASE_INSENSITIVE_ORDER.compare( s1, s2 );
     };
   }
 
