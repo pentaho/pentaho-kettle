@@ -423,7 +423,7 @@ jobGroups:
      - jobID           :  platform-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P platform-ee
+       directives      :  += -DskipDefault -P platform-ee,platform-ee-assemble
        versionProperty :  platform.version
        archiveMatcher  :  NONE
 
