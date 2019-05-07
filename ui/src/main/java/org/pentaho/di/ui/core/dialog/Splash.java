@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -168,6 +169,16 @@ public class Splash {
       // try using the desired font size for the license text
       e.gc.setFont( licFont );
       e.gc.setForeground( new Color( display, 65, 65, 65 ) );
+
+      while ( !willLicenseTextFit( licenseText, e.gc ) ) {
+        licFontSize--;
+        if ( licFont != null ) {
+          licFont.dispose();
+        }
+        licFont = new Font( e.display, "Helvetica", licFontSize, SWT.NORMAL );
+        e.gc.setFont( licFont );
+      }
+
       e.gc.drawText( licenseText, 290, 225, true );
 
       String version = buildVersion;
@@ -242,6 +253,22 @@ public class Splash {
     Image image = new Image( display, img.getAsBitmap( display ), SWT.IMAGE_COPY );
     img.dispose();
     return image;
+  }
+
+  // determine if the license text will fit the allocated space
+  private boolean willLicenseTextFit( String licenseText, GC gc ) {
+    Point splashSize = shell.getSize();
+    Point licenseDrawLocation = new Point( 290, 290 );
+    Point requiredSize = gc.textExtent( licenseText );
+
+    int width = splashSize.x - licenseDrawLocation.x;
+    int height = splashSize.y - licenseDrawLocation.y;
+
+    boolean fitsVertically = width >= requiredSize.x;
+    boolean fitsHorizontally = height >= requiredSize.y;
+
+    return ( fitsVertically && fitsHorizontally );
+
   }
 
   private void drawVersionWarning( PaintEvent e ) {
