@@ -59,6 +59,11 @@ public class ConnectionManager {
     return new MetaStoreFactory<>( clazz, metaStoreSupplier.get(), NAMESPACE );
   }
 
+  private <T extends ConnectionDetails> MetaStoreFactory<T> getMetaStoreFactory( IMetaStore metaStore,
+                                                                                 Class<T> clazz ) {
+    return new MetaStoreFactory<>( clazz, metaStore, NAMESPACE );
+  }
+
   public void setMetastoreSupplier( Supplier<IMetaStore> metaStoreSupplier ) {
     this.metaStoreSupplier = metaStoreSupplier;
   }
@@ -196,18 +201,21 @@ public class ConnectionManager {
     return detailNames;
   }
 
-  public ConnectionDetails getConnectionDetails( String key, String name ) {
+  public ConnectionDetails getConnectionDetails( IMetaStore metaStore, String key, String name ) {
     ConnectionProvider<? extends ConnectionDetails> connectionProvider = getConnectionProvider( key );
     if ( connectionProvider != null ) {
       Class<? extends ConnectionDetails> clazz = connectionProvider.getClassType();
       try {
-        return getMetaStoreFactory( clazz ).loadElement( name );
+        return getMetaStoreFactory( metaStore, clazz ).loadElement( name );
       } catch ( MetaStoreException mse ) {
         return null;
       }
     }
-
     return null;
+  }
+
+  public ConnectionDetails getConnectionDetails( String key, String name ) {
+    return getConnectionDetails( metaStoreSupplier.get(), key, name );
   }
 
   public ConnectionDetails getConnectionDetails( String name ) {
