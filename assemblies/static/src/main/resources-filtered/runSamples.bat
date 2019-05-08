@@ -1,9 +1,10 @@
+@echo off
 
 REM *****************************************************************************
 REM
 REM Pentaho Data Integration
 REM
-REM Copyright (C) 2005 - 2019 by Hitachi Vantara : http://www.hitachivantara.com
+REM Copyright (C) 2006 - ${copyright.year} by Hitachi Vantara : http://www.hitachivantara.com
 REM
 REM *****************************************************************************
 REM
@@ -21,4 +22,16 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
-sleep 1
+setlocal enabledelayedexpansion
+pushd %~dp0
+ECHO ****************************************************
+ECHO * Starting executing transformations - !time! *
+ECHO ****************************************************
+for /r samples\transformations %%x in (*.ktr) DO (
+  echo EXECUTING TRANSFORMATION ["%%x"]
+  call pan.bat -file:"%%x" -level:Minimal
+)
+ECHO *************************************************
+ECHO Finished executing transformation - !time! *
+ECHO *************************************************
+popd

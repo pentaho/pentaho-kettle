@@ -11,6 +11,20 @@
       <directory>${project.basedir}/src/main/resources-filtered</directory>
       <outputDirectory>.</outputDirectory>
       <filtered>true</filtered>
+      <includes>
+        <include>**/*.sh</include>
+        <include>**/*.command</include>
+      </includes>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources-filtered</directory>
+      <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
+      <excludes>
+        <exclude>**/*.sh</exclude>
+        <exclude>**/*.command</exclude>
+      </excludes>
     </fileSet>
     <!-- .sh files that need execution permissions -->
     <fileSet>

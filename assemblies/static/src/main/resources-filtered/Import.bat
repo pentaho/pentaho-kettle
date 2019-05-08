@@ -1,9 +1,10 @@
+@echo off
 
 REM *****************************************************************************
 REM
 REM Pentaho Data Integration
 REM
-REM Copyright (C) 2005 - 2019 by Hitachi Vantara : http://www.hitachivantara.com
+REM Copyright (C) 2011 - ${copyright.year} by Hitachi Vantara : http://www.hitachivantara.com
 REM
 REM *****************************************************************************
 REM
@@ -21,4 +22,10 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
-sleep 1
+setlocal
+pushd %~dp0
+
+SET STARTTITLE="Import"
+SET SPOON_CONSOLE=1
+call Spoon.bat -main org.pentaho.di.imp.Import %*
+popd

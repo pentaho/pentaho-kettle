@@ -1,10 +1,10 @@
-@echo on
+@echo off
 
 REM *****************************************************************************
 REM
 REM Pentaho Data Integration
 REM
-REM Copyright (C) 2006 - 2019 by Hitachi Vantara : http://www.hitachivantara.com
+REM Copyright (C) 2005 - ${copyright.year} by Hitachi Vantara : http://www.hitachivantara.com
 REM
 REM *****************************************************************************
 REM
@@ -22,21 +22,31 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
+setlocal 
+
+cd /D %~dp0
+
 REM **************************************************
-REM ** Libraries used by Kettle:                    **
+REM ** Set console window properties                **
 REM **************************************************
+REM TITLE Spoon console
+REM COLOR F0
 
-set RUNDIR=%CD%\dist
-set XMLFILE=%CD%\%1%
-set SRCDIR=%CD%\%2%
+:: **************************************************
+:: ** Kettle home                                  **
+:: **************************************************
 
-echo RUNDIR=%RUNDIR%
-echo XMLFILE=%XMLFILE%
-echo SRCDIR=%SRCDIR%
+if "%KETTLE_DIR%"=="" set KETTLE_DIR=%~dp0
+if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 
-cd dist
+cd %KETTLE_DIR%
 
+REM Special console/debug options when called from SpoonConsole.bat or SpoonDebug.bat
+if "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=java.exe
+if not "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=javaw.exe
 set IS64BITJAVA=0
+
+call "%~dp0set-pentaho-env.bat"
 
 REM **************************************************
 REM   Platform Specific SWT       **
@@ -52,10 +62,22 @@ REM Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01, mixed mode)
 REM
 REM Below is a logic to find the directory where java can found. We will
 REM temporarily change the directory to that folder where we can run java there
-
-FOR /F %%a IN ('java -version 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+pushd "%_PENTAHO_JAVA_HOME%"
+if exist java.exe goto USEJAVAFROMPENTAHOJAVAHOME
+cd bin
+if exist java.exe goto USEJAVAFROMPENTAHOJAVAHOME
+popd
+pushd "%_PENTAHO_JAVA_HOME%\jre\bin"
+if exist java.exe goto USEJAVAFROMPATH
+goto USEJAVAFROMPATH
+:USEJAVAFROMPENTAHOJAVAHOME
+FOR /F %%a IN ('.\java.exe -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+GOTO CHECK32VS64BITJAVA
+:USEJAVAFROMPATH
+FOR /F %%a IN ('java -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
 GOTO CHECK32VS64BITJAVA
 :CHECK32VS64BITJAVA
+
 
 IF %IS64BITJAVA% == 1 GOTO :USE64
 
@@ -64,7 +86,6 @@ REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
 set LIBSPATH=libswt\win32
-
 GOTO :CONTINUE
 :USE64
 REM ===========================================
@@ -72,9 +93,8 @@ REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
 set LIBSPATH=libswt\win64
 set SWTJAR=..\libswt\win64
-
 :CONTINUE
-
+popd
 
 REM **********************
 REM   Collect arguments
@@ -90,22 +110,23 @@ goto TopArg
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **
-REM ** Change 512m to higher values in case you run out of memory   **
+REM ** Change 2048m to higher values in case you run out of memory  **
 REM ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
 REM ******************************************************************
 
-set PENTAHO_DI_JAVA_OPTIONS="-Xmx512m" "-XX:MaxPermSize=256m"
-set OPT="-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
+if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xms1024m" "-Xmx2048m" "-XX:MaxPermSize=256m"
+
+set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" "-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
 
 REM ***************
 REM ** Run...    **
 REM ***************
 
+if %STARTTITLE%!==! SET STARTTITLE="Spoon"
 REM Eventually call java instead of javaw and do not run in a separate window
-set TRANSLATOR_START_OPTION=start "Translator"
+if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%
 
 @echo on
-%TRANSLATOR_START_OPTION% java %OPT% -jar launcher\launcher-1.0.0.jar -lib ..\%LIBSPATH% -main org.pentaho.di.ui.i18n.editor.Translator2 %XMLFILE% %SRCDIR%
+%SPOON_START_OPTION% "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
 @echo off
-
-cd %RUNDIR%\..
+if "%SPOON_PAUSE%"=="1" pause
