@@ -302,7 +302,7 @@ jobGroups:
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Deula-wrap
+       directives      :  -= test \verify += \clean \install -Deula-wrap
        versionProperty :  pdi.version
        root            :  data-integration
 
