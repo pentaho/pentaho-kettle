@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -566,9 +566,12 @@ public class AbstractMetaTest {
     NamedParams newParams = new NamedParamsDefault();
     newParams.addParameterDefinition( "var3", "default", "description" );
     newParams.setParameterValue( "var3", "a" );
+    newParams.addParameterDefinition( "emptyVar", "", "emptyDesc" );
+    newParams.setParameterValue( "emptyVar", "" );
     meta.copyParametersFrom( newParams );
     meta.activateParameters();
     assertEquals( "default", meta.getParameterDefault( "var3" ) );
+    assertEquals( "", meta.getParameterDefault( "emptyVar" ) );
   }
 
   @Test
@@ -779,7 +782,7 @@ public class AbstractMetaTest {
   public void testMultithreadHammeringOfListener() throws Exception {
 
     CountDownLatch latch = new CountDownLatch( 3 );
-    AbstractMetaListenerThread th1 = new AbstractMetaListenerThread( meta, 2000, latch); // do 2k random add/delete/fire
+    AbstractMetaListenerThread th1 = new AbstractMetaListenerThread( meta, 2000, latch ); // do 2k random add/delete/fire
     AbstractMetaListenerThread th2 = new AbstractMetaListenerThread( meta, 2000, latch ); // do 2k random add/delete/fire
     AbstractMetaListenerThread th3 = new AbstractMetaListenerThread( meta, 2000, latch ); // do 2k random add/delete/fire
 
@@ -892,7 +895,7 @@ public class AbstractMetaTest {
     CountDownLatch whenDone;
     String message;
 
-    AbstractMetaListenerThread ( AbstractMeta aMeta, int times, CountDownLatch latch ) {
+    AbstractMetaListenerThread( AbstractMeta aMeta, int times, CountDownLatch latch ) {
       this.metaToWork = aMeta;
       this.times = times;
       this.whenDone = latch;
@@ -901,7 +904,7 @@ public class AbstractMetaTest {
     @Override public void run() {
       for ( int i = 0; i < times; i++ ) {
         int randomNum = ThreadLocalRandom.current().nextInt( 0, 3 );
-        switch( randomNum ) {
+        switch ( randomNum ) {
           case 0: {
             try {
               metaToWork.addFilenameChangedListener( mock( FilenameChangedListener.class ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1508,7 +1508,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
       }
 
       if ( Utils.isEmpty( value ) ) {
-        setVariable( key, defValue );
+        setVariable( key, Const.NVL( defValue, "" ) );
       } else {
         setVariable( key, value );
       }
