@@ -783,7 +783,7 @@ jobGroups:
      - jobID           :  foundry-workers-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  clean package -DscmBranch=${DEFAULT_BRANCH}
+       directives      :  += -DscmBranch=${DEFAULT_BRANCH}
        versionProperty :  worker-nodes.version
        root            :  foundry
        testable        :  false
