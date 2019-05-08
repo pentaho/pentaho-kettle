@@ -129,7 +129,6 @@ define([
      */
     function _setMessages() {
       vm.breakAll = false;
-      //console.log(vm.errorType);
       switch (vm.errorType) {
         case 1:// Overwrite
           var overwriteBefore = vm.errorFiles[0].type === "job" ?

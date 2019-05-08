@@ -24,12 +24,13 @@
  */
 define(
     [
-      "../components/utils"
+      "../components/utils",
+      "./data.service"
     ],
     function (utils) {
       "use strict";
 
-      var factoryArray = ["helperService", "$http", "$q", factory];
+      var factoryArray = ["helperService", "dataService", "$http", "$q", factory];
       var module = {
         name: "repositoryService",
         factory: factoryArray
@@ -44,7 +45,7 @@ define(
        *
        * @return {Object} The dataService api
        */
-      function factory(helperService, $http, $q) {
+      function factory(helperService, dt, $http, $q) {
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "repository",
@@ -170,9 +171,20 @@ define(
           select(file.objectId, file.name, file.path, file.parent,null, file.provider, file.type);
         }
 
-        function save(filename, folder) {
-          //TODO: Do a check for security or dupe
-          select(null, filename, null, folder.path, null, folder.provider, null);
+        function save(filename, folder, currentFilename, override) {
+          console.log(filename, folder, currentFilename, override);
+          return $q(function(resolve, reject) {
+            dt.checkForSecurityOrDupeIssues(folder.path, filename, currentFilename, override ? override : false).then(function(response) {
+              if (response.status === 200) {
+                select(null, filename, null, folder.path, null, folder.provider, null);
+                resolve();
+              } else {
+                reject();
+              }
+            }, function() {
+              reject();
+            });
+          });
         }
 
         function _getName(path) {
