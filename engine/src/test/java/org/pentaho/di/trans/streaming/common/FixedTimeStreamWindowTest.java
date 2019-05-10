@@ -50,6 +50,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.i18n.BaseMessages.getString;
 
 @RunWith( MockitoJUnitRunner.class )
 public class FixedTimeStreamWindowTest {
@@ -79,6 +80,23 @@ public class FixedTimeStreamWindowTest {
   }
 
   @Test
+  public void abortedSubtransThrowsAnError() throws KettleException {
+    Result result1 = new Result();
+    result1.setNrErrors( 1 );
+    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.of( result1 ) );
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "field" ) );
+    FixedTimeStreamWindow<List> window =
+      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, 1 );
+    try {
+      window.buffer( Flowable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) ).forEach( result -> { } );
+    } catch ( Exception e ) {
+      assertEquals(
+        getString( BaseStreamStep.class, "FixedTimeStreamWindow.SubtransFailed" ), e.getCause().getMessage().trim() );
+    }
+  }
+
+  @Test
   public void testSharedStreamingBatchPoolInternalState() throws Exception {
     /*
     * Tests that the sharedStreamingBatchPool adjusts its core pool size based on the value being set
@@ -91,7 +109,7 @@ public class FixedTimeStreamWindowTest {
         new FixedTimeStreamWindow<>( subtransExecutor, new RowMeta(), 0, 2, 1 );
     Field field1 = window1.getClass().getDeclaredField( "sharedStreamingBatchPool" );
     field1.setAccessible( true );
-    ThreadPoolExecutor sharedStreamingBatchPool1 = ( ThreadPoolExecutor ) field1.get( window1 );
+    ThreadPoolExecutor sharedStreamingBatchPool1 = (ThreadPoolExecutor) field1.get( window1 );
     assertTrue( sharedStreamingBatchPool1.getCorePoolSize() == 5 );
 
     System.setProperty( Const.SHARED_STREAMING_BATCH_POOL_SIZE, "10" );
@@ -99,7 +117,7 @@ public class FixedTimeStreamWindowTest {
         new FixedTimeStreamWindow<>( subtransExecutor, new RowMeta(), 0, 2, 1 );
     Field field2 = window2.getClass().getDeclaredField( "sharedStreamingBatchPool" );
     field2.setAccessible( true );
-    ThreadPoolExecutor sharedStreamingBatchPool2 = ( ThreadPoolExecutor ) field2.get( window2 );
+    ThreadPoolExecutor sharedStreamingBatchPool2 = (ThreadPoolExecutor) field2.get( window2 );
     assertTrue( sharedStreamingBatchPool2.getCorePoolSize() == 10 );
 
     assertEquals( sharedStreamingBatchPool1, sharedStreamingBatchPool2 );
