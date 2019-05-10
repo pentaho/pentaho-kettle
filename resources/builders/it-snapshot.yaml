@@ -3,9 +3,10 @@ buildProperties:
         # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : Master Suite Build
+        DEFAULT_BRANCH                 : master
         MAVEN_DEFAULT_DIRECTIVES       : clean
-        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q project-info-reports:dependencies -P spotbugs -Dspotbugs.failOnError=false -Dspotbugs.maxRank=5
-        MAVEN_TEST_OPTS                : -DsurefireArgLine=-Xmx1g \verify -DrunITs -Daudit sonar:sonar@sonar_publish -Dsonar -Dsonar.branch=${DEFAULT_BRANCH} -Dsonar.host.url=http://sonar.pentaho.com:9000 -Dmaven.test.failure.ignore
+        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q -U
+        MAVEN_TEST_OPTS                : -DsurefireArgLine=-Xmx1g \verify -DrunITs -Daudit -Dsonar -Dmaven.test.failure.ignore project-info-reports:dependencies
         IGNORE_PIPELINE_FAILURE        : true
         JOB_ITEM_DEFAULTS              :
           archivable                   : false
@@ -158,6 +159,7 @@ jobGroups:
      - jobID           :  pdi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -P owasp
        versionProperty :  pdi.version
 
      - jobID           :  metadata
@@ -358,6 +360,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  big-data-plugin.version
+       directives      :  -= -DrunITs
        archiveMatcher  :  NONE
 
      - jobID           :  pdi-data-refinery-plugin
@@ -423,7 +426,7 @@ jobGroups:
      - jobID           :  platform-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P platform-ee,platform-ee-assemble
+       directives      :  += -DskipDefault -P platform-ee,platform-ee-assemble -P owasp
        versionProperty :  platform.version
        archiveMatcher  :  NONE
 
