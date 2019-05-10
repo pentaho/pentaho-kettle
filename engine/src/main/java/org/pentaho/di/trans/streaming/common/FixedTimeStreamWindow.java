@@ -29,6 +29,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.streaming.api.StreamWindow;
 import org.pentaho.di.core.Const;
@@ -49,6 +50,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * subtransformation.
  */
 public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Result> {
+
+  private static final Class<?> PKG = BaseStreamStep.class;
 
   private final RowMetaInterface rowMeta;
   private final long millis;
@@ -103,10 +106,16 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       .filter( Optional::isPresent )
       .map( Optional::get )
       .sequential()
-      .takeWhile( pair -> pair.getValue().getNrErrors() == 0 )
+      .doOnNext( this::failOnError )
       .doOnNext( postProcessor )
       .map( Map.Entry::getValue )
       .blockingIterable();
+  }
+
+  private void failOnError( Map.Entry<List<I>, Result> pair ) throws KettleException {
+    if ( pair.getValue().getNrErrors() > 0 ) {
+      throw new KettleException( BaseMessages.getString( PKG, "FixedTimeStreamWindow.SubtransFailed"  ) );
+    }
   }
 
   private Optional<Map.Entry<List<I>, Result>> sendBufferToSubtrans( List<I> input ) throws KettleException {
