@@ -1,9 +1,10 @@
+@echo off
 
 REM *****************************************************************************
 REM
 REM Pentaho Data Integration
 REM
-REM Copyright (C) 2005 - 2019 by Hitachi Vantara : http://www.hitachivantara.com
+REM Copyright (C) 2012 - ${copyright.year} by Hitachi Vantara : http://www.hitachivantara.com
 REM
 REM *****************************************************************************
 REM
@@ -21,4 +22,7 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
-sleep 1
+echo Launching Spoon with console output:
+set SPOON_CONSOLE=1
+@echo on
+"%~dp0spoon.bat"
