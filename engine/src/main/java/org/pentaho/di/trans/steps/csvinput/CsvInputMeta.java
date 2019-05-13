@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -339,34 +339,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     }
   }
 
-  /*
-   * We should make sure the values are Trimmed from the XML side. Most of the time, the user will make the adjustments
-   * in the UI and the UI side will trim automatically. However, for projects where people send the values in an XML
-   * file or they have a lot of transformations that need to be converted because the UI side wasn't trimming before,
-   * they need this method to help clean up their transformations and save the data correctly for future use. The UI
-   * captures and trims some fields that are initially strings before they become integers that the method here cannot
-   * trim. So we need both methods in both spots to ensure the fields are clean from both directions completely.
-   */
-  private String trimFieldValue( String text ) {
-    if ( text != null && !text.isEmpty() ) {
-      text = text.trim();
-    }
-    return text;
-  }
-
-  private void trimFields() {
-    for ( TextFileInputField field : inputFields ) {
-      field.setFormat( trimFieldValue( field.getFormat() ) );
-      field.setCurrencySymbol( trimFieldValue( field.getCurrencySymbol() ) );
-      field.setDecimalSymbol( trimFieldValue( field.getDecimalSymbol() ) );
-      field.setGroupSymbol( trimFieldValue( field.getGroupSymbol() ) );
-    }
-  }
-
   @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    trimFields();
     try {
       rowMeta.clear(); // Start with a clean slate, eats the input
 
@@ -377,6 +352,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         valueMeta.setConversionMask( field.getFormat() );
         valueMeta.setLength( field.getLength() );
         valueMeta.setPrecision( field.getPrecision() );
+        valueMeta.setConversionMask( field.getFormat() );
         valueMeta.setDecimalSymbol( field.getDecimalSymbol() );
         valueMeta.setGroupingSymbol( field.getGroupSymbol() );
         valueMeta.setCurrencySymbol( field.getCurrencySymbol() );

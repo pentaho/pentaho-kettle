@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -875,32 +875,20 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
       int colnr = 1;
       inputMeta.getInputFields()[i].setName( item.getText( colnr++ ) );
-      inputMeta.getInputFields()[i].setType( ValueMetaFactory.getIdForValueMeta( trimFieldValue( item.getText( colnr++ ) ) ) );
-      inputMeta.getInputFields()[i].setFormat( trimFieldValue( item.getText( colnr++ ) ) );
-      inputMeta.getInputFields()[i].setLength( Const.toInt( trimFieldValue( item.getText( colnr++ ) ), -1 ) );
-      inputMeta.getInputFields()[i].setPrecision( Const.toInt( trimFieldValue( item.getText( colnr++ ) ), -1 ) );
-      inputMeta.getInputFields()[i].setCurrencySymbol( trimFieldValue( item.getText( colnr++ ) ) );
-      inputMeta.getInputFields()[i].setDecimalSymbol( trimFieldValue( item.getText( colnr++ ) ) );
-      inputMeta.getInputFields()[i].setGroupSymbol( trimFieldValue( item.getText( colnr++ ) ) );
-      inputMeta.getInputFields()[i].setTrimType( ValueMetaString.getTrimTypeByDesc( trimFieldValue( item.getText( colnr++ ) ) ) );
+      inputMeta.getInputFields()[i].setType( ValueMetaFactory.getIdForValueMeta( item.getText( colnr++ ) ) );
+      inputMeta.getInputFields()[i].setFormat( item.getText( colnr++ ) );
+      inputMeta.getInputFields()[i].setLength( Const.toInt( item.getText( colnr++ ), -1 ) );
+      inputMeta.getInputFields()[i].setPrecision( Const.toInt( item.getText( colnr++ ), -1 ) );
+      inputMeta.getInputFields()[i].setCurrencySymbol( item.getText( colnr++ ) );
+      inputMeta.getInputFields()[i].setDecimalSymbol( item.getText( colnr++ ) );
+      inputMeta.getInputFields()[i].setGroupSymbol( item.getText( colnr++ ) );
+      inputMeta.getInputFields()[i].setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( colnr++ ) ) );
     }
     wFields.removeEmptyRows();
     wFields.setRowNums();
     wFields.optWidth( true );
 
     inputMeta.setChanged();
-  }
-
-  /*
-   * We should make sure the values are Trimmed from the UI side. Ensuring that whatever the user puts into the
-   * table rows can actually be saved appropriately. There are some fields here that can be trimmed that cannot be
-   * trimmed from the XML side
-   */
-  private String trimFieldValue( String text ) {
-    if ( text != null && !text.isEmpty() ) {
-      text = text.trim();
-    }
-    return text;
   }
 
   private void ok() {
