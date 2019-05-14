@@ -66,6 +66,7 @@ public class HttpUtil {
                                      String serviceAndArguments, boolean isSecure )
     throws UnsupportedEncodingException {
     String realHostname = space.environmentSubstitute( hostname );
+    String xpto;
     if ( !StringUtils.isEmpty( webAppName ) ) {
       serviceAndArguments = "/" + space.environmentSubstitute( webAppName ) + serviceAndArguments;
     }
