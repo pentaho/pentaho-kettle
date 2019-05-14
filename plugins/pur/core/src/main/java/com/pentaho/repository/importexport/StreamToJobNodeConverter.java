@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,17 +96,7 @@ public class StreamToJobNodeConverter implements Converter {
           try {
             JobMeta jobMeta = repository.loadJob( new StringObjectId( fileId.toString() ), null );
             if ( jobMeta != null ) {
-              Set<String> privateDatabases = jobMeta.getPrivateDatabases();
-              if ( privateDatabases != null ) {
-                // keep only private transformation databases
-                for ( Iterator<DatabaseMeta> it = jobMeta.getDatabases().iterator(); it.hasNext(); ) {
-                  String databaseName = it.next().getName();
-                  if ( !privateDatabases.contains( databaseName ) ) {
-                    it.remove();
-                  }
-                }
-              }
-              return new ByteArrayInputStream( jobMeta.getXML().getBytes() );
+              return new ByteArrayInputStream( filterPrivateDatabases( jobMeta ).getXML().getBytes() );
             }
           } catch ( KettleException e ) {
             logger.error( e );
@@ -123,6 +114,22 @@ public class StreamToJobNodeConverter implements Converter {
       logger.error( e );
     }
     return is;
+  }
+
+  @VisibleForTesting
+  JobMeta filterPrivateDatabases( JobMeta jobMeta ) {
+    Set<String> privateDatabases = jobMeta.getPrivateDatabases();
+    if ( privateDatabases != null ) {
+      // keep only private transformation databases
+      for ( Iterator<DatabaseMeta> it = jobMeta.getDatabases().iterator(); it.hasNext(); ) {
+        DatabaseMeta databaseMeta = it.next();
+        String databaseName = databaseMeta.getName();
+        if ( !privateDatabases.contains( databaseName ) && !jobMeta.isDatabaseConnectionUsed( databaseMeta ) ) {
+          it.remove();
+        }
+      }
+    }
+    return jobMeta;
   }
 
   // package-local visibility for testing purposes
