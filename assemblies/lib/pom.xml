@@ -57,6 +57,7 @@
     <paho.version>1.2.0</paho.version>
     <bahir.version>2.3.2</bahir.version>
     <snowflake-jdbc.version>3.6.28</snowflake-jdbc.version>
+    <redshift-jdbc.version>1.2.18.1036</redshift-jdbc.version>
   </properties>
 
   <dependencies>
@@ -480,6 +481,12 @@
       <groupId>net.snowflake</groupId>
       <artifactId>snowflake-jdbc</artifactId>
       <version>${snowflake-jdbc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazon.redshift</groupId>
+      <artifactId>redshift-jdbc4-no-awssdk</artifactId>
+      <version>${redshift-jdbc.version}</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Spring -->
