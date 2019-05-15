@@ -268,6 +268,7 @@ define([
      *
      * @param {Object} folder - folder object
      * @param {Boolean} saveHistory - should save history
+     * @param {Boolean} useCache - should use cache
      */
     function selectFolder(folder, saveHistory, useCache) {
       if (saveHistory) {
@@ -404,7 +405,6 @@ define([
           fileService.open(file);
         }
       } catch (e) {
-        console.log(e);
         if (file.repository) {
           dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
               file.objectId).then(function (response) {
@@ -426,7 +426,21 @@ define([
      * @private
      */
     function _save(override) {
-      fileService.save(vm.fileToSave, vm.folder);
+      if (_isInvalidName()) {
+        _triggerError(17);
+      } else if (override || !_isDuplicate()) {
+        var currentFilename = "";
+        if (vm.files.length > 0) {
+          currentFilename = vm.files[0].name;
+        }
+        fileService.save(vm.fileToSave, vm.folder, currentFilename, override).then(function() {
+          // Dialog should close
+        }, function() {
+          _triggerError(3);
+        });
+      } else {
+        _triggerError(1);
+      }
     }
 
     /**
@@ -607,7 +621,7 @@ define([
         folderService.deleteFolder(vm.tree, vm.folder).then(function (parentFolder) {
           vm.folder = null;
           selectFolder(parentFolder);
-          vm.file = null;
+          vm.files = null;
           vm.searchString = "";
           vm.showMessage = false;
           dt.getRecentFiles().then(_populateRecentFiles);
@@ -706,7 +720,6 @@ define([
         parentFolder.loaded = false;
         onRefreshFolder();
       }, function (response) {
-        //console.log(response);
         console.log("Copy Failed.");
         onRefreshFolder();
         // TODO: Trigger error that files couldn't be copied and why
@@ -720,12 +733,9 @@ define([
      */
     function copyFiles(from, to) {
       fileService.copyFiles(from, to).then(function (response) {
-        console.log("Copy Complete");
         to.loaded = false;
         onRefreshFolder();
       }, function (response) {
-        //console.log(response);
-        console.log("Copy Failed.");
         onRefreshFolder();
         // TODO: Trigger error that files couldn't be copied
       });
@@ -761,8 +771,8 @@ define([
     function _isDuplicate() {
       if (vm.folder && vm.folder.children) {
         for (var i = 0; i < vm.folder.children.length; i++) {
-          if (vm.fileToSave === vm.folder.children[i].name && vm.fileType === vm.folder.children[i].type) {
-            vm.file = vm.folder.children[i];
+          if (vm.fileToSave === vm.folder.children[i].name) {
+            vm.files = [vm.folder.children[i]];
             return true;
           }
         }

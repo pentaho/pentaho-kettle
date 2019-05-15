@@ -4621,16 +4621,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( meta instanceof VariableSpace && fileDialogOperation.getConnection() != null ) {
         ( (VariableSpace) meta ).setVariable( CONNECTION, fileDialogOperation.getConnection() );
       }
-      if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
-        String filename = fileDialogOperation.getPath() + "/" + fileDialogOperation.getFilename();
-        lastFileOpened = filename;
-        lastFileOpenedConnection = fileDialogOperation.getConnection();
-        lastFileOpenedProvider = fileDialogOperation.getProvider();
-        if ( lastFileOpenedConnection != null && meta instanceof VariableSpace ) {
-          ( (VariableSpace) meta ).setVariable( CONNECTION, lastFileOpenedConnection );
-        }
-        saved = saveXMLFile( meta, filename, false );
-      } else if ( fileDialogOperation.getRepositoryObject() != null ) {
+      if ( fileDialogOperation.getRepositoryObject() != null ) {
         RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
         final RepositoryDirectoryInterface oldDir = meta.getRepositoryDirectory();
         final String oldName = meta.getName();
@@ -4642,6 +4633,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           meta.setRepositoryDirectory( oldDir );
           meta.setName( oldName );
         }
+      } else if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
+        String filename = fileDialogOperation.getPath() + "/" + fileDialogOperation.getFilename();
+        lastFileOpened = filename;
+        lastFileOpenedConnection = fileDialogOperation.getConnection();
+        lastFileOpenedProvider = fileDialogOperation.getProvider();
+        if ( lastFileOpenedConnection != null && meta instanceof VariableSpace ) {
+          ( (VariableSpace) meta ).setVariable( CONNECTION, lastFileOpenedConnection );
+        }
+        saved = saveXMLFile( meta, filename, false );
       }
     } catch ( KettleException e ) {
       return false;

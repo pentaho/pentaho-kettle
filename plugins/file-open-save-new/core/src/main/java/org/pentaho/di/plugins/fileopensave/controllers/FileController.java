@@ -27,6 +27,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Result;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
 
@@ -126,8 +127,10 @@ public class FileController {
         fileCache.addFile( fileProvider.getParent( folder ), newFile );
       }
       return Result.success( "", newFile );
-    } catch ( InvalidFileProviderException | FileException e ) {
-      return null;
+    } catch ( FileExistsException fee ) {
+      return Result.fileCollision( "", folder );
+    } catch ( FileException | InvalidFileProviderException fe ) {
+      return Result.error( "", folder );
     }
   }
 

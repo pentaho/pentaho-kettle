@@ -139,9 +139,9 @@ define(
           select(null, file.name, file.path, file.parent, file.connection, file.provider, null);
         }
 
-        function save(filename, folder) {
-          console.log(filename);
+        function save(filename, folder, currentFilename, override) {
           select(null, filename, null, folder.path, null, folder.provider, null);
+          return $q.resolve();
         }
       }
     });

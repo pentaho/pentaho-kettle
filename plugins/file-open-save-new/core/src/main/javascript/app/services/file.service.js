@@ -76,7 +76,11 @@ define(
                   }
                 }
               }
-              resolve(response);
+              if (response.data.data.length === files.length) {
+                resolve(response);
+              } else {
+                reject(response);
+              }
             }, function (response) {
               reject(response);
             });
@@ -181,7 +185,7 @@ define(
          * @returns {Promise}
          */
         function copyFile(from, to, path, overwrite) {
-          handleProgressModal("Waiting...", "Copying file " + from.path + " to " + path);
+          handleProgressModal(i18n.get('file-open-save-plugin.copying.message'), "Copying file " + from.path + " to " + path);
           return helperService.httpPost([baseUrl, "copy"].join("/") + "?overwrite=" + overwrite + "&path=" + path, {
             from: from,
             to: to
@@ -209,7 +213,7 @@ define(
          * @returns {Promise}
          */
         function moveFile(from, to, path, overwrite) {
-          handleProgressModal("Waiting...", "Moving file " + from.path + " to " + path);
+          handleProgressModal(i18n.get('file-open-save-plugin.moving.message'), "Moving file " + from.path + " to " + path);
           return helperService.httpPost([baseUrl, "move"].join("/") + "?overwrite=" + overwrite + "&path=" + path, {
             from: from,
             to: to
@@ -317,10 +321,9 @@ define(
           ss.get(file.provider).open(file);
         }
 
-        function save(filename, folder) {
-          helperService.httpPost([baseUrl, "clearCache"].join("/"), folder).then(function(response) {
-            ss.get(folder.provider).save(filename, folder);
-          });
+        function save(filename, folder, currentFilename, override) {
+          helperService.httpPost([baseUrl, "clearCache"].join("/"), folder);
+          return ss.get(folder.provider).save(filename, folder, currentFilename, override);
         }
 
         /**
