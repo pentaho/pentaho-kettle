@@ -111,6 +111,9 @@ file-open-save-app input.forwardHistory {
   width: 10px;
   cursor: pointer;
   transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
 }
 
 file-open-save-app input.forwardHistory:hover {
@@ -483,6 +486,9 @@ file-open-save-app .bottom {
   bottom: 0;
   right: 0;
   display: flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -webkit-flex;
 }
 
 file-open-save-app .open .bottom,
@@ -494,6 +500,9 @@ file-open-save-app .selectFolder .bottom {
 #fileName,
 #fileFilter {
   display: flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -webkit-flex;
 }
 
 #fileTypeLabel {
@@ -512,10 +521,19 @@ file-open-save-app .selectFolder .bottom {
 
 .flex {
   flex: 1;
-  display: flex !important
+  -moz-flex: 1;
+  -ms-flex: 1;
+  -webkit-flex: 1;
+  display: flex !important;
+  display: -moz-flex !important;
+  display: -ms-flex !important;
+  display: -webkit-flex !important;
 }
 
 .flex input {
-  flex: 1 !important;
+  flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  -webkit-flex: 1;
   height: 35px !important;
 }
