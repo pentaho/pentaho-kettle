@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,9 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Unit tests for RedshiftDatabaseMeta
@@ -70,6 +72,14 @@ public class RedshiftDatabaseMetaTest {
       dbMeta.getURL( "rs.pentaho.com", "4444", "myDB" ) );
     dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     assertEquals( "jdbc:odbc:myDB", dbMeta.getURL( null, "Not Null", "myDB" ) );
+    dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
+    dbMeta.addAttribute( RedshiftDatabaseMeta.RS_AUTHENTICATION_METHOD, RedshiftDatabaseMeta.IAM_CREDENTIALS );
+    dbMeta.addAttribute( RedshiftDatabaseMeta.RS_ACCESS_KEY_ID, "myid" );
+    dbMeta.addAttribute( RedshiftDatabaseMeta.RS_SECRET_ACCESS_KEY, "mysecretkey" );
+    dbMeta.addAttribute( RedshiftDatabaseMeta.RS_SESSION_TOKEN, "mytoken" );
+    assertEquals(
+      "jdbc:redshift:iam://amazonhost:12345/foodmart?AccessKeyID=myid&SecretAccessKey=mysecretkey&SessionToken=mytoken",
+      dbMeta.getURL( "amazonhost", "12345", "foodmart" ) );
   }
 
   @Test

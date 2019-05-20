@@ -33,6 +33,11 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
   public static final String AWS_ACCESS_KEY_ID = "awsAccessKeyId";
   public static final String AWS_ACCESS_KEY = "awsAccessKey";
   public static final String AUTHENTICATION_METHOD = "awsAuthenticationMethod";
+  public static final String RS_AUTHENTICATION_METHOD = "rsAuthenticationMethod";
+  public static final String RS_ACCESS_KEY_ID = "rsAccessKeyId";
+  public static final String RS_SECRET_ACCESS_KEY = "rsSecretAccessKey";
+  public static final String RS_SESSION_TOKEN = "rsSessionToken";
+  public static final String IAM_CREDENTIALS = "IAM Credentials";
 
   public RedshiftDatabaseMeta() {
     addExtraOption( "REDSHIFT", "tcpKeepAlive", "true" );
@@ -61,7 +66,14 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      return "jdbc:redshift://" + hostname + ":" + port + "/" + databaseName;
+      if ( IAM_CREDENTIALS.equals( getAttribute( RS_AUTHENTICATION_METHOD, "" ) ) ) {
+        return "jdbc:redshift:iam://" + hostname + ":" + port + "/" + databaseName
+          + "?AccessKeyID=" + getAttribute( RS_ACCESS_KEY_ID, "" )
+          + "&SecretAccessKey=" + getAttribute( RS_SECRET_ACCESS_KEY, "" )
+          + "&SessionToken=" + getAttribute( RS_SESSION_TOKEN, "" );
+      } else {
+        return "jdbc:redshift://" + hostname + ":" + port + "/" + databaseName;
+      }
     }
   }
 
