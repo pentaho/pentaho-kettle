@@ -21,6 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.core.database;
 
+import java.util.Map;
+
 import static org.pentaho.di.core.util.Utils.isEmpty;
 
 /**
@@ -33,6 +35,13 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
   public static final String AWS_ACCESS_KEY_ID = "awsAccessKeyId";
   public static final String AWS_ACCESS_KEY = "awsAccessKey";
   public static final String AUTHENTICATION_METHOD = "awsAuthenticationMethod";
+  public static final String STANDARD_CREDENTIALS = "Standard";
+  public static final String IAM_CREDENTIALS = "IAM Credentials";
+
+  public static final String JDBC_AUTH_METHOD = "jdbcAuthMethod";
+  public static final String IAM_ACCESS_KEY_ID = "iamAccessKeyId";
+  public static final String IAM_SECRET_ACCESS_KEY = "iamSecretAccessKey";
+  public static final String IAM_SESSION_TOKEN = "iamSessionToken";
 
   public RedshiftDatabaseMeta() {
     addExtraOption( "REDSHIFT", "tcpKeepAlive", "true" );
@@ -61,7 +70,19 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      return "jdbc:redshift://" + hostname + ":" + port + "/" + databaseName;
+      if ( IAM_CREDENTIALS.equals( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
+        return "jdbc:redshift:iam://" + hostname + ":" + port + "/" + databaseName;
+      } else {
+        return "jdbc:redshift://" + hostname + ":" + port + "/" + databaseName;
+      }
+    }
+  }
+
+  @Override public void putOptionalOptions( Map<String, String> extraOptions ) {
+    if ( IAM_CREDENTIALS.equals( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
+      extraOptions.put( "REDSHIFT.AccessKeyID", getAttribute( IAM_ACCESS_KEY_ID, "" ) );
+      extraOptions.put( "REDSHIFT.SecretAccessKey", getAttribute( IAM_SECRET_ACCESS_KEY, "" ) );
+      extraOptions.put( "REDSHIFT.SessionToken", getAttribute( IAM_SESSION_TOKEN, "" ) );
     }
   }
 

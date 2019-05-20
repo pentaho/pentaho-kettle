@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,9 +25,17 @@ package org.pentaho.di.core.database;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_CREDENTIALS;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SESSION_TOKEN;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.JDBC_AUTH_METHOD;
 
 /**
  * Unit tests for RedshiftDatabaseMeta
@@ -70,6 +78,19 @@ public class RedshiftDatabaseMetaTest {
       dbMeta.getURL( "rs.pentaho.com", "4444", "myDB" ) );
     dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     assertEquals( "jdbc:odbc:myDB", dbMeta.getURL( null, "Not Null", "myDB" ) );
+    dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
+    dbMeta.addAttribute( JDBC_AUTH_METHOD, IAM_CREDENTIALS );
+    dbMeta.addAttribute( IAM_ACCESS_KEY_ID, "myid" );
+    dbMeta.addAttribute( IAM_SECRET_ACCESS_KEY, "mysecretkey" );
+    dbMeta.addAttribute( IAM_SESSION_TOKEN, "mytoken" );
+    assertEquals(
+      "jdbc:redshift:iam://amazonhost:12345/foodmart",
+      dbMeta.getURL( "amazonhost", "12345", "foodmart" ) );
+    HashMap<String, String> optionalOptions = new HashMap<>();
+    dbMeta.putOptionalOptions( optionalOptions );
+    assertEquals( "myid", optionalOptions.get( "REDSHIFT.AccessKeyID" ) );
+    assertEquals( "mysecretkey", optionalOptions.get( "REDSHIFT.SecretAccessKey" ) );
+    assertEquals( "mytoken", optionalOptions.get( "REDSHIFT.SessionToken" ) );
   }
 
   @Test

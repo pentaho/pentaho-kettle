@@ -1262,4 +1262,7 @@ public interface DatabaseInterface extends Cloneable {
   default String getLegacyColumnName( DatabaseMetaData dbMetaData, ResultSetMetaData rsMetaData, int index ) throws KettleDatabaseException {
     return "";
   }
+
+  default void putOptionalOptions( Map<String, String> extraOptions ) {
+  }
 }
