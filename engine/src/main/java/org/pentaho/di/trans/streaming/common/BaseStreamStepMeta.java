@@ -57,7 +57,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   public static final String DURATION = "DURATION";
   public static final String SUB_STEP = "SUB_STEP";
   public static final String PARALLELISM = "PARALLELISM";
-  public static final String MESSAGE_DATA_TYPE = "messageDataType";
+  public static final String MESSAGE_DATA_TYPE = "MESSAGE_DATA_TYPE";
 
   @Injection ( name = TRANSFORMATION_PATH )
   protected String transformationPath = "";
