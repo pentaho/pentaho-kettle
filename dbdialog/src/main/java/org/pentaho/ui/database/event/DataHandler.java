@@ -77,6 +77,7 @@ import org.pentaho.ui.xul.containers.XulTreeRow;
 import org.pentaho.ui.xul.containers.XulWindow;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
+import static org.pentaho.di.core.database.BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION;
 import static org.pentaho.di.core.database.SnowflakeHVDatabaseMeta.WAREHOUSE;
 
 /**
@@ -97,6 +98,9 @@ public class DataHandler extends AbstractXulEventHandler {
   private static final String EXTRA_OPTION_WEB_APPLICATION_NAME = BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION
     + "KettleThin.webappname";
   private static final String DEFAULT_WEB_APPLICATION_NAME = "pentaho";
+  private static final String SNOWFLAKE_TYPE = "SNOWFLAKEHV";
+  private static final String EXTRA_OPT_WAREHOUSE = ATTRIBUTE_PREFIX_EXTRA_OPTION + SNOWFLAKE_TYPE + "." + WAREHOUSE;
+
 
   private List<String> databaseDialects;
 
@@ -811,7 +815,7 @@ public class DataHandler extends AbstractXulEventHandler {
         meta.setConnectionPoolingProperties( properties );
       }
     }
-
+    specialSnowflakeGetHandling( meta );
   }
 
   private void setInfo( DatabaseMeta meta ) {
@@ -825,6 +829,7 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.getAttributes().remove( EXTRA_OPTION_WEB_APPLICATION_NAME );
       meta.setChanged();
     }
+    specialSnowflakeSetHandling( meta );
 
     getControls();
 
@@ -938,6 +943,37 @@ public class DataHandler extends AbstractXulEventHandler {
     setDeckChildIndex();
     onPoolingCheck();
     onClusterCheck();
+  }
+
+  /**
+   * Snowflake has a warehouse attr that needs to an "extra option" such
+   * that PRD will properly load and store the value (PRD has a different meta strategy).
+   * BUT, we don't want the warehouse option to show up in the options table,
+   * since it's on the main tab, so we remove the extra option on Set, and add it on Get.
+   * This is a workaround to existing limitations in PRD, which currently ignores all
+   * non-"extra" attributes.
+   */
+  private void specialSnowflakeSetHandling( DatabaseMeta meta ) {
+    if ( metaContainsExtraOptionForWarehouse( meta ) ) {
+      Properties attrs = databaseMeta.getAttributes();
+      String warehouse = (String) attrs.get( EXTRA_OPT_WAREHOUSE );
+      attrs.remove( EXTRA_OPT_WAREHOUSE );
+      attrs.put( WAREHOUSE, warehouse );
+    }
+  }
+
+  private void specialSnowflakeGetHandling( DatabaseMeta meta ) {
+    if ( meta == null || !SNOWFLAKE_TYPE.equals( meta.getPluginId() ) ) {
+      return;
+    }
+    Properties attrs = meta.getAttributes();
+    String warehouse = (String) attrs.get( WAREHOUSE );
+    attrs.put( EXTRA_OPT_WAREHOUSE, warehouse );
+  }
+
+  private boolean metaContainsExtraOptionForWarehouse( DatabaseMeta meta ) {
+    return databaseMeta != null
+      && databaseMeta.getAttributes().containsKey( EXTRA_OPT_WAREHOUSE );
   }
 
   private void traverseDomSetReadOnly( XulComponent component, boolean readonly ) {
