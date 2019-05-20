@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_STRING;
 import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.mqtt.MQTTClientBuilder.DEFAULT_SSL_OPTS;
@@ -164,6 +165,9 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
   @Injection ( name = AUTOMATIC_RECONNECT )
   private String automaticReconnect = "";
 
+  @Injection( name = MESSAGE_DATA_TYPE )
+  public int messageDataType = TYPE_STRING;
+
   public MQTTConsumerMeta() {
     super();
     setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
@@ -191,6 +195,12 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
     serverUris = "";
     mqttVersion = "";
     automaticReconnect = "";
+    messageDataType = TYPE_STRING;
+  }
+
+  @Override
+  public int getMessageDataType() {
+    return messageDataType;
   }
 
   @Override public String getFileName() {
