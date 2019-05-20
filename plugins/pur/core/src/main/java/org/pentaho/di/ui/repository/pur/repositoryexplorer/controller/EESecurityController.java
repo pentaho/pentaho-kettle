@@ -552,12 +552,6 @@ public class EESecurityController extends SecurityController implements java.io.
   protected void addUser() {
     if ( service != null ) {
       try {
-        if ( eeSecurityUser.getUserInfo().getUsername().isEmpty() ) {
-          throw new Exception( BaseMessages.getString( PKG, "CantCreateUserDialog.UsernameIsMandatory" ) );
-        }
-        if ( eeSecurityUser.getUserInfo().getPassword().isEmpty() ) {
-          throw new Exception( BaseMessages.getString( PKG, "CantCreateUserDialog.PasswordIsMandatory" ) );
-        }
         service.saveUserInfo( eeSecurityUser.getUserInfo() );
         eeSecurity.addUser( UIObjectRegistry.getInstance().constructUIRepositoryUser( eeSecurityUser.getUserInfo() ) );
         userDialog.hide();
@@ -675,9 +669,6 @@ public class EESecurityController extends SecurityController implements java.io.
   private void addRole() {
     if ( service != null ) {
       try {
-        if ( securityRole.getName().isEmpty() ) {
-          throw new Exception( BaseMessages.getString( PKG, "CantCreateRoleDialog.RoleNameIsMandatory" ) );
-        }
         IRole role = securityRole.getRole( (IRoleSupportSecurityManager) service );
         ( (IRoleSupportSecurityManager) service ).createRole( role );
         eeSecurity.addRole( UIEEObjectRegistery.getInstance().constructUIRepositoryRole( role ) );
