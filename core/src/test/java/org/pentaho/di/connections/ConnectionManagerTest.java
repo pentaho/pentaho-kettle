@@ -22,9 +22,11 @@
 
 package org.pentaho.di.connections;
 
+import org.apache.commons.vfs2.FileSystemOptions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
@@ -182,6 +184,12 @@ public class ConnectionManagerTest {
   public void testGetConnectionDetailsBySchemeEmpty() {
     addOne();
     Assert.assertEquals( 0, connectionManager.getConnectionDetailsByScheme( DOES_NOT_EXIST ).size() );
+  }
+
+  @Test
+  public void testNullConnectionName() {
+    FileSystemOptions fileSystemOptions = VFSHelper.getOpts( "file://fakefile.ktr", null );
+    Assert.assertNull( fileSystemOptions );
   }
 
   private void addProvider() {
