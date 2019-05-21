@@ -88,16 +88,16 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
     } else {
       account = hostname.substring( 0, hostname.indexOf( '.' ) );
     }
+    // set the warehouse attribute as an "extra" option so it will be appended to the url.
+    addExtraOption( getPluginId(), WAREHOUSE, getAttribute( WAREHOUSE, "" ) );
     return "jdbc:snowflake://"
       + realHostname
       + getParamIfSet( ":", port )
       + "/?account=" + account
       + "&db=" + databaseName
       + "&user=" + getUsername()
-      + "&password=" + getPassword()
-      + getParamIfSet( "&warehouse=", getAttributes().getProperty( WAREHOUSE ) );
+      + "&password=" + getPassword();
   }
-
 
   private String getParamIfSet( String param, String val ) {
     if ( !isEmpty( val ) ) {
