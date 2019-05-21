@@ -18,6 +18,8 @@ buildProperties:
   JOB_ITEM_DEFAULTS              : 
     archivable                   : true
 
+  SLACK_CHANNEL                  : buildteam-alerts
+
 jobGroups:
   # Always required
 
