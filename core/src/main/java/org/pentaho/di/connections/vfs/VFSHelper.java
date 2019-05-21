@@ -30,12 +30,14 @@ import org.pentaho.di.connections.ConnectionManager;
  */
 public class VFSHelper {
   public static FileSystemOptions getOpts( String file, String connection ) {
-    VFSConnectionDetails vfsConnectionDetails =
-      (VFSConnectionDetails) ConnectionManager.getInstance().getConnectionDetails( file, connection );
-    VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
-      (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance().getConnectionProvider( file );
-    if ( vfsConnectionProvider != null ) {
-      return vfsConnectionProvider.getOpts( vfsConnectionDetails );
+    if ( connection != null ) {
+      VFSConnectionDetails vfsConnectionDetails =
+        (VFSConnectionDetails) ConnectionManager.getInstance().getConnectionDetails( file, connection );
+      VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
+        (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance().getConnectionProvider( file );
+      if ( vfsConnectionDetails != null && vfsConnectionProvider != null ) {
+        return vfsConnectionProvider.getOpts( vfsConnectionDetails );
+      }
     }
     return null;
   }
