@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -137,7 +137,7 @@ public class ActiveMQProviderTest {
     delegate.sslTruststorePath = TRUST_STORE_PATH_VAL;
     delegate.sslTruststorePassword = TRUST_STORE_PASS_VAL;
 
-    String urlString = provider.buildUrl( delegate );
+    String urlString = provider.buildUrl( delegate, false );
 
     try {
       URI url = new URI( urlString );
@@ -163,7 +163,7 @@ public class ActiveMQProviderTest {
     delegate.sslTruststorePath = TRUST_STORE_PATH_VAL;
     delegate.sslTruststorePassword = TRUST_STORE_PASS_VAL;
 
-    String urlString = provider.buildUrl( delegate );
+    String urlString = provider.buildUrl( delegate, false );
 
     try {
       URI url = new URI( urlString );
@@ -178,7 +178,7 @@ public class ActiveMQProviderTest {
 
     delegate.amqUrl += ";";
 
-    urlString = provider.buildUrl( delegate );
+    urlString = provider.buildUrl( delegate,false );
 
     try {
       URI url = new URI( urlString );
@@ -216,7 +216,7 @@ public class ActiveMQProviderTest {
     delegate.amqSslProvider = SSL_PROVIDER_VAL;
     delegate.sslUseDefaultContext = false;
 
-    String urlString = provider.buildUrl( delegate );
+    String urlString = provider.buildUrl( delegate, false );
 
     try {
       URI url = new URI( urlString );
@@ -262,7 +262,7 @@ public class ActiveMQProviderTest {
     delegate.amqSslProvider = SSL_PROVIDER_VAL;
     delegate.sslUseDefaultContext = true;
 
-    String urlString = provider.buildUrl( delegate );
+    String urlString = provider.buildUrl( delegate, false );
 
     try {
       URI url = new URI( urlString );
@@ -310,8 +310,9 @@ public class ActiveMQProviderTest {
     delegate.amqSslVerifyHost = VERIFY_HOST_VAL;
     delegate.amqSslTrustAll = TRUST_ALL_VAL;
     delegate.amqSslProvider = SSL_PROVIDER_VAL;
+    String PASSWORD_MASK = "********";
 
-    String urlString = provider.buildUrl( delegate );
+    String urlString = provider.buildUrl( delegate, false );
     String paramString = provider.getConnectionDetails( delegate );
 
     try {
@@ -334,8 +335,11 @@ public class ActiveMQProviderTest {
 
     assertTrue( "URL base incorrect", urlString.startsWith( AMQ_URL_BASE + "?" ) );
 
-    assertTrue( "Connection params missing URL", paramString.contains( "URL: " + urlString ) );
+    assertTrue( "Connection params missing URL",
+      paramString.contains( "URL: " + urlString.replaceFirst( AMQ_PASSWORD_VAL, PASSWORD_MASK )
+        .replaceFirst( TRUST_STORE_PASS_VAL, PASSWORD_MASK )
+        .replaceFirst( KEY_STORE_PASS_VAL, PASSWORD_MASK ) ) );
     assertTrue( "Connection params missing user name", paramString.contains( "User Name: " + AMQ_USERNAME_VAL ) );
-    assertTrue( "Connection params missing password", paramString.contains( "Password: " + AMQ_PASSWORD_VAL ) );
+    assertTrue( "Connection params missing password", paramString.contains( "Password: " + PASSWORD_MASK ) );
   }
 }
