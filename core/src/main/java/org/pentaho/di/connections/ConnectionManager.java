@@ -215,6 +215,9 @@ public class ConnectionManager {
   }
 
   public ConnectionDetails getConnectionDetails( String key, String name ) {
+    if ( metaStoreSupplier.get() == null ) {
+      return null;
+    }
     return getConnectionDetails( metaStoreSupplier.get(), key, name );
   }
 
