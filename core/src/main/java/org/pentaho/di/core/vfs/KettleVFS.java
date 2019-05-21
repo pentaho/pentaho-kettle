@@ -187,8 +187,11 @@ public class KettleVFS {
     String[] varList = varSpace.listVariables();
 
     for ( String var : varList ) {
-      if ( var.equalsIgnoreCase( CONNECTION ) ) {
-        return VFSHelper.getOpts( vfsFilename, varSpace.getVariable( var ) );
+      if ( var.equalsIgnoreCase( CONNECTION ) && varSpace.getVariable( var ) != null ) {
+        FileSystemOptions fileSystemOptions = VFSHelper.getOpts( vfsFilename, varSpace.getVariable( var ) );
+        if ( fileSystemOptions != null ) {
+          return fileSystemOptions;
+        }
       }
       if ( var.startsWith( "vfs." ) ) {
         String param = configBuilder.parseParameterName( var, scheme );
