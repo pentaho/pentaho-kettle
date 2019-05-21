@@ -34,9 +34,6 @@ node('non-master') {
 
         stage('Validations / Triggers') {
           parallel(
-            'github-commits': {
-              job.trigger('engops/github-commits', suiteParameters, false)
-            },
             'github-commits-pipeline': {
               job.trigger('engops/github-commits-pipelines', suiteParameters, false)
             },
