@@ -260,9 +260,14 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     OutputStream os = null;
     try {
+      TransMeta generatedTransMeta = (TransMeta) data.transMeta.clone();
+      String[] paths = Const.splitPath( targetFilePath, RepositoryDirectory.DIRECTORY_SEPARATOR );
+      String transName = paths[ paths.length  - 1 ].replace( ".ktr", "" );
+      generatedTransMeta.setName( transName ); // set transname on injectedtrans to be same as filename w/o extension
+
       os = KettleVFS.getOutputStream( targetFilePath, false );
       os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
-      os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
+      os.write( generatedTransMeta.getXML().getBytes( Const.XML_ENCODING ) );
     } catch ( IOException e ) {
       throw new KettleException( "Unable to write target file (ktr after injection) to file '"
         + targetFilePath + "'", e );
