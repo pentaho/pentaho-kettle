@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import org.w3c.dom.Document;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -34,7 +35,11 @@ public class StatusServletUtils {
   public static final String STATIC_PATH = "/static";
   public static final String PENTAHO_ROOT = "/pentaho";
 
-  public static String getPentahoStyles() {
+  public static String getPentahoStyles( HttpServletRequest request ) {
+    String uri = request.getRequestURI();
+
+    String webapp = uri == null ? StatusServletUtils.PENTAHO_ROOT : uri.substring( 0, uri.indexOf( GetStatusServlet.CONTEXT_PATH ) );
+
     StringBuilder sb = new StringBuilder();
     String themeName = "ruby"; // default pentaho theme
     String themeCss = "globalRuby.css";
@@ -89,9 +94,18 @@ public class StatusServletUtils {
       // log here
     }
 
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/content/common-ui/resources/themes/" + themeName + "/" + themeCss + "\"/>" );
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/themes/" + themeName + "/" + mantleThemeCss + "\"/>" );
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/MantleStyle.css\"/>" );
+    String stylesheetTag = "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" />";
+
+    String[] stylesheetArray = new String[] {
+      String.format( stylesheetTag, webapp + "/content/common-ui/resources/themes/" + themeName + "/" + themeCss ),
+      String.format( stylesheetTag, webapp + "/mantle/themes/" + themeName + "/" + mantleThemeCss ),
+      String.format( stylesheetTag, webapp + "/mantle/MantleStyle.css" )
+    };
+
+    for ( String s : stylesheetArray ) {
+      sb.append(s);
+    }
+
     return sb.toString();
   }
 }
