@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,6 +60,8 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.W
 
 public class WebsphereMQProvider implements JmsProvider {
 
+  public static final String PW_DEBUG_MASK = "********";
+
   @Override public boolean supports( ConnectionType type ) {
     return type == WEBSPHERE;
   }
@@ -72,15 +74,15 @@ public class WebsphereMQProvider implements JmsProvider {
     connDetails.append( "\nChannel: " ).append( resolver.channel );
     connDetails.append( "\nQueueManager: " ).append( resolver.queueManager );
     connDetails.append( "\nUser Name: " ).append( meta.ibmUsername );
-    connDetails.append( "\nPassword: " ).append( meta.ibmPassword );
+    connDetails.append( "\nPassword: " ).append( PW_DEBUG_MASK );
 
     if ( meta.sslEnabled ) {
       connDetails.append( "\nSSL Enabled: true" );
       connDetails.append( "\nKey Store: " ).append( meta.sslKeystorePath );
-      connDetails.append( "\nKey Store Pass: " ).append( meta.sslKeystorePassword );
+      connDetails.append( "\nKey Store Pass: " ).append( PW_DEBUG_MASK );
       connDetails.append( "\nKey Store Type: " ).append( meta.sslKeystoreType );
       connDetails.append( "\nTrust Store: " ).append( meta.sslTruststorePath );
-      connDetails.append( "\nTrust Store Pass: " ).append( meta.sslTruststorePassword );
+      connDetails.append( "\nTrust Store Pass: " ).append( PW_DEBUG_MASK );
       connDetails.append( "\nTrust Store Type: " ).append( meta.sslTruststoreType );
       connDetails.append( "\nSSL Context Algorithm: " ).append( meta.sslContextAlgorithm );
       connDetails.append( "\nCipher Suite: " ).append( meta.sslCipherSuite );

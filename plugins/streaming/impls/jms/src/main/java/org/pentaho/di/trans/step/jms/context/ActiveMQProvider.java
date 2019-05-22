@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.A
 public class ActiveMQProvider implements JmsProvider {
 
   private static final String CHAR_ENCODING = "UTF-8";
+  public static final String PW_DEBUG_MASK = "********";
 
   @Override public boolean supports( ConnectionType type ) {
     return type == ACTIVEMQ;
@@ -50,7 +51,7 @@ public class ActiveMQProvider implements JmsProvider {
 
   @SuppressWarnings ( "all" ) // suppressing autocloseable error.  inconsistent w/ other connectionfactory impls.
   @Override public JMSContext getContext( JmsDelegate delegate ) {
-    String finalUrl = buildUrl( delegate );
+    String finalUrl = buildUrl( delegate, false );
 
     ConnectionFactory factory = new ActiveMQConnectionFactory( finalUrl );
     return factory.createContext( delegate.amqUsername, delegate.amqPassword );
@@ -60,8 +61,8 @@ public class ActiveMQProvider implements JmsProvider {
     return "User Name: "
       + ( isNullOrEmpty( meta.amqUsername ) ? "" : meta.amqUsername )
       + "\nPassword: "
-      + ( isNullOrEmpty( meta.amqPassword ) ? "" : meta.amqPassword )
-      + "\nURL: " + buildUrl( meta );
+      + PW_DEBUG_MASK
+      + "\nURL: " + buildUrl( meta, true );
   }
 
   /**
@@ -70,19 +71,19 @@ public class ActiveMQProvider implements JmsProvider {
    * @param delegate The JmsDelegate containing connection params
    * @return a URL with SSL options appended to it if required by the settings in the JmsDelegate
    */
-  String buildUrl( JmsDelegate delegate ) {
+  String buildUrl( JmsDelegate delegate, boolean debug ) {
     StringBuilder finalUrl = new StringBuilder( delegate.amqUrl.trim() );
 
     // verify user hit the checkbox on the dialogue *and* also has not specified these values on the URL already
     // end result: default to SSL settings in the URL if present, otherwise use data from the security tab
     if ( delegate.sslEnabled && !finalUrl.toString().contains( "sslEnabled" ) ) {
-      appendSslOptions( delegate, finalUrl );
+      appendSslOptions( delegate, finalUrl, debug );
     }
 
     return finalUrl.toString();
   }
 
-  private void appendSslOptions( JmsDelegate delegate, StringBuilder finalUrl ) {
+  private void appendSslOptions( JmsDelegate delegate, StringBuilder finalUrl, boolean debug ) {
     StringBuilder urlQuery = new StringBuilder();
     // could already be other params on the URL
     if ( !finalUrl.toString().contains( "?" ) ) {
@@ -102,35 +103,35 @@ public class ActiveMQProvider implements JmsProvider {
         Preconditions.checkState( !isNullOrEmpty( delegate.sslKeystorePassword ),
           getString( PKG, "JmsDialog.Security.KeystorePasswordRequired" ) );
         urlQuery.append( "&keyStorePath=" ).append( urlEncode( delegate.sslKeystorePath.trim() ) );
-        urlQuery.append( "&keyStorePassword=" ).append( urlEncode( delegate.sslKeystorePassword.trim() ) );
+        urlQuery.append( "&keyStorePassword=" ).append( ( debug ? PW_DEBUG_MASK : urlEncode( delegate.sslKeystorePassword.trim() ) ) );
       }
       // truststore always required for a client
       Preconditions.checkState( !isNullOrEmpty( delegate.sslTruststorePath.trim() ),
         getString( PKG, "JmsDialog.Security.TrustStorePathRequired" ) );
-      addParam( "trustStorePath", delegate.sslTruststorePath, urlQuery );
+      addParam( "trustStorePath", delegate.sslTruststorePath, urlQuery, false );
       // truststore password not required but might be present
-      addParam( "trustStorePassword", delegate.sslTruststorePassword, urlQuery );
-      addParam( "enabledCipherSuites", delegate.sslCipherSuite, urlQuery );
-      addParam( "enabledProtocols", delegate.sslContextAlgorithm, urlQuery );
+      addParam( "trustStorePassword", delegate.sslTruststorePassword, urlQuery, debug );
+      addParam( "enabledCipherSuites", delegate.sslCipherSuite, urlQuery, false );
+      addParam( "enabledProtocols", delegate.sslContextAlgorithm, urlQuery, false );
       // expect true or false per ActiveMQ docs; no need to decode/translate from y/n/yes/no
-      addParam( "verifyHost", delegate.amqSslVerifyHost, urlQuery );
+      addParam( "verifyHost", delegate.amqSslVerifyHost, urlQuery, false );
       // expect true or false per ActiveMQ docs; no need to decode/translate from y/n/yes/no
-      addParam( "trustAll", delegate.amqSslTrustAll, urlQuery );
+      addParam( "trustAll", delegate.amqSslTrustAll, urlQuery, false );
       // used to choose between JDK and OpenSSL if desired; user must provide OpenSSL natively
-      addParam( "sslProvider", delegate.amqSslProvider, urlQuery );
+      addParam( "sslProvider", delegate.amqSslProvider, urlQuery, false );
     }
 
     finalUrl.append( urlQuery.toString() );
   }
 
-  private void addParam( String paramName, String value, StringBuilder queryBuilder ) {
+  private void addParam( String paramName, String value, StringBuilder queryBuilder, boolean debug ) {
     String trimmed = value.trim();
     if ( !isNullOrEmpty( trimmed ) ) {
       queryBuilder
         .append( "&" )
         .append( paramName )
         .append( "=" )
-        .append( urlEncode( trimmed ) );
+        .append( debug ? PW_DEBUG_MASK : urlEncode( trimmed ) );
     }
 
   }
