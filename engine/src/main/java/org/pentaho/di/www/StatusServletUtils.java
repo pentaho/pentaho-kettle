@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ public class StatusServletUtils {
   public static final String STATIC_PATH = "/static";
   public static final String PENTAHO_ROOT = "/pentaho";
 
-  public static String getPentahoStyles() {
+  public static String getPentahoStyles( String root ) {
     StringBuilder sb = new StringBuilder();
     String themeName = "ruby"; // default pentaho theme
     String themeCss = "globalRuby.css";
@@ -75,8 +75,7 @@ public class StatusServletUtils {
       relativePathSeparator = relativePathSeparator.replaceFirst( "(\\.\\.\\\\)", "" );
 
       // Get mantle theme CSS file
-      String mantleThemeDirStr = relativePathSeparator + "webapps" + File.separator
-          + "pentaho" + File.separator + "mantle" + File.separator
+      String mantleThemeDirStr = relativePathSeparator + "webapps" + root + File.separator + "mantle" + File.separator
           + "themes" + File.separator + themeName + File.separator;
       File mantleThemeDir = new File( mantleThemeDirStr );
       for ( File fName : mantleThemeDir.listFiles() ) {
@@ -89,9 +88,11 @@ public class StatusServletUtils {
       // log here
     }
 
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/content/common-ui/resources/themes/" + themeName + "/" + themeCss + "\"/>" );
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/themes/" + themeName + "/" + mantleThemeCss + "\"/>" );
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/MantleStyle.css\"/>" );
+    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + root
+      + "/content/common-ui/resources/themes/" + themeName + "/" + themeCss + "\"/>" );
+    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + root
+      + "/mantle/themes/" + themeName + "/" + mantleThemeCss + "\"/>" );
+    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + root + "/mantle/MantleStyle.css\"/>" );
     return sb.toString();
   }
 }
