@@ -249,7 +249,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         if ( isJettyMode() ) {
           out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );
         } else {
-          out.print( StatusServletUtils.getPentahoStyles() );
+          out.print( StatusServletUtils.getPentahoStyles( root ) );
           out.println( "<style>" );
           out.println( ".pentaho-table td, tr.cellTableRow, td.gwt-MenuItem, .toolbar-button:not(.toolbar-button-disabled) {" );
           out.println( "  cursor: pointer;" );
