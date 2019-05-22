@@ -342,7 +342,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
         if ( isJettyMode() ) {
           out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );
         } else {
-          out.print( StatusServletUtils.getPentahoStyles() );
+          out.print( StatusServletUtils.getPentahoStyles( root ) );
         }
 
         out.println( "</HEAD>" );
