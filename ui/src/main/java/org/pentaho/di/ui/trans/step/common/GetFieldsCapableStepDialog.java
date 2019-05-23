@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,7 +85,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
       final TableItem item = getFieldsTable().table.getItem( i );
       int fieldNameIndex = getFieldsTable().hasIndexColumn() ? 1 : 0;
       final String itemFieldName = item.getText( fieldNameIndex );
-      if ( itemFieldName != null && itemFieldName.equalsIgnoreCase( fieldName ) ) {
+      if ( itemFieldName != null && itemFieldName.equals( fieldName ) ) {
         return item;
       }
     }
@@ -93,15 +93,14 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
   }
 
   default List<String> getNewFieldNames( final String[] incomingFieldNames ) {
-    // get names of all the fields within the fields table, in lower case for a case-insensitive comparison
-    final Set<String> fieldNamesInTableLowerCase = new HashSet();
+    final Set<String> fieldNamesInTable = new HashSet();
     for ( int i = 0; i < getFieldsTable().table.getItemCount(); i++ ) {
       final TableItem item = getFieldsTable().table.getItem( i );
       int fieldNameIndex = getFieldsTable().hasIndexColumn() ? 1 : 0;
-      fieldNamesInTableLowerCase.add( item.getText( fieldNameIndex ).toLowerCase() );
+      fieldNamesInTable.add( item.getText( fieldNameIndex ) );
     }
-    final List<String> newFieldNames = Arrays.asList( incomingFieldNames ).stream().filter(
-      fieldName -> !fieldNamesInTableLowerCase.contains( fieldName.toLowerCase() ) ).collect( Collectors.toList() );
+    final List<String> newFieldNames = Arrays.asList( fieldNamesInTable.toArray( new String[fieldNamesInTable.size()] ) ).stream().filter(
+      fieldName -> !Arrays.asList( incomingFieldNames ).contains( fieldName ) ).collect( Collectors.toList() );
     return newFieldNames;
   }
 
