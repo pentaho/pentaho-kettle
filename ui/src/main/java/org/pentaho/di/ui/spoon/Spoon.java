@@ -1897,9 +1897,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // read from a repository...
       //
       try {
-        String connection = lastUsedFile.getConnection();
+        String connection = getLastUsedConnection( lastUsedFile );
         Variables variables = new Variables();
-        variables.setVariable( CONNECTION, connection );
+        if ( connection != null ) {
+          variables.setVariable( CONNECTION, connection );
+        }
         loadLastUsedFile( lastUsedFile, rep == null ? null : rep.getName() );
         addMenuLast();
       } catch ( KettleException ke ) {
@@ -8212,7 +8214,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // open files stored locally, not in the repository
     if ( !lastUsedFile.isSourceRepository() && !Utils.isEmpty( lastUsedFile.getFilename() ) ) {
-      String connection = lastUsedFile.getConnection();
+      String connection = getLastUsedConnection( lastUsedFile );
       Variables variables = null;
       if ( connection != null ) {
         variables = new Variables();
@@ -8226,6 +8228,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       refreshTree();
     }
+  }
+
+  private String getLastUsedConnection( LastUsedFile lastUsedFile ) {
+    if ( !Utils.isEmpty( lastUsedFile.getConnection() ) && !lastUsedFile.getConnection().equals( "null" ) ) {
+      return lastUsedFile.getConnection();
+    }
+    return null;
   }
 
   /**
