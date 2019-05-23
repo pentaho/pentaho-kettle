@@ -97,7 +97,9 @@ public class TransFileListener implements FileListener, ConnectionListener {
       transMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( transMeta ) );
       transMeta.setRepository( spoon.getRepository() );
       transMeta.setMetaStore( spoon.getMetaStore() );
-      transMeta.setVariable( Spoon.CONNECTION, connection );
+      if ( connection != null ) {
+        transMeta.setVariable( Spoon.CONNECTION, connection );
+      }
       spoon.setTransMetaVariables( transMeta );
       spoon.getProperties().addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null );
       spoon.addMenuLast();
