@@ -581,7 +581,7 @@ public class CsvInput extends BaseStep implements StepInterface {
       //
       // Let's start by looking where we left off reading.
       //
-      while ( !newLineFound && outputIndex < data.fieldsMapping.size() ) {
+      while ( !newLineFound && outputIndex < meta.getInputFields().length ) {
 
         if ( data.resizeBufferIfNeeded() ) {
           // Last row was being discarded if the last item is null and
@@ -644,6 +644,7 @@ public class CsvInput extends BaseStep implements StepInterface {
             for ( int i = 0; i < data.encodingType.getLength(); i++ ) {
               data.moveEndBufferPointer();
             }
+
             // Re-check for double new line (\r\n)...
             if ( data.newLineFound() ) {
               // Found another one, need to skip it later
@@ -723,8 +724,7 @@ public class CsvInput extends BaseStep implements StepInterface {
           field = data.removeEscapedEnclosures( field, escapedEnclosureFound );
         }
 
-        final int currentFieldIndex = outputIndex++;
-        final int actualFieldIndex = data.fieldsMapping.fieldMetaIndex( currentFieldIndex );
+        final int actualFieldIndex = outputIndex++;
         if ( actualFieldIndex != FieldsMapping.FIELD_DOES_NOT_EXIST ) {
           if ( !skipRow ) {
             if ( meta.isLazyConversionActive() ) {
@@ -761,18 +761,18 @@ public class CsvInput extends BaseStep implements StepInterface {
         // this will prevent the endBuffer from being incremented twice (once by this block and once in the
         // do-while loop below) and possibly skipping a newline character. This can occur if there is an
         // empty column at the end of the row (see the Jira case for details)
-        if ( ( !newLineFound && outputIndex < data.fieldsMapping.size() ) || ( newLineFound && doubleLineEnd ) ) {
+        if ( ( !newLineFound && outputIndex < meta.getInputFields().length ) || ( newLineFound && doubleLineEnd ) ) {
+
           int i = 0;
           while ( ( !data.newLineFound() && ( i < data.delimiter.length ) ) ) {
             data.moveEndBufferPointer();
             i++;
           }
-          if ( data.newLineFound() && outputIndex >= data.fieldsMapping.size() ) {
-            data.moveEndBufferPointer();
+
+          if ( data.isCarriageReturn() || doubleLineEnd ) {
+            data.moveEndBufferPointerXTimes( data.encodingType.getLength() );
           }
-          if ( doubleLineEnd && data.encodingType.getLength() > 1 ) {
-            data.moveEndBufferPointer();
-          }
+
         }
 
         data.setStartBuffer( data.getEndBuffer() );
