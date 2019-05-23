@@ -20,21 +20,21 @@
  *  scripts/groovy/BranchingTagging.groovy
  */
 
-
 String COMMAND                  = System.getProperty("COMMAND");
-String BRANCHES                 = System.getProperty("BRANCHES");
-String TAGS                     = System.getProperty("TAGS");
+String BRANCHES                 = System.getProperty("BRANCHES") ?: "false";
+String TAGS                     = System.getProperty("TAGS") ?: "false";
 String TARGET_BRANCH_TAG        = System.getProperty("TARGET_BRANCH_TAG");
-String TARGET_MONDRIAN_BRANCH   = System.getProperty("TARGET_MONDRIAN_BRANCH");
-String TARGET_MONDRIAN4_BRANCH  = System.getProperty("TARGET_MONDRIAN4_BRANCH");
-String PROJECT_TYPE             = System.getProperty("PROJECT_TYPE");
-String CE_PROJECTS              = System.getProperty("CE_PROJECTS");
-String EE_PROJECTS              = System.getProperty("EE_PROJECTS");
+String PROJECT_TYPE             = System.getProperty("PROJECT_TYPE") ?: "RELEASE";
+String CE_PROJECTS              = System.getProperty("CE_PROJECTS") ?: "true";
+String EE_PROJECTS              = System.getProperty("EE_PROJECTS") ?: "true";
 String NOOP                     = System.getProperty("NOOP");
-String PARENT_TARGET_CLONE_DIR  = System.getProperty("PARENT_TARGET_CLONE_DIR");
 
+boolean doCreateCommand = COMMAND.equals("create")
+boolean doDeleteCommand = COMMAND.equals("delete")
+boolean doBranchCommand = BRANCHES.equals("true")
+boolean doTagCommand = TAGS.equals("true")
+def targetBranchTag = TARGET_BRANCH_TAG
 boolean isNOOP = NOOP.equals("true")
-boolean supportsSeperateMondrianBranching = TARGET_BRANCH_TAG.startsWith("7.1")
 
 List<GithubProject> githubProjects = GithubProject.parseGithubProjectsCsv();
 for ( GithubProject githubProject : githubProjects ) {
@@ -44,27 +44,13 @@ for ( GithubProject githubProject : githubProjects ) {
   }
 
   boolean isPrivate = Github.isProjectPrivate( githubProject.org, githubProject.name );
-
-  // Deal with the mondrian branches at least until we can stop branching 7.1
-  def targetBranchTag = TARGET_BRANCH_TAG
-  if ( supportsSeperateMondrianBranching && (githubProject.name.contains("mondrian") || githubProject.name.contains("schema")) ) {
-    if ( githubProject.targetCloneDir.contains("mondrian4") ) {
-      targetBranchTag = TARGET_MONDRIAN4_BRANCH
-    }
-    else {
-      targetBranchTag = TARGET_MONDRIAN_BRANCH
-    }
-  }
+  boolean doCommandForCERepos = CE_PROJECTS.equals("true") && (isPrivate == false)
+  boolean doCommandForEERepos = EE_PROJECTS.equals("true") && (isPrivate == true)
 
   // Branch/Tag creation
-  if ( COMMAND.equals("create") &&
-       ( ( CE_PROJECTS.equals("true") && (isPrivate == false) )
-         ||
-         ( EE_PROJECTS.equals("true") && (isPrivate == true) )
-       )
-     ) {
+  if ( doCreateCommand && (doCommandForCERepos || doCommandForEERepos) ) {
 
-     if ( BRANCHES.equals("true") ) {
+     if ( doBranchCommand ) {
        if ( isNOOP ) {
          println("##### NOOP!  NOT creating ${targetBranchTag} branch for ${githubProject.name}:${githubProject.branch} ...");
        } else {
@@ -73,7 +59,7 @@ for ( GithubProject githubProject : githubProjects ) {
        }
      }
 
-     if ( TAGS.equals("true") ) {
+     if ( doTagCommand ) {
        if ( isNOOP ) {
          println("##### NOOP!  NOT creating ${targetBranchTag} tag for ${githubProject.name}:${githubProject.branch} ...");
        } else {
@@ -85,14 +71,9 @@ for ( GithubProject githubProject : githubProjects ) {
   }
 
   // Branch/Tag deletion
-  if ( COMMAND.equals("delete") &&
-       ( ( CE_PROJECTS.equals("true") && (isPrivate == false) )
-         ||
-         ( EE_PROJECTS.equals("true") && (isPrivate == true) )
-       )
-     ) {
+  if ( doDeleteCommand && (doCommandForCERepos || doCommandForEERepos) ) {
 
-     if ( BRANCHES.equals("true") ) {
+     if ( doBranchCommand ) {
        if ( isNOOP ) {
          println("##### NOOP!  NOT deleting ${targetBranchTag} branch for ${githubProject.name} ...");
        } else {
@@ -101,7 +82,7 @@ for ( GithubProject githubProject : githubProjects ) {
        }
      }
 
-     if ( TAGS.equals("true") ) {
+     if ( doTagCommand ) {
        if ( isNOOP ) {
          println("##### NOOP!  NOT deleting ${targetBranchTag} tag for ${githubProject.name} ... ");
        } else {

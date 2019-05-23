@@ -848,3 +848,11 @@ jobGroups:
        archivable      :  true
        testable        :  false
        parallelize     :  true
+
+  # Don't build, only here for branching purposes
+  4700:
+
+     - jobID           :  patch-installers
+       scmUrl          :  https://github.com/pentaho/pentaho-installer-v2.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       execType        :  NOOP
