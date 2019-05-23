@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,9 +37,9 @@ public class StatusServletUtils {
 
   public static String getPentahoStyles( HttpServletRequest request ) {
     String uri = request.getRequestURI();
-
+    
     String webapp = uri == null ? StatusServletUtils.PENTAHO_ROOT : uri.substring( 0, uri.indexOf( GetStatusServlet.CONTEXT_PATH ) );
-
+    
     StringBuilder sb = new StringBuilder();
     String themeName = "ruby"; // default pentaho theme
     String themeCss = "globalRuby.css";
@@ -80,8 +80,7 @@ public class StatusServletUtils {
       relativePathSeparator = relativePathSeparator.replaceFirst( "(\\.\\.\\\\)", "" );
 
       // Get mantle theme CSS file
-      String mantleThemeDirStr = relativePathSeparator + "webapps" + File.separator
-          + "pentaho" + File.separator + "mantle" + File.separator
+      String mantleThemeDirStr = relativePathSeparator + "webapps" + webapp + File.separator + "mantle" + File.separator
           + "themes" + File.separator + themeName + File.separator;
       File mantleThemeDir = new File( mantleThemeDirStr );
       for ( File fName : mantleThemeDir.listFiles() ) {
