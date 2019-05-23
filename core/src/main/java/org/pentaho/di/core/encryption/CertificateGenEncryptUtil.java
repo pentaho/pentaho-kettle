@@ -95,12 +95,14 @@ public class CertificateGenEncryptUtil {
     }
     Cipher keyCipher = Cipher.getInstance( TRANSMISSION_CIPHER_PARAMS );
     keyCipher.init( Cipher.UNWRAP_MODE, keyKey );
+    keyCipher.init( Cipher.UNWRAP_MODE, keyKey );
     return keyCipher.unwrap( transmittedKey, SINGLE_KEY_ALGORITHM, Cipher.SECRET_KEY );
   }
 
   public static Cipher initDecryptionCipher( Key unwrappedKey, byte[] unencryptedKey ) throws NoSuchAlgorithmException,
     NoSuchPaddingException, InvalidKeyException {
     Cipher decryptionCip = Cipher.getInstance( SINGLE_KEY_ALGORITHM );
+    String xpto;
     if ( unwrappedKey != null ) {
       decryptionCip.init( Cipher.ENCRYPT_MODE, unwrappedKey );
     } else {
