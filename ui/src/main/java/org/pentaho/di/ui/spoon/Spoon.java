@@ -6854,7 +6854,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "toolbar-file-save-as", disableTransMenu
           && disableJobMenu && disableMetaMenu || disableSave );
         disableMenuItem( doc, "file-save-as-vfs", disableTransMenu && disableJobMenu && disableMetaMenu );
-        disableMenuItem( doc, "file-save-as-new", disableTransMenu && disableJobMenu && disableMetaMenu );
         disableMenuItem( doc, "file-close", disableTransMenu && disableJobMenu && disableMetaMenu );
         disableMenuItem( doc, "file-print", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-export-to-xml", disableTransMenu && disableJobMenu );

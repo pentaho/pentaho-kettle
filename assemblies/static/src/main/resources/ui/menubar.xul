@@ -17,7 +17,6 @@
         </menu>
         <menuitem id="file-open" acceltext="CTRL-O" accesskey="ctrl-o" label="${Spoon.Menu.File.Open}" command="spoon.openFile()" />
         <menuitem id="file-open-from-vfs" label="${Spoon.Menu.File.OpenVFS}" command="spoon.openFileVFSFile()" />
-        <menuitem id="file-open-from-vfs-new" label="${Spoon.Menu.File.OpenVFS.New}" command="spoon.openFileVFSFileNew()" />
         <menu id="file-open-recent" label="${Spoon.Menu.File.Open.Recent.Popup}">
           <menupopup id="file-open-recent-popup" />
         </menu>
@@ -28,8 +27,7 @@
         <menuseparator id="file-separator-1"/>
         <menuitem id="file-save" acceltext="CTRL-S" accesskey="ctrl-s" label="${Spoon.Menu.File.Save}" command="spoon.saveFile()" />
         <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" command="spoon.saveFileAs()" />
-        <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" />
-        <menuitem id="file-save-as-new" label="${Spoon.Menu.File.SaveAs.New}" command="spoon.saveAsNew()" />
+        <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" />        
         <!-- <menuitem id="file-publish" label="${Spoon.Menu.File.Publish}"/> -->
         <menuseparator id="file-separator-2"/>
         <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
