@@ -60,6 +60,8 @@ public class KettleVFS {
 
   private static final KettleVFS kettleVFS = new KettleVFS();
   private final DefaultFileSystemManager fsm;
+  private static final int timeOutLimit = 9000;
+  private static final int timeToSleepStep = 50;
 
   private static VariableSpace defaultVariableSpace;
 
@@ -129,12 +131,23 @@ public class KettleVFS {
       // If not, we are going to assume it's a file.
       //
       boolean relativeFilename = true;
-      String[] schemes = fsManager.getSchemes();
-      for ( int i = 0; i < schemes.length && relativeFilename; i++ ) {
-        if ( vfsFilename.startsWith( schemes[ i ] + ":" ) ) {
+      String[] initialSchemes = fsManager.getSchemes();
+
+      relativeFilename = checkForScheme( initialSchemes, relativeFilename, vfsFilename, space, fsOptions );
+
+      int timeOut = timeOutLimit;
+      boolean hasScheme = vfsFilename != null && vfsFilename.contains( "://" ); // check for bigData providers
+
+      while ( relativeFilename && hasScheme && timeOut > 0 ) {
+        String[] schemes = fsManager.getSchemes();
+        try {
+          Thread.sleep( timeToSleepStep );
+          timeOut -= timeToSleepStep;
+          relativeFilename = checkForScheme( schemes, relativeFilename, vfsFilename, space, fsOptions );
+        } catch ( InterruptedException e ) {
           relativeFilename = false;
-          // We have a VFS URL, load any options for the file system driver
-          fsOptions = buildFsOptions( space, fsOptions, vfsFilename, schemes[ i ] );
+          Thread.currentThread().interrupt();
+          break;
         }
       }
 
@@ -160,6 +173,19 @@ public class KettleVFS {
       throw new KettleFileException( "Unable to get VFS File object for filename '"
         + cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
     }
+  }
+
+  protected static boolean checkForScheme( String[] initialSchemes, boolean relativeFilename, String vfsFilename,
+                                         VariableSpace space, FileSystemOptions fsOptions )
+    throws IOException {
+    for ( int i = 0; i < initialSchemes.length && relativeFilename; i++ ) {
+      if ( vfsFilename.startsWith( initialSchemes[ i ] + ":" ) ) {
+        relativeFilename = false;
+        // We have a VFS URL, load any options for the file system driver
+        fsOptions = buildFsOptions( space, fsOptions, vfsFilename, initialSchemes[ i ] );
+      }
+    }
+    return relativeFilename;
   }
 
   /**
