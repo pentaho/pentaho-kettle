@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -239,6 +239,19 @@ public class XMLInputStreamTest {
     assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos] );
   }
 
+  @Test
+  public void multiLineDataReadAsMultipleElements() throws KettleException, IOException {
+    xmlInputStreamMeta.setFilename( createTestFile( getMultiLineDataXml() ) );
+    xmlInputStreamMeta.setEnableNamespaces( true );
+
+    doTest();
+
+    assertEquals( "CHARACTERS", rl.getWritten().get( 2 )[0] );
+    assertEquals( "some data", rl.getWritten().get( 2 )[3] );
+    assertEquals( "CHARACTERS", rl.getWritten().get( 3 )[0] );
+    assertEquals( "other data", rl.getWritten().get( 3 )[3] );
+  }
+
   private void doTest() throws IOException, KettleException {
     XMLInputStream xmlInputStream =
         new XMLInputStream( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
@@ -389,6 +402,12 @@ public class XMLInputStreamTest {
 
   private String getGroupWithoutPrefix() {
     return "<ProductGroup attribute1=\"" + ATTRIBUTE_1 + "\" attribute2=\"" + ATTRIBUTE_2 + "\">G</ProductGroup>";
+  }
+
+  private String getMultiLineDataXml() {
+    return "<tag>"
+      + "some data\n"
+      + "<![CDATA[other data]]></tag>";
   }
 
   private class TestRowListener extends RowAdapter {
