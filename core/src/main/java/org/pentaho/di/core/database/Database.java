@@ -2276,7 +2276,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     if ( useJdbcMeta() ) {
       return getTableFieldsMetaByDbMeta( schemaName, tableName );
     } else {
-      return getQueryFields( databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName ), false );
+      String tableSchema = databaseMeta.getQuotedSchemaTableCombination( "public", "COMPANY3" );
+      String sql = databaseMeta.getSQLQueryFields( tableSchema );
+      return getQueryFields( sql, false );
     }
   }
 
