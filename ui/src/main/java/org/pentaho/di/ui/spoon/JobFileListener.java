@@ -65,7 +65,9 @@ public class JobFileListener implements FileListener, ConnectionListener {
       jobMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( jobMeta ) );
       jobMeta.setRepository( spoon.getRepository() );
       jobMeta.setMetaStore( spoon.getMetaStore() );
-      jobMeta.setVariable( Spoon.CONNECTION, connection );
+      if ( connection != null ) {
+        jobMeta.setVariable( Spoon.CONNECTION, connection );
+      }
       spoon.setJobMetaVariables( jobMeta );
       spoon.getProperties()
         .addLastFile( LastUsedFile.FILE_TYPE_JOB, fname, null, false, null, null, new Date(), connection );
