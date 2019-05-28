@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -613,6 +613,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       data.staxInstance = XMLInputFactory.newInstance(); // could select the parser later on
+      data.staxInstance.setProperty( "javax.xml.stream.isCoalescing", false );
       data.filenr = 0;
       if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 && !meta.sourceFromInput ) {
         String filename = environmentSubstitute( meta.getFilename() );
