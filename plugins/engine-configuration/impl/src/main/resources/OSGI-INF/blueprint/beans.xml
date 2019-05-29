@@ -112,4 +112,10 @@
         class="org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationExecutor">
   </bean>
 
+  <!-- Context menu item for spark tuning -->
+  <bean id="sparkTuningPopupMenu" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.spark.SparkTuningPopupMenu">
+    <pen:di-plugin type="org.pentaho.di.ui.spoon.SpoonPluginType" />
+  </bean>
+
 </blueprint>
