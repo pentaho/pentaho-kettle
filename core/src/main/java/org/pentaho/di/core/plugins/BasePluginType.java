@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -392,15 +392,20 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
       if ( pluginFolder.isPluginAnnotationsFolder() ) {
 
+        FileObject[] fileObjects = null;
         try {
           // Get all the jar files in the plugin folder...
           //
-          FileObject[] fileObjects = jarFileCache.getFileObjects( pluginFolder );
-          if ( fileObjects != null ) {
-            for ( FileObject fileObject : fileObjects ) {
+          fileObjects = jarFileCache.getFileObjects( pluginFolder );
+        } catch ( Exception e ) {
+          e.printStackTrace();
+        }
 
-              // These are the jar files : find annotations in it...
-              //
+        if ( fileObjects != null ) {
+          for ( FileObject fileObject : fileObjects ) {
+            // These are the jar files : find annotations in it...
+            //
+            try {
               AnnotationDB annotationDB = jarFileCache.getAnnotationDB( fileObject );
               Set<String> impls = annotationDB.getAnnotationIndex().get( annotationClassName );
               if ( impls != null ) {
@@ -410,11 +415,13 @@ public abstract class BasePluginType implements PluginTypeInterface {
                     .getParent().getURL() ) );
                 }
               }
+            } catch ( Exception jarPluginLoadError ) {
+              LogChannel.GENERAL.logError( "Error while finding annotations for jar plugin: '"
+                + fileObject + "'" );
+              LogChannel.GENERAL.logDebug( "Error while finding annotations for jar plugin: '"
+                + fileObject + "'", jarPluginLoadError );
             }
-
           }
-        } catch ( Exception e ) {
-          e.printStackTrace();
         }
       }
     }
