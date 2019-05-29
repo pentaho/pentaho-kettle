@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,12 +81,15 @@ public class HttpClientUtil {
    */
   public static String responseToString( HttpResponse response, Charset charset, boolean decode ) throws IOException {
     HttpEntity entity = response.getEntity();
-    String result = EntityUtils.toString( entity, charset );
-    EntityUtils.consume( entity );
-    if ( decode ) {
-      result = URLDecoder.decode( result, StandardCharsets.UTF_8.name() );
+    if ( entity != null ) {
+      String result = EntityUtils.toString( entity, charset );
+      EntityUtils.consume( entity );
+      if ( decode ) {
+        result = URLDecoder.decode( result, StandardCharsets.UTF_8.name() );
+      }
+      return result;
     }
-    return result;
+    return null;
   }
 
   public static InputStream responseToInputStream( HttpResponse response ) throws IOException {
