@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <job>
   <name>create  populate  update slowly changing dimension</name>
-  <description/>
-  <extended_description/>
-  <job_version/>
+  <description />
+  <extended_description />
+  <job_version />
   <directory>/</directory>
   <created_user>-</created_user>
   <created_date>2007/04/11 15:14:53.203</created_date>
@@ -12,68 +12,17 @@
   <parameters>
     </parameters>
   <connection>
-    <name>SampleData.H2</name>
-    <server/>
-    <type>H2</type>
-    <access>JNDI</access>
-    <database>SampleData</database>
-    <port>-1</port>
-    <username/>
-    <password>Encrypted </password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute>
-        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
-        <attribute>N</attribute>
-      </attribute>
-      <attribute>
-        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
-        <attribute>N</attribute>
-      </attribute>
-      <attribute>
-        <code>IS_CLUSTERED</code>
-        <attribute>N</attribute>
-      </attribute>
-      <attribute>
-        <code>PORT_NUMBER</code>
-        <attribute>-1</attribute>
-      </attribute>
-      <attribute>
-        <code>PRESERVE_RESERVED_WORD_CASE</code>
-        <attribute>N</attribute>
-      </attribute>
-      <attribute>
-        <code>QUOTE_ALL_FIELDS</code>
-        <attribute>N</attribute>
-      </attribute>
-      <attribute>
-        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
-        <attribute>Y</attribute>
-      </attribute>
-      <attribute>
-        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
-        <attribute>N</attribute>
-      </attribute>
-      <attribute>
-        <code>USE_POOLING</code>
-        <attribute>N</attribute>
-      </attribute>
-    </attributes>
-  </connection>
-  <connection>
     <name>SampleDataAdmin.H2</name>
-    <server/>
+    <server />
     <type>H2</type>
     <access>JNDI</access>
     <database>SampleDataAdmin</database>
     <port>1521</port>
-    <username/>
+    <username />
     <password>Encrypted </password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
+    <servername />
+    <data_tablespace />
+    <index_tablespace />
     <attributes>
       <attribute>
         <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
@@ -116,12 +65,12 @@
   <slaveservers>
     </slaveservers>
   <job-log-table>
-    <connection/>
-    <schema/>
-    <table/>
-    <size_limit_lines/>
-    <interval/>
-    <timeout_days/>
+    <connection />
+    <schema />
+    <table />
+    <size_limit_lines />
+    <interval />
+    <timeout_days />
     <field>
       <id>ID_JOB</id>
       <enabled>Y</enabled>
@@ -229,10 +178,10 @@
     </field>
   </job-log-table>
   <jobentry-log-table>
-    <connection/>
-    <schema/>
-    <table/>
-    <timeout_days/>
+    <connection />
+    <schema />
+    <table />
+    <timeout_days />
     <field>
       <id>ID_BATCH</id>
       <enabled>Y</enabled>
@@ -320,10 +269,10 @@
     </field>
   </jobentry-log-table>
   <channel-log-table>
-    <connection/>
-    <schema/>
-    <table/>
-    <timeout_days/>
+    <connection />
+    <schema />
+    <table />
+    <timeout_days />
     <field>
       <id>ID_BATCH</id>
       <enabled>Y</enabled>
@@ -386,16 +335,16 @@
     </field>
   </channel-log-table>
   <checkpoint-log-table>
-    <connection/>
-    <schema/>
-    <table/>
-    <timeout_days/>
-    <max_nr_retries/>
-    <run_retry_period/>
-    <namespace_parameter/>
-    <save_parameters/>
-    <save_result_rows/>
-    <save_result_files/>
+    <connection />
+    <schema />
+    <table />
+    <timeout_days />
+    <max_nr_retries />
+    <run_retry_period />
+    <namespace_parameter />
+    <save_parameters />
+    <save_result_rows />
+    <save_result_files />
     <field>
       <id>ID_JOB_RUN</id>
       <enabled>Y</enabled>
@@ -453,13 +402,13 @@
     </field>
   </checkpoint-log-table>
   <pass_batchid>N</pass_batchid>
-  <shared_objects_file/>
+  <shared_objects_file />
   <entries>
     <entry>
       <name>Start</name>
-      <description/>
+      <description />
       <type>SPECIAL</type>
-      <attributes/>
+      <attributes />
       <start>Y</start>
       <dummy>N</dummy>
       <repeat>N</repeat>
@@ -475,36 +424,36 @@
       <nr>0</nr>
       <xloc>94</xloc>
       <yloc>138</yloc>
-      <attributes_kjc/>
+      <attributes_kjc />
     </entry>
     <entry>
       <name>Populate</name>
-      <description/>
+      <description />
       <type>TRANS</type>
-      <attributes/>
+      <attributes />
       <specification_method>filename</specification_method>
-      <trans_object_id/>
+      <trans_object_id />
       <filename>${Internal.Job.Filename.Directory}/DimensionLookup - update dimension table.ktr</filename>
-      <transname/>
+      <transname />
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
       <exec_per_row>N</exec_per_row>
       <clear_rows>Y</clear_rows>
       <clear_files>Y</clear_files>
       <set_logfile>N</set_logfile>
-      <logfile/>
-      <logext/>
+      <logfile />
+      <logext />
       <add_date>N</add_date>
       <add_time>N</add_time>
       <loglevel>Error</loglevel>
       <cluster>N</cluster>
-      <slave_server_name/>
+      <slave_server_name />
       <set_append_logfile>N</set_append_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <follow_abort_remote>N</follow_abort_remote>
       <create_parent_folder>N</create_parent_folder>
       <logging_remote_work>N</logging_remote_work>
-      <run_configuration/>
+      <run_configuration />
       <parameters>
         <pass_all_parameters>Y</pass_all_parameters>
       </parameters>
@@ -513,13 +462,13 @@
       <nr>0</nr>
       <xloc>514</xloc>
       <yloc>138</yloc>
-      <attributes_kjc/>
+      <attributes_kjc />
     </entry>
     <entry>
       <name>Create table</name>
-      <description/>
+      <description />
       <type>SQL</type>
-      <attributes/>
+      <attributes />
       <sql>CREATE TABLE D_CUSTOMER
 (
   customer_tk IDENTITY
@@ -546,7 +495,7 @@ CREATE INDEX idx_D_CUSTOMER_tk
 </sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
-      <sqlfilename/>
+      <sqlfilename />
       <sendOneStatement>F</sendOneStatement>
       <connection>SampleDataAdmin.H2</connection>
       <parallel>N</parallel>
@@ -554,51 +503,51 @@ CREATE INDEX idx_D_CUSTOMER_tk
       <nr>0</nr>
       <xloc>374</xloc>
       <yloc>51</yloc>
-      <attributes_kjc/>
+      <attributes_kjc />
     </entry>
     <entry>
       <name>Table exists 1</name>
-      <description/>
+      <description />
       <type>TABLE_EXISTS</type>
-      <attributes/>
+      <attributes />
       <tablename>D_CUSTOMER</tablename>
-      <schemaname/>
-      <connection>SampleData.H2</connection>
+      <schemaname />
+      <connection>SampleDataAdmin.H2</connection>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>234</xloc>
       <yloc>138</yloc>
-      <attributes_kjc/>
+      <attributes_kjc />
     </entry>
     <entry>
       <name>Update</name>
-      <description/>
+      <description />
       <type>TRANS</type>
-      <attributes/>
+      <attributes />
       <specification_method>filename</specification_method>
-      <trans_object_id/>
+      <trans_object_id />
       <filename>${Internal.Job.Filename.Directory}/DimensionLookup - update dimension table 2.ktr</filename>
-      <transname/>
+      <transname />
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
       <exec_per_row>N</exec_per_row>
       <clear_rows>Y</clear_rows>
       <clear_files>Y</clear_files>
       <set_logfile>N</set_logfile>
-      <logfile/>
-      <logext/>
+      <logfile />
+      <logext />
       <add_date>N</add_date>
       <add_time>N</add_time>
       <loglevel>Error</loglevel>
       <cluster>N</cluster>
-      <slave_server_name/>
+      <slave_server_name />
       <set_append_logfile>N</set_append_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <follow_abort_remote>N</follow_abort_remote>
       <create_parent_folder>N</create_parent_folder>
       <logging_remote_work>N</logging_remote_work>
-      <run_configuration/>
+      <run_configuration />
       <parameters>
         <pass_all_parameters>Y</pass_all_parameters>
       </parameters>
@@ -607,20 +556,20 @@ CREATE INDEX idx_D_CUSTOMER_tk
       <nr>0</nr>
       <xloc>654</xloc>
       <yloc>138</yloc>
-      <attributes_kjc/>
+      <attributes_kjc />
     </entry>
     <entry>
       <name>Truncate table</name>
-      <description/>
+      <description />
       <type>SQL</type>
-      <attributes/>
+      <attributes />
       <sql>TRUNCATE TABLE D_CUSTOMER
 ;
 
 </sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
-      <sqlfilename/>
+      <sqlfilename />
       <sendOneStatement>F</sendOneStatement>
       <connection>SampleDataAdmin.H2</connection>
       <parallel>N</parallel>
@@ -628,7 +577,7 @@ CREATE INDEX idx_D_CUSTOMER_tk
       <nr>0</nr>
       <xloc>374</xloc>
       <yloc>223</yloc>
-      <attributes_kjc/>
+      <attributes_kjc />
     </entry>
   </entries>
   <hops>
@@ -689,5 +638,4 @@ CREATE INDEX idx_D_CUSTOMER_tk
   </hops>
   <notepads>
   </notepads>
-  <attributes/>
 </job>
