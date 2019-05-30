@@ -59,9 +59,10 @@ public class KettleVFS {
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
 
   private static final KettleVFS kettleVFS = new KettleVFS();
+  private static FileSystemOptions fsOptionsForScheme;
   private final DefaultFileSystemManager fsm;
-  private static final int timeOutLimit = 9000;
-  private static final int timeToSleepStep = 50;
+  private static final int TIMEOUT_LIMIT = 9000;
+  private static final int TIME_TO_SLEEP_STEP = 50;
 
   private static VariableSpace defaultVariableSpace;
 
@@ -120,6 +121,7 @@ public class KettleVFS {
   public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions )
     throws KettleFileException {
     try {
+      fsOptionsForScheme = fsOptions;
       FileSystemManager fsManager = getInstance().getFileSystemManager();
 
       // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
@@ -133,17 +135,22 @@ public class KettleVFS {
       boolean relativeFilename = true;
       String[] initialSchemes = fsManager.getSchemes();
 
-      relativeFilename = checkForScheme( initialSchemes, relativeFilename, vfsFilename, space, fsOptions );
+      relativeFilename = checkForScheme( initialSchemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
 
-      int timeOut = timeOutLimit;
+      int timeOut = TIMEOUT_LIMIT;
+
       boolean hasScheme = vfsFilename != null && vfsFilename.contains( "://" ); // check for bigData providers
+      //we have to check for hasScheme even if it is marked as a relative path because that scheme could not
+      //be available by getSchemes at the time we validate our relativeFilename flag.
+      //So we check if even it is marked as relative path if it contains a possible scheme format
+      //if it does, then give it some time to be loaded, until we get it our timeout is up.
 
       while ( relativeFilename && hasScheme && timeOut > 0 ) {
         String[] schemes = fsManager.getSchemes();
         try {
-          Thread.sleep( timeToSleepStep );
-          timeOut -= timeToSleepStep;
-          relativeFilename = checkForScheme( schemes, relativeFilename, vfsFilename, space, fsOptions );
+          Thread.sleep( TIME_TO_SLEEP_STEP );
+          timeOut -= TIME_TO_SLEEP_STEP;
+          relativeFilename = checkForScheme( schemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
         } catch ( InterruptedException e ) {
           relativeFilename = false;
           Thread.currentThread().interrupt();
@@ -164,8 +171,8 @@ public class KettleVFS {
         }
       }
 
-      if ( fsOptions != null ) {
-        return fsManager.resolveFile( filename, fsOptions );
+      if ( fsOptionsForScheme != null ) {
+        return fsManager.resolveFile( filename, fsOptionsForScheme );
       } else {
         return fsManager.resolveFile( filename );
       }
@@ -182,7 +189,7 @@ public class KettleVFS {
       if ( vfsFilename.startsWith( initialSchemes[ i ] + ":" ) ) {
         relativeFilename = false;
         // We have a VFS URL, load any options for the file system driver
-        fsOptions = buildFsOptions( space, fsOptions, vfsFilename, initialSchemes[ i ] );
+        fsOptionsForScheme = buildFsOptions( space, fsOptions, vfsFilename, initialSchemes[ i ] );
       }
     }
     return relativeFilename;
