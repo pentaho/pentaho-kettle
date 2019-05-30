@@ -43,6 +43,9 @@ node('non-master') {
             'regression-smoketest-job-trigger': {
               job.trigger('engops/regression-smoketest-job-trigger', suiteParameters, false)
             },
+            'remote-qa-automation-trigger': {
+              job.trigger('engops/remote-qa-automation-trigger', suiteParameters, false)
+            },
             'snapshot-checker': {
               job.trigger('snapshot-checker', suiteParameters, false)
             },
