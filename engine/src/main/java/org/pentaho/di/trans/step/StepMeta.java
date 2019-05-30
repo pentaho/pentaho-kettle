@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -303,7 +303,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       setDeprecationAndSuggestedStep();
 
       // Create a new StepMetaInterface object...
-      PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepid );
+      PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepid, true );
 
       if ( sp == null ) {
         setStepMetaInterface( new MissingTrans( name, stepid ) );

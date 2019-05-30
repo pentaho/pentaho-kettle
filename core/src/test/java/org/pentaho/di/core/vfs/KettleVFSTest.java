@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,17 @@
 
 package org.pentaho.di.core.vfs;
 
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+
+
 import org.junit.Test;
+import org.pentaho.di.core.exception.KettleFileException;
+
+
+import java.io.IOException;
+
 
 public class KettleVFSTest {
 
@@ -41,4 +49,26 @@ public class KettleVFSTest {
     fileName = "SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr";
     assertFalse( KettleVFS.startsWithScheme( fileName ) );
   }
+
+
+  @Test
+  public void testCheckForSchemeSuccess() throws KettleFileException, IOException {
+    String[] schemes = {"hdfs"};
+    String vfsFilename = "hdfs://hsbcmaster.labs.eag.hitachivantara.com:8020/tmp/acltest/";
+
+    boolean test = KettleVFS.checkForScheme(schemes, true, vfsFilename, null, null);
+    assertFalse( test );
+
+  }
+
+  @Test
+  public void testCheckForSchemeFail() throws KettleFileException, IOException {
+    String[] schemes = {"file"};
+    String vfsFilename = "hdfs://hsbcmaster.labs.eag.hitachivantara.com:8020/tmp/acltest/";
+
+    boolean test = KettleVFS.checkForScheme(schemes, true, vfsFilename, null, null);
+    assertTrue( test );
+
+  }
+
 }
