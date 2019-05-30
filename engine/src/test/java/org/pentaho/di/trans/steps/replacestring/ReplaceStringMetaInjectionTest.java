@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,8 +51,8 @@ public class ReplaceStringMetaInjectionTest extends BaseMetadataInjectionTest<Re
         return meta.getFieldOutStream()[ 0 ];
       }
     } );
-    check( "USE_REGEX", new IntGetter() {
-      @Override public int get() {
+    check( "USE_REGEX", new BooleanGetter() {
+      @Override public boolean get() {
         return meta.getUseRegEx()[ 0 ];
       }
     } );
@@ -76,18 +76,18 @@ public class ReplaceStringMetaInjectionTest extends BaseMetadataInjectionTest<Re
         return meta.getFieldReplaceByString()[ 0 ];
       }
     } );
-    check( "REPLACE_WHOLE_WORD", new IntGetter() {
-      @Override public int get() {
+    check( "REPLACE_WHOLE_WORD", new BooleanGetter() {
+      @Override public boolean get() {
         return meta.getWholeWord()[ 0 ];
       }
     } );
-    check( "CASE_SENSITIVE", new IntGetter() {
-      @Override public int get() {
+    check( "CASE_SENSITIVE", new BooleanGetter() {
+      @Override public boolean get() {
         return meta.getCaseSensitive()[ 0 ];
       }
     } );
-    check( "IS_UNICODE", new IntGetter() {
-      @Override public int get() {
+    check( "IS_UNICODE", new BooleanGetter() {
+      @Override public boolean get() {
         return meta.isUnicode()[ 0 ];
       }
     } );
