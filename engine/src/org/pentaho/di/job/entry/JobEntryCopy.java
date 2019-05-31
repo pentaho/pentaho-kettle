@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -128,7 +128,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
     try {
       String stype = XMLHandler.getTagValue( entrynode, "type" );
       PluginRegistry registry = PluginRegistry.getInstance();
-      PluginInterface jobPlugin = registry.findPluginWithId( JobEntryPluginType.class, stype );
+      PluginInterface jobPlugin = registry.findPluginWithId( JobEntryPluginType.class, stype, true );
       if ( jobPlugin == null ) {
         String name = XMLHandler.getTagValue( entrynode, "name" );
         entry = new MissingEntry( name, stype );
