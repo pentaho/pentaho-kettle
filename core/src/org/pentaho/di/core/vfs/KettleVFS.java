@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,7 +54,10 @@ public class KettleVFS {
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
 
   private static final KettleVFS kettleVFS = new KettleVFS();
+  private static FileSystemOptions fsOptionsForScheme;
   private final DefaultFileSystemManager fsm;
+  private static final int TIMEOUT_LIMIT = 9000;
+  private static final int TIME_TO_SLEEP_STEP = 50;
 
   private static VariableSpace defaultVariableSpace;
 
@@ -112,6 +115,7 @@ public class KettleVFS {
 
   public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions ) throws KettleFileException {
     try {
+      fsOptionsForScheme = fsOptions;
       FileSystemManager fsManager = getInstance().getFileSystemManager();
 
       // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
@@ -123,12 +127,28 @@ public class KettleVFS {
       // If not, we are going to assume it's a file.
       //
       boolean relativeFilename = true;
-      String[] schemes = fsManager.getSchemes();
-      for ( int i = 0; i < schemes.length && relativeFilename; i++ ) {
-        if ( vfsFilename.startsWith( schemes[i] + ":" ) ) {
+      String[] initialSchemes = fsManager.getSchemes();
+
+      relativeFilename = checkForScheme( initialSchemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
+
+      int timeOut = TIMEOUT_LIMIT;
+
+      boolean hasScheme = vfsFilename != null && vfsFilename.contains( "://" ); // check for bigData providers
+      //we have to check for hasScheme even if it is marked as a relative path because that scheme could not
+      //be available by getSchemes at the time we validate our relativeFilename flag.
+      //So we check if even it is marked as relative path if it contains a possible scheme format
+      //if it does, then give it some time to be loaded, until we get it our timeout is up.
+
+      while ( relativeFilename && hasScheme && timeOut > 0 ) {
+        String[] schemes = fsManager.getSchemes();
+        try {
+          Thread.sleep( TIME_TO_SLEEP_STEP );
+          timeOut -= TIME_TO_SLEEP_STEP;
+          relativeFilename = checkForScheme( schemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
+        } catch ( InterruptedException e ) {
           relativeFilename = false;
-          // We have a VFS URL, load any options for the file system driver
-          fsOptions = buildFsOptions( space, fsOptions, vfsFilename, schemes[i] );
+          Thread.currentThread().interrupt();
+          break;
         }
       }
 
@@ -145,8 +165,8 @@ public class KettleVFS {
         }
       }
 
-      if ( fsOptions != null ) {
-        return fsManager.resolveFile( filename, fsOptions );
+      if ( fsOptionsForScheme  != null ) {
+        return fsManager.resolveFile( filename, fsOptionsForScheme  );
       } else {
         return fsManager.resolveFile( filename );
       }
@@ -156,12 +176,26 @@ public class KettleVFS {
     }
   }
 
-  /**
-   * Private method for stripping password from filename when a FileObject
-   * can not be obtained.
-   * getFriendlyURI(FileObject) or getFriendlyURI(String) are the public
-   * methods.
-   */
+  protected static boolean checkForScheme( String[] initialSchemes, boolean relativeFilename, String vfsFilename,
+      VariableSpace space, FileSystemOptions fsOptions )
+    throws IOException {
+    for ( int i = 0; i < initialSchemes.length && relativeFilename; i++ ) {
+      if ( vfsFilename.startsWith( initialSchemes[ i ] + ":" ) ) {
+        relativeFilename = false;
+        // We have a VFS URL, load any options for the file system driver
+        fsOptionsForScheme = buildFsOptions( space, fsOptions, vfsFilename, initialSchemes[ i ] );
+      }
+    }
+    return relativeFilename;
+  }
+
+
+    /**
+     * Private method for stripping password from filename when a FileObject
+     * can not be obtained.
+     * getFriendlyURI(FileObject) or getFriendlyURI(String) are the public
+     * methods.
+     */
   private static String cleanseFilename( String vfsFilename ) {
     return vfsFilename.replaceAll( ":[^:@/]+@", ":<password>@" );
   }
