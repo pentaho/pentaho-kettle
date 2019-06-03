@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -256,7 +256,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
         // are done with this job.
         //
         job.addJobListener( new JobAdapter() {
-          @Override public void jobFinished( Job job ) {
+          public void jobFinished( Job job ) {
             repository.disconnect();
           }
         } );
