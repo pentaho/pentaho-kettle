@@ -261,7 +261,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     OutputStream os = null;
     try {
       TransMeta generatedTransMeta = (TransMeta) data.transMeta.clone();
-      String[] paths = Const.splitPath( targetFilePath, Const.FILE_SEPARATOR );
+      String[] paths = Const.splitPath( targetFilePath, RepositoryDirectory.DIRECTORY_SEPARATOR );
       String transName = paths[ paths.length  - 1 ].replace( ".ktr", "" );
       generatedTransMeta.setName( transName ); // set transname on injectedtrans to be same as filename w/o extension
 
