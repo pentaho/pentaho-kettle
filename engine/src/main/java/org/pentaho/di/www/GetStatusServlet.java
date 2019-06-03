@@ -249,7 +249,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         if ( isJettyMode() ) {
           out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );
         } else {
-          out.print( StatusServletUtils.getPentahoStyles() );
+          out.print( StatusServletUtils.getPentahoStyles( root ) );
           out.println( "<style>" );
           out.println( ".pentaho-table td, tr.cellTableRow, td.gwt-MenuItem, .toolbar-button:not(.toolbar-button-disabled) {" );
           out.println( "  cursor: pointer;" );
@@ -294,7 +294,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 2px; border: 0;\">" );
         out.println( "<tbody><tr>" );
         out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\" id=\"trans-align\"></td>" );
-        out.println( "<td " + setupIconEnterLeaveJavascript( "pause" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"resumeFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"pause\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/run_option.svg\" title=\"" + run + "\"/></div></td>" );
+        out.println( "<td " + setupIconEnterLeaveJavascript( "pause" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"resumeFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"pause\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/run.svg\" title=\"" + run + "\"/></div></td>" );
         out.println( "<td " + setupIconEnterLeaveJavascript( "stop" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"stopFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"stop\"><img style=\"width: 22px; height: 22px\"src=\"" + prefix + "/images/stop.svg\" title=\"" + stop + "\"/></div></td>" );
         out.println( "<td " + setupIconEnterLeaveJavascript( "cleanup" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-left: 10px !important;\" onClick=\"cleanupFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"cleanup\"><img style=\"width: 22px; height: 22px\"src=\"" + prefix + "/images/cleanup.svg\" title=\"" + cleanup + "\"/></div></td>" );
         out.println( "<td " + setupIconEnterLeaveJavascript( "view" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-left: 0 !important;\" onClick=\"viewFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"view\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/view.svg\" title=\"" + view + "\"/></div></td>" );
