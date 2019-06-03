@@ -6105,12 +6105,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     FileListener listener = null;
-    // match by extension first
+    // match by extension first - this results into PDI-15323
+    // So to fix PDI-15323, we let the fileListener for the default extension for this meta
+    // handle the request, commenting out the code that finds the listener by extension type
+    /*
     int idx = filename.lastIndexOf( '.' );
     if ( idx != -1 ) {
       String extension = filename.substring( idx + 1 );
       listener = fileExtensionMap.get( extension );
     }
+    */
     if ( listener == null ) {
       String xt = meta.getDefaultExtension();
       listener = fileExtensionMap.get( xt );
