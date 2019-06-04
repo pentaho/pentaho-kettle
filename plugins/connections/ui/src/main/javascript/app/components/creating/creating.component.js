@@ -46,7 +46,9 @@ define([
             $state.go("success", {data: vm.data});
           });
         }, function (response) {
-          $state.go("failure", {data: vm.data});
+          dataService.createConnection(vm.data.model, vm.data.name).then(function () {
+            $state.go("failure", {data: vm.data});
+          });
         });
       }, 1000);
     }
