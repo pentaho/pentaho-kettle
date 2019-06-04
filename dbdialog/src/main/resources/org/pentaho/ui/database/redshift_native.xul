@@ -9,6 +9,8 @@
   <textbox pen:customclass="variabletextbox" id="database-name-text"/>
   <label id="port-number-label" value="${DatabaseDialog.label.PortNumber}" />
   <textbox pen:customclass="variabletextbox" id="port-number-text" />
+  <label id="username-label" value="${DatabaseDialog.label.Username}" />
+  <textbox pen:customclass="variabletextbox" id="username-text" />
   <label id="auth-method-label" value="${DatabaseDialog.label.AuthenticationMethod}" />
   <menulist id="redshift-auth-method-list" value = "Standard" oncommand="fragmentHandler.setAuthMethodVisibility()">
     <menupopup>
@@ -17,8 +19,6 @@
     </menupopup>
   </menulist>
   <vbox id="auth-standard-controls">
-    <label id="username-label" value="${DatabaseDialog.label.Username}" />
-    <textbox pen:customclass="variabletextbox" id="username-text" />
     <label id="password-label" value="${DatabaseDialog.label.Password}" />
     <textbox pen:customclass="variabletextbox" id="password-text" type="password"/>
   </vbox>
