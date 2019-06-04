@@ -314,7 +314,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     TableItem messageItem = fieldsTable.getTable().getItem( 0 );
     messageItem.setText( 1, BaseMessages.getString( PKG, "MQTTConsumerDialog.InputName.Message" ) );
     messageItem.setText( 2, mqttMeta.getMsgOutputName() );
-    messageItem.setText( 3, getTypeDescription( mqttMeta.messageDataType ) );
+    messageItem.setText( 3, getTypeDescription( mqttMeta.getMessageDataType() ) );
 
     TableItem topicItem = fieldsTable.getTable().getItem( 1 );
     topicItem.setText( 1, BaseMessages.getString( PKG, "MQTTConsumerDialog.InputName.Topic" ) );
@@ -357,7 +357,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     mqttMeta.setPassword( securityLayout.getPassword() );
     mqttMeta.setUseSsl( securityLayout.useSsl() );
     mqttMeta.setSslConfig( securityLayout.sslConfig() );
-    mqttMeta.messageDataType = ValueMetaInterface.getTypeCode( fieldsTable.getTable().getItem( 0 ).getText( 3 ) );
+    mqttMeta.messageDataType = fieldsTable.getTable().getItem( 0 ).getText( 3 );
 
     optionsLayout.retrieveOptions()
       .forEach( option -> {
