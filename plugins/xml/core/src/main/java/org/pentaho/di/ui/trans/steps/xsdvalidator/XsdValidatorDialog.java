@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -91,6 +91,10 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
   private CTabItem wGeneralTab;
   private Composite wGeneralComp;
   private FormData fdGeneralComp;
+
+  private Label wlAllowExternalEntities;
+  private Button wAllowExternalEntities;
+  private FormData fdlAllowExternalEntities, fdAllowExternalEntities;
 
   private boolean gotPrevious = false;
 
@@ -367,13 +371,35 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     groupXSD.marginHeight = 10;
     wXSD.setLayout( groupLayout );
 
+    // Enable/Disable external entity for XSD validation.
+    wlAllowExternalEntities = new Label( wXSD, SWT.RIGHT );
+    wlAllowExternalEntities.setText( BaseMessages.getString( PKG, "XsdValidatorDialog.AllowExternalEntities.Label" ) );
+    props.setLook( wlAllowExternalEntities );
+    fdlAllowExternalEntities = new FormData();
+    fdlAllowExternalEntities.left = new FormAttachment( 0, 0 );
+    fdlAllowExternalEntities.right = new FormAttachment( middle, -margin );
+    fdlAllowExternalEntities.top = new FormAttachment( wStepname, margin );
+    wlAllowExternalEntities.setLayoutData( fdlAllowExternalEntities );
+    wAllowExternalEntities = new Button( wXSD, SWT.CHECK );
+    props.setLook( wAllowExternalEntities );
+    fdAllowExternalEntities = new FormData();
+    fdAllowExternalEntities.left = new FormAttachment( middle, margin );
+    fdAllowExternalEntities.top = new FormAttachment( wStepname, margin );
+    fdAllowExternalEntities.right = new FormAttachment( 100, -margin );
+    wAllowExternalEntities.setLayoutData( fdAllowExternalEntities );
+    wAllowExternalEntities.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } );
+
     // XSD Source?
     wlXSDSource = new Label( wXSD, SWT.RIGHT );
     wlXSDSource.setText( BaseMessages.getString( PKG, "XsdValidatorDialog.XSDSource.Label" ) );
     props.setLook( wlXSDSource );
     fdlXSDSource = new FormData();
     fdlXSDSource.left = new FormAttachment( 0, 0 );
-    fdlXSDSource.top = new FormAttachment( wStepname, margin );
+    fdlXSDSource.top = new FormAttachment( wAllowExternalEntities, margin );
     fdlXSDSource.right = new FormAttachment( middle, -margin );
     wlXSDSource.setLayoutData( fdlXSDSource );
     wXSDSource = new CCombo( wXSD, SWT.BORDER | SWT.READ_ONLY );
@@ -382,7 +408,7 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     wXSDSource.addModifyListener( lsMod );
     fdXSDSource = new FormData();
     fdXSDSource.left = new FormAttachment( middle, margin );
-    fdXSDSource.top = new FormAttachment( wStepname, margin );
+    fdXSDSource.top = new FormAttachment( wAllowExternalEntities, margin );
     fdXSDSource.right = new FormAttachment( 100, -margin );
     wXSDSource.setLayoutData( fdXSDSource );
     wXSDSource.add( BaseMessages.getString( PKG, "XsdValidatorDialog.XSDSource.IS_A_FILE" ) );
@@ -668,6 +694,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
       wIfXMLUnValid.setText( input.getIfXmlInvalid() );
     }
 
+    wAllowExternalEntities.setSelection( input.isAllowExternalEntities() );
+
     if ( input.getXSDSource() != null ) {
       if ( input.getXSDSource().equals( input.SPECIFY_FILENAME ) ) {
         wXSDSource.select( 0 );
@@ -715,6 +743,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     input.setIfXmlInvalid( wIfXMLUnValid.getText() );
 
     input.setXMLSourceFile( wXMLSourceFile.getSelection() );
+
+    input.setAllowExternalEntities( wAllowExternalEntities.getSelection() );
 
     if ( wXSDSource.getSelectionIndex() == 0 ) {
       input.setXSDSource( input.SPECIFY_FILENAME );
