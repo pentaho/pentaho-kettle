@@ -1108,7 +1108,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     String url =  environmentSubstitute( baseUrl );
 
     if ( databaseInterface.supportsOptionsInURL() ) {
-      url = appendExtraOptions( url, getExtraOptions() );
+      Map<String, String> extraOptions = getExtraOptions();
+      databaseInterface.putOptionalOptions( extraOptions );
+      url = appendExtraOptions( url, extraOptions );
     }
     // else {
     // We need to put all these options in a Properties file later (Oracle & Co.)

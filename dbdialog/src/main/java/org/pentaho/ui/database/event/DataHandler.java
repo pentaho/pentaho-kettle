@@ -48,6 +48,7 @@ import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
+import org.pentaho.di.core.database.RedshiftDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -74,6 +75,7 @@ import org.pentaho.ui.xul.containers.XulRoot;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeItem;
 import org.pentaho.ui.xul.containers.XulTreeRow;
+import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.containers.XulWindow;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
@@ -254,6 +256,11 @@ public class DataHandler extends AbstractXulEventHandler {
   private XulButton cancelButton;
   private XulButton testButton;
   private XulLabel noticeLabel;
+
+  private XulMenuList jdbcAuthMethod;
+  private XulTextbox iamAccessKeyId;
+  private XulTextbox iamSecretKeyId;
+  private XulTextbox iamSessionToken;
 
   public DataHandler() {
     databaseDialects = new ArrayList<String>();
@@ -736,6 +743,19 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.setConnectSQL( sqlBox.getValue() );
     }
 
+    if ( jdbcAuthMethod != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, jdbcAuthMethod.getValue() );
+    }
+    if ( iamAccessKeyId != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, iamAccessKeyId.getValue() );
+    }
+    if ( iamSecretKeyId != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, iamSecretKeyId.getValue() );
+    }
+    if ( iamSessionToken != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, iamSessionToken.getValue() );
+    }
+
     // Cluster panel settings
     if ( clusteringCheck != null ) {
       meta.setPartitioned( clusteringCheck.isChecked() );
@@ -912,6 +932,20 @@ public class DataHandler extends AbstractXulEventHandler {
       sqlBox.setValue( meta.getConnectSQL() == null ? "" : meta.getConnectSQL() );
     }
 
+    if ( jdbcAuthMethod != null ) {
+      jdbcAuthMethod.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD ) );
+      setAuthFieldsVisible();
+    }
+    if ( iamAccessKeyId != null ) {
+      iamAccessKeyId.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID ) );
+    }
+    if ( iamSecretKeyId != null ) {
+      iamSecretKeyId.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY ) );
+    }
+    if ( iamSessionToken != null ) {
+      iamSessionToken.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN ) );
+
+    }
     // Clustering panel settings
 
     if ( clusteringCheck != null ) {
@@ -943,6 +977,16 @@ public class DataHandler extends AbstractXulEventHandler {
     setDeckChildIndex();
     onPoolingCheck();
     onClusterCheck();
+  }
+
+  @SuppressWarnings ( "unused" )
+  public void setAuthFieldsVisible() {
+    jdbcAuthMethod = (XulMenuList) document.getElementById( "redshift-auth-method-list" );
+    XulVbox standardControls = (XulVbox) document.getElementById( "auth-standard-controls" );
+    XulVbox iamControls = (XulVbox) document.getElementById( "auth-iam-controls" );
+    boolean isStandardSelected = jdbcAuthMethod != null && "Standard".equals( jdbcAuthMethod.getValue() );
+    standardControls.setVisible( isStandardSelected );
+    iamControls.setVisible( !isStandardSelected );
   }
 
   /**
@@ -1548,6 +1592,10 @@ public class DataHandler extends AbstractXulEventHandler {
     cancelButton = (XulButton) document.getElementById( "general-datasource-window_cancel" );
     testButton = (XulButton) document.getElementById( "test-button" );
     noticeLabel = (XulLabel) document.getElementById( "notice-label" );
+    jdbcAuthMethod = (XulMenuList) document.getElementById( "redshift-auth-method-list" );
+    iamAccessKeyId = (XulTextbox) document.getElementById( "iam-access-key-id" );
+    iamSecretKeyId = (XulTextbox) document.getElementById( "iam-secret-access-key" );
+    iamSessionToken = (XulTextbox) document.getElementById( "iam-session-token" );
 
     if ( portNumberBox != null && serverInstanceBox != null ) {
       if ( Boolean.parseBoolean( serverInstanceBox.getAttributeValue( "shouldDisablePortIfPopulated" ) ) ) {

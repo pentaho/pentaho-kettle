@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -399,6 +399,21 @@ public class DatabaseMetaTest {
     props.setProperty( "EXTRA_OPTION_Infobright.additional_param", "${someVar}" );
     dbmeta.getURL();
     assertTrue( dbmeta.getURL().contains( "someValue" ) );
+  }
+
+  @Test
+  public void supportsOptionalExtraOptions() throws KettleDatabaseException {
+    DatabaseMeta dbmeta = new DatabaseMeta( "rs", "Redshift", "JDBC", "amazon-host", "stuff", "5432", "jerry", null );
+    Properties props = dbmeta.getAttributes();
+    props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.STANDARD_CREDENTIALS );
+    props.setProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, "key" );
+    props.setProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, "secret" );
+    props.setProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, "token" );
+    assertFalse( dbmeta.getURL().contains( "AccessKeyID" ) );
+    assertFalse( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
+    props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.IAM_CREDENTIALS );
+    assertTrue( dbmeta.getURL().contains( "AccessKeyID" ) );
+    assertTrue( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
   }
 
   @Test
