@@ -1,17 +1,17 @@
 # optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
 buildProperties:
-        # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
-        # These are understood by the shared pipeline libraries:
-        BUILD_PLAN_ID                  : Master Suite Build
-        DEFAULT_BRANCH                 : master
-        MAVEN_DEFAULT_DIRECTIVES       : clean
-        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q -U
-        MAVEN_TEST_OPTS                : -DsurefireArgLine=-Xmx1g \verify -DrunITs -Daudit -Dsonar -Dmaven.test.failure.ignore project-info-reports:dependencies
-        IGNORE_PIPELINE_FAILURE        : true
-        JOB_ITEM_DEFAULTS              :
-          archivable                   : false
-        PARALLEL_UNIT_TESTS_CHUNKSIZE  : 110
-        MINION_POLL_CRON_INTERVAL      :
+  # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
+  # These are understood by the shared pipeline libraries:
+  BUILD_PLAN_ID                  : Master Suite Build
+  DEFAULT_BRANCH                 : master
+  MAVEN_DEFAULT_DIRECTIVES       : clean
+  MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q -U
+  MAVEN_TEST_OPTS                : -DsurefireArgLine=-Xmx1g \verify -DrunITs -Daudit -Dsonar -Dmaven.test.failure.ignore project-info-reports:dependencies -Dsonar.sources=pom.xml,src/main
+  IGNORE_PIPELINE_FAILURE        : true
+  JOB_ITEM_DEFAULTS              :
+    archivable                   : false
+  PARALLEL_UNIT_TESTS_CHUNKSIZE  : 110
+  MINION_POLL_CRON_INTERVAL      :
 
 jobGroups:
   # Always required
