@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -201,6 +201,12 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
     return moveEndBufferPointer( true );
   }
 
+  void moveEndBufferPointerXTimes( int xTimes ) throws IOException {
+    for ( int i = 0; i < xTimes; i++ ) {
+      moveEndBufferPointer( true );
+    }
+  }
+
   /**
    * This method should be used very carefully. Moving pointer without increasing number of written bytes
    * can lead to data corruption.
@@ -283,6 +289,10 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
 
   int getEndBuffer() {
     return endBuffer;
+  }
+
+  boolean isCarriageReturn() {
+    return encodingType.isReturn( byteBuffer[endBuffer] );
   }
 
   boolean newLineFound() {
