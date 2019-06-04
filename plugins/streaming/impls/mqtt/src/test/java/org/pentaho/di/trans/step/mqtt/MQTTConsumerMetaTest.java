@@ -292,9 +292,9 @@ public class MQTTConsumerMetaTest {
   @Test
   public void rowMetaUsesMessageDataType() {
     MQTTConsumerMeta meta = new MQTTConsumerMeta();
-    meta.messageDataType = ValueMetaInterface.TYPE_BINARY;
+    meta.messageDataType = ValueMetaInterface.getTypeDescription( ValueMetaInterface.TYPE_BINARY );
     assertEquals( ValueMetaInterface.TYPE_BINARY, meta.getRowMeta( "", new Variables() ).getValueMeta( 0 ).getType() );
-    meta.messageDataType = ValueMetaInterface.TYPE_STRING;
+    meta.messageDataType = ValueMetaInterface.getTypeDescription( ValueMetaInterface.TYPE_STRING );
     assertEquals( ValueMetaInterface.TYPE_STRING, meta.getRowMeta( "", new Variables() ).getValueMeta( 0 ).getType() );
   }
 

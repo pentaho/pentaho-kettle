@@ -29,6 +29,7 @@ import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.serialization.Sensitive;
@@ -166,7 +167,7 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
   private String automaticReconnect = "";
 
   @Injection( name = MESSAGE_DATA_TYPE )
-  public int messageDataType = TYPE_STRING;
+  public String messageDataType;
 
   public MQTTConsumerMeta() {
     super();
@@ -195,12 +196,12 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
     serverUris = "";
     mqttVersion = "";
     automaticReconnect = "";
-    messageDataType = TYPE_STRING;
+    messageDataType = ValueMetaInterface.getTypeDescription( TYPE_STRING );
   }
 
   @Override
   public int getMessageDataType() {
-    return messageDataType;
+    return ValueMetaInterface.getTypeCode( messageDataType );
   }
 
   @Override public String getFileName() {
@@ -211,7 +212,7 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
   @Override
   public RowMeta getRowMeta( String origin, VariableSpace space ) {
     RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaBase( msgOutputName, messageDataType ) );
+    rowMeta.addValueMeta( new ValueMetaBase( msgOutputName, getMessageDataType() ) );
     rowMeta.addValueMeta( new ValueMetaString( topicOutputName ) );
     return rowMeta;
   }
