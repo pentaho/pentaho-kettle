@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -52,7 +53,9 @@ import org.w3c.dom.Node;
  * Created on 30-06-2008
  *
  */
-
+@Step( id = "BlockUntilStepsFinish", i18nPackageName = "org.pentaho.di.trans.steps.blockuntilstepsfinish",
+  name = "BlockUntilStepsFinish.Name", description = "BlockUntilStepsFinish.Description",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
 public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = BlockUntilStepsFinishMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -163,7 +166,8 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
 
       int nrsteps = rep.countNrStepAttributes( id_step, "step_name" );
@@ -179,7 +183,8 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       for ( int i = 0; i < stepName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "step_name", stepName[i] );
