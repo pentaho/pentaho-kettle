@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,7 +63,7 @@ import java.util.concurrent.TimeUnit;
         name = "ElasticSearchBulk.TypeLongDesc.ElasticSearchBulk",
         description = "ElasticSearchBulk.TypeTooltipDesc.ElasticSearchBulk",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk", image = "ESB.svg",
-        documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/ElasticSearch_Bulk_Insert" )
+        documentationUrl = "Products/ElasticSearch_Bulk_Insert" )
 @InjectionSupported( localizationPrefix = "ElasticSearchBulk.Injection." )
 public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInterface {
 

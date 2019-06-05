@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,7 +57,7 @@ import org.w3c.dom.Node;
     description = "SalesforceUpsert.TypeTooltipDesc.SalesforceUpsert",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
     image = "SFU.svg",
-    documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Salesforce_Upsert" )
+    documentationUrl = "Products/Salesforce_Upsert" )
 public class SalesforceUpsertMeta extends SalesforceStepMeta {
   private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!
 
