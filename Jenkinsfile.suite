@@ -88,16 +88,6 @@ node('non-master') {
           }
         }
       }
-
-      if (params.BUILD_UPGRADE_PATH && !params.NOOP) {
-        stage('Upgrade Path') {
-          job.trigger('upgrade-path-installers-pentaho-server', suiteParameters)
-        }
-
-        stage('Deployment (UP)') {
-          job.trigger('deployment-sculptor-sp', suiteParameters)
-        }
-      }
     }
     
     notifyBuildResult(currentBuild.result)
