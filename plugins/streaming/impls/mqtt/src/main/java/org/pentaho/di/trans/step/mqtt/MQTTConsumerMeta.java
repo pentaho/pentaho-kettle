@@ -54,6 +54,7 @@ import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_STRING;
+import static org.pentaho.di.core.row.ValueMetaInterface.getTypeDescription;
 import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.mqtt.MQTTClientBuilder.DEFAULT_SSL_OPTS;
@@ -167,7 +168,7 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
   private String automaticReconnect = "";
 
   @Injection( name = MESSAGE_DATA_TYPE )
-  public String messageDataType;
+  public String messageDataType = getTypeDescription( TYPE_STRING );
 
   public MQTTConsumerMeta() {
     super();
@@ -196,7 +197,7 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
     serverUris = "";
     mqttVersion = "";
     automaticReconnect = "";
-    messageDataType = ValueMetaInterface.getTypeDescription( TYPE_STRING );
+    messageDataType = getTypeDescription( TYPE_STRING );
   }
 
   @Override
