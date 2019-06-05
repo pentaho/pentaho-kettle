@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
     description = "SalesforceDelete.TypeTooltipDesc.SalesforceDelete",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
     image = "SFD.svg",
-    documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Salesforce_Delete" )
+    documentationUrl = "Products/Salesforce_Delete" )
 public class SalesforceDeleteMeta extends SalesforceStepMeta {
   private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
