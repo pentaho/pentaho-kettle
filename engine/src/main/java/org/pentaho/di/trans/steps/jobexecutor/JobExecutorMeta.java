@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -707,7 +707,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
     //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
     // parent parameter.
-    StepWithMappingMeta.replaceVariableValues( mappingJobMeta, space );
+    StepWithMappingMeta.replaceVariableValues( mappingJobMeta, space, "Job" );
     if ( executorMeta.getParameters().isInheritingAllVariables() ) {
       // All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
       // variables from the transformation?' option is checked)

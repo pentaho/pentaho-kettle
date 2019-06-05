@@ -433,21 +433,34 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
     }
   }
 
-  public static void replaceVariableValues( VariableSpace childTransMeta, VariableSpace replaceBy ) {
+  public static void replaceVariableValues( VariableSpace childTransMeta, VariableSpace replaceBy, String type ) {
     if ( replaceBy == null ) {
       return;
     }
     String[] variableNames = replaceBy.listVariables();
     for ( String variableName : variableNames ) {
-      if ( childTransMeta.getVariable( variableName ) != null && !isInternalVariable( variableName ) ) {
+      if ( childTransMeta.getVariable( variableName ) != null && !isInternalVariable( variableName, type ) ) {
         childTransMeta.setVariable( variableName, replaceBy.getVariable( variableName ) );
       }
     }
   }
 
-  private static boolean isInternalVariable( String variableName ) {
-    return ( Arrays.asList( Const.INTERNAL_JOB_VARIABLES ).contains( variableName )
-      || Arrays.asList( Const.INTERNAL_TRANS_VARIABLES ).contains( variableName ) );
+  public static void replaceVariableValues( VariableSpace childTransMeta, VariableSpace replaceBy ) {
+    replaceVariableValues(  childTransMeta,  replaceBy, "" );
+  }
+
+  private static boolean isInternalVariable( String variableName, String type ) {
+    return type.equals( "Trans" ) ? isTransInternalVariable( variableName )
+      : type.equals( "Job" ) ? isJobInternalVariable( variableName )
+      : isJobInternalVariable( variableName ) || isTransInternalVariable( variableName );
+  }
+
+  private static boolean isTransInternalVariable( String variableName ) {
+    return ( Arrays.asList( Const.INTERNAL_TRANS_VARIABLES ).contains( variableName ) );
+  }
+
+  private static boolean isJobInternalVariable( String variableName ) {
+    return ( Arrays.asList( Const.INTERNAL_JOB_VARIABLES ).contains( variableName ) );
   }
 
   /**
