@@ -49,6 +49,7 @@ import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.database.RedshiftDatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -750,7 +751,7 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.getAttributes().put( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, iamAccessKeyId.getValue() );
     }
     if ( iamSecretKeyId != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, iamSecretKeyId.getValue() );
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( iamSecretKeyId.getValue() ) );
     }
     if ( iamSessionToken != null ) {
       meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, iamSessionToken.getValue() );
@@ -940,7 +941,7 @@ public class DataHandler extends AbstractXulEventHandler {
       iamAccessKeyId.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID ) );
     }
     if ( iamSecretKeyId != null ) {
-      iamSecretKeyId.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY ) );
+      iamSecretKeyId.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY ) ) );
     }
     if ( iamSessionToken != null ) {
       iamSessionToken.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN ) );

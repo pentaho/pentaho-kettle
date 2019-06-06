@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,9 +35,6 @@ import org.pentaho.di.trans.step.StepInterface;
  */
 public class BlockUntilStepsFinishData extends BaseStepData implements StepDataInterface {
 
-  /**
-   *
-  */
   boolean continueLoop;
   public ConcurrentHashMap<Integer, StepInterface> stepInterfaces;
 

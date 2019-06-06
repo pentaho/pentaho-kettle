@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -71,7 +71,7 @@ import org.w3c.dom.Node;
  * Store run-time data on the JsonInput step.
  */
 @Step( id = "JsonInput", image = "JSI.svg", i18nPackageName = "org.pentaho.di.trans.steps.jsoninput",
-    documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/JSON_Input", name = "JsonInput.name",
+    documentationUrl = "Products/JSON_Input", name = "JsonInput.name",
     description = "JsonInput.description", categoryDescription = "JsonInput.category" )
 @InjectionSupported( localizationPrefix = "JsonInput.Injection.", groups = { "FILENAME_LINES", "FIELDS" }, hide = {
   "ACCEPT_FILE_NAMES", "ACCEPT_FILE_STEP", "PASS_THROUGH_FIELDS", "ACCEPT_FILE_FIELD", "ADD_FILES_TO_RESULT",

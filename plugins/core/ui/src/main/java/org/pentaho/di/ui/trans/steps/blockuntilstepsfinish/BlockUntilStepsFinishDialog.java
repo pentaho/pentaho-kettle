@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -56,8 +57,11 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
+@PluginDialog( id = "BlockUntilStepsFinish", image = "WFS.svg", pluginType = PluginDialog.PluginType.STEP,
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Block+this+step+until+steps+finish" )
 public class BlockUntilStepsFinishDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = BlockUntilStepsFinishMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = BlockUntilStepsFinishDialog.class; // for i18n purposes, needed by Translator2!!
 
   private String[] previousSteps;
   private BlockUntilStepsFinishMeta input;

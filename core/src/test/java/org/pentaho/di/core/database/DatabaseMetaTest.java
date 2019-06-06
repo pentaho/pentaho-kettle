@@ -40,6 +40,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -407,12 +408,14 @@ public class DatabaseMetaTest {
     Properties props = dbmeta.getAttributes();
     props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.STANDARD_CREDENTIALS );
     props.setProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, "key" );
-    props.setProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, "secret" );
+    props.setProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( "secret" ) );
     props.setProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, "token" );
     assertFalse( dbmeta.getURL().contains( "AccessKeyID" ) );
+    assertFalse( dbmeta.getURL().contains( "secret" ) );
     assertFalse( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
     props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.IAM_CREDENTIALS );
     assertTrue( dbmeta.getURL().contains( "AccessKeyID" ) );
+    assertTrue( dbmeta.getURL().contains( "secret" ) );
     assertTrue( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
   }
 

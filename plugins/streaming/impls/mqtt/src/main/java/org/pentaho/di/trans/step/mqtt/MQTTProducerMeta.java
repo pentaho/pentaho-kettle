@@ -88,7 +88,7 @@ import static org.pentaho.dictionary.DictionaryConst.NODE_TYPE_EXTERNAL_CONNECTI
   name = "MQTTProducer.TypeLongDesc",
   description = "MQTTProducer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
-  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/MQTT_Producer" )
+  documentationUrl = "Products/MQTT_Producer" )
 @InjectionSupported ( localizationPrefix = "MQTTProducerMeta.Injection.", groups = { "SSL" } )
 @Metaverse.CategoryMap ( entity = MQTT_TOPIC_METAVERSE, category = CATEGORY_MESSAGE_QUEUE )
 @Metaverse.CategoryMap ( entity = MQTT_SERVER_METAVERSE, category = CATEGORY_DATASOURCE )
