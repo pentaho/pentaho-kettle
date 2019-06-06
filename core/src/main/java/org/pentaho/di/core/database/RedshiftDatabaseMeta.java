@@ -21,6 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.encryption.Encr;
+
 import java.util.Map;
 
 import static org.pentaho.di.core.util.Utils.isEmpty;
@@ -81,7 +83,7 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
   @Override public void putOptionalOptions( Map<String, String> extraOptions ) {
     if ( IAM_CREDENTIALS.equals( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
       extraOptions.put( "REDSHIFT.AccessKeyID", getAttribute( IAM_ACCESS_KEY_ID, "" ) );
-      extraOptions.put( "REDSHIFT.SecretAccessKey", getAttribute( IAM_SECRET_ACCESS_KEY, "" ) );
+      extraOptions.put( "REDSHIFT.SecretAccessKey", Encr.decryptPassword( getAttribute( IAM_SECRET_ACCESS_KEY, "" ) ) );
       extraOptions.put( "REDSHIFT.SessionToken", getAttribute( IAM_SESSION_TOKEN, "" ) );
     }
   }

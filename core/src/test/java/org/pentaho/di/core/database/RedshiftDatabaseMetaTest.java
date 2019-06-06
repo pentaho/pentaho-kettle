@@ -23,7 +23,11 @@
 package org.pentaho.di.core.database;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +47,11 @@ import static org.pentaho.di.core.database.RedshiftDatabaseMeta.JDBC_AUTH_METHOD
 public class RedshiftDatabaseMetaTest {
 
   private RedshiftDatabaseMeta dbMeta;
+
+  @BeforeClass
+  public static void beforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -81,7 +90,7 @@ public class RedshiftDatabaseMetaTest {
     dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
     dbMeta.addAttribute( JDBC_AUTH_METHOD, IAM_CREDENTIALS );
     dbMeta.addAttribute( IAM_ACCESS_KEY_ID, "myid" );
-    dbMeta.addAttribute( IAM_SECRET_ACCESS_KEY, "mysecretkey" );
+    dbMeta.addAttribute( IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( "mysecretkey" ) );
     dbMeta.addAttribute( IAM_SESSION_TOKEN, "mytoken" );
     assertEquals(
       "jdbc:redshift:iam://amazonhost:12345/foodmart",
