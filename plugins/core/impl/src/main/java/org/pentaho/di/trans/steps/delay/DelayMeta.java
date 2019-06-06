@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -51,7 +52,8 @@ import org.w3c.dom.Node;
  * Created on 27-06-2008
  *
  */
-
+@Step( id = "Delay", i18nPackageName = "org.pentaho.di.trans.steps.delay", name = "Delay.Name",
+  description = "Delay.Description", categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility" )
 public class DelayMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!!
 
