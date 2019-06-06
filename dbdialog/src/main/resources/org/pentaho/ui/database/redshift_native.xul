@@ -11,6 +11,8 @@
   <textbox pen:customclass="variabletextbox" id="port-number-text" />
   <label id="username-label" value="${DatabaseDialog.label.Username}" />
   <textbox pen:customclass="variabletextbox" id="username-text" />
+  <spacer height="7"/>
+  <separator/>
   <label id="auth-method-label" value="${DatabaseDialog.label.AuthenticationMethod}" />
   <menulist id="redshift-auth-method-list" value = "Standard" oncommand="fragmentHandler.setAuthMethodVisibility()">
     <menupopup>
@@ -30,6 +32,6 @@
     <label id="session-token-label" value="${DatabaseDialog.label.SessionToken}" />
     <textbox pen:customclass="variabletextbox" id="iam-session-token" />
   </vbox>
-  <vbox id="redshift-bulk-loader-controls" orient="vertical" flex="1">
+  <vbox id="redshift-bulk-loader-controls" orient="vertical">
   </vbox>
 </groupbox>
