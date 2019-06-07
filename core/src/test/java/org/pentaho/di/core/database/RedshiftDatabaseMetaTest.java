@@ -37,9 +37,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID;
 import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_CREDENTIALS;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_PROFILE_NAME;
 import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY;
 import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SESSION_TOKEN;
 import static org.pentaho.di.core.database.RedshiftDatabaseMeta.JDBC_AUTH_METHOD;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.PROFILE_CREDENTIALS;
 
 /**
  * Unit tests for RedshiftDatabaseMeta
@@ -100,6 +102,11 @@ public class RedshiftDatabaseMetaTest {
     assertEquals( "myid", optionalOptions.get( "REDSHIFT.AccessKeyID" ) );
     assertEquals( "mysecretkey", optionalOptions.get( "REDSHIFT.SecretAccessKey" ) );
     assertEquals( "mytoken", optionalOptions.get( "REDSHIFT.SessionToken" ) );
+    dbMeta.addAttribute( JDBC_AUTH_METHOD, PROFILE_CREDENTIALS );
+    dbMeta.addAttribute( IAM_PROFILE_NAME, "super" );
+    optionalOptions.clear();
+    dbMeta.putOptionalOptions( optionalOptions );
+    assertEquals( "super", optionalOptions.get( "REDSHIFT.Profile" ) );
   }
 
   @Test

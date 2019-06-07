@@ -32,11 +32,9 @@ import org.pentaho.ui.database.Messages;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulListbox;
-import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 /**
@@ -188,12 +186,8 @@ public class FragmentHandler extends AbstractXulEventHandler {
     }
   }
 
-  public void setAuthMethodVisibility() {
-    XulVbox authStandardControls = (XulVbox) document.getElementById( "auth-standard-controls" );
-    XulVbox authIAMControls = (XulVbox) document.getElementById( "auth-iam-controls" );
-    XulMenuList jdbcAuthMethod = (XulMenuList) document.getElementById( "redshift-auth-method-list" );
-    boolean isStandardSelected = jdbcAuthMethod != null && "Standard".equals( jdbcAuthMethod.getValue() );
-    authStandardControls.setVisible( isStandardSelected );
-    authIAMControls.setVisible( !isStandardSelected );
+  public void setAuthMethodVisibility() throws XulException {
+    DataHandler dataHandler = (DataHandler) xulDomContainer.getEventHandler( "dataHandler" );
+    dataHandler.setAuthFieldsVisible();
   }
 }

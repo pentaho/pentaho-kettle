@@ -417,6 +417,10 @@ public class DatabaseMetaTest {
     assertTrue( dbmeta.getURL().contains( "AccessKeyID" ) );
     assertTrue( dbmeta.getURL().contains( "secret" ) );
     assertTrue( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
+    props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.PROFILE_CREDENTIALS );
+    props.setProperty( RedshiftDatabaseMeta.IAM_PROFILE_NAME, "default" );
+    assertTrue( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
+    assertTrue( dbmeta.getURL().contains( "Profile=default" ) );
   }
 
   @Test

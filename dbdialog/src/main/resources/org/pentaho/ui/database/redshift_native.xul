@@ -18,6 +18,7 @@
     <menupopup>
       <menuitem label="Standard"/>
       <menuitem label="IAM Credentials"/>
+      <menuitem label="Profile"/>
     </menupopup>
   </menulist>
   <vbox id="auth-standard-controls">
@@ -31,6 +32,10 @@
     <textbox pen:customclass="variabletextbox" id="iam-secret-access-key" type="password"/>
     <label id="session-token-label" value="${DatabaseDialog.label.SessionToken}" />
     <textbox pen:customclass="variabletextbox" id="iam-session-token" />
+  </vbox>
+  <vbox id="auth-profile-controls">
+    <label id="profile-label" value="${DatabaseDialog.label.Profile}" />
+    <textbox pen:customclass="variabletextbox" id="iam-profile-name"/>
   </vbox>
   <vbox id="redshift-bulk-loader-controls" orient="vertical">
   </vbox>

@@ -262,6 +262,7 @@ public class DataHandler extends AbstractXulEventHandler {
   private XulTextbox iamAccessKeyId;
   private XulTextbox iamSecretKeyId;
   private XulTextbox iamSessionToken;
+  private XulTextbox iamProfileName;
 
   public DataHandler() {
     databaseDialects = new ArrayList<String>();
@@ -756,6 +757,9 @@ public class DataHandler extends AbstractXulEventHandler {
     if ( iamSessionToken != null ) {
       meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, iamSessionToken.getValue() );
     }
+    if ( iamProfileName != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_PROFILE_NAME, iamProfileName.getValue() );
+    }
 
     // Cluster panel settings
     if ( clusteringCheck != null ) {
@@ -945,7 +949,9 @@ public class DataHandler extends AbstractXulEventHandler {
     }
     if ( iamSessionToken != null ) {
       iamSessionToken.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN ) );
-
+    }
+    if ( iamProfileName != null ) {
+      iamProfileName.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_PROFILE_NAME ) );
     }
     // Clustering panel settings
 
@@ -985,9 +991,25 @@ public class DataHandler extends AbstractXulEventHandler {
     jdbcAuthMethod = (XulMenuList) document.getElementById( "redshift-auth-method-list" );
     XulVbox standardControls = (XulVbox) document.getElementById( "auth-standard-controls" );
     XulVbox iamControls = (XulVbox) document.getElementById( "auth-iam-controls" );
-    boolean isStandardSelected = jdbcAuthMethod != null && "Standard".equals( jdbcAuthMethod.getValue() );
-    standardControls.setVisible( isStandardSelected );
-    iamControls.setVisible( !isStandardSelected );
+    XulVbox profileControls = (XulVbox) document.getElementById( "auth-profile-controls" );
+    String jdbcAuthMethodValue = jdbcAuthMethod.getValue();
+    switch ( jdbcAuthMethodValue ) {
+      case RedshiftDatabaseMeta.STANDARD_CREDENTIALS:
+        standardControls.setVisible( true );
+        iamControls.setVisible( false );
+        profileControls.setVisible( false );
+        break;
+      case RedshiftDatabaseMeta.IAM_CREDENTIALS:
+        standardControls.setVisible( false );
+        iamControls.setVisible( true );
+        profileControls.setVisible( false );
+        break;
+      case RedshiftDatabaseMeta.PROFILE_CREDENTIALS:
+        standardControls.setVisible( false );
+        iamControls.setVisible( false );
+        profileControls.setVisible( true );
+        break;
+    }
   }
 
   /**
@@ -1597,6 +1619,7 @@ public class DataHandler extends AbstractXulEventHandler {
     iamAccessKeyId = (XulTextbox) document.getElementById( "iam-access-key-id" );
     iamSecretKeyId = (XulTextbox) document.getElementById( "iam-secret-access-key" );
     iamSessionToken = (XulTextbox) document.getElementById( "iam-session-token" );
+    iamProfileName = (XulTextbox) document.getElementById( "iam-profile-name" );
 
     if ( portNumberBox != null && serverInstanceBox != null ) {
       if ( Boolean.parseBoolean( serverInstanceBox.getAttributeValue( "shouldDisablePortIfPopulated" ) ) ) {
