@@ -53,7 +53,7 @@ import static org.pentaho.di.core.util.StringUtil.isEmpty;
  * Meta data for the abort step.
  */
 @Step( id = "Abort", i18nPackageName = "org.pentaho.di.trans.steps.abort",
-  name = "Abort.Name", description = "Abort.Description", documentationUrl = "Products/Abort",
+  name = "Abort.Name", description = "Abort.Description",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
 public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AbortMeta.class; // for i18n purposes, needed by Translator2!!
