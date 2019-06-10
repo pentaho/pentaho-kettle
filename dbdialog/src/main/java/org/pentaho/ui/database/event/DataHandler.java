@@ -745,22 +745,6 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.setConnectSQL( sqlBox.getValue() );
     }
 
-    if ( jdbcAuthMethod != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, jdbcAuthMethod.getValue() );
-    }
-    if ( iamAccessKeyId != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, iamAccessKeyId.getValue() );
-    }
-    if ( iamSecretKeyId != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( iamSecretKeyId.getValue() ) );
-    }
-    if ( iamSessionToken != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, iamSessionToken.getValue() );
-    }
-    if ( iamProfileName != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_PROFILE_NAME, iamProfileName.getValue() );
-    }
-
     // Cluster panel settings
     if ( clusteringCheck != null ) {
       meta.setPartitioned( clusteringCheck.isChecked() );
@@ -937,22 +921,6 @@ public class DataHandler extends AbstractXulEventHandler {
       sqlBox.setValue( meta.getConnectSQL() == null ? "" : meta.getConnectSQL() );
     }
 
-    if ( jdbcAuthMethod != null ) {
-      jdbcAuthMethod.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD ) );
-      setAuthFieldsVisible();
-    }
-    if ( iamAccessKeyId != null ) {
-      iamAccessKeyId.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID ) );
-    }
-    if ( iamSecretKeyId != null ) {
-      iamSecretKeyId.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY ) ) );
-    }
-    if ( iamSessionToken != null ) {
-      iamSessionToken.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN ) );
-    }
-    if ( iamProfileName != null ) {
-      iamProfileName.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_PROFILE_NAME ) );
-    }
     // Clustering panel settings
 
     if ( clusteringCheck != null ) {
@@ -994,11 +962,6 @@ public class DataHandler extends AbstractXulEventHandler {
     XulVbox profileControls = (XulVbox) document.getElementById( "auth-profile-controls" );
     String jdbcAuthMethodValue = jdbcAuthMethod.getValue();
     switch ( jdbcAuthMethodValue ) {
-      case RedshiftDatabaseMeta.STANDARD_CREDENTIALS:
-        standardControls.setVisible( true );
-        iamControls.setVisible( false );
-        profileControls.setVisible( false );
-        break;
       case RedshiftDatabaseMeta.IAM_CREDENTIALS:
         standardControls.setVisible( false );
         iamControls.setVisible( true );
@@ -1008,6 +971,11 @@ public class DataHandler extends AbstractXulEventHandler {
         standardControls.setVisible( false );
         iamControls.setVisible( false );
         profileControls.setVisible( true );
+        break;
+      default:
+        standardControls.setVisible( true );
+        iamControls.setVisible( false );
+        profileControls.setVisible( false );
         break;
     }
   }
@@ -1431,6 +1399,22 @@ public class DataHandler extends AbstractXulEventHandler {
         useIntegratedSecurity != null ? useIntegratedSecurity.toString() : "false" );
     }
 
+    if ( jdbcAuthMethod != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, jdbcAuthMethod.getValue() );
+    }
+    if ( iamAccessKeyId != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, iamAccessKeyId.getValue() );
+    }
+    if ( iamSecretKeyId != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( iamSecretKeyId.getValue() ) );
+    }
+    if ( iamSessionToken != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, iamSessionToken.getValue() );
+    }
+    if ( iamProfileName != null ) {
+      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_PROFILE_NAME, iamProfileName.getValue() );
+    }
+
     if ( webAppName != null ) {
       meta.setDBName( webAppName.getValue() );
     }
@@ -1547,6 +1531,23 @@ public class DataHandler extends AbstractXulEventHandler {
       } else {
         useIntegratedSecurityCheck.setChecked( false );
       }
+    }
+
+    if ( jdbcAuthMethod != null ) {
+      jdbcAuthMethod.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD ) );
+      setAuthFieldsVisible();
+    }
+    if ( iamAccessKeyId != null ) {
+      iamAccessKeyId.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID ) );
+    }
+    if ( iamSecretKeyId != null ) {
+      iamSecretKeyId.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY ) ) );
+    }
+    if ( iamSessionToken != null ) {
+      iamSessionToken.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN ) );
+    }
+    if ( iamProfileName != null ) {
+      iamProfileName.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_PROFILE_NAME ) );
     }
 
     if ( webAppName != null ) {
