@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,7 +55,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 @PluginDialog( id = "Abort", image = "ABR.svg", pluginType = PluginDialog.PluginType.STEP,
-  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Abort" )
+  documentationUrl = "Products/Abort" )
 public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = AbortDialog.class; // for i18n purposes, needed by Translator2!!
 

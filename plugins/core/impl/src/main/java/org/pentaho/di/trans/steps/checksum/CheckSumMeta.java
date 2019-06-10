@@ -61,7 +61,7 @@ import org.w3c.dom.Node;
  * @author Samatar Hassan
  */
 @Step( id = "CheckSum", i18nPackageName = "org.pentaho.di.trans.steps.checksum", name = "CheckSum.Name",
-    description = "CheckSum.Description", documentationUrl = "Products/Add_a_Checksum",
+    description = "CheckSum.Description",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform" )
 @InjectionSupported( localizationPrefix = "CheckSum.Injection.", groups = { "FIELDS" }  )
 public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
