@@ -48,5 +48,16 @@ node {
             -DNOOP=${params.NOOP} ${WORKSPACE}/scripts/BranchingTagging.groovy
           """
         }
+
+        // Set the build description
+        if (params.BRANCHES) {
+          currentBuild.description = "${params.TARGET_BRANCH_TAG} branch ${params.COMMAND}"
+        }
+        else if (params.TAGS) {
+          currentBuild.description = "${params.TARGET_BRANCH_TAG} tag ${params.COMMAND}"
+        }
+        else if (params.NOOP) {
+          currentBuild.description = "${params.TARGET_BRANCH_TAG} noop"
+        }
     }
 }
