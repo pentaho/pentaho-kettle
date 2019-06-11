@@ -7,7 +7,7 @@ jdk:
 - oraclejdk8
 
 install: true
-script: mvn clean install -s .travis.maven.settings.xml -DskipTests
+script: mvn clean install -s .travis.maven.settings.xml -DskipTests -B -V
 
 after_success:
   - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
