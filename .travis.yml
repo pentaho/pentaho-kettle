@@ -6,6 +6,7 @@ notifications:
 jdk:
 - oraclejdk8
 
+install: true
 script: mvn clean install -s .travis.maven.settings.xml 
 
 after_success:
