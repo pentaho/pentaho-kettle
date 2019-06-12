@@ -1351,7 +1351,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
         // parent parameter.
 
-        StepWithMappingMeta.replaceVariableValues( transMeta, space );
+        StepWithMappingMeta.replaceVariableValues( transMeta, space, "Trans" );
         if ( isPassingAllParameters() ) {
           // All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
           // variables from the transformation?' option is checked)
