@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -55,6 +56,9 @@ import org.w3c.dom.Node;
  * Created on 4-apr-2003
  *
  */
+@Step( id = "CubeOutput", i18nPackageName = "org.pentaho.di.trans.steps.cubeoutput", name = "CubeOutput.Name",
+  description = "CubeOutput.Description",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output" )
 public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
