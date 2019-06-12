@@ -1,14 +1,10 @@
 #! /bin/bash
 set -x
 
-env | sort
+mv /usr/local/maven-3.5.2/conf/settings.xml /usr/local/maven-3.5.2/conf/ORIG.settings.xml
 
-echo $M2_HOME
+cp ./.travis.maven.settings.xml /usr/local/maven-3.5.2/conf/settings.xml
 
-which mvn
 find /usr/local/maven-3.5.2 -type d -name conf -exec ls -ltr {} \;
-
-ls -ltr $M2_HOME
-ls -ltr $M2_HOME/conf
 
 exit 1
