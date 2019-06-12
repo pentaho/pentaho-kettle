@@ -6,6 +6,9 @@ notifications:
 jdk:
 - oraclejdk8
 
+before_install:
+  - chmod +x ./travisSetup.sh
+  
 install: true
 script: ./travisSetup.sh
 
