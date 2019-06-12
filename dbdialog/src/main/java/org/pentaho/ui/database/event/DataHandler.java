@@ -48,7 +48,6 @@ import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
-import org.pentaho.di.core.database.RedshiftDatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -81,6 +80,14 @@ import org.pentaho.ui.xul.containers.XulWindow;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 import static org.pentaho.di.core.database.BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_CREDENTIALS;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_PROFILE_NAME;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SESSION_TOKEN;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.JDBC_AUTH_METHOD;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.PROFILE_CREDENTIALS;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.STANDARD_CREDENTIALS;
 import static org.pentaho.di.core.database.SnowflakeHVDatabaseMeta.WAREHOUSE;
 
 /**
@@ -824,7 +831,6 @@ public class DataHandler extends AbstractXulEventHandler {
         meta.setConnectionPoolingProperties( properties );
       }
     }
-    specialSnowflakeGetHandling( meta );
   }
 
   private void setInfo( DatabaseMeta meta ) {
@@ -838,7 +844,6 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.getAttributes().remove( EXTRA_OPTION_WEB_APPLICATION_NAME );
       meta.setChanged();
     }
-    specialSnowflakeSetHandling( meta );
 
     getControls();
 
@@ -962,12 +967,12 @@ public class DataHandler extends AbstractXulEventHandler {
     XulVbox profileControls = (XulVbox) document.getElementById( "auth-profile-controls" );
     String jdbcAuthMethodValue = jdbcAuthMethod.getValue();
     switch ( jdbcAuthMethodValue ) {
-      case RedshiftDatabaseMeta.IAM_CREDENTIALS:
+      case IAM_CREDENTIALS:
         standardControls.setVisible( false );
         iamControls.setVisible( true );
         profileControls.setVisible( false );
         break;
-      case RedshiftDatabaseMeta.PROFILE_CREDENTIALS:
+      case PROFILE_CREDENTIALS:
         standardControls.setVisible( false );
         iamControls.setVisible( false );
         profileControls.setVisible( true );
@@ -978,37 +983,6 @@ public class DataHandler extends AbstractXulEventHandler {
         profileControls.setVisible( false );
         break;
     }
-  }
-
-  /**
-   * Snowflake has a warehouse attr that needs to an "extra option" such
-   * that PRD will properly load and store the value (PRD has a different meta strategy).
-   * BUT, we don't want the warehouse option to show up in the options table,
-   * since it's on the main tab, so we remove the extra option on Set, and add it on Get.
-   * This is a workaround to existing limitations in PRD, which currently ignores all
-   * non-"extra" attributes.
-   */
-  private void specialSnowflakeSetHandling( DatabaseMeta meta ) {
-    if ( metaContainsExtraOptionForWarehouse( meta ) ) {
-      Properties attrs = databaseMeta.getAttributes();
-      String warehouse = (String) attrs.get( EXTRA_OPT_WAREHOUSE );
-      attrs.remove( EXTRA_OPT_WAREHOUSE );
-      attrs.put( WAREHOUSE, warehouse );
-    }
-  }
-
-  private void specialSnowflakeGetHandling( DatabaseMeta meta ) {
-    if ( meta == null || !SNOWFLAKE_TYPE.equals( meta.getPluginId() ) ) {
-      return;
-    }
-    Properties attrs = meta.getAttributes();
-    String warehouse = (String) attrs.get( WAREHOUSE );
-    attrs.put( EXTRA_OPT_WAREHOUSE, warehouse );
-  }
-
-  private boolean metaContainsExtraOptionForWarehouse( DatabaseMeta meta ) {
-    return databaseMeta != null
-      && databaseMeta.getAttributes().containsKey( EXTRA_OPT_WAREHOUSE );
   }
 
   private void traverseDomSetReadOnly( XulComponent component, boolean readonly ) {
@@ -1400,19 +1374,19 @@ public class DataHandler extends AbstractXulEventHandler {
     }
 
     if ( jdbcAuthMethod != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, jdbcAuthMethod.getValue() );
+      meta.getAttributes().put( JDBC_AUTH_METHOD, jdbcAuthMethod.getValue() );
     }
     if ( iamAccessKeyId != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, iamAccessKeyId.getValue() );
+      meta.getAttributes().put( IAM_ACCESS_KEY_ID, iamAccessKeyId.getValue() );
     }
     if ( iamSecretKeyId != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( iamSecretKeyId.getValue() ) );
+      meta.getAttributes().put( IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( iamSecretKeyId.getValue() ) );
     }
     if ( iamSessionToken != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, iamSessionToken.getValue() );
+      meta.getAttributes().put( IAM_SESSION_TOKEN, iamSessionToken.getValue() );
     }
     if ( iamProfileName != null ) {
-      meta.getAttributes().put( RedshiftDatabaseMeta.IAM_PROFILE_NAME, iamProfileName.getValue() );
+      meta.getAttributes().put( IAM_PROFILE_NAME, iamProfileName.getValue() );
     }
 
     if ( webAppName != null ) {
@@ -1534,20 +1508,20 @@ public class DataHandler extends AbstractXulEventHandler {
     }
 
     if ( jdbcAuthMethod != null ) {
-      jdbcAuthMethod.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD ) );
+      jdbcAuthMethod.setValue( meta.getAttributes().getProperty( JDBC_AUTH_METHOD, STANDARD_CREDENTIALS ) );
       setAuthFieldsVisible();
     }
     if ( iamAccessKeyId != null ) {
-      iamAccessKeyId.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID ) );
+      iamAccessKeyId.setValue( meta.getAttributes().getProperty( IAM_ACCESS_KEY_ID ) );
     }
     if ( iamSecretKeyId != null ) {
-      iamSecretKeyId.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY ) ) );
+      iamSecretKeyId.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( IAM_SECRET_ACCESS_KEY ) ) );
     }
     if ( iamSessionToken != null ) {
-      iamSessionToken.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN ) );
+      iamSessionToken.setValue( meta.getAttributes().getProperty( IAM_SESSION_TOKEN ) );
     }
     if ( iamProfileName != null ) {
-      iamProfileName.setValue( meta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_PROFILE_NAME ) );
+      iamProfileName.setValue( meta.getAttributes().getProperty( IAM_PROFILE_NAME ) );
     }
 
     if ( webAppName != null ) {

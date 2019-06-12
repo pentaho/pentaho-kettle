@@ -438,4 +438,8 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
     return false;
   }
 
+  @Override public void putOptionalOptions( Map<String, String> extraOptions ) {
+    extraOptions.put( "SNOWFLAKEHV." + WAREHOUSE, getAttribute( WAREHOUSE, "" ) );
+  }
+
 }

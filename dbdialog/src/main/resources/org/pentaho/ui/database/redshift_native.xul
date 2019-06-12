@@ -14,7 +14,7 @@
   <spacer height="7"/>
   <separator/>
   <label id="auth-method-label" value="${DatabaseDialog.label.AuthenticationMethod}" />
-  <menulist id="redshift-auth-method-list" value = "Standard" oncommand="fragmentHandler.setAuthMethodVisibility()">
+  <menulist id="redshift-auth-method-list" editable="true" value = "Standard" oncommand="fragmentHandler.setAuthMethodVisibility()">
     <menupopup>
       <menuitem label="Standard"/>
       <menuitem label="IAM Credentials"/>
