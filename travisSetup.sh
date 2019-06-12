@@ -5,6 +5,4 @@ sudo mv /usr/local/maven-3.5.2/conf/settings.xml /usr/local/maven-3.5.2/conf/ORI
 
 sudo cp ./.travis.maven.settings.xml /usr/local/maven-3.5.2/conf/settings.xml
 
-find /usr/local/maven-3.5.2 -type d -name conf -exec ls -ltr {} \;
-
-exit 1
+mvn clean install -DskipTests -B -V
