@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,11 +45,19 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.util.DialogUtils;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.function.Function;
+
+import static org.pentaho.di.core.Const.FORM_MARGIN;
+import static org.pentaho.di.core.Const.MARGIN;
 
 /**
  * The JobEntryDialog class is responsible for constructing and opening the settings dialog for the job entry. Whenever
@@ -59,54 +67,70 @@ import org.pentaho.metastore.api.IMetaStore;
  * <pre>
  * open()
  * </pre>
- *
+ * <p>
  * method on the dialog. SWT is the native windowing environment of Spoon, and it is typically the framework used for
  * implementing job entry dialogs.
  */
 public class JobEntryDialog extends Dialog {
 
-  /** The package name, used for internationalization. */
+  /**
+   * The package name, used for internationalization.
+   */
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
 
-  /** The loggingObject for the dialog */
+  /**
+   * The loggingObject for the dialog
+   */
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
     "Job entry dialog", LoggingObjectType.JOBENTRYDIALOG, null );
 
-  /** A reference to the job entry interface */
+  /**
+   * A reference to the job entry interface
+   */
   protected JobEntryInterface jobEntryInt;
 
-  /** The repository */
+  /**
+   * The repository
+   */
   protected Repository rep;
 
-  /** the MetaStore */
+  /**
+   * the MetaStore
+   */
   protected IMetaStore metaStore;
 
-  /** The job metadata object. */
+  /**
+   * The job metadata object.
+   */
   protected JobMeta jobMeta;
 
-  /** A reference to the shell object */
+  /**
+   * A reference to the shell object
+   */
   protected Shell shell;
 
-  /** A reference to the properties user interface */
+  /**
+   * A reference to the properties user interface
+   */
   protected PropsUI props;
 
-  /** A reference to the parent shell */
+  /**
+   * A reference to the parent shell
+   */
   protected Shell parent;
 
-  /** A reference to a database dialog */
+  /**
+   * A reference to a database dialog
+   */
   protected DatabaseDialog databaseDialog;
 
   /**
    * Instantiates a new job entry dialog.
    *
-   * @param parent
-   *          the parent shell
-   * @param jobEntry
-   *          the job entry interface
-   * @param rep
-   *          the repository
-   * @param jobMeta
-   *          the job metadata object
+   * @param parent   the parent shell
+   * @param jobEntry the job entry interface
+   * @param rep      the repository
+   * @param jobMeta  the job metadata object
    */
   public JobEntryDialog( Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta ) {
     super( parent, SWT.NONE );
@@ -134,14 +158,10 @@ public class JobEntryDialog extends Dialog {
   /**
    * Adds the connection line for the given parent and previous control, and returns a combo box UI component
    *
-   * @param parent
-   *          the parent composite object
-   * @param previous
-   *          the previous control
-   * @param middle
-   *          the middle
-   * @param margin
-   *          the margin
+   * @param parent   the parent composite object
+   * @param previous the previous control
+   * @param middle   the middle
+   * @param margin   the margin
    * @return the combo box UI component
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin ) {
@@ -152,24 +172,18 @@ public class JobEntryDialog extends Dialog {
   /**
    * Adds the connection line for the given parent and previous control, and returns a combo box UI component
    *
-   * @param parent
-   *          the parent composite object
-   * @param previous
-   *          the previous control
-   * @param middle
-   *          the middle
-   * @param margin
-   *          the margin
-   * @param wlConnection
-   *          the connection label
-   * @param wbnConnection
-   *          the "new connection" button
-   * @param wbeConnection
-   *          the "edit connection" button
+   * @param parent        the parent composite object
+   * @param previous      the previous control
+   * @param middle        the middle
+   * @param margin        the margin
+   * @param wlConnection  the connection label
+   * @param wbnConnection the "new connection" button
+   * @param wbeConnection the "edit connection" button
    * @return the combo box UI component
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-    final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
+                                   final Button wbwConnection, final Button wbnConnection,
+                                   final Button wbeConnection ) {
     final CCombo wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection, fdbwConnection;
 
@@ -285,6 +299,58 @@ public class JobEntryDialog extends Dialog {
     return name;
   }
 
+
+  /**
+   * Adds the connection line, adding a "connection valid" icon and handling for invalid connections.
+   * @param parent  the containing composite
+   * @param previous the control positioned above where the selector will be placed
+   * @param title  displayed above
+   * @param connectionFailedTooltip shown if isDbValid returns false
+   * @param isDbValid a function defined by the client to test a db connection.  Used to show an error icon and tooltip
+   * @return  the CCombo containing the db drop down.
+   */
+  @SuppressWarnings( "unused" )
+  protected CCombo addDatabaseSelector( Composite parent, Control previous, String title, String connectionFailedTooltip,
+                                        Function<String, Boolean> isDbValid ) {
+    Label wlDatabase = new Label( parent, SWT.RIGHT );
+    final Button wbWizard = new Button( parent, SWT.PUSH );
+    final Button wbEdit = new Button( parent, SWT.PUSH );
+    final Button wbNew = new Button( parent, SWT.PUSH );
+    CCombo wDatabase = addConnectionLine(
+      parent, previous, props.getMiddlePct(), MARGIN, wlDatabase,
+      wbWizard,
+      wbNew,
+      wbEdit );
+
+    wlDatabase.setText( title );
+    props.setLook( wlDatabase );
+    wlDatabase.setLayoutData( new FormDataBuilder().left( 0, MARGIN ).top( 0, FORM_MARGIN ).result() );
+
+    Label wDbError = new Label( parent, SWT.RIGHT );
+    wDbError.setToolTipText( connectionFailedTooltip );
+    wDbError.setImage( SwtSvgImageUtil.getImage(
+      shell.getDisplay(), getClass().getClassLoader(), "error.svg", ConstUI.SMALL_ICON_SIZE,
+      ConstUI.SMALL_ICON_SIZE ) );
+    props.setLook( wDbError );
+    wDbError.setVisible( false );
+    wDbError.setLayoutData(
+      new FormDataBuilder().left( wlDatabase, MARGIN ).top( 0, 5 ).result() );
+
+    wDatabase.setLayoutData(
+      new FormDataBuilder().left( 0, MARGIN ).top( wlDatabase, FORM_MARGIN ).width( 230 )
+        .result() );
+
+    wbEdit.setLayoutData(
+      new FormDataBuilder().left( wDatabase, FORM_MARGIN ).top( wDatabase, -24 ).result() );
+    wbWizard.setVisible( false );
+    wbNew.setLayoutData(
+      new FormDataBuilder().left( wbEdit, MARGIN ).top( wDatabase, -24 ).result() );
+
+    wDatabase.addListener( SWT.Selection, e -> wDbError.setVisible( !isDbValid.apply( wDatabase.getText() ) ) );
+    return wDatabase;
+  }
+
+
   @VisibleForTesting
   void showDbExistsDialog( DatabaseMeta changing ) {
     DatabaseDialog.showDatabaseExistsDialog( shell, changing );
@@ -299,8 +365,7 @@ public class JobEntryDialog extends Dialog {
   /**
    * Adds the databases from the job metadata to the combo box.
    *
-   * @param wConnection
-   *          the w connection
+   * @param wConnection the w connection
    */
   public void addDatabases( CCombo wConnection ) {
     for ( int i = 0; i < jobMeta.nrDatabases(); i++ ) {
@@ -312,10 +377,8 @@ public class JobEntryDialog extends Dialog {
   /**
    * Selects a database from the combo box
    *
-   * @param wConnection
-   *          the combo box list of connections
-   * @param name
-   *          the name
+   * @param wConnection the combo box list of connections
+   * @param name        the name
    */
   public void selectDatabase( CCombo wConnection, String name ) {
     int idx = wConnection.indexOf( name );
