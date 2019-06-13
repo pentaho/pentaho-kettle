@@ -1,5 +1,7 @@
 # Pentaho Data Integration # 
 
+[![Black Duck Security Risk](https://copilot.blackducksoftware.com/github/repos/Garlog7712/pentaho-kettle/branches/AddCopilot/badge-risk.svg)](https://copilot.blackducksoftware.com/github/repos/Garlog7712/pentaho-kettle/branches/AddCopilot)
+
 Pentaho Data Integration ( ETL ) a.k.a Kettle
 
 ### Project Structure
