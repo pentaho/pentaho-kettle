@@ -8,13 +8,13 @@ jdk:
 
 before_install: |
   chmod +x ./travisSetup.sh &&
-  ls -ltr /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld &&
-  cat /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld
+  ls -ltr /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld || true &&
+  cat /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld || true
   
 install: true
 script: ./travisSetup.sh
 
 after_success: |
   bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload) &&
-  ls -ltr /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld &&
-  cat /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld
+  ls -ltr /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld || true &&
+  cat /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld || true
