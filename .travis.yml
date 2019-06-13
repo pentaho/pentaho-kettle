@@ -18,3 +18,5 @@ script: ./travisSetup.sh
 
 after_success:
   - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
+  - bash ls -ltr /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld
+  - bash cat /home/travis/build/Garlog7712/pentaho-kettle/.copilot/copilot_bom_bdio.jsonld
