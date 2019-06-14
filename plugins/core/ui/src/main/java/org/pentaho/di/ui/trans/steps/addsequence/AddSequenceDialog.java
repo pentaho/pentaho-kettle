@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -56,8 +57,11 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
+@PluginDialog( id = "Sequence", image = "SEQ.svg", pluginType = PluginDialog.PluginType.STEP,
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Add+sequence" )
 public class AddSequenceDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AddSequenceMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = AddSequenceDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlValuename;
   private Text wValuename;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -57,6 +58,9 @@ import org.w3c.dom.Node;
  *
  * Created on 13-may-2003
  */
+@Step( id = "Sequence", i18nPackageName = "org.pentaho.di.trans.steps.addsequence", name = "AddSequence.Name",
+  description = "AddSequence.Description",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform" )
 public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AddSequenceMeta.class; // for i18n purposes, needed by Translator2!!
 
