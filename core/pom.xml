@@ -40,8 +40,6 @@
     <jcifs.version>1.3.3</jcifs.version>
     <simple-jndi.version>1.0.2</simple-jndi.version>
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
-    <httpclient.version>4.5.3</httpclient.version>
-    <httpccore.version>4.4.6</httpccore.version>
     <xmlunit.version>1.5</xmlunit.version>
     <joda.version>2.10.2</joda.version>
   </properties>
@@ -290,18 +288,10 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>${httpccore.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
