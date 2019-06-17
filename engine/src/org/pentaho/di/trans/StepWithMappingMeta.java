@@ -184,10 +184,10 @@ public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRep
       return null;
     }
 
-    //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
-    // parent parameter.
-    replaceVariableValues( mappingTransMeta, space );
     if ( share ) {
+      // When the child parameter does exist in the parent parameters, overwrite the child parameter by the
+      // parent parameter.
+      replaceVariableValues( mappingTransMeta, space );
       // All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
       // variables from the transformation?' option is checked)
       addMissingVariables( mappingTransMeta, space );
