@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -231,9 +231,17 @@ public class XsdValidator extends BaseStep implements StepInterface {
         }
 
         // Create XSDValidator
-        Validator XSDValidator = SchematXSD.newValidator();
+        Validator xsdValidator = SchematXSD.newValidator();
+
+        // Prevent against XML Entity Expansion (XEE) attacks.
+        // https://www.owasp.org/index.php/XML_Security_Cheat_Sheet#XML_Entity_Expansion
+        if ( !meta.isAllowExternalEntities() ) {
+          xsdValidator.setProperty( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+          xsdValidator.setProperty( XMLConstants.ACCESS_EXTERNAL_SCHEMA, "" );
+        }
+
         // Validate XML / XSD
-        XSDValidator.validate( sourceXML );
+        xsdValidator.validate( sourceXML );
 
         isvalid = true;
 
