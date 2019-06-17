@@ -45,19 +45,11 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.ui.core.ConstUI;
-import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.util.DialogUtils;
-import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.metastore.api.IMetaStore;
-
-import java.util.function.Function;
-
-import static org.pentaho.di.core.Const.FORM_MARGIN;
-import static org.pentaho.di.core.Const.MARGIN;
 
 /**
  * The JobEntryDialog class is responsible for constructing and opening the settings dialog for the job entry. Whenever
@@ -76,7 +68,7 @@ public class JobEntryDialog extends Dialog {
   /**
    * The package name, used for internationalization.
    */
-  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * The loggingObject for the dialog
@@ -209,7 +201,7 @@ public class JobEntryDialog extends Dialog {
     //
     wbwConnection.setText( BaseMessages.getString( PKG, "BaseStepDialog.WizardConnectionButton.Label" ) );
     wbwConnection.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
+      @Override public void widgetSelected( SelectionEvent e ) {
         CreateDatabaseWizard cdw = new CreateDatabaseWizard();
         DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, jobMeta.getDatabases() );
         if ( newDBInfo != null ) {
@@ -299,58 +291,6 @@ public class JobEntryDialog extends Dialog {
     return name;
   }
 
-
-  /**
-   * Adds the connection line, adding a "connection valid" icon and handling for invalid connections.
-   * @param parent  the containing composite
-   * @param previous the control positioned above where the selector will be placed
-   * @param title  displayed above
-   * @param connectionFailedTooltip shown if isDbValid returns false
-   * @param isDbValid a function defined by the client to test a db connection.  Used to show an error icon and tooltip
-   * @return  the CCombo containing the db drop down.
-   */
-  @SuppressWarnings( "unused" )
-  protected CCombo addDatabaseSelector( Composite parent, Control previous, String title, String connectionFailedTooltip,
-                                        Function<String, Boolean> isDbValid ) {
-    Label wlDatabase = new Label( parent, SWT.RIGHT );
-    final Button wbWizard = new Button( parent, SWT.PUSH );
-    final Button wbEdit = new Button( parent, SWT.PUSH );
-    final Button wbNew = new Button( parent, SWT.PUSH );
-    CCombo wDatabase = addConnectionLine(
-      parent, previous, props.getMiddlePct(), MARGIN, wlDatabase,
-      wbWizard,
-      wbNew,
-      wbEdit );
-
-    wlDatabase.setText( title );
-    props.setLook( wlDatabase );
-    wlDatabase.setLayoutData( new FormDataBuilder().left( 0, MARGIN ).top( 0, FORM_MARGIN ).result() );
-
-    Label wDbError = new Label( parent, SWT.RIGHT );
-    wDbError.setToolTipText( connectionFailedTooltip );
-    wDbError.setImage( SwtSvgImageUtil.getImage(
-      shell.getDisplay(), getClass().getClassLoader(), "error.svg", ConstUI.SMALL_ICON_SIZE,
-      ConstUI.SMALL_ICON_SIZE ) );
-    props.setLook( wDbError );
-    wDbError.setVisible( false );
-    wDbError.setLayoutData(
-      new FormDataBuilder().left( wlDatabase, MARGIN ).top( 0, 5 ).result() );
-
-    wDatabase.setLayoutData(
-      new FormDataBuilder().left( 0, MARGIN ).top( wlDatabase, FORM_MARGIN ).width( 230 )
-        .result() );
-
-    wbEdit.setLayoutData(
-      new FormDataBuilder().left( wDatabase, FORM_MARGIN ).top( wDatabase, -24 ).result() );
-    wbWizard.setVisible( false );
-    wbNew.setLayoutData(
-      new FormDataBuilder().left( wbEdit, MARGIN ).top( wDatabase, -24 ).result() );
-
-    wDatabase.addListener( SWT.Selection, e -> wDbError.setVisible( !isDbValid.apply( wDatabase.getText() ) ) );
-    return wDatabase;
-  }
-
-
   @VisibleForTesting
   void showDbExistsDialog( DatabaseMeta changing ) {
     DatabaseDialog.showDatabaseExistsDialog( shell, changing );
@@ -428,7 +368,7 @@ public class JobEntryDialog extends Dialog {
       this.wConnection = wConnection;
     }
 
-    public void widgetSelected( SelectionEvent e ) {
+    @Override public void widgetSelected( SelectionEvent e ) {
       DatabaseMeta databaseMeta = jobMeta.findDatabase( wConnection.getText() );
       if ( databaseMeta != null ) {
         // cloning to avoid spoiling data on cancel or incorrect input
