@@ -60,7 +60,7 @@ zaos.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.
 
 HashMap<String, List> javadocMap = new HashMap<String, List>();
 
-FileReader fileReader = new FileReader(new File("javadoc.properties"));
+FileReader fileReader = new FileReader(new File("resources/config/javadoc.properties"));
 BufferedReader bufferedReader = new BufferedReader(fileReader);
 String line = null;
 while ((line = bufferedReader.readLine()) != null) {
