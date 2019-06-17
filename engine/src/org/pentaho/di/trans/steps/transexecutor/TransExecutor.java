@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -289,7 +289,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
       parameters.getInput()[ i ] = value;
     }
     StepWithMappingMeta.activateParams( internalTrans, internalTrans, this, internalTrans.listParameters(),
-      parameters.getVariable(), parameters.getInput() );
+      parameters.getVariable(), parameters.getInput(), meta.getParameters().isInheritingAllVariables() );
   }
 
   @VisibleForTesting
