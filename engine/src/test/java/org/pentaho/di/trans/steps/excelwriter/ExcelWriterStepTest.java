@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.excelwriter;
 
 import com.google.common.io.Files;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -55,6 +56,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -71,6 +73,8 @@ import static org.mockito.Mockito.when;
 public class ExcelWriterStepTest {
 
   private static final String SHEET_NAME = "Sheet1";
+  private static final String XLS = "xls";
+  private static final String DOT_XLS = '.' + XLS;
   private static final String XLSX = "xlsx";
   private static final String DOT_XLSX = '.' + XLSX;
   private static final String EMPTY_STRING = "";
@@ -82,6 +86,8 @@ public class ExcelWriterStepTest {
   private ExcelWriterStepMeta stepMeta;
   private ExcelWriterStepMeta metaMock;
   private ExcelWriterStepData dataMock;
+
+  private File templateFile;
 
   @Before
   public void setUp() throws Exception {
@@ -240,10 +246,10 @@ public class ExcelWriterStepTest {
     when( metaMock.isTemplateEnabled() ).thenReturn( true );
     when( metaMock.isStreamingData() ).thenReturn( true );
     when( metaMock.isHeaderEnabled() ).thenReturn( true );
-    when( metaMock.getExtension() ).thenReturn( "xlsx" );
+    when( metaMock.getExtension() ).thenReturn( XLSX );
     dataMock.createNewFile = true;
     dataMock.realTemplateFileName = getClass().getResource( "template_test.xlsx" ).getFile();
-    dataMock.realSheetname = "Sheet1";
+    dataMock.realSheetname = SHEET_NAME;
     step.prepareNextOutputFile();
   }
 
@@ -270,7 +276,7 @@ public class ExcelWriterStepTest {
     doReturn( true ).when( metaMock ).isTemplateEnabled();
     doReturn( true ).when( metaMock ).isStreamingData();
     doReturn( false ).when( metaMock ).isHeaderEnabled();
-    doReturn( "xlsx" ).when( metaMock ).getExtension();
+    doReturn( XLSX ).when( metaMock ).getExtension();
     doReturn( new ExcelWriterStepField[] { field } ).when( metaMock ).getOutputFields();
 
     doReturn( 10 ).when( dataMock.inputRowMeta ).size();
@@ -295,7 +301,7 @@ public class ExcelWriterStepTest {
     doReturn( "value_bigNumber" ).when( vmi ).getName();
     doReturn( Double.MAX_VALUE ).when( vmi ).getNumber( anyObject() );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
   }
 
   @Test
@@ -307,7 +313,7 @@ public class ExcelWriterStepTest {
     doReturn( "value_binary" ).when( vmi ).getName();
     doReturn( "a1b2c3d4e5f6g7h8i9j0" ).when( vmi ).getString( anyObject() );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
   }
 
   @Test
@@ -319,7 +325,7 @@ public class ExcelWriterStepTest {
     doReturn( "value_bool" ).when( vmi ).getName();
     doReturn( Boolean.FALSE ).when( vmi ).getBoolean( anyObject() );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
   }
 
   @Test
@@ -331,7 +337,7 @@ public class ExcelWriterStepTest {
     doReturn( "value_date" ).when( vmi ).getName();
     doReturn( new Date() ).when( vmi ).getDate( anyObject() );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
   }
 
   @Test
@@ -343,7 +349,7 @@ public class ExcelWriterStepTest {
     doReturn( "value_integer" ).when( vmi ).getName();
     doReturn( Double.MAX_VALUE ).when( vmi ).getNumber( anyObject() );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
   }
 
   @Test
@@ -355,7 +361,7 @@ public class ExcelWriterStepTest {
     doReturn( "value_internetAddress" ).when( vmi ).getName();
     doReturn( "127.0.0.1" ).when( vmi ).getString( anyObject() );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
   }
 
   @Test
@@ -367,7 +373,7 @@ public class ExcelWriterStepTest {
     doReturn( "value_number" ).when( vmi ).getName();
     doReturn( Double.MIN_VALUE ).when( vmi ).getNumber( anyObject() );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
   }
 
   @Test
@@ -379,7 +385,7 @@ public class ExcelWriterStepTest {
     doReturn( "value_string" ).when( vmi ).getName();
     doReturn( "a_string" ).when( vmi ).getString( anyObject() );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
   }
 
   @Test
@@ -391,21 +397,129 @@ public class ExcelWriterStepTest {
     doReturn( "value_timestamp" ).when( vmi ).getName();
     doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
 
-    testValue_Template( vmi, vObj );
+    testBaseXlsx( vmi, vObj, false, false );
+  }
+
+  @Test
+  public void test_Xlsx_Stream_NoTemplate() throws Exception {
+
+    ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
+    Object vObj = new Object();
+    doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
+    doReturn( "value_timestamp" ).when( vmi ).getName();
+    doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
+
+    testBaseXlsx( vmi, vObj, true, false );
+  }
+
+  @Test
+  public void test_Xlsx_NoStream_NoTemplate() throws Exception {
+
+    ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
+    Object vObj = new Object();
+    doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
+    doReturn( "value_timestamp" ).when( vmi ).getName();
+    doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
+
+    testBaseXlsx( vmi, vObj, false, false );
+  }
+
+  @Test
+  public void test_Xlsx_Stream_Template() throws Exception {
+
+    ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
+    Object vObj = new Object();
+    doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
+    doReturn( "value_timestamp" ).when( vmi ).getName();
+    doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
+
+    testBaseXlsx( vmi, vObj, true, true );
+  }
+
+  @Test
+  public void test_Xlsx_NoStream_Template() throws Exception {
+
+    ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
+    Object vObj = new Object();
+    doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
+    doReturn( "value_timestamp" ).when( vmi ).getName();
+    doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
+
+    testBaseXlsx( vmi, vObj, false, true );
+  }
+
+  @Test
+  public void test_Xls_NoTemplate() throws Exception {
+
+    ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
+    Object vObj = new Object();
+    doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
+    doReturn( "value_timestamp" ).when( vmi ).getName();
+    doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
+
+    testBaseXls( vmi, vObj, false );
+  }
+
+  @Test
+  public void test_Xls_Template() throws Exception {
+
+    ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
+    Object vObj = new Object();
+    doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
+    doReturn( "value_timestamp" ).when( vmi ).getName();
+    doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
+
+    testBaseXls( vmi, vObj, true );
+  }
+
+  /**
+   * <p>The base for testing if a field of a specific type is correctly handled for an XLSX.</p>
+   *
+   * @param vmi               {@link ValueMetaInterface}'s instance to be used
+   * @param vObj              the {@link Object} to be used as the value
+   * @param isStreaming       if it's to use streaming
+   * @param isTemplateEnabled if it's to use a template
+   */
+  private void testBaseXlsx( ValueMetaInterface vmi, Object vObj, boolean isStreaming, boolean isTemplateEnabled )
+    throws Exception {
+    testBase( vmi, vObj, XLSX, DOT_XLSX, isStreaming, isTemplateEnabled );
+  }
+
+  /**
+   * <p>The base for testing if a field of a specific type is correctly handled for an XLS.</p>
+   *
+   * @param vmi               {@link ValueMetaInterface}'s instance to be used
+   * @param vObj              the {@link Object} to be used as the value
+   * @param isTemplateEnabled if it's to use a template
+   */
+  private void testBaseXls( ValueMetaInterface vmi, Object vObj, boolean isTemplateEnabled )
+    throws Exception {
+
+    testBase( vmi, vObj, XLS, DOT_XLS, false, isTemplateEnabled );
   }
 
   /**
    * <p>The base for testing if a field of a specific type is correctly handled.</p>
    *
-   * @param vmi  {@link ValueMetaInterface}'s instance to be used
-   * @param vObj the {@link Object} to be used as the value
+   * @param vmi               {@link ValueMetaInterface}'s instance to be used
+   * @param vObj              the {@link Object} to be used as the value
+   * @param extension         the extension to be used
+   * @param isStreaming       if it's to use streaming
+   * @param isTemplateEnabled if it's to use a template
    */
-  private void testValue_Template( ValueMetaInterface vmi, Object vObj ) throws Exception {
+  private void testBase( ValueMetaInterface vmi, Object vObj, String extension, String dotExtension,
+                         boolean isStreaming,
+                         boolean isTemplateEnabled )
+    throws Exception {
     Object[] vObjArr = { vObj };
     assertTrue( step.init( metaMock, dataMock ) );
-    File tempFile = File.createTempFile( XLSX, DOT_XLSX );
+    File tempFile = File.createTempFile( extension, dotExtension );
     tempFile.deleteOnExit();
     String path = tempFile.getAbsolutePath();
+
+    if ( isTemplateEnabled ) {
+      dataMock.realTemplateFileName = getClass().getResource( "template_test" + dotExtension ).getFile();
+    }
 
     dataMock.fieldnrs = new int[] { 0 };
     dataMock.linkfieldnrs = new int[] { -1 };
@@ -415,10 +529,10 @@ public class ExcelWriterStepTest {
     dataMock.inputRowMeta = mock( RowMetaInterface.class );
 
     doReturn( path ).when( step ).buildFilename( 0 );
-    doReturn( false ).when( metaMock ).isTemplateEnabled();
-    doReturn( false ).when( metaMock ).isStreamingData();
+    doReturn( isTemplateEnabled ).when( metaMock ).isTemplateEnabled();
+    doReturn( isStreaming ).when( metaMock ).isStreamingData();
     doReturn( false ).when( metaMock ).isHeaderEnabled();
-    doReturn( XLSX ).when( metaMock ).getExtension();
+    doReturn( extension ).when( metaMock ).getExtension();
     ExcelWriterStepField field = new ExcelWriterStepField();
     doReturn( new ExcelWriterStepField[] { field } ).when( metaMock ).getOutputFields();
 
@@ -427,15 +541,25 @@ public class ExcelWriterStepTest {
 
     step.prepareNextOutputFile();
 
+    assertNull( dataMock.sheet.getRow( 1 ) );
+
+    // Unfortunately HSSFSheet is final and cannot be mocked, so we'll skip some validations
     dataMock.posY = 1;
-    dataMock.sheet = spy( dataMock.sheet );
+    if ( null != dataMock.sheet && !( dataMock.sheet instanceof HSSFSheet ) ) {
+      dataMock.sheet = spy( dataMock.sheet );
+    }
+
     step.writeNextLine( vObjArr );
 
-    verify( step ).writeField( eq( vObj ), eq( vmi ), eq( field ), any( Row.class ), eq( 0 ), any(), eq( 0 ),
-      eq( Boolean.FALSE ) );
+    if ( null != dataMock.sheet && !( dataMock.sheet instanceof HSSFSheet ) ) {
+      verify( step ).writeField( eq( vObj ), eq( vmi ), eq( field ), any( Row.class ), eq( 0 ), any(), eq( 0 ),
+        eq( Boolean.FALSE ) );
 
-    verify( dataMock.sheet ).createRow( anyInt() );
-    verify( dataMock.sheet ).getRow( 1 );
+      verify( dataMock.sheet ).createRow( anyInt() );
+      verify( dataMock.sheet ).getRow( 1 );
+    }
+
+    assertNotNull( dataMock.sheet.getRow( 1 ) );
   }
 
   /**
