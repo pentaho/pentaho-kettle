@@ -11,9 +11,8 @@ jobGroups:
   100:
 
      - jobID           :  pdi-daemon
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       root            :  adaptive-execution
 
   200:
 
