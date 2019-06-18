@@ -80,8 +80,8 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
   TableView getFieldsTable();
 
   default TableItem findTableItem( final String fieldName ) {
-    for ( int i = 0; i < getFieldsTable().table.getItemCount(); i++ ) {
-      final TableItem item = getFieldsTable().table.getItem( i );
+    for ( int i = 0; i < getFieldsTable().getTable().getItemCount(); i++ ) {
+      final TableItem item = getFieldsTable().getTable().getItem( i );
       int fieldNameIndex = getFieldsTable().hasIndexColumn() ? 1 : 0;
       final String itemFieldName = item.getText( fieldNameIndex );
       if ( itemFieldName != null && itemFieldName.equals( fieldName ) ) {
@@ -93,8 +93,8 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
 
   default List<String> getNewFieldNames( final String[] incomingFieldNames ) {
     final Set<String> fieldNamesInTable = new HashSet<>();
-    for ( int i = 0; i < getFieldsTable().table.getItemCount(); i++ ) {
-      final TableItem item = getFieldsTable().table.getItem( i );
+    for ( int i = 0; i < getFieldsTable().getTable().getItemCount(); i++ ) {
+      final TableItem item = getFieldsTable().getTable().getItem( i );
       int fieldNameIndex = getFieldsTable().hasIndexColumn() ? 1 : 0;
       fieldNamesInTable.add( item.getText( fieldNameIndex ) );
     }
@@ -161,8 +161,8 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
   default Map<String, List<String>> getFieldValues() {
     getFieldsTable().nrNonEmpty();
     final Map<String, List<String>> rowValues = new HashMap<>();
-    for ( int i = 0; i < getFieldsTable().table.getItemCount(); i++ ) {
-      final TableItem item = getFieldsTable().table.getItem( i );
+    for ( int i = 0; i < getFieldsTable().getTable().getItemCount(); i++ ) {
+      final TableItem item = getFieldsTable().getTable().getItem( i );
       int startIndex = getFieldsTable().hasIndexColumn() ? 1 : 0;
       final String fieldName = item.getText( startIndex );
       if ( StringUtils.isBlank( fieldName ) ) {
@@ -183,7 +183,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     final String[] incomingFieldNames = getFieldNames( meta );
     final Set<String> newFieldNames = new HashSet<>();
     for ( final String incomingFieldName : incomingFieldNames ) {
-      final TableItem item = new TableItem( getFieldsTable().table, SWT.NONE );
+      final TableItem item = new TableItem( getFieldsTable().getTable(), SWT.NONE );
       int columnIndexOffset = getFieldsTable().hasIndexColumn() ? 1 : 0;
       item.setText( columnIndexOffset, incomingFieldName );
       if ( previousFieldValues.containsKey( incomingFieldName ) ) {
@@ -212,7 +212,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
   default void loadRemainingFields( final Map<String, List<String>> previousFieldValues ) {
     for ( List<String> values : previousFieldValues.values() ) {
       if ( values != null ) {
-        final TableItem item = new TableItem( getFieldsTable().table, SWT.NONE );
+        final TableItem item = new TableItem( getFieldsTable().getTable(), SWT.NONE );
         int columnIndexOffset = getFieldsTable().hasIndexColumn() ? 1 : 0;
         int columnIndex = 0;
         for ( final String value : values ) {
@@ -258,7 +258,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     TableItem item = findTableItem( fieldName );
     // if one doesn't exist, create a new one;
     if ( item == null ) {
-      item = new TableItem( getFieldsTable().table, SWT.NONE );
+      item = new TableItem( getFieldsTable().getTable(), SWT.NONE );
     }
     return item;
   }
