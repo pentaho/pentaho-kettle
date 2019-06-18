@@ -759,10 +759,6 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( meta.isHeaderEnabled() && !( !data.createNewSheet && meta.isAppendOmitHeader() && appendingToSheet ) ) {
         writeHeader();
       }
-      if ( meta.isStreamingData() && !meta.isTemplateEnabled() ) {
-        data.wb = new SXSSFWorkbook( (XSSFWorkbook) data.wb, 100 );
-        data.sheet = data.wb.getSheet( data.realSheetname );
-      }
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "ExcelWriterStep.Log.FileOpened", buildFilename ) );
       }
