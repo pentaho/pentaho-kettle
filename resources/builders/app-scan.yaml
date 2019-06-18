@@ -336,10 +336,9 @@ jobGroups:
        versionProperty :  pdi-data-refinery-plugin.version
 
      - jobID           :  pdi-daemon
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  ael.version
-       root            :  adaptive-execution
 
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
