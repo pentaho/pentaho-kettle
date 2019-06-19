@@ -421,10 +421,9 @@ jobGroups:
   2500:
 
      - jobID           :  pdi-plugins-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-plugins-ee.version
-       root            :  data-integration/plugins
 
      - jobID           :  camel-components
        scmUrl          :  https://github.com/pentaho/pentaho-camel-components.git
