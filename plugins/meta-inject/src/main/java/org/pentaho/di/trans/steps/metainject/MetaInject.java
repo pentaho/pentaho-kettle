@@ -52,6 +52,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -261,9 +262,14 @@ public class MetaInject extends BaseStep implements StepInterface {
     OutputStream os = null;
     try {
       TransMeta generatedTransMeta = (TransMeta) data.transMeta.clone();
-      String[] paths = Const.splitPath( targetFilePath, RepositoryDirectory.DIRECTORY_SEPARATOR );
-      String transName = paths[ paths.length  - 1 ].replace( ".ktr", "" );
-      generatedTransMeta.setName( transName ); // set transname on injectedtrans to be same as filename w/o extension
+      File injectedKtrFile = new File( targetFilePath );
+
+      if ( injectedKtrFile == null ) {
+        throw new IOException();
+      } else {
+        String transName = injectedKtrFile.getName().replace( ".ktr", "" );
+        generatedTransMeta.setName( transName ); // set transname on injectedtrans to be same as filename w/o extension
+      }
 
       os = KettleVFS.getOutputStream( targetFilePath, false );
       os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
