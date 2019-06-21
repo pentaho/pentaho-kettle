@@ -155,10 +155,9 @@ jobGroups:
   4300:
 
      - jobID           :  pdi-client-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi.version
-       root            :  data-integration
        testable        :  false
 
   4400:
