@@ -554,10 +554,9 @@ jobGroups:
        versionProperty :  aggdesigner.version
 
      - jobID           :  foundry-workers-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+       scmUrl          :  https://github.com/pentaho/worker-nodes-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  worker-nodes.version
-       root            :  foundry
 
      - jobID           :  metadata-editor-ee
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
