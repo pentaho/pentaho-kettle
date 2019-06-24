@@ -778,11 +778,10 @@ jobGroups:
   4500:
 
      - jobID           :  foundry-workers-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+       scmUrl          :  https://github.com/pentaho/worker-nodes-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DscmBranch=${DEFAULT_BRANCH}
        versionProperty :  worker-nodes.version
-       root            :  foundry
        testable        :  false
        archivable      :  true
 
