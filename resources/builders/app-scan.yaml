@@ -262,10 +262,9 @@ jobGroups:
        versionProperty :  pentaho-ccc-plugin.version
        
      - jobID           :  commons-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+       scmUrl          :  https://github.com/pentaho/commons-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  commons-ee.version
-       root            :  commons
 
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
