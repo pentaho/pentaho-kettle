@@ -638,11 +638,10 @@ jobGroups:
        directives      :  += -Djavadoc
        versionProperty :  pentaho-data-mining.version
 
-     - jobID           :  platform-plugins-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
+     - jobID           :  worker-nodes-ee-plugin
+       scmUrl          :  https://github.com/pentaho/worker-nodes-ee-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  platform.version
-       root            :  platform/plugins/worker-nodes
 
   3700:
 
