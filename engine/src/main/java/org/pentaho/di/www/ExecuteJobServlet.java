@@ -31,7 +31,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -194,20 +196,35 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     String jobOption = request.getParameter( "job" );
     String levelOption = request.getParameter( "level" );
 
-    response.setStatus( HttpServletResponse.SC_OK );
-
-    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
-      response.setCharacterEncoding( encoding );
-      response.setContentType( "text/html; charset=" + encoding );
-    }
-
     PrintWriter out = response.getWriter();
 
     try {
+      Repository repository;
+      try {
+        repository = openRepository( repOption, userOption, passOption );
+      } catch ( KettleSecurityException kse ) {
+        // Unauthorized user.
+        response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+        String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.Authentication", getContextPath() );
+        out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+        return;
+      }
 
-      final Repository repository = openRepository( repOption, userOption, passOption );
-      final JobMeta jobMeta = loadJob( repository, jobOption );
+      String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+      if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
+        response.setCharacterEncoding( encoding );
+        response.setContentType( "text/html; charset=" + encoding );
+      }
+
+      JobMeta jobMeta;
+      try {
+        jobMeta = loadJob( repository, jobOption );
+      } catch ( KettleException ke ) {
+        // Job not found in repository.
+        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+        out.println( new WebResult( WebResult.STRING_ERROR, ke.getMessage() ) );
+        return;
+      }
 
       // Set the servlet parameters as variables in the job
       //
@@ -255,9 +272,10 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
         // The repository connection is open: make sure we disconnect from the repository once we
         // are done with this job.
         //
+        Repository finalRepository = repository;
         job.addJobListener( new JobAdapter() {
           @Override public void jobFinished( Job job ) {
-            repository.disconnect();
+            finalRepository.disconnect();
           }
         } );
       }
@@ -272,6 +290,9 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
         String logging = KettleLogStore.getAppender().getBuffer( job.getLogChannelId(), false ).toString();
         throw new KettleException( "Error executing job: " + logging, executionException );
       }
+
+      // Everything went well till the end.
+      response.setStatus( HttpServletResponse.SC_OK );
     } catch ( Exception ex ) {
 
       out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
@@ -306,19 +327,22 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
       RepositoryDirectoryInterface directory =
         repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
       if ( directory == null ) {
-        throw new KettleException( "Unable to find directory path '" + directoryPath + "' in the repository" );
+        String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.DirectoryPathNotFoundInRepository", directoryPath );
+        throw new KettleException( message );
       }
 
       ObjectId jobID = repository.getJobId( name, directory );
       if ( jobID == null ) {
-        throw new KettleException( "Unable to find job '" + name + "' in directory :" + directory );
+        String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.JobNotFoundInDirectory", name, directoryPath );
+        throw new KettleException( message );
       }
       JobMeta jobMeta = repository.loadJob( jobID, null );
       return jobMeta;
     }
   }
 
-  private Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
+  @VisibleForTesting
+  Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
 
     if ( Utils.isEmpty( repositoryName ) ) {
       return null;
