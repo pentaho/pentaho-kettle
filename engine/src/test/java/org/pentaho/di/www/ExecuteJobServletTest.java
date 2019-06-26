@@ -22,11 +22,13 @@
 
 package org.pentaho.di.www;
 
+import com.sun.xml.ws.client.ClientTransportException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.owasp.encoder.Encode;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -93,7 +95,7 @@ public class ExecuteJobServletTest {
   @Test
   public void testExecuteJobServletTest()
     throws ServletException, IOException, KettleException {
-    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath( );
+    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
     doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
     doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
     doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
@@ -103,28 +105,30 @@ public class ExecuteJobServletTest {
     PowerMockito.mockStatic( Encr.class );
     when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
 
-    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME,  AUTHORIZED_USER, PASSWORD );
+    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
 
     JobMeta jobMeta = buildJobMeta();
 
     RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
     doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
-    doReturn( mock( RepositoryDirectoryInterface.class ) ).when( repositoryDirectoryInterface ).findDirectory( anyString() );
-    doReturn( mock( ObjectId.class ) ).when( repository ).getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
+    doReturn( mock( RepositoryDirectoryInterface.class ) ).when( repositoryDirectoryInterface )
+      .findDirectory( anyString() );
+    doReturn( mock( ObjectId.class ) ).when( repository )
+      .getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
     doReturn( jobMeta ).when( repository ).loadJob( any( ObjectId.class ), anyString() );
-    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames( );
+    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
 
     StringWriter out = mockWriter();
     spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
-    assertTrue( out.toString().contains(  WebResult.STRING_OK ) );
-    assertTrue( out.toString().contains(  "Job started" ) );
+    assertTrue( out.toString().contains( WebResult.STRING_OK ) );
+    assertTrue( out.toString().contains( "Job started" ) );
   }
 
   @Test
   public void testExecuteJobServletTestCantFindDirectory()
     throws ServletException, IOException, KettleException {
-    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath( );
+    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
     doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
     doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
     doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
@@ -134,24 +138,24 @@ public class ExecuteJobServletTest {
     PowerMockito.mockStatic( Encr.class );
     when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
 
-    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME,  AUTHORIZED_USER, PASSWORD );
+    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
 
     RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
     doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
     doReturn( null ).when( repositoryDirectoryInterface ).findDirectory( anyString() );
-    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames( );
+    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
 
     StringWriter out = mockWriter();
     spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
     String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.DirectoryPathNotFoundInRepository", "/" );
-    assertTrue( out.toString().contains(  message ) );
+    assertTrue( out.toString().contains( Encode.forHtml( message ) ) );
   }
 
   @Test
   public void testExecuteJobServletTestJobNotFoundInDirectory()
     throws ServletException, IOException, KettleException {
-    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath( );
+    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
     doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
     doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
     doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
@@ -161,19 +165,40 @@ public class ExecuteJobServletTest {
     PowerMockito.mockStatic( Encr.class );
     when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
 
-    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME,  AUTHORIZED_USER, PASSWORD );
+    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
 
     RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
     doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
     doReturn( repositoryDirectoryInterface ).when( repositoryDirectoryInterface ).findDirectory( anyString() );
     doReturn( null ).when( repository ).getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
-    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames( );
+    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
 
     StringWriter out = mockWriter();
     spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
     String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.JobNotFoundInDirectory", JOB_NAME, "/" );
-    assertTrue( out.toString().contains(  message ) );
+    assertTrue( out.toString().contains( Encode.forHtml( message ) ) );
+  }
+
+  @Test
+  public void testExecuteJobServletTestCantFindRepository() throws ServletException, IOException {
+    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
+    doReturn( "Unknown" ).when( mockHttpServletRequest ).getParameter( "rep" );
+    doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
+    doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
+    doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
+    doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
+
+    PowerMockito.mockStatic( Encr.class );
+    when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
+
+    KettleLogStore.init();
+
+    StringWriter out = mockWriter();
+    spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
+
+    String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.UnableToFindRepository", "Unknown" );
+    assertTrue( out.toString().contains( message ) );
   }
 
   @Test
@@ -189,7 +214,9 @@ public class ExecuteJobServletTest {
     PowerMockito.mockStatic( Encr.class );
     when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
 
-    doThrow( KettleSecurityException.class ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME,  UNAUTHORIZED_USER, PASSWORD );
+    ClientTransportException cte = mock( ClientTransportException.class );
+    KettleException ke = new KettleException( cte );
+    doThrow( ke ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, UNAUTHORIZED_USER, PASSWORD );
 
     StringWriter out = mockWriter();
     spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
