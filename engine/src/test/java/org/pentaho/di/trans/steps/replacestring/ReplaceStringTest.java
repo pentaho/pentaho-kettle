@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -119,9 +119,9 @@ public class ReplaceStringTest {
 
     meta.setFieldInStream( new String[] { "input1", "input2" } );
     meta.setFieldOutStream( new String[] { "out" } );
-    meta.setUseRegEx( new int[] { 1 } );
-    meta.setCaseSensitive( new int[] { 0 } );
-    meta.setWholeWord( new int[] { 1 } );
+    meta.setUseRegEx( new boolean[] { true } );
+    meta.setCaseSensitive( new boolean[] { false } );
+    meta.setWholeWord( new boolean[] { true } );
     meta.setReplaceString( new String[] { "string" } );
     meta.setReplaceByString( new String[] { "string" } );
     meta.setEmptyString( new boolean[] { true } );
@@ -133,13 +133,13 @@ public class ReplaceStringTest {
     Assert.assertEquals( StringUtils.EMPTY, meta.getFieldOutStream()[ 1 ] );
 
     Assert.assertEquals( meta.getFieldInStream().length, meta.getUseRegEx().length );
-    Assert.assertEquals( 0, meta.getUseRegEx()[ 1 ] );
+    Assert.assertEquals( false, meta.getUseRegEx()[ 1 ] );
 
     Assert.assertEquals( meta.getFieldInStream().length, meta.getCaseSensitive().length );
-    Assert.assertEquals( 0, meta.getCaseSensitive()[ 1 ] );
+    Assert.assertEquals( false, meta.getCaseSensitive()[ 1 ] );
 
     Assert.assertEquals( meta.getFieldInStream().length, meta.getWholeWord().length );
-    Assert.assertEquals( 0, meta.getWholeWord()[ 1 ] );
+    Assert.assertEquals( false, meta.getWholeWord()[ 1 ] );
 
     Assert.assertEquals( meta.getFieldInStream().length, meta.getReplaceString().length );
     Assert.assertEquals( StringUtils.EMPTY, meta.getReplaceString()[ 1 ] );
@@ -179,7 +179,7 @@ public class ReplaceStringTest {
     RowMetaInterface inputRowMeta = new RowMeta();
     byte[] array = { 0, 97, 0, 65, -1, 65, -1, 33 };
     byte[] matcharray = { -1, 33 };
-    String match = new String( matcharray , "UTF-16BE" );
+    String match = new String( matcharray, "UTF-16BE" );
     Object[] _row = new Object[] { new String( array, "UTF-16BE" ), "another data" };
     doReturn( _row ).when( replaceString ).getRow();
     inputRowMeta.addValueMeta( 0, new ValueMetaString( "string" ) );
@@ -187,11 +187,10 @@ public class ReplaceStringTest {
 
     doReturn( new String[] { "string" }  ).when( meta ).getFieldInStream();
     doReturn( new String[] { "output" }  ).when( meta ).getFieldOutStream();
-
-    doReturn( new int[] { 1 } ).when( meta ).isUnicode();
-    doReturn( new int[] { 0 } ).when( meta ).getUseRegEx();
-    doReturn( new int[] { 0 } ).when( meta ).getCaseSensitive();
-    doReturn( new int[] { 0 } ).when( meta ).getWholeWord();
+    doReturn( new boolean[] { true } ).when( meta ).isUnicode();
+    doReturn( new boolean[] { false } ).when( meta ).getUseRegEx();
+    doReturn( new boolean[] { false } ).when( meta ).getCaseSensitive();
+    doReturn( new boolean[] { false } ).when( meta ).getWholeWord();
     doReturn( new String[] { match } ).when( meta ).getReplaceString();
     doReturn( new String[] { "" } ).when( meta ).getFieldReplaceByString();
     doReturn( new String[] { "matched" } ).when( meta ).getReplaceByString();
@@ -210,7 +209,7 @@ public class ReplaceStringTest {
 
     replaceString.processRow( meta, data );
     System.out.println( replaceString.getRow()[1] );
-    assertTrue( "Expected: aAmatchedmatched","aAmatchedmatched".equals( replaceString.getRow()[1] ) );
+    assertTrue( "Expected: aAmatchedmatched", "aAmatchedmatched".equals( replaceString.getRow()[1] ) );
   }
 }
 
