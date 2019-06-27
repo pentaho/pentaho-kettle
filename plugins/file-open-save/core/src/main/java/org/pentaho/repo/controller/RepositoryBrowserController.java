@@ -555,7 +555,8 @@ public class RepositoryBrowserController {
     RepositoryDirectory repositoryDirectory = loadFilesAndFolders( path );
     List<org.pentaho.repo.model.RepositoryObject> repositoryObjects = new ArrayList<>();
     for ( org.pentaho.repo.model.RepositoryObject repositoryObject : repositoryDirectory.getChildren() ) {
-      if ( repositoryObject.getName().contains( filter ) ) {
+      if ( repositoryObject.getName().toLowerCase().contains( filter.toLowerCase() ) || !Util
+        .isFiltered( repositoryObject.getName(), filter ) ) {
         repositoryObjects.add( repositoryObject );
       }
     }
