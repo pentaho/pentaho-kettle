@@ -60,6 +60,7 @@ connection-summary .main_div {
   display: -ms-flex;
   display: -webkit-flex;
   flex-direction: column;
+  -webkit-flex-direction: column;
 }
 
 connection-summary .overflow-container {
