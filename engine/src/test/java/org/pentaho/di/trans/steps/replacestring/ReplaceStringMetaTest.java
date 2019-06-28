@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.replacestring;
 
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -49,11 +50,8 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntegerArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
 public class ReplaceStringMetaTest {
@@ -120,29 +118,17 @@ public class ReplaceStringMetaTest {
       new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
     FieldLoadSaveValidator<boolean[]> booleanArrayLoadSaveValidator =
       new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 25 );
-    FieldLoadSaveValidator<int[]> useRegExArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator(
-        new IntLoadSaveValidator( ReplaceStringMeta.useRegExCode.length ), 25 );
-    FieldLoadSaveValidator<int[]> wholeWordArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator(
-        new IntLoadSaveValidator( ReplaceStringMeta.wholeWordCode.length ), 25 );
-    FieldLoadSaveValidator<int[]> caseSensitiveArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator(
-        new IntLoadSaveValidator( ReplaceStringMeta.caseSensitiveCode.length ), 25 );
-    FieldLoadSaveValidator<int[]> isUnicodeArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator(
-        new IntLoadSaveValidator( ReplaceStringMeta.isUnicodeCode.length ), 25 );
 
     fieldLoadSaveValidatorAttributeMap.put( "in_stream_name", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "out_stream_name", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "use_regex", useRegExArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "use_regex", booleanArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "replace_string", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "replace_by_string", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "set_empty_string", booleanArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "replace_field_by_string", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "whole_word", wholeWordArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "case_sensitive", caseSensitiveArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "is_unicode", isUnicodeArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "whole_word", booleanArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "case_sensitive", booleanArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "is_unicode", booleanArrayLoadSaveValidator );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ReplaceStringMeta.class, attributes, getterMap, setterMap,
@@ -163,11 +149,11 @@ public class ReplaceStringMetaTest {
     replaceString.setFieldReplaceByString( new String[] { "fieldby1", "fieldby2", "fieldby3", "fieldby4" } );
 
     // Other arrays
-    replaceString.setUseRegEx( new int[] { 0, 1, 0 } );
-    replaceString.setWholeWord( new int[] { 1, 1, 0, 0, 1 } );
-    replaceString.setCaseSensitive( new int[] { 1, 0, 0, 1 } );
+    replaceString.setUseRegEx( new boolean[] {false, true, false } );
+    replaceString.setWholeWord( new boolean[] { true, true, false, false, true } );
+    replaceString.setCaseSensitive( new boolean[] { true, false, false, true } );
     replaceString.setEmptyString( new boolean[] { true, false } );
-    replaceString.setIsUnicode( new int[] { 1, 0, 0, 1 } );
+    replaceString.setIsUnicode( new boolean[] { true, false, false, true } );
 
     try {
       String badXml = replaceString.getXML();
@@ -196,8 +182,58 @@ public class ReplaceStringMetaTest {
     Assert.assertEquals( "", replaceString.getFieldReplaceByString()[ 4 ] );
 
     Assert.assertEquals( "outField1", replaceString.getFieldOutStream()[0] );
-    Assert.assertEquals( 1, replaceString.getWholeWord()[0] );
+    Assert.assertEquals( true, replaceString.getWholeWord()[0] );
     Assert.assertEquals( true, replaceString.isSetEmptyString()[0] );
+    Assert.assertEquals( true, replaceString.isUnicode()[0] );
+    Assert.assertEquals( false, replaceString.getUseRegEx()[0] );
+    Assert.assertEquals( true, replaceString.getCaseSensitive()[0] );
   }
 
+  @Test
+  /** BACKLOG-27839 Test that the BooleanArray output is backwards compatible after changing datatypes
+   *  for the following fields:
+   *    use_regex
+   *    whole_word
+   *    case_sensitive
+   *    is_unicode **/
+  public void testXMLOutputForBooleanArrays() throws Exception {
+    ReplaceStringMeta replaceString = new ReplaceStringMeta();
+
+    // String Arrays
+    replaceString.setFieldInStream( new String[] { "field1" } );
+    replaceString.setFieldOutStream( new String[] { "outField1" } );
+    replaceString.setReplaceString( new String[] { "rep1" }  );
+    replaceString.setReplaceByString( new String[] { "by1" }  );
+    replaceString.setFieldReplaceByString( new String[] { "fieldby1" } );
+
+    // Other arrays
+    replaceString.setUseRegEx( new boolean[] { true } );
+    replaceString.setWholeWord( new boolean[] { true } );
+    replaceString.setCaseSensitive( new boolean[] { true } );
+    replaceString.setIsUnicode( new boolean[] { true } );
+
+    replaceString.afterInjectionSynchronization();
+    String ktrTrueXml = replaceString.getXML();
+
+    // Assert that the converted int arrays to boolean arrays output "yes"/"no" instead of the normal "Y"/"N"
+    Assert.assertThat( ktrTrueXml, containsString( "<use_regex>yes</use_regex>" ) );
+    Assert.assertThat( ktrTrueXml, containsString( "<whole_word>yes</whole_word>" ) );
+    Assert.assertThat( ktrTrueXml, containsString( "<case_sensitive>yes</case_sensitive>" ) );
+    Assert.assertThat( ktrTrueXml, containsString( "<is_unicode>yes</is_unicode>" ) );
+
+    replaceString.setUseRegEx( new boolean[] { false } );
+    replaceString.setWholeWord( new boolean[] { false } );
+    replaceString.setCaseSensitive( new boolean[] { false } );
+    replaceString.setEmptyString( new boolean[] { false } );
+    replaceString.setIsUnicode( new boolean[] { false } );
+
+    replaceString.afterInjectionSynchronization();
+    String ktrFalseXml = replaceString.getXML();
+
+    Assert.assertThat( ktrFalseXml, containsString( "<use_regex>no</use_regex>" ) );
+    Assert.assertThat( ktrFalseXml, containsString( "<whole_word>no</whole_word>" ) );
+    Assert.assertThat( ktrFalseXml, containsString( "<case_sensitive>no</case_sensitive>" ) );
+    Assert.assertThat( ktrFalseXml, containsString( "<is_unicode>no</is_unicode>" ) );
+
+  }
 }

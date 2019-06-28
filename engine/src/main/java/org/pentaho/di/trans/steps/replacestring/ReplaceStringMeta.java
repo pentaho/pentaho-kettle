@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -67,7 +67,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
   private String[] fieldOutStream;
 
   @Injection( name = "USE_REGEX", group = "FIELDS" )
-  private int[] useRegEx;
+  private boolean[] useRegEx;
 
   @Injection( name = "REPLACE_STRING", group = "FIELDS" )
   private String[] replaceString;
@@ -83,49 +83,16 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
   private String[] replaceFieldByString;
 
   @Injection( name = "REPLACE_WHOLE_WORD", group = "FIELDS" )
-  private int[] wholeWord;
+  private boolean[] wholeWord;
 
   @Injection( name = "CASE_SENSITIVE", group = "FIELDS" )
-  private int[] caseSensitive;
+  private boolean[] caseSensitive;
 
   @Injection( name = "IS_UNICODE", group = "FIELDS" )
-  private int[] isUnicode;
+  private boolean[] isUnicode;
 
-  public static final String[] caseSensitiveCode = { "no", "yes" };
-
-  public static final String[] isUnicodeCode = { "no", "yes" };
-
-  public static final String[] caseSensitiveDesc = new String[] {
+  public static final String[] flagDescriptor = new String[] {
     BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
-
-  public static final String[] isUnicodeDesc = new String[] {
-    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
-
-  public static final int CASE_SENSITIVE_NO = 0;
-
-  public static final int CASE_SENSITIVE_YES = 1;
-
-  public static final int IS_UNICODE_NO = 0;
-
-  public static final int IS_UNICODE_YES = 1;
-
-  public static final String[] wholeWordDesc = new String[] {
-    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
-
-  public static final String[] wholeWordCode = { "no", "yes" };
-
-  public static final int WHOLE_WORD_NO = 0;
-
-  public static final int WHOLE_WORD_YES = 1;
-
-  public static final String[] useRegExDesc = new String[] {
-    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
-
-  public static final String[] useRegExCode = { "no", "yes" };
-
-  public static final int USE_REGEX_NO = 0;
-
-  public static final int USE_REGEX_YES = 1;
 
   public ReplaceStringMeta() {
     super(); // allocate BaseStepMeta
@@ -146,27 +113,27 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     this.fieldInStream = keyStream;
   }
 
-  public int[] getCaseSensitive() {
+  public boolean[] getCaseSensitive() {
     return caseSensitive;
   }
 
-  public int[] isUnicode() {
+  public boolean[] isUnicode() {
     return isUnicode;
   }
 
-  public int[] getWholeWord() {
+  public boolean[] getWholeWord() {
     return wholeWord;
   }
 
-  public void setWholeWord( int[] wholeWord ) {
+  public void setWholeWord( boolean[] wholeWord ) {
     this.wholeWord = wholeWord;
   }
 
-  public int[] getUseRegEx() {
+  public boolean[] getUseRegEx() {
     return useRegEx;
   }
 
-  public void setUseRegEx( int[] useRegEx ) {
+  public void setUseRegEx( boolean[] useRegEx ) {
     this.useRegEx = useRegEx;
   }
 
@@ -224,11 +191,11 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     this.replaceFieldByString = replaceFieldByString;
   }
 
-  public void setCaseSensitive( int[] caseSensitive ) {
+  public void setCaseSensitive( boolean[] caseSensitive ) {
     this.caseSensitive = caseSensitive;
   }
 
-  public void setIsUnicode( int[] isUnicode ) {
+  public void setIsUnicode( boolean[] isUnicode ) {
     this.isUnicode = isUnicode;
   }
 
@@ -239,14 +206,14 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
   public void allocate( int nrkeys ) {
     fieldInStream = new String[nrkeys];
     fieldOutStream = new String[nrkeys];
-    useRegEx = new int[nrkeys];
+    useRegEx = new boolean[nrkeys];
     replaceString = new String[nrkeys];
     replaceByString = new String[nrkeys];
     setEmptyString = new boolean[nrkeys];
     replaceFieldByString = new String[nrkeys];
-    wholeWord = new int[nrkeys];
-    caseSensitive = new int[nrkeys];
-    isUnicode = new int[nrkeys];
+    wholeWord = new boolean[nrkeys];
+    caseSensitive = new boolean[nrkeys];
+    isUnicode = new boolean[nrkeys];
   }
 
   public Object clone() {
@@ -282,18 +249,18 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
         fieldInStream[i] = Const.NVL( XMLHandler.getTagValue( fnode, "in_stream_name" ), "" );
         fieldOutStream[i] = Const.NVL( XMLHandler.getTagValue( fnode, "out_stream_name" ), "" );
-        useRegEx[i] = getCaseSensitiveByCode( Const.NVL( XMLHandler.getTagValue( fnode, "use_regex" ), "" ) );
+        useRegEx[i] = getFlagFromString( Const.NVL( XMLHandler.getTagValue( fnode, "use_regex" ), "" ) );
         replaceString[i] = Const.NVL( XMLHandler.getTagValue( fnode, "replace_string" ), "" );
         replaceByString[i] = Const.NVL( XMLHandler.getTagValue( fnode, "replace_by_string" ), "" );
         String emptyString = XMLHandler.getTagValue( fnode, "set_empty_string" );
 
         setEmptyString[i] = !Utils.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
         replaceFieldByString[i] = Const.NVL( XMLHandler.getTagValue( fnode, "replace_field_by_string" ), "" );
-        wholeWord[i] = getWholeWordByCode( Const.NVL( XMLHandler.getTagValue( fnode, "whole_word" ), "" ) );
+        wholeWord[i] = getFlagFromString( Const.NVL( XMLHandler.getTagValue( fnode, "whole_word" ), "" ) );
         caseSensitive[i] =
-          getCaseSensitiveByCode( Const.NVL( XMLHandler.getTagValue( fnode, "case_sensitive" ), "" ) );
+          getFlagFromString( Const.NVL( XMLHandler.getTagValue( fnode, "case_sensitive" ), "" ) );
         isUnicode[i] =
-          getIsUniCodeByCode( Const.NVL( XMLHandler.getTagValue( fnode, "is_unicode" ), "" ) );
+          getFlagFromString( Const.NVL( XMLHandler.getTagValue( fnode, "is_unicode" ), "" ) );
 
       }
     } catch ( Exception e ) {
@@ -302,17 +269,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  private static int getIsUniCodeByCode( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < isUnicodeCode.length; i++ ) {
-      if ( isUnicodeCode[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-    return 0;
+  private static boolean getFlagFromString( String tt ) {
+    return ( "Y".equalsIgnoreCase( tt ) || "yes".equalsIgnoreCase( tt )  || "true".equalsIgnoreCase( tt ) );
   }
 
   public void setDefault() {
@@ -332,18 +290,17 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "in_stream_name", fieldInStream[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "out_stream_name", fieldOutStream[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "use_regex", getUseRegExCode( useRegEx[i] ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "use_regex", getFlagTagValue( useRegEx[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "replace_string", replaceString[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "replace_by_string", replaceByString[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "set_empty_string", setEmptyString[i] ) );
       retval.append( "        " ).append(
         XMLHandler.addTagValue( "replace_field_by_string", replaceFieldByString[i] ) );
-      retval
-        .append( "        " ).append( XMLHandler.addTagValue( "whole_word", getWholeWordCode( wholeWord[i] ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "whole_word", getFlagTagValue( wholeWord[i] ) ) );
+      retval.append( "        " )
+        .append( XMLHandler.addTagValue( "case_sensitive", getFlagTagValue( caseSensitive[i] ) ) );
       retval.append( "        " ).append(
-        XMLHandler.addTagValue( "case_sensitive", getCaseSensitiveCode( caseSensitive[i] ) ) );
-      retval.append( "        " ).append(
-        XMLHandler.addTagValue( "is_unicode", getIsUniCodeCode( isUnicode[i] ) ) );
+        XMLHandler.addTagValue( "is_unicode", getFlagTagValue( isUnicode[i] ) ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
 
@@ -352,11 +309,9 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  private static String getIsUniCodeCode( int i ) {
-    if ( i < 0 || i >= isUnicodeCode.length ) {
-      return isUnicodeCode[0];
-    }
-    return isUnicodeCode[i];
+  /** BACKLOG-27839 Outputs Flags that were previously int as "yes" or "no" for Backwards Compatibility in XML. **/
+  private static String getFlagTagValue( boolean flag ) {
+    return ( flag ? "yes" : "no" );
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
@@ -368,18 +323,18 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
         fieldInStream[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "in_stream_name" ), "" );
         fieldOutStream[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "out_stream_name" ), "" );
         useRegEx[i] =
-          getCaseSensitiveByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "use_regex" ), "" ) );
+          getFlagFromString( Const.NVL( rep.getStepAttributeString( id_step, i, "use_regex" ), "" ) );
         replaceString[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "replace_string" ), "" );
         replaceByString[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "replace_by_string" ), "" );
         setEmptyString[i] = rep.getStepAttributeBoolean( id_step, i, "set_empty_string", false );
         replaceFieldByString[i] =
           Const.NVL( rep.getStepAttributeString( id_step, i, "replace_field_by_string" ), "" );
         wholeWord[i] =
-          getWholeWordByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "whole_world" ), "" ) );
+          getFlagFromString( Const.NVL( rep.getStepAttributeString( id_step, i, "whole_world" ), "" ) );
         caseSensitive[i] =
-          getCaseSensitiveByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "case_sensitive" ), "" ) );
+          getFlagFromString( Const.NVL( rep.getStepAttributeString( id_step, i, "case_sensitive" ), "" ) );
         isUnicode[i] =
-          getIsUniCodeByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "is_unicode" ), "" ) );
+          getFlagFromString( Const.NVL( rep.getStepAttributeString( id_step, i, "is_unicode" ), "" ) );
 
       }
     } catch ( Exception e ) {
@@ -393,16 +348,14 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
       for ( int i = 0; i < fieldInStream.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "in_stream_name", fieldInStream[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "out_stream_name", fieldOutStream[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "use_regex", getUseRegExCode( useRegEx[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "use_regex", useRegEx[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "replace_string", replaceString[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "replace_by_string", replaceByString[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "set_empty_string", setEmptyString[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "replace_field_by_string", replaceFieldByString[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "whole_world", getWholeWordCode( wholeWord[i] ) );
-        rep.saveStepAttribute(
-          id_transformation, id_step, i, "case_sensitive", getCaseSensitiveCode( caseSensitive[i] ) );
-        rep.saveStepAttribute(
-          id_transformation, id_step, i, "is_unicode", getIsUniCodeCode( isUnicode[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "whole_world", wholeWord[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "case_sensitive", caseSensitive[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "is_unicode", isUnicode[i] );
 
       }
     } catch ( Exception e ) {
@@ -546,154 +499,6 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     return true;
   }
 
-  private static String getCaseSensitiveCode( int i ) {
-    if ( i < 0 || i >= caseSensitiveCode.length ) {
-      return caseSensitiveCode[0];
-    }
-    return caseSensitiveCode[i];
-  }
-
-  private static String getWholeWordCode( int i ) {
-    if ( i < 0 || i >= wholeWordCode.length ) {
-      return wholeWordCode[0];
-    }
-    return wholeWordCode[i];
-  }
-
-  private static String getUseRegExCode( int i ) {
-    if ( i < 0 || i >= useRegExCode.length ) {
-      return useRegExCode[0];
-    }
-    return useRegExCode[i];
-  }
-
-  public static String getCaseSensitiveDesc( int i ) {
-    if ( i < 0 || i >= caseSensitiveDesc.length ) {
-      return caseSensitiveDesc[0];
-    }
-    return caseSensitiveDesc[i];
-  }
-
-  public static String getIsUnicodeDesc( int i ) {
-    if ( i < 0 || i >= isUnicodeDesc.length ) {
-      return isUnicodeDesc[0];
-    }
-    return isUnicodeDesc[i];
-  }
-
-  public static String getWholeWordDesc( int i ) {
-    if ( i < 0 || i >= wholeWordDesc.length ) {
-      return wholeWordDesc[0];
-    }
-    return wholeWordDesc[i];
-  }
-
-  public static String getUseRegExDesc( int i ) {
-    if ( i < 0 || i >= useRegExDesc.length ) {
-      return useRegExDesc[0];
-    }
-    return useRegExDesc[i];
-  }
-
-  private static int getCaseSensitiveByCode( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < caseSensitiveCode.length; i++ ) {
-      if ( caseSensitiveCode[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-    return 0;
-  }
-
-  private static int getWholeWordByCode( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < wholeWordCode.length; i++ ) {
-      if ( wholeWordCode[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-    return 0;
-  }
-
-  private static int getRegExByCode( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < useRegExCode.length; i++ ) {
-      if ( useRegExCode[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-    return 0;
-  }
-
-  public static int getCaseSensitiveByDesc( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < caseSensitiveDesc.length; i++ ) {
-      if ( caseSensitiveDesc[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-
-    // If this fails, try to match using the code.
-    return getCaseSensitiveByCode( tt );
-  }
-
-  public static int getIsUnicodeByDesc( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < isUnicodeDesc.length; i++ ) {
-      if ( isUnicodeDesc[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-
-    // If this fails, try to match using the code.
-    return getIsUniCodeByCode( tt );
-  }
-
-  public static int getWholeWordByDesc( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < wholeWordDesc.length; i++ ) {
-      if ( wholeWordDesc[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-
-    // If this fails, try to match using the code.
-    return getWholeWordByCode( tt );
-  }
-
-  public static int getUseRegExByDesc( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < useRegExDesc.length; i++ ) {
-      if ( useRegExDesc[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-
-    // If this fails, try to match using the code.
-    return getRegExByCode( tt );
-  }
-
   private void nullToEmpty( String [] strings ) {
     for ( int i = 0; i < strings.length; i++ ) {
       if ( strings[ i ] == null ) {
@@ -722,14 +527,13 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     nullToEmpty( replaceByString );
     nullToEmpty( replaceFieldByString );
 
-    int[][] rtnIntArrays = Utils.normalizeArrays( nrFields, useRegEx, wholeWord, caseSensitive, isUnicode );
-    useRegEx = rtnIntArrays[ 0 ];
-    wholeWord = rtnIntArrays[ 1 ];
-    caseSensitive = rtnIntArrays[ 2 ];
-    isUnicode = rtnIntArrays[ 3 ];
-
-    boolean[][] rtnBooleanArrays = Utils.normalizeArrays( nrFields, setEmptyString );
-    setEmptyString = rtnBooleanArrays[ 0 ];
+    boolean[][] rtnBooleanArrays =
+      Utils.normalizeArrays( nrFields, useRegEx, setEmptyString, wholeWord, caseSensitive, isUnicode );
+    useRegEx = rtnBooleanArrays[ 0 ];
+    setEmptyString = rtnBooleanArrays[ 1 ];
+    wholeWord = rtnBooleanArrays[ 2 ];
+    caseSensitive = rtnBooleanArrays[ 3 ];
+    isUnicode = rtnBooleanArrays[ 4 ];
   }
 
 }
