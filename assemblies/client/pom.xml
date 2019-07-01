@@ -81,7 +81,7 @@
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
-      <artifactId>pentaho-karaf-assembly</artifactId>
+      <artifactId>pentaho-karaf-assembly-client</artifactId>
       <version>${pentaho-karaf.version}</version>
       <classifier>client</classifier>
       <type>zip</type>
@@ -176,7 +176,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>pentaho</groupId>
-                  <artifactId>pentaho-karaf-assembly</artifactId>
+                  <artifactId>pentaho-karaf-assembly-client</artifactId>
                   <classifier>client</classifier>
                   <type>zip</type>
                 </artifactItem>
@@ -199,7 +199,7 @@
             <configuration>
               <target>
                 <echo message="Moving unpacked dependencies to the right place..."/>
-                <move file="${assembly.dir}/system/pentaho-karaf-assembly" tofile="${assembly.dir}/system/karaf" failonerror="false"/>
+                <move file="${assembly.dir}/system/pentaho-karaf-assembly-client-${project.version}" tofile="${assembly.dir}/system/karaf" failonerror="false"/>
                 <move file="${assembly.dir}/pdi-websocket-daemon" tofile="${assembly.dir}/adaptive-execution" failonerror="false"/>
               </target>
             </configuration>
