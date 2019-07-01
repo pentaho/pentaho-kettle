@@ -35,6 +35,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
+import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -236,8 +237,14 @@ public class XsdValidator extends BaseStep implements StepInterface {
         // Prevent against XML Entity Expansion (XEE) attacks.
         // https://www.owasp.org/index.php/XML_Security_Cheat_Sheet#XML_Entity_Expansion
         if ( !meta.isAllowExternalEntities() ) {
-          xsdValidator.setProperty( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
-          xsdValidator.setProperty( XMLConstants.ACCESS_EXTERNAL_SCHEMA, "" );
+          xsdValidator.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
+          xsdValidator.setFeature( "http://xml.org/sax/features/external-general-entities", false );
+          xsdValidator.setFeature( "http://xml.org/sax/features/external-parameter-entities", false );
+          xsdValidator.setProperty( "http://apache.org/xml/properties/internal/entity-resolver",
+            (XMLEntityResolver) xmlResourceIdentifier -> {
+              String message = BaseMessages.getString( PKG, "XsdValidator.Exception.DisallowedDocType" );
+              throw new IOException( message );
+            } );
         }
 
         // Validate XML / XSD
