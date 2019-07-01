@@ -1,8 +1,8 @@
 <groupbox id="database-options-box" orient="vertical" flex="1"
           xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
           xmlns:pen="http://www.pentaho.org/2008/xul">
-
   <caption label="${DatabaseDialog.USER_SETTINGS}"/>
+  <vbox style="overflow:auto;">
   <label id="server-host-name-label" value="${DatabaseDialog.label.ServerHostname}" />
   <textbox pen:customclass="variabletextbox" id="server-host-name-text"  />
   <label id="database-name-label" value="${DatabaseDialog.label.DatabaseName}" />
@@ -38,5 +38,6 @@
     <textbox pen:customclass="variabletextbox" id="iam-profile-name"/>
   </vbox>
   <vbox id="redshift-bulk-loader-controls" orient="vertical">
+  </vbox>
   </vbox>
 </groupbox>
