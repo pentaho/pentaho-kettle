@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -547,7 +547,7 @@ public class ParseMailInputTest {
     return fields;
   }
 
-  private Enumeration<?> getEnum( Header[] headers ) {
+  private Enumeration<Header> getEnum( Header[] headers ) {
     return Collections.enumeration( Arrays.asList( headers ) );
   }
 }

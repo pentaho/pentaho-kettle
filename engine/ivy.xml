@@ -90,7 +90,7 @@
     <dependency org="org.owasp.encoder"                name="encoder"              rev="1.2"             transitive="false"/>
     <dependency org="net.sourceforge.nekohtml"         name="nekohtml"             rev="1.9.15"          transitive="false"/>
     <dependency org="rhino"                            name="js"                   rev="1.7R3"           transitive="false"/>
-    <dependency org="javax.mail"                       name="mail"                 rev="1.4.7"           transitive="false" />
+    <dependency org="com.sun.mail"                     name="javax.mail"           rev="1.6.1"           transitive="false" />
     <dependency org="org.mnode.mstor"                  name="mstor"                rev="0.9.13"          transitive="false"/>
     <dependency org="org.xerial.snappy"                name="snappy-java"          rev="1.1.0"           transitive="true"/>
     <dependency org="commons-cli"											 name="commons-cli"					 rev="1.2" 						 transitive="false"/>
