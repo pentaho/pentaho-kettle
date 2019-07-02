@@ -61,12 +61,12 @@
   </kettle-variable>
 
   <kettle-variable>
-    <description>The transformation performance log schema default for all transformations</description>
+    <description>The transformation performance log database connection default for all transformations</description>
     <variable>KETTLE_TRANS_PERFORMANCE_LOG_DB</variable>
   </kettle-variable>
 
   <kettle-variable>
-    <description>The transformation performance log database connection default for all transformations</description>
+    <description>The transformation performance log schema default for all transformations</description>
     <variable>KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA</variable>
   </kettle-variable>
 
