@@ -1,574 +1,321 @@
-# optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
 buildProperties:
-  # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
-  # These are understood by the shared pipeline libraries:
-  BUILD_PLAN_ID                  : Master Suite Build
-  DEFAULT_BRANCH                 : master
-  MAVEN_DEFAULT_DIRECTIVES       : clean
-  MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q -U
-  MAVEN_TEST_OPTS                : -DsurefireArgLine=-Xmx1g \verify -DrunITs -Daudit -Dsonar -Dmaven.test.failure.ignore project-info-reports:dependencies
-  IGNORE_PIPELINE_FAILURE        : true
-  JOB_ITEM_DEFAULTS              :
-    archivable                   : false
-  PARALLEL_UNIT_TESTS_CHUNKSIZE  : 110
-  MINION_POLL_CRON_INTERVAL      :
+  BUILD_PLAN_ID                 : Suite Integration Test Build
+  IGNORE_PIPELINE_FAILURE       : true
+  PARALLEL_CHUNKSIZE            : 0 # unlimited chunk size
+
+  MAVEN_DEFAULT_COMMAND_OPTIONS : -B -e -q -U -DsurefireArgLine=-Xmx1g -Dmaven.test.failure.ignore
+  MAVEN_DEFAULT_DIRECTIVES      : clean verify project-info-reports:dependencies -DrunITs -Daudit -Dsonar
+
+  JOB_ITEM_DEFAULTS             :
+    scmBranch                   : master
+    archivable                  : false
 
 jobGroups:
-  # Always required
-
-  300:
-
+  All Projects:
      - jobID           :  parent-poms
        scmUrl          :  https://github.com/pentaho/maven-parent-poms.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho.version
-       archiveMatcher  :  NONE
 
      - jobID           :  parent-poms-ee
        scmUrl          :  https://github.com/pentaho/maven-parent-poms-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -Dobfuscate-version-for-license-phase=none
-       versionProperty :  pentaho.version
-       archiveMatcher  :  NONE
 
      - jobID           :  archetypes
        scmUrl          :  https://github.com/pentaho/maven-project-archetypes.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  archetypes.version
-       archiveMatcher  :  NONE
 
      - jobID           :  metastore
        scmUrl          :  https://github.com/pentaho/metastore.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  metastore.version
-       archiveMatcher  :  NONE
 
      - jobID           :  osgi-bundles
        scmUrl          :  https://github.com/pentaho/pentaho-osgi-bundles.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-osgi-bundles.version
-       archiveMatcher  :  NONE
 
      - jobID           :  oss-license-assembly
        scmUrl          :  https://github.com/pentaho/oss-licenses.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  oss-licenses.version
 
      - jobID           :  database
        scmUrl          :  https://github.com/pentaho/pentaho-commons-database.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  commons-database.version
-       archiveMatcher  :  NONE
 
      - jobID           :  mongo-utils
        scmUrl          :  https://github.com/pentaho/pentaho-mongo-utils.git
-       scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  -= -DrunITs
-       versionProperty :  pentaho-mongo-utils.version
-       archiveMatcher  :  NONE
 
      - jobID           :  eula-wrap-config
        scmUrl          :  https://github.com/pentaho/pentaho-eula-wrap-config.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-eula-wrap-config.version
-       archiveMatcher  :  NONE
 
      - jobID           :  reporting
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-reporting.version
-       archiveMatcher  :  NONE
 
      - jobID           :  gwt-widgets
        scmUrl          :  https://github.com/pentaho/pentaho-commons-gwt-modules.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  commons-gwt.version
-       archiveMatcher  :  NONE
 
      - jobID           :  connections
        scmUrl          :  https://github.com/pentaho/pentaho-connections.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-connections.version
-       archiveMatcher  :  NONE
 
      - jobID           :  commons-json
        scmUrl          :  https://github.com/pentaho/pentaho-commons-json.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-json.version
-       archiveMatcher  :  NONE
 
      - jobID           :  application-launcher
        scmUrl          :  https://github.com/pentaho/pentaho-application-launcher.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-launcher.version
-       archiveMatcher  :  NONE
 
      - jobID           :  version-checker
        scmUrl          :  https://github.com/pentaho/pentaho-versionchecker.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-versionchecker.version
-       archiveMatcher  :  NONE
 
      - jobID           :  hdfs-vfs
        scmUrl          :  https://github.com/pentaho/pentaho-hdfs-vfs.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-hdfs-vfs.version
-       archiveMatcher  :  NONE
 
      - jobID           :  s3-vfs
        scmUrl          :  https://github.com/pentaho/pentaho-s3-vfs.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-s3-vfs.version
-       archiveMatcher  :  NONE
 
      - jobID           :  apache-vfs-browser
        scmUrl          :  https://github.com/pentaho/apache-vfs-browser.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-vfs-browser.version
-       archiveMatcher  :  NONE
 
      - jobID           :  xul
        scmUrl          :  https://github.com/pentaho/pentaho-commons-xul.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  commons-xul.version
-       archiveMatcher  :  NONE
 
      - jobID           :  actionsequence-dom
        scmUrl          :  https://github.com/pentaho/pentaho-actionsequence-dom.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-actionsequence-dom.version
-       archiveMatcher  :  NONE
 
      - jobID           :  metadata-registry
        scmUrl          :  https://github.com/pentaho/pentaho-registry.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-registry.version
-       archiveMatcher  :  NONE
 
      - jobID           :  mondrian
        scmUrl          :  https://github.com/pentaho/mondrian.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  mondrian.version
-       archiveMatcher  :  NONE
 
      - jobID           :  platform
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  platform.version
 
      - jobID           :  pdi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
-       scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P owasp
-       versionProperty :  pdi.version
 
      - jobID           :  metadata
        scmUrl          :  https://github.com/pentaho/pentaho-metadata.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-metadata.version
-       archiveMatcher  :  NONE
 
      - jobID           :  vertica-bulkloader
        scmUrl          :  https://github.com/pentaho/pentaho-vertica-bulkloader.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  vertica-bulkloader-plugin.version
 
      - jobID           :  pdi-teradata-tpt-plugin
        scmUrl          :  https://github.com/pentaho/pdi-teradata-tpt-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-teradata-tpt-plugin.version
 
      - jobID           :  chartbeans
        scmUrl          :  https://github.com/pentaho/pentaho-chartbeans.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-chartbeans.version
-       archiveMatcher  :  NONE
 
      - jobID           :  license-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-ee-dsc.version
 
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-dataservice-client-plugin.version
 
      - jobID           :  archetypes-ee
        scmUrl          :  https://github.com/pentaho/maven-project-archetypes-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  archetypes.version
-       archiveMatcher  :  NONE
 
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P api,shims,all -Dsonar.test.exclusions=**/*generated-test-sources*/**
-       versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
 
      - jobID           :  big-data-splunk-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-splunk-plugin.version
-       archiveMatcher  :  NONE
 
      - jobID           :  big-data-mongodb-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-mongodb-plugin.version
-       archiveMatcher  :  NONE
 
      - jobID           :  big-data-cassandra-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-cassandra-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-cassandra-plugin.version
 
      - jobID           :  mondrian-schema-workbench-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-mondrianschemaworkbench-plugins.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  mondrian-schemaworkbench-plugins.version
-       archiveMatcher  :  NONE
 
      - jobID           :  psw-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-schema-workbench-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  mondrian.version
 
      - jobID           :  reportwizard-core
        scmUrl          :  https://github.com/pentaho/pentaho-reportwizard-core.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       archiveMatcher  :  NONE
-       versionProperty :  pentaho-report-wizard-core.version
 
      - jobID           :  mql-editor
        scmUrl          :  https://github.com/pentaho/mql-editor.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-mql-editor.version
-       archiveMatcher  :  NONE
 
      - jobID           :  pdi-palo-plugin
        scmUrl          :  https://github.com/pentaho/pdi-palo-core.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-palo-core.version
-       archiveMatcher  :  NONE
 
      - jobID           :  pdi-osgi-bridge
        scmUrl          :  https://github.com/pentaho/pdi-osgi-bridge.git
-       scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P modules
-       versionProperty :  pdi-osgi-bridge.version
-       archiveMatcher  :  NONE
 
      - jobID           :  metaverse-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-metaverse.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += \install
-       versionProperty :  pentaho-metaverse.version
-       archiveMatcher  :  NONE
+       directives      :  -= verify += install
 
      - jobID           :  pdi-monitoring-plugin
        scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-monitoring-plugin.version
 
      - jobID           :  modeler
        scmUrl          :  https://github.com/pentaho/modeler.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-modeler.version
-       archiveMatcher  :  NONE
 
      - jobID           :  cpf-plugin
        scmUrl          :  https://github.com/webdetails/cpf.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-cpf-plugin.version
-       archiveMatcher  :  NONE
 
      - jobID           :  ccc-plugin
        scmUrl          :  https://github.com/webdetails/ccc.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-ccc-plugin.version
-       
+
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  commons-ee.version
 
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-plugins-ee.version
-       
+
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  \clean \install -B -e -q -U -Daether.connector.resumeDownloads=false -DsurefireArgLine=-Xmx1g -DrunITs -Daudit -Dsonar -Dmaven.test.failure.ignore -Deula-wrap project-info-reports:dependencies
-       versionProperty :  pdi.version
+       directives      :  -= verify += install -Deula-wrap
 
      - jobID           :  camel-components
        scmUrl          :  https://github.com/pentaho/pentaho-camel-components.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-camel.version
-       archiveMatcher  :  NONE
 
      - jobID           :  pdi-dataservice-server-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-server-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-dataservice-plugin.version
-       archiveMatcher  :  NONE
 
      - jobID           :  pdi-platform-plugin
        scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-pdi-plugin.version
 
      - jobID           :  pdi-platform-utils-plugin
        scmUrl          :  https://github.com/pentaho/pdi-platform-utils-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-platform-utils-plugin.version
 
      - jobID           :  platform-plugin-jpivot
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-jpivot.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-jpivot-plugin.version
 
      - jobID           :  cdf-plugin
        scmUrl          :  https://github.com/webdetails/cdf.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-cdf-plugin.version
 
      - jobID           :  common-ui
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-common-ui.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  common-ui.version
 
      - jobID           :  data-access-plugin
        scmUrl          :  https://github.com/pentaho/data-access.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-data-access.version
 
      - jobID           :  marketplace-plugin
        scmUrl          :  https://github.com/pentaho/marketplace.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-marketplace-modules.version
-       archiveMatcher  :  NONE
 
      - jobID           :  big-data-plugin-features
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  big-data-plugin.version
        directives      :  -= -DrunITs
-       archiveMatcher  :  NONE
 
      - jobID           :  pdi-data-refinery-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-data-refinery.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-data-refinery-plugin.version
-       archiveMatcher  :  NONE
 
      - jobID           :  pdi-daemon
        scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  ael.version
 
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-cde-plugin.version
 
      - jobID           :  cpk-plugin
        scmUrl          :  https://github.com/webdetails/cpk.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-cpk-plugin.version
-       archiveMatcher  :  NONE
 
      - jobID           :  cgg-plugin
        scmUrl          :  https://github.com/webdetails/cgg.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-cgg-plugin.version
 
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-sparkl-plugin.version
 
      - jobID           :  platform-reporting-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-reporting.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-reporting-plugin.version
 
      - jobID           :  big-data-hadoop-shims-ee
        scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
 
      - jobID           :  cda-plugin
        scmUrl          :  https://github.com/webdetails/cda.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-cda-plugin.version
 
      - jobID           :  jdbc-distribution-utility
        scmUrl          :  https://github.com/pentaho/jdbc-distribution-utility.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  jdbc-distribution-utility.version
 
      - jobID           :  dashboards-chart-editor-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-dashboard-chart-editor.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-dashboard-chart-editor.version
-       archiveMatcher  :  NONE
 
      - jobID           :  platform-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-ee,platform-ee-assemble -P owasp
-       versionProperty :  platform.version
-       archiveMatcher  :  NONE
 
      - jobID           :  geo-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-geo.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-geo-plugin.version
 
      - jobID           :  analyzer-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-analyzer.git
-       scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -Dagilebi
-       versionProperty :  analyzer-plugin.version
 
      - jobID           :  platform-chart-plugin-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee-chart-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-ee-chart-plugin.version
 
      - jobID           :  analysis-plugin-ee
        scmUrl          :  https://github.com/pentaho/pentaho-analysis-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  analysis-ee-plugin.version
 
      - jobID           :  pdi-yarn-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-yarn-kettle-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-kettle-yarn-plugin.version
-       archiveMatcher  :  NONE
 
      - jobID           :  data-exploration
        scmUrl          :  https://github.com/pentaho/pentaho-det.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-det.version
-       archiveMatcher  :  NONE
 
      - jobID           :  data-exploration-ee
        scmUrl          :  https://github.com/pentaho/pentaho-det-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-det.version
-       archiveMatcher  :  NONE
 
      - jobID           :  karaf-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-karaf-assembly.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += \install
-       versionProperty :  pentaho-karaf.version
+       directives      :  -= verify += install
 
      - jobID           :  dashboards-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-dashboards.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  dashboard-plugin.version
 
      - jobID           :  pdi-weka-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-data-mining.version
 
      - jobID           :  pdi-weka-plugins-ee
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-data-mining.version
-       archiveMatcher  :  NONE
 
      - jobID           :  pir-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-interactive-reporting.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pir-plugin.version
 
      - jobID           :  pdi-scheduler-plugin
        scmUrl          :  https://github.com/pentaho/pdi-scheduler-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-scheduler-plugin.version
 
      - jobID           :  pdi-google-docs-plugin
        scmUrl          :  https://github.com/pentaho/pdi-google-docs-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-google-docs-plugin.version
 
      - jobID           :  pdi-jms-plugin
        scmUrl          :  https://github.com/pentaho/pdi-jms-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-jms-plugin.version
 
      - jobID           :  pdi-sdk-plugins
        scmUrl          :  https://github.com/pentaho/pdi-sdk-plugins.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-sdk-plugins.version
 
      - jobID           :  pdi-r-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-r-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-r-plugin.version
 
      - jobID           :  pdi-sap-hana-bulk-loader-plugin
        scmUrl          :  https://github.com/pentaho/pdi-sap-hana-bulk-loader-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-sap-hana-bulk-loader-plugin.version
 
      - jobID           :  karaf-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-karaf-ee-assembly.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-karaf.version
 
      - jobID           :  prd-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-pur-plugin-ee
        scmUrl          :  https://github.com/pentaho/pdi-ee-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-pur-plugin.version
 
      - jobID           :  pdi-operations-mart-ee
        scmUrl          :  https://github.com/pentaho/pdi-operations-mart.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-operations-mart.version
 
      - jobID           :  metadata-editor
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-metadata.version
 
      - jobID           :  pad
        scmUrl          :  https://github.com/pentaho/pentaho-aggdesigner.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  aggdesigner.version
 
      - jobID           :  foundry-workers-ee
        scmUrl          :  https://github.com/pentaho/worker-nodes-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  worker-nodes.version
 
      - jobID           :  metadata-editor-ee
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-metadata.version
 
      - jobID           :  pad-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-aggdesigner-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  aggdesigner.version
 
      - jobID           :  platform-sdk
        scmUrl          :  https://github.com/pentaho/pentaho-sdk.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-sdk-plugins.version
-
