@@ -302,7 +302,7 @@ jobGroups:
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  -= test \verify += \clean \install -Deula-wrap project-info-reports:dependencies
+       directives      :  -= test \verify project-info-reports:dependencies += \clean \install -Deula-wrap project-info-reports:dependencies
        versionProperty :  pdi.version
 
      - jobID           :  camel-components
