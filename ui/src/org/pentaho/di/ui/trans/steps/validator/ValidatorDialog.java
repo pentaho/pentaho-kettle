@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -836,7 +836,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
     fdlAllowedValues.right = new FormAttachment( middle, -margin );
     fdlAllowedValues.top = new FormAttachment( wRegExpDisallowed, margin );
     wlAllowedValues.setLayoutData( fdlAllowedValues );
-    wAllowedValues = new List( wgData, SWT.MULTI | SWT.LEFT | SWT.BORDER );
+    wAllowedValues = new List( wgData, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
     props.setLook( wAllowedValues );
     FormData fdAllowedValues = new FormData();
     fdAllowedValues.left = new FormAttachment( middle, margin + extra );
