@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,12 +81,6 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    */
   private static final String DEFAULT_TIMESTAMP_FORMAT_FOR_TIMESTAMP = "yyyy-MM-dd HH:mm:ss";
   private static final String DEFAULT_MILLISECOND_DATE_FORMAT = "SSS";
-
-  private static final SimpleDateFormat defaultTimestampFormat =
-    new SimpleDateFormat( DEFAULT_TIMESTAMP_FORMAT_FOR_TIMESTAMP, Locale.US );
-
-  private static final SimpleDateFormat defaultMillisecondDateFormat =
-    new SimpleDateFormat( DEFAULT_MILLISECOND_DATE_FORMAT, Locale.US );
 
   /**
    * Nanoseconds placeholder to specify unformatted nanoseconds position after formatting <code>Date</code> part part of
@@ -247,9 +241,12 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    */
   @Override
   public StringBuffer format( Date timestamp, StringBuffer toAppendTo, FieldPosition pos ) {
+
     if ( compatibleToSuperPattern ) {
       return super.format( timestamp, toAppendTo, pos );
     }
+
+    SimpleDateFormat defaultMillisecondDateFormat = new SimpleDateFormat( DEFAULT_MILLISECOND_DATE_FORMAT, Locale.US );
 
     StringBuffer dateBuffer;
     String nan;
@@ -340,6 +337,9 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    */
   @Override
   public Date parse( String text, ParsePosition pos ) {
+
+    SimpleDateFormat defaultTimestampFormat = new SimpleDateFormat( DEFAULT_TIMESTAMP_FORMAT_FOR_TIMESTAMP, Locale.US );
+
     String timestampFormatDate;
     Date tempDate;
     if ( compatibleToSuperPattern ) {
