@@ -66,7 +66,7 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "sun.jdbc.odbc.JdbcOdbcDriver";
     } else {
-      return "com.amazon.redshift.jdbc4.Driver";
+      return "com.amazon.redshift.jdbc.Driver";
     }
   }
 
