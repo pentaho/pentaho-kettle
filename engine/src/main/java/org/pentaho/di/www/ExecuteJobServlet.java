@@ -26,13 +26,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.sun.xml.ws.client.ClientTransportException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.Utils;
@@ -50,6 +50,8 @@ import org.pentaho.di.job.JobAdapter;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.KettleAuthenticationException;
+import org.pentaho.di.repository.KettleRepositoryNotFoundException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -202,26 +204,29 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     Repository repository;
     try {
       repository = openRepository( repOption, userOption, passOption );
-    } catch ( KettleException ke ) {
+    } catch ( KettleRepositoryNotFoundException krnfe ) {
+      // Repository not found.
+      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
       String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.UnableToFindRepository", repOption );
-
-      if ( ke.getCause() instanceof ClientTransportException ) {
-        // Authentication Error.
-        response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
-        message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.Authentication", getContextPath() );
-        out.println( new WebResult( WebResult.STRING_ERROR, message ) );
-      } else if ( ke.getMessage().contains( message ) ) {
-        // Repository not found.
-        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
-        out.println( new WebResult( WebResult.STRING_ERROR, message ) );
-      } else {
-        // Something unexpected occurred.
-        response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
-        message = BaseMessages.getString(
-          PKG, "ExecuteJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ke ) );
-        out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      return;
+    } catch ( KettleException ke ) {
+      // Authentication Error.
+      if (  ke.getCause() instanceof ExecutionException ) {
+        ExecutionException ee = (ExecutionException) ke.getCause();
+        if (  ee.getCause() instanceof KettleAuthenticationException ) {
+          response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+          String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.Authentication", getContextPath() );
+          out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+          return;
+        }
       }
 
+      // Something unexpected occurred.
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+      String message = BaseMessages.getString(
+        PKG, "ExecuteJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ke ) );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
       return;
     }
 
@@ -377,7 +382,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
     if ( repositoryMeta == null ) {
       String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.UnableToFindRepository", repositoryName );
-      throw new KettleException( message );
+      throw new KettleRepositoryNotFoundException( message );
     }
     PluginRegistry registry = PluginRegistry.getInstance();
     Repository repository = registry.loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
