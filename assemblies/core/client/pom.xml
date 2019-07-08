@@ -58,10 +58,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>pentaho</groupId>
-            <artifactId>pentaho-karaf-assembly</artifactId>
+            <groupId>org.hitachivantara.karaf</groupId>
+            <artifactId>karaf-assembly-client</artifactId>
             <version>${pentaho-karaf.version}</version>
-            <classifier>client</classifier>
             <type>zip</type>
             <exclusions>
                 <exclusion>
@@ -153,9 +152,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>pentaho</groupId>
-                                    <artifactId>pentaho-karaf-assembly</artifactId>
-                                    <classifier>client</classifier>
+                                    <groupId>org.hitachivantara.karaf</groupId>
+                                    <artifactId>karaf-assembly-client</artifactId>
                                     <type>zip</type>
                                 </artifactItem>
                             </artifactItems>
@@ -178,7 +176,7 @@
                         <configuration>
                             <target>
                                 <echo message="Moving unpacked dependencies to the right place..."/>
-                                <move file="${assembly.dir}/system/pentaho-karaf-assembly" tofile="${assembly.dir}/system/karaf" failonerror="false"/>
+                                <move file="${assembly.dir}/system/karaf-assembly-client-${project.version}" tofile="${assembly.dir}/system/karaf" failonerror="false"/>
                             </target>
                         </configuration>
                     </execution>
