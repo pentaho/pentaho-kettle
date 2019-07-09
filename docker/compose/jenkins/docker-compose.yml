@@ -5,25 +5,24 @@ networks:
     name: ${NETWORK_NAME:-hv-pipelines}
 
 volumes:
+  workspace:
+    name: ${WORK_VOLUME_NAME:-hv-jenkins-workspace}
   home:
-    name: ${VOLUME_NAME:-hv-jenkins-home}
+    name: ${HOME_VOLUME_NAME:-hv-jenkins-home}
 
 services:
   master:
     image: ${MASTER_IMAGE_NAME:-hv/jenkins-master}
     build:
       context: ../../jenkins
-      dockerfile: Dockerfile-master
       args:
-        - uid=${UID:-1000}
-        - gid=${GID:-1000}
-        - JENKINS_VERSION=${JENKINS_VERSION}
+        - version=${JENKINS_VERSION:-lts}
     environment:
       - MASTER_LABELS=${MASTER_LABELS:-master}
+    env_file:
+      - .env
     volumes:
       - home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${CREDENTIALS:-./credentials}:/usr/share/jenkins/secrets/credentials
       - ${PROJECTS_DIR:-./projects}:/projects
     networks:
       - pipelines
@@ -32,13 +31,21 @@ services:
   agent:
     image: ${AGENT_IMAGE_NAME:-hv/jenkins-agent}
     build:
-      context: ../../jenkins-agent
+      context: ../../jenkins/agent
       args:
         - uid=${UID:-1000}
         - gid=${GID:-1000}
-    command: -master http://master:8080 -fsroot /var/jenkins_home -executors ${AGENT_EXECUTORS:-2} -name agent -labels ${AGENT_LABELS:-non-master}
+        - home=/jenkins
+    env_file:
+      - .env
+    command: >
+      -master http://master:8080
+      -fsroot /jenkins
+      -executors ${AGENT_EXECUTORS:-2}
+      -name agent
+      -labels ${AGENT_LABELS:-non-master}
     volumes:
-      - home:/var/jenkins_home
+      - workspace:/jenkins/workspace
       - /var/run/docker.sock:/var/run/docker.sock
       - ${PROJECTS_DIR:-./projects}:/projects
     networks:

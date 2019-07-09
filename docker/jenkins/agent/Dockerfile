@@ -7,7 +7,7 @@ ARG gid=1000
 ARG home=/var/jenkins_home
 
 ENV LANG C.UTF-8
-ENV JENKINS_SWARM_VERSION 3.14
+ENV JENKINS_SWARM_VERSION 3.17
 ENV JENKINS_SWARM_URL https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/$JENKINS_SWARM_VERSION/swarm-client-$JENKINS_SWARM_VERSION.jar
 
 # install netstat to allow connection health check with
@@ -36,8 +36,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     docker-ce-cli \
   && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p $home \
-  && chown ${uid}:${gid} $home \
+RUN mkdir -p $home && mkdir $home/workspace \
+  && chown -R ${uid}:${gid} $home \
   && groupadd -o -g ${gid} ${group} \
   && useradd -o -d "$home" -u ${uid} -g ${gid} -m -s /bin/bash ${user}
 
@@ -46,6 +46,5 @@ RUN curl --create-dirs -sSLo /usr/share/jenkins/swarm-client-$JENKINS_SWARM_VERS
 COPY agent.sh /usr/local/bin/agent.sh
 
 USER $user
-VOLUME $home
 
 ENTRYPOINT ["/usr/local/bin/agent.sh"]

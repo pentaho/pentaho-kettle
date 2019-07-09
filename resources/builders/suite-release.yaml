@@ -6,6 +6,7 @@ buildProperties:
 
   MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
   BUILD_RETRIES                  : 3
+  BUILD_ORDER_REPORT             : true
   ATTACH_LOGS                    : false
   USE_MINION_JOBS                : true
   MINION_POLL_CRON_INTERVAL      :
@@ -20,6 +21,7 @@ buildProperties:
 
   # Version based control properties
   RUN_VERSIONING                 : true
+  VERSION_MERGER_LOG_LEVEL       : WARN
   RELEASE_VERSION                : 9.0.0.0
   DEPLOYMENT_FOLDER              : 9.0-QAT
   RELEASE_MODE                   : true
@@ -37,7 +39,11 @@ buildProperties:
 
   # Slack Reporting
   SLACK_INTEGRATION              : true
-  SLACK_CHANNEL                  : 'buildteam-alerts'
+  SLACK_CHANNEL:
+    BUILD_FAILURE                : 'buildteam-alerts'
+    BUILD_ABORTED                : 'buildteam-alerts'
+    BUILD_UNSTABLE               : 'buildteam-alerts'
+    BUILD_SUCCESS                : 'qat-builds'
   BUILD_SLACK_CHANNEL            : 'buildteam-alerts'
 
   # SP specific parameters

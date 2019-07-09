@@ -15,6 +15,5 @@
 
   <modules>
     <module>jenkins</module>
-    <module>jenkins-agent</module>
   </modules>
 </project>

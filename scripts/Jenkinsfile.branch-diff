@@ -1,0 +1,45 @@
+@Library("jenkins-shared-libraries@master") _
+import org.hitachivantara.ci.GroovyUtils
+
+properties(
+  [parameters(
+    [string(defaultValue: 'https://github.com/pentaho/jenkins-pipelines.git', description: 'Jenkins pipeline URL', name: 'PIPELINE_URL'),
+     string(defaultValue: 'master', description: 'Jenkins pipeline branch', name: 'PIPELINE_BRANCH'),
+     string(defaultValue: 'sample-pipeline.yaml', description: 'Build data file', name: 'BUILD_DATA_FILE'),
+     string(defaultValue: '', description: 'Source branch for diff', name: 'SOURCE_BRANCH'),
+     string(defaultValue: '', description: 'Target branch for diff', name: 'TARGET_BRANCH')]
+  )])
+
+node {
+    stage('Branch Diff'){
+        cleanWs()
+
+        git(url: params.PIPELINE_URL, branch: params.PIPELINE_BRANCH, credentialsId: 'github-buildguy')
+
+        def buildData = config.load(BUILD_DATA_FILE: params.BUILD_DATA_FILE)
+
+        // Make sure groovy is installed
+        sh "groovy --version"
+
+        // Create a report that diffs a source branch to a target branch after checking them out
+        def diffFileName = "${WORKSPACE}/diff.txt"
+        sh "echo \"==========================================================\" > ${diffFileName}"
+        sh "echo \"diff ${params.SOURCE_BRANCH} ${params.TARGET_BRANCH}\" >> ${diffFileName}"
+        sh "echo \"========================================================\" >> ${diffFileName}"
+
+        // Loop through job items getting unique repos
+        def jobItems = GroovyUtils.unique(buildData.allItems, { it.scmOrganization + it.scmRepository  })
+        jobItems.each { item ->
+          def sourceFolder = "${WORKSPACE}/${item.scmRepository}-${params.SOURCE_BRANCH}"
+          def targetFolder = "${WORKSPACE}/${item.scmRepository}-${params.TARGET_BRANCH}"
+          sh "git clone -q ${item.scmUrl} ${sourceFolder} -b ${params.SOURCE_BRANCH}"
+          sh "cp -r ${sourceFolder} ${targetFolder}; cd ${targetFolder}; git checkout ${params.TARGET_BRANCH}"
+          sh "echo \"diff -arq ${item.scmRepository}-${params.SOURCE_BRANCH} ${item.scmRepository}-${params.TARGET_BRANCH}\" >> ${diffFileName}"
+          sh "diff -arq --exclude=\".git\" ${sourceFolder} ${targetFolder} >> ${diffFileName} || true"
+        }
+        sh "cat ${diffFileName}"
+
+        // Set the build description
+        currentBuild.description = "diff ${params.SOURCE_BRANCH} ${params.TARGET_BRANCH}"
+    }
+}

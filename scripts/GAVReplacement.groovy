@@ -199,7 +199,7 @@ for (GithubProject githubProject : githubProjects ) {
  
     File projectDir = new File( "github/" + projectDirName );
     
-    Github.clone( githubProject.getGithubSshUrl(), githubProject.getBranch(), false, projectDir);
+    LocalGit.clone( githubProject.getGithubSshUrl(), githubProject.getBranch(), false, projectDir);
 
     System.out.println( "searching for files ..." );
     DepFileVisitor fileVisitor = new DepFileVisitor(  CURRENT_GROUP_ID,
@@ -211,14 +211,14 @@ for (GithubProject githubProject : githubProjects ) {
 
     Files.walkFileTree(FileSystems.getDefault().getPath("github/" + projectDirName), fileVisitor);
     
-    Github.commit("github/" + projectDirName + "/.git", COMMIT_MSG);
+    LocalGit.commit("github/" + projectDirName + "/.git", COMMIT_MSG);
 
   }
   
   if (PUSH.toLowerCase().equals("true")) {
     
     System.out.println("pushing commits on " + githubProject.getGithubSshUrl() + " to branch " + githubProject.getBranch());
-    Github.pushCommits("github/" + projectDirName + "/.git");
+    LocalGit.pushCommits("github/" + projectDirName + "/.git");
    
   }
   

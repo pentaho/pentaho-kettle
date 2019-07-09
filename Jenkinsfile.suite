@@ -1,17 +1,11 @@
 // This is the master top-level pipeline that triggers both the build pipeline and the downstream triggered jobs
-library(identifier: "jenkins-shared-libraries@20190514-0", changelog: false)
+library(identifier: "jenkins-shared-libraries@20190709", changelog: false)
 
 String buildJobName =  'suite-release'
 Map suiteParameters
+def commonJenkinsFile
 
 node('non-master') {
-  properties([
-    buildDiscarder(logRotator(artifactDaysToKeepStr: '', 
-                    artifactNumToKeepStr: '3', 
-                    daysToKeepStr: '', 
-                    numToKeepStr: '45')), 
-    disableConcurrentBuilds()
-  ])
 
   timestamps {
     catchError {
@@ -20,7 +14,10 @@ node('non-master') {
       }
 
       stage('Configure') {
-        suiteParameters = suite.parameters(buildJobName)
+        commonJenkinsFile = load 'scripts/JenkinsfileCommons.groovy'
+
+        commonJenkinsFile.config()
+        suiteParameters = commonJenkinsFile.getJobParameters(buildJobName)
       }
 
       if (!params.NOOP) {
@@ -34,7 +31,7 @@ node('non-master') {
 
         stage('Validations / Triggers') {
           parallel(
-            'github-commits-pipeline': {
+            'github-commits-pipelines': {
               job.trigger('engops/github-commits-pipelines', suiteParameters, false)
             },
             'remote-ip-job-trigger': {
@@ -45,7 +42,7 @@ node('non-master') {
             },
             'remote-qa-automation-trigger': {
               job.trigger('engops/remote-qa-automation-trigger', suiteParameters, false)
-            },
+            }
             'snapshot-checker': {
               job.trigger('snapshot-checker', suiteParameters, false)
             },
@@ -54,57 +51,44 @@ node('non-master') {
             }
           )
         }
-      }
 
-      if (params.BUILD_SERVICEPACK && !params.NOOP) {
-        stage('Service Pack') {
-          stage('Aggregation Designer') {
-            job.trigger('service-pack-installers-aggregation-designer', suiteParameters)
-          }
-          stage('Pentaho Server') {
-            job.trigger('service-pack-installers-pentaho-server', suiteParameters)
-          }
-          stage('DI Client') {
-            job.trigger('service-pack-installers-di-client', suiteParameters)
-          }
-          stage('Metadata Editor') {
-            job.trigger('service-pack-installers-metadata-editor', suiteParameters)
-          }
-          stage('Report Designer') {
-            job.trigger('service-pack-installers-report-designer', suiteParameters)
-          }
-          stage('Schema Workbench') {
-            job.trigger('service-pack-installers-schema-workbench', suiteParameters)
-          }
-          stage('Big Data Plugin') {
-            job.trigger('service-pack-installers-big-data-plugin', suiteParameters)
-          }
-          stage('Platform Installer Bundler') {
-            job.trigger('service-pack-platform-installer-bundler', suiteParameters)
-          }
- 
-          stage('Deployment (SP)') {
-            job.trigger('deployment-sculptor-sp', suiteParameters)
+        if (params.BUILD_SERVICEPACK) {
+          stage('Service Pack') {
+            stage('Aggregation Designer') {
+              job.trigger('service-pack-installers-aggregation-designer', suiteParameters)
+            }
+            stage('Pentaho Server') {
+              job.trigger('service-pack-installers-pentaho-server', suiteParameters)
+            }
+            stage('DI Client') {
+              job.trigger('service-pack-installers-di-client', suiteParameters)
+            }
+            stage('Metadata Editor') {
+              job.trigger('service-pack-installers-metadata-editor', suiteParameters)
+            }
+            stage('Report Designer') {
+              job.trigger('service-pack-installers-report-designer', suiteParameters)
+            }
+            stage('Schema Workbench') {
+              job.trigger('service-pack-installers-schema-workbench', suiteParameters)
+            }
+            stage('Big Data Plugin') {
+              job.trigger('service-pack-installers-big-data-plugin', suiteParameters)
+            }
+            stage('Platform Installer Bundler') {
+              job.trigger('service-pack-platform-installer-bundler', suiteParameters)
+            }
+
+            stage('Deployment (SP)') {
+              job.trigger('deployment-sculptor-sp', suiteParameters)
+            }
           }
         }
       }
     }
     
-    notifyBuildResult(currentBuild.result)
+    commonJenkinsFile.notifyBuildResult(currentBuild.result)
   }
 }
 
-def notifyBuildResult(buildStatus) {
-    def color
-    if (buildStatus == "SUCCESS") {
-      color = 'good'
-    }
-    else if (buildStatus == "UNSTABLE") {
-      color = 'warning'
-    }
-    else {
-      color = 'danger'
-    }
-    slackChannel = params.BUILD_SLACK_CHANNEL ?: ''
-    slackSend (color: color, message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)", channel:slackChannel)
-}
+

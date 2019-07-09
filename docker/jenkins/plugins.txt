@@ -54,6 +54,7 @@ jackson2-api:latest
 jdk-tool:latest
 jenkins-design-language:latest
 jira:latest
+jobConfigHistory:latest
 jquery-detached:latest
 jsch:latest
 junit:latest
@@ -64,8 +65,8 @@ matrix-auth:latest
 matrix-project:latest
 mercurial:latest
 momentjs:latest
-nexus-jenkins-plugin:latest
 pam-auth:latest
+pipeline-github:latest
 pipeline-build-step:latest
 pipeline-github-lib:latest
 pipeline-graph-analysis:latest
@@ -105,7 +106,5 @@ workflow-multibranch:latest
 workflow-scm-step:latest
 workflow-step-api:latest
 workflow-support:latest
-ws-cleanup:latest
 
-folder-properties:1.0::http://nexus.pentaho.org/content/groups/omni/com/mig82/folder-properties/1.0/folder-properties-1.0.hpi
-pipeline-ci-utility-steps:1.15::http://nexus.pentaho.org/content/groups/omni/org/hitachivantara/ci/plugins/pipeline-ci-utility-steps/1.15/pipeline-ci-utility-steps-1.15.hpi
+pipeline-ci-utility-steps:1.17::http://nexus.pentaho.net/content/groups/omni/org/hitachivantara/ci/plugins/pipeline-ci-utility-steps/1.17/pipeline-ci-utility-steps-1.17.hpi

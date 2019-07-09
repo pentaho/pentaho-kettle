@@ -1,0 +1,65 @@
+@Library("jenkins-shared-libraries@master") _
+import org.hitachivantara.ci.GroovyUtils
+
+properties(
+  [parameters(
+    [string(defaultValue: 'https://github.com/pentaho/jenkins-pipelines.git', description: 'Jenkins pipeline URL', name: 'PIPELINE_URL'),
+     string(defaultValue: 'master', description: 'Jenkins pipeline branch', name: 'PIPELINE_BRANCH'),
+     string(defaultValue: 'sample-pipeline.yaml', description: 'Build data file', name: 'BUILD_DATA_FILE'),
+     booleanParam(defaultValue: true, description: '', name: 'REPLACE'),
+     booleanParam(defaultValue: true, description: '', name: 'PUSH'),
+     string(defaultValue: '', description: '', name: 'COMMIT_MSG'),
+     string(defaultValue: '', description: '', name: 'CURRENT_GROUP_ID'),
+     string(defaultValue: '', description: '', name: 'CURRENT_ARTIFACT_ID'),
+     string(defaultValue: '', description: '', name: 'CURRENT_VERSION'),
+     string(defaultValue: '', description: '', name: 'DESIRED_GROUP_ID'),
+     string(defaultValue: '', description: '', name: 'DESIRED_ARTIFACT_ID'),
+     string(defaultValue: '', description: '', name: 'DESIRED_VERSION')]
+  )])
+
+node {
+    stage('Branch/Tag'){
+        git(url: params.PIPELINE_URL, branch: params.PIPELINE_BRANCH, credentialsId: 'github-buildguy')
+
+        def buildData = config.load(BUILD_DATA_FILE: params.BUILD_DATA_FILE)
+
+        // Make sure groovy is installed
+        sh "groovy --version"
+
+        // Create github-projects.csv for existing GAV script, unique by org/repo
+        // The csv file requires repo URLs to be in ssh format
+        def githubProjectsPath = "${WORKSPACE}/scripts/github-projects.csv"
+        def content = ""
+        def jobItems = GroovyUtils.unique(buildData.allItems, { it.scmOrganization + it.scmRepository  })
+        jobItems.each { item ->
+          content += "RELEASE,git@github.com:${item.scmOrganization}/${item.scmRepository}.git,${item.scmBranch},\n"
+        }
+        writeFile file: githubProjectsPath, text: content
+
+        // Call the BranchingTagging script with github-buildguy credentials
+        withCredentials([usernamePassword(
+          credentialsId: "github-buildguy",
+          usernameVariable: 'GIT_USERNAME',
+          passwordVariable: 'GIT_PASSWORD'
+        )]) {
+          sh """
+            groovy -cp ${WORKSPACE}/scripts/classes -Dgroovy.grape.report.downloads=true \
+            -DGITHUB_API_TOKEN=${GIT_PASSWORD} \
+            -DGITHUB_PROJECTS_CSV_PATH=${githubProjectsPath} \
+            -DREPLACE=${params.REPLACE} \
+            -DPUSH=${params.PUSH} \
+            -DCOMMIT_MSG=${params.COMMIT_MSG} \
+            -DCURRENT_GROUP_ID=${params.CURRENT_GROUP_ID} \
+            -DCURRENT_ARTIFACT_ID=${params.CURRENT_ARTIFACT_ID} \
+            -DCURRENT_VERSION=${params.CURRENT_VERSION} \
+            -DDESIRED_GROUP_ID=${params.DESIRED_GROUP_ID} \
+            -DDESIRED_ARTIFACT_ID=${params.DESIRED_ARTIFACT_ID} \
+            -DDESIRED_VERSION=${params.DESIRED_VERSION} \
+             ${WORKSPACE}/scripts/BranchingTagging.groovy \
+          """
+        }
+
+        // Set the build description
+        currentBuild.description = "${params.CURRENT_GROUP_ID}:${params.CURRENT_ARTIFACT_ID}:${params.CURRENT_VERSION} ==> ${params.DESIRED_GROUP_ID}:${params.DESIRED_ARTIFACT_ID}:${params.DESIRED_VERSION}"
+    }
+}
