@@ -1,43 +1,33 @@
-# optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
+# General properties - can be used to override defaults by using the same name
+# see others you can override in resources/config/buildProperties.yaml
 buildProperties:
-  # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
-  # These are understood by the shared pipeline libraries:
-  BUILD_PLAN_ID                  : Sample Build
-  MAVEN_DEFAULT_DIRECTIVES       : clean install -P spotbugs
+  BUILD_PLAN_ID     : Sample Build
 
   JOB_ITEM_DEFAULTS :
     dockerImage     : jenkins-build/maven-oracle-jdk-8
     scmBranch       : master
     directives      : clean install
 
-# required
+# Groups of items to work
 jobGroups:
 
   100:
+    - jobID     :  coding-standards
+      scmUrl    :  https://github.com/pentaho/pentaho-coding-standards.git
+      testable  :  false
 
-     - jobID           :  coding-standards
-       scmUrl          :  https://github.com/pentaho/pentaho-coding-standards.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  coding-standards.version
-       testable        :  false
+    - jobID     :  archetypes
+      scmUrl    :  https://github.com/pentaho/maven-project-archetypes.git
+      testable  :  false
 
   200:
-
-     - jobID           :  parent-poms
-       scmUrl          :  https://github.com/pentaho/maven-parent-poms.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho.version
-       testable        :  false
+    - jobID     :  parent-poms
+      scmUrl    :  https://github.com/pentaho/maven-parent-poms.git
+      testable  :  false
 
   300:
+    - jobID     :  application-launcher
+      scmUrl    :  https://github.com/pentaho/pentaho-application-launcher.git
 
-     - jobID           :  archetypes
-       scmUrl          :  https://github.com/pentaho/maven-project-archetypes.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  archetypes.version
-       testable        :  false
-
-     - jobID           :  parent-poms-ee
-       scmUrl          :  https://github.com/pentaho/maven-parent-poms-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       testable        :  false
+    - jobID     :  apache-vfs-browser
+      scmUrl    :  https://github.com/pentaho/apache-vfs-browser.git
