@@ -1,10 +1,12 @@
 # optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
 buildProperties:
-        # global build control defaults
-        # These are understood by the shared pipeline libraries:
-        BUILD_PLAN_ID                  : Multishim master branch pipeline
-        JOB_ITEM_DEFAULTS:
-          archivable: true
+  # global build control defaults
+  # These are understood by the shared pipeline libraries:
+  BUILD_PLAN_ID         : Multishim master branch pipeline
+  DEFAULT_BRANCH        : master
+  JOB_ITEM_DEFAULTS:
+    archivable: true
+
 # required
 jobGroups:
 
