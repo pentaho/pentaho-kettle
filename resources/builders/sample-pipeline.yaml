@@ -3,7 +3,7 @@ buildProperties:
   # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
   # These are understood by the shared pipeline libraries:
   BUILD_PLAN_ID                  : Sample Build
-  MAVEN_DEFAULT_DIRECTIVES        : clean install -P spotbugs
+  MAVEN_DEFAULT_DIRECTIVES       : clean install -P spotbugs
 
   JOB_ITEM_DEFAULTS :
     dockerImage     : jenkins-build/maven-oracle-jdk-8
