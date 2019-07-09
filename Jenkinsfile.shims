@@ -1,0 +1,37 @@
+// This is the master top-level pipeline that triggers both the build pipeline and the downstream triggered jobs
+// TODO to review before the next shims release to see which tag to use. Using master for now. Was using '20190514-0'
+library(identifier: "${params.LIB_NAME ?: 'jenkins-shared-libraries'}@${params.LIB_VERSION ?: 'master'}", changelog: false)
+
+String buildJobName = 'shims-release'
+Map suiteParameters
+def commonJenkinsFile
+
+node('non-master') {
+
+  timestamps {
+    catchError {
+      stage('Checkout') {
+        checkout scm
+      }
+
+      stage('Configure') {
+        commonJenkinsFile = load 'scripts/JenkinsfileCommons.groovy'
+
+        commonJenkinsFile.config()
+        suiteParameters = commonJenkinsFile.getJobParameters(buildJobName)
+      }
+
+      if (!params.NOOP) {
+        stage('Build') {
+          job.trigger(buildJobName, suiteParameters)
+        }
+
+        stage('Deployment') {
+          job.trigger('deployment-sculptor', suiteParameters)
+        }
+      }
+    }
+    
+    commonJenkinsFile.notifyBuildResult(currentBuild.result)
+  }
+}
