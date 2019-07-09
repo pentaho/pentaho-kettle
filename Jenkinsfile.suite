@@ -42,7 +42,7 @@ node('non-master') {
             },
             'remote-qa-automation-trigger': {
               job.trigger('engops/remote-qa-automation-trigger', suiteParameters, false)
-            }
+            },
             'snapshot-checker': {
               job.trigger('snapshot-checker', suiteParameters, false)
             },
