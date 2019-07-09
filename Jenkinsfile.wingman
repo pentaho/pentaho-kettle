@@ -1,0 +1,6 @@
+library(identifier: "${params.LIB_NAME ?: 'jenkins-shared-libraries'}@${params.LIB_VERSION ?: 'master'}", changelog: false)
+
+node(params.SLAVE_NODE_LABEL) {
+  config.stage()
+  clean.preStage('Cleanup')
+}

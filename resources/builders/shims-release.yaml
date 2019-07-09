@@ -1,0 +1,81 @@
+# optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
+buildProperties:
+  # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
+  # These are understood by the shared pipeline libraries:
+  #
+  # Fix these tokens from the shim build email:
+  #      [shim-name] - Name of the shim (eg. CDH 6.1)
+  #      [shim-id] - Shim ID (eg. cdh61)
+  #      [shim-version] - Major/Minor version (eg. 9.0)
+  #      [shim-release-version] - Release version (eg. 9.0.2019.11.00)
+
+  BUILD_PLAN_ID                  : [shim-name] Shim Release
+
+  MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
+  ARCHIVE_ARTIFACTS_PATTERN      : '**/{target/*.gz,target/*.zip}'
+  BUILD_RETRIES                  : 3
+  ATTACH_LOGS                    : false
+  USE_MINION_JOBS                : true
+  JOB_ITEM_DEFAULTS              :
+    dockerImage                  : jenkins-build/maven-oracle-jdk-8
+
+  # Maven
+  MAVEN_DEFAULT_DIRECTIVES       : clean deploy
+  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-[shim-version]-release
+  MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus.pentaho.org/content/repositories/private-[shim-version]-release
+  ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
+
+  # Version based control properties
+  RUN_VERSIONING                 : true
+  RELEASE_VERSION                : [shim-release-version]
+  DEPLOYMENT_FOLDER              : [shim-release-version]
+  RELEASE_MODE                   : true
+  DEFAULT_BRANCH                 : [shim-id]-[shim-release-version]
+  SUITE_BUILD_RESOURCES_BRANCH   : [shim-id]-[shim-release-version]
+  SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
+  JENKINS_FOLDER_NAME            : "9.0"
+
+  # We need to override this until this pipeline is the nightly
+  BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
+
+  # Tagging
+  CREATE_TAG                     : true
+  TAG_NAME                       : ${RELEASE_VERSION}-R
+
+  # Slack Reporting
+  SLACK_INTEGRATION              : true
+  SLACK_CHANNEL                  : 'buildteam-alerts'
+  BUILD_SLACK_CHANNEL            : 'buildteam-alerts'
+
+jobGroups:
+  # Always required
+
+
+  licenses:
+
+     - jobID           :  oss-license-assembly
+       scmUrl          :  https://github.com/pentaho/oss-licenses.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  oss-licenses.version
+       testable        :  false
+
+
+  shims:
+
+     - jobID           :  big-data-hadoop-shims
+       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -DskipDefault -Deula-wrap -P api,shims,[shim-id]
+       versionProperty :  pentaho-hadoop-shims.version
+       archivable      :  true
+
+  shims-ee:
+
+     - jobID           :  big-data-hadoop-shims-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -DskipDefault -P base,[shim-id] -Deula-wrap
+       versionProperty :  pentaho-hadoop-shims.version
+       archivable      :  true
+       atomicScmCheckout: true
+
