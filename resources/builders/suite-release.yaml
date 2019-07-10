@@ -40,10 +40,10 @@ buildProperties:
   # Slack Reporting
   SLACK_INTEGRATION              : true
   SLACK_CHANNEL:
-    BUILD_FAILURE                : 'buildteam-alerts'
+    BUILD_FAILURE                : 'qat-builds,buildteam-alerts'
     BUILD_ABORTED                : 'buildteam-alerts'
-    BUILD_UNSTABLE               : 'buildteam-alerts'
-    BUILD_SUCCESS                : 'qat-builds'
+    BUILD_UNSTABLE               : 'qat-builds,buildteam-alerts'
+    BUILD_SUCCESS                : 'qat-builds,buildteam-alerts'
   BUILD_SLACK_CHANNEL            : 'buildteam-alerts'
 
   # SP specific parameters
