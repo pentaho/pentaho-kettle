@@ -81,6 +81,46 @@ public class GetFieldsCapableStepDialogTest {
     assertEquals( "b", newFieldNames.get( 0 ) );
   }
 
+  @Test
+  public void testGetNewFieldNamesWithDuplicateFieldNames() {
+    String[] incomingFields = new String[] { "a", "b", "a", "b", "b", "c", "a" };
+    tableItem = mock( TableItem.class );
+
+    when( table.getItemCount() ).thenReturn( 0 );
+
+    List<String> newFieldNames = getFieldsCapableStepDialog.getNewFieldNames( incomingFields );
+
+    assertEquals( 7, newFieldNames.size() );
+    assertEquals( "a", newFieldNames.get( 0 ) );
+    assertEquals( "b", newFieldNames.get( 1 ) );
+    assertEquals( "a_1", newFieldNames.get( 2 ) );
+    assertEquals( "b_1", newFieldNames.get( 3 ) );
+    assertEquals( "b_2", newFieldNames.get( 4 ) );
+    assertEquals( "c", newFieldNames.get( 5 ) );
+    assertEquals( "a_2", newFieldNames.get( 6 ) );
+  }
+
+  @Test
+  public void testGetNewFieldNamesWithDuplicateFieldNamesAndValues() {
+    String[] incomingFields = new String[] { "a", "b", "a", "b", "b", "c", "a" };
+    tableItem = mock( TableItem.class );
+
+    when( tableView.hasIndexColumn() ).thenReturn( false );
+    when( tableView.getTable().getItemCount() ).thenReturn( 1 );
+    when( tableView.getTable().getItem( 0 ) ).thenReturn( tableItem );
+    when( tableItem.getText( 0 ) ).thenReturn( "b" );
+
+    List<String> newFieldNames = getFieldsCapableStepDialog.getNewFieldNames( incomingFields );
+
+    assertEquals( 6, newFieldNames.size() );
+    assertEquals( "a", newFieldNames.get( 0 ) );
+    assertEquals( "a_1", newFieldNames.get( 1 ) );
+    assertEquals( "b_1", newFieldNames.get( 2 ) );
+    assertEquals( "b_2", newFieldNames.get( 3 ) );
+    assertEquals( "c", newFieldNames.get( 4 ) );
+    assertEquals( "a_2", newFieldNames.get( 5 ) );
+  }
+
   /*
    * Workaround to uses Mock.spy with interface that have default methods.
    * This feature are only available on version 2+ of Mockito. ( Stay in beta since 2015)

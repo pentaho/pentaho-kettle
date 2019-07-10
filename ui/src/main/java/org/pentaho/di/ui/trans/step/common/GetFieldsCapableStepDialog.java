@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,16 +93,20 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
   }
 
   default List<String> getNewFieldNames( final String[] incomingFieldNames ) {
-    final Set<String> fieldNamesInTable = new HashSet<>();
+    final List<String> fieldNamesInTable = new ArrayList();
     for ( int i = 0; i < getFieldsTable().getTable().getItemCount(); i++ ) {
       final TableItem item = getFieldsTable().getTable().getItem( i );
       int fieldNameIndex = getFieldsTable().hasIndexColumn() ? 1 : 0;
       fieldNamesInTable.add( item.getText( fieldNameIndex ) );
     }
-    return Arrays
-            .stream( incomingFieldNames )
-            .filter( fieldName -> !fieldNamesInTable.contains( fieldName ) )
-            .collect( Collectors.toList() );
+
+    // If there are duplicates, it is necessary to disambiguate them
+    Set<String> disambiguatedIncomingFieldNames = disambiguateStrings( incomingFieldNames );
+
+    return disambiguatedIncomingFieldNames
+      .stream()
+      .filter( fieldName -> !fieldNamesInTable.contains( fieldName ) )
+      .collect( Collectors.toList() );
   }
 
   /**
@@ -180,7 +185,12 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
   default Set<String> repopulateFields( final StepMetaType meta, final Map<String, List<String>> previousFieldValues,
                                         final boolean reloadAllFields ) {
     // incoming field names
-    final String[] incomingFieldNames = getFieldNames( meta );
+    String[] incomingFieldNames = getFieldNames( meta );
+
+    // If there are duplicates, it is necessary to disambiguate them
+    Set<String> disambiguatedIncomingFieldNames = disambiguateStrings( incomingFieldNames );
+    incomingFieldNames = disambiguatedIncomingFieldNames.stream( ).toArray( String[]::new );
+
     final Set<String> newFieldNames = new HashSet<>();
     for ( final String incomingFieldName : incomingFieldNames ) {
       final TableItem item = new TableItem( getFieldsTable().getTable(), SWT.NONE );
@@ -207,6 +217,22 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
       loadRemainingFields( previousFieldValues );
     }
     return newFieldNames;
+  }
+
+  default Set<String> disambiguateStrings( String[] incomingFieldNames ) {
+    Set<String> disambiguatedIncomingFieldNames = Arrays.stream( incomingFieldNames ).collect( Collectors.toSet() );
+
+    if ( incomingFieldNames.length != new HashSet<>( Arrays.asList( incomingFieldNames ) ).size() ) {
+      disambiguatedIncomingFieldNames = new LinkedHashSet<>();
+      for ( String field : incomingFieldNames ) {
+        String value = field;
+        for ( int i = 1; !disambiguatedIncomingFieldNames.add( value ); i++ ) {
+          value = field + '_' + i;
+        }
+      }
+    }
+
+    return disambiguatedIncomingFieldNames;
   }
 
   default void loadRemainingFields( final Map<String, List<String>> previousFieldValues ) {
