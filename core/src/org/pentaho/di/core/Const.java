@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1242,6 +1242,13 @@ public class Const {
    */
   public static final String KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT_STRING =
     String.valueOf( KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT );
+
+  /**
+   * <p>This environment variable is used by XSD validation steps to enable or disable external entities.</p>
+   * <p>By default external entities are allowed.</p>
+   */
+  public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION = "ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION";
+  public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT = "true";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
