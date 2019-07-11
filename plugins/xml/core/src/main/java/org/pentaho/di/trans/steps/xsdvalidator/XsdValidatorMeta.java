@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -79,9 +80,20 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
 
   private String xsdSource;
 
+  private boolean allowExternalEntities;
+
   public String SPECIFY_FILENAME = "filename";
   public String SPECIFY_FIELDNAME = "fieldname";
   public String NO_NEED = "noneed";
+
+
+  public boolean isAllowExternalEntities() {
+    return allowExternalEntities;
+  }
+
+  public void setAllowExternalEntities( boolean allowExternalEntities ) {
+    this.allowExternalEntities = allowExternalEntities;
+  }
 
   public void setXSDSource( String xsdsourcein ) {
     this.xsdSource = xsdsourcein;
@@ -149,6 +161,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
 
   public XsdValidatorMeta() {
     super(); // allocate BaseStepMeta
+    allowExternalEntities = Boolean.valueOf( System.getProperties().getProperty( Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION, Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT ) );
   }
 
   /**
@@ -208,6 +221,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
       ifXmlInvalid = XMLHandler.getTagValue( stepnode, "ifxmlunvalid" );
       outputStringField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "outputstringfield" ) );
       xmlSourceFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "xmlsourcefile" ) );
+      allowExternalEntities = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "allowExternalEntities" ) );
 
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG,
@@ -227,7 +241,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     xmlSourceFile = false;
     xsdDefinedField = "";
     xsdSource = SPECIFY_FILENAME;
-
+    allowExternalEntities = Boolean.valueOf( System.getProperties().getProperty( Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION, Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT ) );
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
@@ -271,6 +285,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     retval.append( "    " + XMLHandler.addTagValue( "xmlsourcefile", xmlSourceFile ) );
     retval.append( "    " + XMLHandler.addTagValue( "xsddefinedfield", xsdDefinedField ) );
     retval.append( "    " + XMLHandler.addTagValue( "xsdsource", xsdSource ) );
+    retval.append( "    " + XMLHandler.addTagValue( "allowExternalEntities", allowExternalEntities ) );
 
     return retval.toString();
   }
@@ -292,6 +307,9 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
       xsdDefinedField = rep.getStepAttributeString( id_step, "xsddefinedfield" );
       xsdSource = rep.getStepAttributeString( id_step, "xsdsource" );
 
+      allowExternalEntities =
+        Boolean.parseBoolean( rep.getJobEntryAttributeString( id_step, "allowExternalEntities" ) );
+
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG,
           "XsdValidatorMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
@@ -312,6 +330,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
       rep.saveStepAttribute( id_transformation, id_step, "outputstringfield", outputStringField );
       rep.saveStepAttribute( id_transformation, id_step, "xsddefinedfield", xsdDefinedField );
       rep.saveStepAttribute( id_transformation, id_step, "xsdsource", xsdSource );
+      rep.saveJobEntryAttribute( id_transformation, id_step, "allowExternalEntities", allowExternalEntities );
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "XsdValidatorMeta.Exception.UnableToSaveStepInfo" )
