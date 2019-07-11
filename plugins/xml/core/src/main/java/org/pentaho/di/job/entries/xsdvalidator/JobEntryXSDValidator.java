@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,8 +39,10 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.annotations.JobEntry;
@@ -79,13 +81,18 @@ import org.xml.sax.SAXException;
 public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryXSDValidator.class; // for i18n purposes, needed by Translator2!!
 
+  private static final String YES = "Y";
+
   private String xmlfilename;
   private String xsdfilename;
+
+  private boolean allowExternalEntities;
 
   public JobEntryXSDValidator( String n ) {
     super( n, "" );
     xmlfilename = null;
     xsdfilename = null;
+    allowExternalEntities = Boolean.valueOf( System.getProperties().getProperty( Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION, Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT ) );
   }
 
   public JobEntryXSDValidator() {
@@ -103,6 +110,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "xmlfilename", xmlfilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "xsdfilename", xsdfilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "allowExternalEntities", allowExternalEntities ) );
 
     return retval.toString();
   }
@@ -113,6 +121,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
       super.loadXML( entrynode, databases, slaveServers );
       xmlfilename = XMLHandler.getTagValue( entrynode, "xmlfilename" );
       xsdfilename = XMLHandler.getTagValue( entrynode, "xsdfilename" );
+      allowExternalEntities = YES.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "allowExternalEntities" ) );
 
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( "Unable to load job entry of type 'xsdvalidator' from XML node", xe );
@@ -124,6 +133,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     try {
       xmlfilename = rep.getJobEntryAttributeString( id_jobentry, "xmlfilename" );
       xsdfilename = rep.getJobEntryAttributeString( id_jobentry, "xsdfilename" );
+      allowExternalEntities =
+        Boolean.parseBoolean( rep.getJobEntryAttributeString( id_jobentry, "allowExternalEntities" ) );
     } catch ( KettleException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'xsdvalidator' from the repository for id_jobentry="
           + id_jobentry, dbe );
@@ -134,6 +145,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "xmlfilename", xmlfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "xsdfilename", xsdfilename );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "allowExternalEntities", allowExternalEntities );
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'xsdvalidator' to the repository for id_job="
@@ -173,14 +185,27 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
           File XSDFile = new File( KettleVFS.getFilename( xsdfile ) );
           Schema SchematXSD = factorytXSDValidator_1.newSchema( XSDFile );
 
-          Validator XSDValidator = SchematXSD.newValidator();
+          Validator xsdValidator = SchematXSD.newValidator();
+
+          // Prevent against XML Entity Expansion (XEE) attacks.
+          // https://www.owasp.org/index.php/XML_Security_Cheat_Sheet#XML_Entity_Expansion
+          if ( !isAllowExternalEntities() ) {
+            xsdValidator.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
+            xsdValidator.setFeature( "http://xml.org/sax/features/external-general-entities", false );
+            xsdValidator.setFeature( "http://xml.org/sax/features/external-parameter-entities", false );
+            xsdValidator.setProperty( "http://apache.org/xml/properties/internal/entity-resolver",
+              (XMLEntityResolver) xmlResourceIdentifier -> {
+                String message = BaseMessages.getString( PKG, "JobEntryXSDValidator.Error.DisallowedDocType" );
+                throw new IOException( message );
+              } );
+          }
 
           // Get XML File
           File xmlfiletXSDValidator_1 = new File( KettleVFS.getFilename( xmlfile ) );
 
           Source sourcetXSDValidator_1 = new StreamSource( xmlfiletXSDValidator_1 );
 
-          XSDValidator.validate( sourcetXSDValidator_1 );
+          xsdValidator.validate( sourcetXSDValidator_1 );
 
           // Everything is OK
           result.setResult( true );
@@ -252,6 +277,14 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 
   public String getxsdFilename() {
     return xsdfilename;
+  }
+
+  public boolean isAllowExternalEntities() {
+    return allowExternalEntities;
+  }
+
+  public void setAllowExternalEntities( boolean allowExternalEntities ) {
+    this.allowExternalEntities = allowExternalEntities;
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
