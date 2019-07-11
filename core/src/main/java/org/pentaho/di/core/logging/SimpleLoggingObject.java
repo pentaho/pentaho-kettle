@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   private LoggingObjectInterface parent;
   private LogLevel logLevel = DefaultLogLevel.getLogLevel();
   private String containerObjectId;
+  private String logChannelId;
   private Date registrationDate;
   private boolean gatheringMetrics;
   private boolean forcingSeparateLogging;
@@ -107,9 +108,13 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
     return null;
   }
 
+  public void setLogChannelId( String logChannelId ) {
+    this.logChannelId = logChannelId;
+  }
+
   @Override
   public String getLogChannelId() {
-    return null;
+    return logChannelId;
   }
 
   @Override
