@@ -22,10 +22,16 @@
 
 package org.pentaho.di.core.plugins;
 
+import org.apache.commons.io.FileUtils;
+import org.pentaho.di.core.exception.KettleException;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * This interface describes the plugin itself, the IDs it listens too, what libraries (jar files) it uses, the names,
@@ -185,5 +191,26 @@ public interface PluginInterface {
       Optional.ofNullable( fragment.getForumUrl() ).ifPresent( this::setForumUrl );
       Optional.ofNullable( fragment.getClassLoaderGroup() ).ifPresent( this::setClassLoaderGroup );
     }
+  }
+
+  /**
+   * @return Plugin properties
+   * Returns a Properties object containing any properties in a plugin.properties file
+   * in the plugin directopry. The method will return null if the plugin.properties
+   * does not exist.
+   **/
+  default Properties getPluginProperties() throws KettleException {
+    String pluginPropsFilePath = getPluginDirectory().getPath() + "/plugin.properties";
+    File pluginPropsFile = new File( pluginPropsFilePath );
+    if ( !pluginPropsFile.exists() ) {
+      return null;
+    }
+    Properties pluginProps = new Properties();
+    try {
+      pluginProps.load( new FileInputStream( pluginPropsFile ) );
+    } catch( Exception e ) {
+      throw new KettleException( "Plugin's plugin.properties file could not be read.", e );
+    }
+    return pluginProps;
   }
 }
