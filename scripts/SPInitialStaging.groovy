@@ -163,6 +163,7 @@ def aggDesignerFolder ="${cli.buildResourcesPatchedFolder}/pad-ee/${cli.releaseV
 def pdiClientFolder ="${cli.buildResourcesPatchedFolder}/pdi-ee-client/${cli.releaseVersion}"
 def metadataEditorFolder ="${cli.buildResourcesPatchedFolder}/pme-ee/${cli.releaseVersion}"
 def serverFolder = "${cli.buildResourcesPatchedFolder}/pentaho-server-ee/${cli.releaseVersion}"
+def serverManualPatchesFolder = "${cli.buildResourcesPatchedFolder}/pentaho-server-ee/manual_patches"
 def reportDesignerFolder = "${cli.buildResourcesPatchedFolder}/prd-ee/${cli.releaseVersion}"
 def schemaWorkbenchFolder = "${cli.buildResourcesPatchedFolder}/psw-ee/${cli.releaseVersion}"
 
@@ -179,6 +180,7 @@ def aggDesignerTarArchive ="${aggDesignerFolder}.tar"
 def pdiClientTarArchive ="${pdiClientFolder}.tar"
 def metadataEditorTarArchive ="${metadataEditorFolder}.tar"
 def serverTarArchive = "${serverFolder}.tar"
+def serverManualPatchesTarArchive = "${serverManualPatchesFolder}/${cli.releaseVersion}.tar"
 def reportDesignerTarArchive = "${reportDesignerFolder}.tar"
 def schemaWorkbenchTarArchive = "${schemaWorkbenchFolder}.tar"
 
@@ -202,6 +204,7 @@ makeFolder(aggDesignerExtractFolder)
 makeFolder(pdiClientExtractFolder)
 makeFolder(metadataEditorExtractFolder)
 makeFolder(serverExtractFolder)
+makeFolder(serverManualPatchesFolder)
 makeFolder(reportDesignerExtractFolder)
 makeFolder(schemaWorkbenchExtractFolder)
 
@@ -228,5 +231,8 @@ tarFolder(metadataEditorFolder, metadataEditorTarArchive)
 tarFolder(serverFolder, serverTarArchive)
 tarFolder(reportDesignerFolder, reportDesignerTarArchive)
 tarFolder(schemaWorkbenchFolder, schemaWorkbenchTarArchive)
+
+// Copy the server tar to the manual_patches folder since it is just a duplicate
+copyFile(serverTarArchive, serverManualPatchesTarArchive)
 
 return 0
