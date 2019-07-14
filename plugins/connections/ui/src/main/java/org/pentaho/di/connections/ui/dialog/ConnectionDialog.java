@@ -131,7 +131,7 @@ public class ConnectionDialog extends ThinDialog {
       host = LOCALHOST;
       port = getOsgiServicePort();
     }
-    return "http://" + host + ":" + port + path;
+    return System.getProperty( "KETTLE_CONTEXT_PATH" ) + "/osgi" + path;
   }
 
   private static String getKettleProperty( String propertyName ) {
