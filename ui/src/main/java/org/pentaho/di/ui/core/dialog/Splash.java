@@ -33,6 +33,8 @@ import java.util.TimerTask;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -112,7 +114,7 @@ public class Splash {
     shell.setLayout( new FillLayout() );
     final Canvas canvas = new Canvas( shell, SWT.NO_REDRAW_RESIZE );
 
-    shell.addPaintListener( e -> {
+    canvas.addPaintListener( e -> {
       StringBuilder sb = new StringBuilder();
       String line;
 
@@ -203,6 +205,12 @@ public class Splash {
       e.gc.setFont( new Font( display, FONT_TYPE, 10, SWT.NORMAL ) );
       e.gc.drawText( version, 290, 182, true );
       e.gc.drawText( buildDate, 290, 198, true );
+    } );
+
+    canvas.addMouseListener( new MouseAdapter() {
+      public void mouseUp( MouseEvent mouseevent ) {
+        shell.dispose();
+      }
     } );
 
     shell.addDisposeListener( disposeEvent -> {
