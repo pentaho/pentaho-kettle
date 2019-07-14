@@ -41,7 +41,6 @@ import java.util.Properties;
  */
 public class ConnectionDialog extends ThinDialog {
 
-  private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
@@ -68,7 +67,7 @@ public class ConnectionDialog extends ThinDialog {
       clientPath.append( "#/intro" );
     }
     super.createDialog( title, getRepoURL( clientPath.toString() ),
-      OPTIONS, LOGO );
+      OPTIONS, GUIResource.getInstance().getImageLogoSmall() );
     super.dialog.setMinimumSize( 545, 458 );
 
     new BrowserFunction( browser, "close" ) {
