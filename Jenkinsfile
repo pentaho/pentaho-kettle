@@ -44,6 +44,7 @@ pipeline {
                     paths+=(`find plugins/engine-configuration/ui/target | grep -E "pdi-engine-configuration-ui-$dist(-sources)?\\.jar"`)
                     paths+=(`find plugins/file-open-save/core/target | grep -E "file-open-save-core-$dist(-sources)?\\.jar"`)
                     paths+=(`find plugins/get-fields/core/target | grep -E "get-fields-core-$dist(-sources)?\\.jar"`)
+                    paths+=(`find plugins/connections/ui/target | grep -E "connections-ui-$dist(-sources)?\\.jar"`)
 
                     for path in ${paths[@]}
                     do
