@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -95,7 +95,7 @@ public class TransWebSocketEngineAdapter extends Trans {
   private LogLevel logLevel = null;
 
   private final String host;
-  private final String port;
+  private final int port;
   private final boolean ssl;
   private boolean cancelling = false;
 
@@ -115,7 +115,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.ROWLEVEL, LogLevel.TRACE );
   }
 
-  public TransWebSocketEngineAdapter( TransMeta transMeta, String host, String port, boolean ssl ) {
+  public TransWebSocketEngineAdapter( TransMeta transMeta, String host, int port, boolean ssl ) {
     transformation = TransMetaConverter.convert( transMeta );
     this.transMeta = transMeta;
     this.messageEventService = new MessageEventService();
@@ -407,7 +407,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     return new ArrayList<>( operationToCombi.values() );
   }
 
-  @SuppressWarnings ( "unchecked" )
+  @SuppressWarnings( "unchecked" )
   private List<StepMetaDataCombi> getSubSteps( Transformation transformation, StepMetaDataCombi combi ) {
     HashMap<String, Transformation> config =
       ( (Optional<HashMap<String, Transformation>>) transformation

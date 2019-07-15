@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -36,8 +36,6 @@ import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.repository.Repository;
 
-import java.net.URI;
-
 /**
  * Created by bmorrise on 3/17/17.
  */
@@ -45,9 +43,8 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
 
   public static String JAAS_CAPABILITY_ID = "pentaho-kerberos-jaas";
   public static String AEL_SECURITY_CAPABILITY_ID = "ael-security";
-  public static String DEFAULT_PROTOCOL = "http";
-  public static String DEFAULT_HOST = "127.0.0.1";
-  public static String DEFAULT_WEBSOCKET_PORT = "53000";
+  public static String DEFAULT_SCHEMA = "http";
+  public static String DEFAULT_URL = "127.0.0.1:53000";
 
   private ConfigurationAdmin configurationAdmin;
   private ICapabilityManager capabilityManager = DefaultCapabilityManager.getInstance();
@@ -82,15 +79,14 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
 
     String runConfigSchema = Const.NVL( sparkRunConfiguration.getSchema(), "" );
     String runConfigURL = Const.NVL( sparkRunConfiguration.getUrl(), "" );
-    URI uri = URI.create( runConfigSchema.trim() + runConfigURL.trim() );
-    String protocol = uri.getScheme();
-    String host = uri.getHost();
-    String port = uri.getPort() == -1 ? null : String.valueOf( uri.getPort() );
+
 
     // Variables for Websocket spark engine version
-    variableSpace.setVariable( "engine.protocol", Const.NVL( protocol, DEFAULT_PROTOCOL ) );
-    variableSpace.setVariable( "engine.host", Const.NVL( host, DEFAULT_HOST ) );
-    variableSpace.setVariable( "engine.port", Const.NVL( port, DEFAULT_WEBSOCKET_PORT ) );
+    String engineScheme = Const.NVL( runConfigSchema, DEFAULT_SCHEMA ).trim();
+    String engineUrl = Const.NVL( runConfigURL, DEFAULT_URL ).trim();
+
+    variableSpace.setVariable( "engine.scheme", engineScheme );
+    variableSpace.setVariable( "engine.url", engineUrl );
 
     // Sets the appropriate variables on the transformation for the spark engine
     variableSpace.setVariable( "engine", "remote" );
