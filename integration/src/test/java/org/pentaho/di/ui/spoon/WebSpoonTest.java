@@ -179,9 +179,9 @@ public class WebSpoonTest {
     // if any repository is already registered
     if ( driver.findElements( By.xpath( "//div[text() = 'Repository Manager...']" ) ).size() == 1 ) {
       clickElement( "//div[text() = 'Repository Manager...']" );
-      driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='/spoon/osgi/repositories-plugin-core/8.2.0.0-342/index.html']") ) );
+      driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='/spoon/osgi/@pentaho/di-plugin-repositories@8.3.0.0-371/index.html']") ) );
     } else {
-      driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='/spoon/osgi/repositories-plugin-core/8.2.0.0-342/index.html#/add']") ) );
+      driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='/spoon/osgi/@pentaho/di-plugin-repositories@8.3.0.0-371/index.html#/add']") ) );
     }
     assertEquals( 1, driver.findElements( By.xpath( "//button[@id = 'btnClose']" ) ).size() );
   }
@@ -193,7 +193,7 @@ public class WebSpoonTest {
   public void testMarketplace() {
     clickElement( "//div[text() = 'Tools']" );
     clickElement( "//div[text() = 'Marketplace']" );
-    driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='osgi/pentaho-marketplace/8.2.0.0-342/main.html']") ) );
+    driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='osgi/@pentaho/marketplace@8.3.0.0-371/main.html']") ) );
     assertEquals( 1, driver.findElements( By.xpath( "//div[text() = ' Available ']" ) ).size() );
     assertEquals( 0, driver.findElements( By.xpath( "//div[contains(text(), 'Error getting plugins from server')]" ) ).size() );
   }
