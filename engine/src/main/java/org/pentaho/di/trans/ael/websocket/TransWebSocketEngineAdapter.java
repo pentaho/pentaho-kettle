@@ -91,7 +91,7 @@ public class TransWebSocketEngineAdapter extends Trans {
   private final Transformation transformation;
   private ExecutionRequest executionRequest;
   private DaemonMessagesClientEndpoint daemonMessagesClientEndpoint = null;
-  private final MessageEventService messageEventService;
+  protected final MessageEventService messageEventService;
   private LogLevel logLevel = null;
 
   private final String host;
@@ -240,6 +240,15 @@ public class TransWebSocketEngineAdapter extends Trans {
               LogEntry logEntry = event.getData();
               StepInterface stepInterface = findStepInterface( operation.getId(), 0 );
               if ( stepInterface != null ) {
+                // This is intended to put a red error (dash) on the step in PDI.
+                // In order to do that 3 things are needed: errors have to be set
+                // to a positive number, the state is stopped state (not finished)
+                // and Error log on the step (done just below this if statement)
+                if ( LogLevel.ERROR.equals( logEntry.getLogLogLevel() ) ) {
+                  stepInterface.setErrors( 1 );
+                  stepInterface.setStopped( true );
+                }
+
                 LogChannelInterface logChannel = stepInterface.getLogChannel();
                 logToChannel( logChannel, logEntry );
               } else {
