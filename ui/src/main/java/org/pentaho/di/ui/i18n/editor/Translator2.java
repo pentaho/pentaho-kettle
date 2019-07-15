@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.hitachivantara.com
  *
  *******************************************************************************
  *
@@ -21,16 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.i18n.editor;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
@@ -56,13 +46,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -86,6 +76,16 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 /**
  * Class to allow non-developers to edit translation messages files.
  *
@@ -97,6 +97,8 @@ public class Translator2 {
   private static Class<?> PKG = Translator2.class;
 
   public static final String APP_NAME = BaseMessages.getString( PKG, "i18nDialog.ApplicationName" );
+
+  private static final String EMPTY_STRING = "";
 
   private Display display;
   private Shell shell;
@@ -136,10 +138,6 @@ public class Translator2 {
 
   private Button wSearchV;
   private Button wNextV;
-
-  /*
-   * private Button wSearchG; private Button wNextG;
-   */
 
   private Button wAll;
 
@@ -184,15 +182,14 @@ public class Translator2 {
 
       // What are the statistics?
       //
-      Map<String, int[]> folderKeyCounts = new HashMap<String, int[]>();
-      Map<String, Integer> nrKeysPerFolder = new HashMap<String, Integer>();
+      Map<String, int[]> folderKeyCounts = new HashMap<>();
+      Map<String, Integer> nrKeysPerFolder = new HashMap<>();
 
       for ( String sourceFolder : rootDirectories ) {
         folderKeyCounts.put( sourceFolder, new int[localeList.size()] );
       }
 
       for ( String sourceFolder : rootDirectories ) {
-
         int[] keyCounts = folderKeyCounts.get( sourceFolder );
         int nrKeys = 0;
 
@@ -216,7 +213,7 @@ public class Translator2 {
             }
           }
         }
-        nrKeysPerFolder.put( sourceFolder, new Integer( nrKeys ) );
+        nrKeysPerFolder.put( sourceFolder, nrKeys );
       }
 
       DecimalFormat pctFormat = new DecimalFormat( "#00.00" );
@@ -228,11 +225,11 @@ public class Translator2 {
         System.out.println( "-------------------------------------" );
 
         int nrKeys = nrKeysPerFolder.get( sourceFolder );
-        System.out.println( BaseMessages.getString( PKG, "i18n.Log.NumberOfKeysFound", "" + nrKeys ) );
+        System.out.println( BaseMessages.getString( PKG, "i18n.Log.NumberOfKeysFound", EMPTY_STRING + nrKeys ) );
 
         int[] keyCounts = folderKeyCounts.get( sourceFolder );
 
-        String[] locales = localeList.toArray( new String[localeList.size()] );
+        String[] locales = localeList.toArray( new String[] {} );
         for ( int i = 0; i < locales.length; i++ ) {
           for ( int j = 0; j < locales.length - 1; j++ ) {
             if ( keyCounts[j] < keyCounts[j + 1] ) {
@@ -252,30 +249,28 @@ public class Translator2 {
           int missingKeys = nrKeys - keyCounts[i];
           String statusKeys =
             "# "
-              + nrFormat.format( i + 1 ) + " : " + locales[i] + " : " + pctFormat.format( donePct ) + "% "
+              + nrFormat.format( i + 1L ) + " : " + locales[i] + " : " + pctFormat.format( donePct ) + "% "
               + BaseMessages.getString( PKG, "i18n.Log.CompleteKeys", keyCounts[i] )
-              + ( missingKeys != 0 ? BaseMessages.getString( PKG, "i18n.Log.MissingKeys", missingKeys ) : "" );
+              + ( missingKeys != 0 ? BaseMessages.getString( PKG, "i18n.Log.MissingKeys", missingKeys ) : EMPTY_STRING );
           System.out.println( statusKeys );
         }
       }
     } catch ( Exception e ) {
       throw new KettleFileException( BaseMessages.getString( PKG, "i18n.Log.UnableToGetFiles", rootDirectories
         .toString() ), e );
-
     }
   }
 
   public void loadConfiguration( String configFile, String sourceFolder ) throws Exception {
     // What are the locale to handle?
     //
-    localeList = new ArrayList<String>();
-    rootDirectories = new ArrayList<String>();
-    filesToAvoid = new ArrayList<String>();
-    xmlFolders = new ArrayList<SourceCrawlerXMLFolder>();
+    localeList = new ArrayList<>();
+    rootDirectories = new ArrayList<>();
+    filesToAvoid = new ArrayList<>();
+    xmlFolders = new ArrayList<>();
 
     FileObject file = KettleVFS.getFileObject( configFile );
     if ( file.exists() ) {
-
       try {
         Document doc = XMLHandler.loadXMLFile( file );
         Node configNode = XMLHandler.getSubNode( doc, "translator-config" );
@@ -412,12 +407,14 @@ public class Translator2 {
   private void addListeners() {
     // In case someone dares to press the [X] in the corner ;-)
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         e.doit = quitFile();
       }
     } );
 
     wReload.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         int[] idx = wPackages.table.getSelectionIndices();
         reload();
@@ -426,12 +423,14 @@ public class Translator2 {
     } );
 
     wZip.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         saveFilesToZip();
       }
     } );
 
     wClose.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         quitFile();
       }
@@ -453,10 +452,10 @@ public class Translator2 {
 
   public boolean quitFile() {
     java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
-    if ( changedMessagesStores.size() > 0 ) {
+    if ( !changedMessagesStores.isEmpty() ) {
       MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_WARNING );
       mb.setMessage( BaseMessages.getString( PKG, "i18nDialog.ChangedFilesWhenExit", changedMessagesStores.size()
-        + "" ) );
+        + EMPTY_STRING ) );
       mb.setText( BaseMessages.getString( PKG, "i18nDialog.Warning" ) );
 
       int answer = mb.open();
@@ -515,11 +514,13 @@ public class Translator2 {
 
     // Add a selection listener.
     wLocale.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         refreshGrid();
       }
     } );
     wPackages.table.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         refreshGrid();
       }
@@ -549,16 +550,6 @@ public class Translator2 {
 
     BaseStepDialog.positionBottomButtons(
       composite, new Button[] { wReload, wSave, wZip, wClose, }, Const.MARGIN * 3, null );
-
-    /*
-     * wSearchG = new Button(composite, SWT.PUSH); wSearchG.setText("   Search &key  "); FormData fdSearchG = new
-     * FormData(); fdSearchG.left = new FormAttachment(0, 0); fdSearchG.bottom = new FormAttachment(100, 0);
-     * wSearchG.setLayoutData(fdSearchG);
-     *
-     * wNextG = new Button(composite, SWT.PUSH); wNextG.setText("   Next ke&y  "); FormData fdNextG = new FormData();
-     * fdNextG.left = new FormAttachment(wSearchG, Const.MARGIN); fdNextG.bottom = new FormAttachment(100, 0);
-     * wNextG.setLayoutData(fdNextG);
-     */
 
     int left = 25;
     int middle = 40;
@@ -717,12 +708,14 @@ public class Translator2 {
     wNextV.setLayoutData( fdNextV );
 
     wAll.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         refreshGrid();
       }
     } );
 
     wTodo.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         // If someone clicks on the todo list, we set the appropriate values
         //
@@ -749,42 +742,49 @@ public class Translator2 {
     } );
 
     wApply.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         applyChangedValue();
       }
     } );
 
     wRevert.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         revertChangedValue();
       }
     } );
 
     wSave.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent event ) {
         saveFiles();
       }
     } );
 
     wSearch.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         search( referenceLocale );
       }
     } );
 
     wNext.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         searchAgain( referenceLocale );
       }
     } );
 
     wSearchV.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         search( selectedLocale );
       }
     } );
 
     wNextV.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         searchAgain( selectedLocale );
       }
@@ -794,7 +794,7 @@ public class Translator2 {
 
   protected boolean saveFiles() {
     java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
-    if ( changedMessagesStores.size() > 0 ) {
+    if ( !changedMessagesStores.isEmpty() ) {
 
       StringBuilder msg = new StringBuilder();
       for ( MessagesStore messagesStore : changedMessagesStores ) {
@@ -828,7 +828,6 @@ public class Translator2 {
       } else {
         return false;
       }
-
     } else {
       // Nothing was saved.
       // TODO: disable the button if nothing changed.
@@ -840,7 +839,7 @@ public class Translator2 {
   protected void saveFilesToZip() {
     if ( saveFiles() ) {
       java.util.List<MessagesStore> messagesStores = store.getMessagesStores( selectedLocale, null );
-      if ( messagesStores.size() > 0 ) {
+      if ( !messagesStores.isEmpty() ) {
 
         StringBuilder msg = new StringBuilder();
         for ( MessagesStore messagesStore : messagesStores ) {
@@ -885,9 +884,7 @@ public class Translator2 {
               shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
               "There was an error saving the changed messages files:", e );
           }
-
         }
-
       }
     }
   }
@@ -896,9 +893,9 @@ public class Translator2 {
     // Ask for the search string...
     //
     EnterStringDialog dialog =
-      new EnterStringDialog( shell, Const.NVL( searchString, "" ), BaseMessages.getString(
+      new EnterStringDialog( shell, Const.NVL( searchString, EMPTY_STRING ), BaseMessages.getString(
         PKG, "i18nDialog.SearchKey" ), BaseMessages.getString( PKG, "i18nDialog.SearchLocale1" )
-        + " '" + Const.NVL( searchLocale, "" ) + "' "
+        + " '" + Const.NVL( searchLocale, EMPTY_STRING ) + "' "
         + BaseMessages.getString( PKG, "i18nDialog.SearchLocale2" ) );
     searchString = dialog.open();
 
@@ -927,7 +924,7 @@ public class Translator2 {
         for ( String key : messagesStore.getMessagesMap().keySet() ) {
           String value = messagesStore.getMessagesMap().get( key );
           String upperValue = value.toUpperCase();
-          if ( upperValue.indexOf( upperSearchString ) >= 0 ) {
+          if ( upperValue.contains( upperSearchString ) ) {
             // OK, we found a key worthy of our attention...
             //
             if ( lastKeyFound ) {
@@ -946,12 +943,10 @@ public class Translator2 {
         }
       }
     }
-
   }
 
   protected void showKeySelection( String key ) {
     if ( !key.equals( selectedKey ) ) {
-
       applyChangedValue();
     }
 
@@ -961,9 +956,9 @@ public class Translator2 {
       KeyOccurrence keyOccurrence = crawler.getKeyOccurrence( key, selectedMessagesPackage );
 
       wKey.setText( key );
-      wMain.setText( Const.NVL( mainValue, "" ) );
-      wValue.setText( Const.NVL( value, "" ) );
-      wSource.setText( Const.NVL( keyOccurrence.getSourceLine(), "" ) );
+      wMain.setText( Const.NVL( mainValue, EMPTY_STRING ) );
+      wValue.setText( Const.NVL( value, EMPTY_STRING ) );
+      wSource.setText( Const.NVL( keyOccurrence.getSourceLine(), EMPTY_STRING ) );
 
       // Focus on the entry field
       // Put the cursor all the way at the back
@@ -985,10 +980,10 @@ public class Translator2 {
     applyChangedValue();
 
     wTodo.removeAll();
-    wKey.setText( "" );
-    wMain.setText( "" );
-    wValue.setText( "" );
-    wSource.setText( "" );
+    wKey.setText( EMPTY_STRING );
+    wMain.setText( EMPTY_STRING );
+    wValue.setText( EMPTY_STRING );
+    wSource.setText( EMPTY_STRING );
 
     selectedLocale = wLocale.getSelectionCount() == 0 ? null : wLocale.getSelection()[0];
     selectedSourceFolder =
@@ -1018,7 +1013,7 @@ public class Translator2 {
     // Get the list of keys that need a translation...
     //
     java.util.List<KeyOccurrence> keys = crawler.getOccurrencesForPackage( messagesPackage );
-    java.util.List<KeyOccurrence> todo = new ArrayList<KeyOccurrence>();
+    java.util.List<KeyOccurrence> todo = new ArrayList<>();
     for ( KeyOccurrence keyOccurrence : keys ) {
       // Avoid the System keys. Those are taken care off in a different package
       //
@@ -1110,12 +1105,12 @@ public class Translator2 {
             item.setBackground( GUIResource.getInstance().getColorYellow() );
           } else if ( todo.size() > 5 ) {
             item.setBackground( GUIResource.getInstance().getColorBlue() );
-          } else if ( todo.size() > 0 ) {
+          } else if ( !todo.isEmpty() ) {
             item.setBackground( GUIResource.getInstance().getColorGreen() );
           }
         }
       }
-      if ( messagesPackages.size() == 0 ) {
+      if ( messagesPackages.isEmpty() ) {
         new TableItem( wPackages.table, SWT.NONE );
       } else {
         wPackages.setRowNums();
@@ -1133,7 +1128,7 @@ public class Translator2 {
   public void refreshLocale() {
     // OK, we have a distinct list of locale to work with...
     wLocale.removeAll();
-    wLocale.setItems( localeList.toArray( new String[localeList.size()] ) );
+    wLocale.setItems( localeList.toArray( new String[] {} ) );
   }
 
   public String toString() {
@@ -1173,5 +1168,4 @@ public class Translator2 {
       log.logError( Const.getStackTracker( e ) );
     }
   }
-
 }

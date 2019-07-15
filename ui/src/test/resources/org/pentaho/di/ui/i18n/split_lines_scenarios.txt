@@ -1,0 +1,411 @@
+// Dummy content here
+// and here
+// and here also!
+
+ package 	org.pentaho.c.d.e	;
+
+
+ import some.import.here  ;
+    import    another.import.here  ;
+
+ import yet.another.import.here  ;
+import and.a.final.import.here;
+
+import now.one.ending.in.Messages;
+// Some real imports to have coverage:
+ import				org.pentaho.Xpto ;
+import				org.pentaho.something.Messages;
+
+// Some imports ending in *
+ import				org.pentaho.*;
+import	a.b.*;
+
+
+
+public class SomeClass {
+
+  private static Class<?> PKG = Xpto.class; // for i18n
+  private static Class<?> PKG = a.b.c.Xyz.class    ; // for i18n
+
+    private static String PKG = "alfa/beta/gama/delta/";
+
+
+
+
+/* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ *
+ *  "BaseMessages" scenarios: all should be detected and counted!
+ *
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
+
+
+BaseMessages One line  1: + ypto( BaseMessages.getString( PKG, \"basemessages_getstring_pkg.lines.01.scenario.01\" ) );
+
+BaseMessages One line  2: + ypto( BaseMessages.  getString( PKG, \"basemessages_getstring_pkg.lines.01.scenario.02\" ) );
+
+BaseMessages One line  3: + ypto( BaseMessages. 	 getString( PKG, \"basemessages_getstring_pkg.lines.01.scenario.03\" ) );
+
+BaseMessages One line  4: + ypto( BaseMessages.getString   ( PKG, \"basemessages_getstring_pkg.lines.01.scenario.04\" ) );
+
+BaseMessages One line  5: + ypto( BaseMessages.getString  	 ( PKG, \"basemessages_getstring_pkg.lines.01.scenario.05\" ) );
+
+BaseMessages One line  6: + ypto( BaseMessages.getString(    PKG, \"basemessages_getstring_pkg.lines.01.scenario.06\" ) );
+
+BaseMessages One line  7: + ypto( BaseMessages.getString(  	  PKG, \"basemessages_getstring_pkg.lines.01.scenario.07\" ) );
+
+
+
+BaseMessages Two lines  1: + ypto( BaseMessages 	
+ 			 . getString	( PKG, \"basemessages_getstring_pkg.lines.02.scenario.01\" ) );
+
+BaseMessages Two lines  2: + ypto( BaseMessages.
+ 			 getString( PKG, \"basemessages_getstring_pkg.lines.02.scenario.02\" ) );
+
+BaseMessages Two lines  3: + ypto( BaseMessages.getString
+ 		( PKG, \"basemessages_getstring_pkg.lines.02.scenario.03\" ) );
+
+BaseMessages Two lines  4: + ypto( BaseMessages.getString(
+ 	 PKG, \"basemessages_getstring_pkg.lines.02.scenario.04\" ) );
+
+BaseMessages Two lines  5: + ypto( BaseMessages.getString( PKG
+,  \"basemessages_getstring_pkg.lines.02.scenario.05\" ) );
+
+BaseMessages Two lines  6: + ypto( BaseMessages.getString( PKG,
+					\"basemessages_getstring_pkg.lines.02.scenario.06\" ) );
+
+
+
+BaseMessages Three lines  1: + ypto( BaseMessages
+ 			 .getString(
+  	 PKG, \"basemessages_getstring_pkg.lines.03.scenario.01\" ) );
+
+BaseMessages Three lines  2: + ypto( BaseMessages
+    .
+ 			 getString(  	 PKG, \"basemessages_getstring_pkg.lines.03.scenario.02\" ) );
+
+BaseMessages Three lines  3: + ypto( BaseMessages. 			 getString
+  (	 PKG, \"basemessages_getstring_pkg.lines.03.scenario.03\" ) );
+
+
+
+BaseMessages Four lines  1: + ypto( BaseMessages
+.
+ 			 getString(
+  	 PKG, \"basemessages_getstring_pkg.lines.04.scenario.01\" ) );
+
+BaseMessages Four lines  2: + ypto( BaseMessages	.		
+ 			 getString
+			 (
+  	 PKG, \"basemessages_getstring_pkg.lines.04.scenario.02\" ) );
+
+BaseMessages Four lines  3: + ypto( BaseMessages .
+ 			 getString
+			 (  	 PKG
+			 , \"basemessages_getstring_pkg.lines.04.scenario.03\" ) );
+
+
+
+BaseMessages Five lines  1: + ypto( BaseMessages
+.
+ 			 getString
+ 			      (
+  	 PKG, \"basemessages_getstring_pkg.lines.05.scenario.01\" ) );
+
+BaseMessages Five lines  2: + ypto( BaseMessages.	
+ 			 getString	
+ 			      (  	 
+	PKG
+	, \"basemessages_getstring_pkg.lines.05.scenario.02\" ) );
+
+
+
+BaseMessages Six lines  1: + ypto( BaseMessages
+.
+ 			 getString
+ 			      (
+  	 PKG
+  	 ,         \"basemessages_getstring_pkg.lines.06.scenario.01\" ) );
+
+BaseMessages Six lines  2: + ypto( BaseMessages
+
+.
+ 			 getString
+ 			      (
+  	 PKG  	 ,         \"basemessages_getstring_pkg.lines.06.scenario.02\" ) );
+
+BaseMessages Six lines  3: + ypto( BaseMessages
+
+
+. 			 getString
+ 			      (
+  	 PKG  	 ,         \"basemessages_getstring_pkg.lines.06.scenario.03\" ) );
+
+
+
+BaseMessages Seven lines  1: + ypto( BaseMessages
+.
+ 			 getString
+ 			      (
+  	 PKG
+  ,
+\"basemessages_getstring_pkg.lines.07.scenario.01\" ) );
+
+
+
+BaseMessages Incomplete source: + ypto( BaseMessages.get_String( PKG,
+
+
+
+
+/* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ *
+ *  "SomeOtherMessages" scenarios: all should be detected and counted!
+ *
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
+
+
+SomeOtherMessages One line  1: + ypto( SomeOtherMessages.getString( PKG, \"someothermessages_getstring_pkg.lines.01.scenario.01\" ) );
+
+SomeOtherMessages One line  2: + ypto( SomeOtherMessages.  getString( PKG, \"someothermessages_getstring_pkg.lines.01.scenario.02\" ) );
+
+SomeOtherMessages One line  3: + ypto( SomeOtherMessages. 	 getString( PKG, \"someothermessages_getstring_pkg.lines.01.scenario.03\" ) );
+
+SomeOtherMessages One line  4: + ypto( SomeOtherMessages.getString   ( PKG, \"someothermessages_getstring_pkg.lines.01.scenario.04\" ) );
+
+SomeOtherMessages One line  5: + ypto( SomeOtherMessages.getString  	 ( PKG, \"someothermessages_getstring_pkg.lines.01.scenario.05\" ) );
+
+SomeOtherMessages One line  6: + ypto( SomeOtherMessages.getString(    PKG, \"someothermessages_getstring_pkg.lines.01.scenario.06\" ) );
+
+SomeOtherMessages One line  7: + ypto( SomeOtherMessages.getString(  	  PKG, \"someothermessages_getstring_pkg.lines.01.scenario.07\" ) );
+
+
+
+SomeOtherMessages Two lines  1: + ypto( SomeOtherMessages 	
+ 			 . getString	( PKG, \"someothermessages_getstring_pkg.lines.02.scenario.01\" ) );
+
+SomeOtherMessages Two lines  2: + ypto( SomeOtherMessages.
+ 			 getString( PKG, \"someothermessages_getstring_pkg.lines.02.scenario.02\" ) );
+
+SomeOtherMessages Two lines  3: + ypto( SomeOtherMessages.getString
+ 		( PKG, \"someothermessages_getstring_pkg.lines.02.scenario.03\" ) );
+
+SomeOtherMessages Two lines  4: + ypto( SomeOtherMessages.getString(
+ 	 PKG, \"someothermessages_getstring_pkg.lines.02.scenario.04\" ) );
+
+SomeOtherMessages Two lines  5: + ypto( SomeOtherMessages.getString( PKG
+,  \"someothermessages_getstring_pkg.lines.02.scenario.05\" ) );
+
+SomeOtherMessages Two lines  6: + ypto( SomeOtherMessages.getString( PKG,
+					\"someothermessages_getstring_pkg.lines.02.scenario.06\" ) );
+
+
+
+SomeOtherMessages Three lines  1: + ypto( SomeOtherMessages
+ 			 .getString(
+  	 PKG, \"someothermessages_getstring_pkg.lines.03.scenario.01\" ) );
+
+SomeOtherMessages Three lines  2: + ypto( SomeOtherMessages
+    .
+ 			 getString(  	 PKG, \"someothermessages_getstring_pkg.lines.03.scenario.02\" ) );
+
+SomeOtherMessages Three lines  3: + ypto( SomeOtherMessages. 			 getString
+  (	 PKG, \"someothermessages_getstring_pkg.lines.03.scenario.03\" ) );
+
+
+
+SomeOtherMessages Four lines  1: + ypto( SomeOtherMessages
+.
+ 			 getString(
+  	 PKG, \"someothermessages_getstring_pkg.lines.04.scenario.01\" ) );
+
+SomeOtherMessages Four lines  2: + ypto( SomeOtherMessages	.		
+ 			 getString
+			 (
+  	 PKG, \"someothermessages_getstring_pkg.lines.04.scenario.02\" ) );
+
+SomeOtherMessages Four lines  3: + ypto( SomeOtherMessages .
+ 			 getString
+			 (  	 PKG
+			 , \"someothermessages_getstring_pkg.lines.04.scenario.03\" ) );
+
+
+
+SomeOtherMessages Five lines  1: + ypto( SomeOtherMessages
+.
+ 			 getString
+ 			      (
+  	 PKG, \"someothermessages_getstring_pkg.lines.05.scenario.01\" ) );
+
+SomeOtherMessages Five lines  2: + ypto( SomeOtherMessages.	
+ 			 getString	
+ 			      (  	 
+	PKG
+	, \"someothermessages_getstring_pkg.lines.05.scenario.02\" ) );
+
+
+
+SomeOtherMessages Six lines  1: + ypto( SomeOtherMessages
+.
+ 			 getString
+ 			      (
+  	 PKG
+  	 ,         \"someothermessages_getstring_pkg.lines.06.scenario.01\" ) );
+
+SomeOtherMessages Six lines  2: + ypto( SomeOtherMessages
+
+.
+ 			 getString
+ 			      (
+  	 PKG  	 ,         \"someothermessages_getstring_pkg.lines.06.scenario.02\" ) );
+
+SomeOtherMessages Six lines  3: + ypto( SomeOtherMessages
+
+
+. 			 getString
+ 			      (
+  	 PKG  	 ,         \"someothermessages_getstring_pkg.lines.06.scenario.03\" ) );
+
+
+
+SomeOtherMessages Seven lines  1: + ypto( SomeOtherMessages
+.
+ 			 getString
+ 			      (
+  	 PKG
+  ,
+\"someothermessages_getstring_pkg.lines.07.scenario.01\" ) );
+
+
+
+SomeOtherMessages Incomplete source: + ypto( SomeOtherMessages.get_String( PKG,
+
+
+
+
+/* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ *
+ *  "NotToBeDetectedMessages" scenarios: all should be detected and counted!
+ *
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+ * ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
+
+
+NotToBeDetectedMessages One line  1: + ypto( NotToBeDetectedMessages.getString( PKG, \"nottobedetectedmessages_getstring_pkg.lines.01.scenario.01\" ) );
+
+NotToBeDetectedMessages One line  2: + ypto( NotToBeDetectedMessages.  getString( PKG, \"nottobedetectedmessages_getstring_pkg.lines.01.scenario.02\" ) );
+
+NotToBeDetectedMessages One line  3: + ypto( NotToBeDetectedMessages. 	 getString( PKG, \"nottobedetectedmessages_getstring_pkg.lines.01.scenario.03\" ) );
+
+NotToBeDetectedMessages One line  4: + ypto( NotToBeDetectedMessages.getString   ( PKG, \"nottobedetectedmessages_getstring_pkg.lines.01.scenario.04\" ) );
+
+NotToBeDetectedMessages One line  5: + ypto( NotToBeDetectedMessages.getString  	 ( PKG, \"nottobedetectedmessages_getstring_pkg.lines.01.scenario.05\" ) );
+
+NotToBeDetectedMessages One line  6: + ypto( NotToBeDetectedMessages.getString(    PKG, \"nottobedetectedmessages_getstring_pkg.lines.01.scenario.06\" ) );
+
+NotToBeDetectedMessages One line  7: + ypto( NotToBeDetectedMessages.getString(  	  PKG, \"nottobedetectedmessages_getstring_pkg.lines.01.scenario.07\" ) );
+
+
+
+NotToBeDetectedMessages Two lines  1: + ypto( NotToBeDetectedMessages 	
+ 			 . getString	( PKG, \"nottobedetectedmessages_getstring_pkg.lines.02.scenario.01\" ) );
+
+NotToBeDetectedMessages Two lines  2: + ypto( NotToBeDetectedMessages.
+ 			 getString( PKG, \"nottobedetectedmessages_getstring_pkg.lines.02.scenario.02\" ) );
+
+NotToBeDetectedMessages Two lines  3: + ypto( NotToBeDetectedMessages.getString
+ 		( PKG, \"nottobedetectedmessages_getstring_pkg.lines.02.scenario.03\" ) );
+
+NotToBeDetectedMessages Two lines  4: + ypto( NotToBeDetectedMessages.getString(
+ 	 PKG, \"nottobedetectedmessages_getstring_pkg.lines.02.scenario.04\" ) );
+
+NotToBeDetectedMessages Two lines  5: + ypto( NotToBeDetectedMessages.getString( PKG
+,  \"nottobedetectedmessages_getstring_pkg.lines.02.scenario.05\" ) );
+
+NotToBeDetectedMessages Two lines  6: + ypto( NotToBeDetectedMessages.getString( PKG,
+					\"nottobedetectedmessages_getstring_pkg.lines.02.scenario.06\" ) );
+
+
+
+NotToBeDetectedMessages Three lines  1: + ypto( NotToBeDetectedMessages
+ 			 .getString(
+  	 PKG, \"nottobedetectedmessages_getstring_pkg.lines.03.scenario.01\" ) );
+
+NotToBeDetectedMessages Three lines  2: + ypto( NotToBeDetectedMessages
+    .
+ 			 getString(  	 PKG, \"nottobedetectedmessages_getstring_pkg.lines.03.scenario.02\" ) );
+
+NotToBeDetectedMessages Three lines  3: + ypto( NotToBeDetectedMessages. 			 getString
+  (	 PKG, \"nottobedetectedmessages_getstring_pkg.lines.03.scenario.03\" ) );
+
+
+
+NotToBeDetectedMessages Four lines  1: + ypto( NotToBeDetectedMessages
+.
+ 			 getString(
+  	 PKG, \"nottobedetectedmessages_getstring_pkg.lines.04.scenario.01\" ) );
+
+NotToBeDetectedMessages Four lines  2: + ypto( NotToBeDetectedMessages	.		
+ 			 getString
+			 (
+  	 PKG, \"nottobedetectedmessages_getstring_pkg.lines.04.scenario.02\" ) );
+
+NotToBeDetectedMessages Four lines  3: + ypto( NotToBeDetectedMessages .
+ 			 getString
+			 (  	 PKG
+			 , \"nottobedetectedmessages_getstring_pkg.lines.04.scenario.03\" ) );
+
+
+
+NotToBeDetectedMessages Five lines  1: + ypto( NotToBeDetectedMessages
+.
+ 			 getString
+ 			      (
+  	 PKG, \"nottobedetectedmessages_getstring_pkg.lines.05.scenario.01\" ) );
+
+NotToBeDetectedMessages Five lines  2: + ypto( NotToBeDetectedMessages.	
+ 			 getString	
+ 			      (  	 
+	PKG
+	, \"nottobedetectedmessages_getstring_pkg.lines.05.scenario.02\" ) );
+
+
+
+NotToBeDetectedMessages Six lines  1: + ypto( NotToBeDetectedMessages
+.
+ 			 getString
+ 			      (
+  	 PKG
+  	 ,         \"nottobedetectedmessages_getstring_pkg.lines.06.scenario.01\" ) );
+
+NotToBeDetectedMessages Six lines  2: + ypto( NotToBeDetectedMessages
+
+.
+ 			 getString
+ 			      (
+  	 PKG  	 ,         \"nottobedetectedmessages_getstring_pkg.lines.06.scenario.02\" ) );
+
+NotToBeDetectedMessages Six lines  3: + ypto( NotToBeDetectedMessages
+
+
+. 			 getString
+ 			      (
+  	 PKG  	 ,         \"nottobedetectedmessages_getstring_pkg.lines.06.scenario.03\" ) );
+
+
+
+NotToBeDetectedMessages Seven lines  1: + ypto( NotToBeDetectedMessages
+.
+ 			 getString
+ 			      (
+  	 PKG
+  ,
+\"nottobedetectedmessages_getstring_pkg.lines.07.scenario.01\" ) );
+
+
+
+NotToBeDetectedMessages Incomplete source: + ypto( NotToBeDetectedMessages.get_String( PKG,
