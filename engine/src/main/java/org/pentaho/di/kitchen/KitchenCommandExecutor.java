@@ -22,6 +22,7 @@
 
 package org.pentaho.di.kitchen;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.KettleConstants;
@@ -170,8 +171,6 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       }
     }
 
-    int returnCode = CommandExecutorCodes.Kitchen.SUCCESS.getCode();
-
     try {
 
       // Set the command line arguments on the job ...
@@ -236,10 +235,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Finished" ) );
 
-    if ( getResult().getNrErrors() != 0 ) {
-      getLog().logError( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.FinishedWithErrors" ) );
-      returnCode = CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
-    }
+    int returnCode = getReturnCode();
 
     Date stop = Calendar.getInstance().getTime();
 
@@ -381,4 +377,19 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
   public void setKettleInit( Future<KettleException> kettleInit ) {
     this.kettleInit = kettleInit;
   }
+
+  @VisibleForTesting
+  int getReturnCode() {
+
+    int successCode = CommandExecutorCodes.Kitchen.SUCCESS.getCode();
+
+    if ( getResult().getNrErrors() != 0 ) {
+      getLog().logError( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.FinishedWithErrors" ) );
+      return CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
+    }
+
+    return getResult().getResult() ? successCode : CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
+
+  }
+
 }
