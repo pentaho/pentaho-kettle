@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,8 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStep;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
   private static Class<?> PKG = AbstractFileErrorHandler.class; // for i18n purposes, needed by Translator2!!
@@ -119,7 +121,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
           .getStepname() );
       baseStep.addResultFile( resultFile );
       try {
-        if ( encoding == null ) {
+        if ( isBlank( encoding ) ) {
           outputStreamWriter = new OutputStreamWriter( KettleVFS.getOutputStream( file, false ) );
         } else {
           outputStreamWriter = new OutputStreamWriter( KettleVFS.getOutputStream( file, false ), encoding );
