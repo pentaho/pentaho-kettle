@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -64,24 +64,25 @@ public class SessionConfiguratorTest {
 
   @Test
   public void testPrincipalKeytab() throws URISyntaxException, RuntimeException {
-    sessionConfigurator = new SessionConfigurator( new URI( "ws://test:8080/execute" ), "filepath.keytab", "testPrincipal" );
+    sessionConfigurator =
+      new SessionConfigurator( new URI( "ws://test:8080/execute" ), "filepath.keytab", "testPrincipal" );
 
     expectedException.expect( RuntimeException.class );
     sessionConfigurator.beforeRequest( headers );
   }
 
   @Test
-  public void testDaemonNoAuthentication( ) throws KettleException {
+  public void testDaemonNoAuthentication() throws KettleException {
     expectedException.expect( KettleException.class );
-    new DaemonMessagesClientEndpoint( "host", "8080", true, null );
+    new DaemonMessagesClientEndpoint( "host", 8080, true, null );
   }
 
   @Test
-  public void testDaemonWithAuthentication( ) throws KettleException {
+  public void testDaemonWithAuthentication() throws KettleException {
     System.getProperties().setProperty( "KETTLE_AEL_PDI_DAEMON_PRINCIPAL", "principal" );
     System.getProperties().setProperty( "KETTLE_AEL_PDI_DAEMON_KEYTAB", "filepath.keytab" );
 
     expectedException.expect( KettleException.class );
-    new DaemonMessagesClientEndpoint( "host", "8080", true, null );
+    new DaemonMessagesClientEndpoint( "host", 8080, true, null );
   }
 }

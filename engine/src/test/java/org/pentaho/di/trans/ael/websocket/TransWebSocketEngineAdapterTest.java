@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -81,8 +81,8 @@ public class TransWebSocketEngineAdapterTest {
   public void testOpsIncludeSubTrans() throws Exception {
     TransMeta transMeta = new TransMeta( getClass().getResource( "grid-to-subtrans.ktr" ).getPath() );
     TransWebSocketEngineAdapter adapter =
-      new TransWebSocketEngineAdapter( transMeta, "", "", false );
-    adapter.prepareExecution( new String[]{} );
+      new TransWebSocketEngineAdapter( transMeta, "", -1, false );
+    adapter.prepareExecution( new String[] {} );
     List<StepMetaDataCombi> steps = adapter.getSteps();
     steps.sort( Comparator.comparing( s -> s.stepname ) );
     assertEquals( 2, steps.size() );
@@ -96,7 +96,7 @@ public class TransWebSocketEngineAdapterTest {
     DaemonMessagesClientEndpoint daemonEndpoint = mock( DaemonMessagesClientEndpoint.class );
     CountDownLatch latch = new CountDownLatch( 1 );
     TransWebSocketEngineAdapter adapter =
-      new TransWebSocketEngineAdapter( transMeta, "", "", false ) {
+      new TransWebSocketEngineAdapter( transMeta, "", -1, false ) {
         @Override DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
           return daemonEndpoint;
         }
@@ -109,7 +109,7 @@ public class TransWebSocketEngineAdapterTest {
           }
         }
       };
-    adapter.prepareExecution( new String[]{} );
+    adapter.prepareExecution( new String[] {} );
     adapter.getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step )
       .forEach( step -> step.setRunning( true ) );
     adapter.safeStop();
@@ -126,7 +126,7 @@ public class TransWebSocketEngineAdapterTest {
   private Matcher<StopMessage> matchesSafeStop() {
     return new BaseMatcher<StopMessage>() {
       @Override public boolean matches( Object o ) {
-        return ((StopMessage) o).isSafeStop();
+        return ( (StopMessage) o ).isSafeStop();
       }
 
       @Override public void describeTo( Description description ) {
