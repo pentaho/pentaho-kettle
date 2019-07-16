@@ -190,7 +190,6 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
           // Prevent against XML Entity Expansion (XEE) attacks.
           // https://www.owasp.org/index.php/XML_Security_Cheat_Sheet#XML_Entity_Expansion
           if ( !isAllowExternalEntities() ) {
-            xsdValidator.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
             xsdValidator.setFeature( "http://xml.org/sax/features/external-general-entities", false );
             xsdValidator.setFeature( "http://xml.org/sax/features/external-parameter-entities", false );
             xsdValidator.setProperty( "http://apache.org/xml/properties/internal/entity-resolver",
