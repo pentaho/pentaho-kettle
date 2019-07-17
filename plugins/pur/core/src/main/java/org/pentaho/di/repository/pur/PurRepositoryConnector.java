@@ -18,7 +18,6 @@ package org.pentaho.di.repository.pur;
 
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.pentaho.pdi.ws.RepositorySyncException;
-import com.sun.xml.ws.client.ClientTransportException;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -229,9 +228,6 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             // this message will be presented to the user in spoon
             result.setConnectMessage( e.getMessage() );
             return null;
-          } catch ( ClientTransportException e ) {
-            // caused by authentication errors, etc
-            return e;
           } catch ( WebServiceException e ) {
             // if we can speak to the repository okay but not the sync service, assume we're talking to a BA Server
             log.logError( e.getMessage(), e );
