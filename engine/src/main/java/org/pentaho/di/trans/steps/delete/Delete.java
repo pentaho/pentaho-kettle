@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -127,7 +127,8 @@ public class Delete extends BaseStep implements StepInterface {
           throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired", meta
             .getKeyStream()[i] ) );
         }
-        data.keynrs2[i] = getInputRowMeta().indexOfValue( meta.getKeyStream2()[i] );
+        data.keynrs2[i] = meta.getKeyStream2().length == 0 ? -1
+          : getInputRowMeta().indexOfValue( meta.getKeyStream2()[i] );
         if ( data.keynrs2[i] < 0 && // couldn't find field!
           "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
         ) {
