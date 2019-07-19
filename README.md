@@ -33,16 +33,16 @@ $ docker run -d -p 8080:8080 hiromuhota/webspoon
 
 Please refer to the [wiki](https://github.com/HiromuHota/pentaho-kettle/wiki/System-Requirements) for system requirements.
 
-1. Unzip `pdi-ce-8.2.0.0-342.zip`, then copy `system` and `plugins` folders to `$CATALINA_HOME`.
+1. Unzip `pdi-ce-8.3.0.0-371.zip`, then copy `system` and `plugins` folders to `$CATALINA_HOME`.
 2. Run install.sh at `$CATALINA_HOME`.
 3. Allow encoded slash (`org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true`).
 3. (Re)start the Tomcat.
 
 The actual commands look like below:
 
-```
-$ export version=0.8.2.19
-$ export dist=8.2.0.0-342
+```bash
+$ export version=0.8.3.19
+$ export dist=8.3.0.0-371
 $ export CATALINA_HOME=/home/vagrant/apache-tomcat-8.5.23
 
 $ cd ~/
@@ -67,7 +67,7 @@ If `$CATALINA_HOME/system/kettle/slave-server-config.xml` exists, the embedded C
 See [here](https://wiki.pentaho.com/display/EAI/Carte+Configuration) for the config format.
 An example config xml looks like this:
 
-```
+```xml
 <slave_config>
   <max_log_lines>10000</max_log_lines>
   <max_log_timeout_minutes>2880</max_log_timeout_minutes>
@@ -112,7 +112,7 @@ $CATALINA_HOME
 Spoon uses the XUL (XML User Interface Language) to define some parts of its user interface (see [here](https://wiki.pentaho.com/display/ServerDoc2x/The+Pentaho+XUL+Framework+Developer%27s+Guide) for details).
 The file menu, for example, is defined in `webapps/spoon/WEB-INF/classes/ui/menubar.xul` as in the following snippet:
 
-```
+```xml
 <menu id="file" label="${Spoon.Menu.File}" accesskey="alt-f">
   <menuitem id="file-open" label="${Spoon.Menu.File.Open}" />
   <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" />
@@ -122,7 +122,7 @@ The file menu, for example, is defined in `webapps/spoon/WEB-INF/classes/ui/menu
 To restrict user's capability, one may want to disable some of UI components.
 To to so, add `disable="true"` to the component to be disabled like below.
 
-```
+```xml
 <menu id="file" label="${Spoon.Menu.File}" accesskey="alt-f">
   <menuitem id="file-open" label="${Spoon.Menu.File.Open}" />
   <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" disabled="true" />
@@ -171,15 +171,15 @@ Please build and locally-publish the following dependent libraries.
 
 ### pentaho-xul-swt
 
-```
-$ git clone -b webspoon-8.2 https://github.com/HiromuHota/pentaho-commons-xul.git
+```bash
+$ git clone -b webspoon-8.3 https://github.com/HiromuHota/pentaho-commons-xul.git
 $ cd pentaho-commons-xul
 $ mvn clean install -pl swt
 ```
 
 ### rap
 
-```
+```bash
 $ git clone -b webspoon-3.7.0 https://github.com/HiromuHota/rap.git
 $ cd rap
 $ mvn clean install
@@ -187,8 +187,8 @@ $ mvn clean install
 
 ### pentaho-vfs-browser
 
-```
-$ git clone -b webspoon-8.2 https://github.com/HiromuHota/apache-vfs-browser.git
+```bash
+$ git clone -b webspoon-8.3 https://github.com/HiromuHota/apache-vfs-browser.git
 $ cd apache-vfs-browser
 $ mvn clean install
 ```
@@ -198,7 +198,7 @@ $ mvn clean install
 **Make sure patched dependent libraries have been published locally**
 
 ```bash
-$ git clone -b webspoon-8.2 https://github.com/HiromuHota/pentaho-kettle.git
+$ git clone -b webspoon-8.3 https://github.com/HiromuHota/pentaho-kettle.git
 $ cd pentaho-kettle
 $ mvn clean install
 ```
@@ -216,7 +216,7 @@ Pass a parameter like below if webSpoon is deployed to a different url.
 
 The following command runs all the unit test cases including UI in non-headless mode.
 
-```
+```bash
 $ cd integration
 $ mvn clean test -Dtest.baseurl=http://localhost:8080/spoon/spoon -Dheadless.unittest=false
 ```

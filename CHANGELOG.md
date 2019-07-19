@@ -1,6 +1,13 @@
 # Change Log
 
-## 0.8.2.19 - 2019-XX-XX
+## 0.8.3.19 - 2019-07-19
+### Changed
+- Rebased to 8.3.0.0-371.
+
+### Fixed
+- Partially fix connections/ui (#166)
+
+## 0.8.2.19 - 2019-05-24
 ### Added
 - Add Jenkinsfile
 
