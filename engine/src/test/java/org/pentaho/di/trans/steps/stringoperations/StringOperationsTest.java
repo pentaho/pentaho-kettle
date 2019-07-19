@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,15 +84,15 @@ public class StringOperationsTest {
     StringOperationsMeta meta = mock( StringOperationsMeta.class );
     doReturn( new String[] { "Value" } ).when( meta ).getFieldInStream();
     doReturn( new String[] { "" } ).when( meta ).getFieldOutStream();
-    doReturn( new int[] { StringOperationsMeta.TRIM_BOTH } ).when( meta ).getTrimType();
-    doReturn( new int[] { StringOperationsMeta.LOWER_UPPER_NONE } ).when( meta ).getLowerUpper();
-    doReturn( new int[] { StringOperationsMeta.PADDING_NONE } ).when( meta ).getPaddingType();
+    doReturn( new String[] { StringOperationsMeta.trimTypeCode[StringOperationsMeta.TRIM_BOTH] } ).when( meta ).getTrimType();
+    doReturn( new String[] { StringOperationsMeta.lowerUpperCode[StringOperationsMeta.LOWER_UPPER_NONE] } ).when( meta ).getLowerUpper();
+    doReturn( new String[] { StringOperationsMeta.paddingCode[StringOperationsMeta.PADDING_NONE] } ).when( meta ).getPaddingType();
     doReturn( new String[] { "" } ).when( meta ).getPadChar();
     doReturn( new String[] { "" } ).when( meta ).getPadLen();
-    doReturn( new int[] { StringOperationsMeta.INIT_CAP_NO } ).when( meta ).getInitCap();
-    doReturn( new int[] { StringOperationsMeta.MASK_NONE } ).when( meta ).getMaskXML();
-    doReturn( new int[] { StringOperationsMeta.DIGITS_NONE } ).when( meta ).getDigits();
-    doReturn( new int[] { StringOperationsMeta.REMOVE_SPECIAL_CHARACTERS_NONE } ).when( meta ).getRemoveSpecialCharacters();
+    doReturn( new String[] { StringOperationsMeta.initCapCode[StringOperationsMeta.INIT_CAP_NO] } ).when( meta ).getInitCap();
+    doReturn( new String[] { StringOperationsMeta.maskXMLCode[StringOperationsMeta.MASK_NONE] } ).when( meta ).getMaskXML();
+    doReturn( new String[] { StringOperationsMeta.digitsCode[StringOperationsMeta.DIGITS_NONE] } ).when( meta ).getDigits();
+    doReturn( new String[] { StringOperationsMeta.removeSpecialCharactersCode[StringOperationsMeta.REMOVE_SPECIAL_CHARACTERS_NONE] } ).when( meta ).getRemoveSpecialCharacters();
 
     return meta;
   }
