@@ -65,8 +65,8 @@
     <snowflake-jdbc.version>3.6.28</snowflake-jdbc.version>
 
     <!-- Spring -->
-    <springframework4.version>4.3.17.RELEASE</springframework4.version>
-    <springframework4-security.version>4.1.5.RELEASE</springframework4-security.version>
+    <springframework4.version>4.3.22.RELEASE</springframework4.version>
+    <springframework4-security.version>4.2.9.RELEASE</springframework4-security.version>
   </properties>
 
   <dependencies>
