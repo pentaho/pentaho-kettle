@@ -80,6 +80,10 @@
           <groupId>org.eclipse.rap</groupId>
           <artifactId>org.eclipse.rap.clientbuilder</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.mozilla</groupId>
+          <artifactId>rhino</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
