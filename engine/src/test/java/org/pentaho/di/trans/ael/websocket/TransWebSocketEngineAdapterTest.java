@@ -38,9 +38,16 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.engine.api.events.LogEvent;
+import org.pentaho.di.engine.api.model.ModelType;
+import org.pentaho.di.engine.api.remote.Message;
+import org.pentaho.di.engine.api.remote.RemoteSource;
 import org.pentaho.di.engine.api.remote.StopMessage;
+import org.pentaho.di.engine.api.reporting.LogEntry;
+import org.pentaho.di.engine.api.reporting.LogLevel;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
 import java.util.Comparator;
@@ -49,6 +56,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -88,6 +97,38 @@ public class TransWebSocketEngineAdapterTest {
     assertEquals( 2, steps.size() );
     assertEquals( 0, steps.get( 0 ).step.subStatuses().size() );
     assertEquals( 2, steps.get( 1 ).step.subStatuses().size() );
+  }
+
+  @Test
+  public void testLoggingOnStep() throws KettleException {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "grid-to-subtrans.ktr" ).getPath() );
+    TransWebSocketEngineAdapter adapter =
+      new TransWebSocketEngineAdapter( transMeta, "", 0, false );
+    adapter.setLog( logChannel );
+    adapter.prepareExecution( new String[]{} );
+    StepInterface stepInterface = adapter.getStepInterface( "Data Grid", 0 );
+    LogEntry errorLog = LogEntry.LogEntryBuilder.aLogEntry().withLogLevel( LogLevel.BASIC ).build();
+    Message errorMessage = new LogEvent( new RemoteSource( ModelType.OPERATION, stepInterface.getStepname() ) , errorLog );
+    adapter.messageEventService.fireEvent( errorMessage );
+
+    assertEquals( 0, stepInterface.getErrors() );
+    assertFalse( stepInterface.isStopped() );
+  }
+
+  @Test
+  public void testErrorLoggingOnStep() throws KettleException {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "grid-to-subtrans.ktr" ).getPath() );
+    TransWebSocketEngineAdapter adapter =
+      new TransWebSocketEngineAdapter( transMeta, "", 0, false );
+    adapter.setLog( logChannel );
+    adapter.prepareExecution( new String[]{} );
+    StepInterface stepInterface = adapter.getStepInterface( "Data Grid", 0 );
+    LogEntry errorLog = LogEntry.LogEntryBuilder.aLogEntry().withLogLevel( LogLevel.ERROR ).build();
+    Message errorMessage = new LogEvent( new RemoteSource( ModelType.OPERATION, stepInterface.getStepname() ) , errorLog );
+    adapter.messageEventService.fireEvent( errorMessage );
+
+    assertEquals( 1, stepInterface.getErrors() );
+    assertTrue( stepInterface.isStopped() );
   }
 
   @Test
