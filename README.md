@@ -218,7 +218,7 @@ The following command runs all the unit test cases including UI in non-headless 
 
 ```bash
 $ cd integration
-$ mvn clean test -Dtest.baseurl=http://localhost:8080/spoon/spoon -Dheadless.unittest=false
+$ mvn clean test -Dtest.baseurl=http://localhost:8080/spoon -Dheadless.unittest=false
 ```
 
 # Notices

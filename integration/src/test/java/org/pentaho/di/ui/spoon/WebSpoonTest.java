@@ -26,6 +26,11 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,6 +76,18 @@ public class WebSpoonTest {
   @Test
   public void testAppLoading() {
     assertEquals( driver.getTitle(), "Spoon" );
+  }
+
+  @Test
+  public void testGetFields() throws Exception {
+    String filePath = "file:///home/tomcat/.kettle/data/samples/transformations/files/jsonfile.js";
+    filePath = java.net.URLEncoder.encode( filePath, "ISO-8859-1" );
+    String url = baseUrl + "/osgi/cxf/get-fields/sample/" + filePath + "/json";
+    HttpUriRequest request = new HttpGet( url );
+
+    HttpResponse response = HttpClientBuilder.create().build().execute( request );
+
+    assert response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
   }
 
   @Test
