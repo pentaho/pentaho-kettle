@@ -18,7 +18,7 @@
 
   <properties>
     <!-- webSpoon specific dependencies -->
-    <rap.version>3.7.0</rap.version>
+    <rap.version>3.9.0</rap.version>
   </properties>
 
 
