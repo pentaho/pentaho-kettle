@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -210,7 +210,6 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
         new SimpleLoggingObject( getContextPath(), LoggingObjectType.CARTE, null );
     servletLoggingObject.setContainerObjectId( carteObjectId );
     servletLoggingObject.setLogLevel( level );
-    servletLoggingObject.setLogChannelId( carteObjectId );
     return servletLoggingObject;
   }
 
