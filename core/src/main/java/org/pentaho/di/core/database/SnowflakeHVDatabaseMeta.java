@@ -94,9 +94,7 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
       + realHostname
       + getParamIfSet( ":", port )
       + "/?account=" + account
-      + "&db=" + databaseName
-      + "&user=" + getUsername()
-      + "&password=" + getPassword();
+      + "&db=" + databaseName;
   }
 
   private String getParamIfSet( String param, String val ) {
