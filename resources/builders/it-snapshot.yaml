@@ -1,9 +1,13 @@
 buildProperties:
   BUILD_PLAN_ID                 : Suite Integration Test Build
+
   IGNORE_PIPELINE_FAILURE       : true
   PARALLEL_CHUNKSIZE            : 0 # unlimited chunk size
 
-  MAVEN_DEFAULT_COMMAND_OPTIONS : -B -e -q -U -DsurefireArgLine=-Xmx1g -Dmaven.test.failure.ignore
+  USE_MINION_JOBS               : true
+  MINION_PIPELINE_TEMPLATE      : resources/templates/minion-pipeline-it.vm
+
+  MAVEN_DEFAULT_COMMAND_OPTIONS : -B -e -U -DsurefireArgLine=-Xmx1g -Dmaven.test.failure.ignore
   MAVEN_DEFAULT_DIRECTIVES      : clean verify project-info-reports:dependencies -DrunITs -Daudit -Dsonar
 
   JOB_ITEM_DEFAULTS             :
