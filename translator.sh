@@ -112,24 +112,12 @@ case `uname -s` in
 	FreeBSD)
 	    ARCH=`uname -m`
 		case $ARCH in
-			x86_64)
-				LIBPATH=$BASEDIR/libswt/freebsd/x86_64/
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-
 			i[3-6]86)
 				LIBPATH=$BASEDIR/libswt/freebsd/x86/
 				;;
 
-			ppc)
-				LIBPATH=$BASEDIR/libswt/freebsd/ppc/
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-
-			*)	
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+			*)
+				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 		esac

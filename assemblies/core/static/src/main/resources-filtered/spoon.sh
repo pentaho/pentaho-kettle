@@ -191,23 +191,11 @@ case `uname -s` in
 		# linux compatibility packages installed
 	    ARCH=`uname -m`
 		case $ARCH in
-			x86_64)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
-				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
-				exit
-				;;
-
 			i[3-6]86)
 				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
 				;;
 
-			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
-				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
-				exit
-				;;
-
-			*)	
+			*)
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
