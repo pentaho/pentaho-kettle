@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
  */
 public class ReplaceStringProcessRowNoUnicodeTest {
 
-  private StepMockHelper<ReplaceStringMeta, ReplaceStringData> stepMockHelper;
+  private StepMockHelper<ReplaceStringMeta, ReplaceStringData> stepMockHelper = null;
 
   /**
    * <p>The string to use as a replacement for any found match.</p>
@@ -80,6 +80,32 @@ public class ReplaceStringProcessRowNoUnicodeTest {
    * <p>It matches/expects one or more letters that not 'B', a 'B' and zero or more random characters.</p>
    */
   private static final String TESTPROCESSROW_REGEX_WHOLE_MATCH_PATTERN = "[^B]+B.*";
+
+  /**
+   * <p>Regex expression that splits the input string into two groups.</p>
+   * <p>It matches/expects one or more letters 'a', followed by one or more letters that not 'a'.</p>
+   *
+   * @see #TESTPROCESSROW_REGEX_CONCATENATE_PATTERN
+   */
+  private static final String TESTPROCESSROW_REGEX_SPLIT_PATTERN = "([a]+)([^a]+)";
+
+  /**
+   * <p>The separator to be used in the concatenation of the identified groups.</p>
+   *
+   * @see #TESTPROCESSROW_REGEX_CONCATENATE_PATTERN
+   */
+  private static final char TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR = '-';
+
+  /**
+   * <p>Regex expression to concatenate the identified groups.</p>
+   * <p>Concatenates the two groups by the same order, separating both with a {@value
+   * #TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR}.</p>
+   *
+   * @see #TESTPROCESSROW_REGEX_SPLIT_PATTERN
+   * @see #TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR
+   */
+  private static final String TESTPROCESSROW_REGEX_CONCATENATE_PATTERN =
+    "$1" + TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR + "$2";
 
   @Before
   public void setUp() throws Exception {
@@ -761,6 +787,28 @@ public class ReplaceStringProcessRowNoUnicodeTest {
   }
 
   @Test
+  public void testProcessRow_UseRegExYes_CaseSensitiveNo_WholeWordNo_UnicodeNo_RegexSplitAndConcatenate()
+    throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+    ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, false, false, false );
+
+    ReplaceString replaceString =
+      prepareTestProcessRow( data, meta, TESTPROCESSROW_STRING, TESTPROCESSROW_REGEX_SPLIT_PATTERN,
+        TESTPROCESSROW_REGEX_CONCATENATE_PATTERN );
+
+    replaceString.processRow( meta, data );
+
+    assertNotNull( replaceString.getRow() );
+    assertEquals( 2, replaceString.getRow().length );
+    assertNotNull( replaceString.getRow()[ 1 ] );
+    String[] splits =
+      StringUtils.split( (String) replaceString.getRow()[ 1 ], TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR );
+    assertEquals( 2, splits.length );
+    assertEquals( 2, splits[ 0 ].length() );
+    assertEquals( 6, splits[ 1 ].length() );
+  }
+
+  @Test
   public void testProcessRow_UseRegExYes_CaseSensitiveNo_WholeWordNo_UnicodeNo_RegexMatch() throws Exception {
     ReplaceStringData data = new ReplaceStringData();
     ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, false, false, false );
@@ -902,6 +950,28 @@ public class ReplaceStringProcessRowNoUnicodeTest {
     assertEquals( 2, replaceString.getRow().length );
     // Should return null
     assertNull( replaceString.getRow()[ 1 ] );
+  }
+
+  @Test
+  public void testProcessRow_UseRegExYes_CaseSensitiveNo_WholeWordYes_UnicodeNo_RegexSplitAndConcatenate()
+    throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+    ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, false, true, false );
+
+    ReplaceString replaceString =
+      prepareTestProcessRow( data, meta, TESTPROCESSROW_STRING, TESTPROCESSROW_REGEX_SPLIT_PATTERN,
+        TESTPROCESSROW_REGEX_CONCATENATE_PATTERN );
+
+    replaceString.processRow( meta, data );
+
+    assertNotNull( replaceString.getRow() );
+    assertEquals( 2, replaceString.getRow().length );
+    assertNotNull( replaceString.getRow()[ 1 ] );
+    String[] splits =
+      StringUtils.split( (String) replaceString.getRow()[ 1 ], TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR );
+    assertEquals( 2, splits.length );
+    assertEquals( 2, splits[ 0 ].length() );
+    assertEquals( 6, splits[ 1 ].length() );
   }
 
   @Test
@@ -1049,6 +1119,28 @@ public class ReplaceStringProcessRowNoUnicodeTest {
   }
 
   @Test
+  public void testProcessRow_UseRegExYes_CaseSensitiveYes_WholeWordNo_UnicodeNo_RegexSplitAndConcatenate()
+    throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+    ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, true, false, false );
+
+    ReplaceString replaceString =
+      prepareTestProcessRow( data, meta, TESTPROCESSROW_STRING, TESTPROCESSROW_REGEX_SPLIT_PATTERN,
+        TESTPROCESSROW_REGEX_CONCATENATE_PATTERN );
+
+    replaceString.processRow( meta, data );
+
+    assertNotNull( replaceString.getRow() );
+    assertEquals( 2, replaceString.getRow().length );
+    assertNotNull( replaceString.getRow()[ 1 ] );
+    String[] splits =
+      StringUtils.split( (String) replaceString.getRow()[ 1 ], TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR );
+    assertEquals( 2, splits.length );
+    assertEquals( 1, splits[ 0 ].length() );
+    assertEquals( 7, splits[ 1 ].length() );
+  }
+
+  @Test
   public void testProcessRow_UseRegExYes_CaseSensitiveYes_WholeWordNo_UnicodeNo_RegexMatch() throws Exception {
     ReplaceStringData data = new ReplaceStringData();
     ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, true, false, false );
@@ -1190,6 +1282,28 @@ public class ReplaceStringProcessRowNoUnicodeTest {
     assertEquals( 2, replaceString.getRow().length );
     // Should return null
     assertNull( replaceString.getRow()[ 1 ] );
+  }
+
+  @Test
+  public void testProcessRow_UseRegExYes_CaseSensitiveYes_WholeWordYes_UnicodeNo_RegexSplitAndConcatenate()
+    throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+    ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, true, true, false );
+
+    ReplaceString replaceString =
+      prepareTestProcessRow( data, meta, TESTPROCESSROW_STRING, TESTPROCESSROW_REGEX_SPLIT_PATTERN,
+        TESTPROCESSROW_REGEX_CONCATENATE_PATTERN );
+
+    replaceString.processRow( meta, data );
+
+    assertNotNull( replaceString.getRow() );
+    assertEquals( 2, replaceString.getRow().length );
+    assertNotNull( replaceString.getRow()[ 1 ] );
+    String[] splits =
+      StringUtils.split( (String) replaceString.getRow()[ 1 ], TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR );
+    assertEquals( 2, splits.length );
+    assertEquals( 1, splits[ 0 ].length() );
+    assertEquals( 7, splits[ 1 ].length() );
   }
 
   @Test

@@ -64,6 +64,27 @@ public class ReplaceStringProcessRowUnicodeTest {
   private static final String TESTPROCESSROW_REPLACE_BY_STRING = "matched";
 
   /**
+   * <p>The Unicode latin small letter 'a' as a string.</p>
+   */
+  private static final String UNICODE_LATIN_SMALL_LETTER_A =
+    new String( new byte[] { 0, 97 }, StandardCharsets.UTF_16BE );
+  /**
+   * <p>The Unicode latin capital letter 'a' as a string.</p>
+   */
+  private static final String UNICODE_LATIN_CAPITAL_LETTER_A =
+    new String( new byte[] { 0, 65 }, StandardCharsets.UTF_16BE );
+  /**
+   * <p>The Unicode fullwidth latin capital letter 'a' as a string.</p>
+   */
+  private static final String UNICODE_FULLWIDTH_LATIN_CAPITAL_LETTER_A =
+    new String( new byte[] { -1, 65 }, StandardCharsets.UTF_16BE );
+  /**
+   * <p>The Unicode fullwidth latin small letter 'a' as a string.</p>
+   */
+  private static final String UNICODE_FULLWIDTH_LATIN_SMALL_LETTER_A =
+    new String( new byte[] { -1, 33 }, StandardCharsets.UTF_16BE );
+
+  /**
    * <p>The string to be used as input.</p>
    * <p>The string is composed of the following letters:</p>
    * <ul>
@@ -74,25 +95,52 @@ public class ReplaceStringProcessRowUnicodeTest {
    * </ul>
    */
   private static final String TESTPROCESSROW_STRING =
-    new String( new byte[] { 0, 97, 0, 65, -1, 65, -1, 33 }, StandardCharsets.UTF_16BE );
+    UNICODE_LATIN_SMALL_LETTER_A + UNICODE_LATIN_CAPITAL_LETTER_A + UNICODE_FULLWIDTH_LATIN_CAPITAL_LETTER_A
+      + UNICODE_FULLWIDTH_LATIN_SMALL_LETTER_A;
 
   /**
    * <p>Just the fullwidth latin small letter 'a'.</p>
    */
-  private static final String TESTPROCESSROW_SIMPLE_MATCH_PATTERN =
-    new String( new byte[] { -1, 33 }, StandardCharsets.UTF_16BE );
+  private static final String TESTPROCESSROW_SIMPLE_MATCH_PATTERN = UNICODE_FULLWIDTH_LATIN_SMALL_LETTER_A;
 
   /**
    * <p>The Regex expression for one or more fullwidth latin small letter 'a'.</p>
    */
-  private static final String TESTPROCESSROW_REGEX_MATCH_PATTERN = TESTPROCESSROW_SIMPLE_MATCH_PATTERN + '+';
+  private static final String TESTPROCESSROW_REGEX_MATCH_PATTERN = UNICODE_FULLWIDTH_LATIN_SMALL_LETTER_A + '+';
 
   /**
    * <p>A Regex expression that matches the entire string.</p>
    * <p>It matches/expects a latin small letter 'a', two random characters and a fullwidth latin small letter 'a'.</p>
    */
-  private static final String TESTPROCESSROW_REGEX_WHOLE_MATCH_PATTERN =
-    new String( new byte[] { 0, 97, 0, 46, 0, 46, -1, 33 }, StandardCharsets.UTF_16BE );
+  private static final String TESTPROCESSROW_REGEX_WHOLE_MATCH_PATTERN = UNICODE_LATIN_SMALL_LETTER_A + ".."
+    + UNICODE_FULLWIDTH_LATIN_SMALL_LETTER_A;
+
+  /**
+   * <p>Regex expression that splits the input string into two groups.</p>
+   * <p>It matches/expects one or more letters 'a', followed by one or more letters that not 'a'.</p>
+   *
+   * @see #TESTPROCESSROW_REGEX_CONCATENATE_PATTERN
+   */
+  private static final String TESTPROCESSROW_REGEX_SPLIT_PATTERN =
+    "([" + UNICODE_LATIN_SMALL_LETTER_A + "]+)([^" + UNICODE_LATIN_SMALL_LETTER_A + "]+)";
+
+  /**
+   * <p>The separator to be used in the concatenation of the identified groups.</p>
+   *
+   * @see #TESTPROCESSROW_REGEX_CONCATENATE_PATTERN
+   */
+  private static final char TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR = '-';
+
+  /**
+   * <p>Regex expression to concatenate the identified groups.</p>
+   * <p>Concatenates the two groups by the same order, separating both with a {@value
+   * #TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR}.</p>
+   *
+   * @see #TESTPROCESSROW_REGEX_SPLIT_PATTERN
+   * @see #TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR
+   */
+  private static final String TESTPROCESSROW_REGEX_CONCATENATE_PATTERN =
+    "$1" + TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR + "$2";
 
   @Before
   public void setUp() throws Exception {
@@ -774,6 +822,28 @@ public class ReplaceStringProcessRowUnicodeTest {
   }
 
   @Test
+  public void testProcessRow_UseRegExYes_CaseSensitiveNo_WholeWordNo_UnicodeYes_RegexSplitAndConcatenate()
+    throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+    ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, false, false, true );
+
+    ReplaceString replaceString =
+      prepareTestProcessRow( data, meta, TESTPROCESSROW_STRING, TESTPROCESSROW_REGEX_SPLIT_PATTERN,
+        TESTPROCESSROW_REGEX_CONCATENATE_PATTERN );
+
+    replaceString.processRow( meta, data );
+
+    assertNotNull( replaceString.getRow() );
+    assertEquals( 2, replaceString.getRow().length );
+    assertNotNull( replaceString.getRow()[ 1 ] );
+    String[] splits =
+      StringUtils.split( (String) replaceString.getRow()[ 1 ], TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR );
+    assertEquals( 2, splits.length );
+    assertEquals( 2, splits[ 0 ].length() );
+    assertEquals( 2, splits[ 1 ].length() );
+  }
+
+  @Test
   public void testProcessRow_UseRegExYes_CaseSensitiveNo_WholeWordNo_UnicodeYes_RegexMatch() throws Exception {
     ReplaceStringData data = new ReplaceStringData();
     ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, false, false, true );
@@ -915,6 +985,28 @@ public class ReplaceStringProcessRowUnicodeTest {
     assertEquals( 2, replaceString.getRow().length );
     // Should return null
     assertNull( replaceString.getRow()[ 1 ] );
+  }
+
+  @Test
+  public void testProcessRow_UseRegExYes_CaseSensitiveNo_WholeWordYes_UnicodeYes_RegexSplitAndConcatenate()
+    throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+    ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, false, true, true );
+
+    ReplaceString replaceString =
+      prepareTestProcessRow( data, meta, TESTPROCESSROW_STRING, TESTPROCESSROW_REGEX_SPLIT_PATTERN,
+        TESTPROCESSROW_REGEX_CONCATENATE_PATTERN );
+
+    replaceString.processRow( meta, data );
+
+    assertNotNull( replaceString.getRow() );
+    assertEquals( 2, replaceString.getRow().length );
+    assertNotNull( replaceString.getRow()[ 1 ] );
+    String[] splits =
+      StringUtils.split( (String) replaceString.getRow()[ 1 ], TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR );
+    assertEquals( 2, splits.length );
+    assertEquals( 2, splits[ 0 ].length() );
+    assertEquals( 2, splits[ 1 ].length() );
   }
 
   @Test
@@ -1062,6 +1154,28 @@ public class ReplaceStringProcessRowUnicodeTest {
   }
 
   @Test
+  public void testProcessRow_UseRegExYes_CaseSensitiveYes_WholeWordNo_UnicodeYes_RegexSplitAndConcatenate()
+    throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+    ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, true, false, true );
+
+    ReplaceString replaceString =
+      prepareTestProcessRow( data, meta, TESTPROCESSROW_STRING, TESTPROCESSROW_REGEX_SPLIT_PATTERN,
+        TESTPROCESSROW_REGEX_CONCATENATE_PATTERN );
+
+    replaceString.processRow( meta, data );
+
+    assertNotNull( replaceString.getRow() );
+    assertEquals( 2, replaceString.getRow().length );
+    assertNotNull( replaceString.getRow()[ 1 ] );
+    String[] splits =
+      StringUtils.split( (String) replaceString.getRow()[ 1 ], TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR );
+    assertEquals( 2, splits.length );
+    assertEquals( 1, splits[ 0 ].length() );
+    assertEquals( 3, splits[ 1 ].length() );
+  }
+
+  @Test
   public void testProcessRow_UseRegExYes_CaseSensitiveYes_WholeWordNo_UnicodeYes_RegexMatch() throws Exception {
     ReplaceStringData data = new ReplaceStringData();
     ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, true, false, true );
@@ -1203,6 +1317,28 @@ public class ReplaceStringProcessRowUnicodeTest {
     assertEquals( 2, replaceString.getRow().length );
     // Should return null
     assertNull( replaceString.getRow()[ 1 ] );
+  }
+
+  @Test
+  public void testProcessRow_UseRegExYes_CaseSensitiveYes_WholeWordYes_UnicodeYes_RegexSplitAndConcatenate()
+    throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+    ReplaceStringMeta meta = getReplaceStringMeta( stepMockHelper, true, true, true, true );
+
+    ReplaceString replaceString =
+      prepareTestProcessRow( data, meta, TESTPROCESSROW_STRING, TESTPROCESSROW_REGEX_SPLIT_PATTERN,
+        TESTPROCESSROW_REGEX_CONCATENATE_PATTERN );
+
+    replaceString.processRow( meta, data );
+
+    assertNotNull( replaceString.getRow() );
+    assertEquals( 2, replaceString.getRow().length );
+    assertNotNull( replaceString.getRow()[ 1 ] );
+    String[] splits =
+      StringUtils.split( (String) replaceString.getRow()[ 1 ], TESTPROCESSROW_REGEX_CONCATENATE_SEPARATOR );
+    assertEquals( 2, splits.length );
+    assertEquals( 1, splits[ 0 ].length() );
+    assertEquals( 3, splits[ 1 ].length() );
   }
 
   @Test
