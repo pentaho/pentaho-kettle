@@ -37,7 +37,7 @@ ee:
         - pentaho-geo-ee-${platform.version}.zip
         - pentaho-monitoring-plugin-mib-assembly-${platform.version}.zip
         - pir-plugin-ee-${platform.version}.zip
-        - snowflake-83-plugins-${platform.version}.zip
+        - snowflake-plugins-${snowflake-plugin.version}.zip
     server:
         - pentaho-server-ee-${platform.version}.zip
         - pentaho-server-manual-ee-${platform.version}.zip
