@@ -399,6 +399,13 @@ jobGroups:
        versionProperty :  pdi-plugins-ee.version
        archivable      :  true
        #parallelize     :  true
+       
+     - jobID           :  snowflake-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       root            :  snowflake
+       versionProperty :  snowflake-plugin.version
+       archivable      :  true
 
      - jobID           :  camel-components
        scmUrl          :  https://github.com/pentaho/pentaho-camel-components.git
