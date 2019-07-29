@@ -24,11 +24,13 @@ package org.pentaho.di.engine.configuration.impl.spark;
 
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.dialog.PropertiesComboDialog;
 import org.pentaho.di.ui.core.dialog.PropertiesDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
+import java.util.List;
 import java.util.Map;
 
 public class SparkTuningStepHandler extends AbstractXulEventHandler {
@@ -45,10 +47,13 @@ public class SparkTuningStepHandler extends AbstractXulEventHandler {
   public void openSparkTuning() {
     TransGraph transGraph = Spoon.getInstance().getActiveTransGraph();
     StepMeta stepMeta = transGraph.getCurrentStep();
-    String title = BaseMessages.getString( PKG, "TransGraph.Dialog.SparkTuning.Title" ) + " - " + stepMeta.getName();
+    String title = BaseMessages.getString( PKG, "TransGraph.Dialog.SparkTuning.Title" )
+      + " - " + stepMeta.getName();
 
-    PropertiesDialog dialog = new PropertiesDialog( transGraph.getParent().getShell(),
-      transGraph.getTransMeta(), stepMeta.getAttributes( SPARK_TUNING_PROPERTIES ), title );
+    List<String> tuningProperties = SparkTunableProperties.getProperties( stepMeta.getStepID() );
+
+    PropertiesDialog dialog = new PropertiesComboDialog( transGraph.getParent().getShell(), transGraph.getTransMeta(),
+      tuningProperties, stepMeta.getAttributes( SPARK_TUNING_PROPERTIES ), title );
     Map<String, String> properties = dialog.open();
 
     // null means the cancel button was clicked otherwise ok was clicked

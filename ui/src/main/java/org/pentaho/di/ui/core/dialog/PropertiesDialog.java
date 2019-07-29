@@ -96,9 +96,7 @@ public class PropertiesDialog extends Dialog {
     wOK.setLayoutData( fdOk );
     wOK.addListener( SWT.Selection, e -> ok() );
 
-    ColumnInfo[] columns = new ColumnInfo[]{
-      new ColumnInfo( "name", ColumnInfo.COLUMN_TYPE_TEXT ),
-      new ColumnInfo( "value", ColumnInfo.COLUMN_TYPE_TEXT ) };
+    ColumnInfo[] columns = createColumns();
 
     propertiesTable = new TableView(
       transMeta,
@@ -139,6 +137,12 @@ public class PropertiesDialog extends Dialog {
     }
 
     return properties;
+  }
+
+  protected ColumnInfo[] createColumns() {
+    return new ColumnInfo[]{
+      new ColumnInfo( BaseMessages.getString( "propertiesDialog.name" ), ColumnInfo.COLUMN_TYPE_TEXT ),
+      new ColumnInfo( BaseMessages.getString( "propertiesDialog.value" ), ColumnInfo.COLUMN_TYPE_TEXT ) };
   }
 
   private void populateData() {
