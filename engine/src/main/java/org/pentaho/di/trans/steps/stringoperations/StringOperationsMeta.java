@@ -672,49 +672,49 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     return true;
   }
 
-  private static String getTrimTypeCode( int i ) {
+  public static String getTrimTypeCode( int i ) {
     if ( i < 0 || i >= trimTypeCode.length ) {
       return trimTypeCode[0];
     }
     return trimTypeCode[i];
   }
 
-  private static String getLowerUpperCode( int i ) {
+  public static String getLowerUpperCode( int i ) {
     if ( i < 0 || i >= lowerUpperCode.length ) {
       return lowerUpperCode[0];
     }
     return lowerUpperCode[i];
   }
 
-  private static String getInitCapCode( int i ) {
+  public static String getInitCapCode( int i ) {
     if ( i < 0 || i >= initCapCode.length ) {
       return initCapCode[0];
     }
     return initCapCode[i];
   }
 
-  private static String getMaskXMLCode( int i ) {
+  public static String getMaskXMLCode( int i ) {
     if ( i < 0 || i >= maskXMLCode.length ) {
       return maskXMLCode[0];
     }
     return maskXMLCode[i];
   }
 
-  private static String getDigitsCode( int i ) {
+  public static String getDigitsCode( int i ) {
     if ( i < 0 || i >= digitsCode.length ) {
       return digitsCode[0];
     }
     return digitsCode[i];
   }
 
-  private static String getRemoveSpecialCharactersCode( int i ) {
+  public static String getRemoveSpecialCharactersCode( int i ) {
     if ( i < 0 || i >= removeSpecialCharactersCode.length ) {
       return removeSpecialCharactersCode[0];
     }
     return removeSpecialCharactersCode[i];
   }
 
-  private static String getPaddingCode( int i ) {
+  public static String getPaddingCode( int i ) {
     if ( i < 0 || i >= paddingCode.length ) {
       return paddingCode[0];
     }
