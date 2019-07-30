@@ -449,6 +449,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
         Collections.sort( tables );
         for ( String table : tables ) {
           DatabaseExplorerNode theTableNode = new DatabaseExplorerNode();
+          theTableNode.setSchema( schema );
           theTableNode.setIsTable( true );
           theTableNode.setName( table );
           theTableNode.setImage( TABLE_IMAGE );
