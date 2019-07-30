@@ -26,6 +26,9 @@ import com.google.common.base.Preconditions;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -440,4 +443,13 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
     extraOptions.put( "SNOWFLAKEHV." + WAREHOUSE, getAttribute( WAREHOUSE, "" ) );
   }
 
+  @Override public ResultSet getSchemas( DatabaseMetaData databaseMetaData, DatabaseMeta dbMeta )
+    throws SQLException {
+    return databaseMetaData.getSchemas( dbMeta.getDatabaseName(), null );
+  }
+
+  @Override public ResultSet getTables( DatabaseMetaData databaseMetaData, DatabaseMeta dbMeta, String schemaPattern,
+                                        String tableNamePattern, String[] tableTypes ) throws SQLException {
+    return databaseMetaData.getTables( dbMeta.getDatabaseName(), schemaPattern, tableNamePattern, tableTypes );
+  }
 }
