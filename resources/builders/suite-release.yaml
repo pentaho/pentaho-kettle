@@ -429,7 +429,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-plugins-ee.version
-       archivable      :  true
        
      - jobID           :  snowflake-plugin
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
