@@ -56,7 +56,9 @@ import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -3085,5 +3087,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   protected DatabaseInterface getDbInterface( String typeCode ) throws KettleDatabaseException {
     return getDatabaseInterface( typeCode );
+  }
+
+  public ResultSet getTables( DatabaseMetaData databaseMetaData, String schema, String table,
+                              String[] tableTypesToGet ) throws SQLException {
+    return databaseInterface.getTables( databaseMetaData, this, schema, table, tableTypesToGet );
+  }
+
+  public ResultSet getSchemas( DatabaseMetaData databaseMetaData ) throws SQLException {
+    return databaseInterface.getSchemas( databaseMetaData, this );
   }
 }

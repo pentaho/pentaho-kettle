@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -311,7 +311,7 @@ public class DatabaseMetaInformation {
               schemaResultSet.close();
               schemaStatement.close();
             } else {
-              ResultSet schemaResultSet = dbmd.getSchemas();
+              ResultSet schemaResultSet = databaseMeta.getDatabaseInterface().getSchemas( dbmd, databaseMeta );
               while ( schemaResultSet != null && schemaResultSet.next() ) {
                 String schemaName = schemaResultSet.getString( 1 );
                 schemaList.add( new Schema( schemaName ) );
@@ -325,7 +325,7 @@ public class DatabaseMetaInformation {
             ArrayList<String> schemaTables = new ArrayList<String>();
 
             try {
-              ResultSet schemaTablesResultSet = dbmd.getTables( null, schema.getSchemaName(), null, null );
+              ResultSet schemaTablesResultSet = dbmd.getTables( db.getDatabaseMeta().getDatabaseName(), schema.getSchemaName(), null, null );
               while ( schemaTablesResultSet.next() ) {
                 String tableName = schemaTablesResultSet.getString( 3 );
                 if ( !db.isSystemTable( tableName ) ) {
