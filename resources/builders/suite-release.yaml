@@ -433,7 +433,6 @@ jobGroups:
      - jobID           :  snowflake-plugin
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Deula-wrap
        root            :  snowflake
        versionProperty :  snowflake-plugin.version
        archivable      :  true
