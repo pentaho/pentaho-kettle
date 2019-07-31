@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,7 +66,7 @@ public class CarteServlet extends HttpServlet {
 
   public void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
     String servletPath = req.getPathInfo();
-    if ( servletPath.endsWith( "/" ) ) {
+    if ( servletPath != null && servletPath.endsWith( "/" ) ) {
       servletPath = servletPath.substring( 0, servletPath.length() - 1 );
     }
     CartePluginInterface plugin = cartePluginRegistry.get( servletPath );
