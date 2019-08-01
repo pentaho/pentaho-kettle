@@ -48,7 +48,7 @@ buildProperties:
 
   # SP specific parameters
   PREVIOUS_RELEASE_VERSION       : ""
-  SP_RELEASE_VERSION             : "201905"
+  SP_RELEASE_VERSION             : ""
   DO_AUTO_PATCH                  : false
 
 
@@ -230,6 +230,12 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metadata.version
 
+     - jobID           :  hadoop-shims-api
+       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -DskipDefault -Deula-wrap -P api
+       versionProperty :  pentaho-hadoop-shims.version
+
   1300:
 
      - jobID           :  database-gwt
@@ -264,6 +270,14 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-dataservice-client-plugin.version
 
+     - jobID           :  hadoop-shims-common
+       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       root            :  common
+       parallelize     :  true
+       versionProperty :  pentaho-hadoop-shims.version
+       directives      :  += -Deula-wrap
+
   1400:
 
      - jobID           :  archetypes-ee
@@ -271,12 +285,14 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  archetypes.version
 
-     - jobID           :  big-data-hadoop-shims
+     - jobID           :  hadoop-shims-all
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -Deula-wrap -P api,shims,all
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  true
+       root            :  shims
+       parallelize     :  true
+       directives      :  += -Deula-wrap
 
   1500:
 
@@ -498,7 +514,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-user-console -Djavadoc
-       #parallelize     :  true
+       parallelize     :  true
        versionProperty :  platform.version
 
      - jobID           :  big-data-plugin-features
@@ -545,17 +561,26 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting-plugin.version
-       #parallelize     :  true
+       parallelize     :  true
+
+     - jobID           :  hadoop-shims-ee-common
+       scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -DskipDefault -Deula-wrap -P common
+       parallelize     :  true
+       versionProperty :  pentaho-hadoop-shims.version
 
   3000:
 
-     - jobID           :  big-data-hadoop-shims-ee
+     - jobID           :  hadoop-shims-ee-all
        scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P base,all -Deula-wrap
+       root            :  shims
+       directives      :  += -P all -Deula-wrap
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  true
        atomicScmCheckout: true
+       parallelize     :  true
 
      - jobID           :  cda-plugin
        scmUrl          :  https://github.com/webdetails/cda.git
@@ -599,6 +624,7 @@ jobGroups:
        directives      :  += -Dagilebi -Deula-wrap
        versionProperty :  analyzer-plugin.version
        archivable      :  true
+       parallelize     :  true
 
   3500:
 
@@ -644,6 +670,7 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  dashboard-plugin.version
        archivable      :  true
+       parallelize     :  true
 
      - jobID           :  pdi-weka-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining.git
@@ -773,6 +800,7 @@ jobGroups:
        versionProperty :  pdi.version
        testable        :  false
        archivable      :  true
+       parallelize     :  true
 
   4300:
 
@@ -783,6 +811,7 @@ jobGroups:
        versionProperty :  pdi.version
        testable        :  false
        archivable      :  true
+       parallelize     :  true
 
   4400:
 
@@ -823,6 +852,7 @@ jobGroups:
        versionProperty :  platform.version
        testable        :  false
        archivable      :  true
+       parallelize     :  true
 
      - jobID           :  metadata-editor-ee
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
