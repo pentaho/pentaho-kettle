@@ -368,7 +368,11 @@ public class EnterSelectionDialog extends Dialog {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           super.widgetSelected( selectionEvent );
           setActive();
-          wConstantValue.setFocus();
+          if ( wbUseConstant.getSelection() ) {
+            wConstantValue.setFocus();
+          } else {
+            wSelection.setFocus();
+          }
         }
       } );
 
@@ -415,6 +419,11 @@ public class EnterSelectionDialog extends Dialog {
     wOK.setFocus();
 
     shell.open();
+    if ( wbUseConstant.getSelection() ) {
+      wConstantValue.setFocus();
+    } else {
+      wSelection.setFocus();
+    }
 
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
@@ -569,6 +578,8 @@ public class EnterSelectionDialog extends Dialog {
     wOK.setFocus();
     shell.pack();
     shell.open();
+
+    wlSelection.setFocus();
 
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
