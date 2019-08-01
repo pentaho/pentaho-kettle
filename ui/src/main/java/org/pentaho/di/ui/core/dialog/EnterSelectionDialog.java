@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -368,6 +368,7 @@ public class EnterSelectionDialog extends Dialog {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           super.widgetSelected( selectionEvent );
           setActive();
+          wConstantValue.setFocus();
         }
       } );
 
