@@ -586,4 +586,8 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     repositoryDirectory.setPath( file.getParent() );
     return repositoryDirectory;
   }
+
+  public void clearProviderCache() {
+    //Any local caches that this provider might use should be cleared here.
+  }
 }

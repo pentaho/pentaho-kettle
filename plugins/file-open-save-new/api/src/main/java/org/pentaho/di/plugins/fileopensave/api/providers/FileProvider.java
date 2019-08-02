@@ -67,4 +67,6 @@ public interface FileProvider<T extends File> {
   T writeFile( InputStream inputStream, T destDir, String path, boolean overwrite ) throws FileException;
 
   T getParent( T file );
+
+  void clearProviderCache();
 }

@@ -240,4 +240,8 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
 
     return fileSystem;
   }
+
+  public void clearProviderCache() {
+    //Any local caches that this provider might use should be cleared here.
+  }
 }
