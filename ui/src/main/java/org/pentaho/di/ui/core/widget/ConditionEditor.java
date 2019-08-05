@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -549,7 +549,7 @@ public class ConditionEditor extends Composite {
       case AREA_SUBCONDITION:
         mPop = new Menu( widget );
         MenuItem miEdit = new MenuItem( mPop, SWT.CASCADE );
-        miEdit.setText( "Edit condition" );
+        miEdit.setText( BaseMessages.getString( PKG, "ConditionEditor.EditCondition.Label" ) );
         miEdit.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent e ) {
