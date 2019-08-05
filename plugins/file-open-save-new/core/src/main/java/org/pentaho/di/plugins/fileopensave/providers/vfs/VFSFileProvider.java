@@ -417,4 +417,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         .getConnectionProvider( key );
     return vfsConnectionProvider;
   }
+
+  public void clearProviderCache() {
+    this.roots = new HashMap<>();
+  }
 }
