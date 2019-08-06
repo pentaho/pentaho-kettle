@@ -296,7 +296,7 @@ public class BaseStepDialog extends Dialog {
 
     setShellImage( shell );
 
-    if ( stepMeta.isDeprecated() ) {
+    if ( stepMeta != null && stepMeta.isDeprecated() ) {
 
       addDeprecation();
     }

@@ -22,9 +22,11 @@
 
 package org.pentaho.di.trans.steps.tableinput;
 
+import org.apache.commons.lang.UnhandledException;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ProgressNullMonitorListener;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
@@ -61,8 +63,12 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 /*
@@ -83,7 +89,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   @Injection( name = "LIMIT" )
   private String rowLimit;
 
-  /** Should I execute once per row? */
+  /**
+   * Should I execute once per row?
+   */
   @Injection( name = "EXECUTE_FOR_EACH_ROW" )
   private boolean executeEachInputRow;
 
@@ -92,6 +100,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Injection( name = "LAZY_CONVERSION" )
   private boolean lazyConversionActive;
+
+  @Injection( name = "CACHED_ROW_META" )
+  private boolean cachedRowMetaActive;
+
+  private RowMetaInterface cachedRowMeta;
 
   public TableInputMeta() {
     super();
@@ -110,8 +123,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param oncePerRow
-   *          true if the step should be run per row
+   * @param oncePerRow true if the step should be run per row
    */
   public void setExecuteEachInputRow( boolean oncePerRow ) {
     this.executeEachInputRow = oncePerRow;
@@ -125,8 +137,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param database
-   *          The database to set.
+   * @param database The database to set.
    */
   public void setDatabaseMeta( DatabaseMeta database ) {
     this.databaseMeta = database;
@@ -140,8 +151,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param rowLimit
-   *          The rowLimit to set.
+   * @param rowLimit The rowLimit to set.
    */
   public void setRowLimit( String rowLimit ) {
     this.rowLimit = rowLimit;
@@ -155,8 +165,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param sql
-   *          The sql to set.
+   * @param sql The sql to set.
    */
   public void setSQL( String sql ) {
     this.sql = sql;
@@ -185,6 +194,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       executeEachInputRow = "Y".equals( XMLHandler.getTagValue( stepnode, "execute_each_row" ) );
       variableReplacementActive = "Y".equals( XMLHandler.getTagValue( stepnode, "variables_active" ) );
       lazyConversionActive = "Y".equals( XMLHandler.getTagValue( stepnode, "lazy_conversion_active" ) );
+      cachedRowMetaActive = "Y".equals( XMLHandler.getTagValue( stepnode, "cached_row_meta_active" ) );
+      cachedRowMeta = new RowMeta( XMLHandler.getSubNode( stepnode, RowMeta.XML_META_TAG ) );
+
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
@@ -202,9 +214,14 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( databaseMeta == null ) {
       return; // TODO: throw an exception here
+    }
+
+    if ( cachedRowMetaActive ) {
+      row.addRowMeta( cachedRowMeta );
+      return;
     }
 
     boolean param = false;
@@ -229,10 +246,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     if ( add != null ) {
-      for ( int i = 0; i < add.size(); i++ ) {
-        ValueMetaInterface v = add.getValueMeta( i );
-        v.setOrigin( origin );
-      }
+      attachOrigin( add, origin );
       row.addRowMeta( add );
     } else {
       try {
@@ -244,8 +258,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
         if ( !Utils.isEmpty( infoStream.getStepname() ) ) {
           param = true;
-          if ( info.length > 0 && info[0] != null ) {
-            paramRowMeta = info[0];
+          if ( info.length > 0 && info[ 0 ] != null ) {
+            paramRowMeta = info[ 0 ];
             paramData = RowDataUtil.allocateRowData( paramRowMeta.size() );
           }
         }
@@ -255,10 +269,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         if ( add == null ) {
           return;
         }
-        for ( int i = 0; i < add.size(); i++ ) {
-          ValueMetaInterface v = add.getValueMeta( i );
-          v.setOrigin( origin );
-        }
+        attachOrigin( add, origin );
         row.addRowMeta( add );
       } catch ( KettleException ke ) {
         throw new KettleStepException( "Unable to get queryfields for SQL: " + Const.CR + sNewSQL, ke );
@@ -283,6 +294,13 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  private void attachOrigin( RowMetaInterface rmi, String origin ) {
+    for ( int i = 0; i < rmi.size(); i++ ) {
+      ValueMetaInterface v = rmi.getValueMeta( i );
+      v.setOrigin( origin );
+    }
+  }
+
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -295,11 +313,31 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "execute_each_row", executeEachInputRow ) );
     retval.append( "    " + XMLHandler.addTagValue( "variables_active", variableReplacementActive ) );
     retval.append( "    " + XMLHandler.addTagValue( "lazy_conversion_active", lazyConversionActive ) );
-
+    retval.append( "    " + XMLHandler.addTagValue( "cached_row_meta_active", cachedRowMetaActive ) );
+    storeCachedRowMeta( retval );
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  private void storeCachedRowMeta( StringBuilder retval ) {
+    // Cache the cache flag . . . it's odd, but this is so we can set the actual cached values with existing logic.
+    boolean originalCachedFlag = cachedRowMetaActive;
+    try {
+      cachedRowMetaActive = false;
+      // This ultimately calls back into the getFields method with everything it needs.
+      ProgressNullMonitorListener progressMonitor = new ProgressNullMonitorListener();
+      RowMetaInterface rowMeta = parentStepMeta.getParentTransMeta().getStepFields( parentStepMeta, progressMonitor );
+      if ( rowMeta != null ) {
+        retval.append( "    " + rowMeta.getMetaXML() );
+      }
+    } catch ( KettleStepException | IOException e ) {
+      throw new RuntimeException( "Unexpected error stored cached row meta data.", e );
+    } finally {
+      this.cachedRowMetaActive = originalCachedFlag;
+    }
+  }
+
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     this.databases = databases;
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
@@ -317,12 +355,25 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       executeEachInputRow = rep.getStepAttributeBoolean( id_step, "execute_each_row" );
       variableReplacementActive = rep.getStepAttributeBoolean( id_step, "variables_active" );
       lazyConversionActive = rep.getStepAttributeBoolean( id_step, "lazy_conversion_active" );
+      cachedRowMetaActive = rep.getStepAttributeBoolean( id_step, "cached_row_meta_active" );
+
+      String sRowMeta = rep.getStepAttributeString( id_step, RowMeta.XML_META_TAG );
+      if ( sRowMeta != null ) {
+        Node node = DocumentBuilderFactory
+          .newInstance()
+          .newDocumentBuilder()
+          .parse( new ByteArrayInputStream( sRowMeta.getBytes() ) )
+          .getDocumentElement();
+        cachedRowMeta = new RowMeta( node ); ;
+      }
+
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "sql", sql );
@@ -332,6 +383,10 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "execute_each_row", executeEachInputRow );
       rep.saveStepAttribute( id_transformation, id_step, "variables_active", variableReplacementActive );
       rep.saveStepAttribute( id_transformation, id_step, "lazy_conversion_active", lazyConversionActive );
+      rep.saveStepAttribute( id_transformation, id_step, "cached_row_meta_active", cachedRowMetaActive );
+      if ( cachedRowMeta != null ) {
+        rep.saveStepAttribute( id_transformation, id_step, RowMeta.XML_META_TAG, cachedRowMeta.getMetaXML() );
+      }
 
       // Also, save the step-database relationship!
       if ( databaseMeta != null ) {
@@ -343,8 +398,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( databaseMeta != null ) {
@@ -387,7 +442,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     if ( !Utils.isEmpty( infoStream.getStepname() ) ) {
       boolean found = false;
       for ( int i = 0; i < input.length; i++ ) {
-        if ( infoStream.getStepname().equalsIgnoreCase( input[i] ) ) {
+        if ( infoStream.getStepname().equalsIgnoreCase( input[ i ] ) ) {
           found = true;
         }
       }
@@ -428,8 +483,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
           cr =
             new CheckResult(
               CheckResultInterface.TYPE_RESULT_ERROR, "This step is receiving "
-                + info.size() + " but not the expected " + count
-                + " fields of input from the previous step.", stepMeta );
+              + info.size() + " but not the expected " + count
+              + " fields of input from the previous step.", stepMeta );
           remarks.add( cr );
         }
       } else {
@@ -455,8 +510,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param steps
-   *          optionally search the info step in a list of steps
+   * @param steps optionally search the info step in a list of steps
    */
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
     List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
@@ -466,7 +520,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new TableInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -476,8 +530,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-    IMetaStore metaStore ) throws KettleStepException {
+                             RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info,
+                             Repository repository,
+                             IMetaStore metaStore ) throws KettleStepException {
 
     // if ( stepMeta.getName().equalsIgnoreCase( "cdc_cust" ) ) {
     //   System.out.println( "HERE!" );
@@ -494,7 +549,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         DatabaseImpact ii =
           new DatabaseImpact(
             DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-              .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
+            .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
             "read from one or more database tables via SQL statement" );
         impact.add( ii );
 
@@ -518,8 +573,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param variableReplacementActive
-   *          The variableReplacementActive to set.
+   * @param variableReplacementActive The variableReplacementActive to set.
    */
   public void setVariableReplacementActive( boolean variableReplacementActive ) {
     this.variableReplacementActive = variableReplacementActive;
@@ -533,11 +587,38 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param lazyConversionActive
-   *          the lazyConversionActive to set
+   * @param lazyConversionActive the lazyConversionActive to set
    */
   public void setLazyConversionActive( boolean lazyConversionActive ) {
     this.lazyConversionActive = lazyConversionActive;
+  }
+
+  /**
+   * @return the cachedRowMetaActive
+   */
+  public boolean isCachedRowMetaActive() {
+    return cachedRowMetaActive;
+  }
+
+  /**
+   * @param cachedRowMetaActive the cachedRowMetaActive to set
+   */
+  public void setCachedRowMetaActive( boolean cachedRowMetaActive ) {
+    this.cachedRowMetaActive = cachedRowMetaActive;
+  }
+
+  /**
+   * @return the cachedRowMetaActive
+   */
+  public RowMetaInterface getCachedRowMeta() {
+    return cachedRowMeta;
+  }
+
+  /**
+   * @param cachedRowMeta the cachedRowMetaActive to set
+   */
+  public void setCachedRowMeta( RowMetaInterface cachedRowMeta ) {
+    this.cachedRowMeta = cachedRowMeta;
   }
 
   /**
@@ -567,8 +648,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * For compatibility, wraps around the standard step IO metadata
    *
-   * @param stepMeta
-   *          The step where you read lookup data from
+   * @param stepMeta The step where you read lookup data from
    */
   public void setLookupFromStep( StepMeta stepMeta ) {
     getStepIOMeta().getInfoStreams().get( 0 ).setStepMeta( stepMeta );

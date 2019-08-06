@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
@@ -62,6 +63,8 @@ public class PanCommandExecutorTest {
 
   @Before
   public void setUp() throws Exception {
+
+    KettleEnvironment.init();
 
     repository = mock( Repository.class );
     fsMetaStore = mock( IMetaStore.class );

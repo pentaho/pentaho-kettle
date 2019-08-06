@@ -28,10 +28,12 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -47,8 +49,16 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
+import org.pentaho.di.trans.steps.loadsave.validator.ListLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.ObjectValidator;
+import org.pentaho.di.trans.steps.switchcase.SwitchCaseTarget;
 
 /**
  * User: Dzmitry Stsiapanau Date: 2/4/14 Time: 5:47 PM
@@ -72,7 +82,8 @@ public class TableInputMetaTest {
     KettleEnvironment.init();
     PluginRegistry.init( false );
     List<String> attributes =
-        Arrays.asList( "databaseMeta", "sQL", "rowLimit", "executeEachInputRow", "variableReplacementActive", "lazyConversionActive" );
+      Arrays.asList( "databaseMeta", "sQL", "rowLimit", "executeEachInputRow", "variableReplacementActive",
+        "lazyConversionActive", "cachedRowMetaActive" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
@@ -82,7 +93,7 @@ public class TableInputMetaTest {
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+      new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
   }
 
   @Test
