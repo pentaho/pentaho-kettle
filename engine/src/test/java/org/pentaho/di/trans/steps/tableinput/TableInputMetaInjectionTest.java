@@ -63,6 +63,11 @@ public class TableInputMetaInjectionTest extends BaseMetadataInjectionTest<Table
         return meta.isLazyConversionActive();
       }
     } );
+    check( "CACHED_ROW_META", new BooleanGetter() {
+      public boolean get() {
+        return meta.isCachedRowMetaActive();
+      }
+    } );
     skipPropertyTest( "CONNECTIONNAME" );
   }
 }
