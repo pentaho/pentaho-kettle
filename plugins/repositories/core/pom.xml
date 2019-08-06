@@ -26,7 +26,7 @@
     <junit.version>4.11</junit.version>
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
     <rap.version>3.9.0</rap.version>
-    <webspoon.version>8.2.0.0-342-18</webspoon.version>
+    <webspoon.version>8.3.0.0-371-19</webspoon.version>
   </properties>
 
   <dependencies>
