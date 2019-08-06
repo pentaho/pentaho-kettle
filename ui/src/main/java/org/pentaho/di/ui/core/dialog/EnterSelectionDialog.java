@@ -419,9 +419,9 @@ public class EnterSelectionDialog extends Dialog {
     wOK.setFocus();
 
     shell.open();
-    if ( wbUseConstant.getSelection() ) {
+    if ( wbUseConstant != null && wbUseConstant.getSelection() ) {
       wConstantValue.setFocus();
-    } else {
+    } else if ( wSelection != null ) {
       wSelection.setFocus();
     }
 
@@ -579,7 +579,7 @@ public class EnterSelectionDialog extends Dialog {
     shell.pack();
     shell.open();
 
-    wlSelection.setFocus();
+    wSelection.setFocus();
 
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
