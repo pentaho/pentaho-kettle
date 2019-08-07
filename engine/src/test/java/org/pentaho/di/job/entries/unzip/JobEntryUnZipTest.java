@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
@@ -126,15 +127,40 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
     FileObject sourceFileObject = Mockito.mock( FileObject.class );
     Mockito.doReturn( Mockito.mock( FileName.class ) ).when( sourceFileObject ).getName();
 
+    FileObject moveToDir = KettleVFS.getFileObject( System.getProperty( "user.dir" ) );
+
     //delete
     jobEntryUnZip.afterunzip = 1;
-    unzipPostprocessingMethod.invoke( jobEntryUnZip, sourceFileObject, Mockito.mock( FileObject.class ), "" );
+    unzipPostprocessingMethod.invoke( jobEntryUnZip, sourceFileObject, moveToDir, "" );
     Mockito.verify( sourceFileObject, Mockito.times( 1 ) ).delete();
 
     //move
     jobEntryUnZip.afterunzip = 2;
-    unzipPostprocessingMethod.invoke( jobEntryUnZip, sourceFileObject, Mockito.mock( FileObject.class ), "" );
+    unzipPostprocessingMethod.invoke( jobEntryUnZip, sourceFileObject, moveToDir, "" );
     Mockito.verify( sourceFileObject, Mockito.times( 1 ) ).moveTo( Mockito.anyObject() );
+  }
+
+  @Test
+  public void unzipPostProcessingTestWithInvalidPath() throws Exception {
+
+    JobEntryUnZip jobEntryUnZip = new JobEntryUnZip();
+
+    Method unzipPostprocessingMethod = jobEntryUnZip.getClass().getDeclaredMethod( "doUnzipPostProcessing", FileObject.class, FileObject.class, String.class );
+    unzipPostprocessingMethod.setAccessible( true );
+    FileObject sourceFileObject = Mockito.mock( FileObject.class );
+    Mockito.doReturn( Mockito.mock( FileName.class ) ).when( sourceFileObject ).getName();
+
+    FileObject moveToDir = Mockito.mock( FileObject.class );
+
+    //delete
+    jobEntryUnZip.afterunzip = 1;
+    unzipPostprocessingMethod.invoke( jobEntryUnZip, sourceFileObject, moveToDir, "" );
+    Mockito.verify( sourceFileObject, Mockito.times( 1 ) ).delete();
+
+    //move - not called because moveToDir is a mock and does not exits - invalid path to move to
+    jobEntryUnZip.afterunzip = 2;
+    unzipPostprocessingMethod.invoke( jobEntryUnZip, sourceFileObject, moveToDir, "" );
+    Mockito.verify( sourceFileObject, Mockito.times( 0 ) ).moveTo( Mockito.anyObject() );
   }
 
 }
