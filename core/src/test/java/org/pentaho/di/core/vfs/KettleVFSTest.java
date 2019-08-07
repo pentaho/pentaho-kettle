@@ -22,17 +22,13 @@
 
 package org.pentaho.di.core.vfs;
 
-
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-
-
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleFileException;
 
-
-import java.io.IOException;
-
+import java.io.File;
 
 public class KettleVFSTest {
 
@@ -52,23 +48,75 @@ public class KettleVFSTest {
 
 
   @Test
-  public void testCheckForSchemeSuccess() throws KettleFileException, IOException {
-    String[] schemes = {"hdfs"};
+  public void testCheckForSchemeSuccess() throws KettleFileException {
     String vfsFilename = "hdfs://hsbcmaster.labs.eag.hitachivantara.com:8020/tmp/acltest/";
 
-    boolean test = KettleVFS.checkForScheme(schemes, true, vfsFilename, null, null);
-    assertFalse( test );
+    boolean test = "hdfs".equals( KettleVFS.getScheme( vfsFilename ) );
+    assertTrue( test );
+  }
 
+  @Test( expected = KettleFileException.class )
+  public void testCheckForSchemeFailWithException() throws KettleFileException {
+    String invalidVfsFilename = "{\"textMessage\":{\"textMessage\":\" textMessage"
+      + "textMessage \",\"textMessage\":{textMessage}}}";
+
+    KettleVFS.getScheme( invalidVfsFilename );
   }
 
   @Test
-  public void testCheckForSchemeFail() throws KettleFileException, IOException {
-    String[] schemes = {"file"};
+  public void testCheckForSchemeFail() throws KettleFileException {
     String vfsFilename = "hdfs://hsbcmaster.labs.eag.hitachivantara.com:8020/tmp/acltest/";
 
-    boolean test = KettleVFS.checkForScheme(schemes, true, vfsFilename, null, null);
-    assertTrue( test );
+    boolean test = "file".equals( KettleVFS.getScheme( vfsFilename ) );
+    assertFalse( test );
+  }
 
+  @Test
+  public void testIfSchemeIsRelativePath() {
+    String vfsFilename = "file://hsbcmaster.labs.eag.hitachivantara.com:8020/tmp/acltest/";
+
+    boolean testVfsFilename =  KettleVFS.isRelativePath( vfsFilename );
+    assertFalse( testVfsFilename );
+  }
+
+  @Test
+  public void testIfRelativePathIsRelativePath() {
+    String relativePathVfsFilename = "/tmp/acltest/";
+
+    boolean testRelativePathVfsFilename =  KettleVFS.isRelativePath( relativePathVfsFilename );
+    assertTrue( testRelativePathVfsFilename );
+  }
+
+  @Test
+  public void testIfBlankIsRelativePath() {
+    String blankVfsFilename =  "";
+
+    boolean testBlankVfsFilename =  KettleVFS.isRelativePath( blankVfsFilename );
+    assertTrue( testBlankVfsFilename );
+  }
+
+  @Test
+  public void testIfNullIsRelativePath() {
+    String nullVfsFilename = null;
+
+    boolean testNullVfsFilename = KettleVFS.isRelativePath( nullVfsFilename );
+    assertTrue( testNullVfsFilename );
+  }
+
+  @Test
+  public void testNormalizePathWithFile() {
+    String vfsFilename = "\\\\tmp/acltest.txt";
+
+    String testNormalizePath = KettleVFS.normalizePath( vfsFilename );
+    assertTrue( testNormalizePath.startsWith( "file:/" )  );
+  }
+
+  @Test
+  public void testNormalizePath() {
+    String vfsFilename = "tmp/acltest";
+
+    String testNormalizePath = KettleVFS.normalizePath( vfsFilename );
+    assertEquals( new File( vfsFilename ).getAbsolutePath(), testNormalizePath );
   }
 
 }
