@@ -81,11 +81,11 @@ public class TransDebugMetaTest {
     when( stepDebugMeta.getRowBuffer() ).thenReturn( list );
 
     assertFalse( trans.isPaused() );
-    transDebugMeta.rowWrittenEventDebug( rowMetaInterface, new Object[]{}, stepDebugMeta, trans, transDebugMeta );
+    transDebugMeta.rowWrittenEventHandler( rowMetaInterface, new Object[]{}, stepDebugMeta, trans, transDebugMeta );
     verify( trans, times( 1 ) ).pauseRunning();
     assertTrue( trans.isPaused() );
 
-    transDebugMeta.rowWrittenEventDebug( rowMetaInterface, new Object[]{}, stepDebugMeta, trans, transDebugMeta );
+    transDebugMeta.rowWrittenEventHandler( rowMetaInterface, new Object[]{}, stepDebugMeta, trans, transDebugMeta );
     assertTrue( trans.isPaused() );
     verify( trans, times( 1 ) ).pauseRunning();
   }
