@@ -24,27 +24,41 @@ package org.pentaho.di.kitchen;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.base.Params;
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.util.Base64;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith( PowerMockRunner.class )
+@PrepareForTest( BaseMessages.class )
 public class KitchenCommandExecutorTest {
 
   private KitchenCommandExecutor mockedKitchenCommandExecutor;
 
   @Before
   public void setUp() throws Exception {
-
+    KettleLogStore.init();
     mockedKitchenCommandExecutor = mock( KitchenCommandExecutor.class );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
@@ -52,6 +66,7 @@ public class KitchenCommandExecutorTest {
     when( mockedKitchenCommandExecutor.loadJobFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
     when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyBoolean() ) ).thenCallRealMethod();
     when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyString() ) ).thenCallRealMethod();
+
   }
 
   @After
@@ -66,5 +81,25 @@ public class KitchenCommandExecutorTest {
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
     Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( null, fileName, base64Zip );
     assertNotNull( job );
+  }
+
+  @Test
+  public void testExecuteWithInvalidRepository() {
+    // Create Mock Objects
+    Params params = mock( Params.class );
+    KitchenCommandExecutor kitchenCommandExecutor = new KitchenCommandExecutor( Kitchen.class );
+    PowerMockito.mockStatic( BaseMessages.class );
+
+    // Mock returns
+    when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
+    when( BaseMessages.getString( any( Class.class ), anyString(), anyVararg() ) ).thenReturn( "" );
+
+    try {
+      Result result = kitchenCommandExecutor.execute( params );
+      Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
+    } catch ( Throwable throwable ) {
+      Assert.fail();
+    }
+
   }
 }
