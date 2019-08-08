@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.powermock.api.mockito.PowerMockito;
@@ -41,6 +42,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.File;
 import java.util.Base64;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -49,29 +51,36 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( BaseMessages.class )
 public class KitchenCommandExecutorTest {
 
   private KitchenCommandExecutor mockedKitchenCommandExecutor;
+  private Result result;
+  private LogChannelInterface logChannelInterface;
 
   @Before
   public void setUp() throws Exception {
     KettleLogStore.init();
     mockedKitchenCommandExecutor = mock( KitchenCommandExecutor.class );
+    result = mock( Result.class );
+    logChannelInterface = mock( LogChannelInterface.class );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
     when( mockedKitchenCommandExecutor.loadJobFromFilesystem( anyString(), anyString(), anyObject() ) ).thenCallRealMethod();
     when( mockedKitchenCommandExecutor.loadJobFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
     when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyBoolean() ) ).thenCallRealMethod();
     when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyString() ) ).thenCallRealMethod();
-
+    when( mockedKitchenCommandExecutor.getReturnCode() ).thenCallRealMethod();
   }
 
   @After
   public void tearDown() {
     mockedKitchenCommandExecutor = null;
+    result = null;
+    logChannelInterface = null;
   }
 
   @Test
@@ -81,6 +90,29 @@ public class KitchenCommandExecutorTest {
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
     Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( null, fileName, base64Zip );
     assertNotNull( job );
+  }
+
+  @Test
+  public void testReturnCodeSuccess() {
+    when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
+    when( result.getResult() ).thenReturn( true );
+    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
+  }
+
+  @Test
+  public void testReturnCodeWithErrors() {
+    mockStatic( BaseMessages.class );
+    when( result.getNrErrors() ).thenReturn( new Long( 1 ) );
+    when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
+    when( mockedKitchenCommandExecutor.getLog() ).thenReturn( logChannelInterface );
+    when( BaseMessages.getString( any(), anyString() ) ).thenReturn( "NoMessage" );
+    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+  }
+
+  @Test
+  public void testReturnCodeFailWithNoErrors() {
+    when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
+    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
   }
 
   @Test
@@ -100,6 +132,5 @@ public class KitchenCommandExecutorTest {
     } catch ( Throwable throwable ) {
       Assert.fail();
     }
-
   }
 }
