@@ -71,6 +71,9 @@ public class FileBrowserEndpoint {
                             @QueryParam( "useCache" ) Boolean useCache,
                             File file ) {
     useCache = useCache != null ? useCache : true;
+    if ( !useCache ) {
+      fileController.clearCache( file );
+    }
     return Response.ok( fileController.getFiles( file, filters, useCache ) ).build();
   }
 

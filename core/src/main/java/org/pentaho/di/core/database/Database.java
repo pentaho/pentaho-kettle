@@ -1951,7 +1951,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Retrieves the table description matching the schema and table name.
    *
-   * @param shema the schema name pattern
+   * @param schema the schema name pattern
    * @param table the table name pattern
    * @return table description row set
    * @throws KettleDatabaseException if DatabaseMetaData is null or some database error occurs
@@ -1962,7 +1962,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetDbMeta" ) );
     }
     try {
-      tables = getDatabaseMetaData().getTables( null, schema, table, TABLE_TYPES_TO_GET );
+      tables = databaseMeta.getTables(
+        getDatabaseMetaData(), schema, table, TABLE_TYPES_TO_GET );
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetTableNames" ), e );
     }
@@ -1975,7 +1976,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Retrieves the columns metadata matching the schema and table name.
    *
-   * @param shema the schema name pattern
+   * @param schema the schema name pattern
    * @param table the table name pattern
    * @return columns description row set
    * @throws KettleDatabaseException if DatabaseMetaData is null or some database error occurs
@@ -3952,7 +3953,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     Map<String, Collection<String>> tableMap = new HashMap<String, Collection<String>>();
     ResultSet alltables = null;
     try {
-      alltables = getDatabaseMetaData().getTables( null, schemaname, null, databaseMeta.getTableTypes() );
+      alltables = databaseMeta.getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getTableTypes() );
       while ( alltables.next() ) {
         // due to PDI-743 with ODBC and MS SQL Server the order is changed and
         // try/catch included for safety
@@ -4068,7 +4069,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     Map<String, Collection<String>> viewMap = new HashMap<String, Collection<String>>();
     ResultSet allviews = null;
     try {
-      allviews = getDatabaseMetaData().getTables( null, schemaname, null, databaseMeta.getViewTypes() );
+      allviews = getDatabaseMeta().getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getViewTypes() );
       while ( allviews.next() ) {
         // due to PDI-743 with ODBC and MS SQL Server the order is changed and
         // try/catch included for safety
@@ -4167,7 +4168,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // ArrayList<String> names = new ArrayList<String>();
     ResultSet alltables = null;
     try {
-      alltables = getDatabaseMetaData().getTables( null, schemaname, null, databaseMeta.getSynonymTypes() );
+      alltables = getDatabaseMeta().getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getSynonymTypes() );
       while ( alltables.next() ) {
         // due to PDI-743 with ODBC and MS SQL Server the order is changed and
         // try/catch included for safety
@@ -4244,7 +4245,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     ArrayList<String> catalogList = new ArrayList<String>();
     ResultSet catalogResultSet = null;
     try {
-      catalogResultSet = getDatabaseMetaData().getSchemas();
+      catalogResultSet = databaseMeta.getSchemas( getDatabaseMetaData() );
       // Grab all the catalog names and put them in an array list
       while ( catalogResultSet != null && catalogResultSet.next() ) {
         catalogList.add( catalogResultSet.getString( 1 ) );

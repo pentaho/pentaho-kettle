@@ -22,7 +22,6 @@
 
 package org.pentaho.di.www;
 
-import com.sun.xml.ws.client.ClientTransportException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +33,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.repository.KettleAuthenticationException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.core.encryption.Encr;
@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -214,8 +215,9 @@ public class ExecuteJobServletTest {
     PowerMockito.mockStatic( Encr.class );
     when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
 
-    ClientTransportException cte = mock( ClientTransportException.class );
-    KettleException ke = new KettleException( cte );
+    KettleAuthenticationException kae = new KettleAuthenticationException( );
+    ExecutionException ee = new ExecutionException( kae );
+    KettleException ke = new KettleException( ee );
     doThrow( ke ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, UNAUTHORIZED_USER, PASSWORD );
 
     StringWriter out = mockWriter();

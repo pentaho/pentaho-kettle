@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,8 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -59,31 +61,44 @@ import org.w3c.dom.Node;
  * @author Tom, Matt
  * @since 28-March-2006
  */
+@InjectionSupported( localizationPrefix = "Delete.Injection.", groups = "FIELDS" )
 public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = DeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private DatabaseMeta databaseMeta;
+
   /** The target schema name */
+  @Injection( name = "TARGET_SCHEMA" )
   private String schemaName;
 
   /** The lookup table name */
+  @Injection( name = "TARGET_TABLE" )
   private String tableName;
 
   /** database connection */
-  private DatabaseMeta databaseMeta;
+  @Injection( name = "CONNECTIONNAME" )
+  public void metaSetConnection( String connectionName ) throws KettleException {
+    setConnection( connectionName );
+  }
 
   /** which field in input stream to compare with? */
+  @Injection( name = "STREAM_FIELDNAME_1", group = "FIELDS" )
   private String[] keyStream;
 
   /** field in table */
+  @Injection( name = "TABLE_NAME_FIELD", group = "FIELDS" )
   private String[] keyLookup;
 
   /** Comparator: =, <>, BETWEEN, ... */
+  @Injection( name = "COMPARATOR", group = "FIELDS" )
   private String[] keyCondition;
 
   /** Extra field for between... */
+  @Injection( name = "STREAM_FIELDNAME_2", group = "FIELDS" )
   private String[] keyStream2;
 
   /** Commit size for inserts/updates */
+  @Injection( name = "COMMIT_SIZE" )
   private String commitSize;
 
   public DeleteMeta() {
@@ -640,5 +655,17 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
 
   public boolean supportsErrorHandling() {
     return true;
+  }
+
+  public void setConnection( String connectionName ) throws KettleException {
+    // Get the databases from the Database connection list this is required by
+    // MDI injection of the connection name
+    databaseMeta = DatabaseMeta.findDatabase( getParentStepMeta().getParentTransMeta().getDatabases(), connectionName );
+    if ( databaseMeta == null ) {
+      String errMsg = BaseMessages.getString( PKG, "DeleteMeta.Exception.ConnectionUndefined",
+        getParentStepMeta().getName(), connectionName );
+      logError( errMsg );
+      throw new KettleException( errMsg );
+    }
   }
 }

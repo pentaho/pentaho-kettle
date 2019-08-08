@@ -1265,4 +1265,13 @@ public interface DatabaseInterface extends Cloneable {
 
   default void putOptionalOptions( Map<String, String> extraOptions ) {
   }
+
+  default ResultSet getSchemas( DatabaseMetaData databaseMetaData, DatabaseMeta dbMeta ) throws SQLException {
+    return databaseMetaData.getSchemas();
+  }
+
+  default ResultSet getTables( DatabaseMetaData databaseMetaData, DatabaseMeta dbMeta,
+                               String schemaPattern, String tableNamePattern, String[] tableTypes ) throws SQLException {
+    return databaseMetaData.getTables( null, schemaPattern, tableNamePattern, tableTypes );
+  }
 }

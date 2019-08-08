@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  s *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -91,8 +91,7 @@ public class SparkRunConfigurationExecutorTest {
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
-    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
-    verify( variableSpace ).setVariable( "engine.port", "8121" );
+    verify( variableSpace ).setVariable( "engine.url", "127.0.0.2:8121" );
   }
 
   @Test
@@ -108,9 +107,8 @@ public class SparkRunConfigurationExecutorTest {
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
-    verify( variableSpace ).setVariable( "engine.protocol", SparkRunConfigurationExecutor.DEFAULT_PROTOCOL );
-    verify( variableSpace ).setVariable( "engine.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
-    verify( variableSpace ).setVariable( "engine.port", SparkRunConfigurationExecutor.DEFAULT_WEBSOCKET_PORT );
+    verify( variableSpace ).setVariable( "engine.scheme", "http://" );
+    verify( variableSpace ).setVariable( "engine.url", SparkRunConfigurationExecutor.DEFAULT_URL );
   }
 
   @Test
@@ -125,9 +123,8 @@ public class SparkRunConfigurationExecutorTest {
     sparkRunConfigurationExecutor
       .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
-    verify( variableSpace ).setVariable( "engine.protocol", "https" );
-    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
-    verify( variableSpace ).setVariable( "engine.port", "8121" );
+    verify( variableSpace ).setVariable( "engine.scheme", "https://" );
+    verify( variableSpace ).setVariable( "engine.url", "127.0.0.2:8121" );
   }
 
   @Test
@@ -143,9 +140,8 @@ public class SparkRunConfigurationExecutorTest {
     sparkRunConfigurationExecutor
       .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
-    verify( variableSpace ).setVariable( "engine.protocol", "http" );
-    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
-    verify( variableSpace ).setVariable( "engine.port", "8121" );
+    verify( variableSpace ).setVariable( "engine.scheme", "http://" );
+    verify( variableSpace ).setVariable( "engine.url", "127.0.0.2:8121" );
   }
 
   @Test

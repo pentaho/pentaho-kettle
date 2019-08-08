@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,7 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value.timestamp;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -32,12 +37,10 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+import static org.junit.Assert.assertEquals;
 
 /**
  * User: Dzmitry Stsiapanau Date: 3/17/14 Time: 4:46 PM
@@ -190,7 +193,8 @@ public class SimpleTimestampFormatTest {
     parseUnit( "DATE.ZERO." + patternName, stf, localeForErrorMSG, dateWithoutPrecision );
   }
 
-  private void parseUnit( String patternName, SimpleTimestampFormat stf, String localeForErrorMSG, Date date ) throws ParseException {
+  private void parseUnit( String patternName, SimpleTimestampFormat stf, String localeForErrorMSG, Date date )
+    throws ParseException {
     if ( date instanceof Timestamp ) {
       assertEquals( localeForErrorMSG + "=locale localized pattern= " + stf.toLocalizedPattern(),
         date, ( stf.parse( tdb.getString( patternName ) ) ) );
@@ -254,4 +258,49 @@ public class SimpleTimestampFormatTest {
     }
   }
 
+  @Test
+  public void testParseMultiThread() {
+    Integer threadPoolSize = 10;
+    Locale.setDefault( Locale.Category.FORMAT, Locale.US );
+    SimpleTimestampFormat simpleTimestampFormat = new SimpleTimestampFormat( "yyyy-MM-dd HH:mm:ss.SSS" );
+
+    ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool( threadPoolSize );
+
+    for ( int i = 0; i < 500; i++ ) {
+      TaskSimpleTimestampFormatTest task =
+        new TaskSimpleTimestampFormatTest( "TaskSimpleTimestampFormatTest " + i, simpleTimestampFormat );
+      System.out.println( "Created : " + task.getName() );
+      executor.execute( task );
+    }
+    executor.shutdown();
+  }
+
+}
+
+class TaskSimpleTimestampFormatTest implements Runnable {
+  private String name;
+  private SimpleTimestampFormat simpleTimestampFormat;
+
+  public TaskSimpleTimestampFormatTest( String name, SimpleTimestampFormat simpleTimestampFormat ) {
+    this.name = name;
+    //this.simpleTimestampFormat = simpleTimestampFormat;
+    this.simpleTimestampFormat = new SimpleTimestampFormat( "yyyy-MM-dd HH:mm:ss.SSS" );
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void run() {
+    try {
+      String input = "2019-07-08 10:16:01.001";
+      synchronized ( simpleTimestampFormat ) {
+        Date result = simpleTimestampFormat.parse( input );
+        System.out.println( "Task: " + this.name + ", Result: " + result.toString() );
+        Assert.assertEquals( input, result.toString() );
+      }
+    } catch ( ParseException e ) {
+      Assert.fail();
+    }
+  }
 }

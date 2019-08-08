@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -71,8 +71,7 @@ public class TransSupplierTest {
   public void testWebsocketVersion() throws KettleException {
     props.setProperty( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
     when( meta.getVariable( "engine" ) ).thenReturn( "spark" );
-    when( meta.getVariable( "engine.host" ) ).thenReturn( "hostname" );
-    when( meta.getVariable( "engine.port" ) ).thenReturn( "8080" );
+    when( meta.getVariable( "engine.url" ) ).thenReturn( "hostname:8080" );
     when( meta.nrTransHops() ).thenReturn( 0 );
     when( meta.getTransHop( 0 ) ).thenReturn( transHopMeta );
     when( meta.realClone( false ) ).thenReturn( meta );

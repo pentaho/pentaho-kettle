@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -91,11 +91,11 @@ public class TransWebSocketEngineAdapter extends Trans {
   private final Transformation transformation;
   private ExecutionRequest executionRequest;
   private DaemonMessagesClientEndpoint daemonMessagesClientEndpoint = null;
-  private final MessageEventService messageEventService;
+  protected final MessageEventService messageEventService;
   private LogLevel logLevel = null;
 
   private final String host;
-  private final String port;
+  private final int port;
   private final boolean ssl;
   private boolean cancelling = false;
 
@@ -115,7 +115,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.ROWLEVEL, LogLevel.TRACE );
   }
 
-  public TransWebSocketEngineAdapter( TransMeta transMeta, String host, String port, boolean ssl ) {
+  public TransWebSocketEngineAdapter( TransMeta transMeta, String host, int port, boolean ssl ) {
     transformation = TransMetaConverter.convert( transMeta );
     this.transMeta = transMeta;
     this.messageEventService = new MessageEventService();
@@ -240,6 +240,15 @@ public class TransWebSocketEngineAdapter extends Trans {
               LogEntry logEntry = event.getData();
               StepInterface stepInterface = findStepInterface( operation.getId(), 0 );
               if ( stepInterface != null ) {
+                // This is intended to put a red error (dash) on the step in PDI.
+                // In order to do that 3 things are needed: errors have to be set
+                // to a positive number, the state is stopped state (not finished)
+                // and Error log on the step (done just below this if statement)
+                if ( LogLevel.ERROR.equals( logEntry.getLogLogLevel() ) ) {
+                  stepInterface.setErrors( 1 );
+                  stepInterface.setStopped( true );
+                }
+
                 LogChannelInterface logChannel = stepInterface.getLogChannel();
                 logToChannel( logChannel, logEntry );
               } else {
@@ -407,7 +416,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     return new ArrayList<>( operationToCombi.values() );
   }
 
-  @SuppressWarnings ( "unchecked" )
+  @SuppressWarnings( "unchecked" )
   private List<StepMetaDataCombi> getSubSteps( Transformation transformation, StepMetaDataCombi combi ) {
     HashMap<String, Transformation> config =
       ( (Optional<HashMap<String, Transformation>>) transformation

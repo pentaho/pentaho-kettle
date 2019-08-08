@@ -24,14 +24,18 @@ package org.pentaho.di.kitchen;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -44,6 +48,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -58,7 +63,7 @@ public class KitchenCommandExecutorTest {
 
   @Before
   public void setUp() throws Exception {
-
+    KettleLogStore.init();
     mockedKitchenCommandExecutor = mock( KitchenCommandExecutor.class );
     result = mock( Result.class );
     logChannelInterface = mock( LogChannelInterface.class );
@@ -108,5 +113,24 @@ public class KitchenCommandExecutorTest {
   public void testReturnCodeFailWithNoErrors() {
     when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
     assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+  }
+
+  @Test
+  public void testExecuteWithInvalidRepository() {
+    // Create Mock Objects
+    Params params = mock( Params.class );
+    KitchenCommandExecutor kitchenCommandExecutor = new KitchenCommandExecutor( Kitchen.class );
+    PowerMockito.mockStatic( BaseMessages.class );
+
+    // Mock returns
+    when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
+    when( BaseMessages.getString( any( Class.class ), anyString(), anyVararg() ) ).thenReturn( "" );
+
+    try {
+      Result result = kitchenCommandExecutor.execute( params );
+      Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
+    } catch ( Throwable throwable ) {
+      Assert.fail();
+    }
   }
 }

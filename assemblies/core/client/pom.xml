@@ -58,8 +58,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.hitachivantara.karaf</groupId>
-            <artifactId>karaf-assembly-client</artifactId>
+            <groupId>org.hitachivantara.karaf.assemblies</groupId>
+            <artifactId>client</artifactId>
             <version>${pentaho-karaf.version}</version>
             <type>zip</type>
             <exclusions>
@@ -152,32 +152,13 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.hitachivantara.karaf</groupId>
-                                    <artifactId>karaf-assembly-client</artifactId>
+                                    <groupId>org.hitachivantara.karaf.assemblies</groupId>
+                                    <artifactId>client</artifactId>
                                     <type>zip</type>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${assembly.dir}/system</outputDirectory>
+                            <outputDirectory>${assembly.dir}/system/karaf</outputDirectory>
                             <excludes>**/etc-pan/*.cfg,**/etc-kitchen/*.cfg,**/etc-scale/*.cfg</excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- post processing -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>rename-unpacked-dependencies</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <echo message="Moving unpacked dependencies to the right place..."/>
-                                <move file="${assembly.dir}/system/karaf-assembly-client-${project.version}" tofile="${assembly.dir}/system/karaf" failonerror="false"/>
-                            </target>
                         </configuration>
                     </execution>
                 </executions>
