@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,7 +58,7 @@ public class RedshiftDatabaseMetaTest {
 
   @Test
   public void testGetDriverClass() throws Exception {
-    assertEquals( "com.amazon.redshift.jdbc4.Driver", dbMeta.getDriverClass() );
+    assertEquals( "com.amazon.redshift.jdbc.Driver", dbMeta.getDriverClass() );
     dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", dbMeta.getDriverClass() );
   }
