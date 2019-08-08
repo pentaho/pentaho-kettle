@@ -101,7 +101,7 @@ public class TransDebugMeta {
       for ( StepInterface baseStep : trans.findBaseSteps( stepMeta.getName() ) ) {
         baseStep.addRowListener( new RowAdapter() {
           public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-            rowWrittenEventDebug( rowMeta, row, stepDebugMeta, trans, self );
+            rowWrittenEventHandler( rowMeta, row, stepDebugMeta, trans, self );
           }
         } );
       }
@@ -109,7 +109,7 @@ public class TransDebugMeta {
   }
 
   @VisibleForTesting
-  void rowWrittenEventDebug( RowMetaInterface rowMeta, Object[] row, StepDebugMeta stepDebugMeta, Trans trans,
+  void rowWrittenEventHandler( RowMetaInterface rowMeta, Object[] row, StepDebugMeta stepDebugMeta, Trans trans,
                                      TransDebugMeta self ) throws KettleStepException {
     try {
 
