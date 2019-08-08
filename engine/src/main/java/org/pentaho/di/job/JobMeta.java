@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1247,6 +1247,7 @@ public class JobMeta extends AbstractMeta
    */
   public void addJobEntry( int p, JobEntryCopy si ) {
     jobcopies.add( p, si );
+    si.setParentJobMeta( this );
     changedEntries = true;
   }
 
