@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -363,7 +363,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
           .newDocumentBuilder()
           .parse( new ByteArrayInputStream( sRowMeta.getBytes() ) )
           .getDocumentElement();
-        cachedRowMeta = new RowMeta( node ); ;
+        cachedRowMeta = new RowMeta( node );
       }
 
     } catch ( Exception e ) {
