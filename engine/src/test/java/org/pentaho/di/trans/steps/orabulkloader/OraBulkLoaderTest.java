@@ -45,9 +45,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -78,7 +81,7 @@ public class OraBulkLoaderTest {
   }
 
   @Before
-  public void setUp() throws Exception{
+  public void setUp() throws Exception {
     stepMockHelper = new StepMockHelper<OraBulkLoaderMeta, OraBulkLoaderData>( "TEST_CREATE_COMMANDLINE",
       OraBulkLoaderMeta.class, OraBulkLoaderData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
@@ -189,5 +192,19 @@ public class OraBulkLoaderTest {
 
     assertFalse( Files.exists( Paths.get( tempControlFilepath ) ) );
     assertFalse( Files.exists( Paths.get( tempDataFilepath ) ) );
+  }
+
+  @Test
+  public void testNoDatabaseConnection() {
+    assertFalse( oraBulkLoader.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface ) );
+
+    try {
+      // Verify that the database connection being set to null throws a KettleException with the following message.
+      oraBulkLoader.verifyDatabaseConnection();
+      // If the method does not throw a Kettle Exception, then the DB was set and not null for this test. Fail it.
+      fail( "Database Connection is not null, this fails the test." );
+    } catch ( KettleException aKettleException ) {
+      assertThat( aKettleException.getMessage(), containsString( "There is no connection defined in this step." ) );
+    }
   }
 }

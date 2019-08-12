@@ -22,6 +22,7 @@
 
 package org.pentaho.di.kitchen;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.KettleConstants;
@@ -35,6 +36,7 @@ import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
@@ -44,7 +46,6 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
-import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.File;
 import java.io.Serializable;
@@ -111,6 +112,11 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
           RepositoryMeta repositoryMeta = loadRepositoryConnection( params.getRepoName(), "Kitchen.Log.LoadingRep", "Kitchen.Error.NoRepDefinied", "Kitchen.Log.FindingRep" );
 
+          if ( repositoryMeta == null ) {
+            System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.CanNotConnectRep" ) );
+            return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+          }
+
           logDebug( "Kitchen.Log.CheckUserPass" );
           repository = establishRepositoryConnection( repositoryMeta, params.getRepoUsername(), params.getRepoPassword(), RepositoryOperation.EXECUTE_JOB );
 
@@ -169,8 +175,6 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         return exitWithStatus( CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR.getCode() );
       }
     }
-
-    int returnCode = CommandExecutorCodes.Kitchen.SUCCESS.getCode();
 
     try {
 
@@ -236,10 +240,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Finished" ) );
 
-    if ( getResult().getNrErrors() != 0 ) {
-      getLog().logError( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.FinishedWithErrors" ) );
-      returnCode = CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
-    }
+    int returnCode = getReturnCode();
 
     Date stop = Calendar.getInstance().getTime();
 
@@ -381,4 +382,19 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
   public void setKettleInit( Future<KettleException> kettleInit ) {
     this.kettleInit = kettleInit;
   }
+
+  @VisibleForTesting
+  int getReturnCode() {
+
+    int successCode = CommandExecutorCodes.Kitchen.SUCCESS.getCode();
+
+    if ( getResult().getNrErrors() != 0 ) {
+      getLog().logError( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.FinishedWithErrors" ) );
+      return CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
+    }
+
+    return getResult().getResult() ? successCode : CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
+
+  }
+
 }

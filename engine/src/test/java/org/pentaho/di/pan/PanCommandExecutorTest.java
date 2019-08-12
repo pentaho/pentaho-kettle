@@ -24,15 +24,26 @@ package org.pentaho.di.pan;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
+import org.junit.runner.RunWith;
+import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.base.Params;
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.util.Base64;
@@ -40,12 +51,16 @@ import java.util.Base64;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith( PowerMockRunner.class )
+@PrepareForTest( BaseMessages.class )
 public class PanCommandExecutorTest {
 
   private static final String FS_METASTORE_NAME = "FS_METASTORE";
@@ -63,9 +78,7 @@ public class PanCommandExecutorTest {
 
   @Before
   public void setUp() throws Exception {
-
     KettleEnvironment.init();
-
     repository = mock( Repository.class );
     fsMetaStore = mock( IMetaStore.class );
     repoMetaStore = mock( IMetaStore.class );
@@ -83,7 +96,7 @@ public class PanCommandExecutorTest {
     // mock actions from PanCommandExecutor
     when( mockedPanCommandExecutor.getMetaStore() ).thenReturn( metastore );
     when( mockedPanCommandExecutor.loadRepositoryDirectory( anyObject(), anyString(), anyString(), anyString(), anyString() ) )
-            .thenReturn( directoryInterface );
+      .thenReturn( directoryInterface );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
     when( mockedPanCommandExecutor.loadTransFromFilesystem( anyString(), anyString(), anyString(), anyObject() ) ).thenCallRealMethod();
@@ -118,13 +131,13 @@ public class PanCommandExecutorTest {
 
     assertEquals( 2, ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList().size() );
     assertTrue( ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList().stream()
-            .anyMatch( m -> {
-              try {
-                return REPO_METASTORE_NAME.equals( m.getName() );
-              } catch ( Exception e ) {
-                return false;
-              }
-            } ) );
+      .anyMatch( m -> {
+        try {
+          return REPO_METASTORE_NAME.equals( m.getName() );
+        } catch ( Exception e ) {
+          return false;
+        }
+      } ) );
   }
 
   @Test
@@ -141,13 +154,13 @@ public class PanCommandExecutorTest {
     assertEquals( 1, ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList().size() );
 
     assertTrue( ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList().stream()
-            .anyMatch( m -> {
-              try {
-                return FS_METASTORE_NAME.equals( m.getName() );
-              } catch ( Exception e ) {
-                return false;
-              }
-            } ) );
+      .anyMatch( m -> {
+        try {
+          return FS_METASTORE_NAME.equals( m.getName() );
+        } catch ( Exception e ) {
+          return false;
+        }
+      } ) );
   }
 
   @Test
@@ -157,5 +170,26 @@ public class PanCommandExecutorTest {
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
     Trans trans = mockedPanCommandExecutor.loadTransFromFilesystem( null, fileName, null, base64Zip );
     assertNotNull( trans );
+  }
+
+
+  @Test
+  public void testExecuteWithInvalidRepository() {
+    // Create Mock Objects
+    Params params = mock( Params.class );
+    PanCommandExecutor panCommandExecutor = new PanCommandExecutor( Kitchen.class );
+    PowerMockito.mockStatic( BaseMessages.class );
+
+    // Mock returns
+    when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
+    when( BaseMessages.getString( any( Class.class ), anyString(), anyVararg() ) ).thenReturn( "" );
+
+    try {
+      Result result = panCommandExecutor.execute( params );
+      Assert.assertEquals( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode(), result.getExitStatus() );
+    } catch ( Throwable throwable ) {
+      Assert.fail();
+    }
+
   }
 }
