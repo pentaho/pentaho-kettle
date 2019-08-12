@@ -319,18 +319,24 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   private void storeCachedRowMeta( StringBuilder retval ) {
+    try {
+      if ( cachedRowMeta != null ) {
+        retval.append( "    " + cachedRowMeta.getMetaXML() );
+      }
+    } catch ( IOException e ) {
+      throw new RuntimeException( "Unexpected error stored cached row meta data.", e );
+    }
+  }
+
+  public void updateCachedRowMeta() {
     // Cache the cache flag . . . it's odd, but this is so we can set the actual cached values with existing logic.
     boolean originalCachedFlag = cachedRowMetaActive;
     try {
       cachedRowMetaActive = false;
-      // This ultimately calls back into the getFields method with everything it needs.
       ProgressNullMonitorListener progressMonitor = new ProgressNullMonitorListener();
-      RowMetaInterface rowMeta = parentStepMeta.getParentTransMeta().getStepFields( parentStepMeta, progressMonitor );
-      if ( rowMeta != null ) {
-        retval.append( "    " + rowMeta.getMetaXML() );
-      }
-    } catch ( KettleStepException | IOException e ) {
-      throw new RuntimeException( "Unexpected error stored cached row meta data.", e );
+      cachedRowMeta = parentStepMeta.getParentTransMeta().getStepFields( parentStepMeta, progressMonitor );
+    } catch ( KettleStepException e ) {
+      throw new RuntimeException( "Unexpected error fetching row meta data.", e );
     } finally {
       this.cachedRowMetaActive = originalCachedFlag;
     }

@@ -563,6 +563,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     // copy info to TextFileInputMeta class (input)
 
     getInfo( input, false );
+    input.updateCachedRowMeta();
 
     if ( input.getDatabaseMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
