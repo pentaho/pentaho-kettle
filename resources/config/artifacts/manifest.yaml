@@ -44,7 +44,6 @@ ee:
         - pentaho-workernodes-${platform.version}-dist.zip
         - pentaho-workernodes-${platform.version}.tar.gz
     shims:
-        - pentaho-big-data-ee-cdh512-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-cdh513-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-cdh514-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-big-data-ee-cdh61-package-${pentaho-hadoop-shims.version}-dist.zip
@@ -75,11 +74,9 @@ ce:
         - pentaho-server-ce-${platform.version}.zip
         - pentaho-server-manual-ce-${platform.version}.zip
     shims:
-        - pentaho-hadoop-shims-cdh512-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-cdh513-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-cdh514-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-cdh61-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-emr59-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-emr511-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-emr521-package-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-hdi35-package-${pentaho-hadoop-shims.version}-dist.zip
