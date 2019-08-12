@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,7 +21,10 @@
  ******************************************************************************/
 package org.pentaho.di.repository;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,9 +39,14 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.test.util.XXEUtils;
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXParseException;
 
+@RunWith ( MockitoJUnitRunner.class )
 public class RepositoryExportSaxParserTest {
   private static final String PKG = "org/pentaho/di/repository/";
   private static final String REPOSITORY_FILE = "test_repo";
@@ -49,6 +57,9 @@ public class RepositoryExportSaxParserTest {
   private RepositoryExportSaxParser repExpSAXParser;
   private RepositoryImportFeedbackInterface repImpPgDlg = mock( RepositoryImportFeedbackInterface.class );
   private RepositoryImporter repImpMock = mock( RepositoryImporter.class );
+
+  @Mock private Attributes attributes;
+
 
   @Before
   public void setUp() throws IOException, URISyntaxException {
@@ -64,6 +75,29 @@ public class RepositoryExportSaxParserTest {
   }
 
   @Test
+  public void startElementIncludesAttributes() throws Exception {
+    repExpSAXParser = new RepositoryExportSaxParser( "nofile", null );
+
+    when( attributes.getLength() ).thenReturn( 2 );
+    when( attributes.getQName( 0 ) ).thenReturn( "name1" );
+    when( attributes.getQName( 1 ) ).thenReturn( "name2" );
+    when( attributes.getValue( 0 ) ).thenReturn( "val1" );
+    when( attributes.getValue( 1 ) ).thenReturn( "val2" );
+
+    repExpSAXParser.startElement( "uri", "", "qualifiedTagName", attributes );
+
+    assertThat( repExpSAXParser.xml.toString(), equalTo( "<qualifiedTagName name1=\"val1\" name2=\"val2\">" ) );
+  }
+
+  @Test
+  public void startElementWithoutAttributes() throws Exception {
+    repExpSAXParser = new RepositoryExportSaxParser( "nofile", null );
+
+    repExpSAXParser.startElement( "uri", "", "tagName", null );
+    assertThat( repExpSAXParser.xml.toString(), equalTo( "<tagName>" ) );
+  }
+
+  @Test
   public void testNoExceptionOccurs_WhenNameContainsJapaneseCharacters() throws Exception {
     repExpSAXParser = new RepositoryExportSaxParser( getRepositoryFile().getCanonicalPath(), repImpPgDlg );
     try {
@@ -73,7 +107,7 @@ public class RepositoryExportSaxParserTest {
     }
   }
 
-  @Test( expected = SAXParseException.class )
+  @Test ( expected = SAXParseException.class )
   public void exceptionIsThrownWhenParsingXmlWithBigAmountOfExternalEntities() throws Exception {
     File file = createTmpFile( XXEUtils.MALICIOUS_XML );
 
@@ -106,7 +140,7 @@ public class RepositoryExportSaxParserTest {
   private void copyTestResourceIntoTempDir() throws IOException, URISyntaxException {
     File destFile = getRepositoryFile();
     File sourceFile =
-        new File( RepositoryExportSaxParserTest.class.getClassLoader().getResource( PKG + REPOSITORY_FILE ).toURI() );
+      new File( RepositoryExportSaxParserTest.class.getClassLoader().getResource( PKG + REPOSITORY_FILE ).toURI() );
 
     copyFile( sourceFile, destFile );
     System.out.println( "Copied: " + sourceFile + "-->" + destFile );
