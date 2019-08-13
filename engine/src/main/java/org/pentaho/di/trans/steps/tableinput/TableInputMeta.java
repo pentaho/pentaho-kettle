@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.tableinput;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ProgressNullMonitorListener;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
@@ -63,6 +64,9 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 /*
@@ -92,6 +96,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Injection( name = "LAZY_CONVERSION" )
   private boolean lazyConversionActive;
+
+  @Injection( name = "CACHED_ROW_META" )
+  private boolean cachedRowMetaActive;
+
+  private RowMetaInterface cachedRowMeta;
 
   public TableInputMeta() {
     super();
@@ -185,6 +194,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       executeEachInputRow = "Y".equals( XMLHandler.getTagValue( stepnode, "execute_each_row" ) );
       variableReplacementActive = "Y".equals( XMLHandler.getTagValue( stepnode, "variables_active" ) );
       lazyConversionActive = "Y".equals( XMLHandler.getTagValue( stepnode, "lazy_conversion_active" ) );
+      cachedRowMetaActive = "Y".equals( XMLHandler.getTagValue( stepnode, "cached_row_meta_active" ) );
+      cachedRowMeta = new RowMeta( XMLHandler.getSubNode( stepnode, RowMeta.XML_META_TAG ) );
+
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
@@ -205,6 +217,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( databaseMeta == null ) {
       return; // TODO: throw an exception here
+    }
+
+    if ( cachedRowMetaActive ) {
+      row.addRowMeta( cachedRowMeta );
+      return;
     }
 
     boolean param = false;
@@ -229,10 +246,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     if ( add != null ) {
-      for ( int i = 0; i < add.size(); i++ ) {
-        ValueMetaInterface v = add.getValueMeta( i );
-        v.setOrigin( origin );
-      }
+      attachOrigin( add, origin );
       row.addRowMeta( add );
     } else {
       try {
@@ -244,8 +258,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
         if ( !Utils.isEmpty( infoStream.getStepname() ) ) {
           param = true;
-          if ( info.length > 0 && info[0] != null ) {
-            paramRowMeta = info[0];
+          if ( info.length > 0 && info[ 0 ] != null ) {
+            paramRowMeta = info[ 0 ];
             paramData = RowDataUtil.allocateRowData( paramRowMeta.size() );
           }
         }
@@ -255,10 +269,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         if ( add == null ) {
           return;
         }
-        for ( int i = 0; i < add.size(); i++ ) {
-          ValueMetaInterface v = add.getValueMeta( i );
-          v.setOrigin( origin );
-        }
+        attachOrigin( add, origin );
         row.addRowMeta( add );
       } catch ( KettleException ke ) {
         throw new KettleStepException( "Unable to get queryfields for SQL: " + Const.CR + sNewSQL, ke );
@@ -283,6 +294,13 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  private void attachOrigin( RowMetaInterface rmi, String origin ) {
+    for ( int i = 0; i < rmi.size(); i++ ) {
+      ValueMetaInterface v = rmi.getValueMeta( i );
+      v.setOrigin( origin );
+    }
+  }
+
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -295,8 +313,33 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "execute_each_row", executeEachInputRow ) );
     retval.append( "    " + XMLHandler.addTagValue( "variables_active", variableReplacementActive ) );
     retval.append( "    " + XMLHandler.addTagValue( "lazy_conversion_active", lazyConversionActive ) );
-
+    retval.append( "    " + XMLHandler.addTagValue( "cached_row_meta_active", cachedRowMetaActive ) );
+    storeCachedRowMeta( retval );
     return retval.toString();
+  }
+
+  private void storeCachedRowMeta( StringBuilder retval ) {
+    try {
+      if ( cachedRowMeta != null ) {
+        retval.append( "    " + cachedRowMeta.getMetaXML() );
+      }
+    } catch ( IOException e ) {
+      throw new RuntimeException( "Unexpected error stored cached row meta data.", e );
+    }
+  }
+
+  public void updateCachedRowMeta() {
+    // Cache the cache flag . . . it's odd, but this is so we can set the actual cached values with existing logic.
+    boolean originalCachedFlag = cachedRowMetaActive;
+    try {
+      cachedRowMetaActive = false;
+      ProgressNullMonitorListener progressMonitor = new ProgressNullMonitorListener();
+      cachedRowMeta = parentStepMeta.getParentTransMeta().getStepFields( parentStepMeta, progressMonitor );
+    } catch ( KettleStepException e ) {
+      throw new RuntimeException( "Unexpected error fetching row meta data.", e );
+    } finally {
+      this.cachedRowMetaActive = originalCachedFlag;
+    }
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
@@ -317,6 +360,18 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       executeEachInputRow = rep.getStepAttributeBoolean( id_step, "execute_each_row" );
       variableReplacementActive = rep.getStepAttributeBoolean( id_step, "variables_active" );
       lazyConversionActive = rep.getStepAttributeBoolean( id_step, "lazy_conversion_active" );
+      cachedRowMetaActive = rep.getStepAttributeBoolean( id_step, "cached_row_meta_active" );
+
+      String sRowMeta = rep.getStepAttributeString( id_step, RowMeta.XML_META_TAG );
+      if ( sRowMeta != null ) {
+        Node node = DocumentBuilderFactory
+          .newInstance()
+          .newDocumentBuilder()
+          .parse( new ByteArrayInputStream( sRowMeta.getBytes() ) )
+          .getDocumentElement();
+        cachedRowMeta = new RowMeta( node );
+      }
+
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
@@ -332,6 +387,10 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "execute_each_row", executeEachInputRow );
       rep.saveStepAttribute( id_transformation, id_step, "variables_active", variableReplacementActive );
       rep.saveStepAttribute( id_transformation, id_step, "lazy_conversion_active", lazyConversionActive );
+      rep.saveStepAttribute( id_transformation, id_step, "cached_row_meta_active", cachedRowMetaActive );
+      if ( cachedRowMeta != null ) {
+        rep.saveStepAttribute( id_transformation, id_step, RowMeta.XML_META_TAG, cachedRowMeta.getMetaXML() );
+      }
 
       // Also, save the step-database relationship!
       if ( databaseMeta != null ) {
@@ -538,6 +597,34 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setLazyConversionActive( boolean lazyConversionActive ) {
     this.lazyConversionActive = lazyConversionActive;
+  }
+
+  /**
+   * @return the cachedRowMetaActive
+   */
+  public boolean isCachedRowMetaActive() {
+    return cachedRowMetaActive;
+  }
+
+  /**
+   * @param cachedRowMetaActive the cachedRowMetaActive to set
+   */
+  public void setCachedRowMetaActive( boolean cachedRowMetaActive ) {
+    this.cachedRowMetaActive = cachedRowMetaActive;
+  }
+
+  /**
+   * @return the cachedRowMetaActive
+   */
+  public RowMetaInterface getCachedRowMeta() {
+    return cachedRowMeta;
+  }
+
+  /**
+   * @param cachedRowMeta the cachedRowMetaActive to set
+   */
+  public void setCachedRowMeta( RowMetaInterface cachedRowMeta ) {
+    this.cachedRowMeta = cachedRowMeta;
   }
 
   /**
