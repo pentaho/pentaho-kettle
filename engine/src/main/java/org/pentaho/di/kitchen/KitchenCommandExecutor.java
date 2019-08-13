@@ -35,6 +35,7 @@ import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
@@ -44,7 +45,6 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
-import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.File;
 import java.io.Serializable;
@@ -110,6 +110,11 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
           RepositoryMeta repositoryMeta = loadRepositoryConnection( params.getRepoName(), "Kitchen.Log.LoadingRep", "Kitchen.Error.NoRepDefinied", "Kitchen.Log.FindingRep" );
+
+          if ( repositoryMeta == null ) {
+            System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.CanNotConnectRep" ) );
+            return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+          }
 
           logDebug( "Kitchen.Log.CheckUserPass" );
           repository = establishRepositoryConnection( repositoryMeta, params.getRepoUsername(), params.getRepoPassword(), RepositoryOperation.EXECUTE_JOB );
