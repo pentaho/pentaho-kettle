@@ -12,7 +12,7 @@
 # - mirror -I <glob> -n -R = mirror the glob pattern up (-R), only replacing newer files (-n)
 
 BOX_FTP_HOST_NAME=ftp.box.com
-GOLDEN_FTP_HOST_NAME=ftpgolden.pentaho.com
+GOLDEN_FTP_HOST_NAME=ftpgolden.pentaho.net
 PROMOTION_LOG=promotion_log.txt
 
 #
