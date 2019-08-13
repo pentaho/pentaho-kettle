@@ -51,8 +51,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Comparator;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class KettleVFS {
   public static final String TEMP_DIR = System.getProperty( "java.io.tmpdir" );
@@ -120,123 +118,82 @@ public class KettleVFS {
     return getFileObject( vfsFilename, defaultVariableSpace, fsOptions );
   }
 
-  private static boolean hasScheme( String path ) {
-    return path != null && path.contains( "://" );
-  }
-  //For PPP-4374 - hdfs provider was not loaded in time and it caused a false positive for relativePath boolean
-  private static boolean isMarkedAsRelativePathButSillHasScheme( String path ) {
-    return isRelativePath( path ) && hasScheme( path );
-  }
-
-  protected static boolean isRelativePath( String path ) {
-    // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
-    // In that case, VFS doesn't parse the file correctly.
-    // We need to put file: in front of it to make it work.
-    // However, how are we going to verify this?
-    //
-    // We are going to see if the filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
-    // If not, we are going to assume it's a file.
-    //
-    FileSystemManager fsManager = getInstance().getFileSystemManager();
-    String[] initialSchemes = fsManager.getSchemes();
-
-    boolean relativeFilename = true;
-
-    for ( int i = 0; i < initialSchemes.length && relativeFilename; i++ ) {
-      if ( path != null && path.startsWith( initialSchemes[ i ] + ":" ) ) {
-        relativeFilename = false;
-      }
-    }
-
-    return relativeFilename;
-  }
-  //For PDI-18211 - now we validate/throw an exception when we have invalid formats
-  protected static String getScheme( String absolutePath ) throws KettleFileException {
-    String scheme;
-    try {
-      scheme = new URI( absolutePath.replace( "\\", "/" ) ).getScheme();
-    } catch ( URISyntaxException e ) {
-      throw new KettleFileException( "Invalid URI to get VFS File object '"
-        + cleanseFilename( absolutePath ) + "' : " + e.getMessage(), e );
-    }
-    return scheme;
-  }
-
-  protected static String normalizePath( String path ) {
-    String normalizedPath = path;
-
-    if ( path.startsWith( "\\\\" ) ) {
-      File file = new File( path );
-      normalizedPath = file.toURI().toString();
-    } else if ( isRelativePath(  path ) ) {
-      File file = new File( path );
-      normalizedPath = file.getAbsolutePath();
-    }
-
-    return normalizedPath;
-  }
-
-  protected static FileObject myGetFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions )
-    throws IOException, KettleFileException {
-    String absolutePath = normalizePath( vfsFilename );
-    String scheme = getScheme( absolutePath );
-
-    FileSystemManager fsManager = getInstance().getFileSystemManager();
-
-    if ( scheme != null && !scheme.isEmpty() ) {
-      // All other providers
-      fsOptionsForScheme = buildFsOptions( space, fsOptions, absolutePath, scheme );
-      return fsManager.resolveFile( absolutePath, fsOptions );
-    }
-
-    return fsManager.resolveFile( absolutePath );
-
-  }
-
-  protected static FileObject myWaitGetFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions,
-                                                 int timeOut )
+  public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions )
     throws KettleFileException {
-
     try {
-      boolean isRelativePath = isRelativePath( vfsFilename );
-      String scheme = getScheme( vfsFilename );
+      fsOptionsForScheme = fsOptions;
+      FileSystemManager fsManager = getInstance().getFileSystemManager();
 
-      // Wait for scheme to be available for FileObject
-      while ( isRelativePath && hasScheme( vfsFilename ) && scheme != null && timeOut > 0  ) {
-        int timeoutStep = TIME_TO_SLEEP_STEP;
-        timeOut -= timeoutStep;
+      // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
+      // In that case, VFS doesn't parse the file correctly.
+      // We need to put file: in front of it to make it work.
+      // However, how are we going to verify this?
+      //
+      // We are going to see if the filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
+      // If not, we are going to assume it's a file.
+      //
+      boolean relativeFilename = true;
+      String[] initialSchemes = fsManager.getSchemes();
+
+      relativeFilename = checkForScheme( initialSchemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
+
+      int timeOut = TIMEOUT_LIMIT;
+
+      boolean hasScheme = vfsFilename != null && vfsFilename.contains( "://" ); // check for bigData providers
+      //we have to check for hasScheme even if it is marked as a relative path because that scheme could not
+      //be available by getSchemes at the time we validate our relativeFilename flag.
+      //So we check if even it is marked as relative path if it contains a possible scheme format
+      //if it does, then give it some time to be loaded, until we get it our timeout is up.
+
+      while ( relativeFilename && hasScheme && timeOut > 0 ) {
+        String[] schemes = fsManager.getSchemes();
         try {
-          Thread.sleep( timeoutStep );
-          //check again for relativePath boolean:
-          //true - keeps the loop running - scheme not found yet - still a relativePath
-          //false - end loop - a scheme was found - it was a false relativePath
-          isRelativePath = isRelativePath( vfsFilename );
+          Thread.sleep( TIME_TO_SLEEP_STEP );
+          timeOut -= TIME_TO_SLEEP_STEP;
+          relativeFilename = checkForScheme( schemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
         } catch ( InterruptedException e ) {
-          isRelativePath = false;
+          relativeFilename = false;
           Thread.currentThread().interrupt();
           break;
         }
       }
 
-      // time is up or provider found
-      if ( isMarkedAsRelativePathButSillHasScheme( vfsFilename ) ) {
-        throw new KettleFileException( "Unable to get Scheme for filename: " + cleanseFilename( vfsFilename ) );
+      String filename;
+      if ( vfsFilename.startsWith( "\\\\" ) ) {
+        File file = new File( vfsFilename );
+        filename = file.toURI().toString();
+      } else {
+        if ( relativeFilename ) {
+          File file = new File( vfsFilename );
+          filename = file.getAbsolutePath();
+        } else {
+          filename = vfsFilename;
+        }
       }
 
-      return myGetFileObject( vfsFilename, space, fsOptions );
-
-    } catch ( IOException | KettleFileException e ) {
+      if ( fsOptionsForScheme != null ) {
+        return fsManager.resolveFile( filename, fsOptionsForScheme );
+      } else {
+        return fsManager.resolveFile( filename );
+      }
+    } catch ( IOException e ) {
       throw new KettleFileException( "Unable to get VFS File object for filename '"
         + cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
     }
-
   }
 
-  public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions ) throws KettleFileException {
-    fsOptionsForScheme = fsOptions;
-    return myWaitGetFileObject(  vfsFilename,  space,  fsOptions, TIMEOUT_LIMIT );
+  protected static boolean checkForScheme( String[] initialSchemes, boolean relativeFilename, String vfsFilename,
+                                         VariableSpace space, FileSystemOptions fsOptions )
+    throws IOException {
+    for ( int i = 0; i < initialSchemes.length && relativeFilename; i++ ) {
+      if ( vfsFilename.startsWith( initialSchemes[ i ] + ":" ) ) {
+        relativeFilename = false;
+        // We have a VFS URL, load any options for the file system driver
+        fsOptionsForScheme = buildFsOptions( space, fsOptions, vfsFilename, initialSchemes[ i ] );
+      }
+    }
+    return relativeFilename;
   }
-
 
   /**
    * Private method for stripping password from filename when a FileObject
