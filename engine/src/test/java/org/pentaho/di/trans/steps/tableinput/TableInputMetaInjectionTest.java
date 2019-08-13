@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,11 @@ public class TableInputMetaInjectionTest extends BaseMetadataInjectionTest<Table
     check( "LAZY_CONVERSION", new BooleanGetter() {
       public boolean get() {
         return meta.isLazyConversionActive();
+      }
+    } );
+    check( "CACHED_ROW_META", new BooleanGetter() {
+      public boolean get() {
+        return meta.isCachedRowMetaActive();
       }
     } );
     skipPropertyTest( "CONNECTIONNAME" );
