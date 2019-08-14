@@ -107,8 +107,7 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
 
   @Override protected void createAdditionalTabs() {
     fieldsTab = new FieldsTab(
-      wTabFolder, props, transMeta, lsMod, jmsMeta.messageField, jmsMeta.destinationField );
-
+      wTabFolder, props, transMeta, lsMod, jmsMeta.messageField, jmsMeta.destinationField, jmsMeta.messageId, jmsMeta.jmsTimestamp, jmsMeta.jmsRedelivered );
     fieldsTab.buildFieldsTab();
   }
 
@@ -125,6 +124,9 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     jmsDelegate.destinationName = destinationForm.getDestinationName();
     jmsMeta.messageField = fieldsTab.getFieldNames()[ 0 ];
     jmsMeta.destinationField = fieldsTab.getFieldNames()[ 1 ];
+    jmsMeta.messageId = fieldsTab.getFieldNames()[ 2 ];
+    jmsMeta.jmsTimestamp = fieldsTab.getFieldNames()[ 3 ];
+    jmsMeta.jmsRedelivered = fieldsTab.getFieldNames()[ 4 ];
     jmsMeta.receiveTimeout = wReceiverTimeout.getText();
 
     jmsDialogSecurityLayout.saveAuthentication();

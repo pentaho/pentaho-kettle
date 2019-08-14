@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -67,7 +67,7 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
     try {
       while ( !closed.get() && ( message = consumer.receive( receiverTimeout ) ) != null ) {
         streamStep.logDebug( message.toString() );
-        acceptRows( singletonList( Arrays.asList( message.getBody( Object.class ), jmsDelegate.destinationName ) ) );
+        acceptRows( singletonList( Arrays.asList( message.getBody( Object.class ), jmsDelegate.destinationName, message.getJMSMessageID(), message.getJMSTimestamp(), message.getJMSRedelivered() ) ) );
       }
     } catch ( JMSRuntimeException | JMSException jmsException ) {
       error( jmsException );

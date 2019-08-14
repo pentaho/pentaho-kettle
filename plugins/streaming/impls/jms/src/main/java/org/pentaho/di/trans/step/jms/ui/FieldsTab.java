@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,15 +54,21 @@ public class FieldsTab {
   private ModifyListener lsMod;
   private String message;
   private String destination;
+  private String messageId;
+  private String jmsTimestamp;
+  private String jmsRedelivered;
 
   public FieldsTab( CTabFolder wTabFolder, PropsUI props,
-                    VariableSpace transMeta, ModifyListener lsMod, String message, String destination ) {
+                    VariableSpace transMeta, ModifyListener lsMod, String message, String destination, String messageId, String jmsTimestamp, String jmsRedelivered ) {
     this.wTabFolder = wTabFolder;
     this.props = props;
     this.transMeta = transMeta;
     this.lsMod = lsMod;
     this.message = message;
     this.destination = destination;
+    this.messageId = messageId;
+    this.jmsTimestamp = jmsTimestamp;
+    this.jmsRedelivered = jmsRedelivered;
   }
 
   public void buildFieldsTab() {
@@ -99,7 +105,7 @@ public class FieldsTab {
       parentWidget,
       SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
       columns,
-      2,
+      5,
       true,
       lsMod,
       props,
@@ -144,6 +150,21 @@ public class FieldsTab {
     topicItem.setText( 1, BaseMessages.getString( PKG, "JmsConsumerDialog.InputName.Destination" ) );
     topicItem.setText( 2, destination );
     topicItem.setText( 3, "String" );
+
+    TableItem messageIdItem = fieldsTable.getTable().getItem( 2 );
+    messageIdItem.setText( 1, BaseMessages.getString( PKG, "JmsConsumerDialog.InputName.MessageId" ) );
+    messageIdItem.setText( 2, messageId );
+    messageIdItem.setText( 3, "String" );
+
+    TableItem jmsTimestampIdItem = fieldsTable.getTable().getItem( 3 );
+    jmsTimestampIdItem.setText( 1, BaseMessages.getString( PKG, "JmsConsumerDialog.InputName.JMSTimestamp" ) );
+    jmsTimestampIdItem.setText( 2, jmsTimestamp );
+    jmsTimestampIdItem.setText( 3, "String" );
+
+    TableItem jmsRedeliveredItem = fieldsTable.getTable().getItem( 4 );
+    jmsRedeliveredItem.setText( 1, BaseMessages.getString( PKG, "JmsConsumerDialog.InputName.JMSRedelivered" ) );
+    jmsRedeliveredItem.setText( 2, jmsRedelivered );
+    jmsRedeliveredItem.setText( 3, "String" );
   }
 
   private ColumnInfo[] getFieldColumns() {
