@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.di.trans.steps.gpload;
@@ -642,6 +642,12 @@ public class GPLoad extends BaseStep implements StepInterface {
     return true;
   }
 
+  protected void verifyDatabaseConnection() throws KettleException {
+    if ( meta.getDatabaseMeta() == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "GPLoadMeta.GetSQL.NoConnectionDefined" ) );
+    }
+  }
+
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (GPLoadMeta) smi;
     data = (GPLoadData) sdi;
@@ -650,6 +656,13 @@ public class GPLoad extends BaseStep implements StepInterface {
     preview = trans.isPreview();
 
     if ( super.init( smi, sdi ) ) {
+
+      try {
+        verifyDatabaseConnection();
+      } catch ( KettleException ex ) {
+        logError( ex.getMessage() );
+        return false;
+      }
       return true;
     }
     return false;
