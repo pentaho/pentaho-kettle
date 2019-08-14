@@ -65,6 +65,7 @@ public class TransSupplier implements Supplier<Trans> {
 
     //default value for ssl for now false
     boolean ssl = "https".equalsIgnoreCase( protocol ) || "wss".equalsIgnoreCase( protocol );
+    log.logBasic( "Using Spark Execution Engine ("+uri.getHost()+":" + uri.getPort() +")"  );
     return new TransWebSocketEngineAdapter( transMeta, uri.getHost(), uri.getPort(), ssl );
   }
 
