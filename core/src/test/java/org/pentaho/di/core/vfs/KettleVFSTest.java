@@ -23,14 +23,15 @@
 package org.pentaho.di.core.vfs;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 
 import org.junit.Test;
-import org.pentaho.di.core.exception.KettleFileException;
 
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -41,6 +42,8 @@ public class KettleVFSTest {
    * known protocol like zip: jar: then it returns true else returns false
    * @param fileName
    */
+  private static final String PROVIDER_PATTERN_SCHEME = "^[\\w\\d]+://(.*)";
+
   @Test
   public void testStartsWithScheme() {
     String fileName = "zip:file:///SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr";
@@ -52,22 +55,117 @@ public class KettleVFSTest {
 
 
   @Test
-  public void testCheckForSchemeSuccess() throws KettleFileException, IOException {
+  public void testCheckForSchemeSuccess() throws IOException {
     String[] schemes = {"hdfs"};
-    String vfsFilename = "hdfs://hsbcmaster.labs.eag.hitachivantara.com:8020/tmp/acltest/";
+    String vfsFilename = "hdfs://hsbcmaster:8020/tmp/acltest/";
 
-    boolean test = KettleVFS.checkForScheme(schemes, true, vfsFilename, null, null);
-    assertFalse( test );
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertFalse( testVfsFilename );
 
   }
 
   @Test
-  public void testCheckForSchemeFail() throws KettleFileException, IOException {
+  public void testCheckForSchemeFail() throws IOException {
     String[] schemes = {"file"};
-    String vfsFilename = "hdfs://hsbcmaster.labs.eag.hitachivantara.com:8020/tmp/acltest/";
+    String vfsFilename = "hdfs://hsbcmaster:8020/tmp/acltest/";
 
-    boolean test = KettleVFS.checkForScheme(schemes, true, vfsFilename, null, null);
-    assertTrue( test );
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertTrue( testVfsFilename );
+
+  }
+
+  @Test
+  public void testCheckForSchemeIfRelativePath() throws IOException {
+    String[] schemes = {"file"};
+    String vfsFilename = "\"/tmp/acltest/\"";
+
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertTrue( testVfsFilename );
+
+  }
+
+  @Test
+  public void testCheckForSchemeIfBlank() throws IOException {
+    String[] schemes = {"file"};
+    String vfsFilename = " ";
+
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertTrue( testVfsFilename );
+
+  }
+
+  @Test
+  public void testCheckForSchemeIfNull() throws IOException {
+    String[] schemes = {"file"};
+    String vfsFilename = null;
+
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertTrue( testVfsFilename );
+
+  }
+
+  @Test
+  public void testNormalizePathWithFile() {
+    String vfsFilename = "\\\\tmp/acltest.txt";
+
+    String testNormalizePath = KettleVFS.normalizePath( vfsFilename, true );
+    assertTrue( testNormalizePath.startsWith( "file:/" )  );
+  }
+
+  @Test
+  public void testNormalizePath() {
+    String vfsFilename = "tmp/acltest";
+
+    String testNormalizePath = KettleVFS.normalizePath( vfsFilename, true );
+    assertEquals( new File( vfsFilename ).getAbsolutePath(), testNormalizePath );
+  }
+
+  @Test
+  public void testHasScheme() {
+    String vfsFilename = "hdfs://hsbcmaster:8020/tmp/acltest/";
+
+    boolean testVfsFilename = KettleVFS.hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
+    assertTrue( testVfsFilename );
+
+  }
+
+  @Test
+  public void testHasSchemeWithSpaces() {
+    String vfsFilename = "/tmp/This is a text file4551613284841905296.txt";
+    String vfsFilenameWithScheme = "hdfs://tmp/This is a text file4551613284841905296.txt";
+
+    boolean testVfsFilename = KettleVFS.hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
+    assertFalse( testVfsFilename );
+
+    boolean testVfsFilenameWithScheme = KettleVFS.hasScheme( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
+    assertTrue( testVfsFilenameWithScheme );
+
+  }
+
+  @Test
+  public void testHasSchemeWithVariables() {
+    String vfsFilename = "${input_file}";
+    String vfsFilenameWithScheme = "hdfs://${input_file}";
+
+    boolean testVfsFilename = KettleVFS.hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
+    assertFalse( testVfsFilename );
+
+    boolean testVfsFilenameWithScheme = KettleVFS.hasScheme( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
+    assertTrue( testVfsFilenameWithScheme );
+
+  }
+
+  @Test
+  public void testHasSchemeWithJSON() {
+    String vfsFilename = "{\"textMessage\":{\"textMessage\":\" textMessage"
+      + "textMessage \",\"textMessage\":{textMessage}}}";
+    String vfsFilenameWithScheme = "hdfs://" + vfsFilename;
+
+    boolean testVfsFilename = KettleVFS.hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
+    assertFalse( testVfsFilename );
+
+    boolean testVfsFilenameWithScheme = KettleVFS.hasScheme( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
+    assertTrue( testVfsFilenameWithScheme );
 
   }
 
