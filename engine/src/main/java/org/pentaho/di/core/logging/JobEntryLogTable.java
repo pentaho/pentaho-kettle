@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -149,7 +149,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     table.fields.add( new LogTableField( ID.LINES_OUTPUT.id, true, false, "LINES_OUTPUT", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.LinesOutput" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.LinesOutput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LINES_REJECTED.id, true, false, "LINES_REJECTED", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.LinesRejected" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.LinesRejected" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.Errors" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.Errors" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
-    table.fields.add( new LogTableField( ID.RESULT.id, true, false, "RESULT", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.Result" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.Result" ), ValueMetaInterface.TYPE_BOOLEAN, -1 ) );
+    table.fields.add( new LogTableField( ID.RESULT.id, true, false, "RESULT", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.Result" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.Result" ), ValueMetaInterface.TYPE_STRING, 5 ) );
     table.fields.add( new LogTableField( ID.NR_RESULT_ROWS.id, true, false, "NR_RESULT_ROWS", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.NrResultRows" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.NrResultRows" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.NR_RESULT_FILES.id, true, false, "NR_RESULT_FILES", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.NrResultFiles" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.NrResultFiles" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LOG_FIELD.id, false, false, "LOG_FIELD", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.LogField" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.LogField" ), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH ) );
