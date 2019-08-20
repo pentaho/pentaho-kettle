@@ -32,7 +32,7 @@ node('non-master') {
         stage('Validations / Triggers') {
           parallel(
             'github-commits': {
-              job.trigger('engops/github-commits-pipelines', suiteParameters, false)
+              job.trigger('engops/github-commits', suiteParameters, false)
             },
             'remote-ip-job-trigger': {
               job.trigger('engops/remote-ip-job-trigger', suiteParameters, false)
