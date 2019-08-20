@@ -174,7 +174,7 @@
         <menuseparator />
         <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
         <menuseparator />
-        <menuitem id="capability-manager" label="Capability Manager" command="spoon.editCapabilities()" />
+        <menuitem id="capability-manager" label="${Spoon.Menu.CapabilityManager}" command="spoon.editCapabilities()" />
         <menuseparator />
         <menuitem id="help-plugins" label="${Spoon.Menu.ShowPluginInfo}" command="spoon.showPluginInfo()" />
 
