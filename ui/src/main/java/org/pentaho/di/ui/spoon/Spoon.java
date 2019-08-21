@@ -5130,6 +5130,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return true;
   }
 
+  public void logoutFile() {
+    WebSpoonUtils.exec("window.location.href = \"./logout\";");
+  }
+
   public boolean quitFile( boolean canCancel ) throws KettleException {
     if ( log.isDetailed() ) {
       log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.QuitApplication" ) ); // "Quit application."
@@ -6934,6 +6938,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "file-print", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-export-to-xml", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-export-all-to-xml", disableTransMenu && disableJobMenu );
+        disableMenuItem( doc, "file-logout", !WebSpoonUtils.isMultiUser() );
 
         // Disable the undo and redo menus if there is no active transformation
         // or active job

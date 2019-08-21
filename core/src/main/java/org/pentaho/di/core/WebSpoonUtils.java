@@ -51,7 +51,7 @@ public class WebSpoonUtils {
     }
   }
 
-  private static void exec( String... strings ) {
+  public static void exec( String... strings ) {
     StringBuilder builder = new StringBuilder();
     builder.append( "try{" );
     for ( String str : strings ) {
@@ -119,5 +119,12 @@ public class WebSpoonUtils {
 
   public static String getConnectionId() {
     return ( (UISessionImpl) getUISession() ).getConnectionId();
+  }
+
+  /*
+   * Return true if user-auth is enabled.
+   */
+  public static boolean isMultiUser() {
+    return Const.getUser() == null ? false : true;
   }
 }

@@ -45,6 +45,7 @@
           </menupopup>
         </menu>
         <menuseparator id="file-separator-4"/>
+        <menuitem id="file-logout" label="${Spoon.Menu.File.Logout}" command="spoon.logoutFile()" />
         <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile(true)" disabled="true" />
       </menupopup>
     </menu>
