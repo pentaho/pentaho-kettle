@@ -357,26 +357,54 @@ public class JobEntryTransTest {
 
   @Test
   public void updateResultTest() {
-    updateResultTest( 3, 5 );
+    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
+    Trans transMock = mock( Trans.class );
+    setInternalState( jobEntryTrans, "trans", transMock );
+    //Transformation returns result with 5 rows
+    when( transMock.getResult() ).thenReturn( generateDummyResult( 5 ) );
+    //Previous result has 3 rows
+    Result resultToBeUpdated = generateDummyResult( 3 );
+    //Update the result
+    jobEntryTrans.updateResult( resultToBeUpdated );
+    //Result should have 5 number of rows since the trans result has 5 rows (meaning 5 rows were returned)
+    assertEquals( resultToBeUpdated.getRows().size(), 5 );
   }
 
   @Test
   public void updateResultTestWithZeroRows() {
-    updateResultTest( 3, 0 );
-  }
-
-  private void updateResultTest( int previousRowsResult, int newRowsResult ) {
     JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
     Trans transMock = mock( Trans.class );
     setInternalState( jobEntryTrans, "trans", transMock );
-    //Transformation returns result with <newRowsResult> rows
-    when( transMock.getResult() ).thenReturn( generateDummyResult( newRowsResult ) );
-    //Previous result has <previousRowsResult> rows
-    Result resultToBeUpdated = generateDummyResult( previousRowsResult );
+    //Transformation returns result with 0 rows
+    when( transMock.getResult() ).thenReturn( generateDummyResult( 0 ) );
+    //Previous result has 3 rows
+    Result resultToBeUpdated = generateDummyResult( 3 );
     //Update the result
     jobEntryTrans.updateResult( resultToBeUpdated );
-    //Result should have the number of rows of the transformation result
-    assertEquals( resultToBeUpdated.getRows().size(), newRowsResult );
+    //Result should have 3 number of rows since the trans result has no rows (meaning nothing was done)
+    assertEquals( resultToBeUpdated.getRows().size(), 3 );
+  }
+
+  @Test
+  public void updateResultTestWithZeroRowsForced() {
+    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
+    Trans transMock = mock( Trans.class );
+    setInternalState( jobEntryTrans, "trans", transMock );
+    //Transformation returns result with 0 rows
+    when( transMock.getResult() ).thenReturn( generateDummyResult( 0 ) );
+    //Previous result has 3 rows
+    Result resultToBeUpdated = generateDummyResult( 3 );
+    //Result Set Was updated
+    when( transMock.isResultRowsSet() ).thenReturn( true );
+    //Update the result
+    jobEntryTrans.updateResult( resultToBeUpdated );
+    //Result should have zero number of rows since the result rows has no rows but the result set was in fact updated
+    //(meaning something was done that resulted in zero rows.
+    assertEquals( resultToBeUpdated.getRows().size(), 0 );
+  }
+
+  private void updateResultTest( int previousRowsResult, int newRowsResult ) {
+
   }
 
   private Result generateDummyResult( int nRows ) {
