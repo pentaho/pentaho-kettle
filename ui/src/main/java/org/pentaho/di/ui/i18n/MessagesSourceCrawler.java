@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.hitachivantara.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,8 +64,8 @@ import java.util.regex.Pattern;
 public class MessagesSourceCrawler {
 
   /**
-   * When searching for a scanPhrase, it may exist over more than one source line. This string contains the characters
-   * to be considered in the calculation of the different splits that each scanPhrase may have.
+   * When searching for a scanPhrase, it may be spread over more than one source line. This string contains the
+   * characters to be considered in the calculation of the different splits that each scanPhrase may have.
    *
    * @see #SPLIT_CHARACTERS
    * @see #SPLITTER_AND_WHITESPACES_PATTERN
@@ -73,7 +73,7 @@ public class MessagesSourceCrawler {
   private static final String SPLIT_CHARACTERS_STRING = ".(,";
 
   /**
-   * When searching for a scanPhrase, it may exist over more than one source line. These are the characters to be
+   * When searching for a scanPhrase, it may be spread over more than one source line. These are the characters to be
    * considered in the calculation of the different splits that each scanPhrase may have.
    *
    * @see #SPLIT_CHARACTERS_STRING
@@ -102,25 +102,27 @@ public class MessagesSourceCrawler {
 
   private static final String EMPTY_STRING = "";
   private static final String ASTERISK = "*";
-  private static final String DOT = ".";
   private static final String DOLLAR_SIGN = "$";
+  private static final String DOT = ".";
   private static final String QUESTION_MARK = "?";
-  private static final String N_STRING = "N";
-  private static final String YES_STRING = "yes";
-  private static final String DOT_CLASS_STRING = ".class";
-  private static final String IMPORT_STRING = "import";
-  private static final int IMPORT_STRING_LENGTH = IMPORT_STRING.length();
+  private static final String SPACE = " ";
+  private static final String TAB = "\t";
+  private static final String N = "N";
+  private static final String YES = "yes";
+  private static final String DOT_CLASS = ".class";
+  private static final String IMPORT_TOKEN = "import";
+  private static final int IMPORT_TOKEN_LENGTH = IMPORT_TOKEN.length();
   private static final String JAVA_EXTENSION = "java";
-  private static final String MESSAGES_PACKAGE_END_STRING = ".Messages;";
-  private static final String ORG_PENTAHO_STRING = "org.pentaho.";
-  private static final String SYSTEM_DOT_STRING = "System.";
+  private static final String PACKAGE_END_MESSAGES = ".Messages;";
+  private static final String PACKAGE_START_ORG_PENTAHO = "org.pentaho.";
+  private static final String PACKAGE_START_SYSTEM = "System.";
 
   //REGEX expressions to be compiled
-  private static final String PACKAGE_PATTERN = "^\\s*package\\s*.*;\\s*$";
-  private static final String IMPORT_PATTERN = "^\\s*import\\s*[a-z._0-9]*\\.([*]|([A-Z][a-z._0-9]*))\\s*;\\s*$";
-  private static final String IMPORT_MESSAGES_PATTERN = "^\\s*import\\s*[a-z._0-9]*\\.Messages;\\s*$";
-  private static final String STRING_PKG_PATTERN = "^.*private static String PKG.*=.*$";
-  private static final String CLASS_PKG_PATTERN = "^.*private static Class.*\\sPKG\\s*=.*$";
+  private static final String PATTERN_PACKAGE_DECLARATION = "^\\s*package\\s*.*;\\s*$";
+  private static final String PATTERN_ANY_PACKAGE_IMPORT =          "^\\s*import\\s*[a-z._0-9]*\\.([*]|([A-Z][a-z._0-9]*))\\s*;\\s*$";
+  private static final String PATTERN_MESSAGES_PACKAGE_IMPORT = "^\\s*import\\s*[a-z._0-9]*\\.Messages;\\s*$";
+  private static final String PATTERN_STRING_PKG_VARIABLE_DECLARATION = "^.*private static String PKG.*=.*$";
+  private static final String PATTERN_CLASS_PKG_VARIABLE_DECLARATION = "^.*private static Class.*\\sPKG\\s*=.*$";
 
   /**
    * All phrases to scan for.
@@ -149,11 +151,11 @@ public class MessagesSourceCrawler {
    */
   private List<SourceCrawlerXMLFolder> xmlFolders;
 
-  private Pattern packagePattern = Pattern.compile( PACKAGE_PATTERN );
-  private Pattern importPattern = Pattern.compile( IMPORT_PATTERN );
-  private Pattern importMessagesPattern = Pattern.compile( IMPORT_MESSAGES_PATTERN );
-  private Pattern stringPkgPattern = Pattern.compile( STRING_PKG_PATTERN );
-  private Pattern classPkgPattern = Pattern.compile( CLASS_PKG_PATTERN );
+  private static Pattern packagePattern = Pattern.compile( PATTERN_PACKAGE_DECLARATION );
+  private static Pattern importPattern = Pattern.compile( PATTERN_ANY_PACKAGE_IMPORT );
+  private static Pattern importMessagesPattern = Pattern.compile( PATTERN_MESSAGES_PACKAGE_IMPORT );
+  private static Pattern stringPkgPattern = Pattern.compile( PATTERN_STRING_PKG_VARIABLE_DECLARATION );
+  private static Pattern classPkgPattern = Pattern.compile( PATTERN_CLASS_PKG_VARIABLE_DECLARATION );
 
   private LogChannelInterface log;
 
@@ -251,7 +253,7 @@ public class MessagesSourceCrawler {
     for ( SourceCrawlerXMLFolder xmlFolder : xmlFolders ) {
       String[] xmlDirs = { xmlFolder.getFolder() };
       String[] xmlMasks = { xmlFolder.getWildcard() };
-      String[] xmlReq = { N_STRING };
+      String[] xmlReq = { N };
       boolean[] xmlSubdirs = { true }; // search sub-folders too
 
       FileInputList xulFileInputList =
@@ -285,8 +287,8 @@ public class MessagesSourceCrawler {
 
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
     Transformer transformer = transformerFactory.newTransformer();
-    transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, YES_STRING );
-    transformer.setOutputProperty( OutputKeys.INDENT, YES_STRING );
+    transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, YES );
+    transformer.setOutputProperty( OutputKeys.INDENT, YES );
 
     for ( int i = 0; i < nodeList.getLength(); i++ ) {
       Node node = nodeList.item( i );
@@ -356,7 +358,7 @@ public class MessagesSourceCrawler {
         // "package org.pentaho.di.trans.steps.sortedmerge;"
         //
         if ( packagePattern.matcher( line ).matches() ) {
-          int beginIndex = line.indexOf( ORG_PENTAHO_STRING );
+          int beginIndex = line.indexOf( PACKAGE_START_ORG_PENTAHO );
           int endIndex = line.indexOf( ';' );
           if ( beginIndex >= 0 && endIndex > beginIndex ) {
             messagesPackage = line.substring( beginIndex, endIndex ); // this is the default
@@ -367,7 +369,7 @@ public class MessagesSourceCrawler {
         // Remember all the imports...
         //
         if ( importPattern.matcher( line ).matches() ) {
-          int beginIndex = line.indexOf( IMPORT_STRING ) + IMPORT_STRING_LENGTH + 1;
+          int beginIndex = line.indexOf( IMPORT_TOKEN ) + IMPORT_TOKEN_LENGTH + 1;
           int endIndex = line.indexOf( ';', beginIndex );
           if ( beginIndex >= 0 && endIndex > beginIndex ) {
             String expression = line.substring( beginIndex, endIndex );
@@ -390,8 +392,8 @@ public class MessagesSourceCrawler {
         // "import org.pentaho.di.trans.steps.sortedmerge.Messages;"
         //
         if ( importMessagesPattern.matcher( line ).matches() ) {
-          int beginIndex = line.indexOf( ORG_PENTAHO_STRING );
-          int endIndex = line.indexOf( MESSAGES_PACKAGE_END_STRING );
+          int beginIndex = line.indexOf( PACKAGE_START_ORG_PENTAHO );
+          int endIndex = line.indexOf( PACKAGE_END_MESSAGES );
           if ( beginIndex >= 0 && endIndex > beginIndex ) {
             messagesPackage = line.substring( beginIndex, endIndex ); // if there is any specified, we take this one.
           }
@@ -415,7 +417,7 @@ public class MessagesSourceCrawler {
         //
         if ( classPackage != null && classPkgPattern.matcher( line ).matches() ) {
           int fromIndex = line.indexOf( '=' ) + 1;
-          int toIndex = line.indexOf( DOT_CLASS_STRING, fromIndex );
+          int toIndex = line.indexOf( DOT_CLASS, fromIndex );
           String expression = Const.trim( line.substring( fromIndex, toIndex ) );
 
           // If the expression doesn't contain any package, we'll look up the package in the imports. If not found
@@ -642,7 +644,7 @@ public class MessagesSourceCrawler {
 
     // Sanity check...
     //
-    if ( key.contains( "\t" ) || key.contains( " " ) ) {
+    if ( key.contains( TAB ) || key.contains( SPACE ) ) {
       System.out.println( "Suspect key found: [" + key + "] in file [" + fileObject + "]" );
     }
 
@@ -650,7 +652,7 @@ public class MessagesSourceCrawler {
     //
     // Make sure we pass the System key occurrences to the correct package.
     //
-    if ( key.startsWith( SYSTEM_DOT_STRING ) ) {
+    if ( key.startsWith( PACKAGE_START_SYSTEM ) ) {
       String i18nPackage = BaseMessages.class.getPackage().getName();
       KeyOccurrence keyOccurrence =
         new KeyOccurrence( fileObject, sourceFolder, i18nPackage, row, column, key, arguments, line );

@@ -20,7 +20,7 @@
   </source-directories>
   
   <scan-phrases>
-    <scan-phrase>BaseMessages.getString( PKG,</scan-phrase>
+    <scan-phrase>BaseMessages.getString(PKG,</scan-phrase>
   </scan-phrases>
   
   <locale-list>

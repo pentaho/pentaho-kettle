@@ -22,6 +22,8 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
+setlocal 
+
 set XMLFILE=%1%
 set SRCDIR=%2%
 
@@ -70,8 +72,7 @@ REM ** Set java runtime options                                     **
 REM ** Change 512m to higher values in case you run out of memory   **
 REM ******************************************************************
 
-set PENTAHO_DI_JAVA_OPTIONS="-Xmx512m" "-XX:MaxPermSize=256m"
-set OPT=
+set OPT="-Xmx512m" "-XX:MaxPermSize=256m"
 
 REM ***************
 REM ** Run...    **
