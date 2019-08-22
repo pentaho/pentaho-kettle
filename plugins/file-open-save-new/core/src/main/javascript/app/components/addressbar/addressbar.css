@@ -1,0 +1,171 @@
+addressbar {
+  height: 34px;
+  line-height: 34px;
+  display: flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -webkit-flex;
+}
+
+addressbar .combobox {
+  float: left;
+  width: 100%;
+  position:relative;
+}
+
+addressbar .navigation-buttons {
+  line-height: 40px;
+  margin-right: 20px;
+  white-space: nowrap;
+}
+
+addressbar .navigation-buttons input[type="button"] {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+addressbar input.forwardHistory {
+  background: url("../../img/nav-back.svg") no-repeat center center;
+  height: 17px;
+  width: 10px;
+  cursor: pointer;
+  transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+}
+
+addressbar input.forwardHistory:hover {
+  background-position: right center;
+}
+
+addressbar input.forwardHistory[disabled] {
+  background-position: left center;
+}
+
+addressbar input.backHistory {
+  background: url("../../img/nav-back.svg") no-repeat center center;
+  height: 17px;
+  width: 10px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+addressbar input.backHistory:hover {
+  background-position: right center;
+}
+
+addressbar input.backHistory[disabled] {
+  background-position: left center;
+}
+
+addressbar .breadcrumb {
+  position: relative;
+}
+
+addressbar .breadcrumb,
+addressbar .address {
+  cursor: pointer;
+  border:1px solid #ffffff;
+  border-radius: 5px;
+}
+
+addressbar .breadcrumb:hover,
+addressbar .breadcrumb.selected,
+addressbar .address {
+  border-color: #cbcbcb;
+}
+
+addressbar .address input {
+  width: 100%;
+  outline: none;
+  border: 0;
+  font-size: 14px;
+  margin: 8px 10px 7px 10px;
+}
+
+addressbar .history {
+  top: 35px;
+  position: absolute;
+  width: 100%;
+  border: 1px solid #cbcbcb;
+  background-color: #ffffff;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  z-index: 100;
+}
+
+addressbar .history > li {
+  padding: 0 10px 0 10px;
+  cursor: pointer;
+}
+
+addressbar .history > li:hover {
+  background-color: #355EA3;
+  color: #ffffff;
+}
+
+addressbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+addressbar .breadcrumb ul.parts :last-child {
+  padding-right: 0;
+  background: none;
+  color: #212121;
+  cursor: default;
+}
+
+addressbar .breadcrumb ul.parts {
+  padding: 0px 10px 0 10px;
+}
+
+addressbar .breadcrumb ul.parts li {
+  cursor: pointer;
+  color: #005DA6;
+  display: inline-block;
+  background: url("../../img/chevron_right_tree.svg") no-repeat right center;
+  padding-right: 20px;
+}
+
+addressbar .breadcrumb ul.parts .repository {
+  background: url("../../img/chevron_right_tree.svg"),
+  url("../../img/repository.svg");
+  background-repeat: no-repeat,
+  no-repeat;
+  background-position: right center,
+  left center;
+  width: 22px;
+}
+
+addressbar .breadcrumb ul.parts .local {
+  background: url("../../img/chevron_right_tree.svg"),
+  url("../../img/local.svg");
+  background-repeat: no-repeat,
+  no-repeat;
+  background-position: right center,
+  left center;
+  width: 15px;
+}
+
+addressbar .breadcrumb ul.parts .vfs {
+  background: url("../../img/chevron_right_tree.svg"),
+    url("../../img/vfs.svg");
+  background-repeat: no-repeat,
+    no-repeat;
+  background-position: right center,
+    left center;
+  width: 20px;
+}
+
+addressbar .breadcrumb:hover .dropdown,
+addressbar .breadcrumb.selected .dropdown {
+  background-image: url('../../img/chevron_down_tree.svg');
+  background-repeat: no-repeat;
+  background-position: right center;
+  width: 32px;
+}

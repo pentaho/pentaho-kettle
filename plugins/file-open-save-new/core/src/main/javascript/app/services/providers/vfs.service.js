@@ -24,7 +24,7 @@
  */
 define(
     [
-      "../components/utils"
+      "../../components/utils"
     ],
     function (utils) {
       "use strict";
@@ -50,66 +50,40 @@ define(
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "vfs",
+          order: 0,
+          matchPath: matchPath,
           selectFolder: selectFolder,
+          getBreadcrumbPath: getBreadcrumbPath,
           getPath: getPath,
+          getFilesByPath: getFilesByPath,
           createFolder: createFolder,
           addFolder: addFolder,
-          findRootNode: findRootNode,
-          parsePath: parsePath,
           deleteFiles: deleteFiles,
           renameFile: renameFile,
           isCopy: isCopy,
           open: open,
-          save: save
+          save: save,
+          resolvePath: resolvePath
         };
 
-        function findRootNode(tree, folder, path) {
-          var protocol = getProtocol(path);
-          path = _stripProtocol(path);
-          for (var i = 0; i < tree.length; i++) {
-            if (tree[i].provider.toLowerCase() === folder.provider.toLowerCase()) {
-              var node = tree[i];
-              node.open = true;
-              if (!node.root) {
-                node = _findConnection(node, folder.connection);
-              }
-              if (!node) {
-                return null;
-              }
-              node.protocol = protocol;
-              return node;
+        function resolvePath(path, properties) {
+          return $q(function (resolve, reject) {
+            if (path.indexOf("pvfs://") === 0) {
+              resolve("VFS Connections/" + path.replace("pvfs://", ''));
+            } else if (properties && properties.connection) {
+              resolve("VFS Connections/" + properties.connection + "/" + path.replace(/^[\w]+:\/\//, ''));
+            } else {
+              reject(path);
             }
-          }
-          return null;
+          });
         }
 
-        function parsePath(path, folder) {
-          var newPath = _stripProtocol(path);
-          if (newPath.indexOf(folder.root) === 0) {
-            newPath = newPath.replace(folder.root, "");
-          }
-          if (newPath.indexOf("/") === 0) {
-            newPath = newPath.substr(1, newPath.length);
-          }
-          if (newPath.indexOf(folder.connection) === 0) {
-            newPath = newPath.replace(folder.connection, "");
-          }
-          if (newPath.indexOf("/") === 0) {
-            newPath = newPath.substr(1, newPath.length);
-          }
-          return !newPath ? null : newPath.split("/");
+        function getPath(file) {
+          return file.root ? _getTreePath(file) : file.path;
         }
 
-        function _findConnection(node, connection) {
-          if (!connection) {
-            return node;
-          }
-          for (var i = 0; i < node.children.length; i++) {
-            if (node.children[i].name.toLowerCase() === connection.toLowerCase()) {
-              node.children[i].open = true;
-              return node.children[i];
-            }
-          }
+        function matchPath(path) {
+          return path && path.match(/^[\w]+:\/\//) != null;
         }
 
         function selectFolder(folder, filters, useCache) {
@@ -130,23 +104,38 @@ define(
           });
         }
 
-        function getPath(folder) {
+        function getBreadcrumbPath(file) {
+          return {
+            type: "vfs",
+            fileType: file.type ? file.type : "folder",
+            prefix: _getFilePrefix(file),
+            uri: _getFilePath(file),
+            path: _getTreePath(file)
+          };
+        }
+
+        function _getFilePrefix(file) {
+          if (file.root) {
+            return null;
+          }
+          return file.path ? file.path.match(/^[\w]+:\/\//)[0] : null;
+        }
+
+        function _getTreePath(folder) {
           if (!folder.path) {
-            return folder.name;
+            return folder.root ? folder.root + "/" + folder.name : folder.name;
           }
-          return (folder.connection ? folder.connection + "/" : "") + folder.path.replace(/^[a-z]+:\/\//, "");
+          if (folder.connection) {
+            return folder.root + "/" + (folder.connection ? folder.connection + "/" : "") + folder.path.replace(/^[\w]+:\/\//, "");
+          }
+          return folder.path.replace(/^[\w]+:\/\//, "");
         }
 
-        function _stripProtocol(path) {
-          return path.replace(/^[a-z]+:\/\//, "/");
-        }
-
-        function getProtocol(path) {
-          var match = path.match(/[\w]+:\/\//);
-          if (match) {
-            return match[0];
+        function _getFilePath(file) {
+          if (file.connectionPath) {
+            return file.connectionPath;
           }
-          return null;
+          return file.path ? file.path : null;
         }
 
         /**
@@ -166,6 +155,10 @@ define(
               reject();
             }
           });
+        }
+
+        function getFilesByPath(path, useCache) {
+          return getFiles({path: path, provider: "vfs"}, undefined, useCache);
         }
 
         /**

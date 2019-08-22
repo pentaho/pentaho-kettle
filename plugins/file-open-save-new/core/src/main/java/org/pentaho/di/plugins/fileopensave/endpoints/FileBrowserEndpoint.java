@@ -78,6 +78,13 @@ public class FileBrowserEndpoint {
   }
 
   @POST
+  @Path( "/getFile" )
+  @Produces( { MediaType.APPLICATION_JSON } )
+  public Response getFile( File file ) {
+    return Response.ok( fileController.getFile( file ) ).build();
+  }
+
+  @POST
   @Path( "/delete" )
   @Produces( { MediaType.APPLICATION_JSON } )
   @Consumes( { MediaType.APPLICATION_JSON } )

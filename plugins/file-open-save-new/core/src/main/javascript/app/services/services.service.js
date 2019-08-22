@@ -49,15 +49,33 @@ define(
       function factory() {
         var services = [];
         for (var i = 0; i < arguments.length; i++) {
-          services[arguments[i].provider] = arguments[i];
+          services.push(arguments[i]);
         }
+        services.sort(function(a, b) {
+          return a.order > b.order ? 1 : -1;
+        });
 
         return {
-          get: get
+          get: get,
+          getByPath: getByPath
         };
 
+        function getByPath(path) {
+          for (var i = 0; i < services.length; i++) {
+            if (services[i].matchPath(path)) {
+              return services[i];
+            }
+          }
+          return null;
+        }
+
         function get(name) {
-          return services[name.toLowerCase()];
+          for (var i = 0; i < services.length; i++) {
+            if (services[i].provider.toLowerCase() === name.toLowerCase()) {
+              return services[i];
+            }
+          }
+          return null;
         }
       }
     });

@@ -157,7 +157,7 @@ public class ConnectionManager {
     if ( clearCache ) {
       nameCache.clear();
     }
-    if ( nameCache.size() > 0 ) {
+    if ( !nameCache.isEmpty() ) {
       return nameCache;
     }
     List<String> detailNames = new ArrayList<>();

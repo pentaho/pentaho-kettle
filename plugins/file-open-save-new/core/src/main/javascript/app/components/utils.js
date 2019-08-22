@@ -25,8 +25,15 @@ define(
         truncateString: truncateString,
         buildParameters: buildParameters,
         concatParameters: concatParameters,
-        getFilename: getFilename
+        getFilename: getFilename,
+        cleanPath: cleanPath,
+        getParentPath: getParentPath,
+        getPlaceholder: getPlaceholder
       };
+
+      function cleanPath(path) {
+        return path.lastIndexOf("/") === path.length - 1 ? path.substr(0, path.length - 1) : path;
+      }
 
       /**
        * String comparison with arithmetic comparison of numbers
@@ -138,5 +145,43 @@ define(
 
       function getFilename(path) {
         return path.substr(path.lastIndexOf("/") + 1, path.length);
+      }
+
+      function getParentPath(path) {
+        return path.substr(0, path.lastIndexOf("/"));
+      }
+
+      /**
+       * Determines if the browser is Internet Explorer.
+       * If it is, it truncates the placeholder for the search box if it's width is greater than the
+       * search box. It then adds ellipsis to the end of that string and returns that value.
+       * If it is not Internet Explorer, it just returns the search box placeholder and any
+       * truncation/ellipsis is handled using CSS. NOTE: this is a workaround for an IE bug
+       * that doesn't allow placeholders to be ellipsis unless the input is readonly.
+       * @return {string} - the Placeholder for the search box
+       */
+      function getPlaceholder(placeholder, folder, currentRepo) {
+        var isIE = navigator.userAgent.indexOf("Trident") !== -1 && Boolean(document.documentMode);
+        var retVal = placeholder;
+        if (folder.path !== "Recents") {
+          if (folder.name) {
+            retVal += " " + folder.name;
+          } else {
+            retVal += " " + folder.path.substr(folder.path.lastIndexOf("/") + 1, folder.path.length);
+          }
+        } else {
+          retVal += " " + currentRepo;
+        }
+        if (isIE && getTextWidth(retVal) > 210) {
+          var tmp = "";
+          for (var i = 0; i < retVal.length; i++) {
+            tmp = retVal.slice(0, i);
+            if (getTextWidth(tmp) > 196) {
+              break;
+            }
+          }
+          retVal = tmp + "...";
+        }
+        return retVal;
       }
     });

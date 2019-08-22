@@ -24,12 +24,14 @@
  */
 define(
     [
-      "./services.service"
+      "./services.service",
+      "./file.service",
+      "../components/utils"
     ],
-    function (servicesService) {
+    function (servicesService, fileService, utils) {
       "use strict";
 
-      var factoryArray = [servicesService.name, "$q", factory];
+      var factoryArray = [servicesService.name, fileService.name, "$q", factory];
       var module = {
         name: "folderService",
         factory: factoryArray
@@ -42,30 +44,186 @@ define(
        *
        * @return {Object} The fileService api
        */
-      function factory(ss, $q) {
+      function factory(ss, fileService, $q) {
         return {
+          folder: null,
+          getPath: getPath,
           selectFolder: selectFolder,
           openFolder: openFolder,
+          selectFolderByPath: selectFolderByPath,
           findFolderByPath: findFolderByPath,
-          getPath: getPath,
+          getFilesByPath: getFilesByPath,
+          getBreadcrumbPath: getBreadcrumbPath,
           deleteFolder: deleteFolder,
           addFolder: addFolder,
-          createFolder: createFolder
+          createFolder: createFolder,
+          resolvePath: resolvePath,
+          upDirectory: upDirectory,
+          openPath: openPath,
+          refreshFolder: refreshFolder
         };
 
-        function getPath(folder) {
-          if (!folder.root) {
-            return folder.name;
+        function refreshFolder(tree) {
+          var self = this;
+          return $q(function(resolve, reject) {
+            if (self.folder) {
+              self.folder.loaded = false;
+              if (self.folder.provider) {
+                self.selectFolder(self.folder, undefined, false).then(resolve);
+              } else {
+                self.openPath(tree, self.folder.path, {useCache: false}).then(resolve);
+              }
+            }
+          });
+        }
+
+        // TODO: rename so that it's clear this is a file path not a tree path
+        function openPath(tree, path, props) {
+          var self = this;
+          return $q(function(resolve, reject) {
+            path = utils.cleanPath(path);
+            self.resolvePath(path, props).then(function (path) {
+              self.selectFolderByPath(tree, path).then(function() {
+                resolve();
+              });
+            }).catch(function (path) {
+              self.folder = {path: path};
+              fileService.get({
+                path: path
+              }).then(function (file) {
+                var filename = null;
+                if (file.type === "file") {
+                  filename = utils.getFilename(path);
+                  path = utils.getParentPath(path);
+                }
+                self.folder = {path: path};
+                var useCache = props ? props.useCache : false;
+                self.getFilesByPath(path, useCache).then(function (files) {
+                  self.folder.loaded = true;
+                  self.folder.children = files.data;
+                  self.fileLoading = false;
+                  fileService.files = [];
+                  _selectFile(filename);
+                  resolve();
+                });
+              });
+            });
+          });
+        }
+
+        function _selectFile(filename) {
+          if (filename && self.folder) {
+            for (var i = 0; i < self.folder.children.length; i++) {
+              if (filename === self.folder.children[i].name) {
+                fileService.files = [self.folder.children[i]];
+              }
+            }
           }
-          var service = ss.get(folder.provider);
+        }
+
+        // Select folder by path in the tree
+        function selectFolderByPath(tree, path, props) {
+          var self = this;
+          return $q(function(resolve, reject) {
+            self.findFolderByPath(tree, path, props).then(function (selectedFile) {
+              fileService.files = [];
+              if (selectedFile.type === "file") {
+                self.selectFolderByPath(tree, path.substr(0, path.lastIndexOf("/"))).then(function() {
+                  fileService.files = [selectedFile];
+                  resolve();
+                });
+              } else {
+                self.selectFolder(selectedFile).then(resolve);
+              }
+            });
+          });
+        }
+
+        function upDirectory(tree) {
+          if (!this.folder) {
+            return;
+          }
+          var path = this.getPath(this.folder);
+          path = utils.getParentPath(path);
+          fileService.files = [];
+          var self = this;
+          return $q(function(resolve, reject) {
+            if (self.folder.root) {
+              self.selectFolderByPath(tree, path).then(resolve);
+            } else {
+              self.openPath(tree, path).then(resolve);
+            }
+          });
+        }
+
+        function resolvePath(path, properties) {
+          var service;
+          if (properties && properties.provider) {
+            service = ss.get(properties.provider);
+          } else {
+            service = ss.getByPath(path);
+          }
+          if (service) {
+            return service.resolvePath(path, properties);
+          }
+          return null;
+        }
+
+        function getPath(folder) {
+          var service = folder.provider ? ss.get(folder.provider) : null;
           if (!service) {
-            return "";
+            service = ss.getByPath(folder.path);
           }
           return service.getPath(folder);
         }
 
+        function getBreadcrumbPath(file) {
+          var service = file.provider ? ss.get(file.provider) : null;
+          if (!service) {
+            service = ss.getByPath(file.path);
+          }
+          if (!service) {
+            return {
+              prefix: null,
+              fileType: "folder",
+              uri: file.name,
+              path: file.name
+            };
+          }
+
+          return service.getBreadcrumbPath(file);
+        }
+
+        function getFilesByPath(path, useCache) {
+          var service = ss.getByPath(path);
+          return $q(function(resolve, reject) {
+            service.getFilesByPath(path, useCache).then(function (files) {
+              resolve(files);
+            });
+          });
+        }
+
         function openFolder(folder) {
-          return selectFolder(folder);
+          return this.selectFolder(folder);
+        }
+
+        function selectFolder(folder, filters, useCache) {
+          var self = this;
+          return $q(function(resolve, reject) {
+            if (folder !== self.folder || self.folder.loaded === false) {
+              self.folder = folder;
+              self.folder.open = true;
+              if (folder.provider !== "recents") {
+                _selectFolder(folder, filters, useCache).then(function () {
+                  resolve(self.folder);
+                });
+              } else {
+                resolve(self.folder);
+              }
+            } else {
+              resolve(self.folder);
+            }
+          });
         }
 
         /**
@@ -75,7 +233,7 @@ define(
          * @param {String} filters - file filters
          * @param {Boolean} useCache - Clear the cache on the server
          */
-        function selectFolder(folder, filters, useCache) {
+        function _selectFolder(folder, filters, useCache) {
           return $q(function(resolve, reject) {
             var service = ss.get(folder.provider);
             if (service) {
@@ -92,36 +250,26 @@ define(
           });
         }
 
-        function findFolderByPath(tree, f, path) {
+        function _findRoot(tree, name) {
+          for (var i = 0; i < tree.length; i++) {
+            if (tree[i].name === name) {
+              return tree[i];
+            }
+          }
+        }
+
+        function findFolderByPath(tree, path) {
           return $q(function(resolve, reject) {
-            if (!f.provider) {
+            var parts = path.split("/");
+            var root = _findRoot(tree, parts.shift());
+            if (parts.length === 0) {
+              resolve(root);
               return;
             }
-            var service = ss.get(f.provider);
-            if (!service) {
-              return;
-            }
-            var node = service.findRootNode(tree, f, path);
-            console.log("Root Node: ", node);
-            if (node === null) {
-              reject();
-            } else {
-              node.open = true;
-              if (node === f) {
-                resolve(node);
-              } else if (node) {
-                var parts = service.parsePath(path, f);
-                if (parts) {
-                  _findFolder(node, parts).then(function(folder) {
-                    resolve(folder);
-                  });
-                } else {
-                  resolve(node);
-                }
-              } else {
-                reject();
-              }
-            }
+            root.open = true;
+            _findFolder(root, parts).then(function(folder) {
+              resolve(folder);
+            });
           });
         }
 
@@ -278,6 +426,26 @@ define(
           for (var i = 0; i < child.children.length; i++) {
             _updateDirectories(child.children[i], oldPath, newPath);
           }
+        }
+
+        /**
+         * Returns the name of the selected folder
+         *
+         * @return {String} - "Search results in "<The name of the selected folder>", truncating with ellipsis accordingly
+         */
+        function getSelectedFolderName() {
+          var retVal = i18n.get("file-open-save-plugin.app.search-results-in.label");
+          if (vm.selectedFolder === "") {
+            retVal += "\"" + vm.currentRepo;
+          } else {
+            retVal += "\"" + vm.selectedFolder;
+          }
+          if ($state.is("open") && utils.getTextWidth(retVal) > 435) {
+            retVal = utils.truncateString(retVal, 426) + "...";
+          } else if ($state.is("save") && utils.getTextWidth(retVal) > 395) {
+            retVal = utils.truncateString(retVal, 386) + "...";
+          }
+          return retVal + "\"";
         }
       }
     });

@@ -24,6 +24,7 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
@@ -58,13 +59,22 @@ public class VFSFile extends BaseEntity implements File {
     this.connection = connection;
   }
 
+  public String getConnectionPath() {
+    if ( getPath() == null || connection == null ) {
+      return null;
+    }
+    return ConnectionFileProvider.SCHEME + "://" + connection + "/" + getPath().replaceAll( "[\\w]+://", "" );
+  }
+
   public static VFSFile create( String parent, FileObject fileObject, String connection ) {
     VFSFile vfsFile = new VFSFile();
     vfsFile.setName( fileObject.getName().getBaseName() );
     vfsFile.setPath( fileObject.getName().getFriendlyURI() );
     vfsFile.setParent( parent );
-    vfsFile.setConnection( connection );
-    vfsFile.setRoot( VFSFileProvider.NAME );
+    if ( connection != null ) {
+      vfsFile.setConnection( connection );
+      vfsFile.setRoot( VFSFileProvider.NAME );
+    }
     vfsFile.setCanEdit( true );
     try {
       vfsFile.setDate( new Date( fileObject.getContent().getLastModifiedTime() ) );
@@ -91,7 +101,8 @@ public class VFSFile extends BaseEntity implements File {
 
     VFSFile compare = (VFSFile) obj;
     return compare.getProvider().equals( getProvider() )
-      && compare.getConnection().equals( getConnection() )
+      && ( ( compare.getConnection() == null && getConnection() == null ) || compare.getConnection()
+      .equals( getConnection() ) )
       && ( ( compare.getPath() == null && getPath() == null ) || compare.getPath().equals( getPath() ) );
   }
 }

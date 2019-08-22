@@ -174,6 +174,15 @@ public class FileController {
     return Result.error( "Unable to move file", file );
   }
 
+  public File getFile( File file ) {
+    try {
+      FileProvider<File> fileProvider = getFileProvider( file.getProvider() );
+      return fileProvider.getFile( file );
+    } catch ( InvalidFileProviderException e ) {
+      return null;
+    }
+  }
+
   public Result copyFile( File file, File destDir, String path, Boolean overwrite ) {
     try {
       FileProvider<File> fileProvider = getFileProvider( file.getProvider() );

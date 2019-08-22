@@ -1,8 +1,8 @@
 <modals></modals>
 <error ng-show="vm.showError"
     error-type="vm.errorType"
-    error-files="vm.files"
-    error-folder="vm.files.length === 0 ? vm.folder : vm.files[0]"
+    error-files="vm.selectedFiles"
+    error-folder="vm.selectedFiles.length === 0 ? vm.folder : vm.selectedFiles[0]"
     on-error-confirm="vm.confirmError()"
     on-error-cancel="vm.cancelError()"
     key class="noselect"></error>
@@ -14,37 +14,26 @@
         {{::vm.headerTitle}}
       </div>
       <search
-          placeholder="vm.getPlaceholder()"
+          placeholder="vm.placeholder"
           on-search="vm.doSearch(searchValue)"
           on-blur="vm.storeRecentSearch()"
           autofill="vm.recentSearches"
           search-value="vm.searchString"
           searching="vm.searching"></search>
     </div>
-    <div class="headerBottom">
-      <div class="navigation-buttons">
-        <input type="button" class="backHistory" ng-click="vm.onBackHistory()" title="{{::vm.backHistory}}" ng-disabled="vm.backHistoryDisabled()"/>
-        <input type="button" class="forwardHistory" ng-click="vm.onForwardHistory()" title="{{::vm.forwardHistory}}" ng-disabled="vm.forwardHistoryDisabled()"/>
-      </div>
-      <div ng-show="vm.searchString">
-        <div class="breadcrumbSection searchResults">
-          {{vm.getSelectedFolderName()}}
-        </div>
-      </div>
-      <div ng-hide="vm.searchString" class="breadcrumbSection">
-        <breadcrumb path="vm.getPath()"
-            file-path="vm.getFilePath()"
-            include-root="vm.includeRoot"
-            on-select="vm.selectFolderByPath(selectedPath, vm.folder, true)"
-            type="vm.getType()">
-        </breadcrumb>
-      </div>
-      <div class="addDelete">
-        <input type="button" class="refreshFolder" ng-click="vm.onRefreshFolder()" title="{{::vm.refreshFolder}}" ng-disabled="vm.refreshDisabled()"/>
-        <input type="button" class="deleteFolder" ng-click="vm.onDeleteFiles()" title="{{::vm.removeText}}" ng-disabled="vm.deleteDisabled()"/>
-        <input type="button" class="addFolder" ng-click="vm.onAddFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDisabled()"/>
-        <input type="button" class="upDirectory" ng-click="vm.onUpDirectory()" title="{{::vm.upDirectory}}" ng-disabled="vm.upDisabled()"/>
-      </div>
+    <div class="headerBottom flex">
+      <addressbar path="vm.breadcrumbPath"
+          on-select="vm.selectFolderByPath(path)"
+          on-enter="vm.openPath(path)"
+          class="flex">
+      </addressbar>
+      <filecontrols files="vm.fileList"
+          folder="vm.folder"
+          on-add-folder="vm.onAddFolder()"
+          on-delete-files="vm.onDeleteFiles()"
+          on-up-directory="vm.onUpDirectory()"
+          on-refresh-folder="vm.onRefreshFolder()"
+      ></filecontrols>
     </div>
   </div>
   <div id="middle" class="middle">
@@ -54,7 +43,7 @@
           on-select="vm.selectFolder(selectedFolder, true)"
           show-recents="vm.showRecents"
           selected-folder="vm.folder"
-          ng-class="{dark: vm.files.length !== 0}"
+          ng-class="{dark: vm.selectedFiles.length !== 0}"
           on-move="vm.onMoveFiles(from, to)"
           on-copy="vm.onCopyFiles(from, to)"
           on-delete="vm.onDeleteFiles([folder])"
@@ -68,7 +57,7 @@
       <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">
         {{vm.fileAreaMessage}}
       </div>
-      <card ng-if="vm.isShowRecents()"
+      <card ng-if="vm.isShowRecents"
           recent-files="vm.recentFiles"
           folder="vm.folder"
           on-click="vm.selectFile(file)"
@@ -76,10 +65,10 @@
           selected-file="vm.file"
           resize-cards="vm.showRecents"></card>
       <files ng-show="!vm.showMessage && !vm.showRecents"
-          filter="vm.selectedFilter";
+          filter="vm.selectedFilter"
           folder="vm.folder"
-          files="vm.getFiles()"
-          selected-files="vm.files"
+          files="vm.fileList"
+          selected-files="vm.selectedFiles"
           on-select-file="vm.onSelectFile(file, true)"
           on-highlight="vm.onHighlight(selectedFiles)"
           on-rename="vm.onRenameFile(file, newPath)"
@@ -92,51 +81,15 @@
           show-additional="vm.searchResults.length>0"></files>
     </div>
   </div>
-
-  <div class="bottom">
-    <div id="fileName" class="flex" ng-show="vm.state.is('save')">
-      <label id="fileNameLabel">
-        {{::vm.saveFileNameLabel}}
-      </label>
-      <div class="fileNameEntry flex">
-        <input id="fileNameEntryTextBox" type="text" class="fileNameEntryTextBox" ng-model="vm.fileToSave" focus/>
-      </div>
-    </div>
-    <div class="flex" ng-show="vm.state.is('open')"></div>
-    <div id="fileFilter">
-      <label id="fileTypeLabel">
-        {{::vm.fileFilterLabel}}
-      </label>
-      <div id="fileFilterSelect">
-        <selectbox options="vm.fileFilters" value="vm.selectedFilter" on-select="vm.selectFilter(value)"></selectbox>
-      </div>
-    </div>
-    <div class="buttons">
-      <button class="secondary" ng-click="vm.cancel()">
-        <span>
-          {{::vm.cancelButton}}
-        </span>
-      </button>
-      <button class="primary" ng-if="vm.state.is('selectFolder')" ng-click="vm.okClicked()" ng-disabled="!vm.file">
-        <span>
-          {{::vm.okButton}}
-        </span>
-      </button>
-      <button class="primary" ng-if="vm.state.is('selectFile')" ng-click="vm.okClicked()" ng-disabled="vm.file.type!='file'">
-        <span>
-          {{::vm.okButton}}
-        </span>
-      </button>
-      <button class="primary" ng-if="vm.state.is('open')" ng-click="vm.openClicked()" ng-disabled="vm.files.length!=1">
-        <span>
-          {{::vm.openButton}}
-        </span>
-      </button>
-      <button class="primary" ng-if="vm.state.is('save')" ng-click="vm.saveClicked()" ng-disabled="vm.isSaveEnabled()">
-        <span>
-          {{::vm.saveButton}}
-        </span>
-      </button>
-    </div>
-  </div>
+  <filebar
+      state="vm.state"
+      path="vm.folder.path"
+      filename="vm.fileToSave"
+      on-open-click="vm.onOpenClick()"
+      on-select-filter="vm.onSelectFilter(filter)"
+      on-ok-click="vm.onOKClick()"
+      on-save-click="vm.onSaveClick()"
+      on-cancel-click="vm.onCancelClick()"
+  ></filebar>
+  <div>{{vm.debug}}</div>
 </div>

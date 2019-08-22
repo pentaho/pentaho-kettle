@@ -29,7 +29,6 @@ import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
-import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileOperationException;
@@ -46,6 +45,7 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
@@ -129,31 +129,45 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return deletedFiles;
   }
 
+  private void deleteJob( RepositoryFile repositoryFile ) throws KettleException {
+    StringObjectId objectId = new StringObjectId( repositoryFile.getObjectId() );
+    if ( isJobOpened( repositoryFile.getObjectId(), repositoryFile.getParent(), repositoryFile.getName() ) ) {
+      throw new KettleJobException();
+    }
+    getRepository().deleteJob( objectId );
+  }
+
+  private void deleteTrans( RepositoryFile repositoryFile ) throws KettleException {
+    StringObjectId objectId = new StringObjectId( repositoryFile.getObjectId() );
+    if ( isTransOpened( repositoryFile.getObjectId(), repositoryFile.getParent(), repositoryFile.getName() ) ) {
+      throw new KettleTransException();
+    }
+    getRepository().deleteTransformation( objectId );
+  }
+
+  private void deleteFolder( RepositoryFile repositoryFile ) throws KettleException {
+    isFileOpenedInFolder( repositoryFile.getPath() );
+    // TODO: Handle recents at a higher level
+    //          removeRecentsUsingPath( path );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = findDirectory( repositoryFile.getPath() );
+    if ( getRepository() instanceof RepositoryExtended ) {
+      ( (RepositoryExtended) getRepository() ).deleteRepositoryDirectory( repositoryDirectoryInterface, true );
+    } else {
+      getRepository().deleteRepositoryDirectory( repositoryDirectoryInterface );
+    }
+  }
+
   private boolean deleteFile( RepositoryFile repositoryFile ) throws Exception {
     try {
       switch ( repositoryFile.getType() ) {
         case JOB:
-          if ( isJobOpened( repositoryFile.getObjectId(), repositoryFile.getParent(), repositoryFile.getName() ) ) {
-            throw new KettleJobException();
-          }
-          getRepository().deleteJob( repositoryFile::getObjectId );
+          deleteJob( repositoryFile );
           break;
         case TRANSFORMATION:
-          if ( isTransOpened( repositoryFile.getObjectId(), repositoryFile.getParent(), repositoryFile.getName() ) ) {
-            throw new KettleTransException();
-          }
-          getRepository().deleteTransformation( repositoryFile::getObjectId );
+          deleteTrans( repositoryFile );
           break;
         case FOLDER:
-          isFileOpenedInFolder( repositoryFile.getPath() );
-          // TODO: Handle recents at a higher level
-          //          removeRecentsUsingPath( path );
-          RepositoryDirectoryInterface repositoryDirectoryInterface = findDirectory( repositoryFile.getPath() );
-          if ( getRepository() instanceof RepositoryExtended ) {
-            ( (RepositoryExtended) getRepository() ).deleteRepositoryDirectory( repositoryDirectoryInterface, true );
-          } else {
-            getRepository().deleteRepositoryDirectory( repositoryDirectoryInterface );
-          }
+          deleteFolder( repositoryFile );
           break;
       }
       return true;
@@ -465,13 +479,11 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
         populateFolders( repositoryDirectory, rootDirectory );
         boolean isPentahoRepository =
           getRepository().getRepositoryMeta().getId().equals( PENTAHO_ENTERPRISE_REPOSITORY );
-        if ( isPentahoRepository ) {
-          for ( File child : repositoryDirectory
-            .getChildren() ) {
-            repositoryTree.addChild( (RepositoryDirectory) child );
-          }
-        } else {
-          repositoryTree.addChild( repositoryDirectory );
+        if ( !isPentahoRepository ) {
+          populateFiles( repositoryDirectory, rootDirectory, FILTER );
+        }
+        for ( RepositoryFile child : repositoryDirectory.getChildren() ) {
+          repositoryTree.addChild( child );
         }
         return repositoryTree;
       } catch ( Exception e ) {
@@ -589,5 +601,9 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
 
   public void clearProviderCache() {
     //Any local caches that this provider might use should be cleared here.
+  }
+
+  @Override public RepositoryFile getFile( RepositoryFile file ) {
+    return null;
   }
 }

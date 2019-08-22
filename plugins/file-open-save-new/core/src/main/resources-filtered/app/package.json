@@ -23,9 +23,9 @@
   "config": {
     "pentaho/modules": {
       "IPenFileService": {"base": null, "isAbstract": true},
-      "pentaho/di/plugin/fileOpenSaveNew/services/vfs.service": {"type": "IPenFileService"},
-      "pentaho/di/plugin/fileOpenSaveNew/services/local.service": {"type": "IPenFileService"},
-      "pentaho/di/plugin/fileOpenSaveNew/services/repository.service": {"type": "IPenFileService"}
+      "pentaho/di/plugin/fileOpenSaveNew/services/providers/vfs.service": {"type": "IPenFileService"},
+      "pentaho/di/plugin/fileOpenSaveNew/services/providers/repository.service": {"type": "IPenFileService"},
+      "pentaho/di/plugin/fileOpenSaveNew/services/providers/local.service": {"type": "IPenFileService"}
     }
   }
 }

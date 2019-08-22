@@ -319,4 +319,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   public void clearProviderCache() {
     //Any local caches that this provider might use should be cleared here.
   }
+
+  @Override public LocalFile getFile( LocalFile file ) {
+    return null;
+  }
 }

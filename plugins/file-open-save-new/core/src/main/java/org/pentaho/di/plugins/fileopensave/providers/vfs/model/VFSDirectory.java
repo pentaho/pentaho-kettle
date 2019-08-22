@@ -82,8 +82,10 @@ public class VFSDirectory extends VFSFile implements Directory {
     vfsDirectory.setName( fileObject.getName().getBaseName() );
     vfsDirectory.setPath( fileObject.getName().getFriendlyURI() );
     vfsDirectory.setParent( parent );
-    vfsDirectory.setConnection( connection );
-    vfsDirectory.setRoot( VFSFileProvider.NAME );
+    if ( connection != null ) {
+      vfsDirectory.setConnection( connection );
+      vfsDirectory.setRoot( VFSFileProvider.NAME );
+    }
     vfsDirectory.setCanEdit( true );
     vfsDirectory.setHasChildren( true );
     vfsDirectory.setCanAddChildren( true );

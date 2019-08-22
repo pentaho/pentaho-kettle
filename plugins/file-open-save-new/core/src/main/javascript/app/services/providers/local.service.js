@@ -46,34 +46,33 @@ define(
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "local",
+          order: 2,
+          getBreadcrumbPath: getBreadcrumbPath,
           selectFolder: selectFolder,
-          getPath: getPath,
+          matchPath: matchPath,
           addFolder: addFolder,
           createFolder: createFolder,
-          findRootNode: findRootNode,
-          parsePath: parsePath,
           deleteFiles: deleteFiles,
           renameFile: renameFile,
           isCopy: isCopy,
           open: open,
-          save: save
+          save: save,
+          resolvePath: resolvePath,
+          getPath: getPath
         };
 
-        function findRootNode(tree, folder, path) {
-          for (var i = 0; i < tree.length; i++) {
-            if (tree[i].provider.toLowerCase() === folder.provider.toLowerCase()) {
-              return tree[i];
-            }
-          }
-          return null;
+        function getPath(file) {
+          return file.root ? _getTreePath(file) : file.path;
         }
 
-        function parsePath(path, folder) {
-          var newPath = path.replace(folder.root, "");
-          if (newPath.indexOf("/") === 0) {
-            newPath = newPath.substr(1, newPath.length);
-          }
-          return !newPath ? null : newPath.split("/");
+        function resolvePath(path, properties) {
+          return $q(function (resolve, reject) {
+            resolve("Local" + path);
+          });
+        }
+
+        function matchPath(path) {
+          return path && path.indexOf("/") === 0;
         }
 
         function selectFolder(folder, filters) {
@@ -93,8 +92,25 @@ define(
           });
         }
 
-        function getPath(folder) {
-          return folder.path;
+        function getBreadcrumbPath(file) {
+          return {
+            type: "local",
+            fileType: file.type ? file.type : "folder",
+            prefix: null,
+            uri: _getFilePath(file),
+            path: _getTreePath(file)
+          };
+        }
+
+        function _getTreePath(folder) {
+          if (!folder.path) {
+            return folder.root ? folder.root + "/" + folder.name : folder.name;
+          }
+          return folder.root + folder.path;
+        }
+
+        function _getFilePath(file) {
+          return file.path ? file.path : null;
         }
 
         function createFolder(node, name) {
@@ -136,6 +152,7 @@ define(
         }
 
         function open(file) {
+          console.log("Opening Local File: " + file.path);
           select(null, file.name, file.path, file.parent, file.connection, file.provider, null);
         }
 

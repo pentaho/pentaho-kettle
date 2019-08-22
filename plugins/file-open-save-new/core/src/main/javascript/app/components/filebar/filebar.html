@@ -1,0 +1,44 @@
+<div id="fileName" class="flex" ng-show="vm.state.is('save')">
+  <label id="fileNameLabel">
+    {{::vm.saveFileNameLabel}}
+  </label>
+  <div class="fileNameEntry flex">
+    <input id="fileNameEntryTextBox" ng-change="vm.onChange()" type="text" class="fileNameEntryTextBox" ng-model="vm.filename" focus/>
+  </div>
+</div>
+<div class="flex" ng-show="vm.state.is('open')"></div>
+<div id="fileFilter">
+  <label id="fileTypeLabel">
+    {{::vm.fileFilterLabel}}
+  </label>
+  <div id="fileFilterSelect">
+    <selectbox options="vm.fileFilters" value="vm.selectedFilter" on-select="vm.onSelect(value)"></selectbox>
+  </div>
+</div>
+<div class="buttons">
+  <button class="secondary" ng-click="vm.onCancelClick()">
+      <span>
+        {{::vm.cancelButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('selectFolder')" ng-click="vm.onOKClick()" ng-disabled="!vm.file">
+      <span>
+        {{::vm.okButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('selectFile')" ng-click="vm.onOKClick()" ng-disabled="vm.file.type!='file'">
+      <span>
+        {{::vm.okButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('open')" ng-click="vm.onOpenClick()" ng-disabled="!vm.filename">
+      <span>
+        {{::vm.openButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('save')" ng-click="vm.onSaveClick()" ng-disabled="vm.isSaveEnabled">
+      <span>
+        {{::vm.saveButton}}
+      </span>
+  </button>
+</div>
