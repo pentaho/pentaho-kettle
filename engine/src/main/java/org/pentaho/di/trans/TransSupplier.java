@@ -27,6 +27,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.ael.websocket.TransWebSocketEngineAdapter;
 
 import java.net.URI;
@@ -35,6 +36,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class TransSupplier implements Supplier<Trans> {
+
+  private static final Class<?> PKG = TransSupplier.class;
+  private static final String MSG_KETTLE_ENGINE = "TransSupplier.SelectedEngine.Kettle";
+  private static final String MSG_SPARK_ENGINE = "TransSupplier.SelectedEngine.Spark";
 
   private final TransMeta transMeta;
   private final LogChannelInterface log;
@@ -52,7 +57,7 @@ public class TransSupplier implements Supplier<Trans> {
    */
   public Trans get() {
     if ( Utils.isEmpty( transMeta.getVariable( "engine" ) ) ) {
-      log.logBasic( "Using legacy execution engine" );
+      log.logBasic( BaseMessages.getString( PKG, MSG_KETTLE_ENGINE ) );
       return fallbackSupplier.get();
     }
 
@@ -65,6 +70,7 @@ public class TransSupplier implements Supplier<Trans> {
 
     //default value for ssl for now false
     boolean ssl = "https".equalsIgnoreCase( protocol ) || "wss".equalsIgnoreCase( protocol );
+    log.logBasic( BaseMessages.getString( PKG, MSG_SPARK_ENGINE, protocol, url ) );
     return new TransWebSocketEngineAdapter( transMeta, uri.getHost(), uri.getPort(), ssl );
   }
 
