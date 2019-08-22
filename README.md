@@ -1,5 +1,5 @@
-# jenkins-pipelines
-Jenkins Pipeline and YAML Build Data Files
+# Jenkins Pipelines
+Jenkins Pipeline and YAML Build Data Files.
 
 This repository is used to quickly build source repositories checked into a Git repository. The source for this repository is built on top of [Jenkins Declarative Pipeline](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline), a DSL with a relatively simple syntax. For a detailed reference, see the [Wiki](../../wiki).
 

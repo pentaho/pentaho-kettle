@@ -1,4 +1,4 @@
-library(identifier: "${params.LIB_NAME ?: 'jenkins-shared-libraries'}@${params.LIB_VERSION ?: 'master'}", changelog: false)
+library(identifier: "jenkins-shared-libraries@20190816", changelog: false)
 
 node(params.SLAVE_NODE_LABEL ?: 'non-master') {
   timestamps {
