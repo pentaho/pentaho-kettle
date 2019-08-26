@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -526,6 +526,8 @@ public class Kitchen {
 
     if ( result != null && result.getNrErrors() != 0 ) {
       log.logError( BaseMessages.getString( PKG, "Kitchen.Error.FinishedWithErrors" ) );
+      returnCode = 1;
+    } else if ( !result.getResult() ) {
       returnCode = 1;
     }
     cal = Calendar.getInstance();
