@@ -259,7 +259,7 @@ public class TransWebSocketEngineAdapter extends Trans {
 
             @Override
             public String getIdentifier() {
-              return OPERATION_LOG + operation.getId();
+              return OPERATION_LOG + operation.getKey();
             }
           } );
       } catch ( HandlerRegistrationException e ) {

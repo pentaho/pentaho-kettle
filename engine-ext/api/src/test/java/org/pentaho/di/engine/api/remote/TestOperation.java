@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -27,10 +27,7 @@ import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ccaspanello on 8/14/17.
@@ -38,6 +35,7 @@ import java.util.Map;
 public class TestOperation implements Operation {
 
   private final String id;
+  private final String key;
   private Map<String, Serializable> config;
   private List<Operation> from;
   private List<Operation> to;
@@ -46,6 +44,7 @@ public class TestOperation implements Operation {
 
   public TestOperation( String id ) {
     this.id = id;
+    this.key = id + UUID.randomUUID();
     this.config = new HashMap<>();
     this.from = new ArrayList<>();
     this.to = new ArrayList<>();
@@ -56,6 +55,11 @@ public class TestOperation implements Operation {
   @Override
   public String getId() {
     return id;
+  }
+
+  @Override
+  public String getKey() {
+    return key;
   }
 
   @Override public Map<String, Serializable> getConfig() {
