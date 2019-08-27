@@ -94,10 +94,12 @@ public class GithubProject {
   }
 
   protected static String replaceFromMap(def str, def buildProperties) {
-      buildProperties.each { k, v ->
-        def token = "\${$k}"
-        if (str.contains(token)) {
-          str = str.replace(token, v)
+      if (str) {
+        buildProperties.each { k, v ->
+          def token = "\${$k}"
+          if (str.contains(token)) {
+            str = str.replace(token, v)
+          }
         }
       }
       return str
@@ -111,17 +113,15 @@ public class GithubProject {
     Map<String, Object> buildData = yaml.load(input)
 
     def buildProperties = buildData['buildProperties']
-    //println prettyPrint(toJson(buildProperties))
-
     def scmData = []
     def jobGroups = buildData['jobGroups']
     jobGroups.each { jobGroup, jobItems ->
       jobItems.each { job ->
-         def url = replaceFromMap(job['scmUrl'], buildProperties)
-         def branch = replaceFromMap(job['scmBranch'], buildProperties) ?: buildProperties['DEFAULT_BRANCH'] ?: "undefined_branch"
+        def url = replaceFromMap(job['scmUrl'], buildProperties)
+        def branch = replaceFromMap(job['scmBranch'], buildProperties) ?: buildProperties['DEFAULT_BRANCH'] ?: "undefined_branch"
 
-         def item = [ url:url, branch: branch ]
-         scmData.add(item)
+        def item = [ url:url, branch: branch ]
+        scmData.add(item)
       }
     }
 
