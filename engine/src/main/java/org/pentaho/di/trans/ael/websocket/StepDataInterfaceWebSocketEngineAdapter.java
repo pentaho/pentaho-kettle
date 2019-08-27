@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -82,7 +82,7 @@ public class StepDataInterfaceWebSocketEngineAdapter implements StepDataInterfac
 
           @Override
           public String getIdentifier() {
-            return OPERATION_STATUS_HANDLER_ID + op.getId();
+            return OPERATION_STATUS_HANDLER_ID + op.getKey();
           }
         } );
   }

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -104,7 +104,7 @@ public class StepInterfaceWebSocketEngineAdapter extends BaseStep {
 
         @Override
         public String getIdentifier() {
-          return ROWS_HANDLER_ID + operation.getId();
+          return ROWS_HANDLER_ID + operation.getKey();
         }
       } );
   }
@@ -135,7 +135,7 @@ public class StepInterfaceWebSocketEngineAdapter extends BaseStep {
 
         @Override
         public String getIdentifier() {
-          return OPERATION_STATUS_HANDLER_ID + operation.getId();
+          return OPERATION_STATUS_HANDLER_ID + operation.getKey();
         }
       } );
   }
@@ -157,7 +157,7 @@ public class StepInterfaceWebSocketEngineAdapter extends BaseStep {
 
         @Override
         public String getIdentifier() {
-          return METRICS_HANDLER_ID + operation.getId();
+          return METRICS_HANDLER_ID + operation.getKey();
         }
       } );
   }
