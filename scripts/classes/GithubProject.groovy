@@ -118,7 +118,7 @@ public class GithubProject {
     jobGroups.each { jobGroup, jobItems ->
       jobItems.each { job ->
          def url = replaceFromMap(job['scmUrl'], buildProperties)
-         def branch = replaceFromMap(job['scmBranch'], buildProperties) ?: buildProperties['DEFAULT_BRANCH']
+         def branch = replaceFromMap(job['scmBranch'], buildProperties) ?: buildProperties['DEFAULT_BRANCH'] ?: "undefined_branch"
 
          def item = [ url:url, branch: branch ]
          scmData.add(item)
