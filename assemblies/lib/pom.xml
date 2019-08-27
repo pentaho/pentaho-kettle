@@ -36,7 +36,6 @@
     <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
     <sapdbc.version>7.4.4</sapdbc.version>
     <sqlite-jdbc.version>3.7.2</sqlite-jdbc.version>
-    <geronimo-servlet_3.0_spec.version>1.0</geronimo-servlet_3.0_spec.version>
     <webservices-api.version>2.3.1</webservices-api.version>
     <webservices-rt.version>2.3.1</webservices-rt.version>
     <asm.version>3.2</asm.version>
@@ -56,6 +55,7 @@
     <paho.version>1.2.0</paho.version>
     <bahir.version>2.3.2</bahir.version>
     <snowflake-jdbc.version>3.6.28</snowflake-jdbc.version>
+    <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
   </properties>
 
   <dependencies>
@@ -471,15 +471,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-servlet_3.0_spec</artifactId>
-      <version>${geronimo-servlet_3.0_spec.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${javax.servlet-api.version}</version>
     </dependency>
     <dependency>
       <groupId>net.snowflake</groupId>
