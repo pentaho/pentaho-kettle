@@ -30,8 +30,12 @@ import javax.jms.JMSConsumer;
 import javax.jms.JMSException;
 import javax.jms.JMSRuntimeException;
 import javax.jms.Message;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -67,7 +71,11 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
     try {
       while ( !closed.get() && ( message = consumer.receive( receiverTimeout ) ) != null ) {
         streamStep.logDebug( message.toString() );
-        acceptRows( singletonList( Arrays.asList( message.getBody( Object.class ), jmsDelegate.destinationName, message.getJMSMessageID(), message.getJMSTimestamp(), message.getJMSRedelivered() ) ) );
+        Date date = new Date( message.getJMSTimestamp() );
+        DateFormat formatter = new SimpleDateFormat( "MM-dd-yyyy HH:mm:ss a" );
+        formatter.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+        String jmsTimestamp = formatter.format( date );
+        acceptRows( singletonList( Arrays.asList( message.getBody( Object.class ), jmsDelegate.destinationName, message.getJMSMessageID(), jmsTimestamp, message.getJMSRedelivered() ) ) );
       }
     } catch ( JMSRuntimeException | JMSException jmsException ) {
       error( jmsException );

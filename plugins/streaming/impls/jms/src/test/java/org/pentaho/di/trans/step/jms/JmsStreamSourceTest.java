@@ -96,7 +96,7 @@ public class JmsStreamSourceTest {
     assertThat( sentMessage.get( 0 ), equalTo( "message" ) );
     assertThat( sentMessage.get( 1 ), equalTo( "dest" ) );
     assertThat( sentMessage.get( 2 ), equalTo( "messageId" ) );
-    assertThat( sentMessage.get( 3 ), equalTo( 1000L ) );
+    assertThat( sentMessage.get( 3 ), equalTo( "01-01-1970 00:00:01 AM" ) );
     assertThat( sentMessage.get( 4 ), equalTo( true ) );
 
     verify( consumer ).close();
