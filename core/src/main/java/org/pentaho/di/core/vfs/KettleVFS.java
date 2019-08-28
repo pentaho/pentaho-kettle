@@ -51,6 +51,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class KettleVFS {
   public static final String TEMP_DIR = System.getProperty( "java.io.tmpdir" );
@@ -63,6 +65,7 @@ public class KettleVFS {
   private final DefaultFileSystemManager fsm;
   private static final int TIMEOUT_LIMIT = 9000;
   private static final int TIME_TO_SLEEP_STEP = 50;
+  private static final String PROVIDER_PATTERN_SCHEME = "^[\\w\\d]+://(.*)";
 
   private static VariableSpace defaultVariableSpace;
 
@@ -117,40 +120,41 @@ public class KettleVFS {
   public static FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions ) throws KettleFileException {
     return getFileObject( vfsFilename, defaultVariableSpace, fsOptions );
   }
-
+  // IMPORTANT:
+  // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
+  // In that case, VFS doesn't parse the file correctly.
+  // We need to put file: in front of it to make it work.
+  // However, how are we going to verify this?
+  //
+  // We are going to see if the filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
+  // If not, we are going to assume it's a file, marking the relativeFilename flag as true, and it only changes if
+  // a scheme is provided.
+  //
   public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions )
     throws KettleFileException {
     try {
       fsOptionsForScheme = fsOptions;
       FileSystemManager fsManager = getInstance().getFileSystemManager();
-
-      // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
-      // In that case, VFS doesn't parse the file correctly.
-      // We need to put file: in front of it to make it work.
-      // However, how are we going to verify this?
-      //
-      // We are going to see if the filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
-      // If not, we are going to assume it's a file.
-      //
+      int timeOut = TIMEOUT_LIMIT;
       boolean relativeFilename = true;
       String[] initialSchemes = fsManager.getSchemes();
 
-      relativeFilename = checkForScheme( initialSchemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
+      relativeFilename = checkForSchemeProvider( initialSchemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
 
-      int timeOut = TIMEOUT_LIMIT;
+      boolean hasScheme = vfsFilename != null && hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
 
-      boolean hasScheme = vfsFilename != null && vfsFilename.contains( "://" ); // check for bigData providers
-      //we have to check for hasScheme even if it is marked as a relative path because that scheme could not
-      //be available by getSchemes at the time we validate our relativeFilename flag.
-      //So we check if even it is marked as relative path if it contains a possible scheme format
-      //if it does, then give it some time to be loaded, until we get it our timeout is up.
+      //Waiting condition - PPP-4374:
+      //We have to check for hasScheme even if it is marked as a relative path because that scheme could not
+      //be available by getSchemes at the time we validate our relativeFilename flag initially (Kitchen loading problem)
+      //So we check if - even it is marked as relative path - our vfsFilename has a possible scheme format (PROVIDER_PATTERN_SCHEME)
+      //If it does, then give it some time to be loaded. It stops when timeout is up or a scheme is found.
 
       while ( relativeFilename && hasScheme && timeOut > 0 ) {
         String[] schemes = fsManager.getSchemes();
         try {
           Thread.sleep( TIME_TO_SLEEP_STEP );
           timeOut -= TIME_TO_SLEEP_STEP;
-          relativeFilename = checkForScheme( schemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
+          relativeFilename = checkForSchemeProvider( schemes, relativeFilename, vfsFilename, space, fsOptionsForScheme );
         } catch ( InterruptedException e ) {
           relativeFilename = false;
           Thread.currentThread().interrupt();
@@ -158,35 +162,52 @@ public class KettleVFS {
         }
       }
 
-      String filename;
-      if ( vfsFilename.startsWith( "\\\\" ) ) {
-        File file = new File( vfsFilename );
-        filename = file.toURI().toString();
-      } else {
-        if ( relativeFilename ) {
-          File file = new File( vfsFilename );
-          filename = file.getAbsolutePath();
-        } else {
-          filename = vfsFilename;
-        }
-      }
+      String filename = normalizePath( vfsFilename, relativeFilename );
 
-      if ( fsOptionsForScheme != null ) {
-        return fsManager.resolveFile( filename, fsOptionsForScheme );
-      } else {
-        return fsManager.resolveFile( filename );
-      }
+      return myGetFileObject( filename );
+
     } catch ( IOException e ) {
       throw new KettleFileException( "Unable to get VFS File object for filename '"
         + cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
     }
   }
 
-  protected static boolean checkForScheme( String[] initialSchemes, boolean relativeFilename, String vfsFilename,
+  protected static FileObject myGetFileObject( String filename ) throws FileSystemException {
+    FileSystemManager fsManager = getInstance().getFileSystemManager();
+    return fsOptionsForScheme != null ? fsManager.resolveFile( filename, fsOptionsForScheme ) : fsManager.resolveFile( filename );
+  }
+
+  protected static String normalizePath( String path, boolean relativeFilename ) {
+    String normalizedPath = path;
+
+    if ( path.startsWith( "\\\\" ) ) {
+      File file = new File( path );
+      normalizedPath = file.toURI().toString();
+    } else if ( relativeFilename ) {
+      File file = new File( path );
+      normalizedPath = file.getAbsolutePath();
+    }
+
+    return normalizedPath;
+  }
+
+  protected static boolean hasScheme( String path, String patternString ) {
+    boolean hasScheme = false;
+    Pattern pattern = Pattern.compile( patternString );
+
+    if ( pattern != null ) {
+      Matcher matcher = pattern.matcher( path );
+      hasScheme = matcher.matches();
+    }
+
+    return hasScheme;
+  }
+
+  protected static boolean checkForSchemeProvider( String[] initialSchemes, boolean relativeFilename, String vfsFilename,
                                          VariableSpace space, FileSystemOptions fsOptions )
     throws IOException {
     for ( int i = 0; i < initialSchemes.length && relativeFilename; i++ ) {
-      if ( vfsFilename.startsWith( initialSchemes[ i ] + ":" ) ) {
+      if ( vfsFilename != null && vfsFilename.startsWith( initialSchemes[ i ] + ":" ) ) {
         relativeFilename = false;
         // We have a VFS URL, load any options for the file system driver
         fsOptionsForScheme = buildFsOptions( space, fsOptions, vfsFilename, initialSchemes[ i ] );
