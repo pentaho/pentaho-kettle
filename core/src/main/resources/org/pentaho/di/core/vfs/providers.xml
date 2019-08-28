@@ -71,6 +71,10 @@
         <if-available class-name="com.jcraft.jsch.JSch"/>
     </provider>
 
+    <provider class-name="org.pentaho.di.connections.vfs.provider.ConnectionFileProvider">
+        <scheme name="pvfs"/>
+    </provider>
+
     <provider class-name="org.apache.commons.vfs2.provider.res.ResourceFileProvider">
         <scheme name="res"/>
     </provider>

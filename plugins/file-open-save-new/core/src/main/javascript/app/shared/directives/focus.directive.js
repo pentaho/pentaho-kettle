@@ -33,7 +33,9 @@ define([
           $timeout(function() {
             element[0].focus();
             element[0].select();
-            element[0].setSelectionRange(0, value.length);
+            if (value) {
+              element[0].setSelectionRange(0, value.length);
+            }
             watch();
           });
         });

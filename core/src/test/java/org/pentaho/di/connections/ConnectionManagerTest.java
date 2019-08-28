@@ -26,6 +26,8 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.connections.common.TestConnectionDetails;
+import org.pentaho.di.connections.common.TestConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
 import org.pentaho.metastore.persist.MetaStoreElementType;
@@ -204,37 +206,6 @@ public class ConnectionManagerTest {
     connectionManager.save( testConnectionDetails );
   }
 
-  @MetaStoreElementType(
-    name = "Test VFS Connection",
-    description = "Defines the connection details for a test vfs connection" )
-  public static class TestConnectionDetails implements ConnectionDetails {
-
-    private static String TYPE = "test";
-
-    private String name;
-    private String description;
-
-    @Override public String getName() {
-      return name;
-    }
-
-    @Override public void setName( String name ) {
-      this.name = name;
-    }
-
-    @Override public String getType() {
-      return TYPE;
-    }
-
-    @Override public String getDescription() {
-      return description;
-    }
-
-    public void setDescription( String description ) {
-      this.description = description;
-    }
-  }
-
   public static class BadConnectionDetails implements ConnectionDetails {
     @Override public String getName() {
       return null;
@@ -250,47 +221,6 @@ public class ConnectionManagerTest {
 
     @Override public String getDescription() {
       return null;
-    }
-  }
-
-  public static class TestConnectionProvider implements ConnectionProvider<TestConnectionDetails> {
-
-    private ConnectionManager connectionManager;
-
-    public TestConnectionProvider( ConnectionManager connectionManager ) {
-      this.connectionManager = connectionManager;
-    }
-
-    public static final String NAME = "Test";
-    public static final String SCHEME = "test";
-
-    @Override public String getName() {
-      return NAME;
-    }
-
-    @Override public String getKey() {
-      return SCHEME;
-    }
-
-    @Override public Class<TestConnectionDetails> getClassType() {
-      return TestConnectionDetails.class;
-    }
-
-    @Override public List<String> getNames() {
-      return connectionManager.getNamesByType( getClass() );
-    }
-
-    @SuppressWarnings( "unchecked" )
-    @Override public List<TestConnectionDetails> getConnectionDetails() {
-      return (List<TestConnectionDetails>) connectionManager.getConnectionDetailsByScheme( getKey() );
-    }
-
-    @Override public boolean test( TestConnectionDetails connectionDetails ) {
-      return true;
-    }
-
-    @Override public TestConnectionDetails prepare( TestConnectionDetails connectionDetails ) {
-      return connectionDetails;
     }
   }
 

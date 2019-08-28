@@ -70,6 +70,7 @@ define([
     vm._name = "name";
     vm._type = "type";
     vm._date = "date";
+    vm.fileFilter = fileFilter;
     vm.selectFile = selectFile;
     vm.commitFile = commitFile;
     vm.rename = rename;
@@ -92,7 +93,6 @@ define([
     vm.errorType = 0;
     vm.onKeyDown = onKeyDown;
     vm.onKeyUp = onKeyUp;
-    vm.getFiles = getFiles;
     var targetFiles = [];
 
     /**
@@ -115,30 +115,30 @@ define([
      * that have changed, and the values are an object of the form
      */
     function onChanges(changes) {
-      if (changes.folder) {
-        $timeout(function () {
-          vm.selectedFile = null;
-          _setSort(0, false, "name");
-        }, 200);
-      }
+      $timeout(function () {
+        vm.selectedFile = null;
+        _setSort(0, false, "name");
+      }, 200);
     }
 
     function onKeyDown(event) {
-      var ctrlKey = event.metaKey || event.ctrlKey;
-      if (event.keyCode === 67 && ctrlKey) {
-        targetFiles = vm.selectedFiles;
-        clipboardService.set(targetFiles, "copy");
-      }
-      if (event.keyCode === 88 && ctrlKey) {
-        targetFiles = vm.selectedFiles;
-        clipboardService.set(targetFiles, "cut");
-      }
-      if (event.keyCode === 86 && ctrlKey) {
-        vm.onPasteFolder();
-      }
-      if (event.keyCode === 65 && ctrlKey) {
-        if (event.target.tagName !== "INPUT") {
-          selectAll();
+      if (event.target.tagName !== "INPUT") {
+        var ctrlKey = event.metaKey || event.ctrlKey;
+        if (event.keyCode === 67 && ctrlKey) {
+          targetFiles = vm.selectedFiles;
+          clipboardService.set(targetFiles, "copy");
+        }
+        if (event.keyCode === 88 && ctrlKey) {
+          targetFiles = vm.selectedFiles;
+          clipboardService.set(targetFiles, "cut");
+        }
+        if (event.keyCode === 86 && ctrlKey) {
+          vm.onPasteFolder();
+        }
+        if (event.keyCode === 65 && ctrlKey) {
+          if (event.target.tagName !== "INPUT") {
+            selectAll();
+          }
         }
       }
     }
@@ -182,7 +182,8 @@ define([
     /**
      * Calls two-way binding to parent component (app) to open file if not editing.
      *
-     * @param {Object} file - file object.
+     * @param {Object} e - Click event
+     * @param {Object} file - file object
      */
     function commitFile(e, file) {
       e.preventDefault();
@@ -246,7 +247,6 @@ define([
         }
       }
     }
-
 
     /**
      * Create a new folder
@@ -505,25 +505,8 @@ define([
       vm.onAddFolder();
     }
 
-    function getFiles() {
-      var files = [];
-      if (vm.files) {
-        for (var i = 0; i < vm.files.length; i++) {
-          if (vm.files[i].type === "folder") {
-            files.push(vm.files[i]);
-          } else {
-            if (vm.filter === "all") {
-              files.push(vm.files[i]);
-            } else {
-              if (vm.files[i].path.match(vm.filter) != null) {
-                files.push(vm.files[i]);
-              }
-            }
-          }
-
-        }
-      }
-      return files;
+    function fileFilter(file) {
+      return file.type === "folder" || vm.filter === "all" || file.path.match(vm.filter);
     }
 
     /**

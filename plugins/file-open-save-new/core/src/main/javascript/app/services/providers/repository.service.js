@@ -24,8 +24,8 @@
  */
 define(
     [
-      "../components/utils",
-      "./data.service"
+      "../../components/utils",
+      "../data.service"
     ],
     function (utils) {
       "use strict";
@@ -49,47 +49,57 @@ define(
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "repository",
+          order: 1,
+          matchPath: matchPath,
           selectFolder: selectFolder,
-          getPath: getPath,
+          getTreePath: getTreePath,
+          getFilePath: getFilePath,
           createFolder: createFolder,
-          findRootNode: findRootNode,
-          parsePath: parsePath,
           addFolder: addFolder,
           deleteFiles: deleteFiles,
           renameFile: renameFile,
           isCopy: isCopy,
           open: open,
-          save: save
+          save: save,
+          resolvePath: resolvePath,
+          getBreadcrumbPath: getBreadcrumbPath,
+          getPath: getPath
         };
 
-        /**
-         *
-         * @param tree
-         * @param folder
-         * @param subtree
-         * @returns {*}
-         */
-        function findRootNode(tree, folder, subtree) {
-          for (var i = 0; i < tree.length; i++) {
-            if (tree[i].provider.toLowerCase() === folder.provider.toLowerCase()) {
-              return tree[i];
-            }
-          }
-          return null;
+        function getPath(file) {
+          return file.root ? _getTreePath(file) : file.path;
         }
 
-        /**
-         *
-         * @param path
-         * @param folder
-         * @returns {*}
-         */
-        function parsePath(path, folder) {
-          var newPath = path.replace(folder.root, "");
-          if (newPath.indexOf("/") === 0) {
-            newPath = newPath.substr(1, newPath.length);
+        function getBreadcrumbPath(file) {
+          var path = {
+            type: "repository",
+            fileType: file.type ? file.type : "folder",
+            prefix: null,
+            uri: _getFilePath(file),
+            path: _getTreePath(file)
+          };
+          return path;
+        }
+
+        function _getTreePath(folder) {
+          if (!folder.path) {
+            return folder.root ? folder.root + "/" + folder.name : folder.name;
           }
-          return !newPath ? null : newPath.split("/");
+          return folder.root + folder.path;
+        }
+
+        function _getFilePath(file) {
+          return file.path ? file.path : null;
+        }
+
+        function resolvePath(path, properties) {
+          return $q(function (resolve, reject) {
+            resolve("Pentaho Repository" + path);
+          });
+        }
+
+        function matchPath(path) {
+          return path && path.indexOf("/") === 0;
         }
 
         function selectFolder(folder, filters, useCache) {
@@ -109,9 +119,14 @@ define(
           });
         }
 
-        function getPath(folder) {
-          return folder.path;
+        function getTreePath(folder) {
+          return folder.root + folder.path;
         }
+
+        function getFilePath(file) {
+          return file.path;
+        }
+
 
         function createFolder(node, name) {
           return $q(function (resolve, reject) {
@@ -172,7 +187,6 @@ define(
         }
 
         function save(filename, folder, currentFilename, override) {
-          console.log(filename, folder, currentFilename, override);
           return $q(function(resolve, reject) {
             dt.checkForSecurityOrDupeIssues(folder.path, filename, currentFilename, override ? override : false).then(function(response) {
               if (response.status === 200) {

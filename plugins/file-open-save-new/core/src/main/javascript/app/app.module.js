@@ -28,40 +28,30 @@ define([
   "./components/folder/folder.component",
   "./components/error/error.component",
   "./components/loading/loading.component",
-  "./components/breadcrumb/breadcrumb.component",
+  "./components/addressbar/addressbar.component",
   "./components/files/files.component",
   "./components/search/search.component",
   "./components/modals/modals.component",
   "./components/selectbox/selectbox.component",
-  "./shared/directives/edit.directive",
-  "./shared/directives/key.directive",
-  "./shared/directives/focus.directive",
-  "./shared/directives/scrollToFolder.directive",
-  "./shared/directives/rightClick.directive",
-  "./shared/directives/context.directive",
-  "./shared/directives/drag.directive",
-  "./shared/directives/drop.directive",
-  "./shared/directives/ngbodyclick.directive",
-  "./components/breadcrumb/breadcrumb.directive",
+  "./components/filebar/filebar.component",
+  "./components/filecontrols/filecontrols.component",
   "./services/helper.service",
   "./services/data.service",
-  "./services/repository.service",
-  "./services/vfs.service",
-  "./services/local.service",
+  "./services/providers/repository.service",
+  "./services/providers/vfs.service",
+  "./services/providers/local.service",
   "./services/search.service",
   "./services/file.service",
   "./services/folder.service",
-  "./shared/directives/resize/resize.module",
   "./services/services.service",
   "./services/clipboard.service",
-  "./shared/directives/modal.directive",
   "./services/modal.service",
+  "./shared/shared.module",
   "angular-ui-router"
 ], function (angular, fileServices, appConfig, appComponent, cardComponent, folderComponent, errorComponent,
-             loadingComponent, breadcrumbComponent, filesComponent, searchComponent, modalsComponent, selectBoxComponent, editDirective, keyDirective,
-             focusDirective, scrollToFolderDirective, rightClickDirective, contextDirective, dragDirective, dropDirective, bodyClickDirective,
-             breadcrumbDirective, helperService, dataService, repositoryService, vfsService, localService,
-             searchService, fileService, folderService, resizeModule, servicesService, clipboardService, modalDirective, modalService) {
+             loadingComponent, addressbarComponent, filesComponent, searchComponent, modalsComponent, selectBoxComponent,
+             filebarComponent, fileControls, helperService, dataService, repositoryService, vfsService, localService,
+             searchService, fileService, folderService, servicesService, clipboardService, modalService, sharedModule) {
   "use strict";
 
   var module = {
@@ -79,28 +69,19 @@ define([
    * @private
    */
   function activate() {
-    var a = angular.module(module.name, [resizeModule.name, "ui.router"])
+    var app = angular.module(module.name, [sharedModule.name, "ui.router"])
         .component(loadingComponent.name, loadingComponent.options)
         .component(appComponent.name, appComponent.options)
         .component(cardComponent.name, cardComponent.options)
         .component(folderComponent.name, folderComponent.options)
         .component(errorComponent.name, errorComponent.options)
-        .component(breadcrumbComponent.name, breadcrumbComponent.options)
+        .component(addressbarComponent.name, addressbarComponent.options)
         .component(filesComponent.name, filesComponent.options)
         .component(searchComponent.name, searchComponent.options)
         .component(modalsComponent.name, modalsComponent.options)
         .component(selectBoxComponent.name, selectBoxComponent.options)
-        .directive(editDirective.name, editDirective.options)
-        .directive(keyDirective.name, keyDirective.options)
-        .directive(focusDirective.name, focusDirective.options)
-        .directive(breadcrumbDirective.name, breadcrumbDirective.options)
-        .directive(scrollToFolderDirective.name, scrollToFolderDirective.options)
-        .directive(rightClickDirective.name, rightClickDirective.options)
-        .directive(contextDirective.name, contextDirective.options)
-        .directive(dragDirective.name, dragDirective.options)
-        .directive(dropDirective.name, dropDirective.options)
-        .directive(modalDirective.name, modalDirective.options)
-        .directive(bodyClickDirective.name, bodyClickDirective.options)
+        .component(filebarComponent.name, filebarComponent.options)
+        .component(fileControls.name, fileControls.options)
         .service(helperService.name, helperService.factory)
         .service(dataService.name, dataService.factory)
         .service(fileService.name, fileService.factory)
@@ -112,7 +93,7 @@ define([
         .config(appConfig);
 
     fileServices.map(function(item) {
-      a.service(item.name, item.factory);
+      app.service(item.name, item.factory);
     });
   }
 

@@ -49,13 +49,15 @@ define(
       function factory(ss, helperService, modalService, $q, $interval, $timeout) {
         var baseUrl = "/cxf/browser-new";
         return {
+          files: [],
           deleteFiles: deleteFiles,
           renameFile: renameFile,
           moveFiles: moveFiles,
           copyFiles: copyFiles,
           isCopy: isCopy,
           open: open,
-          save: save
+          save: save,
+          get: get
         };
 
         /**
@@ -234,19 +236,15 @@ define(
           var newPath = to.path + "/" + filename;
           switch (overwrite) {
             case "one":
-              console.log("one");
               overwrite = "";
             case "all":
-              console.log("all");
               operation(from[index], to, newPath, true).then(function (result) {
                 startOperation(from, to, ++index, operation, overwrite, resolve, reject);
               });
               break;
             case "rename_one":
-              console.log("rename_one");
               overwrite = "";
             case "rename_all":
-              console.log("rename_all");
               helperService.httpPost([baseUrl, "getNewName"].join("/") + "?newPath=" + newPath, to).then(function (result) {
                 var renamedPath = result.data.data;
                 operation(from[index], to, renamedPath, true).then(function (result) {
@@ -326,14 +324,26 @@ define(
           return ss.get(folder.provider).save(filename, folder, currentFilename, override);
         }
 
-        /**
-         * Checks if the file name is valid or not. An invalid name contains forward or backward slashes
-         * @returns {boolean} - true if the name is invalid, false otherwise
-         * @private
-         */
-        function _hasInvalidChars(name) {
-          return name.match(/[\\\/]/g) !== null;
+        function browse(path) {
+          helperService.httpPost([baseUrl, "rename"].join("/") + "?newPath=" + newPath, file).then(function (response) {
+            file.path = newPath;
+          });
         }
+
+        function get(file) {
+          var service = ss.getByPath(file.path);
+          if (service) {
+            file.provider = service.provider;
+          }
+          return $q(function(resolve, reject) {
+            helperService.httpPost([baseUrl, "getFile"].join("/"), file).then(function (response) {
+              resolve(response.data);
+            }).catch(function(e) {
+              reject(e);
+            });
+          })
+        }
+
       }
     }
 );

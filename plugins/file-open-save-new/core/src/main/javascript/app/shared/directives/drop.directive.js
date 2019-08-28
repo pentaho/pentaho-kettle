@@ -42,7 +42,7 @@ define([
               if (files.indexOf(scope.file) === -1) {
                 scope.onDrop({from:files, to:scope.file});
               } else {
-                console.log("You can't drop folders into themselves");
+                // TODO: Error that you can't drop folder into themselves
               }
               $rootScope.dragData = null;
             }

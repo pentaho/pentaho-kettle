@@ -142,48 +142,6 @@ define([
      * @param {String} path - Path to folder
      * @private
      */
-    function _openFolderTree(path) {
-      vm.tree.children[0].name = "/";
-      path = path === "/" ? "" : path;
-      var parts = path.split("/");
-      parts[0] = "/";
-      var index = 0;
-      _findAndOpenFolder(vm.tree.children, index, parts, function () {
-        // If the folder contents have loaded before the tree we want to use that object's children
-        if (vm.selectedFolder && vm.selectedFolder.path === path) {
-          var folder = _findFolderByPath(path);
-          folder.children = vm.selectedFolder.children;
-          selectFolder(folder);
-        } else {
-          _selectFolderByPath(path);
-        }
-      });
-    }
-
-    function _findAndOpenFolder(children, index, parts, callback) {
-      if (parts.length === 1) {
-        if (callback) {
-          callback();
-        }
-        return;
-      }
-      if (children[index].name === parts[0]) {
-        if (parts.length >= 1) {
-          parts.shift();
-          openFolder(children[index], function () {
-            _findAndOpenFolder(children[index].children, 0, parts, callback);
-          });
-        }
-      } else {
-        _findAndOpenFolder(children, ++index, parts, callback);
-      }
-    }
-
-    /**
-     * Selects a folder by path
-     * @param {String} path - Path to folder
-     * @private
-     */
     function _selectFolderByPath(path) {
       selectFolder(_findFolderByPath(path));
     }

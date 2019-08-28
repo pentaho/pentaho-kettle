@@ -127,8 +127,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance()
         .getConnectionProvider( vfsConnectionDetails.getType() );
 
-    List<VFSRoot> roots = vfsConnectionProvider.getLocations( vfsConnectionDetails );
-    for ( VFSRoot root : roots ) {
+    List<VFSRoot> vfsRoots = vfsConnectionProvider.getLocations( vfsConnectionDetails );
+    for ( VFSRoot root : vfsRoots ) {
       VFSDirectory vfsDirectory = new VFSDirectory();
       vfsDirectory.setName( root.getName() );
       vfsDirectory.setDate( root.getModifiedDate() );
@@ -177,6 +177,21 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     return files;
   }
 
+  @Override public VFSFile getFile( VFSFile file ) {
+    try {
+      FileObject fileObject = KettleVFS
+        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection() ) );
+      if ( fileObject.getType().equals( FileType.FOLDER ) ) {
+        return VFSDirectory.create( null, fileObject, null );
+      } else {
+        return VFSFile.create( null, fileObject, null );
+      }
+    } catch ( KettleFileException | FileSystemException e ) {
+      // File does not exist
+    }
+    return null;
+  }
+
   /**
    * @param files
    * @return
@@ -209,8 +224,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       fileObject.createFolder();
       String parent = folder.getPath().substring( 0, folder.getPath().length() - 1 );
       return VFSDirectory.create( parent, fileObject, folder.getConnection() );
-    } catch ( KettleFileException | FileSystemException kfe ) {
-      // TODO: Do something smart here
+    } catch ( KettleFileException | FileSystemException ignored ) {
+      // Ignored
     }
     return null;
   }
@@ -242,16 +257,14 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    * @param overwrite
    * @return
    */
-  private VFSFile doMove( VFSFile file, String newPath, Boolean overwrite ) {
+  private VFSFile doMove( VFSFile file, String newPath, boolean overwrite ) {
     try {
       FileObject fileObject = KettleVFS
         .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection() ) );
       FileObject renameObject = KettleVFS
         .getFileObject( newPath, new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection() ) );
-      if ( overwrite ) {
-        if ( renameObject.exists() ) {
-          renameObject.delete();
-        }
+      if ( overwrite && renameObject.exists() ) {
+        renameObject.delete();
       }
       fileObject.moveTo( renameObject );
       if ( file instanceof VFSDirectory ) {

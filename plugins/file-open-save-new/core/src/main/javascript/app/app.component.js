@@ -44,7 +44,7 @@ define([
   };
 
   appController.$inject = [dataService.name, fileService.name, folderService.name,
-    modalService.name, searchService.name, "$location", "$timeout", "$interval", "$state", "$q", "$document"];
+    modalService.name, searchService.name, "$location", "$timeout", "$interval", "$state", "$q"];
 
   /**
    * The App Controller.
@@ -52,61 +52,59 @@ define([
    * This provides the controller for the app component.
    *
    * @param {Object} dt - Angular service that contains helper functions for the app component controller
-   * @param {Function} $location - Angular service used for parsing the URL in browser address bar
-   * @param {Object} $timeout - Angular wrapper around window.setTimeout
    * @param fileService
    * @param folderService
+   * @param modalService
+   * @param searchService
+   * @param {Function} $location - Angular service used for parsing the URL in browser address bar
+   * @param {Object} $timeout - Angular wrapper around window.setTimeout*
+   * @param $interval
    * @param $state
    * @param $q
    */
-  function appController(dt, fileService, folderService, modalService, searchService, $location, $timeout, $interval, $state, $q, $document) {
+  function appController(dt, fileService, folderService, modalService, searchService, $location, $timeout, $interval, $state, $q) {
     var vm = this;
     vm.$onInit = onInit;
     vm.openFolder = openFolder;
     vm.selectFolder = selectFolder;
     vm.selectFolderByPath = selectFolderByPath;
+    vm.openPath = openPath;
     vm.onRenameFile = onRenameFile;
     vm.onCreateFolder = onCreateFolder;
     vm.onMoveFiles = onMoveFiles;
     vm.onCopyFiles = onCopyFiles;
     vm.onSelectFile = onSelectFile;
-    vm.onDeleteFiles = onDeleteFiles;
-    vm.openClicked = openClicked;
-    vm.saveClicked = saveClicked;
-    vm.okClicked = okClicked;
-    vm.cancel = cancel;
+    vm.onOpenClick = onOpenClick;
+    vm.onSaveClick = onSaveClick;
+    vm.onOKClick = onOKClick;
+    vm.onCancelClick = onCancelClick;
     vm.onHighlight = onHighlight;
     vm.confirmError = confirmError;
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
     vm.renameError = renameError;
     vm.recentsHasScrollBar = recentsHasScrollBar;
-    vm.addDisabled = addDisabled;
-    vm.deleteDisabled = deleteDisabled;
-    vm.upDisabled = upDisabled;
-    vm.refreshDisabled = refreshDisabled;
     vm.onKeyUp = onKeyUp;
     vm.onKeyDown = onKeyDown;
-    vm.getPlaceholder = getPlaceholder;
-    vm.getSelectedFolderName = getSelectedFolderName;
-    vm.isSaveEnabled = isSaveEnabled;
-    vm.isShowRecents = isShowRecents;
-    vm.getFiles = getFiles;
-    vm.getPath = getPath;
-    vm.getFilePath = getFilePath;
-    vm.getType = getType;
-    vm.selectFilter = selectFilter;
+    vm.onSelectFilter = selectFilter;
+
+    vm.isShowRecents = true;
+    vm.isSaveEnabled = false;
+
+    vm.addDisabled = true;
+    vm.deleteDisabled = true;
+    vm.upDisabled = true;
+    vm.refreshDisabled = true;
+    vm.placeholder = "";
+    vm.fileList = [];
 
     vm.onAddFolder = onAddFolder;
+    vm.onDeleteFiles = onDeleteFiles;
     vm.onUpDirectory = onUpDirectory;
     vm.onRefreshFolder = onRefreshFolder;
-    vm.onBackHistory = onBackHistory;
-    vm.onForwardHistory = onForwardHistory;
 
     vm.doSearch = doSearch;
 
-    vm.backHistoryDisabled = backHistoryDisabled;
-    vm.forwardHistoryDisabled = forwardHistoryDisabled;
     vm.currentRepo = "";
     vm.selectedFolder = "";
     vm.fileToSave = "";
@@ -118,8 +116,8 @@ define([
     vm.state = $state;
     vm.searchResults = [];
     vm.status = "";
-    var history = [];
-    var historyIndex = -1;
+    vm.breadcrumbPath = { prefix: null, path: "Recents", uri: null };
+    vm.type = null;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -127,51 +125,14 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
-      vm.searchPlaceholder = i18n.get("file-open-save-plugin.app.header.search.placeholder");
-      vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
-      vm.openButton = i18n.get("file-open-save-plugin.app.open.button");
-      vm.cancelButton = i18n.get("file-open-save-plugin.app.cancel.button");
-      vm.saveButton = i18n.get("file-open-save-plugin.app.save.button");
-      vm.okButton = i18n.get("file-open-save-plugin.app.ok.button");
-      vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
-      vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
-      vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
-      vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
       vm.loadingTitle = i18n.get("file-open-save-plugin.loading.title");
       vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
-      vm.fileFilterLabel = i18n.get("file-open-save-plugin.app.save.file-filter.label");
-      vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.showRecents = false;
-      vm.files = [];
-      vm.includeRoot = false;
+      vm.selectedFiles = [];
       vm.autoExpand = false;
       vm.searchString = "";
       _resetFileAreaMessage();
 
-      vm.fileFilters = [
-        {
-          value: "all",
-          label: "All Files"
-        },
-        {
-          value: "\\.kjb$|\\.ktr$",
-          label: "Kettle Files"
-        },
-        {
-          value: "\\.csv$",
-          label: "*.csv"
-        },
-        {
-          value: "\\.txt$",
-          label: "*.txt"
-        },
-        {
-          value: "\\.json$",
-          label: "*.json"
-        }
-      ];
-
-      vm.selectedFilter = vm.fileFilters[0].value;
       vm.filename = $location.search().filename;
       vm.fileType = $location.search().fileType;
       vm.origin = $location.search().origin;
@@ -179,13 +140,17 @@ define([
       vm.tree = [
         {name: "Recents", hasChildren: false, provider: "recents", order: 0}
       ];
-      vm.folder = vm.tree[0];
+      folderService.folder = vm.tree[0];
+      _update();
       vm.selectedFolder = "";
       $timeout(function () {
         var state = $state.current.name;
         vm.headerTitle = i18n.get("file-open-save-plugin.app.header." + state + ".title");
         if (!$state.is('selectFolder')) {
-          dt.getDirectoryTree($location.search().filter).then(_populateTree);
+          dt.getDirectoryTree($location.search().filter).then(function(response) {
+            _populateTree(response);
+            _init();
+          });
           dt.getRecentFiles().then(_populateRecentFiles);
           vm.showRecents = true;
         } else {
@@ -196,6 +161,15 @@ define([
       });
     }
 
+    function _init() {
+      var path = decodeURIComponent($location.search().path);
+      if (path && path !== "undefined") {
+        vm.autoExpand = true;
+        openPath(path, $location.search());
+      }
+      _setFileToSaveName();
+    }
+
     /**
      * Sets the folder directory tree
      *
@@ -204,14 +178,6 @@ define([
      */
     function _populateTree(response) {
       vm.tree = vm.tree.concat(response.data);
-      var path = decodeURIComponent($location.search().path);
-      var connection = $location.search().connection;
-      var provider = $location.search().provider;
-      if (path && path !== "undefined") {
-        vm.autoExpand = true;
-        selectFolderByPath(path, {path: path, connection: connection, provider: provider}, true);
-      }
-      _setFileToSaveName();
     }
 
     /**
@@ -267,45 +233,69 @@ define([
      * Sets variables showRecents, folder, and selectedFolder according to the contents of parameter
      *
      * @param {Object} folder - folder object
-     * @param {Boolean} saveHistory - should save history
      * @param {Boolean} useCache - should use cache
      */
-    function selectFolder(folder, saveHistory, useCache) {
-      if (saveHistory) {
-        addHistory(folder);
-      }
+    function selectFolder(folder, useCache) {
       vm.searchResults = [];
       if (vm.searching) {
         _clearSearch();
       }
       _resetFileAreaMessage();
-      vm.files = [];
-      if (folder !== vm.folder || vm.folder.loaded === false) {
-        vm.folder = folder;
-        vm.folder.open = true;
-        vm.showRecents = false;
-        if (folder.provider === "recents") {
-          vm.showRecents = true;
-        } else {
-          vm.fileLoading = true;
-          folderService.selectFolder(folder, vm.filters, useCache).then(function () {
-            vm.fileLoading = false;
-          });
-        }
-      }
+      fileService.files = [];
+      vm.showRecents = folder.provider === "recents";
+      vm.fileLoading = true;
+      vm.folder = folder;
+      folderService.selectFolder(folder, vm.filters, useCache).then(function(folder) {
+        vm.fileLoading = false;
+        vm.showRecents = folder.provider === "recents";
+        _update();
+      }).catch(function() {
+        vm.fileLoading = false;
+      });
     }
 
     /**
      * Selects a folder according to the path parameter
      *
      * @param {String} path - path to file
-     * @param {Object} folder - currently selected folder to get parameters from
-     * @param {Boolean} saveHistory - should save history
+     * @param {Object} props - properties
      */
-    function selectFolderByPath(path, folder, saveHistory) {
-      folderService.findFolderByPath(vm.tree, folder, path).then(function (selectedFolder) {
-        selectFolder(selectedFolder, saveHistory);
+    function selectFolderByPath(path, props) {
+      vm.fileLoading = true;
+      vm.showRecents = false;
+      folderService.selectFolderByPath(vm.tree, path, props).then(function() {
+        vm.fileLoading = false;
+        _update();
       });
+    }
+
+    function openPath(path, properties) {
+      vm.fileLoading = true;
+      vm.showRecents = false;
+      folderService.openPath(vm.tree, path, properties).then(function() {
+        vm.fileLoading = false;
+        _update();
+      });
+    }
+
+    function _update() {
+      vm.folder = folderService.folder;
+      vm.selectedFiles = fileService.files;
+      vm.breadcrumbPath = folderService.getBreadcrumbPath(vm.selectedFiles.length === 1 ? vm.selectedFiles[0] : vm.folder);
+      vm.isShowRecents = vm.recentFiles
+          && (!vm.showMessage
+          && vm.showRecents
+          && vm.recentFiles.length > 0
+          && !$state.is('selectFolder')
+          && !$state.is('selectFile'));
+
+      vm.placeholder = utils.getPlaceholder(i18n.get("file-open-save-plugin.app.header.search.placeholder"), vm.folder, vm.currentRepo);
+      vm.fileList = _getFiles();
+      if (vm.selectedFiles.length === 1) {
+        vm.fileToSave = vm.selectedFiles[0].type === "folder" ? vm.fileToSave : vm.selectedFiles[0].name;
+      } else {
+        vm.fileToSave = "";
+      }
     }
 
     /**
@@ -313,12 +303,11 @@ define([
      * the recent file or other file and closes the browser.
      *
      * @param {Object} file - file object
-     * @param {Boolean} saveHistory - should save history
      */
-    function onSelectFile(file, saveHistory) {
+    function onSelectFile(file) {
       if (file.type === "folder") {
         vm.searchString = "";
-        selectFolder(file, saveHistory);
+        selectFolder(file);
       } else if ($state.is("open")) {
         _open(file);
       }
@@ -328,11 +317,8 @@ define([
      * Get file list for current state
      * @returns {Array} - Search result files or selected folder children
      */
-    function getFiles() {
-      if (vm.searchResults.length !== 0) {
-        return vm.searchResults;
-      }
-      return vm.folder.children;
+    function _getFiles() {
+      return vm.searchResults.length !== 0 ? vm.searchResults : vm.folder.children;
     }
 
     /**
@@ -361,29 +347,26 @@ define([
      * @param {Object} files - file objects
      */
     function onHighlight(files) {
-      vm.files = files;
-      if (files.length === 1) {
-        vm.fileToSave = files[0].type === "folder" ? vm.fileToSave : files[0].name;
-      }
+      fileService.files = files;
+      _update();
     }
 
     /**
      * Called when user clicks "Open"
      */
-    function openClicked() {
-      if (vm.files.length === 1 && vm.files[0].type === "folder") {
+    function onOpenClick() {
+      if (fileService.files.length === 1 && fileService.files[0].type === "folder") {
         vm.searchString = "";
-        selectFolder(vm.files[0]);
-      } else if (vm.files.length === 1) {
-        console.log(vm.files[0]);
-        _open(vm.files[0]);
+        selectFolder(fileService.files[0]);
+      } else if (fileService.files.length === 1) {
+        _open(fileService.files[0]);
       }
     }
 
     /**
      * Called when user clicks "Save"
      */
-    function saveClicked() {
+    function onSaveClick() {
       _save(false);
     }
 
@@ -430,8 +413,8 @@ define([
         _triggerError(17);
       } else if (override || !_isDuplicate()) {
         var currentFilename = "";
-        if (vm.files.length > 0) {
-          currentFilename = vm.files[0].name;
+        if (vm.selectedFiles.length > 0) {
+          currentFilename = vm.selectedFiles[0].name;
         }
         fileService.save(vm.fileToSave, vm.folder, currentFilename, override).then(function() {
           // Dialog should close
@@ -446,14 +429,14 @@ define([
     /**
      * Handler for when the ok button is clicked
      */
-    function okClicked() {
+    function onOKClick() {
       select(vm.file.objectId, vm.file.name, vm.file.path, vm.file.connection, vm.file.provider, vm.file.type);
     }
 
     /**
      * Called if user clicks cancel in either open or save to close the browser
      */
-    function cancel() {
+    function onCancelClick() {
       _closeBrowser();
     }
 
@@ -537,50 +520,6 @@ define([
     }
 
     /**
-     * Determines if add button is to be disabled
-     * @return {boolean} - True if no folder is selected or if Recents is selected, false otherwise
-     */
-    function addDisabled() {
-      return vm.folder && !vm.folder.canAddChildren;
-    }
-
-
-    /**
-     * Determines if the refresh button is to be disabled
-     * @returns {boolean} - True if current folder is selected and not loaded
-     */
-    function refreshDisabled() {
-      return vm.folder && !vm.folder.loaded;
-    }
-
-    /**
-     * Determines if the up directory button is to be disabled
-     * @returns {boolean} - True if current folder is select and not loaded
-     */
-    function upDisabled() {
-      return vm.folder && !vm.folder.loaded;
-    }
-
-    /**
-     * Determines if delete button is to be disabled
-     * @return {boolean} - True if no folder is selected, if Recents is selected,
-     * or if root folder/file is selected, false otherwise
-     */
-    function deleteDisabled() {
-      if (vm.files.length > 0) {
-        for (var i = 0; i < vm.files.length; i++) {
-          if (!vm.files[i].canEdit) {
-            return true;
-          }
-        }
-        return false;
-      } else if (vm.folder) {
-        return !vm.folder.canEdit;
-      }
-      return false;
-    }
-
-    /**
      * @param {Object} response - Response object
      * Populates the most recent searches
      * @private
@@ -595,21 +534,22 @@ define([
     //TODO: Get a message based on the provider, file, etc.
     function onDeleteFiles(files) {
       if (files) {
-        vm.files = files;
+        fileService.files = files;
       }
-      if (vm.files.length === 1) {
-        if (vm.files[0].type === "folder") {
+      if (fileService.files.length === 1) {
+        if (fileService.files[0].type === "folder") {
           _triggerError(6);
         } else {
           _triggerError(5);
         }
       } else {
-        if (vm.files.length === 0) {
+        if (fileService.files.length === 0) {
           _triggerError(6);
         } else {
           _triggerError(21);
         }
       }
+      _update();
     }
 
     // TODO: Fix all the error messages
@@ -617,11 +557,11 @@ define([
      * Calls the service for removing the file
      */
     function commitRemove() {
-      if (vm.files.length === 0) {
+      if (vm.selectedFiles.length === 0) {
         folderService.deleteFolder(vm.tree, vm.folder).then(function (parentFolder) {
           vm.folder = null;
           selectFolder(parentFolder);
-          vm.files = null;
+          vm.selectedFiles = null;
           vm.searchString = "";
           vm.showMessage = false;
           dt.getRecentFiles().then(_populateRecentFiles);
@@ -633,8 +573,8 @@ define([
           }
         });
       } else {
-        fileService.deleteFiles(vm.folder, vm.files).then(function (response) {
-          vm.files = [];
+        fileService.deleteFiles(vm.folder, vm.selectedFiles).then(function (response) {
+          fileService.files = [];
           dt.getRecentFiles().then(_populateRecentFiles);
         }, function (response) {
           if (vm.file.type === "folder") {
@@ -650,6 +590,7 @@ define([
           }
         });
       }
+      _update();
     }
 
     /**
@@ -657,6 +598,7 @@ define([
      */
     function onAddFolder() {
       folderService.addFolder(vm.folder);
+      vm.fileList = _getFiles();
     }
 
     /**
@@ -712,15 +654,12 @@ define([
     // TODO: Bust cache on moved directory
     function moveFiles(from, to) {
       fileService.moveFiles(from, to).then(function (response) {
-        console.log("Move Complete");
         to.loaded = false;
         // TODO: Do some cleanup here instead of full refresh
-        var parentPath = from[0].path.substr(0, from[0].path.lastIndexOf("/"));
-        var parentFolder = folderService.findFolderByPath(vm.tree, from[0], parentPath);
+        var parentFolder = folderService.findFolderByPath(vm.tree, from[0]);
         parentFolder.loaded = false;
         onRefreshFolder();
       }, function (response) {
-        console.log("Copy Failed.");
         onRefreshFolder();
         // TODO: Trigger error that files couldn't be copied and why
       });
@@ -772,11 +711,12 @@ define([
       if (vm.folder && vm.folder.children) {
         for (var i = 0; i < vm.folder.children.length; i++) {
           if (vm.fileToSave === vm.folder.children[i].name) {
-            vm.files = [vm.folder.children[i]];
+            fileService.files = [vm.folder.children[i]];
             return true;
           }
         }
       }
+      _update();
       return false;
     }
 
@@ -809,8 +749,8 @@ define([
     function onKeyUp(event) {
       if (event.keyCode === 13 && event.target.tagName !== "INPUT") {
         if ($state.is("open")) {
-          if (vm.files.length === 1) {
-            onSelectFile(vm.files[0]);
+          if (vm.selectedFiles.length === 1) {
+            onSelectFile(vm.selectedFiles[0]);
           }
         } else if (!vm.showRecents) {
           _save(false);
@@ -819,180 +759,25 @@ define([
     }
 
     /**
-     * Determines if the browser is Internet Explorer.
-     * If it is, it truncates the placeholder for the search box if it's width is greater than the
-     * search box. It then adds ellipsis to the end of that string and returns that value.
-     * If it is not Internet Explorer, it just returns the search box placeholder and any
-     * truncation/ellipsis is handled using CSS. NOTE: this is a workaround for an IE bug
-     * that doesn't allow placeholders to be ellipsis unless the input is readonly.
-     * @return {string} - the Placeholder for the search box
-     */
-    function getPlaceholder() {
-      var isIE = navigator.userAgent.indexOf("Trident") !== -1 && Boolean(document.documentMode);
-      var retVal = vm.searchPlaceholder;
-      if (vm.folder.path !== "Recents") {
-        retVal += " " + vm.folder.name;
-      } else {
-        retVal += " " + vm.currentRepo;
-      }
-      if (isIE && utils.getTextWidth(retVal) > 210) {
-        var tmp = "";
-        for (var i = 0; i < retVal.length; i++) {
-          tmp = retVal.slice(0, i);
-          if (utils.getTextWidth(tmp) > 196) {
-            break;
-          }
-        }
-        retVal = tmp + "...";
-      }
-      return retVal;
-    }
-
-    /**
-     * Returns input with first letter capitalized
-     * @param {string} input - input string
-     * @return {string} - returns input with first letter capitalized
-     * @private
-     */
-    function _capsFirstLetter(input) {
-      return input.charAt(0).toUpperCase() + input.slice(1);
-    }
-
-    /**
-     * Returns the name of the selected folder
-     *
-     * @return {String} - "Search results in "<The name of the selected folder>", truncating with ellipsis accordingly
-     */
-    function getSelectedFolderName() {
-      var retVal = i18n.get("file-open-save-plugin.app.search-results-in.label");
-      if (vm.selectedFolder === "") {
-        // if (vm.selectedFolder === "" && isPentahoRepo()) {
-        retVal += "\"" + vm.currentRepo;
-      } else {
-        retVal += "\"" + vm.selectedFolder;
-      }
-      if ($state.is("open") && utils.getTextWidth(retVal) > 435) {
-        retVal = utils.truncateString(retVal, 426) + "...";
-      } else if ($state.is("save") && utils.getTextWidth(retVal) > 395) {
-        retVal = utils.truncateString(retVal, 386) + "...";
-      }
-      return retVal + "\"";
-    }
-
-    /**
-     * Returns whether or not the save button should be enabled
-     *
-     * @returns {boolean} - true if the save button should be enabled
-     */
-    function isSaveEnabled() {
-      return vm.fileToSave === '' || !vm.folder.path;
-    }
-
-    /**
-     * Returns whether or not the recents panel should be shown
-     *
-     * @returns {boolean} - true if recents should be shown
-     */
-    function isShowRecents() {
-      if (vm.recentFiles) {
-        return !vm.showMessage && vm.showRecents && vm.recentFiles.length > 0 && !$state.is('selectFolder') && !$state.is('selectFile');
-      }
-    }
-
-    /**
-     * Get the path of the current selected file
-     * @returns {string} - the path of the currently selected file/folder
-     */
-    function getPath() {
-      if (vm.files.length === 1) {
-        return folderService.getPath(vm.files[0])
-      } else {
-        return folderService.getPath(vm.folder)
-      }
-    }
-
-    function getType() {
-      if (vm.files.length === 1) {
-        return vm.files[0].provider;
-      } else {
-        return vm.folder.provider;
-      }
-    }
-
-    /**
-     * Get the path of the current selected file
-     * @returns {string} - the path of the currently selected file/folder
-     */
-    function getFilePath() {
-      if (vm.files.length === 1) {
-        return vm.files[0].path;
-      } else {
-        return vm.folder.path;
-      }
-    }
-
-    /**
      * Navigate up a directory
      */
     function onUpDirectory() {
-      if (vm.folder) {
-        var path = folderService.getPath(vm.folder);
-        selectFolderByPath(path.substr(0, path.lastIndexOf("/")), vm.folder, true);
-      }
-    }
-
-    /**
-     * Add a location to the history
-     * @param {folder} folder - the folder to add to the history
-     */
-    function addHistory(folder) {
-      if (historyIndex !== history.length) {
-        history = history.slice(0, historyIndex + 1);
-      }
-      historyIndex++;
-      history.push(folder);
-    }
-
-    /**
-     * Navigate back in the history
-     */
-    function onBackHistory() {
-      vm.files = [];
-      historyIndex--;
-      var path = folderService.getPath(history[historyIndex]);
-      selectFolderByPath(path, history[historyIndex], false);
-    }
-
-    /**
-     * Navigate back in the history
-     */
-    function onForwardHistory() {
-      vm.files = [];
-      historyIndex++;
-      var path = folderService.getPath(history[historyIndex]);
-      selectFolderByPath(path, history[historyIndex], false);
+      vm.fileLoading = true;
+      folderService.upDirectory(vm.tree).then(function() {
+        vm.fileLoading = false;
+        _update();
+      });
     }
 
     /**
      * Refresh the currently visible folder
      */
     function onRefreshFolder() {
-      if (vm.folder) {
-        vm.folder.loaded = false;
-        selectFolder(vm.folder, false, false);
-      }
-    }
-
-    /**
-     * Whether or not to disable the back history button
-     * @returns {boolean} - Whether or not to disable the back history button
-     */
-    function backHistoryDisabled() {
-      return historyIndex <= 0;
-    }
-
-    function forwardHistoryDisabled() {
-      return historyIndex >= history.length - 1;
+      vm.fileLoading = true;
+      folderService.refreshFolder(vm.tree).then(function() {
+        vm.fileLoading = false;
+        _update();
+      });
     }
 
     function doSearch(value) {
@@ -1007,5 +792,4 @@ define([
     name: "fileOpenSaveApp",
     options: options
   };
-})
-;
+});
