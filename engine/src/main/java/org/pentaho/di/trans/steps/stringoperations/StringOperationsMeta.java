@@ -175,6 +175,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     BaseMessages.getString( PKG, "StringOperationsMeta.Digits.Remove" ) };
 
   // mask XML
+
   public static final String[] maskXMLDesc = new String[] {
     BaseMessages.getString( PKG, "StringOperationsMeta.MaskXML.None" ),
     BaseMessages.getString( PKG, "StringOperationsMeta.MaskXML.EscapeXML" ),
@@ -413,15 +414,15 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         fieldInStream[i] = Const.NVL( XMLHandler.getTagValue( fnode, "in_stream_name" ), "" );
         fieldOutStream[i] = Const.NVL( XMLHandler.getTagValue( fnode, "out_stream_name" ), "" );
 
-        trimType[i] = getTrimTypeDesc( Integer.parseInt( Const.NVL( XMLHandler.getTagValue( fnode, "trim_type" ), "0" ) ) );
-        lowerUpper[i] = getLowerUpperDesc( Integer.parseInt( Const.NVL( XMLHandler.getTagValue( fnode, "lower_upper" ), "0" ) ) );
-        padding_type[i] = getPaddingDesc( Integer.parseInt( Const.NVL( XMLHandler.getTagValue( fnode, "padding_type" ), "0" ) ) );
+        trimType[i] = Const.NVL( XMLHandler.getTagValue( fnode, "trim_type" ), "" );
+        lowerUpper[i] = Const.NVL( XMLHandler.getTagValue( fnode, "lower_upper" ), "" );
+        padding_type[i] = Const.NVL( XMLHandler.getTagValue( fnode, "padding_type" ), "" );
         padChar[i] = Const.NVL( XMLHandler.getTagValue( fnode, "pad_char" ), "" );
         padLen[i] = Const.NVL( XMLHandler.getTagValue( fnode, "pad_len" ), "" );
-        initCap[i] = getInitCapDesc( Integer.parseInt( Const.NVL( XMLHandler.getTagValue( fnode, "init_cap" ), "0" ) ) );
-        maskXML[i] = getMaskXMLDesc( Integer.parseInt( Const.NVL( XMLHandler.getTagValue( fnode, "mask_xml" ), "0" ) ) );
-        digits[i] = getDigitsDesc( Integer.parseInt( Const.NVL( XMLHandler.getTagValue( fnode, "digits" ), "0" ) ) );
-        remove_special_characters[i] = getRemoveSpecialCharactersDesc( Integer.parseInt( Const.NVL( XMLHandler.getTagValue( fnode, "remove_special_characters" ), "0" ) ) );
+        initCap[i] = Const.NVL( XMLHandler.getTagValue( fnode, "init_cap" ), "" );
+        maskXML[i] = Const.NVL( XMLHandler.getTagValue( fnode, "mask_xml" ), "" );
+        digits[i] = Const.NVL( XMLHandler.getTagValue( fnode, "digits" ), "" );
+        remove_special_characters[i] = Const.NVL( XMLHandler.getTagValue( fnode, "remove_special_characters" ), "" );
 
       }
     } catch ( Exception e ) {
@@ -451,17 +452,18 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
       retval.append( "        " ).append( XMLHandler.addTagValue( "in_stream_name", fieldInStream[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "out_stream_name", fieldOutStream[i] ) );
 
-      retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", getTrimTypeByDesc( trimType[i] ) ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "lower_upper", getLowerUpperByDesc( lowerUpper[i] ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", trimType[i] ) );
       retval.append( "        " ).append(
-        XMLHandler.addTagValue( "padding_type", getPaddingByDesc( padding_type[i] ) ) );
+        XMLHandler.addTagValue( "lower_upper", lowerUpper[i] ) );
+      retval.append( "        " ).append(
+        XMLHandler.addTagValue( "padding_type", padding_type[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "pad_char", padChar[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "pad_len", padLen[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "init_cap", getInitCapByDesc( initCap[i] ) ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "mask_xml", getMaskXMLByDesc( maskXML[i] ) ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "digits", getDigitsByDesc( digits[i] ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "init_cap", initCap[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "mask_xml", maskXML[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "digits", digits[i] ) );
       retval.append( "        " ).append(
-        XMLHandler.addTagValue( "remove_special_characters", getRemoveSpecialCharactersByDesc( remove_special_characters[i] ) ) );
+        XMLHandler.addTagValue( "remove_special_characters", remove_special_characters[i] ) );
 
       retval.append( "      </field>" ).append( Const.CR );
     }
