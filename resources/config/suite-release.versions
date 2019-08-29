@@ -24,6 +24,7 @@ dashboard-plugin.version=9.0.0.0-BUILDTAG
 jdbc-distribution-utility.version=9.0.0.0-BUILDTAG
 kafka-plugin.version=9.0.0.0-BUILDTAG
 launcher.version=9.0.0.0-BUILDTAG
+layout-editor.version=9.0.0.0-BUILDTAG
 metadata-client-tool.version=9.0.0.0-BUILDTAG
 metastore.version=9.0.0.0-BUILDTAG
 mondrian.version=9.0.0.0-BUILDTAG
