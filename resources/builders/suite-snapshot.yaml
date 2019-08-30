@@ -5,7 +5,6 @@ buildProperties:
   MAVEN_DEFAULT_DIRECTIVES       : clean deploy
 
   MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e
-  MINION_POLL_CRON_INTERVAL      : 'H/5 * * * *'
 
   MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://nexus.pentaho.org/content/repositories/public-9.0-snapshot
   MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://nexus.pentaho.org/content/repositories/private-9.0-snapshot
