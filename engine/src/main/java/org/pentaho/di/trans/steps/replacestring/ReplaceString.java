@@ -190,8 +190,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
         }
 
         data.outStreamNrs[i] = environmentSubstitute( meta.getFieldOutStream()[i] );
-        data.patterns[i] = buildPattern( meta.getUseRegEx()[i], meta.getCaseSensitive()[i],
-            meta.getWholeWord()[i], environmentSubstitute( meta.getReplaceString()[i] ), meta.isUnicode()[i] );
+        data.patterns[ i ] = buildPattern( !meta.getUseRegEx()[ i ], meta.getCaseSensitive()[ i ],
+          meta.getWholeWord()[ i ], environmentSubstitute( meta.getReplaceString()[ i ] ), meta.isUnicode()[ i ] );
 
         String field = meta.getFieldReplaceByString()[i];
         if ( !Utils.isEmpty( field ) ) {
