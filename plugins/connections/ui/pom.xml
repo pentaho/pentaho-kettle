@@ -89,6 +89,11 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>require-css</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>jquery</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <resources>
