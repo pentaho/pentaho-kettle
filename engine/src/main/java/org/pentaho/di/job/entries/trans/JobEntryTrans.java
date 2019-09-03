@@ -1257,7 +1257,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     Result newResult = trans.getResult();
     result.clear(); // clear only the numbers, NOT the files or rows.
     result.add( newResult );
-    result.setRows( newResult.getRows() );
+    if ( !Utils.isEmpty( newResult.getRows() ) || trans.isResultRowsSet() ) {
+      result.setRows( newResult.getRows() );
+    }
   }
 
   /**

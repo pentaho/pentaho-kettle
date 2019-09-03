@@ -282,6 +282,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private List<StepMetaDataCombi> steps;
 
   /**
+   * Indicates if the result rows have been set
+   */
+  private boolean resultRowsSet;
+
+  /**
    * The class number.
    */
   public int class_nr;
@@ -5669,6 +5674,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       backwardChange = false;
 
     } // finished sorting
+  }
+
+  public void setResultRowSet( boolean resultRowsSet ) {
+    this.resultRowsSet = resultRowsSet;
+  }
+
+  public boolean isResultRowsSet() {
+    return resultRowsSet;
   }
 
   @Override
