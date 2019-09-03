@@ -98,19 +98,19 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
   @Metaverse.Node ( name = JMS_MESSAGE_ID_METAVERSE, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
   @Metaverse.Property ( name = JMS_MESSAGE_ID_METAVERSE, parentNodeName = JMS_MESSAGE_ID_METAVERSE )
   @Metaverse.NodeLink ( nodeName = JMS_MESSAGE_ID_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
-  public String messageId = "message_id";
+  public String messageId = "messageId";
 
   @Injection ( name = "JMS_TIMESTAMP" )
   @Metaverse.Node ( name = JMS_TIMESTAMP_METAVERSE, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
   @Metaverse.Property ( name = JMS_TIMESTAMP_METAVERSE, parentNodeName = JMS_TIMESTAMP_METAVERSE )
   @Metaverse.NodeLink ( nodeName = JMS_TIMESTAMP_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
-  public String jmsTimestamp = "jms_timestamp";
+  public String jmsTimestamp = "jmsTimestamp";
 
   @Injection ( name = "JMS_REDELIVERED" )
   @Metaverse.Node ( name = JMS_REDELIVERED_METAVERSE, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
   @Metaverse.Property ( name = JMS_REDELIVERED_METAVERSE, parentNodeName = JMS_REDELIVERED_METAVERSE )
   @Metaverse.NodeLink ( nodeName = JMS_REDELIVERED_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
-  public String jmsRedelivered = "jms_redelivered";
+  public String jmsRedelivered = "jmsRedelivered";
 
   @VisibleForTesting
   public JmsConsumerMeta() {
