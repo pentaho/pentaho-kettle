@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,9 +57,8 @@ public class RowsToResult extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // get row, set busy!
     if ( r == null ) { // no more input to be expected...
-
       getTrans().getResultRows().addAll( data.rows );
-
+      getTrans().setResultRowSet( true );
       setOutputDone();
       return false;
     }
