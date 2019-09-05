@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -477,7 +477,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
           TransHopMeta hop = hops.get( hopInd );
           return (
             hop.isErrorHop()
-            && hop.getFromStep().getStepID().equals( this.input.getParentStepMeta().getStepID() ) );
+            && hop.getFromStep().getName().equals( this.input.getParentStepMeta().getName() ) );
         } )
         .forEach( hopInd -> this.transMeta.removeTransHop( hopInd ) );
     }
