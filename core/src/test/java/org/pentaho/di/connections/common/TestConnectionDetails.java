@@ -23,6 +23,9 @@
 package org.pentaho.di.connections.common;
 
 import org.pentaho.di.connections.ConnectionDetails;
+import org.pentaho.di.connections.annotations.Encrypted;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElement;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
 @MetaStoreElementType(
@@ -32,8 +35,19 @@ public class TestConnectionDetails implements ConnectionDetails {
 
   private static String TYPE = "test";
 
+  @MetaStoreAttribute
   private String name;
+
+  @MetaStoreAttribute
   private String description;
+
+  @Encrypted
+  @MetaStoreAttribute
+  private String password;
+
+  @Encrypted
+  @MetaStoreAttribute
+  private String password1;
 
   @Override public String getName() {
     return name;
@@ -53,5 +67,21 @@ public class TestConnectionDetails implements ConnectionDetails {
 
   public void setDescription( String description ) {
     this.description = description;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword( String password ) {
+    this.password = password;
+  }
+
+  public String getPassword1() {
+    return password1;
+  }
+
+  public void setPassword1( String password1 ) {
+    this.password1 = password1;
   }
 }

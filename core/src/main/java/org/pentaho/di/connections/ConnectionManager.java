@@ -22,6 +22,7 @@
 
 package org.pentaho.di.connections;
 
+import org.pentaho.di.connections.utils.EncryptUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
@@ -100,15 +101,13 @@ public class ConnectionManager {
     if ( connectionProvider.prepare( connectionDetails ) == null ) {
       return false;
     }
-    try {
-      getMetaStoreFactory( (Class<T>) connectionDetails.getClass() ).saveElement( connectionDetails );
-      if ( !nameCache.contains( connectionDetails.getName() ) ) {
-        nameCache.add( connectionDetails.getName() );
-      }
-      return true;
-    } catch ( MetaStoreException mse ) {
+    if ( !saveElement( getMetaStoreFactory( (Class<T>) connectionDetails.getClass() ), connectionDetails ) ) {
       return false;
     }
+    if ( !nameCache.contains( connectionDetails.getName() ) ) {
+      nameCache.add( connectionDetails.getName() );
+    }
+    return true;
   }
 
   @SuppressWarnings( "unchecked" )
@@ -123,7 +122,7 @@ public class ConnectionManager {
       Collections.list( connectionProviders.elements() );
     for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
       try {
-        ConnectionDetails connectionDetails = getMetaStoreFactory( provider.getClassType() ).loadElement( name );
+        ConnectionDetails connectionDetails = loadElement( getMetaStoreFactory( provider.getClassType() ), name );
         if ( connectionDetails != null ) {
           getMetaStoreFactory( provider.getClassType() ).deleteElement( name );
           nameCache.remove( name );
@@ -205,11 +204,7 @@ public class ConnectionManager {
     ConnectionProvider<? extends ConnectionDetails> connectionProvider = getConnectionProvider( key );
     if ( connectionProvider != null ) {
       Class<? extends ConnectionDetails> clazz = connectionProvider.getClassType();
-      try {
-        return getMetaStoreFactory( metaStore, clazz ).loadElement( name );
-      } catch ( MetaStoreException mse ) {
-        return null;
-      }
+      return loadElement( getMetaStoreFactory( metaStore, clazz ), name );
     }
     return null;
   }
@@ -225,16 +220,35 @@ public class ConnectionManager {
     List<ConnectionProvider<? extends ConnectionDetails>> providers =
       Collections.list( connectionProviders.elements() );
     for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-      try {
-        ConnectionDetails connectionDetails = getMetaStoreFactory( provider.getClassType() ).loadElement( name );
-        if ( connectionDetails != null ) {
-          return connectionDetails;
-        }
-      } catch ( MetaStoreException ignored ) {
-        // Isn't in that metastore
+      ConnectionDetails connectionDetails = loadElement( getMetaStoreFactory( provider.getClassType() ), name );
+      if ( connectionDetails != null ) {
+        return connectionDetails;
       }
     }
     return null;
+  }
+
+  private <T extends ConnectionDetails> boolean saveElement( MetaStoreFactory<T> metaStoreFactory,
+                                                             T connectionDetails ) {
+    try {
+      EncryptUtils.encryptFields( connectionDetails );
+      metaStoreFactory.saveElement( connectionDetails );
+      return true;
+    } catch ( MetaStoreException ignored ) {
+      return false;
+    }
+  }
+
+  private ConnectionDetails loadElement( MetaStoreFactory metaStoreFactory, String name ) {
+    try {
+      ConnectionDetails connectionDetails = (ConnectionDetails) metaStoreFactory.loadElement( name );
+      if ( connectionDetails != null ) {
+        EncryptUtils.decryptFields( connectionDetails );
+      }
+      return connectionDetails;
+    } catch ( MetaStoreException e ) {
+      return null;
+    }
   }
 
   public ConnectionDetails createConnectionDetails( String scheme ) {
