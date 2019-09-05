@@ -30,10 +30,13 @@ import org.pentaho.di.connections.common.TestConnectionDetails;
 import org.pentaho.di.connections.common.TestConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
-import org.pentaho.metastore.persist.MetaStoreElementType;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.util.List;
+
+import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 
 /**
  * Created by bmorrise on 3/10/19.
@@ -42,14 +45,18 @@ public class ConnectionManagerTest {
 
   public static final String EXAMPLE = "example";
   public static final String DOES_NOT_EXIST = "Does not exist";
+  private static String DESCRIPTION = "Connection Description";
   private static String CONNECTION_NAME = "Connection Name";
+  private static String PASSWORD = "testpassword";
+  private static String PASSWORD2 = "testpassword2";
 
   private ConnectionManager connectionManager;
 
   private MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
 
   @Before
-  public void setup() {
+  public void setup() throws Exception {
+    KettleClientEnvironment.init();
     connectionManager = new ConnectionManager();
     connectionManager.setMetastoreSupplier( () -> memoryMetaStore );
   }
@@ -72,6 +79,23 @@ public class ConnectionManagerTest {
       (TestConnectionDetails) connectionManager
         .getConnectionDetails( TestConnectionProvider.SCHEME, CONNECTION_NAME );
     Assert.assertEquals( CONNECTION_NAME, testConnectionDetails1.getName() );
+  }
+
+  @Test
+  public void testEncryptedField() throws Exception {
+    addOne();
+
+    TestConnectionDetails testConnectionDetails1 =
+      (TestConnectionDetails) connectionManager
+        .getConnectionDetails( TestConnectionProvider.SCHEME, CONNECTION_NAME );
+    Assert.assertEquals( PASSWORD, testConnectionDetails1.getPassword() );
+    Assert.assertEquals( PASSWORD2, testConnectionDetails1.getPassword1() );
+
+    MetaStoreFactory<TestConnectionDetails> metaStoreFactory =
+      new MetaStoreFactory<>( TestConnectionDetails.class, memoryMetaStore, NAMESPACE );
+    TestConnectionDetails testConnectionDetails = metaStoreFactory.loadElement( CONNECTION_NAME );
+    Assert.assertTrue( testConnectionDetails.getPassword().startsWith( "Encrypted " ) );
+    Assert.assertTrue( testConnectionDetails.getPassword1().startsWith( "Encrypted " ) );
   }
 
   @Test
@@ -202,7 +226,10 @@ public class ConnectionManagerTest {
   private void addOne() {
     addProvider();
     TestConnectionDetails testConnectionDetails = new TestConnectionDetails();
+    testConnectionDetails.setDescription( DESCRIPTION );
     testConnectionDetails.setName( CONNECTION_NAME );
+    testConnectionDetails.setPassword( PASSWORD );
+    testConnectionDetails.setPassword1( PASSWORD2 );
     connectionManager.save( testConnectionDetails );
   }
 
