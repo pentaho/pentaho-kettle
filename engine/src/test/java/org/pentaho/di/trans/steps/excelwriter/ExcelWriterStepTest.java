@@ -45,16 +45,13 @@ import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
-import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.utils.TestUtils;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -133,108 +130,6 @@ public class ExcelWriterStepTest {
       // We expected this error message, the sheet name is too long for Excel
       assertTrue( content.contains( "12345678901234567890123456789012" ) );
     }
-  }
-
-  @Test
-  public void testTopLevelMetadataEntries() throws Exception {
-
-    List<StepInjectionMetaEntry> entries =
-      stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
-
-    String masterKeys = "FIELDS";
-
-    for ( StepInjectionMetaEntry entry : entries ) {
-      String key = entry.getKey();
-      assertTrue( masterKeys.contains( key ) );
-      masterKeys = masterKeys.replace( key, EMPTY_STRING );
-    }
-
-    assertEquals( 0, masterKeys.trim().length() );
-  }
-
-  @Test
-  public void testChildLevelMetadataEntries() throws Exception {
-
-    List<StepInjectionMetaEntry> entries =
-      stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
-
-    StepInjectionMetaEntry mappingEntry = null;
-    String childKeys =
-      "NAME TYPE FORMAT STYLECELL FIELDTITLE TITLESTYLE FORMULA HYPERLINKFIELD CELLCOMMENT COMMENTAUTHOR";
-
-    for ( StepInjectionMetaEntry entry : entries ) {
-      String key = entry.getKey();
-      if ( key.equals( "FIELDS" ) ) {
-        mappingEntry = entry;
-        break;
-      }
-    }
-
-    assertNotNull( mappingEntry );
-
-    List<StepInjectionMetaEntry> fieldAttributes = mappingEntry.getDetails().get( 0 ).getDetails();
-
-    for ( StepInjectionMetaEntry attribute : fieldAttributes ) {
-      String key = attribute.getKey();
-      assertTrue( childKeys.contains( key ) );
-      childKeys = childKeys.replace( key, EMPTY_STRING );
-    }
-
-    assertEquals( 0, childKeys.trim().length() );
-  }
-
-  @Test
-  public void testInjection() throws Exception {
-
-    List<StepInjectionMetaEntry> entries =
-      stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
-
-    for ( StepInjectionMetaEntry entry : entries ) {
-      switch ( entry.getValueType() ) {
-        case ValueMetaInterface.TYPE_STRING:
-          entry.setValue( "new_".concat( entry.getKey() ) );
-          break;
-        case ValueMetaInterface.TYPE_BOOLEAN:
-          entry.setValue( Boolean.TRUE );
-          break;
-        default:
-          break;
-      }
-
-      if ( !entry.getDetails().isEmpty() ) {
-
-        List<StepInjectionMetaEntry> childEntries = entry.getDetails().get( 0 ).getDetails();
-        for ( StepInjectionMetaEntry childEntry : childEntries ) {
-          switch ( childEntry.getValueType() ) {
-            case ValueMetaInterface.TYPE_STRING:
-              childEntry.setValue( "new_".concat( childEntry.getKey() ) );
-              break;
-            case ValueMetaInterface.TYPE_BOOLEAN:
-              childEntry.setValue( Boolean.TRUE );
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    }
-
-    stepMeta.getStepMetaInjectionInterface().injectStepMetadataEntries( entries );
-
-    assertEquals( "Cell comment not properly injected... ", "new_CELLCOMMENT",
-      stepMeta.getOutputFields()[ 0 ].getCommentField() );
-    assertEquals( "Format not properly injected... ", "new_FORMAT", stepMeta.getOutputFields()[ 0 ].getFormat() );
-    assertEquals( "Hyperlink not properly injected... ", "new_HYPERLINKFIELD",
-      stepMeta.getOutputFields()[ 0 ].getHyperlinkField() );
-    assertEquals( "Name not properly injected... ", "new_NAME", stepMeta.getOutputFields()[ 0 ].getName() );
-    assertEquals( "Style cell not properly injected... ", "new_STYLECELL",
-      stepMeta.getOutputFields()[ 0 ].getStyleCell() );
-    assertEquals( "Title not properly injected... ", "new_FIELDTITLE", stepMeta.getOutputFields()[ 0 ].getTitle() );
-    assertEquals( "Title style cell not properly injected... ", "new_TITLESTYLE",
-      stepMeta.getOutputFields()[ 0 ].getTitleStyleCell() );
-    assertEquals( "Type not properly injected... ", 0, stepMeta.getOutputFields()[ 0 ].getType() );
-    assertEquals( "Comment author not properly injected... ", "new_COMMENTAUTHOR",
-      stepMeta.getOutputFields()[ 0 ].getCommentAuthorField() );
   }
 
   @Test

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,39 @@
 
 package org.pentaho.di.trans.steps.excelwriter;
 
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 public class ExcelWriterStepField implements Cloneable {
+  @Injection( name = "NAME", group = "FIELDS" )
   private String name;
+
+  @Injection( name = "TYPE", group = "FIELDS" )
   private int type;
+
+  @Injection( name = "FORMAT", group = "FIELDS" )
   private String format;
-  private String title;
-  private boolean formula;
-  private String hyperlinkField;
-  private String commentField;
-  private String commentAuthorField;
-  private String titleStyleCell;
+
+  @Injection( name = "STYLE_FROM_CELL", group = "FIELDS" )
   private String styleCell;
+
+  @Injection( name = "TITLE", group = "FIELDS" )
+  private String title;
+
+  @Injection( name = "HEADERFOOTER_STYLE_FROM_CELL", group = "FIELDS" )
+  private String titleStyleCell;
+
+  @Injection( name = "CONTAINS_FORMULA", group = "FIELDS" )
+  private boolean formula;
+
+  @Injection( name = "HYPERLINK", group = "FIELDS" )
+  private String hyperlinkField;
+
+  @Injection( name = "CELL_COMMENT", group = "FIELDS" )
+  private String commentField;
+
+  @Injection( name = "CELL_COMMENT_AUTHOR", group = "FIELDS" )
+  private String commentAuthorField;
 
   public String getCommentAuthorField() {
     return commentAuthorField;

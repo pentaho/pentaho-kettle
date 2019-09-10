@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,9 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -52,11 +55,11 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@InjectionSupported( localizationPrefix = "ExcelWriter.Injection.", groups = "FIELDS" )
 public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExcelWriterStepMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -69,90 +72,154 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   public static final String ROW_WRITE_OVERWRITE = "overwrite";
   public static final String ROW_WRITE_PUSH_DOWN = "push";
 
+  // FILE GROUP START
+
   /** The base name of the output file */
+  @Injection( name = "FILENAME" )
   private String fileName;
-  /** what to do if file exists **/
-  private String ifFileExists;
-  private String ifSheetExists;
-
-  private boolean makeSheetActive;
-  private boolean forceFormulaRecalculation = false;
-  private boolean leaveExistingStylesUnchanged = false;
-
-  /** advanced line append options **/
-  private int appendOffset = 0;
-  private int appendEmpty = 0;
-  private boolean appendOmitHeader = false;
-
-  /** how to write rows **/
-  private String rowWritingMethod;
-
-  /** where to start writing **/
-  private String startingCell;
 
   /** The file extension in case of a generated filename */
+  @Injection( name = "EXTENSION" )
   private String extension;
 
-  /** The password to protect the sheet */
-  private String password;
-  private String protectedBy;
-
-  /** Add a header at the top of the file? */
-  private boolean headerEnabled;
-
-  /** Add a footer at the bottom of the file? */
-  private boolean footerEnabled;
+  /** Do we need to stream data to handle very large files? */
+  @Injection( name = "STREAM_XSLX_DATA" )
+  private boolean streamingData;
 
   /** if this value is larger then 0, the text file is split up into parts of this number of lines */
+  @Injection( name = "SPLIT_EVERY_DATA_ROWS" )
   private int splitEvery;
 
   /** Flag: add the stepnr in the filename */
+  @Injection( name = "INCLUDE_STEPNR_IN_FILENAME" )
   private boolean stepNrInFilename;
 
   /** Flag: add the date in the filename */
+  @Injection( name = "INCLUDE_DATE_IN_FILENAME" )
   private boolean dateInFilename;
 
-  /** Flag: add the filenames to result filenames */
-  private boolean addToResultFilenames;
-
-  /** Flag: protect the sheet */
-  private boolean protectsheet;
-
   /** Flag: add the time in the filename */
+  @Injection( name = "INCLUDE_TIME_IN_FILENAME" )
   private boolean timeInFilename;
 
-  /** Flag: use a template */
-  private boolean templateEnabled;
-  private boolean templateSheetEnabled;
-  private boolean templateSheetHidden;
+  @Injection( name = "SPECIFY_DATE_TIME_FORMAT" )
+  private boolean SpecifyFormat;
 
-  /** the excel template */
-  private String templateFileName;
-  private String templateSheetName;
+  @Injection( name = "DATE_TIME_FORMAT" )
+  private String date_time_format;
+
+  /** what to do if file exists **/
+  @Injection( name = "IF_OUTPUT_FILE_EXISTS" )
+  private String ifFileExists;
+
+  /** Flag : Do not open new file when transformation start */
+  @Injection( name = "WAIT_FOR_FIRST_ROW" )
+  private boolean doNotOpenNewFileInit;
+
+  /** Flag: add the filenames to result filenames */
+  @Injection( name = "ADD_FILENAMES_TO_RESULT" )
+  private boolean addToResultFilenames;
+
+  // FILE GROUP END
+
+  // SHEET GROUP START
 
   /** the excel sheet name */
+  @Injection( name = "SHEET_NAME" )
   private String sheetname;
+
+  @Injection( name = "MAKE_SHEET_ACTIVE" )
+  private boolean makeSheetActive;
+
+  @Injection( name = "IF_SHEET_EXISTS_IN_OUTPUT" )
+  private String ifSheetExists;
+
+  /** Flag: protect the sheet */
+  @Injection( name = "PROTECT_SHEET" )
+  private boolean protectsheet;
+
+  /** The user/password to protect the sheet */
+  @Injection( name = "PROTECTED_BY_USER" )
+  private String protectedBy;
+  @Injection( name = "PASSWORD" )
+  private String password;
+
+  // SHEET GROUP END
+
+  // TEMPLATE GROUP START
+
+  /** Flag: use a template */
+  @Injection( name = "USE_TEMPLATE_FOR_NEW_FILES" )
+  private boolean templateEnabled;
+
+  /** the excel template */
+  @Injection( name = "TEMPLATE_FILE" )
+  private String templateFileName;
+
+  @Injection( name = "USE_TEMPLATE_FOR_NEW_SHEETS" )
+  private boolean templateSheetEnabled;
+
+  @Injection( name = "TEMPLATE_SHEET" )
+  private String templateSheetName;
+
+  @Injection( name = "HIDE_TEMPLATE_SHEET" )
+  private boolean templateSheetHidden;
+
+  // TEMPLATE GROUP END
+
+  // CONTENT OPTIONS GROUP START
+
+  /** where to start writing **/
+  @Injection( name = "START_WRITING_AT_CELL" )
+  private String startingCell;
+
+  /** how to write rows **/
+  @Injection( name = "WHEN_WRITING_ROWS" )
+  private String rowWritingMethod;
+
+  /** Add a header at the top of the file? */
+  @Injection( name = "WRITE_HEADER" )
+  private boolean headerEnabled;
+
+  /** Add a footer at the bottom of the file? */
+  @Injection( name = "WRITE_FOOTER" )
+  private boolean footerEnabled;
+
+  /** Flag : auto size columns? */
+  @Injection( name = "AUTO_SIZE_COLUMNS" )
+  private boolean autosizecolums;
+
+  @Injection( name = "FORCE_FORMULA_RECALC" )
+  private boolean forceFormulaRecalculation = false;
+
+  @Injection( name = "LEAVE_STYLES_UNCHANGED" )
+  private boolean leaveExistingStylesUnchanged = false;
+
+  // CONTENT OPTIONS GROUP END
+
+  // WHEN WRITING TO EXISTING SHEET GROUP START
+
+  /** Flag : appendLines lines? */
+  @Injection( name = "START_WRITING_AT_SHEET_END" )
+  private boolean appendLines;
+
+  /** advanced line append options **/
+  @Injection( name = "OFFSET_BY_ROWS" )
+  private int appendOffset = 0;
+
+  @Injection( name = "BEGIN_BY_WRITING_EMPTY_LINES" )
+  private int appendEmpty = 0;
+
+  @Injection( name = "OMIT_HEADER" )
+  private boolean appendOmitHeader = false;
+
+  // WHEN WRITING TO EXISTING SHEET GROUP END
 
   /* THE FIELD SPECIFICATIONS ... */
 
   /** The output fields */
+  @InjectionDeep
   private ExcelWriterStepField[] outputFields;
-
-  /** Flag : appendLines lines? */
-  private boolean appendLines;
-
-  /** Flag : Do not open new file when transformation start */
-  private boolean doNotOpenNewFileInit;
-
-  private boolean SpecifyFormat;
-
-  private String date_time_format;
-
-  /** Flag : auto size columns? */
-  private boolean autosizecolums;
-
-  /** Do we need to stream data to handle very large files? */
-  private boolean streamingData;
 
   public ExcelWriterStepMeta() {
     super();
@@ -1086,11 +1153,6 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
-  }
-
-  @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new ExcelWriterMetaInjection( this );
   }
 
   @Override
