@@ -65,7 +65,6 @@
     <httpccore.version>4.4.6</httpccore.version>
     <commons-codec.version>1.10</commons-codec.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
-    <commons-logging.version>1.1.3</commons-logging.version>
     <guava.version>17.0</guava.version>
     <encoder.version>1.2</encoder.version>
     <h2.version>1.2.131</h2.version>
@@ -146,17 +145,6 @@
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${commons-codec.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${commons-logging.version}</version>
         <exclusions>
           <exclusion>
             <groupId>*</groupId>
