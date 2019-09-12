@@ -22,19 +22,7 @@
 
 package org.pentaho.di.core.row;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.security.MessageDigest;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.zip.Adler32;
-import java.util.zip.CRC32;
-import java.util.zip.CheckedInputStream;
-
+import com.wcohen.ss.NeedlemanWunsch;
 import org.apache.commons.codec.language.DoubleMetaphone;
 import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.RefinedSoundex;
@@ -54,7 +42,17 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLCheck;
 
-import com.wcohen.ss.NeedlemanWunsch;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.security.MessageDigest;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.zip.Adler32;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedInputStream;
 
 public class ValueDataUtil {
 
@@ -788,20 +786,19 @@ public class ValueDataUtil {
   }
 
   // If decimal part has only zeros, remove it. Otherwise scale it to maxScale
-  private static BigDecimal removeTrailingZeroFractionOrScale( BigDecimal a, int maxScale ) {
+  private static BigDecimal removeTrailingZeroFractionOrScale( BigDecimal a ) {
     if ( a.remainder( BigDecimal.ONE ).compareTo( BigDecimal.ZERO ) == 0 ) {
       return a.setScale( 0 );
     }
-
-    return a.setScale( maxScale, RoundingMode.HALF_EVEN );
+    return a;
   }
 
   public static BigDecimal multiplyBigDecimals( BigDecimal a, BigDecimal b, MathContext mc ) {
     if ( mc == null ) {
-      mc = new MathContext( getMaxPrecision( a, b ), RoundingMode.HALF_EVEN );
+      mc = MathContext.UNLIMITED;
     }
 
-    return removeTrailingZeroFractionOrScale( a.multiply( b, mc ), getMaxScale( a, b ) );
+    return removeTrailingZeroFractionOrScale( a.multiply( b, mc ) );
   }
 
   protected static Object multiplyString( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
@@ -857,12 +854,26 @@ public class ValueDataUtil {
   }
 
   public static BigDecimal divideBigDecimals( BigDecimal a, BigDecimal b, MathContext mc ) {
-    if ( mc == null ) {
-      mc = new MathContext( getMaxPrecision( a, b ), RoundingMode.HALF_EVEN );
+    BigDecimal result = null;
+    try {
+      // Try unbounded division. But will throw an exception if the
+      // result would be a repeating decimal. We catch that and then
+      // bound it below.
+      //
+      // It's possible that on hundreds of calls to divideBigDecimals, that this
+      // will end up creating a performance issue. The proper answer to that though
+      // is to not use this method without a MathContext.
+      result = a.divide( b, mc != null ? mc : MathContext.UNLIMITED );
+    } catch ( ArithmeticException ae ) {
+      // Repeating decimal, we have to bound it if we supplied the MathContext
+      if ( mc == null ) {
+        result = a.divide( b, MathContext.DECIMAL128 );
+      } else {
+        // We have to throw the exception out if the MathContext was passed in
+        throw ae;
+      }
     }
-
-    BigDecimal result = a.divide( b, mc );
-    return removeTrailingZeroFractionOrScale( result, result.scale() );
+    return removeTrailingZeroFractionOrScale( result );
   }
 
   public static Object sqrt( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
@@ -1265,8 +1276,8 @@ public class ValueDataUtil {
       case ValueMetaInterface.TYPE_BIGNUMBER:
         BigDecimal aValue = metaA.getBigNumber( dataA );
         BigDecimal bValue = metaA.getBigNumber( dataB );
-        BigDecimal result = aValue.remainder( bValue, new MathContext( getMaxPrecision( aValue, bValue ),  RoundingMode.HALF_EVEN ) );
-        return removeTrailingZeroFractionOrScale( result, result.scale() );
+        BigDecimal result = aValue.remainder( bValue, MathContext.UNLIMITED );
+        return removeTrailingZeroFractionOrScale( result );
       default:
         throw new KettleValueException( "The 'remainder' function only works on numeric data" );
     }
