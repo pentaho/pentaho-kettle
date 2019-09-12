@@ -293,8 +293,6 @@ define([
       vm.fileList = _getFiles();
       if (vm.selectedFiles.length === 1) {
         vm.fileToSave = vm.selectedFiles[0].type === "folder" ? vm.fileToSave : vm.selectedFiles[0].name;
-      } else {
-        vm.fileToSave = "";
       }
     }
 

@@ -57,13 +57,16 @@ define([
     vm.onForwardHistory = onForwardHistory;
     vm.onDropdownClick = onDropdownClick;
     vm.onRecentClick = onRecentClick;
+    vm.onClickExtras = onClickExtras;
     vm.isShowHistory = false;
 
     vm.index = -1;
     vm.history = [];
     vm.recents = [];
     vm.parts = [];
+    vm.extras = [];
     vm.state = "breadcrumb";
+    vm.showExtras = false;
 
     /**
      * The $onInit} hook of components lifecycle which is called on each controller
@@ -105,6 +108,12 @@ define([
 
     function onBodyClick() {
       vm.isShowHistory = false;
+      vm.showExtras = false;
+    }
+
+    function onClickExtras(e) {
+      e.stopPropagation();
+      vm.showExtras=!vm.showExtras
     }
 
     function onNameClick(e, path) {
@@ -156,8 +165,17 @@ define([
       for (var i = 0; i < parts.length; i++) {
         set.push({path: parts.slice(0, i + 1).join("/"), name: parts[i]});
       }
-      vm.parts = showRoot ? set : set.slice(1, set.length);
       vm.type = showRoot ? null : vm.type;
+      if (!showRoot) {
+        set.splice(0, 1);
+      }
+      if (set.length > 3) {
+        vm.parts = set.splice(set.length - 3, set.length);
+        vm.extras = set;
+      } else {
+        vm.parts = set;
+        vm.extras = [];
+      }
     }
 
     function onBackHistory() {

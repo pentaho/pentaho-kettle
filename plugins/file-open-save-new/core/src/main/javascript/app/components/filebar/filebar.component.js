@@ -33,7 +33,7 @@ define([
     bindings: {
       path: '<',
       state: "<",
-      filename: "<",
+      filename: "=",
       onSelectFilter: "&",
       onOpenClick: "&",
       onOKClick: "&",

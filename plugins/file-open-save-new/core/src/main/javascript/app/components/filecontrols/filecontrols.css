@@ -1,5 +1,6 @@
 filecontrols {
   margin-top: 10px;
+  white-space: nowrap;
 }
 
 filecontrols input[type="button"] {

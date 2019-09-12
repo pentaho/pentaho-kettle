@@ -4610,7 +4610,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
     } else {
       if ( meta.getFilename() != null ) {
-        fileDialogOperation.setPath( meta.getFilename().substring( 0, meta.getFilename().lastIndexOf( "/" ) ) );
+        fileDialogOperation
+          .setPath( meta.getFilename().substring( 0, meta.getFilename().lastIndexOf( File.separator ) ) );
       }
     }
     if ( meta instanceof VariableSpace ) {
@@ -4636,7 +4637,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           meta.setName( oldName );
         }
       } else if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
-        String filename = fileDialogOperation.getPath() + "/" + fileDialogOperation.getFilename();
+        String filename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
         lastFileOpened = filename;
         lastFileOpenedConnection = fileDialogOperation.getConnection();
         lastFileOpenedProvider = fileDialogOperation.getProvider();
