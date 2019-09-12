@@ -5,6 +5,7 @@ addressbar {
   display: -moz-flex;
   display: -ms-flex;
   display: -webkit-flex;
+  white-space: nowrap;
 }
 
 addressbar .combobox {
@@ -113,7 +114,7 @@ addressbar ul {
   padding: 0;
 }
 
-addressbar .breadcrumb ul.parts :last-child {
+addressbar .breadcrumb ul.parts>li:last-child {
   padding-right: 0;
   background: none;
   color: #212121;
@@ -124,7 +125,7 @@ addressbar .breadcrumb ul.parts {
   padding: 0px 10px 0 10px;
 }
 
-addressbar .breadcrumb ul.parts li {
+addressbar .breadcrumb ul.parts>li {
   cursor: pointer;
   color: #005DA6;
   display: inline-block;
@@ -168,4 +169,29 @@ addressbar .breadcrumb.selected .dropdown {
   background-repeat: no-repeat;
   background-position: right center;
   width: 32px;
+}
+
+addressbar .breadcrumb ul.extras {
+  top: 26px;
+  left: -10px;
+  position: absolute;
+  background-color: #ffffff;
+  -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  padding: 5px 0;
+  max-width: 300px;
+  z-index: 100;
+  border: 1px solid #F2F2F2;
+}
+
+addressbar .breadcrumb ul.extras>li {
+  line-height: normal;
+  padding: 5px 10px;
+  white-space: nowrap;
+  color: #212121;
+}
+
+addressbar .breadcrumb ul.extras>li:hover {
+  background-color: #E6EFF6;
 }

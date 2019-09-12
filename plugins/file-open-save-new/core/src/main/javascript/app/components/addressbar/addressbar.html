@@ -6,6 +6,12 @@
   <div class="breadcrumb flex" ng-if="vm.state=='breadcrumb'" ng-click="vm.onClick($event)" ng-class="{'selected': vm.isShowHistory}">
     <ul class="parts flex">
       <li ng-if="vm.type" ng-class="vm.type">&nbsp;</li>
+      <li ng-if="vm.extras.length>0" style="position:relative" ng-click="vm.onClickExtras($event)">
+        <ul class="extras" ng-if="vm.showExtras">
+          <li ng-repeat="set in vm.extras" ng-click="vm.onNameClick($event, set.path)">{{set.name}}</li>
+        </ul>
+        &hellip;
+      </li>
       <li ng-repeat="set in vm.parts" ng-click="vm.onNameClick($event, set.path)">{{set.name}}</li>
     </ul>
     <div class="dropdown" ng-click="vm.onDropdownClick($event)">&nbsp;</div>
