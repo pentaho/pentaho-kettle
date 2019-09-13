@@ -34,9 +34,9 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.karaf.tooling</groupId>
+          <groupId>org.hitachivantara.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karaf-maven-plugin.version}</version>
+
           <configuration>
             <excludedArtifactIds>
               <!--
