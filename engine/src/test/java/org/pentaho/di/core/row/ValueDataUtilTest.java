@@ -655,10 +655,18 @@ public class ValueDataUtilTest {
     BigDecimal field2 = new BigDecimal( "1.0" );
     BigDecimal field3 = new BigDecimal( "2.0" );
 
-    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
-    BigDecimal expResult2 = new BigDecimal( "246913578024691357802.2469135780246913578" );
+    // PDI-18318 Change - Now that the precision is specified as unlimited, then it's no longer
+    // bound by the arbitrary scale that causes PDI-18318. The correct answer here does include
+    // the trailing zero based on how the scale and precision are set. See the Javadoc on
+    // BigDecimal.
+    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.12345678901234567890" );
+    BigDecimal expResult2 = new BigDecimal( "246913578024691357802.24691357802469135780" );
 
-    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.1200000000000000000" );
+    // PDI-18318 change - note that the precision is specifically set to 21. As a result, the trailing
+    // zeros indicates that it has overridden the scale value and made the number go out further than it
+    // should.
+    // BigDecimal expResult3 = new BigDecimal( "123456789012345678901.1200000000000000000" );
+    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.12" );
     BigDecimal expResult4 = new BigDecimal( "246913578024691357802" );
 
     assertEquals( expResult1, ValueDataUtil.multiplyBigDecimals( field1, field2, null ) );
@@ -666,6 +674,14 @@ public class ValueDataUtilTest {
 
     assertEquals( expResult3, ValueDataUtil.multiplyBigDecimals( field1, field2, new MathContext( 23 ) ) );
     assertEquals( expResult4, ValueDataUtil.multiplyBigDecimals( field1, field3, new MathContext( 21 ) ) );
+
+    // Test PDI-18318 findings
+    assertEquals( new BigDecimal("132"), ValueDataUtil.multiplyBigDecimals( new BigDecimal("3"), new BigDecimal( "44"), null ) );
+    assertEquals( new BigDecimal("1332"), ValueDataUtil.multiplyBigDecimals( new BigDecimal("3"), new BigDecimal( "444"), null ) );
+    assertEquals( new BigDecimal("495"), ValueDataUtil.multiplyBigDecimals( new BigDecimal("99"), new BigDecimal( "5"), null ) );
+    assertEquals( new BigDecimal("657372927282717615"), ValueDataUtil.multiplyBigDecimals( new BigDecimal("657372927282717615"), new BigDecimal( "1"), null ) );
+    assertEquals( new BigDecimal("495"), ValueDataUtil.multiplyBigDecimals( new BigDecimal("99.0000000000000"), new BigDecimal( "5.00"), null ) );
+    assertEquals( new BigDecimal("99"), ValueDataUtil.multiplyBigDecimals( new BigDecimal("99.0000000000000"), new BigDecimal( "1"), null ) );
   }
 
   @Test
@@ -685,6 +701,13 @@ public class ValueDataUtilTest {
 
     assertEquals( expResult3, ValueDataUtil.divideBigDecimals( field1, field2, new MathContext( 23 ) ) );
     assertEquals( expResult4, ValueDataUtil.divideBigDecimals( field1, field3, new MathContext( 21 ) ) );
+    // Test PDI-18318 findings
+    assertEquals( new BigDecimal("2.75"), ValueDataUtil.divideBigDecimals( new BigDecimal("11"), new BigDecimal( "4"), null ) );
+    assertEquals( new BigDecimal("2.538461538461538461538461538461538"), ValueDataUtil.divideBigDecimals( new BigDecimal("33"), new BigDecimal( "13"), null ) );
+    assertEquals( new BigDecimal("3.75"), ValueDataUtil.divideBigDecimals( new BigDecimal("15"), new BigDecimal( "4"), null ) );
+    assertEquals( new BigDecimal("29.16666666666666666666666666666667"), ValueDataUtil.divideBigDecimals( new BigDecimal("875"), new BigDecimal( "30"), null ) );
+    assertEquals( new BigDecimal("3.399690162664601084430673896204493"), ValueDataUtil.divideBigDecimals( new BigDecimal("4389"), new BigDecimal( "1291"), null ) );
+    assertEquals( new BigDecimal("484315.25"), ValueDataUtil.divideBigDecimals( new BigDecimal("1937261"), new BigDecimal( "4"), null ) );
   }
 
   @Test
@@ -698,6 +721,9 @@ public class ValueDataUtilTest {
 
     assertEquals( expResult1, ValueDataUtil.remainder( new ValueMetaBigNumber( ), field1, new ValueMetaBigNumber( ), field2 ) );
     assertEquals( expResult2, ValueDataUtil.remainder( new ValueMetaBigNumber( ), field1, new ValueMetaBigNumber( ), field3 ) );
+    // Test PDI-18318 findings
+    assertEquals( new BigDecimal( "1.90"), ValueDataUtil.remainder( new ValueMetaBigNumber( ), new BigDecimal( "23"), new ValueMetaBigNumber( ), new BigDecimal( "2.110") ) );
+    assertEquals( new BigDecimal( "5"), ValueDataUtil.remainder( new ValueMetaBigNumber( ), new BigDecimal( "875"), new ValueMetaBigNumber( ), new BigDecimal( "30") ) );
   }
 
   @Test
