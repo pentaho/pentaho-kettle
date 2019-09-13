@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.plugins;
 
-import org.apache.commons.io.FileUtils;
 import org.pentaho.di.core.exception.KettleException;
 
 import java.io.File;
@@ -208,7 +207,7 @@ public interface PluginInterface {
     Properties pluginProps = new Properties();
     try {
       pluginProps.load( new FileInputStream( pluginPropsFile ) );
-    } catch( Exception e ) {
+    } catch ( Exception e ) {
       throw new KettleException( "Plugin's plugin.properties file could not be read.", e );
     }
     return pluginProps;
