@@ -25,6 +25,7 @@ package org.pentaho.di.core.database;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.BatchUpdateException;
@@ -120,7 +121,8 @@ import org.pentaho.di.repository.RepositoryDirectory;
  * @author Matt
  * @since 05-04-2003
  */
-public class Database implements VariableSpace, LoggingObjectInterface {
+@SuppressWarnings( "WeakerAccess" )
+public class Database implements VariableSpace, LoggingObjectInterface, Closeable {
   /**
    * for i18n purposes, needed by Translator2!!
    */
@@ -693,6 +695,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         log.logError( Const.getStackTracker( ignoredKde ) );
       }
     }
+  }
+
+  @Override public void close() {
+    disconnect();
   }
 
   /**
