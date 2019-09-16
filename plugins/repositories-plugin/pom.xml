@@ -1,37 +1,31 @@
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  
   <parent>
     <groupId>pentaho-kettle</groupId>
     <artifactId>plugins</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.28-223</version>
   </parent>
-  
   <groupId>org.pentaho</groupId>
   <artifactId>repositories-plugin-modules</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.1.0.28-223</version>
   <packaging>pom</packaging>
-  
   <name>Repositories Plugin: ${project.artifactId}</name>
   <description>Repositories Plugin</description>
-  
   <modules>
     <module>repositories-plugin-core</module>
     <module>assembly</module>
   </modules>
-  
   <properties>
-    <dependency.karaf.version>3.0.3</dependency.karaf.version>
-    <dependency.angular.version>1.5.6</dependency.angular.version>
-    <dependency.jquery.version>2.2.1</dependency.jquery.version>
     <dependency.angular-route.version>${dependency.angular.version}</dependency.angular-route.version>
-    <dependency.angular-sanitize.version>${dependency.angular.version}</dependency.angular-sanitize.version>
-    <dependency.angular-animate.version>${dependency.angular.version}</dependency.angular-animate.version>
     <dependency.angular-translate.version>2.12.1</dependency.angular-translate.version>
+    <dependency.karaf.version>3.0.3</dependency.karaf.version>
+    <dependency.angular-sanitize.version>${dependency.angular.version}</dependency.angular-sanitize.version>
+    <dependency.jquery.version>2.2.1</dependency.jquery.version>
+    <dependency.angular.version>1.5.6</dependency.angular.version>
+    <dependency.angular-animate.version>${dependency.angular.version}</dependency.angular-animate.version>
   </properties>
-  
   <build>
     <pluginManagement>
       <plugins>
@@ -47,5 +41,4 @@
       </plugins>
     </pluginManagement>
   </build>
-  
 </project>
