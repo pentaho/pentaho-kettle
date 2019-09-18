@@ -581,14 +581,6 @@ jobGroups:
        versionProperty :  pentaho-karaf.version
 
   3900:
-     - jobID           :  big-data-plugin-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
-       directives      :  += -DskipDefault -P assemblies,pack -Deula-wrap
-       testable        :  false
-       archivable      :  true
-       atomicScmCheckout: true
-       versionProperty :  big-data-plugin.version
-
      - jobID           :  prd-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        directives      :  += -Pdesigner -Djavadoc -Dmaven.test.failure.ignore=true
