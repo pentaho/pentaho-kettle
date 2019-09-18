@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
@@ -70,7 +71,7 @@ public class MQTTProducerTest {
 
     StepPluginType.getInstance().handlePluginAnnotation(
       MQTTProducerMeta.class,
-      MQTTProducerMeta.class.getAnnotation( org.pentaho.di.core.annotations.Step.class ),
+      MQTTProducerMeta.class.getAnnotation( Step.class ),
       Collections.emptyList(), false, null );
     KettleEnvironment.init();
   }

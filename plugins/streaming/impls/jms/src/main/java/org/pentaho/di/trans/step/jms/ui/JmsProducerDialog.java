@@ -214,7 +214,7 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     wSetupComp.setLayout( setupLayout );
 
     jmsDialogSecurityLayout = new JmsDialogSecurityLayout(
-      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate, shell );
+      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate );
     jmsDialogSecurityLayout.buildSecurityTab();
 
     connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod, jmsDelegate, jmsDialogSecurityLayout );

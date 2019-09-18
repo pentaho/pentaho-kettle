@@ -74,8 +74,8 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC_IN_FIELD;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USERNAME;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USE_SSL;
-import static org.pentaho.di.trans.step.mqtt.MQTTProducerMeta.MQTT_SERVER_METAVERSE;
-import static org.pentaho.di.trans.step.mqtt.MQTTProducerMeta.MQTT_TOPIC_METAVERSE;
+import static org.pentaho.di.trans.step.mqtt.MQTTProducerMeta.MQTT_SERVER_METAVERSE; //NOSONAR
+import static org.pentaho.di.trans.step.mqtt.MQTTProducerMeta.MQTT_TOPIC_METAVERSE; //NOSONAR
 import static org.pentaho.dictionary.DictionaryConst.CATEGORY_DATASOURCE;
 import static org.pentaho.dictionary.DictionaryConst.CATEGORY_MESSAGE_QUEUE;
 import static org.pentaho.dictionary.DictionaryConst.LINK_CONTAINS_CONCEPT;

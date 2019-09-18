@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.W
  */
 public class WrappedWebsphereMQProvider implements JmsProvider {
 
+  @SuppressWarnings( { "squid:S4738", "Guava" } )  //using guava memoize, so no gain switching to java Supplier
   private Supplier<JmsProvider> prov = Suppliers.memoize( this::getProvider );
 
   private JmsProvider getProvider() {
