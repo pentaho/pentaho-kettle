@@ -71,7 +71,7 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     wSetupComp.setLayout( setupLayout );
 
     jmsDialogSecurityLayout = new JmsDialogSecurityLayout(
-      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate, shell );
+      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate );
     jmsDialogSecurityLayout.buildSecurityTab();
 
     connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod, jmsMeta.jmsDelegate,
@@ -106,8 +106,7 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
   }
 
   @Override protected void createAdditionalTabs() {
-    fieldsTab = new FieldsTab(
-      wTabFolder, props, transMeta, lsMod, jmsMeta.messageField, jmsMeta.destinationField, jmsMeta.messageId, jmsMeta.jmsTimestamp, jmsMeta.jmsRedelivered );
+    fieldsTab = new FieldsTab( wTabFolder, props, transMeta, lsMod, jmsMeta );
     fieldsTab.buildFieldsTab();
   }
 
