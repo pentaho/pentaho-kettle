@@ -220,10 +220,18 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/maven-project-archetypes-ee.git
        versionProperty :  archetypes.version
 
+     - jobID           :  big-data-hadoop-shims-common
+       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
+       directives      :  += -DskipDefault -P common 
+       archivable      :  false
+       versionProperty :  pentaho-hadoop-shims.version
+
+  1410:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       directives      :  += -DskipDefault -Deula-wrap -P api,shims,all
+       directives      :  += -DskipDefault -P all
        archivable      :  true
+       root            :  shims
        versionProperty :  pentaho-hadoop-shims.version
 
   1500:
