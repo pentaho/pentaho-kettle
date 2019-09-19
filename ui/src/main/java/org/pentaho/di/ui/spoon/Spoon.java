@@ -940,9 +940,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       /* menuBar = (XulMenubar) */
       MenuManager menuManager = getMenuBarManager();
       menuManager.createMenuBar( (Decorations) getShell() );
-      shell.setMenuBar( menuManager.getMenu() );
 
-      mainSpoonContainer.getDocumentRoot().getElementById( "spoon-menubar" );
+      XulComponent menuBar = mainSpoonContainer.getDocumentRoot().getElementById( "spoon-menubar" );
+      if ( !StringUtils.equalsIgnoreCase( menuBar.getAttributeValue( "disabled" ), "true" ) ) {
+        shell.setMenuBar( menuManager.getMenu() );
+      }
+
       mainToolbar = (XulToolbar) mainSpoonContainer.getDocumentRoot().getElementById( "main-toolbar" );
       props.setLook( (Control) mainToolbar.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
 
