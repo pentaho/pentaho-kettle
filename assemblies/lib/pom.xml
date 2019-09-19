@@ -19,6 +19,7 @@
     <rxjava.version>2.2.3</rxjava.version>
 
     <pentaho-json.version>9.0.0.0-SNAPSHOT</pentaho-json.version>
+    <pentaho-hadoop-shims-common-mapreduce.version>9.0.0.0-SNAPSHOT</pentaho-hadoop-shims-common-mapreduce.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
     <pdi-osgi-bridge.version>9.0.0.0-SNAPSHOT</pdi-osgi-bridge.version>
     <commons-database.version>9.0.0.0-SNAPSHOT</commons-database.version>
@@ -26,7 +27,6 @@
     <pentaho-metaverse.version>9.0.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>9.0.0.0-SNAPSHOT</platform.version>
     <pentaho-reporting.version>9.0.0.0-SNAPSHOT</pentaho-reporting.version>
-    <pentaho-hadoop-shims-api.version>9.0.0.0-SNAPSHOT</pentaho-hadoop-shims-api.version>
 
     <!-- third party -->
     <derbyclient.version>10.2.1.6</derbyclient.version>
@@ -64,11 +64,6 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>pentaho-hadoop-shims-api</artifactId>
-      <version>${pentaho-hadoop-shims-api.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -256,7 +251,7 @@
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-hadoop-shims-common-mapreduce</artifactId>
-      <version>${pentaho-hadoop-shims-api.version}</version>
+      <version>${pentaho-hadoop-shims-common-mapreduce.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
