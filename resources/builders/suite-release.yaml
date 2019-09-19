@@ -217,7 +217,7 @@ jobGroups:
        
      - jobID           :  big-data-hadoop-shims-api
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       directives      :  += -DskipDefault -P api
+       directives      :  += -DskipDefault -P shim-api
        versionProperty :  pentaho-hadoop-shims.version
 
   1400:
