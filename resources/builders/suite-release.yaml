@@ -519,6 +519,11 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-det.git
        directives      :  += -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-det.version
+       
+     - jobID           :  big-data-plugin-features
+       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+       directives      :  += -DskipDefault -P assembly -DfeaturesOnly
+       versionProperty :  big-data-plugin.version
 
   3600:
      - jobID           :  data-exploration-ee
@@ -587,7 +592,7 @@ jobGroups:
        
      - jobID           :  big-data-plugin-assembly
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       directives      :  += -DskipDefault -P assembly
+       directives      :  += -DskipDefault -P assembly -DassemblyOnly
        archivable      :  true
        versionProperty :  big-data-plugin.version
 
