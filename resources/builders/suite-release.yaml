@@ -214,19 +214,29 @@ jobGroups:
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-plugin.git
        versionProperty :  pdi-dataservice-client-plugin.version
+       
+     - jobID           :  big-data-hadoop-shims-api
+       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
+       directives      :  += -DskipDefault -P api
+       versionProperty :  pentaho-hadoop-shims.version
 
   1400:
      - jobID           :  archetypes-ee
        scmUrl          :  https://github.com/pentaho/maven-project-archetypes-ee.git
        versionProperty :  archetypes.version
-
-     - jobID           :  big-data-hadoop-shims-common
-       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       directives      :  += -DskipDefault -P common 
-       archivable      :  false
-       versionProperty :  pentaho-hadoop-shims.version
+       
+     - jobID           :  big-data-plugin-lowdeps
+       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+       directives      :  += -DskipDefault -P lowdeps
+       versionProperty :  big-data-plugin.version
 
   1410:
+     - jobID           :  big-data-hadoop-shims-common
+       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
+       directives      :  += -DskipDefault -P common
+       versionProperty :  pentaho-hadoop-shims.version
+       
+  1420:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        directives      :  += -DskipDefault -P all
@@ -413,9 +423,10 @@ jobGroups:
        #parallelize     :  true
        versionProperty :  platform.version
 
-     - jobID           :  big-data-plugin-features
+     - jobID           :  big-data-plugin-highdeps
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       directives      :  += -DfeaturesOnly
+       directives      :  += -DskipDefault -P highdeps
+       archivable      :  true
        versionProperty :  big-data-plugin.version
 
      - jobID           :  pdi-data-refinery-plugin
@@ -540,13 +551,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining-ee.git
        directives      :  += -Djavadoc
        versionProperty :  pentaho-data-mining.version
-
-     - jobID           :  big-data-plugin-assembly
-       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       root            :  assemblies
-       testable        :  false
-       archivable      :  true
-       versionProperty :  big-data-plugin.version
 
      - jobID           :  pir-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-interactive-reporting.git
