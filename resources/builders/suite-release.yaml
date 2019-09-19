@@ -522,7 +522,8 @@ jobGroups:
        
      - jobID           :  big-data-plugin-features
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       directives      :  += -DskipDefault -P assembly -DfeaturesOnly
+       directives      :  += -DskipDefault -DfeaturesOnly
+       root            :  assemblies
        versionProperty :  big-data-plugin.version
 
   3600:
@@ -592,8 +593,9 @@ jobGroups:
        
      - jobID           :  big-data-plugin-assembly
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       directives      :  += -DskipDefault -P assembly -DassemblyOnly
+       directives      :  += -DskipDefault -DassemblyOnly
        archivable      :  true
+       root            :  assemblies
        versionProperty :  big-data-plugin.version
 
   3800:
