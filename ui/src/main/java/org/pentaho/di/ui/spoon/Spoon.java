@@ -948,6 +948,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       mainToolbar = (XulToolbar) mainSpoonContainer.getDocumentRoot().getElementById( "main-toolbar" );
       props.setLook( (Control) mainToolbar.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
+      if ( StringUtils.equalsIgnoreCase( mainToolbar.getAttributeValue( "disabled" ), "true" ) ) {
+        setMainToolbarVisible( false );
+      }
 
       /* canvas = (XulVbox) */
       mainSpoonContainer.getDocumentRoot().getElementById( "trans-job-canvas" );
