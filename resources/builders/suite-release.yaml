@@ -426,7 +426,6 @@ jobGroups:
      - jobID           :  big-data-plugin-highdeps
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -P highdeps
-       archivable      :  true
        versionProperty :  big-data-plugin.version
 
      - jobID           :  pdi-data-refinery-plugin
@@ -585,6 +584,12 @@ jobGroups:
        directives      :  += -Deula-wrap
        archivable      :  true
        versionProperty :  pdi-sap-hana-bulk-loader-plugin.version
+       
+     - jobID           :  big-data-plugin-assembly
+       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+       directives      :  += -DskipDefault -P assembly
+       archivable      :  true
+       versionProperty :  big-data-plugin.version
 
   3800:
      - jobID           :  karaf-assembly-ee
