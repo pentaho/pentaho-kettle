@@ -43,16 +43,11 @@ ee:
         - pentaho-workernodes-${platform.version}.zip
         - pentaho-workernodes-${platform.version}.tar.gz
     shims:
-        - pentaho-big-data-ee-cdh513-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-big-data-ee-cdh514-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-big-data-ee-cdh61-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-big-data-ee-emr511-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-big-data-ee-emr521-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-big-data-ee-hdp25-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-big-data-ee-hdp26-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-big-data-ee-hdp30-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-big-data-ee-mapr520-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-big-data-ee-mapr60-package-${pentaho-hadoop-shims.version}.zip
     upgrade:
         - pentaho-upgrade-utility-${platform.version}-ba.zip
         - pentaho-upgrade-utility-${platform.version}-pdi.zip
@@ -73,17 +68,11 @@ ce:
         - pentaho-server-ce-${platform.version}.zip
         - pentaho-server-manual-ce-${platform.version}.zip
     shims:
-        - pentaho-hadoop-shims-cdh513-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-hadoop-shims-cdh514-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-hadoop-shims-cdh61-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-hadoop-shims-emr511-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-hadoop-shims-emr521-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-hadoop-shims-hdi35-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-hadoop-shims-hdp25-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-hadoop-shims-hdp26-package-${pentaho-hadoop-shims.version}.zip
         - pentaho-hadoop-shims-hdp30-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-hadoop-shims-mapr520-package-${pentaho-hadoop-shims.version}.zip
-        - pentaho-hadoop-shims-mapr60-package-${pentaho-hadoop-shims.version}.zip
     other:
         - pre-classic-sdk-${platform.version}.zip
 
