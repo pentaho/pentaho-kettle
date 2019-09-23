@@ -143,6 +143,10 @@ jobGroups:
 
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-plugin.git
+       
+     - jobID           :  big-data-hadoop-shims-api
+       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
+       directives      :  += -DskipDefault -P shim-api
 
   1400:
      - jobID           :  archetypes-ee
@@ -154,12 +158,17 @@ jobGroups:
        archivable      :  false
 
   1410:
+     - jobID           :  big-data-hadoop-shims-common
+       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
+       directives      :  += -DskipDefault -P common
+       
+  1420:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        directives      :  += -DskipDefault -P all
        archivable      :  true
        root            :  shims
-
+       
   1500:
      - jobID           :  big-data-splunk-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
@@ -303,9 +312,9 @@ jobGroups:
        directives      :  += -DskipDefault -P platform-user-console
        #parallelize     :  true
 
-     - jobID           :  big-data-plugin-features
+     - jobID           :  big-data-plugin-highdeps
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       directives      :  += -DfeaturesOnly
+       directives      :  += -DskipDefault -P highdeps
 
      - jobID           :  pdi-data-refinery-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-data-refinery.git
@@ -332,22 +341,14 @@ jobGroups:
        #parallelize     :  true
 
   3000:
-     - jobID           :  big-data-hadoop-shims-ee-api
+     - jobID           :  big-data-hadoop-shims-ee
        scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
-       directives      :  += -DskipDefault -P base
+       directives      :  += -DskipDefault -P base,all
+       archivable      :  true
        atomicScmCheckout: true
 
      - jobID           :  cda-plugin
        scmUrl          :  https://github.com/webdetails/cda.git
-
-  3010:
-     - jobID            :  big-data-hadoop-shims-ee
-       scmUrl           :  https://github.com/pentaho/pentaho-big-data-ee.git
-       directives       :  += -DskipDefault -P all
-       root             :  shims
-       #parallelize     :  true
-       archivable       :  true
-       atomicScmCheckout:  true
 
   3100:
      - jobID           :  jdbc-distribution-utility
@@ -385,6 +386,11 @@ jobGroups:
 
      - jobID           :  data-exploration
        scmUrl          :  https://github.com/pentaho/pentaho-det.git
+       
+     - jobID           :  big-data-plugin-features
+       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+       directives      :  += -DskipDefault -DfeaturesOnly
+       root            :  assemblies
 
   3600:
      - jobID           :  data-exploration-ee
@@ -407,12 +413,6 @@ jobGroups:
   3700:
      - jobID           :  pdi-weka-plugins-ee
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining-ee.git
-
-     - jobID           :  big-data-plugin-assembly
-       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       root            :  assemblies
-       testable        :  false
-       archivable      :  true
 
      - jobID           :  pir-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-interactive-reporting.git
@@ -438,6 +438,12 @@ jobGroups:
      - jobID           :  pdi-sap-hana-bulk-loader-plugin
        scmUrl          :  https://github.com/pentaho/pdi-sap-hana-bulk-loader-plugin.git
        archivable      :  true
+       
+     - jobID           :  big-data-plugin-assembly
+       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+       directives      :  += -DskipDefault -DassemblyOnly
+       archivable      :  true
+       root            :  assemblies
 
   3800:
      - jobID           :  karaf-assembly-ee
