@@ -28,6 +28,8 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Currently hard coded because we cannot simply include the bundles as they are designed today.  They have a dependency
@@ -38,10 +40,10 @@ import java.util.Map;
 public class SparkTunableProperties {
   private static final Map<String, List<String>> stepMap = ImmutableMap.<String, List<String>>builder()
     .put( "ParquetInput", dataFrameWriterTunable() )
-    .put( "ParquetOutput", dataFrameWriterTunable() )
-    .put( "AvroOutput", dataFrameWriterTunable() )
+    .put( "ParquetOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
+    .put( "AvroOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
     .put( "AvroInputNew", dataFrameWriterTunable() )
-    .put( "OrcOutput", dataFrameWriterTunable() )
+    .put( "OrcOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
     .put( "OrcInput", dataFrameWriterTunable() )
 
     .put( "Dummy", datasetTunable() )
@@ -50,16 +52,16 @@ public class SparkTunableProperties {
     // Reminder to add the other steps tunable options
     //    .put( "TextFileInput", datasetTunable()
     //    .put( "HadoopFileInputPlugin", datasetTunable()
-    //    .put( "TextFileOutput", datasetTunable()
-    //    .put( "HadoopFileOutputPlugin", datasetTunable()
-    //    .put( "FilterRows", datasetTunable()
-    //    .put( "StreamLookup", datasetTunable()
-    //    .put( "SortRows", datasetTunable()
-    //    .put( "GroupBy", datasetTunable()
-    //    .put( "MemoryGroupBy", datasetTunable()
+    .put( "TextFileOutput", datasetTunable() )
+    .put( "HadoopFileOutputPlugin", datasetTunable() )
+    .put( "FilterRows", datasetTunable() )
+    .put( "StreamLookup", datasetTunable() )
+    .put( "SortRows", datasetTunable() )
+    .put( "GroupBy", datasetTunable() )
+    .put( "MemoryGroupBy", datasetTunable() )
     //    .put( "Unique", datasetTunable()
     //    .put( "UniqueRowsByHashSet", datasetTunable()
-    //    .put( "MergeJoin", datasetTunable()
+    .put( "MergeJoin", datasetTunable() )
     //    .put( "RecordsFromStream", datasetTunable()
     //    .put( "KafkaConsumerInput", datasetTunable()
     //    .put( "KinesisConsumer", datasetTunable()
@@ -75,9 +77,9 @@ public class SparkTunableProperties {
     //    .put( "MappingOutput", datasetTunable() );
     //    .put( "Mapping", datasetTunable() );
     //    .put( "TableOutput", datasetTunable() );
-    //    .put( "SwitchCase", datasetTunable() );
-    //    .put( "MergeRows", datasetTunable() );
-    //    .put( "JoinRows", datasetTunable() );
+    .put( "SwitchCase", datasetTunable() )
+    .put( "MergeRows", datasetTunable() )
+    .put( "JoinRows", datasetTunable() )
     //    .put( "JavaFilter", datasetTunable() );
 
     // Step List Pulled from pdi-spark-engine-operations-ee beans.xml
@@ -123,6 +125,10 @@ public class SparkTunableProperties {
       "jdbc.upperBound",
       "jdbc.numPartitions"
     );
+  }
+
+  private static List<String> multiTunable( List<String> ... tunables ) {
+    return Stream.of( tunables ).flatMap( List::stream ).collect( Collectors.toList() );
   }
 
   private SparkTunableProperties() {
