@@ -80,12 +80,6 @@
     <mstor.version>0.9.13</mstor.version>
     <snappy-java.version>1.1.0</snappy-java.version>
     <commons-cli.version>1.2</commons-cli.version>
-    <jetty-plus.version>8.1.15.v20140411</jetty-plus.version>
-    <jetty-server.version>8.1.15.v20140411</jetty-server.version>
-    <jetty-security.version>8.1.15.v20140411</jetty-security.version>
-    <jetty-servlet.version>8.1.15.v20140411</jetty-servlet.version>
-    <jetty-xml.version>8.1.15.v20140411</jetty-xml.version>
-    <jetty-webapp.version>8.1.15.v20140411</jetty-webapp.version>
     <log4jdbc.version>1.2</log4jdbc.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <oro.version>2.0.8</oro.version>
@@ -761,7 +755,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
-      <version>${jetty-plus.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -772,7 +765,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>${jetty-server.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.jetty.orbit</groupId>
@@ -783,7 +775,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-security</artifactId>
-      <version>${jetty-security.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -794,7 +785,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
-      <version>${jetty-servlet.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -805,7 +795,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-xml</artifactId>
-      <version>${jetty-xml.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -816,7 +805,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
-      <version>${jetty-webapp.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
