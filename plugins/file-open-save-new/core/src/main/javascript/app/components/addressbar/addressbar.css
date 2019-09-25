@@ -62,6 +62,7 @@ addressbar input.backHistory[disabled] {
 }
 
 addressbar .breadcrumb {
+  padding-left: 10px;
   position: relative;
 }
 
@@ -122,7 +123,7 @@ addressbar .breadcrumb ul.parts>li:last-child {
 }
 
 addressbar .breadcrumb ul.parts {
-  padding: 0px 10px 0 10px;
+  padding: 0 10px 0 0;
 }
 
 addressbar .breadcrumb ul.parts>li {
@@ -133,33 +134,32 @@ addressbar .breadcrumb ul.parts>li {
   padding-right: 20px;
 }
 
-addressbar .breadcrumb ul.parts .repository {
-  background: url("../../img/chevron_right_tree.svg"),
-  url("../../img/repository.svg");
-  background-repeat: no-repeat,
-  no-repeat;
-  background-position: right center,
+addressbar .breadcrumb .arrow {
+  background: url("../../img/chevron_right_tree.svg");
+  background-repeat: no-repeat;
+  background-position: right center;
+  width: 18px;
+}
+
+addressbar .breadcrumb .repository {
+  background: url("../../img/repository.svg");
+  background-repeat: no-repeat;
+  background-position: left center,
   left center;
   width: 22px;
 }
 
-addressbar .breadcrumb ul.parts .local {
-  background: url("../../img/chevron_right_tree.svg"),
-  url("../../img/local.svg");
-  background-repeat: no-repeat,
-  no-repeat;
-  background-position: right center,
-  left center;
+addressbar .breadcrumb .local {
+  background: url("../../img/local.svg");
+  background-repeat: no-repeat;
+  background-position: left center;
   width: 15px;
 }
 
-addressbar .breadcrumb ul.parts .vfs {
-  background: url("../../img/chevron_right_tree.svg"),
-    url("../../img/vfs.svg");
-  background-repeat: no-repeat,
-    no-repeat;
-  background-position: right center,
-    left center;
+addressbar .breadcrumb .vfs {
+  background: url("../../img/vfs.svg");
+  background-repeat: no-repeat;
+  background-position: left center;
   width: 20px;
 }
 

@@ -43,7 +43,7 @@ define([
   "./services/search.service",
   "./services/file.service",
   "./services/folder.service",
-  "./services/services.service",
+  "./services/provider.service",
   "./services/clipboard.service",
   "./services/modal.service",
   "./shared/shared.module",

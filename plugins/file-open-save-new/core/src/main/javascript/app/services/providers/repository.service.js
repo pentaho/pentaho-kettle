@@ -50,6 +50,7 @@ define(
         return {
           provider: "repository",
           order: 1,
+          root: "Pentaho Repository",
           matchPath: matchPath,
           selectFolder: selectFolder,
           getTreePath: getTreePath,
@@ -93,13 +94,14 @@ define(
         }
 
         function resolvePath(path, properties) {
+
           return $q(function (resolve, reject) {
-            resolve("Pentaho Repository" + path);
+            resolve(this.root + path);
           });
         }
 
         function matchPath(path) {
-          return path && path.indexOf("/") === 0;
+          return (path && path.indexOf("/") === 0) ? 1 : 0;
         }
 
         function selectFolder(folder, filters, useCache) {

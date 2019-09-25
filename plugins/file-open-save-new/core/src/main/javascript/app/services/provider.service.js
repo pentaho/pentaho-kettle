@@ -60,13 +60,29 @@ define(
           getByPath: getByPath
         };
 
-        function getByPath(path) {
+        function getByPath(path, tree) {
+          var currentValue = -1;
+          var currentService = null;
           for (var i = 0; i < services.length; i++) {
-            if (services[i].matchPath(path)) {
-              return services[i];
+            var matchValue = services[i].matchPath(path);
+            if (matchValue > 0 && matchValue > currentValue && (tree && _inTree(services[i].root, tree))) {
+              currentService = services[i];
+              currentValue = matchValue;
+            } else if (matchValue > 0 && matchValue > currentValue && !tree) {
+              currentService = services[i];
+              currentValue = matchValue;
             }
           }
-          return null;
+          return currentService;
+        }
+
+        function _inTree(root, tree) {
+          for (var i = 0; i < tree.length; i++) {
+            if (tree[i].name === root) {
+              return true;
+            }
+          }
+          return false;
         }
 
         function get(name) {
