@@ -55,7 +55,6 @@
   <properties>
     <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
     <target.jdk.version>1.8</target.jdk.version>
-    <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
     <junit.version>4.12</junit.version>
     <guava.version>17.0</guava.version>
     <mockito-all.version>1.9.5</mockito-all.version>
@@ -103,7 +102,6 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>${maven-bundle-plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
