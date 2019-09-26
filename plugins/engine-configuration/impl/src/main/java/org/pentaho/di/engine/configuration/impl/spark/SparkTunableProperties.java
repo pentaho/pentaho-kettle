@@ -62,32 +62,26 @@ public class SparkTunableProperties {
     //    .put( "Unique", datasetTunable()
     //    .put( "UniqueRowsByHashSet", datasetTunable()
     .put( "MergeJoin", datasetTunable() )
-    //    .put( "RecordsFromStream", datasetTunable()
-    //    .put( "KafkaConsumerInput", datasetTunable()
-    //    .put( "KinesisConsumer", datasetTunable()
-    //    .put( "MQTTConsumer", datasetTunable()
-    //    .put( "Abort", datasetTunable()
-    //    .put( "TransExecutor", datasetTunable()
-    //    .put( "RowsFromResult", datasetTunable()
-    //    .put( "RowsToResult", datasetTunable() );
-    //    .put( "WriteToLog", datasetTunable() );
-    //    .put( "MetaInject", datasetTunable() );
-    //    .put( "SimpleMapping", datasetTunable() );
-    //    .put( "MappingInput", datasetTunable() );
-    //    .put( "MappingOutput", datasetTunable() );
-    //    .put( "Mapping", datasetTunable() );
-    //    .put( "TableOutput", datasetTunable() );
+    .put( "RecordsFromStream", datasetTunable() )
+    .put( "Abort", datasetTunable() )
+    .put( "TransExecutor", datasetTunable() )
+    .put( "RowsFromResult", datasetTunable() )
+    .put( "RowsToResult", datasetTunable() )
+    .put( "WriteToLog", datasetTunable() )
+    .put( "MetaInject", datasetTunable() )
+    .put( "SimpleMapping", datasetTunable() )
+    .put( "MappingInput", datasetTunable() )
+    .put( "MappingOutput", datasetTunable() )
+    .put( "Mapping", datasetTunable() )
+    .put( "TableOutput", datasetTunable() )
     .put( "SwitchCase", datasetTunable() )
     .put( "MergeRows", datasetTunable() )
     .put( "JoinRows", datasetTunable() )
-    //    .put( "JavaFilter", datasetTunable() );
-
-    // Step List Pulled from pdi-spark-engine-operations-ee beans.xml
-    //    .put( "AmqpConsumer", datasetTunable()
+    .put( "JavaFilter", datasetTunable() )
 
     // Step List Pulled from pdi-spark-hbase-ee beans.xml
-    //    .put( "HBaseInput", datasetTunable()
-    //    .put( "HBaseOutput", datasetTunable()
+    .put( "HBaseInput", datasetTunable() )
+    .put( "HBaseOutput", datasetTunable() )
     .build();
 
   /**
