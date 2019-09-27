@@ -40,6 +40,15 @@ public class SparkTunablePropertiesTest {
   }
 
   @Test
+  public void testJoinTunable() {
+    assertTrue( SparkTunableProperties.getProperties( "MergeJoin" ).contains( "join.broadcast.stepName" ) );
+    assertTrue( SparkTunableProperties.getProperties( "JoinRows" ).contains( "join.broadcast.stepName" ) );
+    assertTrue( SparkTunableProperties.getProperties( "MergeRows" ).contains( "join.broadcast.stepName" ) );
+    assertFalse( SparkTunableProperties.getProperties( "badID" ).contains( "join.broadcast.stepName" ) );
+
+  }
+
+  @Test
   public void testJdbcTunable() {
     List<String> properties = SparkTunableProperties.getProperties( "TableInput" );
     assertTrue( properties.contains( "jdbc.columnName" ) );
