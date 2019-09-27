@@ -103,18 +103,12 @@ define([
      *
      * @param {Object} folder - folder object
      */
-    function openFolder(folder, callback) {
+    function openFolder(folder) {
       folder.open = !folder.open;
-      vm.onOpen({openFolder: folder}).then(function () {
-        _setWidth();
-      });
-    }
-
-    function _setFolder(folder) {
-      vm.width = 0;
-      folder.open = folder.open !== true;
-      if (folder.open === false) {
-        folder.loading = false;
+      if (folder.open) {
+        vm.onOpen({openFolder: folder}).then(function () {
+          _setWidth();
+        });
       }
     }
 

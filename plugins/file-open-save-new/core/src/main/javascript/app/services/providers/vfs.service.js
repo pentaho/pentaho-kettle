@@ -51,6 +51,7 @@ define(
         return {
           provider: "vfs",
           order: 0,
+          root: "VFS Connections",
           matchPath: matchPath,
           selectFolder: selectFolder,
           getBreadcrumbPath: getBreadcrumbPath,
@@ -69,9 +70,9 @@ define(
         function resolvePath(path, properties) {
           return $q(function (resolve, reject) {
             if (path.indexOf("pvfs://") === 0) {
-              resolve("VFS Connections/" + path.replace("pvfs://", ''));
+              resolve(this.root + "/" + path.replace("pvfs://", ''));
             } else if (properties && properties.connection) {
-              resolve("VFS Connections/" + properties.connection + "/" + path.replace(/^[\w]+:\/\//, ''));
+              resolve(this.root + "/" + properties.connection + "/" + path.replace(/^[\w]+:\/\//, ''));
             } else {
               reject(path);
             }
@@ -83,7 +84,7 @@ define(
         }
 
         function matchPath(path) {
-          return path && path.match(/^[\w]+:\/\//) != null;
+          return (path && path.match(/^[\w]+:\/\//) != null) ? .5 : 0;
         }
 
         function selectFolder(folder, filters, useCache) {

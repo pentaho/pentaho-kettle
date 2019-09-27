@@ -24,14 +24,14 @@
  */
 define(
     [
-      "./services.service",
+      "./provider.service",
       "./file.service",
       "../components/utils"
     ],
-    function (servicesService, fileService, utils) {
+    function (providerService, fileService, utils) {
       "use strict";
 
-      var factoryArray = [servicesService.name, fileService.name, "$q", factory];
+      var factoryArray = [providerService.name, fileService.name, "$q", factory];
       var module = {
         name: "folderService",
         factory: factoryArray
@@ -44,15 +44,13 @@ define(
        *
        * @return {Object} The fileService api
        */
-      function factory(ss, fileService, $q) {
+      function factory(providerService, fileService, $q) {
         return {
           folder: null,
-          getPath: getPath,
+          tree: null,
           selectFolder: selectFolder,
-          openFolder: openFolder,
           selectFolderByPath: selectFolderByPath,
           findFolderByPath: findFolderByPath,
-          getFilesByPath: getFilesByPath,
           getBreadcrumbPath: getBreadcrumbPath,
           deleteFolder: deleteFolder,
           addFolder: addFolder,
@@ -60,153 +58,18 @@ define(
           resolvePath: resolvePath,
           upDirectory: upDirectory,
           openPath: openPath,
-          refreshFolder: refreshFolder
+          refreshFolder: refreshFolder,
+          loadFile: loadFile
         };
 
-        function refreshFolder(tree) {
-          var self = this;
-          return $q(function(resolve, reject) {
-            if (self.folder) {
-              self.folder.loaded = false;
-              if (self.folder.provider) {
-                self.selectFolder(self.folder, undefined, false).then(resolve);
-              } else {
-                self.openPath(tree, self.folder.path, {useCache: false}).then(resolve);
-              }
-            }
-          });
-        }
-
-        // TODO: rename so that it's clear this is a file path not a tree path
-        function openPath(tree, path, props) {
-          var self = this;
-          return $q(function(resolve, reject) {
-            path = utils.cleanPath(path);
-            self.resolvePath(path, props).then(function (path) {
-              self.selectFolderByPath(tree, path).then(function() {
-                resolve();
-              });
-            }).catch(function (path) {
-              self.folder = {path: path};
-              fileService.get({
-                path: path
-              }).then(function (file) {
-                var filename = null;
-                if (file.type === "file") {
-                  filename = utils.getFilename(path);
-                  path = utils.getParentPath(path);
-                }
-                self.folder = {path: path};
-                var useCache = props ? props.useCache : false;
-                self.getFilesByPath(path, useCache).then(function (files) {
-                  self.folder.loaded = true;
-                  self.folder.children = files.data;
-                  self.fileLoading = false;
-                  fileService.files = [];
-                  _selectFile(filename);
-                  resolve();
-                });
-              });
-            });
-          });
-        }
-
-        function _selectFile(filename) {
-          if (filename && self.folder) {
-            for (var i = 0; i < self.folder.children.length; i++) {
-              if (filename === self.folder.children[i].name) {
-                fileService.files = [self.folder.children[i]];
-              }
-            }
-          }
-        }
-
-        // Select folder by path in the tree
-        function selectFolderByPath(tree, path, props) {
-          var self = this;
-          return $q(function(resolve, reject) {
-            self.findFolderByPath(tree, path, props).then(function (selectedFile) {
-              fileService.files = [];
-              if (selectedFile.type === "file") {
-                self.selectFolderByPath(tree, path.substr(0, path.lastIndexOf("/"))).then(function() {
-                  fileService.files = [selectedFile];
-                  resolve();
-                });
-              } else {
-                self.selectFolder(selectedFile).then(resolve);
-              }
-            });
-          });
-        }
-
-        function upDirectory(tree) {
-          if (!this.folder) {
-            return;
-          }
-          var path = this.getPath(this.folder);
-          path = utils.getParentPath(path);
-          fileService.files = [];
-          var self = this;
-          return $q(function(resolve, reject) {
-            if (self.folder.root) {
-              self.selectFolderByPath(tree, path).then(resolve);
-            } else {
-              self.openPath(tree, path).then(resolve);
-            }
-          });
-        }
-
-        function resolvePath(path, properties) {
-          var service;
-          if (properties && properties.provider) {
-            service = ss.get(properties.provider);
-          } else {
-            service = ss.getByPath(path);
-          }
-          if (service) {
-            return service.resolvePath(path, properties);
-          }
-          return null;
-        }
-
-        function getPath(folder) {
-          var service = folder.provider ? ss.get(folder.provider) : null;
-          if (!service) {
-            service = ss.getByPath(folder.path);
-          }
-          return service.getPath(folder);
-        }
-
-        function getBreadcrumbPath(file) {
-          var service = file.provider ? ss.get(file.provider) : null;
-          if (!service) {
-            service = ss.getByPath(file.path);
-          }
-          if (!service) {
-            return {
-              prefix: null,
-              fileType: "folder",
-              uri: file.name,
-              path: file.name
-            };
-          }
-
-          return service.getBreadcrumbPath(file);
-        }
-
-        function getFilesByPath(path, useCache) {
-          var service = ss.getByPath(path);
-          return $q(function(resolve, reject) {
-            service.getFilesByPath(path, useCache).then(function (files) {
-              resolve(files);
-            });
-          });
-        }
-
-        function openFolder(folder) {
-          return this.selectFolder(folder);
-        }
-
+        /**
+         * Select a folder by object
+         *
+         * @param folder
+         * @param filters
+         * @param useCache
+         * @returns {*}
+         */
         function selectFolder(folder, filters, useCache) {
           var self = this;
           return $q(function(resolve, reject) {
@@ -227,6 +90,247 @@ define(
         }
 
         /**
+         * Select a folder by the path in the tree
+         *
+         * @param tree
+         * @param path
+         * @param props
+         * @returns {*}
+         */
+        function selectFolderByPath(path, props) {
+          var self = this;
+          return $q(function(resolve, reject) {
+            self.findFolderByPath(path, props).then(function (selectedFile) {
+              fileService.files = [];
+              if (selectedFile.type === "file") {
+                self.selectFolderByPath(path.substr(0, path.lastIndexOf("/"))).then(function() {
+                  fileService.files = [selectedFile];
+                  resolve();
+                });
+              } else {
+                self.selectFolder(selectedFile).then(resolve);
+              }
+            });
+          });
+        }
+
+        /**
+         * Reload the tree from the source
+         *
+         * @param tree
+         * @returns {*}
+         */
+        function refreshFolder() {
+          var self = this;
+          return $q(function(resolve, reject) {
+            if (self.folder) {
+              self.folder.loaded = false;
+              if (self.folder.provider) {
+                self.selectFolder(self.folder, undefined, false).then(resolve);
+              } else {
+                self.openPath(self.folder.path, {useCache: false}).then(resolve);
+              }
+            }
+          });
+        }
+
+        /**
+         * Load a file based on a file path and not a tree path
+         *
+         * @param tree
+         * @param path
+         * @param props
+         * @returns {*}
+         */
+        function openPath(path, props) {
+          var self = this;
+          return $q(function(resolve, reject) {
+            path = utils.cleanPath(path);
+            var serviceResolve = self.resolvePath(path, props);
+            if (serviceResolve !== null) {
+              serviceResolve.then(function (path) {
+                self.selectFolderByPath(path).then(function() {
+                  resolve();
+                });
+              }).catch(function (path) {
+                self.loadFile(path, props, resolve);
+              });
+            } else {
+              reject();
+            }
+          });
+        }
+
+        /**
+         * Load a file by its path and select it
+         *
+         * @param path
+         * @param props
+         * @param resolve
+         */
+        function loadFile(path, props, resolve) {
+          var self = this;
+          self.folder = {path: path};
+          fileService.get({ path: path }).then(function (file) {
+            var filename = null;
+            if (file.type === "file") {
+              filename = utils.getFilename(path);
+              path = utils.getParentPath(path);
+            }
+            self.folder = {path: path};
+            var useCache = props ? props.useCache : false;
+            _getFilesByPath(path, useCache).then(function (files) {
+              self.folder.loaded = true;
+              self.folder.children = files.data;
+              self.fileLoading = false;
+              fileService.files = [];
+              _selectFile(filename, self);
+              resolve();
+            });
+          });
+        }
+
+        /**
+         * Select a file by the filename
+         *
+         * @param filename
+         * @param self
+         * @private
+         */
+        function _selectFile(filename, self) {
+          if (filename && self.folder) {
+            for (var i = 0; i < self.folder.children.length; i++) {
+              if (filename === self.folder.children[i].name) {
+                fileService.files = [self.folder.children[i]];
+              }
+            }
+          }
+        }
+
+        /**
+         * Find a folder object by the tree path
+         *
+         * @param tree
+         * @param path
+         * @returns {*}
+         */
+        function findFolderByPath(path) {
+          var self = this;
+          return $q(function(resolve, reject) {
+            var parts = path.split("/");
+            var root = _findRoot(self.tree, parts.shift());
+            if (parts.length === 0) {
+              resolve(root);
+              return;
+            }
+            root.open = true;
+            _findFolder(root, parts).then(function(folder) {
+              resolve(folder);
+            });
+          });
+        }
+
+        /**
+         * Delete a folder by object
+         *
+         * @param tree
+         * @param folder
+         * @returns {*}
+         */
+        function deleteFolder(folder) {
+          var self = this;
+          return $q(function(resolve, reject) {
+            var parentFolder = self.findFolderByPath(folder, _getParent(folder.path)).then(function(parent) {
+              providerService.get(folder.provider).deleteFiles([folder]).then(function(response) {
+                var index = parent.children.indexOf(folder);
+                parent.children.splice(index, 1);
+                resolve(parent);
+              }, function(response) {
+                reject(response);
+              });
+            });
+          });
+        }
+
+        /**
+         * Navigate up one directory in the tree
+         *
+         * @param tree
+         * @returns {*}
+         */
+        function upDirectory() {
+          if (!this.folder) {
+            return;
+          }
+          var path = getPath(this.folder);
+          path = utils.getParentPath(path);
+          fileService.files = [];
+          var self = this;
+          return $q(function(resolve, reject) {
+            if (self.folder.root) {
+              self.selectFolderByPath(path).then(resolve);
+            } else {
+              self.openPath(path).then(resolve);
+            }
+          });
+        }
+
+        function resolvePath(path, properties) {
+          var service;
+          if (properties && properties.provider) {
+            service = providerService.get(properties.provider);
+          } else {
+            service = providerService.getByPath(path, this.tree);
+          }
+          if (service) {
+            return service.resolvePath(path, properties);
+          }
+          return null;
+        }
+
+        function getPath(folder) {
+          var service = folder.provider ? providerService.get(folder.provider) : null;
+          if (!service) {
+            service = providerService.getByPath(folder.path);
+          }
+          return service.getPath(folder);
+        }
+
+        function getBreadcrumbPath(file) {
+          var service = file.provider ? providerService.get(file.provider) : null;
+          if (!service) {
+            service = providerService.getByPath(file.path);
+          }
+          if (!service) {
+            return {
+              prefix: null,
+              fileType: "folder",
+              uri: file.name,
+              path: file.name
+            };
+          }
+
+          return service.getBreadcrumbPath(file);
+        }
+
+        /**
+         * Get files for an arbitrary path
+         *
+         * @param path
+         * @param useCache
+         * @returns {*}
+         * @private
+         */
+        function _getFilesByPath(path, useCache) {
+          var service = providerService.getByPath(path);
+          return $q(function(resolve, reject) {
+            service.getFilesByPath(path, useCache).then(function (files) {
+              resolve(files);
+            });
+          });
+        }
+
+        /**
          * Sets variables showRecents, folder, and selectedFolder according to the contents of parameter
          *
          * @param {Object} folder - folder object
@@ -235,7 +339,7 @@ define(
          */
         function _selectFolder(folder, filters, useCache) {
           return $q(function(resolve, reject) {
-            var service = ss.get(folder.provider);
+            var service = providerService.get(folder.provider);
             if (service) {
               folder.loading = true;
               service.selectFolder(folder, filters, useCache).then(function() {
@@ -256,21 +360,6 @@ define(
               return tree[i];
             }
           }
-        }
-
-        function findFolderByPath(tree, path) {
-          return $q(function(resolve, reject) {
-            var parts = path.split("/");
-            var root = _findRoot(tree, parts.shift());
-            if (parts.length === 0) {
-              resolve(root);
-              return;
-            }
-            root.open = true;
-            _findFolder(root, parts).then(function(folder) {
-              resolve(folder);
-            });
-          });
         }
 
         function _findFolder(node, parts) {
@@ -302,7 +391,7 @@ define(
                 resolve(node);
               } else {
                 node.loading = true;
-                ss.get(node.provider).createFolder(node, name).then(function(children) {
+                providerService.get(node.provider).createFolder(node, name).then(function(children) {
                   node.children = children;
                   node.loading = false;
                   resolve(_doFind(node, name));
@@ -314,27 +403,13 @@ define(
           });
         }
 
-        function deleteFolder(tree, folder) {
-          return $q(function(resolve, reject) {
-            var parentFolder = findFolderByPath(tree, folder, _getParent(folder.path)).then(function(parent) {
-              ss.get(folder.provider).deleteFiles([folder]).then(function(response) {
-                var index = parent.children.indexOf(folder);
-                parent.children.splice(index, 1);
-                resolve(parent);
-              }, function(response) {
-                reject(response);
-              });
-            });
-          });
-        }
-
         function _getParent(path) {
           return path.substr(0, path.lastIndexOf("/"));
         }
 
         function createFolder(folder) {
           return $q(function(resolve, reject) {
-            ss.get(folder.provider).addFolder(folder).then(function(response) {
+            providerService.get(folder.provider).addFolder(folder).then(function(response) {
               var result = response.data;
               if (result.status === "SUCCESS") {
                 folder.new = false;

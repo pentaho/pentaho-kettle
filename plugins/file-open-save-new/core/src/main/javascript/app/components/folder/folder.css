@@ -121,7 +121,7 @@ folder .folder.repository .folderImage {
   height: 16px;
 }
 
-folder .folder.environments .folderImage {
+folder .folder.vfs .folderImage {
   margin-top: 3px;
   background: url("../../img/vfs.svg") no-repeat left center;
   width: 16px;

@@ -25,15 +25,15 @@
 define(
     [
       "pentaho/i18n-osgi!file-open-save-new.messages",
-      "./services.service",
+      "./provider.service",
       "./helper.service",
       "./modal.service",
       "../components/utils"
     ],
-    function (i18n, servicesService, helperService, modalService, utils) {
+    function (i18n, providerService, helperService, modalService, utils) {
       "use strict";
 
-      var factoryArray = [servicesService.name, helperService.name, modalService.name, "$q", "$interval", "$timeout", factory];
+      var factoryArray = [providerService.name, helperService.name, modalService.name, "$q", "$interval", "$timeout", factory];
       var module = {
         name: "fileService",
         factory: factoryArray
@@ -46,7 +46,7 @@ define(
        *
        * @return {Object} The fileService api
        */
-      function factory(ss, helperService, modalService, $q, $interval, $timeout) {
+      function factory(providerService, helperService, modalService, $q, $interval, $timeout) {
         var baseUrl = "/cxf/browser-new";
         return {
           files: [],
@@ -68,7 +68,7 @@ define(
          */
         function deleteFiles(folder, files) {
           return $q(function (resolve, reject) {
-            ss.get(folder.provider).deleteFiles(files).then(function (response) {
+            providerService.get(folder.provider).deleteFiles(files).then(function (response) {
               // TODO: Smart cleanup
               var deletedFolders = response.data.data;
               for (var i = 0; i < deletedFolders.length; i++) {
@@ -97,7 +97,7 @@ define(
          */
         function renameFile(file, newPath) {
           return $q(function (resolve, reject) {
-            ss.get(file.provider).renameFile(file, newPath).then(function (response) {
+            providerService.get(file.provider).renameFile(file, newPath).then(function (response) {
               var result = response.data;
               if (result.status === "SUCCESS") {
                 resolve(result);
@@ -281,7 +281,7 @@ define(
          * @returns {*}
          */
         function isCopy(from, to) {
-          return ss.get(from.provider).isCopy(from, to) && ss.get(to.provider).isCopy(from, to);
+          return providerService.get(from.provider).isCopy(from, to) && providerService.get(to.provider).isCopy(from, to);
         }
 
         //TODO: Add a rename function to folders so I can traverse and rename
@@ -316,12 +316,12 @@ define(
         }
 
         function open(file) {
-          ss.get(file.provider).open(file);
+          providerService.get(file.provider).open(file);
         }
 
         function save(filename, folder, currentFilename, override) {
           helperService.httpPost([baseUrl, "clearCache"].join("/"), folder);
-          return ss.get(folder.provider).save(filename, folder, currentFilename, override);
+          return providerService.get(folder.provider).save(filename, folder, currentFilename, override);
         }
 
         function browse(path) {
@@ -331,7 +331,7 @@ define(
         }
 
         function get(file) {
-          var service = ss.getByPath(file.path);
+          var service = providerService.getByPath(file.path);
           if (service) {
             file.provider = service.provider;
           }

@@ -24,7 +24,7 @@
  */
 define(
     [],
-    function(fileService) {
+    function() {
       "use strict";
 
       var factoryArray = ["helperService", "$http", "$q", factory];
@@ -47,6 +47,7 @@ define(
         return {
           provider: "local",
           order: 2,
+          root: "Local",
           getBreadcrumbPath: getBreadcrumbPath,
           selectFolder: selectFolder,
           matchPath: matchPath,
@@ -67,12 +68,12 @@ define(
 
         function resolvePath(path, properties) {
           return $q(function (resolve, reject) {
-            resolve("Local" + path);
+            resolve(this.root + path);
           });
         }
 
         function matchPath(path) {
-          return path && path.indexOf("/") === 0;
+          return (path && path.indexOf("/") === 0) ? 1 : 0;
         }
 
         function selectFolder(folder, filters) {

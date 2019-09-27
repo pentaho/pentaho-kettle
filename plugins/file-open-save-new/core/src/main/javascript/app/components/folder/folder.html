@@ -7,11 +7,7 @@
       ng-model="folder"
       on-drop="vm.onDrop(from, to)"
       ng-click="vm.selectFolder(folder)"
-      ng-dblclick="vm.selectAndOpenFolder(folder)"
-      ng-class="{recents: folder.provider === 'recents',
-                 local: folder.provider === 'local' && !folder.root,
-                 repository: folder.provider ==='repository' && !folder.root,
-                 environments: folder.provider ==='vfs' && !folder.root,
+      ng-class="!folder.root ? [folder.provider, {selected: folder === vm.selectedFolder, opened: folder.open === true}] : {
                  home: folder.path === '/home' && folder.provider === 'repository',
                  public: folder.path === '/public' && folder.provider === 'repository',
                  selected: folder === vm.selectedFolder,

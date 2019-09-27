@@ -178,6 +178,7 @@ define([
      */
     function _populateTree(response) {
       vm.tree = vm.tree.concat(response.data);
+      folderService.tree = vm.tree;
     }
 
     /**
@@ -226,7 +227,7 @@ define([
      * @param {folder} folder - Folder to open
      */
     function openFolder(folder) {
-      return folderService.openFolder(folder);
+      return folderService.selectFolder(folder);
     }
 
     /**
@@ -263,7 +264,7 @@ define([
     function selectFolderByPath(path, props) {
       vm.fileLoading = true;
       vm.showRecents = false;
-      folderService.selectFolderByPath(vm.tree, path, props).then(function() {
+      folderService.selectFolderByPath(path, props).then(function() {
         vm.fileLoading = false;
         _update();
       });
@@ -272,9 +273,11 @@ define([
     function openPath(path, properties) {
       vm.fileLoading = true;
       vm.showRecents = false;
-      folderService.openPath(vm.tree, path, properties).then(function() {
+      folderService.openPath(path, properties).then(function() {
         vm.fileLoading = false;
         _update();
+      }).catch(function(e) {
+        vm.fileLoading = false;
       });
     }
 
@@ -556,7 +559,7 @@ define([
      */
     function commitRemove() {
       if (vm.selectedFiles.length === 0) {
-        folderService.deleteFolder(vm.tree, vm.folder).then(function (parentFolder) {
+        folderService.deleteFolder(vm.folder).then(function (parentFolder) {
           vm.folder = null;
           selectFolder(parentFolder);
           vm.selectedFiles = null;
@@ -654,7 +657,7 @@ define([
       fileService.moveFiles(from, to).then(function (response) {
         to.loaded = false;
         // TODO: Do some cleanup here instead of full refresh
-        var parentFolder = folderService.findFolderByPath(vm.tree, from[0]);
+        var parentFolder = folderService.findFolderByPath(from[0]);
         parentFolder.loaded = false;
         onRefreshFolder();
       }, function (response) {
@@ -761,7 +764,7 @@ define([
      */
     function onUpDirectory() {
       vm.fileLoading = true;
-      folderService.upDirectory(vm.tree).then(function() {
+      folderService.upDirectory().then(function() {
         vm.fileLoading = false;
         _update();
       });
@@ -772,7 +775,7 @@ define([
      */
     function onRefreshFolder() {
       vm.fileLoading = true;
-      folderService.refreshFolder(vm.tree).then(function() {
+      folderService.refreshFolder().then(function() {
         vm.fileLoading = false;
         _update();
       });
@@ -783,6 +786,7 @@ define([
       if (value !== "") {
         searchService.search(vm.folder, vm.searchResults, value);
       }
+      _update();
     }
   }
 
