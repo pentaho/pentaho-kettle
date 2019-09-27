@@ -61,7 +61,7 @@ public class SparkTunableProperties {
     .put( "MemoryGroupBy", datasetTunable() )
     //    .put( "Unique", datasetTunable()
     //    .put( "UniqueRowsByHashSet", datasetTunable()
-    .put( "MergeJoin", datasetTunable() )
+    .put( "MergeJoin", multiTunable( datasetTunable(), joinTunable() ) )
     .put( "RecordsFromStream", datasetTunable() )
     .put( "Abort", datasetTunable() )
     .put( "TransExecutor", datasetTunable() )
@@ -75,8 +75,8 @@ public class SparkTunableProperties {
     .put( "Mapping", datasetTunable() )
     .put( "TableOutput", datasetTunable() )
     .put( "SwitchCase", datasetTunable() )
-    .put( "MergeRows", datasetTunable() )
-    .put( "JoinRows", datasetTunable() )
+    .put( "MergeRows", multiTunable( datasetTunable(), joinTunable() ) )
+    .put( "JoinRows", multiTunable( datasetTunable(), joinTunable() ) )
     .put( "JavaFilter", datasetTunable() )
 
     // Step List Pulled from pdi-spark-hbase-ee beans.xml
@@ -109,6 +109,12 @@ public class SparkTunableProperties {
       "num.repartition.before",
       "columns.repartition.before",
       "persist.type.before"
+    );
+  }
+
+  private static List<String> joinTunable() {
+    return Arrays.asList(
+      "join.broadcast.stepName"
     );
   }
 
