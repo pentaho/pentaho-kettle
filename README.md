@@ -180,7 +180,7 @@ $ mvn clean install -pl swt
 ### rap
 
 ```bash
-$ git clone -b webspoon-3.7.0 https://github.com/HiromuHota/rap.git
+$ git clone -b webspoon-3.9.0 https://github.com/HiromuHota/rap.git
 $ cd rap
 $ mvn clean install
 ```
