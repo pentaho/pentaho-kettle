@@ -117,5 +117,9 @@
         class="org.pentaho.di.engine.configuration.impl.spark.SparkTuningPopupMenu">
     <pen:di-plugin type="org.pentaho.di.ui.spoon.SpoonPluginType" />
   </bean>
+  <bean id="sparkTuningStepMenuExtensionPoint"
+        scope="singleton" class="org.pentaho.di.engine.configuration.impl.spark.SparkTuningPopupMenuExtensionPoint">
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
 
 </blueprint>

@@ -39,18 +39,18 @@ import java.util.stream.Stream;
  */
 public class SparkTunableProperties {
   private static final Map<String, List<String>> stepMap = ImmutableMap.<String, List<String>>builder()
-    .put( "ParquetInput", dataFrameWriterTunable() )
+    .put( "ParquetInput", nonTunable() )
     .put( "ParquetOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
     .put( "AvroOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
-    .put( "AvroInputNew", dataFrameWriterTunable() )
+    .put( "AvroInputNew", nonTunable() )
     .put( "OrcOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
-    .put( "OrcInput", dataFrameWriterTunable() )
+    .put( "OrcInput", nonTunable() )
 
     .put( "Dummy", datasetTunable() )
 
     .put( "TableInput", jdbcTunable() )
     // Reminder to add the other steps tunable options
-    //    .put( "TextFileInput", datasetTunable()
+    .put( "TextFileInput", nonTunable() )
     //    .put( "HadoopFileInputPlugin", datasetTunable()
     .put( "TextFileOutput", datasetTunable() )
     .put( "HadoopFileOutputPlugin", datasetTunable() )
@@ -80,8 +80,15 @@ public class SparkTunableProperties {
     .put( "JavaFilter", datasetTunable() )
 
     // Step List Pulled from pdi-spark-hbase-ee beans.xml
-    .put( "HBaseInput", datasetTunable() )
+    .put( "HBaseInput", nonTunable() )
     .put( "HBaseOutput", datasetTunable() )
+    //    .put( "RecordsFromStream", datasetTunable()
+    .put( "KafkaConsumerInput", nonTunable() )
+    .put( "KinesisConsumer", nonTunable() )
+    .put( "MQTTConsumer", nonTunable() )
+
+    // Step List Pulled from pdi-spark-engine-operations-ee beans.xml
+    .put( "AmqpConsumer", nonTunable() )
     .build();
 
   /**
@@ -125,6 +132,10 @@ public class SparkTunableProperties {
       "jdbc.upperBound",
       "jdbc.numPartitions"
     );
+  }
+
+  private static List<String> nonTunable() {
+    return Arrays.asList();
   }
 
   private static List<String> multiTunable( List<String> ... tunables ) {
