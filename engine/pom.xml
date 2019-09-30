@@ -86,6 +86,7 @@
     <javax.websocket-api.version>1.1</javax.websocket-api.version>
     <rxjava.version>2.2.3</rxjava.version>
     <xmlunit.version>1.5</xmlunit.version>
+    <wiremock.version>2.25.0</wiremock.version>
   </properties>
 
   <dependencies>
@@ -916,6 +917,12 @@
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
       <version>${xmlunit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8-standalone</artifactId>
+      <version>${wiremock.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
