@@ -87,7 +87,7 @@ node('non-master') {
         
         if (params.BUILD_UPGRADE_PATH && !params.NOOP) {
           stage('Upgrade Path') {
-            job.trigger('engops/scant-release-jobs/upgrade-path-pentaho-server', suiteParameters)
+            job.trigger('upgrade-path-pentaho-server', suiteParameters)
           }
 
           stage('Deployment (UP)') {
