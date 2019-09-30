@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,8 @@ package org.pentaho.di.core;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthenticationException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.util.Utils;
 
@@ -64,18 +64,46 @@ public class HTTPProtocol {
    * <p>
    * All other values of status code are not dealt with but logic can be added as needed.
    *
-   * @param urlAsString
-   * @param username
-   * @param password
-   * @return
+   * @param urlAsString The url to connect to
+   * @param username Basic Authentication username
+   * @param password Basic Authentication password
+   * @return If the status code returned not -1 and 401 then the contents are returned. If the status code is 401 an
+   * AuthenticationException is thrown.
    * @throws AuthenticationException
    * @throws IOException
    */
   public String get( String urlAsString, String username, String password )
     throws IOException, AuthenticationException {
 
-    HttpClient httpClient;
     HttpGet getMethod = new HttpGet( urlAsString );
+    try ( CloseableHttpClient httpClient = openHttpClient( username, password ) ) {
+      HttpResponse httpResponse = httpClient.execute( getMethod );
+      int statusCode = httpResponse.getStatusLine().getStatusCode();
+      StringBuilder bodyBuffer = new StringBuilder();
+
+      if ( statusCode != -1 ) {
+        if ( statusCode != HttpStatus.SC_UNAUTHORIZED ) {
+          // the response
+          InputStreamReader inputStreamReader = new InputStreamReader( httpResponse.getEntity().getContent() );
+
+          int c;
+          while ( ( c = inputStreamReader.read() ) != -1 ) {
+            bodyBuffer.append( (char) c );
+          }
+          inputStreamReader.close();
+
+        } else {
+          throw new AuthenticationException();
+        }
+      }
+
+      // Display response
+      return bodyBuffer.toString();
+    }
+  }
+
+  CloseableHttpClient openHttpClient( String username, String password ) {
+    CloseableHttpClient httpClient;
     if ( !Utils.isEmpty( username ) ) {
       HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
       clientBuilder.setCredentials( username, password );
@@ -83,27 +111,6 @@ public class HTTPProtocol {
     } else {
       httpClient = HttpClientManager.getInstance().createDefaultClient();
     }
-    HttpResponse httpResponse = httpClient.execute( getMethod );
-    int statusCode = httpResponse.getStatusLine().getStatusCode();
-    StringBuilder bodyBuffer = new StringBuilder();
-
-    if ( statusCode != -1 ) {
-      if ( statusCode != HttpStatus.SC_UNAUTHORIZED ) {
-        // the response
-        InputStreamReader inputStreamReader = new InputStreamReader( httpResponse.getEntity().getContent() );
-
-        int c;
-        while ( ( c = inputStreamReader.read() ) != -1 ) {
-          bodyBuffer.append( (char) c );
-        }
-        inputStreamReader.close();
-
-      } else {
-        throw new AuthenticationException();
-      }
-    }
-
-    // Display response
-    return bodyBuffer.toString();
+    return httpClient;
   }
 }
