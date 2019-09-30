@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -43,6 +44,7 @@ public class ExcelWriterStepData extends BaseStepData implements StepDataInterfa
   public int posY;
   public Sheet sheet;
   public Workbook wb;
+  public XSSFWorkbook xssfWorkbook;
   public int[] fieldnrs;
   public RowMetaInterface inputRowMeta;
   public int[] commentfieldnrs;
