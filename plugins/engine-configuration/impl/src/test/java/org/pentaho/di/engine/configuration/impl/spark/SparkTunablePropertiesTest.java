@@ -53,7 +53,12 @@ public class SparkTunablePropertiesTest {
     List<String> properties = SparkTunableProperties.getProperties( "TableInput" );
     assertTrue( properties.contains( "jdbc.columnName" ) );
     assertFalse( properties.contains( "cache.before" ) );
+  }
 
+  @Test
+  public void testNonTunable() {
+    List<String> properties = SparkTunableProperties.getProperties( "AvroInputNew" );
+    assertTrue( properties.isEmpty() );
   }
 
 }
