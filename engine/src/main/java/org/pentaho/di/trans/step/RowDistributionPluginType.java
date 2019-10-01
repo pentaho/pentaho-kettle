@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,10 +57,12 @@ public class RowDistributionPluginType extends BasePluginType implements PluginT
   /**
    * Scan & register internal row distribution plugins
    */
+  @Override
   protected void registerNatives() throws KettlePluginException {
     // None at this moment
   }
 
+  @Override
   protected void registerXmlPlugins() throws KettlePluginException {
     // None at this moment
   }

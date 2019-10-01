@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,10 +58,12 @@ public class TransDialogPluginType extends BasePluginType implements PluginTypeI
   /**
    * Scan & register internal transformation dialog plugins
    */
+  @Override
   protected void registerNatives() throws KettlePluginException {
     // No native plugins
   }
 
+  @Override
   protected void registerXmlPlugins() throws KettlePluginException {
     // No longer performed.
   }
