@@ -27,18 +27,22 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class PropertiesComboDialog extends PropertiesDialog {
   private static final Class<?> PKG = PropertiesComboDialog.class;
 
-  List<String> comboOptions;
+  private List<String> comboOptions = new ArrayList<>();
 
-  public PropertiesComboDialog( Shell shell, TransMeta transMeta, List<String> comboOptions,
-                                Map<String, String> properties, String title ) {
-    super( shell, transMeta, properties, title );
-    this.comboOptions = comboOptions;
+  public PropertiesComboDialog( Shell shell, TransMeta transMeta, Map<String, String> properties, String title ) {
+    this( shell, transMeta, properties, title, null, null, null );
+  }
+
+  public PropertiesComboDialog( Shell shell, TransMeta transMeta, Map<String, String> properties, String title,
+                                String helpUrl, String helpTitle, String helpHeader ) {
+    super( shell, transMeta, properties, title, helpUrl, helpTitle, helpHeader );
   }
 
   @Override
@@ -53,4 +57,13 @@ public class PropertiesComboDialog extends PropertiesDialog {
 
     return new ColumnInfo[] { nameColumn, valueColumn };
   }
+
+  public List<String> getComboOptions() {
+    return comboOptions;
+  }
+
+  public void setComboOptions( List<String> comboOptions ) {
+    this.comboOptions = comboOptions;
+  }
+
 }
