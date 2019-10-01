@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.memgroupby;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -196,7 +197,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     return true;
   }
 
-  private void handleLastOfGroup() throws KettleException {
+  @VisibleForTesting
+  void handleLastOfGroup() throws KettleException {
     // Dump the content of the map...
     //
     for ( HashEntry entry : data.map.keySet() ) {
