@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,10 +65,12 @@ public class LogTablePluginType extends BasePluginType implements PluginTypeInte
   /**
    * Scan & register internal logging plugins
    */
+  @Override
   protected void registerNatives() throws KettlePluginException {
     // No native
   }
 
+  @Override
   protected void registerXmlPlugins() throws KettlePluginException {
     for ( PluginFolderInterface folder : pluginFolders ) {
 
