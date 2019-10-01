@@ -212,7 +212,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             data.getFileStreamsCollection().closeOldestOpenFile( isZipFile );
           }
 
-          if ( createParentDirIfNotExists && ( ( ( meta.getSplitEvery( ) > 0 ) && ( data.getFileStreamsCollection().size( ) == 0 ) ) || meta.isFileNameInField( ) ) ) {
+          if ( createParentDirIfNotExists && ( ( data.getFileStreamsCollection().size( ) == 0 )  || meta.isFileNameInField( ) ) ) {
             createParentFolder( filename );
           }
           if ( log.isDetailed() ) {
