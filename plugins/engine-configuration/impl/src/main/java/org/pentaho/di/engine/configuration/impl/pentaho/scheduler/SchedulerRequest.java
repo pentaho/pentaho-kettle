@@ -38,7 +38,6 @@ import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -149,7 +148,7 @@ public class SchedulerRequest {
       JobScheduleParam jobScheduleParam = new JobScheduleParam();
       jobScheduleParam.setName( "logLevel" );
       jobScheduleParam.setType( STRING_TYPE );
-      jobScheduleParam.setStringValue( new ArrayList<>( Arrays.asList( meta.getLogLevel().getCode() ) ) );
+      jobScheduleParam.setStringValue( Arrays.asList( meta.getLogLevel().getCode() ) );
       jobScheduleRequest.getJobParameters().add( jobScheduleParam );
     }
 
@@ -158,7 +157,7 @@ public class SchedulerRequest {
     jobScheduleParamClearingLog.setName( "clearLog" );
     jobScheduleParamClearingLog.setType( STRING_TYPE );
     jobScheduleParamClearingLog
-      .setStringValue( new ArrayList<>( Arrays.asList( String.valueOf( meta.isClearingLog() ) ) ) );
+      .setStringValue( Arrays.asList( String.valueOf( meta.isClearingLog() ) ) );
     jobScheduleRequest.getJobParameters().add( jobScheduleParamClearingLog );
 
     // Set the safe mode enabled param
@@ -166,7 +165,7 @@ public class SchedulerRequest {
     jobScheduleParamSafeModeEnable.setName( "runSafeMode" );
     jobScheduleParamSafeModeEnable.setType( STRING_TYPE );
     jobScheduleParamSafeModeEnable
-      .setStringValue( new ArrayList<>( Arrays.asList( String.valueOf( meta.isSafeModeEnabled() ) ) ) );
+      .setStringValue( Arrays.asList( String.valueOf( meta.isSafeModeEnabled() ) ) );
     jobScheduleRequest.getJobParameters().add( jobScheduleParamSafeModeEnable );
 
 
@@ -175,7 +174,7 @@ public class SchedulerRequest {
     jobScheduleParamGatheringMetricsParam.setName( "gatheringMetrics" );
     jobScheduleParamGatheringMetricsParam.setType( STRING_TYPE );
     jobScheduleParamGatheringMetricsParam
-      .setStringValue( new ArrayList<>( Arrays.asList( String.valueOf( meta.isGatheringMetrics() ) ) ) );
+      .setStringValue( Arrays.asList( String.valueOf( meta.isGatheringMetrics() ) ) );
     jobScheduleRequest.getJobParameters().add( jobScheduleParamGatheringMetricsParam );
 
     if ( meta instanceof JobMeta ) {
@@ -186,7 +185,7 @@ public class SchedulerRequest {
         JobScheduleParam jobScheduleParamStartStepName = new JobScheduleParam();
         jobScheduleParamStartStepName.setName( "startCopyName" );
         jobScheduleParamStartStepName.setType( STRING_TYPE );
-        jobScheduleParamStartStepName.setStringValue( new ArrayList<>( Arrays.asList( jobMeta.getStartCopyName() ) ) );
+        jobScheduleParamStartStepName.setStringValue( Arrays.asList( jobMeta.getStartCopyName() ) );
         jobScheduleRequest.getJobParameters().add( jobScheduleParamStartStepName );
       }
 
@@ -195,7 +194,7 @@ public class SchedulerRequest {
       jobScheduleParamExpandingRemoteJob.setName( "expandingRemoteJob" );
       jobScheduleParamExpandingRemoteJob.setType( STRING_TYPE );
       jobScheduleParamExpandingRemoteJob
-        .setStringValue( new ArrayList<>( Arrays.asList( String.valueOf( jobMeta.isExpandingRemoteJob() ) ) ) );
+        .setStringValue( Arrays.asList( String.valueOf( jobMeta.isExpandingRemoteJob() ) ) );
       jobScheduleRequest.getJobParameters().add( jobScheduleParamExpandingRemoteJob );
     }
 

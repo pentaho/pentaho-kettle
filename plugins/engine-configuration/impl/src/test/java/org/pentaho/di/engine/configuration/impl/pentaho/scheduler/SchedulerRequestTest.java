@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 public class SchedulerRequestTest {
   // input file
   private static final String TEST_REPOSITORY_DIRECTORY = "/home/admin";
-  private static final String TEST_JOB_NAME = "jobName";
+  private static final String TEST_JOB_NAME = "jobName and special characters & < >";
   private static final String JOB_EXTENSION = "kjb";
 
   // job parameters
@@ -93,8 +93,10 @@ public class SchedulerRequestTest {
       + "<key>%s</key>" + "<value>%s</value>"
       + "</entry>"
       + "</pdiParameters>"
-          + "</jobScheduleRequest>", TEST_REPOSITORY_DIRECTORY, TEST_JOB_NAME, JOB_EXTENSION,
-        LOG_LEVEL_PARAM_NAME, STRING_PARAM_TYPE, TEST_LOG_LEVEL_PARAM_VALUE,
+      + "</jobScheduleRequest>", TEST_REPOSITORY_DIRECTORY,
+    TEST_JOB_NAME.replace( "&", "&amp;" ).replace( "<", "&lt;" )
+      .replace( ">", "&gt;" ),
+    JOB_EXTENSION, LOG_LEVEL_PARAM_NAME, STRING_PARAM_TYPE, TEST_LOG_LEVEL_PARAM_VALUE,
         CLEAR_LOG_PARAM_NAME, STRING_PARAM_TYPE, TEST_CLEAR_LOG_PARAM_VALUE,
         RUN_SAFE_MODE_PARAM_NAME, STRING_PARAM_TYPE, TEST_RUN_SAFE_MODE_PARAM_VALUE,
         GATHERING_METRICS_PARAM_NAME, STRING_PARAM_TYPE, TEST_GATHERING_METRICS_PARAM_VALUE,
