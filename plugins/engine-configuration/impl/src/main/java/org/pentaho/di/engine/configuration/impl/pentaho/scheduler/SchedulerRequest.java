@@ -52,6 +52,9 @@ public class SchedulerRequest {
   public static final String APPLICATION_XML = "application/xml";
   public static final String UTF_8 = "UTF-8";
   public static final String AUTHORIZATION = "Authorization";
+
+  public static final String STRING_TYPE = "string";
+
   private HttpClient httpclient = HttpClients.createDefault();
   private HttpPost httpPost;
   private Repository repository;
@@ -145,7 +148,7 @@ public class SchedulerRequest {
     if ( meta.getLogLevel() != null ) {
       JobScheduleParam jobScheduleParam = new JobScheduleParam();
       jobScheduleParam.setName( "logLevel" );
-      jobScheduleParam.setType( "string" );
+      jobScheduleParam.setType( STRING_TYPE );
       jobScheduleParam.setStringValue( new ArrayList<>( Arrays.asList( meta.getLogLevel().getCode() ) ) );
       jobScheduleRequest.getJobParameters().add( jobScheduleParam );
     }
@@ -153,7 +156,7 @@ public class SchedulerRequest {
     // Set the clearing log param
     JobScheduleParam jobScheduleParamClearingLog = new JobScheduleParam();
     jobScheduleParamClearingLog.setName( "clearLog" );
-    jobScheduleParamClearingLog.setType( "string" );
+    jobScheduleParamClearingLog.setType( STRING_TYPE );
     jobScheduleParamClearingLog
       .setStringValue( new ArrayList<>( Arrays.asList( String.valueOf( meta.isClearingLog() ) ) ) );
     jobScheduleRequest.getJobParameters().add( jobScheduleParamClearingLog );
@@ -161,7 +164,7 @@ public class SchedulerRequest {
     // Set the safe mode enabled param
     JobScheduleParam jobScheduleParamSafeModeEnable = new JobScheduleParam();
     jobScheduleParamSafeModeEnable.setName( "runSafeMode" );
-    jobScheduleParamSafeModeEnable.setType( "string" );
+    jobScheduleParamSafeModeEnable.setType( STRING_TYPE );
     jobScheduleParamSafeModeEnable
       .setStringValue( new ArrayList<>( Arrays.asList( String.valueOf( meta.isSafeModeEnabled() ) ) ) );
     jobScheduleRequest.getJobParameters().add( jobScheduleParamSafeModeEnable );
@@ -170,7 +173,7 @@ public class SchedulerRequest {
     // Set the gathering metrics param
     JobScheduleParam jobScheduleParamGatheringMetricsParam = new JobScheduleParam();
     jobScheduleParamGatheringMetricsParam.setName( "gatheringMetrics" );
-    jobScheduleParamGatheringMetricsParam.setType( "string" );
+    jobScheduleParamGatheringMetricsParam.setType( STRING_TYPE );
     jobScheduleParamGatheringMetricsParam
       .setStringValue( new ArrayList<>( Arrays.asList( String.valueOf( meta.isGatheringMetrics() ) ) ) );
     jobScheduleRequest.getJobParameters().add( jobScheduleParamGatheringMetricsParam );
@@ -182,7 +185,7 @@ public class SchedulerRequest {
         // Set the start step name
         JobScheduleParam jobScheduleParamStartStepName = new JobScheduleParam();
         jobScheduleParamStartStepName.setName( "startCopyName" );
-        jobScheduleParamStartStepName.setType( "string" );
+        jobScheduleParamStartStepName.setType( STRING_TYPE );
         jobScheduleParamStartStepName.setStringValue( new ArrayList<>( Arrays.asList( jobMeta.getStartCopyName() ) ) );
         jobScheduleRequest.getJobParameters().add( jobScheduleParamStartStepName );
       }
@@ -190,7 +193,7 @@ public class SchedulerRequest {
       // Set the expanding remote job param
       JobScheduleParam jobScheduleParamExpandingRemoteJob = new JobScheduleParam();
       jobScheduleParamExpandingRemoteJob.setName( "expandingRemoteJob" );
-      jobScheduleParamExpandingRemoteJob.setType( "string" );
+      jobScheduleParamExpandingRemoteJob.setType( STRING_TYPE );
       jobScheduleParamExpandingRemoteJob
         .setStringValue( new ArrayList<>( Arrays.asList( String.valueOf( jobMeta.isExpandingRemoteJob() ) ) ) );
       jobScheduleRequest.getJobParameters().add( jobScheduleParamExpandingRemoteJob );
