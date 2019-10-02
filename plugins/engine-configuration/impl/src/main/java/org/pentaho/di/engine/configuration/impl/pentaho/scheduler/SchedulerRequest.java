@@ -212,7 +212,7 @@ public class SchedulerRequest {
       marshaller.marshal( jobScheduleRequest, sw );
       jobScheduleRequestString = sw.toString();
     } catch ( JAXBException e ) {
-      e.printStackTrace();
+      repository.getLog().logError( BaseMessages.getString( PKG, "SchedulerRequest.error.marshal" ), e.getMessage() );
     }
 
     return new StringEntity( jobScheduleRequestString );

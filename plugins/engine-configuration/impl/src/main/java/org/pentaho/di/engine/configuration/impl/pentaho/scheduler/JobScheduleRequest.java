@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @XmlRootElement( name = "jobScheduleRequest" )
@@ -36,11 +37,11 @@ public class JobScheduleRequest implements Serializable {
 
   private static final long serialVersionUID = -485489832281790257L;
 
-  String inputFile;
+  private String inputFile;
 
-  ArrayList<JobScheduleParam> jobParameters = new ArrayList<>();
+  private List<JobScheduleParam> jobParameters = new ArrayList<>();
 
-  Map<String, String> pdiParameters = new HashMap<>();
+  private Map<String, String> pdiParameters = new HashMap<>();
 
   public String getInputFile() {
     return inputFile;
@@ -50,11 +51,11 @@ public class JobScheduleRequest implements Serializable {
     this.inputFile = file;
   }
 
-  public ArrayList<JobScheduleParam> getJobParameters() {
+  public List<JobScheduleParam> getJobParameters() {
     return jobParameters;
   }
 
-  public void setJobParameters( ArrayList<JobScheduleParam> jobParameters ) {
+  public void setJobParameters( List<JobScheduleParam> jobParameters ) {
     if ( jobParameters != this.jobParameters ) {
       this.jobParameters.clear();
       if ( jobParameters != null ) {

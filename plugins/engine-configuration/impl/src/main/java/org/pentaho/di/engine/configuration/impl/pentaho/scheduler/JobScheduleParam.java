@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 @XmlAccessorType( XmlAccessType.FIELD )
 @XmlType( propOrder = { "name", "type", "stringValue" } )
@@ -33,17 +33,9 @@ public class JobScheduleParam implements Serializable {
 
   private static final long serialVersionUID = -4214459740606299083L;
 
-  private static final SimpleDateFormat isodatetime = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSZZZ" );
-    //$NON-NLS-1$
-
-  String name;
-
-  String type;
-
-  ArrayList<String> stringValue = new ArrayList<String>();
-
-  public JobScheduleParam() {
-  }
+  private String name;
+  private String type;
+  private List<String> stringValue = new ArrayList<>();
 
 
   public String getName() {
@@ -62,11 +54,11 @@ public class JobScheduleParam implements Serializable {
     this.type = type;
   }
 
-  public ArrayList<String> getStringValue() {
+  public List<String> getStringValue() {
     return stringValue;
   }
 
-  public void setStringValue( ArrayList<String> value ) {
+  public void setStringValue( List<String> value ) {
     this.stringValue = value;
   }
 
