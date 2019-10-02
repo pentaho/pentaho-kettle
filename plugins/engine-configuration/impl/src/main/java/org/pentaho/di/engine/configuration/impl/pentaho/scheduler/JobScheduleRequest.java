@@ -56,12 +56,7 @@ public class JobScheduleRequest implements Serializable {
   }
 
   public void setJobParameters( List<JobScheduleParam> jobParameters ) {
-    if ( jobParameters != this.jobParameters ) {
-      this.jobParameters.clear();
-      if ( jobParameters != null ) {
-        this.jobParameters.addAll( jobParameters );
-      }
-    }
+    this.jobParameters = jobParameters;
   }
 
   public Map<String, String> getPdiParameters() {
