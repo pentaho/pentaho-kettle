@@ -35,11 +35,14 @@ define([
   "./components/help/help.component",
   "./directives/focus.directive",
   "./directives/ngbodyclick.directive",
+  "./directives/showpassword.directive",
   "./service/helper.service",
   "./service/data.service",
   "angular-ui-router",
   "angular-animate"
-], function (angular, plugins, appConfig, appAnimation, introComponent, summaryComponent, creatingComponent, successComponent, failureComponent, selectboxComponent, controlsComponent, messageComponent, helpComponent, focusDirective, bodyClickDirective, helperService, dataService) {
+], function (angular, plugins, appConfig, appAnimation, introComponent, summaryComponent, creatingComponent,
+             successComponent, failureComponent, selectboxComponent, controlsComponent, messageComponent, helpComponent,
+             focusDirective, bodyClickDirective, showPasswordDirective, helperService, dataService) {
   "use strict";
 
   var module = {
@@ -102,6 +105,7 @@ define([
         .component(helpComponent.name, helpComponent.options)
         .directive(focusDirective.name, focusDirective.options)
         .directive(bodyClickDirective.name, bodyClickDirective.options)
+        .directive(showPasswordDirective.name, showPasswordDirective.options)
         .service(helperService.name, helperService.factory)
         .service(dataService.name, dataService.factory)
         .animation(appAnimation.class, appAnimation.factory)
