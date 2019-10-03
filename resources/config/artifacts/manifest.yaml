@@ -43,11 +43,11 @@ ee:
         - pentaho-workernodes-${platform.version}-dist.zip
         - pentaho-workernodes-${platform.version}.tar.gz
     shims:
-        - pentaho-big-data-ee-cdh514-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-big-data-ee-cdh61-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-big-data-ee-emr521-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-big-data-ee-hdp26-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-big-data-ee-hdp30-package-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-cdh514-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-hdp26-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
     upgrade:
         - PentahoServer-UP-${platform.version}-Linux.zip
         - PentahoServer-UP-${platform.version}-Mac.zip
@@ -71,11 +71,11 @@ ce:
         - pentaho-server-ce-${platform.version}.zip
         - pentaho-server-manual-ce-${platform.version}.zip
     shims:
-        - pentaho-hadoop-shims-cdh514-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-cdh61-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-emr521-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-hdp26-package-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-hdp30-package-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-cdh61-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-cdh514-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-hdp26-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
     other:
         - pre-classic-sdk-${platform.version}.zip
 
