@@ -22,6 +22,12 @@
       <artifactId>file-open-save-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- This dependency is transitive but should not be marked with dependency="true" because it has only client
+    side code, so the bundle activation would never be triggered-->
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>core-ui</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

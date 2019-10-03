@@ -39,6 +39,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>core-ui</artifactId>
+    </dependency>
+    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
     </dependency>

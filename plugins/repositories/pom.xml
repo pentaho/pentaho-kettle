@@ -16,6 +16,7 @@
   </parent>
 
   <properties>
+    <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
     <angular.version>1.5.8</angular.version>
     <angular-route.version>${angular.version}</angular-route.version>
     <angular-sanitize.version>${angular.version}</angular-sanitize.version>
@@ -32,5 +33,15 @@
     <module>core</module>
     <module>assemblies</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.pentaho.di.plugins</groupId>
+        <artifactId>core-ui</artifactId>
+        <version>${pdi.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
 </project>
