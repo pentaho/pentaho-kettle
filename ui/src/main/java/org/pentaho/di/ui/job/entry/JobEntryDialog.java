@@ -48,8 +48,12 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.function.Supplier;
 
 /**
  * The JobEntryDialog class is responsible for constructing and opening the settings dialog for the job entry. Whenever
@@ -110,6 +114,8 @@ public class JobEntryDialog extends Dialog {
    * A reference to the parent shell
    */
   protected Shell parent;
+
+  private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
   /**
    * A reference to a database dialog
@@ -355,6 +361,7 @@ public class JobEntryDialog extends Dialog {
       if ( connectionName != null ) {
         jobMeta.addDatabase( databaseMeta );
         reinitConnectionDropDown( wConnection, databaseMeta.getName() );
+        spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
       }
     }
   }
