@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,10 +28,12 @@ import java.util.function.Function;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.pentaho.di.core.logging.LoggingObjectType.DATABASE;
 import static org.pentaho.di.core.logging.LoggingObjectType.TRANS;
 import static org.pentaho.di.core.logging.LoggingObjectType.STEP;
@@ -111,18 +113,26 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
     while ( loggingObject != null ) {
       if ( loggingObject.getObjectType() == TRANS || loggingObject.getObjectType() == JOB ) {
         RepositoryDirectoryInterface rd = loggingObject.getRepositoryDirectory();
-        String filename = loggingObject.getFilename();
+        String name;
+        if ( isNotBlank( loggingObject.getFilename() ) ) {
+          name = loggingObject.getFilename();
+        } else {
+          name = loggingObject.getObjectType() == TRANS
+            ? ( loggingObject.getObjectName() + RepositoryObjectType.TRANSFORMATION.getExtension() )
+            : ( loggingObject.getObjectName() + RepositoryObjectType.JOB.getExtension() );
+        }
+
         if ( rd != null ) {
           String path = rd.getPath();
           if ( path.equals( SEPARATOR ) ) {
-            if ( filename != null && filename.length() > 0 ) {
-              subjects.add( filename );
+            if ( name != null && name.length() > 0 ) {
+              subjects.add( name );
             }
           } else {
-            subjects.add( path + SEPARATOR + filename );
+            subjects.add( path + SEPARATOR + name );
           }
-        } else if ( filename != null && filename.length() > 0 ) {
-          subjects.add( filename );
+        } else if ( name != null && name.length() > 0 ) {
+          subjects.add( name );
         }
       }
       loggingObject = loggingObject.getParent();
