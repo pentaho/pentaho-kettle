@@ -205,6 +205,8 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() ); // same as the other list options
       }
 
+      checkTimeoutVariable( job );
+
       job.start(); // Execute the selected job.
       job.waitUntilFinished();
       setResult( job.getResult() ); // get the execution result
@@ -366,5 +368,14 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
   public void setKettleInit( Future<KettleException> kettleInit ) {
     this.kettleInit = kettleInit;
+  }
+
+  private void checkTimeoutVariable( Job job ) {
+    try {
+      int val = Integer.parseInt( job.getVariable( Const.KITCHEN_KARAF_TIMEOUT_SECONDS, "0" ) );
+      Thread.sleep( val * 1000 );
+    } catch ( InterruptedException e ) {
+      Thread.currentThread().interrupt();
+    }
   }
 }
