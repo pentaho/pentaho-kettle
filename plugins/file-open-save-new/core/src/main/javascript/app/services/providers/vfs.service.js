@@ -68,11 +68,12 @@ define(
         };
 
         function resolvePath(path, properties) {
+          var self = this;
           return $q(function (resolve, reject) {
             if (path.indexOf("pvfs://") === 0) {
-              resolve(this.root + "/" + path.replace("pvfs://", ''));
+              resolve(self.root + "/" + path.replace("pvfs://", ''));
             } else if (properties && properties.connection) {
-              resolve(this.root + "/" + properties.connection + "/" + path.replace(/^[\w]+:\/\//, ''));
+              resolve(self.root + "/" + properties.connection + "/" + path.replace(/^[\w]+:\/\//, ''));
             } else {
               reject(path);
             }

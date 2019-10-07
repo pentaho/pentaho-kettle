@@ -73,7 +73,7 @@ define(
 
         function getBreadcrumbPath(file) {
           var path = {
-            type: "repository",
+            type: this.provider,
             fileType: file.type ? file.type : "folder",
             prefix: null,
             uri: _getFilePath(file),
@@ -94,9 +94,9 @@ define(
         }
 
         function resolvePath(path, properties) {
-
+          var self = this;
           return $q(function (resolve, reject) {
-            resolve(this.root + path);
+            resolve(self.root + path);
           });
         }
 
