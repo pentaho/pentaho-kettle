@@ -34,8 +34,8 @@ public class SparkTunablePropertiesTest {
 
   @Test
   public void testGenericDatasetTunable() {
-    assertTrue( SparkTunableProperties.getProperties( "badID" ).contains( "cache.before" ) );
-    assertFalse( SparkTunableProperties.getProperties( "badID" ).contains( "jdbc.columnName" ) );
+    assertTrue( SparkTunableProperties.getProperties( "badID" ).contains( "cache" ) );
+    assertFalse( SparkTunableProperties.getProperties( "badID" ).contains( "read.jdbc.columnName" ) );
 
   }
 
@@ -51,14 +51,46 @@ public class SparkTunablePropertiesTest {
   @Test
   public void testJdbcTunable() {
     List<String> properties = SparkTunableProperties.getProperties( "TableInput" );
-    assertTrue( properties.contains( "jdbc.columnName" ) );
-    assertFalse( properties.contains( "cache.before" ) );
+    assertTrue( properties.contains( "read.jdbc.columnName" ) );
+    assertFalse( properties.contains( "cache" ) );
   }
 
   @Test
   public void testNonTunable() {
     List<String> properties = SparkTunableProperties.getProperties( "AvroInputNew" );
     assertTrue( properties.isEmpty() );
+  }
+
+  @Test
+  // This is requried because if spark is sent a tunning property it does not recognize it
+  // ignores it and does inform the user it is being ignored.
+  public void guardAgainstBreakingSparkInterface() {
+    // dataframe Tunable check
+    assertTrue( 4 == SparkTunableProperties.dataFrameWriterTunable().size() );
+    assertTrue( "write.partitionBy.columns".equals( SparkTunableProperties.dataFrameWriterTunable().get( 0 ) ) );
+    assertTrue( "write.bucketBy.columns".equals( SparkTunableProperties.dataFrameWriterTunable().get( 1 ) ) );
+    assertTrue( "write.bucketBy.numBuckets".equals( SparkTunableProperties.dataFrameWriterTunable().get( 2 ) ) );
+    assertTrue( "write.sortBy.columns".equals( SparkTunableProperties.dataFrameWriterTunable().get( 3 ) ) );
+
+    // dataset Tunable check
+    assertTrue( 5 == SparkTunableProperties.datasetTunable().size() );
+    assertTrue( "cache".equals( SparkTunableProperties.datasetTunable().get( 0 ) ) );
+    assertTrue( "coalesce".equals( SparkTunableProperties.datasetTunable().get( 1 ) ) );
+    assertTrue( "repartition.numPartitions".equals( SparkTunableProperties.datasetTunable().get( 2 ) ) );
+    assertTrue( "repartition.columns".equals( SparkTunableProperties.datasetTunable().get( 3 ) ) );
+    assertTrue( "persist.storageLevel".equals( SparkTunableProperties.datasetTunable().get( 4 ) ) );
+
+    // broadcast Tunable check
+    assertTrue( 1 == SparkTunableProperties.joinTunable().size() );
+    assertTrue( "join.broadcast.stepName".equals( SparkTunableProperties.joinTunable().get( 0 ) ) );
+
+    // jdbc Tunable check
+    assertTrue( 4 == SparkTunableProperties.jdbcTunable().size() );
+    assertTrue( "read.jdbc.columnName".equals( SparkTunableProperties.jdbcTunable().get( 0 ) ) );
+    assertTrue( "read.jdbc.lowerBound".equals( SparkTunableProperties.jdbcTunable().get( 1 ) ) );
+    assertTrue( "read.jdbc.upperBound".equals( SparkTunableProperties.jdbcTunable().get( 2 ) ) );
+    assertTrue( "read.jdbc.numPartitions".equals( SparkTunableProperties.jdbcTunable().get( 3 ) ) );
+
   }
 
 }
