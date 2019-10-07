@@ -100,37 +100,37 @@ public class SparkTunableProperties {
     return stepMap.containsKey( stepId ) ? stepMap.get( stepId ) : datasetTunable();
   }
 
-  private static List<String> dataFrameWriterTunable() {
+  protected static List<String> dataFrameWriterTunable() {
     return Arrays.asList(
-      "writer.repartition.columns",
-      "writer.bucketing.columns",
-      "writer.bucketing.number",
-      "writer.sort.columns"
+      "write.partitionBy.columns",
+      "write.bucketBy.columns",
+      "write.bucketBy.numBuckets",
+      "write.sortBy.columns"
     );
   }
 
-  private static List<String> datasetTunable() {
+  protected static List<String> datasetTunable() {
     return Arrays.asList(
-      "cache.before",
-      "coalesce.before",
-      "num.repartition.before",
-      "columns.repartition.before",
-      "persist.type.before"
+      "cache",
+      "coalesce",
+      "repartition.numPartitions",
+      "repartition.columns",
+      "persist.storageLevel"
     );
   }
 
-  private static List<String> joinTunable() {
+  protected static List<String> joinTunable() {
     return Arrays.asList(
       "join.broadcast.stepName"
     );
   }
 
-  private static List<String> jdbcTunable() {
+  protected static List<String> jdbcTunable() {
     return Arrays.asList(
-      "jdbc.columnName",
-      "jdbc.lowerBound",
-      "jdbc.upperBound",
-      "jdbc.numPartitions"
+      "read.jdbc.columnName",
+      "read.jdbc.lowerBound",
+      "read.jdbc.upperBound",
+      "read.jdbc.numPartitions"
     );
   }
 
