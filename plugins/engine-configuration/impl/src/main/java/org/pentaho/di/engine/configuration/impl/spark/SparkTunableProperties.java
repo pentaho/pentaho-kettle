@@ -51,7 +51,7 @@ public class SparkTunableProperties {
     .put( "TableInput", jdbcTunable() )
     // Reminder to add the other steps tunable options
     .put( "TextFileInput", nonTunable() )
-    //    .put( "HadoopFileInputPlugin", datasetTunable()
+    .put( "HadoopFileInputPlugin", nonTunable() )
     .put( "TextFileOutput", datasetTunable() )
     .put( "HadoopFileOutputPlugin", datasetTunable() )
     .put( "FilterRows", datasetTunable() )
