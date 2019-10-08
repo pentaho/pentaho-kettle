@@ -1301,6 +1301,9 @@ public class Const {
   public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION = "ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION";
   public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT = "true";
 
+  /** A variable to configure a timeout for Karaf provider delays on kitchen */
+  public static final String KITCHEN_KARAF_TIMEOUT_SECONDS = "KITCHEN_KARAF_TIMEOUT_SECONDS";
+
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
