@@ -1695,6 +1695,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       // Set fieldNameParameter only if exists and if it is not declared any staticValue( parameterValues array )
       //
       String thisValue = namedParam.getParameterValue( parameters[ idx ] );
+      // multiple executions on the same jobEntryTrans variableSpace need to be updated even for nulls or blank values.
+      // so we have to ask if that same variable had a value before and if it had - and the new value is empty -
+      // we should set it as a blank value instead of ignoring it
+      if ( !Utils.isEmpty( jobEntryTrans.getVariable( parameters[ idx ] ) ) && Utils.isEmpty( thisValue )  ) {
+        jobEntryTrans.setVariable( parameters[ idx ], "" );
+      }
       // Set value only if is not empty at namedParam and exists in parameterFieldNames
       if ( !Utils.isEmpty( thisValue ) && idx < parameterFieldNames.length ) {
         // If exists then ask if is not empty
