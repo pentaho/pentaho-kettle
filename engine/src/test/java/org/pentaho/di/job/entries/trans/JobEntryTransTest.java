@@ -266,6 +266,64 @@ public class JobEntryTransTest {
   }
 
   @Test
+  public void testPrepareFieldNamesParametersWithNulls() throws UnknownParamException {
+    //NOTE: this only tests the prepareFieldNamesParameters function not all variable substitution logic
+    // array of params
+    String[] parameterNames = new String[6];
+    parameterNames[0] = "param1";
+    parameterNames[1] = "param2";
+    parameterNames[2] = "param3";
+    parameterNames[3] = "param4";
+    parameterNames[4] = "param5";
+    parameterNames[5] = "param6";
+
+    // array of fieldNames params
+    String[] parameterFieldNames = new String[6];
+    parameterFieldNames[0] = null;
+    parameterFieldNames[2] = "ValueParam3";
+    parameterFieldNames[3] = "FieldValueParam4";
+    parameterFieldNames[4] = "FieldValueParam5";
+
+    // array of parameterValues params
+    String[] parameterValues = new String[6];
+    parameterValues[1] = "ValueParam2";
+    parameterValues[3] = "";
+    parameterValues[4] = "StaticValueParam5";
+    parameterValues[5] = "StaticValueParam6";
+
+
+    JobEntryTrans jet = new JobEntryTrans();
+    VariableSpace variableSpace = new Variables();
+    jet.copyVariablesFrom( variableSpace );
+
+    jet.setVariable( "param6", "someDummyPreviousValue" );
+
+    //at this point StreamColumnNameParams are already inserted in namedParams
+    NamedParams namedParam = Mockito.mock( NamedParamsDefault.class );
+    Mockito.doReturn( "value1" ).when( namedParam ).getParameterValue(  "param1" );
+    Mockito.doReturn( "value2" ).when( namedParam ).getParameterValue(  "param2" );
+    Mockito.doReturn( "value3" ).when( namedParam ).getParameterValue(  "param3" );
+    Mockito.doReturn( "value4" ).when( namedParam ).getParameterValue(  "param4" );
+    Mockito.doReturn( "value5" ).when( namedParam ).getParameterValue(  "param5" );
+    Mockito.doReturn( "" ).when( namedParam ).getParameterValue(  "param6" );
+
+    jet.prepareFieldNamesParameters( parameterNames, parameterFieldNames, parameterValues, namedParam, jet );
+    // "param1" has parameterFieldName value = null and no parameterValues defined so it should be null
+    Assert.assertEquals( null, jet.getVariable( "param1" ) );
+    // "param2" has only parameterValues defined and no parameterFieldName value so it should be null
+    Assert.assertEquals( null, jet.getVariable( "param2" ) );
+    // "param3" has only the parameterFieldName defined so it should return the mocked value
+    Assert.assertEquals( "value3", jet.getVariable( "param3" ) );
+    // "param4" has parameterFieldName and also an empty parameterValues defined so it should return the mocked value
+    Assert.assertEquals( "value4", jet.getVariable( "param4" ) );
+    // "param5" has parameterFieldName and also parameterValues defined with a not empty value so it should return null
+    Assert.assertEquals( null, jet.getVariable( "param5" ) );
+    // "param6" only has a parameterValues defined with a not empty value and has a previous value on it (someDummyPreviousValue)
+    // so it should return "" since the mockedValue is not empty - PDI-18227
+    Assert.assertEquals( "", jet.getVariable( "param6" ) );
+  }
+
+  @Test
   public void testGetTransMeta() throws KettleException {
     String param1 = "param1";
     String param2 = "param2";
