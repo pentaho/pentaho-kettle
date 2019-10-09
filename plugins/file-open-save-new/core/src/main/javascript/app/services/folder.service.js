@@ -92,7 +92,6 @@ define(
         /**
          * Select a folder by the path in the tree
          *
-         * @param tree
          * @param path
          * @param props
          * @returns {*}
@@ -117,7 +116,6 @@ define(
         /**
          * Reload the tree from the source
          *
-         * @param tree
          * @returns {*}
          */
         function refreshFolder() {
@@ -210,7 +208,6 @@ define(
         /**
          * Find a folder object by the tree path
          *
-         * @param tree
          * @param path
          * @returns {*}
          */
@@ -224,9 +221,91 @@ define(
               return;
             }
             root.open = true;
+            // Check if the root directory is / and set that directory to root if it is
+            if (root.children.length === 1 && root.children[0].name === '/') {
+              root = root.children[0];
+            }
+            root.open = true;
             _findFolder(root, parts).then(function(folder) {
               resolve(folder);
             });
+          });
+        }
+
+        /**
+         * Get root object in tree by name
+         *
+         * @param tree
+         * @param name
+         * @returns {*}
+         * @private
+         */
+        function _findRoot(tree, name) {
+          for (var i = 0; i < tree.length; i++) {
+            if (tree[i].name === name) {
+              return tree[i];
+            }
+          }
+        }
+
+        function _findFolder(node, parts) {
+          return $q(function(resolve, reject) {
+            _doFind(node, parts.shift()).then(function(folder) {
+              if (parts.length > 0) {
+                resolve(_findFolder(folder, parts));
+              } else {
+                resolve(folder);
+              }
+            });
+          });
+        }
+
+        /**
+         * Find child folder for node in tree
+         *
+         * @param node
+         * @param name
+         * @returns {*}
+         * @private
+         */
+        function _doFind(node, name) {
+          return $q(function(resolve, reject) {
+            var folder = null;
+            for (var i = 0; i < node.children.length; i++) {
+              if (node.children[i].name === name) {
+                folder = node.children[i];
+                folder.open = true;
+                folder.loading = false;
+              }
+            }
+            if (folder) {
+              resolve(folder);
+            } else {
+              if (node.children.length > 0) {
+                resolve(node);
+              } else {
+                _populateFolder(node, name, resolve);
+              }
+            }
+          });
+        }
+
+        /**
+         * If folder is not already loaded, load it from the server
+         *
+         * @param node
+         * @param name
+         * @param resolve
+         * @private
+         */
+        function _populateFolder(node, name, resolve) {
+          node.loading = true;
+          providerService.get(node.provider).createFolder(node, name).then(function(children) {
+            node.children = children;
+            node.loading = false;
+            resolve(_doFind(node, name));
+          }, function() {
+            resolve(null);
           });
         }
 
@@ -255,7 +334,6 @@ define(
         /**
          * Navigate up one directory in the tree
          *
-         * @param tree
          * @returns {*}
          */
         function upDirectory() {
@@ -350,55 +428,6 @@ define(
               });
             } else {
               resolve();
-            }
-          });
-        }
-
-        function _findRoot(tree, name) {
-          for (var i = 0; i < tree.length; i++) {
-            if (tree[i].name === name) {
-              return tree[i];
-            }
-          }
-        }
-
-        function _findFolder(node, parts) {
-          return $q(function(resolve, reject) {
-            _doFind(node, parts.shift()).then(function(folder) {
-              if (parts.length > 0) {
-                resolve(_findFolder(folder, parts));
-              } else {
-                resolve(folder);
-              }
-            });
-          });
-        }
-
-        function _doFind(node, name) {
-          return $q(function(resolve, reject) {
-            var folder = null;
-            for (var i = 0; i < node.children.length; i++) {
-              if (node.children[i].name === name) {
-                folder = node.children[i];
-                folder.open = true;
-                folder.loading = false;
-              }
-            }
-            if (folder) {
-              resolve(folder);
-            } else {
-              if (node.children.length > 0) {
-                resolve(node);
-              } else {
-                node.loading = true;
-                providerService.get(node.provider).createFolder(node, name).then(function(children) {
-                  node.children = children;
-                  node.loading = false;
-                  resolve(_doFind(node, name));
-                }, function() {
-                  resolve(null);
-                });
-              }
             }
           });
         }

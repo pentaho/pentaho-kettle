@@ -13,7 +13,7 @@
         </ul>
         &hellip;
       </li>
-      <li ng-repeat="set in vm.parts" ng-click="vm.onNameClick($event, set.path)">{{set.name}}</li>
+      <li ng-repeat="set in vm.parts" ng-click="vm.onNameClick($event, set.path)">{{set.name == "" ? "/" : set.name}}</li>
     </ul>
     <div class="dropdown" ng-click="vm.onDropdownClick($event)">&nbsp;</div>
   </div>
