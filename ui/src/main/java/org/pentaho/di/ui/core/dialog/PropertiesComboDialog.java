@@ -43,9 +43,14 @@ public class PropertiesComboDialog extends PropertiesDialog {
 
   @Override
   protected ColumnInfo[] createColumns() {
-    return new ColumnInfo[] {
-      new ColumnInfo( BaseMessages.getString( PKG, "PropertiesDialog.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO, comboOptions.toArray(
-        new String[ 0 ] ) ),
-      new ColumnInfo( BaseMessages.getString( PKG, "PropertiesDialog.Value" ), ColumnInfo.COLUMN_TYPE_TEXT ) };
+
+    ColumnInfo nameColumn = new ColumnInfo( BaseMessages.getString( PKG, "PropertiesDialog.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            comboOptions.toArray( new String[ 0 ] ) );
+    ColumnInfo valueColumn = new ColumnInfo( BaseMessages.getString( PKG, "PropertiesDialog.Value" ), ColumnInfo.COLUMN_TYPE_TEXT );
+
+    // allow the use of parameters on the value column (BACKLOG-31476)
+    valueColumn.setUsingVariables( true );
+
+    return new ColumnInfo[] { nameColumn, valueColumn };
   }
 }
