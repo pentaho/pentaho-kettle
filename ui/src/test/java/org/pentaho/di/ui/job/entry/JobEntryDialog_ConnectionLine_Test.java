@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,10 +33,18 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.powermock.reflect.Whitebox;
 
-import static org.junit.Assert.*;
+import java.util.function.Supplier;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 /**
  * @author Andrey Khayrutdinov
@@ -80,8 +88,15 @@ public class JobEntryDialog_ConnectionLine_Test {
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) )
       .thenAnswer( new PropsSettingAnswer( answeredName, INPUT_HOST ) );
 
+    Supplier<Spoon> mockSupplier = mock( Supplier.class );
+    Spoon mockSpoon = mock( Spoon.class );
+    Whitebox.setInternalState( dialog, "spoonSupplier", mockSupplier );
+    when( mockSupplier.get() ).thenReturn( mockSpoon );
     dialog.jobMeta = jobMeta;
     dialog.new AddConnectionListener( mock( CCombo.class ) ).widgetSelected( null );
+    if ( answeredName != null ) {
+      verify( mockSpoon, times( 1 ) ).refreshTree( anyString() );
+    }
   }
 
 
