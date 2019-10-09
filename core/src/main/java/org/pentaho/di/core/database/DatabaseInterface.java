@@ -1274,4 +1274,24 @@ public interface DatabaseInterface extends Cloneable {
                                String schemaPattern, String tableNamePattern, String[] tableTypes ) throws SQLException {
     return databaseMetaData.getTables( null, schemaPattern, tableNamePattern, tableTypes );
   }
+
+  /**
+   *
+   * @return The hadoop cluster associated with the connection
+   */
+  default String getNamedCluster() {
+    return "";
+  }
+
+  /**
+   * Set the hadoop cluster associated with the connection
+   * @param namedCluster The hadoop cluster name
+   */
+  default void setNamedCluster( String namedCluster ) {
+
+  }
+
+  default List<String> getNamedClusterList() {
+    return null;
+  }
 }

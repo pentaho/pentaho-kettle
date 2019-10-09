@@ -3097,4 +3097,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public ResultSet getSchemas( DatabaseMetaData databaseMetaData ) throws SQLException {
     return databaseInterface.getSchemas( databaseMetaData, this );
   }
+
+  public String getNamedCluster() {
+    return databaseInterface.getNamedCluster();
+  }
+
+  public void setNamedCluster( String namedCluster ) {
+    databaseInterface.setNamedCluster( namedCluster );
+  }
 }

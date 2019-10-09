@@ -172,6 +172,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
 
   public static final String SEQUENCE_FOR_BATCH_ID = "SEQUENCE_FOR_BATCH_ID";
   public static final String AUTOINCREMENT_SQL_FOR_BATCH_ID = "AUTOINCREMENT_SQL_FOR_BATCH_ID";
+  public static final String NAMED_CLUSTER_ID = "NAMED_CLUSTER_ID";
 
   /**
    * Boolean to indicate if savepoints can be released Most databases do, so we set it to true. Child classes can
@@ -289,7 +290,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
 
   private String pluginId;
   private String pluginName;
-
+  
   public BaseDatabaseMeta() {
     attributes = new Properties();
     changed = false;
@@ -2333,5 +2334,15 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   @Override
   public String getAttribute( String attributeId, String defaultValue ) {
     return attributes.getProperty( attributeId, defaultValue  );
+  }
+
+  @Override
+  public void setNamedCluster( String namedCluster ) {
+    addAttribute( NAMED_CLUSTER_ID, namedCluster );
+  }
+
+  @Override
+  public String getNamedCluster() {
+    return getAttribute( NAMED_CLUSTER_ID, "" );
   }
 }
