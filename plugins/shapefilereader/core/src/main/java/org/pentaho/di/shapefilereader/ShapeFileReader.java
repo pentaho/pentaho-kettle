@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -352,7 +352,7 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
         return false;
       }
 
-      data.shapeFile = new ShapeFile( log, meta.getShapeFilename(), meta.getDbfFilename() );
+      data.shapeFile = new ShapeFile( log, meta.getShapeFilename(), meta.getDbfFilename(), meta.getEncoding() );
       try {
         data.shapeFile.readFile();
       } catch ( Exception e ) {
