@@ -197,7 +197,7 @@ define(
         }
 
         function open(file) {
-          select(null, file.name, file.path, file.parent, file.connection, file.provider, null);
+          select(null, file.name, _getFilePath(file), file.parent, file.connection, file.provider, null);
         }
 
         function save(filename, folder, currentFilename, override) {
