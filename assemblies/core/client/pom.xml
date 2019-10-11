@@ -158,7 +158,7 @@
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${assembly.dir}/system/karaf</outputDirectory>
-                            <excludes>**/etc-pan/*.cfg,**/etc-kitchen/*.cfg,**/etc-scale/*.cfg</excludes>
+                            <excludes>**/etc-pan/*.cfg,**/etc-kitchen/*.cfg,**/etc-scale/*.cfg,**/deploy/pentaho-hadoop-shims*.kar</excludes>
                         </configuration>
                     </execution>
                 </executions>
