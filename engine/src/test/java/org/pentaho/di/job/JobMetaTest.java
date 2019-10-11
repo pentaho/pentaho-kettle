@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,12 +50,15 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.same;
@@ -204,6 +207,25 @@ public class JobMetaTest {
 
     // assert
     verify( jobMetaSpy ).setRepositoryDirectory( directoryJob );
+  }
+
+  // [PDI-18326]
+  @Test
+  public void testVerifyParametersActivatedWhenExporting() throws KettleException {
+    String testKey = "TESTKEY";
+    String testVariable = "test_value";
+    final JobMeta jobMetaSpy = spy( jobMeta );
+    jobMetaSpy.addParameterDefinition( testKey, "", "test key description" );
+    jobMetaSpy.setParameterValue( testKey, testVariable );
+    jobMetaSpy.setRepositoryDirectory( directoryJob );
+    jobMetaSpy.setName( JOB_META_NAME );
+    Map<String, ResourceDefinition> definitions = new HashMap<>( 1 );
+
+    assertNull( jobMetaSpy.getVariable( testKey ) );
+    jobMetaSpy.exportResources( jobMetaSpy, definitions, mock( ResourceNamingInterface.class ),
+      null, null );
+
+    assertEquals( jobMetaSpy.getVariable( testKey ) , testVariable );
   }
 
   @Test

@@ -89,6 +89,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 /**
  * Recursive definition of a Job. This step means that an entire Job has to be executed. It can be the same Job, but
  * just make sure that you don't get an endless loop. Provide an escape routine using JobEval.
@@ -746,57 +748,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           resultRow = null;
         }
 
-        NamedParams namedParam = new NamedParamsDefault();
-
-        // First (optionally) copy all the parameter values from the parent job
-        //
-        if ( paramsFromPrevious ) {
-          String[] parentParameters = parentJob.listParameters();
-          for ( int idx = 0; idx < parentParameters.length; idx++ ) {
-            String par = parentParameters[idx];
-            String def = parentJob.getParameterDefault( par );
-            String val = parentJob.getParameterValue( par );
-            String des = parentJob.getParameterDescription( par );
-
-            namedParam.addParameterDefinition( par, def, des );
-            namedParam.setParameterValue( par, val );
-          }
-        }
-
-        // Now add those parameter values specified by the user in the job entry
-        //
-        if ( parameters != null ) {
-          for ( int idx = 0; idx < parameters.length; idx++ ) {
-            if ( !Utils.isEmpty( parameters[idx] ) ) {
-
-              // If it's not yet present in the parent job, add it...
-              //
-              if ( Const.indexOfString( parameters[idx], namedParam.listParameters() ) < 0 ) {
-                // We have a parameter
-                try {
-                  namedParam.addParameterDefinition( parameters[idx], "", "Job entry runtime" );
-                } catch ( DuplicateParamException e ) {
-                  // Should never happen
-                  //
-                  logError( "Duplicate parameter definition for " + parameters[idx] );
-                }
-              }
-
-              if ( Utils.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
-                namedParam.setParameterValue( parameters[idx], Const.NVL(
-                  environmentSubstitute( parameterValues[idx] ), "" ) );
-              } else {
-                // something filled in, in the field column...
-                //
-                String value = "";
-                if ( resultRow != null ) {
-                  value = resultRow.getString( parameterFieldNames[idx], "" );
-                }
-                namedParam.setParameterValue( parameters[idx], value );
-              }
-            }
-          }
-        }
+        NamedParams namedParam = retrieveNamedParams( resultRow );
 
         Result oneResult = new Result();
 
@@ -1268,6 +1220,77 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return resultat;
   }
 
+  private NamedParams retrieveNamedParams( RowMetaAndData resultRow ) throws KettleException {
+    NamedParams namedParam = new NamedParamsDefault();
+
+    // First (optionally) copy all the parameter values from the parent job
+    //
+    if ( paramsFromPrevious ) {
+      String[] parentParameters = parentJob.listParameters();
+      for ( int idx = 0; idx < parentParameters.length; idx++ ) {
+        String par = parentParameters[idx];
+        String def = parentJob.getParameterDefault( par );
+        String val = parentJob.getParameterValue( par );
+        String des = parentJob.getParameterDescription( par );
+
+        namedParam.addParameterDefinition( par, def, des );
+        namedParam.setParameterValue( par, val );
+      }
+    }
+
+    // Now add those parameter values specified by the user in the job entry
+    //
+    if ( parameters != null ) {
+      for ( int idx = 0; idx < parameters.length; idx++ ) {
+        if ( !Utils.isEmpty( parameters[idx] ) ) {
+
+          // If it's not yet present in the parent job, add it...
+          //
+          if ( Const.indexOfString( parameters[idx], namedParam.listParameters() ) < 0 ) {
+            // We have a parameter
+            try {
+              namedParam.addParameterDefinition( parameters[idx], "", "Job entry runtime" );
+            } catch ( DuplicateParamException e ) {
+              // Should never happen
+              //
+              logError( "Duplicate parameter definition for " + parameters[idx] );
+            }
+          }
+
+          if ( Utils.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
+            namedParam.setParameterValue( parameters[idx], Const.NVL(
+              environmentSubstitute( parameterValues[idx] ), "" ) );
+          } else {
+            // something filled in, in the field column...
+            //
+            String value = "";
+            if ( resultRow != null ) {
+              value = resultRow.getString( parameterFieldNames[idx], "" );
+            }
+            namedParam.setParameterValue( parameters[idx], value );
+          }
+        }
+      }
+    }
+
+    return namedParam;
+  }
+
+  private void resolveParameters( JobMeta jobMeta ) throws KettleException {
+    // [PDI-18326] - We should resolve the JobEntyrJob's parameters (namedParams) against the set
+    // JobMeta's named parameters. This ensures that a Job that has a JobEntry that passes a
+    // parameter will be resolved appropriately without losing its value during the
+    // exportResources process. In the JobMeta class, we activate these parameters as well
+    // especially when these values need to be environmentally subsituted.
+    NamedParams namedParams = retrieveNamedParams( null );
+
+    for ( String paramKey : jobMeta.listParameters() ) {
+      if ( isPassingAllParameters() && isNotBlank( namedParams.getParameterValue( paramKey ) ) ) {
+        jobMeta.setParameterValue( paramKey, namedParams.getParameterValue( paramKey ) );
+      }
+    }
+  }
+
   /**
    * Make sure that we are not loading jobs recursively...
    *
@@ -1511,6 +1534,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     //
     copyVariablesFrom( space ); // To make sure variables are available.
     JobMeta jobMeta = getJobMeta( repository, metaStore, space );
+
+    resolveParameters( jobMeta );
 
     // Also go down into the job and export the files there. (going down
     // recursively)

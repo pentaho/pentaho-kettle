@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,6 +57,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -108,7 +110,6 @@ public class JobEntryJobTest {
       any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ), any( Repository.class ), any( Job.class ), anyString() );
 
     whenNew( CurrentDirectoryResolver.class ).withNoArguments().thenReturn( resolver );
-    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
   }
 
   /**
@@ -130,6 +131,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testNotConnectedLoad_RepByRef() throws Exception {
+    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
     jej.setJobObjectId( JOB_ENTRY_JOB_OBJECT_ID );
@@ -147,6 +149,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testNotConnectedLoad_RepByName() throws Exception {
+    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     jej.setJobName( JOB_ENTRY_FILE_NAME );
@@ -164,6 +167,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testNotConnectedLoad_Filename() throws Exception {
+    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     jej.setFileName( JOB_ENTRY_FILE_PATH );
@@ -228,6 +232,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_Filename() throws Exception {
+    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     jej.setFileName( JOB_ENTRY_FILE_PATH );
@@ -278,6 +283,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_Filename_Guess() throws Exception {
+    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.setFileName( JOB_ENTRY_FILE_PATH );
     jej.loadXML( getNode( jej ), databases, servers, repository, store );
@@ -356,6 +362,7 @@ public class JobEntryJobTest {
     doReturn( "filename" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "specification_method" );
     doReturn( JOB_ENTRY_FILE_PATH ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "file_name" );
 
+    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
@@ -378,6 +385,7 @@ public class JobEntryJobTest {
     doReturn( "job" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "name" );
     doReturn( "${hdfs}" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "dir_path" );
 
+    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
@@ -485,6 +493,7 @@ public class JobEntryJobTest {
     doReturn( null ).when( myrepo ).getJobEntryAttributeString( any( ObjectId.class ), anyString() );
     doReturn( JOB_ENTRY_FILE_PATH ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "file_name" );
 
+    whenNew( JobMeta.class ).withAnyArguments().thenReturn( mock( JobMeta.class ) );
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
@@ -522,10 +531,37 @@ public class JobEntryJobTest {
     doReturn( JOB_ENTRY_JOB_NAME ).when( meta ).exportResources(
       any( JobMeta.class ), any( Map.class ), any( ResourceNamingInterface.class ),
       any( Repository.class ), any( IMetaStore.class ) );
+    doReturn( new String[0] ).when( meta ).listParameters();
 
     jej.exportResources( null, null, null, null, null );
 
     verify( meta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + JOB_ENTRY_JOB_NAME );
     verify( jej ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+  }
+
+  // [PDI-18326]
+  @Test
+  public void testExportResourcesResolveParams() throws Exception {
+    String testKey = "TESTKEY";
+    String testVariable = "test_value";
+    JobMeta jobMeta = spy( new JobMeta() );
+    JobEntryJob jobEntryJob = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    jobEntryJob.setDescription( JOB_ENTRY_DESCRIPTION );
+    jobEntryJob.parameters = new String[1];
+    jobEntryJob.parameterFieldNames = new String[1];
+    jobEntryJob.parameterValues = new String[1];
+    jobEntryJob.parameters[0] = testKey;
+    jobEntryJob.parameterValues[0] = testVariable;
+
+    doReturn( jobMeta ).when( jobEntryJob ).getJobMeta( any(), any(), any() );
+    doReturn( "testfilename" ).when( jobMeta ).exportResources( any(), any(), any(), any(), any() );
+    doNothing().when( jobMeta ).setFilename( any() );
+    doNothing().when( jobMeta ).setRepositoryDirectory( any() );
+
+    jobMeta.addParameterDefinition( testKey, "", "test key description" );
+
+    jobEntryJob.exportResources( null, null, null, null, null );
+
+    assertEquals( jobMeta.getParameterValue( testKey ), testVariable );
   }
 }

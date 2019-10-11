@@ -2540,6 +2540,10 @@ public class JobMeta extends AbstractMeta
         // At the end we make a new XML version of it in "exported"
         // format...
 
+        // Make sure parameters are activated for variable resolution further down the entries
+        jobMeta.copyParametersFrom( this.namedParams );
+        jobMeta.activateParameters();
+
         // loop over steps, databases will be exported to XML anyway.
         //
         for ( JobEntryCopy jobEntry : jobMeta.jobcopies ) {
