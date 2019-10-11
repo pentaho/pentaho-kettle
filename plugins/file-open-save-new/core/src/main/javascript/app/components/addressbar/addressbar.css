@@ -127,13 +127,16 @@ addressbar .breadcrumb ul.parts {
 }
 
 addressbar .breadcrumb ul.parts>li {
-  max-width: 200px;
-  overflow: hidden;
   cursor: pointer;
   color: #005DA6;
   display: inline-block;
   background: url("../../img/chevron_right_tree.svg") no-repeat right center;
   padding-right: 20px;
+}
+
+addressbar .breadcrumb ul.parts>li.part {
+  max-width: 200px;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
