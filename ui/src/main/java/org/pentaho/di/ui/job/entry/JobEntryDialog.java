@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,8 +48,12 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.function.Supplier;
 
 /**
  * The JobEntryDialog class is responsible for constructing and opening the settings dialog for the job entry. Whenever
@@ -93,8 +97,12 @@ public class JobEntryDialog extends Dialog {
   /** A reference to the parent shell */
   protected Shell parent;
 
-  /** A reference to a database dialog */
+  /**
+   * A reference to a database dialog
+   */
   protected DatabaseDialog databaseDialog;
+
+  private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
   /**
    * Instantiates a new job entry dialog.
@@ -352,6 +360,7 @@ public class JobEntryDialog extends Dialog {
       if ( connectionName != null ) {
         jobMeta.addDatabase( databaseMeta );
         reinitConnectionDropDown( wConnection, databaseMeta.getName() );
+        spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
       }
     }
   }

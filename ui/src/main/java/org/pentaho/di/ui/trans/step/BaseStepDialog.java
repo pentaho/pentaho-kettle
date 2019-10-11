@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,12 +85,15 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * This class provides functionality common to Step Dialogs.
@@ -227,6 +230,8 @@ public class BaseStepDialog extends Dialog {
    * A reference to a database dialog.
    */
   protected DatabaseDialog databaseDialog;
+
+  private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
   static {
     // Get the button alignment
@@ -1488,6 +1493,7 @@ public class BaseStepDialog extends Dialog {
       if ( connectionName != null ) {
         transMeta.addDatabase( databaseMeta );
         reinitConnectionDropDown( wConnection, databaseMeta.getName() );
+        spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
       }
     }
   }
