@@ -920,6 +920,7 @@ public class Const {
   /**
    * The XML file that contains the list of native Kettle two-way password encoder plugins
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
 
   /**
@@ -931,17 +932,20 @@ public class Const {
   /**
    * Specifies the password encoding plugin to use by ID (Kettle is the default).
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-password-encoder-plugins.xml
    * file
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
 
   /**
    * The name of the Kettle encryption seed environment variable for the KettleTwoWayPasswordEncoder class
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = "KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED";
 
   /**
@@ -1005,6 +1009,7 @@ public class Const {
   /**
    * Set this variable to with the intended password to pass as repository credentials
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String KETTLE_PASSWORD = "KETTLE_PASSWORD";
 
   /**
