@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
+<style type="text/css">
+	.st0{clip-path:url(#SVGID_2_);}
+	.st1{fill:none;}
+	.st2{fill:#FFFFFF;}
+</style>
+<g>
+	<defs>
+		<rect id="SVGID_1_" width="32" height="32"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+	</clipPath>
+	<g id="Time.S_D" class="st0">
+		<rect id="Rectangle_974" class="st1" width="32" height="32"/>
+		<g id="StepCompleted-16">
+			<rect id="Rectangle_974-2" class="st1" width="32" height="32"/>
+			<circle id="Ellipse_236" class="st1" cx="16" cy="16" r="8"/>
+		</g>
+		<g id="Group_5772">
+			<g id="Group_50">
+				<g id="Path_56">
+					<path id="Path_3058" class="st1" d="M16,24L16,24c-4.4,0-8-3.6-8-8l0,0c0-4.4,3.6-8,8-8l0,0c4.4,0,8,3.6,8,8l0,0
+						C24,20.4,20.4,24,16,24z"/>
+					<path id="Path_3059" class="st2" d="M16,23c3.9,0,7-3.1,7-7s-3.1-7-7-7c-3.9,0-7,3.1-7,7c0,1.9,0.7,3.7,2.1,5
+						C12.4,22.3,14.1,23,16,23 M16,24c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8C24,20.4,20.4,24,16,24z"/>
+				</g>
+			</g>
+		</g>
+		<path id="Path_3060" class="st2" d="M18.6,19.4l-3.1-3.1V11h1v4.8l2.9,2.9L18.6,19.4z"/>
+	</g>
+</g>
+</svg>

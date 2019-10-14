@@ -42,7 +42,7 @@ public interface FileProvider<T extends File> {
 
   Tree getTree();
 
-  List<T> getFiles( T file, String filters );
+  List<T> getFiles( T file, String filters ) throws FileException;
 
   List<T> delete( List<T> files ) throws FileException;
 

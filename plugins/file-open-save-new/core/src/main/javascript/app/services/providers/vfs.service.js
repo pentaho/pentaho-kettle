@@ -24,9 +24,10 @@
  */
 define(
     [
-      "../../components/utils"
+      "../../components/utils",
+      "pentaho/i18n-osgi!file-open-save-new.messages"
     ],
-    function (utils) {
+    function (utils, i18n) {
       "use strict";
 
       var factoryArray = ["helperService", "$http", "$q", factory];
@@ -50,7 +51,7 @@ define(
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "vfs",
-          order: 0,
+          order: 2,
           root: "VFS Connections",
           matchPath: matchPath,
           selectFolder: selectFolder,
@@ -99,6 +100,11 @@ define(
                   folder.children[i].provider = folder.provider;
                 }
                 resolve();
+              }, function(err) {
+                reject({
+                  title: i18n.get('file-open-save-plugin.vfs.unable-to-connect.title'),
+                  message: i18n.get('file-open-save-plugin.vfs.unable-to-connect.message')
+                });
               });
             } else {
               resolve();

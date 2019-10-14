@@ -26,9 +26,10 @@ define(
     [
       "./provider.service",
       "./file.service",
-      "../components/utils"
+      "../components/utils",
+      "pentaho/i18n-osgi!file-open-save-new.messages"
     ],
-    function (providerService, fileService, utils) {
+    function (providerService, fileService, utils, i18n) {
       "use strict";
 
       var factoryArray = [providerService.name, fileService.name, "$q", factory];
@@ -79,6 +80,8 @@ define(
               if (folder.provider !== "recents") {
                 _selectFolder(folder, filters, useCache).then(function () {
                   resolve(self.folder);
+                }, function(err) {
+                  reject(err);
                 });
               } else {
                 resolve(self.folder);
@@ -151,7 +154,7 @@ define(
                   resolve();
                 });
               }).catch(function (path) {
-                self.loadFile(path, props, resolve);
+                self.loadFile(path, props, resolve, reject);
               });
             } else {
               reject();
@@ -166,7 +169,7 @@ define(
          * @param props
          * @param resolve
          */
-        function loadFile(path, props, resolve) {
+        function loadFile(path, props, resolve, reject) {
           var self = this;
           self.folder = {path: path};
           fileService.get({ path: path }).then(function (file) {
@@ -184,6 +187,8 @@ define(
               fileService.files = [];
               _selectFile(filename, self);
               resolve();
+            }, function(error) {
+              reject(error);
             });
           });
         }
@@ -272,7 +277,7 @@ define(
           return $q(function(resolve, reject) {
             var folder = null;
             for (var i = 0; i < node.children.length; i++) {
-              if (node.children[i].name === name) {
+              if (node.children[i].name.trim() === name.trim()) {
                 folder = node.children[i];
                 folder.open = true;
                 folder.loading = false;
@@ -404,6 +409,11 @@ define(
           return $q(function(resolve, reject) {
             service.getFilesByPath(path, useCache).then(function (files) {
               resolve(files);
+            }, function(err) {
+              reject({
+                title: i18n.get('file-open-save-plugin.vfs.unable-to-connect.title'),
+                message: i18n.get('file-open-save-plugin.vfs.unable-to-connect.message')
+              })
             });
           });
         }
@@ -423,8 +433,8 @@ define(
               service.selectFolder(folder, filters, useCache).then(function() {
                 folder.loading = false;
                 resolve();
-              }, function () {
-                resolve();
+              }, function (err) {
+                reject(err);
               });
             } else {
               resolve();

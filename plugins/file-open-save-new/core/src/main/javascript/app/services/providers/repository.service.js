@@ -49,7 +49,7 @@ define(
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "repository",
-          order: 1,
+          order: 0,
           root: "Pentaho Repository",
           matchPath: matchPath,
           selectFolder: selectFolder,

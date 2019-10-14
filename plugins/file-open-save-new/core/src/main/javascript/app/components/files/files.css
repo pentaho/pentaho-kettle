@@ -157,11 +157,12 @@ files td.editing .fileTypeIcon {
 }
 
 files tr .fileTypeIcon {
-  background: no-repeat left center;
+  background: no-repeat center center;
+  background-size: 32px;
 }
 
 files tr.selected .fileTypeIcon {
-  background-position: right center;
+
 }
 
 files .headerLabel {
@@ -217,18 +218,18 @@ files .sortWrapper {
 }
 
 files .sortWrapper .sort {
-  background: url("../../img/sort_none.svg") center no-repeat;
-  height: 17px;
+  background: url("../../img/Sort.XS_D.svg") center no-repeat;
+  height: 18px;
   width: 10px;
   visibility: hidden;
 }
 
 files .sortWrapper .sort.sortUp {
-  background-image: url("../../img/sort_up.svg");
+  background-image: url("../../img/SortAscending.XS_D.svg");
   visibility: visible;
 }
 
 files .sortWrapper .sort.sortDown {
-  background-image: url("../../img/sort_down.svg");
+  background-image: url("../../img/SortDescending.XS_D.svg");
   visibility: visible;
 }

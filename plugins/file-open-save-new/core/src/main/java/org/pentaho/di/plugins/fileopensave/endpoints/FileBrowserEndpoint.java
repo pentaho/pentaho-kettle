@@ -25,6 +25,8 @@ package org.pentaho.di.plugins.fileopensave.endpoints;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FromTo;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileNotFoundException;
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.controllers.RepositoryBrowserController;
 
@@ -74,7 +76,14 @@ public class FileBrowserEndpoint {
     if ( !useCache ) {
       fileController.clearCache( file );
     }
-    return Response.ok( fileController.getFiles( file, filters, useCache ) ).build();
+    try {
+      return Response.ok( fileController.getFiles( file, filters, useCache ) ).build();
+    } catch ( FileException e ) {
+      if ( e instanceof FileNotFoundException ) {
+        return Response.status( Response.Status.NOT_FOUND ).build();
+      }
+    }
+    return Response.status( Response.Status.NO_CONTENT ).build();
   }
 
   @POST

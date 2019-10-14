@@ -154,15 +154,15 @@ define([
     }
 
     var types = [];
-    types['kjb'] = "job";
-    types['ktr'] = "trans";
-    types['jpg'] = "image";
-    types['png'] = "image";
-    types['gif'] = "image";
-    types['txt'] = "text";
-    types['csv'] = "text";
-    types['json'] = "text";
-    types['xml'] = "text";
+    types['kjb'] = "Job.S_D";
+    types['ktr'] = "Transformation.S_D";
+    types['jpg'] = "Picture.S_D";
+    types['png'] = "Picture.S_D";
+    types['gif'] = "Picture.S_D";
+    types['txt'] = "Report.S_D";
+    types['csv'] = "Report.S_D";
+    types['json'] = "Report.S_D";
+    types['xml'] = "Report.S_D";
 
     /**
      * Gets the file extension
@@ -171,12 +171,14 @@ define([
      */
     function getExtension(file) {
       if (file.type === "folder") {
-        return "folder";
+        return vm.isSelected(file) ? "Archive.S_D_white" : "Archive.S_D";
       }
       var index = file.path.lastIndexOf(".");
       var extension = file.path.substr(index + 1, file.path.length);
       var type = types[extension.toLowerCase()];
-      return type ? type : "blank";
+      var icon = type ? type : "Doc.S_D";
+      icon += vm.isSelected(file) ? "_white" : "";
+      return icon;
     }
 
     /**

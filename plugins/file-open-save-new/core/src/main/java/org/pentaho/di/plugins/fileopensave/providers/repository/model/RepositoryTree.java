@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class RepositoryTree implements Tree<RepositoryFile> {
 
-  private static final int ORDER = 2;
+  private static final int ORDER = 1;
   private String name;
   private boolean includeRoot;
 

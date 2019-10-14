@@ -28,6 +28,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Result;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileNotFoundException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
 
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -80,7 +82,7 @@ public class FileController {
   }
 
   // TODO: Make cache account for filters
-  public List<File> getFiles( File file, String filters, Boolean useCache ) {
+  public List<File> getFiles( File file, String filters, Boolean useCache ) throws FileException {
     try {
       FileProvider<File> fileProvider = getFileProvider( file.getProvider() );
       if ( fileCache.containsKey( file ) && useCache ) {
