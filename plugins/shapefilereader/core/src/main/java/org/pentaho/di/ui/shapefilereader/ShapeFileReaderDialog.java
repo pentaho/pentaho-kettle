@@ -26,6 +26,7 @@
  */
 package org.pentaho.di.ui.shapefilereader;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusListener;
@@ -95,6 +96,10 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
+    //set encoding based on environment variable or empty otherwise
+    input.setEncoding( StringUtils.isNotBlank( transMeta.getVariable( "ESRI.encoding" ) )
+      ? transMeta.getVariable( "ESRI.encoding" ) : "" );
+
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
@@ -408,8 +413,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
     if ( input.getDbfFilename() != null ) {
       wDbf.setText( input.getDbfFilename() );
     }
-
-    if ( input.getEncoding() != null ) {
+    if ( StringUtils.isNotBlank( input.getEncoding() ) ) {
       wEncoding.setText( input.getEncoding() );
     }
 
@@ -422,9 +426,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
       wEncoding.add( charSet.displayName() );
     }
 
-    // Now select the default!
-    String defEncoding = transMeta.getVariable( "ESRI.encoding", "UTF-8" );
-    int idx = Const.indexOfString( defEncoding, wEncoding.getItems() );
+    int idx = Const.indexOfString( input.getEncoding(), wEncoding.getItems() );
     if ( idx >= 0 ) {
       wEncoding.select( idx );
     }
@@ -441,7 +443,8 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
 
     input.setShapeFilename( wShape.getText() );
     input.setDbfFilename( wDbf.getText() );
-    input.setEncoding( wEncoding.getText() );
+    input.setEncoding( StringUtils.isNotBlank( wEncoding.getText() )
+      ? wEncoding.getText() : input.getEncoding() );
 
     dispose();
   }
