@@ -23,6 +23,7 @@
 package org.pentaho.di.kitchen;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.log4j.MDC;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.KettleConstants;
@@ -226,6 +227,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() ); // same as the other list options
       }
 
+      MDC.put( KettleConstants.UUID, params.getUuid() ); // Add the UUID to log4j MDC so it can be inserted in log lines
       job.start(); // Execute the selected job.
       job.waitUntilFinished();
       setResult( job.getResult() ); // get the execution result
@@ -247,6 +249,8 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     calculateAndPrintElapsedTime( start, stop, "Kitchen.Log.StartStop", "Kitchen.Log.ProcessEndAfter", "Kitchen.Log.ProcessEndAfterLong",
             "Kitchen.Log.ProcessEndAfterLonger", "Kitchen.Log.ProcessEndAfterLongest" );
     getResult().setElapsedTimeMillis( stop.getTime() - start.getTime() );
+
+    MDC.remove( KettleConstants.UUID ); // cleanup log4j MDC
 
     return exitWithStatus( returnCode );
   }
