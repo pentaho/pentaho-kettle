@@ -199,7 +199,6 @@ String buildResourcesPatchedFolder = cli.buildResourcesPatchedFolder
 makeFolder(buildResourcesPatchedFolder)
 
 // Make all of the patch folders
-makeFolder(manualBigDataPluginFolder)
 makeFolder(aggDesignerExtractFolder)
 makeFolder(pdiClientExtractFolder)
 makeFolder(metadataEditorExtractFolder)
@@ -207,9 +206,6 @@ makeFolder(serverExtractFolder)
 makeFolder(serverManualPatchesFolder)
 makeFolder(reportDesignerExtractFolder)
 makeFolder(schemaWorkbenchExtractFolder)
-
-// Copy the big data plugin to manual folder
-copyFile(bigDataEEPackageArchive, bigDataEEPackageDestination)
 
 // Expand the product archives
 expandArchive(aggDesignerArchive, aggDesignerExtractFolder)
