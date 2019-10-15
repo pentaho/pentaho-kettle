@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2239,7 +2239,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
         setValue( getInteger() + v.getInteger() );
         break;
       case VALUE_TYPE_BOOLEAN:
-        setValue( getBoolean() | v.getBoolean() );
+        setValue( getBoolean() || v.getBoolean() );
         break;
       case VALUE_TYPE_STRING:
         setValue( getString() + v.getString() );
@@ -3486,7 +3486,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     return trunc( (int) level );
   }
 
-  @SuppressWarnings( "fallthrough" )
+  @SuppressWarnings( { "fallthrough", "squid:S128" } )
   public Value trunc( int level ) throws KettleValueException {
     if ( isNull() ) {
       return this; // don't do anything, leave it at NULL!

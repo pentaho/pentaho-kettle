@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.pentaho.di.core.logging.LogChannel;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -62,7 +63,8 @@ public class SlaveConnectionManager {
         context.init( new KeyManager[ 0 ], new X509TrustManager[] { getDefaultTrustManager() }, new SecureRandom() );
         SSLContext.setDefault( context );
       } catch ( Exception e ) {
-        //log.logError( "Default SSL context hasn't been initialized", e );
+        new LogChannel( "SlaveConnectionManager" )
+          .logDebug( "Default SSL context hasn't been initialized.\n" + e.getMessage() );
       }
     }
     manager = new PoolingHttpClientConnectionManager();
@@ -128,6 +130,7 @@ public class SlaveConnectionManager {
     return new X509TrustManager() {
       @Override
       public void checkClientTrusted( X509Certificate[] certs, String param ) throws CertificateException {
+        throw new CertificateException( "Client Authentication not implemented" );
       }
 
       @Override
@@ -141,7 +144,7 @@ public class SlaveConnectionManager {
 
       @Override
       public X509Certificate[] getAcceptedIssuers() {
-        return null;
+        return new X509Certificate[0];
       }
     };
   }
