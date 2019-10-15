@@ -29,6 +29,7 @@ package org.pentaho.di.shapefilereader;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -141,7 +142,11 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
           linesInput++;
 
           // Put it out to the rest of the world...
-          putRow( data.outputRowMeta, outputRow );
+          try {
+            putRow( data.outputRowMeta, data.outputRowMeta.cloneRow( outputRow ) );
+          } catch( KettleValueException e) {
+            throw new KettleStepException( "Unable to clone row", e);
+          }
         }
       }
       break;
@@ -202,7 +207,11 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
           linesInput++;
 
           // Put it out to the rest of the world...
-          putRow( data.outputRowMeta, outputRow );
+          try {
+            putRow( data.outputRowMeta, data.outputRowMeta.cloneRow( outputRow ) );
+          } catch( KettleValueException e) {
+            throw new KettleStepException( "Unable to clone row", e);
+          }
         }
       }
       break;
@@ -264,7 +273,11 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
           linesInput++;
 
           // Put it out to the rest of the world...
-          putRow( data.outputRowMeta, outputRow );
+          try {
+            putRow( data.outputRowMeta, data.outputRowMeta.cloneRow( outputRow ) );
+          } catch( KettleValueException e) {
+            throw new KettleStepException( "Unable to clone row", e);
+          }
         }
       }
       break;
@@ -318,7 +331,11 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
         linesInput++;
 
         // Put it out to the rest of the world...
-        putRow( data.outputRowMeta, outputRow );
+        try {
+          putRow( data.outputRowMeta, data.outputRowMeta.cloneRow( outputRow ) );
+        } catch( KettleValueException e) {
+          throw new KettleStepException( "Unable to clone row", e);
+        }
       }
       break;
       default:
