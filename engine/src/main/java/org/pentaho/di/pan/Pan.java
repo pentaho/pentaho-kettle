@@ -72,7 +72,7 @@ public class Pan {
     StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
     StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
     StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
-    StringBuilder optionBase64Zip;
+    StringBuilder optionBase64Zip, optionUuid;
 
     NamedParams optionParams = new NamedParamsDefault();
 
@@ -153,6 +153,9 @@ public class Pan {
         new CommandLineOption(
           "zip", "Base64Zip", optionBase64Zip =
           new StringBuilder(), false, true ),
+        new CommandLineOption(
+                "uuid", "UUID", optionUuid =
+                new StringBuilder(), false, true ),
         new CommandLineOption(
           "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
           new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
@@ -237,7 +240,8 @@ public class Pan {
         }
       }
 
-      Params transParams = ( new Params.Builder() )
+      Params.Builder builder = optionUuid.length() > 0 ? new Params.Builder( optionUuid.toString() ) : new Params.Builder();
+      Params transParams = ( builder )
               .blockRepoConns( optionNorep.toString() )
               .repoName( optionRepname.toString() )
               .repoUsername( optionUsername.toString() )
