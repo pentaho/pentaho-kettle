@@ -77,7 +77,7 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
   public String dbfFilename;
 
   /**
-   * The encoding to use for reading: null or empty string means system default encoding
+   * File encoding
    */
   private String encoding;
 
@@ -152,7 +152,7 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
   public void setDefault() {
     shapeFilename = "";
     dbfFilename = "";
-    encoding = "";
+    encoding = "ISO8859-1";
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
