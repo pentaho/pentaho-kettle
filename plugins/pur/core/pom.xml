@@ -38,7 +38,6 @@
     <!-- Test dependencies -->
     <se-jcr.version>0.9</se-jcr.version>
     <jcr.version>2.0</jcr.version>
-    <jackrabbit-core.version>2.14.2</jackrabbit-core.version>
 
     <!-- Wadl2Java Settings -->
     <wadl2java.generated-class-name>Localhost_PentahoPlugin</wadl2java.generated-class-name>
@@ -329,7 +328,6 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-core</artifactId>
-      <version>${jackrabbit-core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
