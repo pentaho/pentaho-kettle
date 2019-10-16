@@ -98,7 +98,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
-    shell.setImage( getImage() );
+    setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
