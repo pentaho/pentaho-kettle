@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
@@ -53,7 +52,7 @@ public class FieldsTab {
 
   private CTabFolder wTabFolder;
   private PropsUI props;
-  private TableView fieldsTable;
+  TableView fieldsTable;
   private VariableSpace transMeta;
   private ModifyListener lsMod;
   private String message;
@@ -183,14 +182,4 @@ public class FieldsTab {
 
     return new ColumnInfo[] { referenceName, name, type };
   }
-
-  public String[] getFieldNames() {
-    return stream( fieldsTable.getTable().getItems() ).map( row -> row.getText( 2 ) ).toArray( String[]::new );
-  }
-
-  public int[] getFieldTypes() {
-    return stream( fieldsTable.getTable().getItems() )
-      .mapToInt( row -> ValueMetaFactory.getIdForValueMeta( row.getText( 3 ) ) ).toArray();
-  }
-
 }
