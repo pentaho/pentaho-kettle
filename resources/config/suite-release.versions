@@ -121,7 +121,7 @@ pentaho.version=9.0.0.0-BUILDTAG
 pir-plugin.version=9.0.0.0-BUILDTAG
 platform.version=9.0.0.0-BUILDTAG
 schemaworkbench-plugins.version=9.0.0.0-BUILDTAG
-snowflake-plugin.version=1.0.0-BUILDTAG
+snowflake-plugin.version=1.1.0-BUILDTAG
 vertica-bulkloader-plugin.version=9.0.0.0-BUILDTAG
 worker-nodes.version=9.0.0.0-BUILDTAG
 
