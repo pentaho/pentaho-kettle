@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,11 @@ package org.pentaho.di.trans.steps.jsoninput;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertNotNull;
+import static org.pentaho.di.core.util.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,6 +48,7 @@ import java.util.zip.ZipOutputStream;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.jayway.jsonpath.InvalidPathException;
 import junit.framework.ComparisonFailure;
 
 import org.apache.commons.io.IOUtils;
@@ -1084,6 +1088,33 @@ public class JsonInputTest {
     Assert.assertEquals( 1, jsonInput.getErrors() );
   }
 
+  @Test
+  public void testJsonInputPathResolutionSuccess() {
+    JsonInputField inputField = new JsonInputField( "value" );
+    final String PATH = "${PARAM_PATH}.price";
+    inputField.setPath( PATH );
+    inputField.setType( ValueMetaInterface.TYPE_STRING );
+    final JsonInputMeta inputMeta = createSimpleMeta( "json", inputField );
+    VariableSpace variables = new Variables();
+    JsonInput jsonInput = null;
+    try {
+      jsonInput =
+        createJsonInput( "json", inputMeta, variables, new Object[] { getBasicTestJson() } );
+      fail( "Without the parameter, this call should fail with an InvalidPathException. If it does not, test fails." );
+    } catch ( InvalidPathException pathException ) {
+      assertNull( jsonInput );
+    }
+
+    variables.setVariable( "PARAM_PATH", "$..book.[*]" );
+
+    try {
+      jsonInput = createJsonInput( "json", inputMeta, variables, new Object[] { getBasicTestJson() } );
+      assertNotNull( jsonInput );
+    } catch ( Exception ex ) {
+      fail( "Json Input should be able to resolve the paths with the parameter introduced in the variable space." );
+    }
+  }
+
   protected JsonInputMeta createSimpleMeta( String inputColumn, JsonInputField... jsonPathFields ) {
     JsonInputMeta jsonInputMeta = new JsonInputMeta();
     jsonInputMeta.setDefault();
@@ -1212,7 +1243,7 @@ public class JsonInputTest {
     @Override
     public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
       if ( rowNbr >= data.length ) {
-        throw new ComparisonFailure( "too many output rows", "" + data.length, "" + (rowNbr + 1) );
+        throw new ComparisonFailure( "too many output rows", "" + data.length, "" + ( rowNbr + 1 ) );
       } else {
         for ( int i = 0; i < data[ rowNbr ].length; i++ ) {
           try {
