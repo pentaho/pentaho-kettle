@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -72,7 +71,6 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
   private TextVar wConnection;
   private TableView topicsTable;
   private ComboVar wQOS;
-  private TableView fieldsTable;
 
   private final Point startingDimensions = new Point( 527, 676 );
 
@@ -231,16 +229,6 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     optionsLayout = new MqttDialogOptionsLayout( props, wTabFolder, lsMod, transMeta,
       mqttMeta.retrieveOptions() );
     optionsLayout.buildTab();
-  }
-
-
-  @Override protected String[] getFieldNames() {
-    return stream( fieldsTable.getTable().getItems() ).map( row -> row.getText( 2 ) ).toArray( String[]::new );
-  }
-
-  @Override protected int[] getFieldTypes() {
-    return stream( fieldsTable.getTable().getItems() )
-      .mapToInt( row -> ValueMetaFactory.getIdForValueMeta( row.getText( 3 ) ) ).toArray();
   }
 
   private void buildFieldsTab() {
