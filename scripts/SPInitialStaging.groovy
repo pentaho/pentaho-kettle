@@ -148,7 +148,6 @@ assert cli.process(args) : "Unable to parse command-line arguments"
 
 // Product archives
 def buildHostingVersionFolder = "${cli.buildHostingRootFolder}/${cli.suiteReleaseVersion}/${cli.releaseBuildNumber}"
-def bigDataEEPackageArchive = "${buildHostingVersionFolder}/pentaho-big-data-ee-package-${cli.releaseVersion}.zip"
 def aggDesignerArchive = "${buildHostingVersionFolder}/pad-ee-${cli.releaseVersion}.zip"
 def pdiClientArchive = "${buildHostingVersionFolder}/pdi-ee-client-${cli.releaseVersion}.zip"
 def metadataEditorArchive = "${buildHostingVersionFolder}/pme-ee-${cli.releaseVersion}.zip"
@@ -158,7 +157,6 @@ def macReportDesignerArchive = "${buildHostingVersionFolder}/prd-ee-mac-${cli.re
 def schemaWorkbenchArchive = "${buildHostingVersionFolder}/psw-ee-${cli.mondrianVersion}.zip"
 
 // Patch destination folders
-def manualBigDataPluginFolder = "${cli.buildResourcesPatchedFolder}/manual/big-data-plugin"
 def aggDesignerFolder ="${cli.buildResourcesPatchedFolder}/pad-ee/${cli.releaseVersion}"
 def pdiClientFolder ="${cli.buildResourcesPatchedFolder}/pdi-ee-client/${cli.releaseVersion}"
 def metadataEditorFolder ="${cli.buildResourcesPatchedFolder}/pme-ee/${cli.releaseVersion}"
@@ -183,9 +181,6 @@ def serverTarArchive = "${serverFolder}.tar"
 def serverManualPatchesTarArchive = "${serverManualPatchesFolder}/${cli.releaseVersion}.tar"
 def reportDesignerTarArchive = "${reportDesignerFolder}.tar"
 def schemaWorkbenchTarArchive = "${schemaWorkbenchFolder}.tar"
-
-// File copy destinations
-def bigDataEEPackageDestination = "${manualBigDataPluginFolder}/pentaho-big-data-ee-package-${cli.releaseVersion}.zip"
 
 // Plugin paths
 def pentahoServerPluginFolder = "${serverExtractFolder}/pentaho-server/pentaho-solutions/system"
