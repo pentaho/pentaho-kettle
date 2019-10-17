@@ -114,7 +114,7 @@ jobGroups:
 
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       directives      :  += -DskipDefault -P api,shims,all -Dsonar.test.exclusions=**/*generated-test-sources*/**
+       directives      :  += -DskipDefault -P api,common,shims,all -Dsonar.test.exclusions=**/*generated-test-sources*/**
 
      - jobID           :  big-data-splunk-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
