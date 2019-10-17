@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="32" height="32" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Cloud.S_D" clip-path="url(#clip-path)">
+    <rect id="Rectangle_2459" data-name="Rectangle 2459" width="32" height="32" fill="none"/>
+    <g id="Union_296" data-name="Union 296">
+      <path id="Path_3717" data-name="Path 3717" d="M20.486,22H12a4,4,0,0,1-2-7.464V14.5a4.5,4.5,0,0,1,8.3-2.417,3,3,0,0,1,3.682,3.246A3.5,3.5,0,0,1,20.5,22Z" fill="none"/>
+      <path id="Path_3718" data-name="Path 3718" d="M19.486,21h1.023a2.5,2.5,0,0,0,1.05-4.766l-.648-.3.077-.711a2,2,0,0,0-2.458-2.164l-.693.166-.384-.6A3.5,3.5,0,0,0,11,14.5v.612l-.5.289A3,3,0,0,0,12,21h7.486M20.5,22H12a4,4,0,0,1-2-7.465V14.5a4.5,4.5,0,0,1,8.3-2.417A3,3,0,0,1,22,15a2.964,2.964,0,0,1-.018.328A3.5,3.5,0,0,1,20.5,22Z" fill="#414141"/>
+    </g>
+  </g>
+</svg>

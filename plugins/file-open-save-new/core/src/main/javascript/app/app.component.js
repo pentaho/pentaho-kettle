@@ -250,8 +250,10 @@ define([
         vm.fileLoading = false;
         vm.showRecents = folder.provider === "recents";
         _update();
-      }).catch(function() {
+      }).catch(function(error) {
+        folder.loading = false;
         vm.fileLoading = false;
+        modalService.open("error-dialog", error.title, error.message).then(_update);
       });
     }
 
@@ -276,8 +278,11 @@ define([
       folderService.openPath(path, properties).then(function() {
         vm.fileLoading = false;
         _update();
-      }).catch(function(e) {
+      }).catch(function(error) {
         vm.fileLoading = false;
+        modalService.open("error-dialog", error.title, error.message).then(function () {
+          selectFolder(vm.folder);
+        });
       });
     }
 

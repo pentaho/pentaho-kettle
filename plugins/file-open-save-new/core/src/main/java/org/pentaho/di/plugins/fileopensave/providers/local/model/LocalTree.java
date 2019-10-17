@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class LocalTree implements Tree<LocalFile> {
 
-  private static final int ORDER = 3;
+  private static final int ORDER = 2;
 
   @Override public String getProvider() {
     return LocalFileProvider.TYPE;

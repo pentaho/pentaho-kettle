@@ -46,7 +46,7 @@ define(
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "local",
-          order: 2,
+          order: 1,
           root: "Local",
           getBreadcrumbPath: getBreadcrumbPath,
           selectFolder: selectFolder,

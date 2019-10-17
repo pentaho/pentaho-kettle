@@ -41,6 +41,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileNotFoundException;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
@@ -149,7 +150,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    * @return
    */
   @Override
-  public List<VFSFile> getFiles( VFSFile file, String filters ) {
+  public List<VFSFile> getFiles( VFSFile file, String filters ) throws FileException {
     if ( file.getPath() == null ) {
       return getRoot( file );
     }
@@ -172,7 +173,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         }
       }
     } catch ( KettleFileException | FileSystemException ignored ) {
-      // File does not exist
+      throw new FileNotFoundException( file.getPath(), TYPE );
     }
     return files;
   }

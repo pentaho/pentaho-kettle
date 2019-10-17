@@ -1,6 +1,6 @@
 <div class="navigation-buttons">
-  <input type="button" class="backHistory" ng-click="vm.onBackHistory()" title="{{::vm.backHistory}}" ng-disabled="vm.index<1"/>
-  <input type="button" class="forwardHistory" ng-click="vm.onForwardHistory()" title="{{::vm.forwardHistory}}" ng-disabled="vm.index>=vm.history.length-1" />
+  <input type="button" class="back" ng-click="vm.onBackHistory()" title="{{::vm.backHistory}}" ng-disabled="vm.index<1"/>
+  <input type="button" class="forward" ng-click="vm.onForwardHistory()" title="{{::vm.forwardHistory}}" ng-disabled="vm.index>=vm.history.length-1" />
 </div>
 <div class="combobox" ng-body-click="vm.onBodyClick()">
   <div class="breadcrumb flex" ng-if="vm.state=='breadcrumb'" ng-click="vm.onClick($event)" ng-class="{'selected': vm.isShowHistory}">

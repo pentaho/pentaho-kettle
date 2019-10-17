@@ -15,13 +15,13 @@
     <argument ref="fileProviders" />
   </bean>
 
-  <bean id="VFSFileProvider" scope="singleton" class="org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider" />
   <bean id="RepositoryFileProvider" scope="singleton" class="org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider" />
   <bean id="LocalFileProvider" scope="singleton" class="org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider" />
+  <bean id="VFSFileProvider" scope="singleton" class="org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider" />
 
-  <service id="VFSFileProviderService" ref="VFSFileProvider" interface="org.pentaho.di.plugins.fileopensave.api.providers.FileProvider"/>
   <service id="RepositoryFileProviderService" ref="RepositoryFileProvider" interface="org.pentaho.di.plugins.fileopensave.api.providers.FileProvider"/>
   <service id="LocalFileProviderService" ref="LocalFileProvider" interface="org.pentaho.di.plugins.fileopensave.api.providers.FileProvider"/>
+  <service id="VFSFileProviderService" ref="VFSFileProvider" interface="org.pentaho.di.plugins.fileopensave.api.providers.FileProvider"/>
 
   <jaxrs:server address="/browser-new" id="browser-endpoint">
     <jaxrs:serviceBeans>

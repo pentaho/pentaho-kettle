@@ -60,11 +60,13 @@ card .cardMiddle .cardTypeIcon {
 }
 
 card .card.cardTrans .cardMiddle .cardTypeIcon {
-  background: url("../../img/trans_large.svg") no-repeat left center;
+  background: url("../../img/file_icons/Transformation.S_D.svg") no-repeat center center;
+  background-size: 64px 64px;
 }
 
 card .card.cardJob .cardMiddle .cardTypeIcon {
-  background: url("../../img/job_large.svg") no-repeat left center;
+  background: url("../../img/file_icons/Job.S_D.svg") no-repeat center center;
+  background-size: 64px 64px;
 }
 
 card .card.selected .cardMiddle .cardTypeIcon {
