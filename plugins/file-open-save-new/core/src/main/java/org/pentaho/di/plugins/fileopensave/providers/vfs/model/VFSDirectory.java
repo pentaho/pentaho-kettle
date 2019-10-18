@@ -80,7 +80,7 @@ public class VFSDirectory extends VFSFile implements Directory {
   public static VFSDirectory create( String parent, FileObject fileObject, String connection ) {
     VFSDirectory vfsDirectory = new VFSDirectory();
     vfsDirectory.setName( fileObject.getName().getBaseName() );
-    vfsDirectory.setPath( fileObject.getName().getFriendlyURI() );
+    vfsDirectory.setPath( fileObject.getName().getURI() );
     vfsDirectory.setParent( parent );
     if ( connection != null ) {
       vfsDirectory.setConnection( connection );

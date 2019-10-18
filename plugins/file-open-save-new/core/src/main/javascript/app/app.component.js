@@ -281,7 +281,11 @@ define([
       }).catch(function(error) {
         vm.fileLoading = false;
         modalService.open("error-dialog", error.title, error.message).then(function () {
-          selectFolder(vm.folder);
+          if (vm.folder.provider) {
+            selectFolder(vm.folder);
+          } else {
+            selectFolderByPath(vm.folder.path);
+          }
         });
       });
     }
