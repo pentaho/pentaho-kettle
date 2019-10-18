@@ -160,7 +160,6 @@ define(
         }
 
         function open(file) {
-          console.log("Opening Local File: " + file.path);
           select(null, file.name, file.path, file.parent, file.connection, file.provider, null);
         }
 

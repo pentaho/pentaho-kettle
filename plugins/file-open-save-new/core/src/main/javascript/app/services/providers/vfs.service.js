@@ -126,17 +126,26 @@ define(
           if (file.root) {
             return null;
           }
-          return file.path ? file.path.match(/^[\w]+:\/\//)[0] : null;
+          var prefix = null;
+          if (file.path) {
+            prefix = file.path.match(/^[\w]+:\/\//)[0];
+            var matches = file.path.match(/\/\/(.*@)/);
+            if (matches) {
+              prefix += matches[1];
+            }
+          }
+          return prefix;
         }
 
         function _getTreePath(folder) {
           if (!folder.path) {
             return folder.root ? folder.root + "/" + folder.name : folder.name;
           }
+          var path = _justThePath(folder.path);
           if (folder.connection) {
-            return folder.root + "/" + (folder.connection ? folder.connection + "/" : "") + folder.path.replace(/^[\w]+:\/\//, "");
+            return folder.root + "/" + (folder.connection ? folder.connection + "/" : "") + path;
           }
-          return folder.path.replace(/^[\w]+:\/\//, "");
+          return path;
         }
 
         function _getFilePath(file) {
@@ -144,6 +153,10 @@ define(
             return file.connectionPath;
           }
           return file.path ? file.path : null;
+        }
+
+        function _justThePath(url) {
+          return url.replace(/^[\w]+:\/\//, "").replace(/.*@/, "");
         }
 
         /**

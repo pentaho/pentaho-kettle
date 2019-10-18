@@ -69,7 +69,7 @@ public class VFSFile extends BaseEntity implements File {
   public static VFSFile create( String parent, FileObject fileObject, String connection ) {
     VFSFile vfsFile = new VFSFile();
     vfsFile.setName( fileObject.getName().getBaseName() );
-    vfsFile.setPath( fileObject.getName().getFriendlyURI() );
+    vfsFile.setPath( fileObject.getName().getURI() );
     vfsFile.setParent( parent );
     if ( connection != null ) {
       vfsFile.setConnection( connection );
