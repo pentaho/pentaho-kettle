@@ -43,10 +43,12 @@ define([
       $timeout(function() {
         dataService.testConnection(vm.data.model).then(function (response) {
           dataService.createConnection(vm.data.model, vm.data.name).then(function () {
+            vm.data.name = vm.data.model.name;
             $state.go("success", {data: vm.data});
           });
         }, function (response) {
           dataService.createConnection(vm.data.model, vm.data.name).then(function () {
+            vm.data.name = vm.data.model.name;
             $state.go("failure", {data: vm.data});
           });
         });
