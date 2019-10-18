@@ -29,7 +29,6 @@ import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileSystem;
-import org.apache.commons.vfs2.provider.URLFileName;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.variables.Variables;
@@ -49,7 +48,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
 
   @Override
   protected FileObject createFile( AbstractFileName abstractFileName ) throws Exception {
-    String connectionName = ( (URLFileName) abstractFileName ).getHostName();
+    String connectionName = ( (ConnectionFileName) abstractFileName ).getConnection();
     ConnectionDetails connectionDetails = connectionManager.get().getConnectionDetails( connectionName );
 
     if ( connectionDetails != null ) {

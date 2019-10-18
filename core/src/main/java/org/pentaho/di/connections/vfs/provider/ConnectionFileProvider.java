@@ -28,7 +28,6 @@ import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractOriginatingFileProvider;
-import org.apache.commons.vfs2.provider.URLFileNameParser;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +44,7 @@ public class ConnectionFileProvider extends AbstractOriginatingFileProvider {
     Capability.WRITE_CONTENT, Capability.GET_LAST_MODIFIED, Capability.RANDOM_ACCESS_READ ) );
 
   public ConnectionFileProvider() {
-    setFileNameParser( new URLFileNameParser( 80 ) );
+    setFileNameParser( new ConnectionFileNameParser() );
   }
 
   @Override protected FileSystem doCreateFileSystem( FileName fileName, FileSystemOptions fileSystemOptions )
