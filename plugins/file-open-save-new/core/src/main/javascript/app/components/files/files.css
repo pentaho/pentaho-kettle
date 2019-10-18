@@ -22,9 +22,17 @@ files .filesWrapper {
   overflow: hidden;
 }
 
-files table {
+files table.headerTable {
   width: 100%;
   border: none;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0;
+}
+
+files table#filesTableBody {
+  width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
@@ -81,16 +89,12 @@ files .dateCell {
 }
 
 files th,
-files td {
+files tbody tr td {
   text-align: left;
   line-height: 18px;
   padding: 6px 10px;
   white-space: nowrap;
   cursor: pointer;
-}
-
-files td {
-  border-left: 1px solid transparent;
 }
 
 files td.editing {
@@ -109,12 +113,40 @@ files th:first-child {
   border-left: 0 none;
 }
 
+files tbody tr.selected {
+  border: 1px solid #005DA6;
+}
+
 files tbody tr.selected td,
 files tbody tr.selected:hover td,
 files tbody tr.selected .fileModified,
 files tbody tr.selected .fileType {
   background-color: #005DA6;
   color: #FFFFFF;
+}
+
+files tbody tr.selected.highlighted td,
+files tbody tr.selected.highlighted:hover td,
+files tbody tr.selected.highlighted .fileModified,
+files tbody tr.selected.highlighted .fileType {
+  background: none;
+  color: #000000;
+}
+
+files tbody tr {
+  border: 1px solid #ffffff;
+}
+
+files tbody tr.highlighted {
+  border-left: 1px solid #0B89B6;
+  border-right: 1px solid #0B89B6;
+}
+
+files tbody tr.highlighted td {
+  background: none;
+  border-top: 1px solid #0B89B6;
+  border-bottom: 1px solid #0B89B6;
+  color: #000000;
 }
 
 files tbody td div {
