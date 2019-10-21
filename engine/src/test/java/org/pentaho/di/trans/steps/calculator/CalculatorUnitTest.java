@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -812,16 +812,16 @@ public class CalculatorUnitTest {
 
   private void assertCalculatorReminder( final Object expectedResult, final Object[] values, final int[] types ) throws Exception {
     RowMeta inputRowMeta = new RowMeta();
-    for( int i = 0; i < types.length; i++ ) {
+    for ( int i = 0; i < types.length; i++ ) {
       switch ( types[i] ) {
         case ValueMetaInterface.TYPE_BIGNUMBER:
-          inputRowMeta.addValueMeta( new ValueMetaBigNumber("f" + i ) );
+          inputRowMeta.addValueMeta( new ValueMetaBigNumber( "f" + i ) );
           break;
         case ValueMetaInterface.TYPE_NUMBER:
-          inputRowMeta.addValueMeta( new ValueMetaNumber("f" + i ) );
+          inputRowMeta.addValueMeta( new ValueMetaNumber( "f" + i ) );
           break;
         case ValueMetaInterface.TYPE_INTEGER:
-          inputRowMeta.addValueMeta( new ValueMetaInteger("f" + i ) );
+          inputRowMeta.addValueMeta( new ValueMetaInteger( "f" + i ) );
           break;
         default:
           throw new IllegalArgumentException( "Unexpected value dataType: " + types[i]
@@ -847,6 +847,151 @@ public class CalculatorUnitTest {
     CalculatorMeta meta = new CalculatorMeta();
     meta.setCalculation( new CalculatorMetaFunction[] {
       new CalculatorMetaFunction( "res", CalculatorMetaFunction.CALC_REMAINDER, "f0", "f1", null,
+        ValueMetaInterface.TYPE_NUMBER, 0, 0, false, "", "", "", "" ) } );
+
+    //Verify output
+    try {
+      calculator.addRowListener( new RowAdapter() {
+        @Override public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+          try {
+            assertEquals( expectedResult, row[ 2 ] );
+          } catch ( Exception pe ) {
+            throw new KettleStepException( pe );
+          }
+        }
+      } );
+      calculator.processRow( meta, new CalculatorData() );
+    } catch ( KettleException ke ) {
+      ke.printStackTrace();
+      fail();
+    }
+  }
+
+  @Test
+  public void calculatorDistanceLevenshteinDistance() throws Exception {
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "0.0" ), new Object[]{ "abcd", "abcd" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "1.0" ), new Object[]{ "abcd", "abcg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "2.0" ), new Object[]{ "abcd", "abfg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "3.0" ), new Object[]{ "abcd", "aefg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "4.0" ), new Object[]{ "abcd", "defg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "0.0" ), new Object[]{ 1234, 1234 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "1.0" ), new Object[]{ 1234, 1238 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "2.0" ), new Object[]{ 1234, 1278 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "3.0" ), new Object[]{ 1234, 1678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "4.0" ), new Object[]{ 1234, 5678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "0.0" ), new Object[]{ 1234.0, 1234.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "4.0" ), new Object[]{ 1234.0, 5678.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE, new Double( "5.0" ), new Object[]{ 1234.0, 5678.9 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+  }
+
+  @Test
+  public void calculatorDistanceDamerauLevenshteinDistance() throws Exception {
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "0.0" ), new Object[]{ "abcd", "abcd" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "1.0" ), new Object[]{ "abcd", "abcg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "2.0" ), new Object[]{ "abcd", "abfg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "3.0" ), new Object[]{ "abcd", "aefg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "4.0" ), new Object[]{ "abcd", "defg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "0.0" ), new Object[]{ 1234, 1234 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "1.0" ), new Object[]{ 1234, 1238 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "2.0" ), new Object[]{ 1234, 1278 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "3.0" ), new Object[]{ 1234, 1678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "4.0" ), new Object[]{ 1234, 5678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "0.0" ), new Object[]{ 1234.0, 1234.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "4.0" ), new Object[]{ 1234.0, 5678.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN, new Double( "5.0" ), new Object[]{ 1234.0, 5678.9 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+  }
+
+  @Test
+  public void calculatorDistanceNeedlemanWunschDistance() throws Exception {
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "0.0" ), new Object[]{ "abcd", "abcd" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-1.0" ), new Object[]{ "abcd", "abcg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-2.0" ), new Object[]{ "abcd", "abfg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-3.0" ), new Object[]{ "abcd", "aefg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-4.0" ), new Object[]{ "abcd", "defg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "0.0" ), new Object[]{ 1234, 1234 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-1.0" ), new Object[]{ 1234, 1238 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-2.0" ), new Object[]{ 1234, 1278 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-3.0" ), new Object[]{ 1234, 1678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-4.0" ), new Object[]{ 1234, 5678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "0.0" ), new Object[]{ 1234.0, 1234.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-4.0" ), new Object[]{ 1234.0, 5678.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH, new Double( "-5.0" ), new Object[]{ 1234.0, 5678.9 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+  }
+
+  @Test
+  public void calculatorDistanceJaroDistance() throws Exception {
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "1.0" ), new Object[]{ "abcd", "abcd" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.8333333333333334" ), new Object[]{ "abcd", "abcg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.6666666666666666" ), new Object[]{ "abcd", "abfg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.5" ), new Object[]{ "abcd", "aefg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.0" ), new Object[]{ "abcd", "defg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "1.0" ), new Object[]{ 1234, 1234 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.8333333333333334" ), new Object[]{ 1234, 1238 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.6666666666666666" ), new Object[]{ 1234, 1278 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.5" ), new Object[]{ 1234, 1678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.0" ), new Object[]{ 1234, 5678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "1.0" ), new Object[]{ 1234.0, 1234.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.5555555555555555" ), new Object[]{ 1234.0, 5678.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO, new Double( "0.4444444444444444" ), new Object[]{ 1234.0, 5678.9 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+  }
+
+  @Test
+  public void calculatorDistanceJaroWinklerDistance() throws Exception {
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "1.0" ), new Object[]{ "abcd", "abcd" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.8833333333333334" ), new Object[]{ "abcd", "abcg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.6666666666666666" ), new Object[]{ "abcd", "abfg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.5" ), new Object[]{ "abcd", "aefg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.0" ), new Object[]{ "abcd", "defg" }, new int[]{ ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "1.0" ), new Object[]{ 1234, 1234 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.8833333333333334" ), new Object[]{ 1234, 1238 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.6666666666666666" ), new Object[]{ 1234, 1278 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.5" ), new Object[]{ 1234, 1678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.0" ), new Object[]{ 1234, 5678 }, new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "1.0" ), new Object[]{ 1234.0, 1234.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.5555555555555555" ), new Object[]{ 1234.0, 5678.0 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorDistance( CalculatorMetaFunction.CALC_JARO_WINKLER, new Double( "0.4444444444444444" ), new Object[]{ 1234.0, 5678.9 }, new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+  }
+
+  private void assertCalculatorDistance( int function, final Object expectedResult, final Object[] values, final int[] types ) throws Exception {
+    RowMeta inputRowMeta = new RowMeta();
+    for ( int i = 0; i < types.length; i++ ) {
+      switch ( types[i] ) {
+        case ValueMetaInterface.TYPE_BIGNUMBER:
+          inputRowMeta.addValueMeta( new ValueMetaBigNumber( "f" + i ) );
+          break;
+        case ValueMetaInterface.TYPE_NUMBER:
+          inputRowMeta.addValueMeta( new ValueMetaNumber( "f" + i ) );
+          break;
+        case ValueMetaInterface.TYPE_INTEGER:
+          inputRowMeta.addValueMeta( new ValueMetaInteger( "f" + i ) );
+          break;
+        case ValueMetaInterface.TYPE_STRING:
+          inputRowMeta.addValueMeta( new ValueMetaString( "f" + i ) );
+          break;
+        default:
+          throw new IllegalArgumentException( "Unexpected value dataType: " + types[i]
+            + ". Long, Double, BigDecimal or String expected." );
+      }
+    }
+
+    RowSet inputRowSet = null;
+    try {
+      inputRowSet = smh.getMockInputRowSet( new Object[][] {
+        { values[0], values[1] } } );
+    } catch ( Exception pe ) {
+      pe.printStackTrace();
+      fail();
+    }
+    inputRowSet.setRowMeta( inputRowMeta );
+
+    Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    calculator.addRowSetToInputRowSets( inputRowSet );
+    calculator.setInputRowMeta( inputRowMeta );
+    calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
+
+    CalculatorMeta meta = new CalculatorMeta();
+    meta.setCalculation( new CalculatorMetaFunction[] {
+      new CalculatorMetaFunction( "res", function, "f0", "f1", null,
         ValueMetaInterface.TYPE_NUMBER, 0, 0, false, "", "", "", "" ) } );
 
     //Verify output
