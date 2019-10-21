@@ -67,12 +67,6 @@ ce:
     server:
         - pentaho-server-ce-${platform.version}.zip
         - pentaho-server-manual-ce-${platform.version}.zip
-    shims:
-        - pentaho-hadoop-shims-cdh61-kar-${pentaho-hadoop-shims.version}.kar
-        - pentaho-hadoop-shims-cdh514-kar-${pentaho-hadoop-shims.version}.kar
-        - pentaho-hadoop-shims-emr521-kar-${pentaho-hadoop-shims.version}.kar
-        - pentaho-hadoop-shims-hdp26-kar-${pentaho-hadoop-shims.version}.kar
-        - pentaho-hadoop-shims-hdp30-kar-${pentaho-hadoop-shims.version}.kar
     other:
         - pre-classic-sdk-${platform.version}.zip
 
