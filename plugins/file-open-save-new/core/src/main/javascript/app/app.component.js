@@ -129,6 +129,7 @@ define([
       vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
       vm.showRecents = false;
       vm.selectedFiles = [];
+      vm.errorFiles = [];
       vm.autoExpand = false;
       vm.searchString = "";
       _resetFileAreaMessage();
@@ -163,6 +164,10 @@ define([
 
     function _init() {
       var path = decodeURIComponent($location.search().path);
+
+      // URLs come over with '+' instead of spaces
+      path = path.replace(/\+/g, " ");
+
       if (path && path !== "undefined") {
         vm.autoExpand = true;
         openPath(path, $location.search());
@@ -306,6 +311,7 @@ define([
       if (vm.selectedFiles.length === 1) {
         vm.fileToSave = vm.selectedFiles[0].type === "folder" ? vm.fileToSave : vm.selectedFiles[0].name;
       }
+      vm.errorFiles = vm.selectedFiles;
     }
 
     /**
@@ -419,19 +425,18 @@ define([
      * @private
      */
     function _save(override) {
+      var duplicate = folderService.getDuplicate(vm.fileToSave);
       if (_isInvalidName()) {
         _triggerError(17);
-      } else if (override || !_isDuplicate()) {
-        var currentFilename = "";
-        if (vm.selectedFiles.length > 0) {
-          currentFilename = vm.selectedFiles[0].name;
-        }
+      } else if (override || duplicate === null) {
+        var currentFilename = duplicate !== null ? duplicate.name : null;
         fileService.save(vm.fileToSave, vm.folder, currentFilename, override).then(function() {
           // Dialog should close
         }, function() {
           _triggerError(3);
         });
       } else {
+        vm.errorFiles = [duplicate];
         _triggerError(1);
       }
     }
@@ -709,25 +714,6 @@ define([
           reject();
         });
       });
-    }
-
-    /**
-     * Checks to see if the user has entered a file to save the same as a file already in current directory
-     * NOTE: does not check for hidden files. That is done in the checkForSecurityOrDupeIssues rest call
-     * @return {boolean} - true if duplicate, false otherwise
-     * @private
-     */
-    function _isDuplicate() {
-      if (vm.folder && vm.folder.children) {
-        for (var i = 0; i < vm.folder.children.length; i++) {
-          if (vm.fileToSave === vm.folder.children[i].name) {
-            fileService.files = [vm.folder.children[i]];
-            return true;
-          }
-        }
-      }
-      _update();
-      return false;
     }
 
     /**

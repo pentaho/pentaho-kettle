@@ -111,33 +111,14 @@ define(
         }
 
         function _getOverwrite(result) {
-          var overwrite = "";
-          if (result.values['apply-all']) {
-            switch (result.button) {
-              case "rename":
-                overwrite = "rename_all";
-                break;
-              case "overwrite":
-                overwrite = "all";
-                break;
-              case "skip":
-                overwrite = "skip_all";
-                break;
-            }
-          } else {
-            switch (result.button) {
-              case "rename":
-                overwrite = "rename_one";
-                break;
-              case "overwrite":
-                overwrite = "one";
-                break;
-              case "skip":
-                overwrite = "skip";
-                break;
-            }
+          switch (result.button) {
+            case "replace":
+              return result.values['apply-all'] ? "replace_all" : "replace_one";
+            case "stop":
+              return "stop";
+            case "keep":
+              return result.values['apply-all'] ? "keep_all" : "keep_one";
           }
-          return overwrite;
         }
 
         function handleFileExistsCheck(to, newPath) {
@@ -187,7 +168,7 @@ define(
          * @returns {Promise}
          */
         function copyFile(from, to, path, overwrite) {
-          handleProgressModal(i18n.get('file-open-save-plugin.copying.message'), "Copying file " + from.path + " to " + path);
+          handleProgressModal(i18n.get('file-open-save-plugin.copying.message'), "Copying " + from.path + " to " + path);
           return helperService.httpPost([baseUrl, "copy"].join("/") + "?overwrite=" + overwrite + "&path=" + path, {
             from: from,
             to: to
@@ -215,7 +196,7 @@ define(
          * @returns {Promise}
          */
         function moveFile(from, to, path, overwrite) {
-          handleProgressModal(i18n.get('file-open-save-plugin.moving.message'), "Moving file " + from.path + " to " + path);
+          handleProgressModal(i18n.get('file-open-save-plugin.moving.message'), "Moving " + from.path + " to " + path);
           return helperService.httpPost([baseUrl, "move"].join("/") + "?overwrite=" + overwrite + "&path=" + path, {
             from: from,
             to: to
@@ -234,17 +215,18 @@ define(
           }
           var filename = utils.getFilename(from[index].path);
           var newPath = to.path + "/" + filename;
+          console.log(overwrite);
           switch (overwrite) {
-            case "one":
+            case "replace_one":
               overwrite = "";
-            case "all":
+            case "replace_all":
               operation(from[index], to, newPath, true).then(function (result) {
                 startOperation(from, to, ++index, operation, overwrite, resolve, reject);
               });
               break;
-            case "rename_one":
+            case "keep_one":
               overwrite = "";
-            case "rename_all":
+            case "keep_all":
               helperService.httpPost([baseUrl, "getNewName"].join("/") + "?newPath=" + newPath, to).then(function (result) {
                 var renamedPath = result.data.data;
                 operation(from[index], to, renamedPath, true).then(function (result) {
@@ -252,9 +234,7 @@ define(
                 });
               });
               break;
-            case "skip":
-              overwrite = "";
-            case "skip_all":
+            case "stop":
               startOperation(from, to, ++index, operation, overwrite, resolve, reject);
               break;
             case "":

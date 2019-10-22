@@ -167,7 +167,7 @@ define(
          * @return {Promise} - a promise resolved once data is returned
          */
         function checkForSecurityOrDupeIssues(path, name, fileName, override) {
-          if (fileName === null) {
+          if (fileName === null || fileName === "") {
             return _httpGet([baseUrl, "checkForSecurityOrDupeIssues",
               encodeURIComponent(path), encodeURIComponent(name), override].join("/"));
           }

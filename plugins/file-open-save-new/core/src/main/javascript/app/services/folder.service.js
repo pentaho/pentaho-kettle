@@ -60,7 +60,8 @@ define(
           upDirectory: upDirectory,
           openPath: openPath,
           refreshFolder: refreshFolder,
-          loadFile: loadFile
+          loadFile: loadFile,
+          getDuplicate: getDuplicate
         };
 
         /**
@@ -560,6 +561,23 @@ define(
             retVal = utils.truncateString(retVal, 386) + "...";
           }
           return retVal + "\"";
+        }
+
+        /**
+         * Checks to see if the user has entered a file to save the same as a file already in current directory
+         * NOTE: does not check for hidden files. That is done in the checkForSecurityOrDupeIssues rest call
+         * @return {boolean} - true if duplicate, false otherwise
+         * @private
+         */
+        function getDuplicate(name) {
+          if (this.folder && this.folder.children) {
+            for (var i = 0; i < this.folder.children.length; i++) {
+              if (name === this.folder.children[i].name) {
+                return this.folder.children[i];
+              }
+            }
+          }
+          return null;
         }
       }
     });
