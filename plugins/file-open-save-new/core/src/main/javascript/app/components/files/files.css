@@ -122,6 +122,7 @@ files tbody tr.selected:hover td,
 files tbody tr.selected .fileModified,
 files tbody tr.selected .fileType {
   background-color: #005DA6;
+  border: 1px solid #005DA6;
   color: #FFFFFF;
 }
 
@@ -135,6 +136,10 @@ files tbody tr.selected.highlighted .fileType {
 
 files tbody tr {
   border: 1px solid #ffffff;
+}
+
+files tbody tr.over {
+  border: 1px solid #E6EFF6;
 }
 
 files tbody tr.highlighted {

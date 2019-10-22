@@ -37,6 +37,12 @@ folder .folder.selected {
   color: #FFF;
 }
 
+folder .folder.highlighted {
+  -webkit-box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+  -moz-box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+  box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+}
+
 folder.dark .folder.selected {
 	background-color: #0F2B5B;
 }

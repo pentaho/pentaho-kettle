@@ -11,6 +11,7 @@
                  home: folder.path === '/home' && folder.provider === 'repository',
                  public: folder.path === '/public' && folder.provider === 'repository',
                  selected: folder === vm.selectedFolder,
+                 highlighted: folder === vm.targetFolder,
                  empty: folder.hasChildren === false,
                  opened: folder.open === true}"
       ng-style="{paddingLeft: indent + 'px', width: vm.width === 0 ? 'auto' : vm.width - indent + 'px'}">
@@ -30,7 +31,7 @@
     ng-if="folder.type=='folder'"></div>
   </div>
 </script>
-<div ng-repeat="folder in vm.getTree() | orderBy: 'order'" ng-include="'tree_item.html'" ng-init="indent=0" ng-if="folder.name != '' && !folder.hidden"></div>
+<div id="folders" ng-body-click="vm.onBodyClick(e, id)" ng-repeat="folder in vm.getTree() | orderBy: 'order'" ng-include="'tree_item.html'" ng-init="indent=0" ng-if="folder.name != '' && !folder.hidden"></div>
 <div id="foldersFolderContext" class="context-menu" ng-show="vm.targetFolder.canDelete || vm.canPaste()">
   <ul>
     <li ng-click="vm.onDeleteFolder()" ng-show="vm.targetFolder.canDelete">Delete</li>
