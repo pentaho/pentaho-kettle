@@ -69,6 +69,7 @@ define([
     vm.canPaste = canPaste;
     vm.onRightClick = onRightClick;
     vm.onDeleteFolder = onDeleteFolder;
+    vm.onBodyClick = onBodyClick;
     vm.width = 0;
     vm.state = $state;
     vm.getId = getId;
@@ -83,6 +84,21 @@ define([
     function onChanges(changes) {
       if (changes.selectedFolder) {
         _setWidth();
+      }
+    }
+
+    function onBodyClick(e, id) {
+      var parentNode = e.target.parentNode;
+      var found = false;
+      while (parentNode) {
+        if (parentNode.id === id) {
+          found = true;
+          break;
+        }
+        parentNode = parentNode.parentNode;
+      }
+      if (!found) {
+        vm.targetFolder = null;
       }
     }
 
@@ -118,6 +134,7 @@ define([
      * @param {Object} folder - folder object
      */
     function selectFolder(folder) {
+      vm.targetFolder = null;
       vm.onSelect({selectedFolder: folder});
     }
 
