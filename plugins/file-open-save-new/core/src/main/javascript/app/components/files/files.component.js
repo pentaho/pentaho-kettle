@@ -143,6 +143,9 @@ define([
     function onKeyDown(event) {
       if (event.target.tagName !== "INPUT") {
         var ctrlKey = event.metaKey || event.ctrlKey;
+        if (event.keyCode === 27) {
+          vm.highlighted = [];
+        }
         if (event.keyCode === 67 && ctrlKey) {
           targetFiles = vm.selectedFiles;
           clipboardService.set(targetFiles, "copy");

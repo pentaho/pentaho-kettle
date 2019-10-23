@@ -70,10 +70,13 @@ define([
     vm.onRightClick = onRightClick;
     vm.onDeleteFolder = onDeleteFolder;
     vm.onBodyClick = onBodyClick;
+    vm.onKeyDown = onKeyDown;
+    vm.onKeyUp = onKeyUp;
     vm.width = 0;
     vm.state = $state;
     vm.getId = getId;
     vm.targetFolder = null;
+    vm.errorType = 0;
 
     /**
      * Called whenever one-way bindings are updated.
@@ -100,6 +103,18 @@ define([
       if (!found) {
         vm.targetFolder = null;
       }
+    }
+
+    function onKeyDown(event) {
+      if (event.target.tagName !== "INPUT") {
+        if (event.keyCode === 27) {
+          vm.targetFolder = null;
+        }
+      }
+    }
+
+    function onKeyUp(event) {
+      // Ignored
     }
 
     function getTree() {
