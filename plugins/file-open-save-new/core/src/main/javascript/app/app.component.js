@@ -114,7 +114,7 @@ define([
     vm.fileLoading = false;
     vm.searching = false;
     vm.state = $state;
-    vm.searchResults = [];
+    vm.searchResults = null;
     vm.status = "";
     vm.breadcrumbPath = { prefix: null, path: "Recents", uri: null };
     vm.type = null;
@@ -242,7 +242,7 @@ define([
      * @param {Boolean} useCache - should use cache
      */
     function selectFolder(folder, useCache) {
-      vm.searchResults = [];
+      vm.searchResults = null;
       if (vm.searching) {
         _clearSearch();
       }
@@ -334,7 +334,7 @@ define([
      * @returns {Array} - Search result files or selected folder children
      */
     function _getFiles() {
-      return vm.searchResults.length !== 0 ? vm.searchResults : vm.folder.children;
+      return vm.searchResults !== null ? vm.searchResults : vm.folder.children;
     }
 
     /**
@@ -777,8 +777,9 @@ define([
     }
 
     function doSearch(value) {
-      vm.searchResults = [];
+      vm.searchResults = null;
       if (value !== "") {
+        vm.searchResults = [];
         searchService.search(vm.folder, vm.searchResults, value);
       }
       _update();

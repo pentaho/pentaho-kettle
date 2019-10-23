@@ -113,16 +113,11 @@ files th:first-child {
   border-left: 0 none;
 }
 
-files tbody tr.selected {
-  border: 1px solid #005DA6;
-}
-
 files tbody tr.selected td,
 files tbody tr.selected:hover td,
 files tbody tr.selected .fileModified,
 files tbody tr.selected .fileType {
   background-color: #005DA6;
-  border: 1px solid #005DA6;
   color: #FFFFFF;
 }
 
@@ -134,23 +129,14 @@ files tbody tr.selected.highlighted .fileType {
   color: #000000;
 }
 
-files tbody tr {
-  border: 1px solid #ffffff;
-}
-
-files tbody tr.over {
-  border: 1px solid #E6EFF6;
-}
-
 files tbody tr.highlighted {
-  border-left: 1px solid #0B89B6;
-  border-right: 1px solid #0B89B6;
+  -webkit-box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+  -moz-box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+  box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
 }
 
 files tbody tr.highlighted td {
   background: none;
-  border-top: 1px solid #0B89B6;
-  border-bottom: 1px solid #0B89B6;
   color: #000000;
 }
 
@@ -196,10 +182,6 @@ files td.editing .fileTypeIcon {
 files tr .fileTypeIcon {
   background: no-repeat center center;
   background-size: 32px;
-}
-
-files tr.selected .fileTypeIcon {
-
 }
 
 files .headerLabel {
