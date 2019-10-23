@@ -44,6 +44,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.log4j.MDC;
+import org.pentaho.di.base.KettleConstants;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -204,6 +206,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   private String executingUser;
 
   private String transactionId;
+
+  private String uuid;
 
   private Map<String, Object> extensionDataMap;
 
@@ -375,6 +379,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       copyParametersFrom( jobMeta );
       activateParameters();
 
+      // Add the UUID to log4j MDC so it can be inserted in log lines
+      if( uuid != null ) {
+        MDC.put( KettleConstants.UUID, uuid );
+      }
+
       // Run the job
       //
       fireJobStartListeners();
@@ -408,6 +417,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         log.logDebug( BaseMessages.getString( PKG, "Job.Log.DisposeEmbeddedMetastore" ) );
 
         fireJobFinishListeners();
+
+        MDC.remove( KettleConstants.UUID ); // cleanup log4j MDC
 
         // release unused vfs connections
         KettleVFS.freeUnusedResources();
@@ -1409,6 +1420,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   public void setPassedBatchId( long jobBatchId ) {
     this.passedBatchId = jobBatchId;
+  }
+
+  public void setUuid( String uuid ) {
+    this.uuid = uuid;
   }
 
   /**
