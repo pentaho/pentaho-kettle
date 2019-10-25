@@ -382,6 +382,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.specs</groupId>
+      <artifactId>org.apache.karaf.specs.activator</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <!-- Third-party JDBC dependencies -->
     <dependency>
