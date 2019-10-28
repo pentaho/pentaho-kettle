@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -273,7 +273,7 @@ public class Calculator extends BaseStep implements StepInterface {
             }
             break;
           case CalculatorMetaFunction.CALC_DIVIDE: // A / B
-            calcData[index] = ValueDataUtil.divide( metaA, dataA, metaB, dataB );
+            calcData[index] = ValueDataUtil.divide( metaA, dataA, metaB, dataB, this );
             break;
           case CalculatorMetaFunction.CALC_SQUARE: // A * A
             calcData[index] = ValueDataUtil.multiply( metaA, dataA, metaA, dataA );
@@ -282,13 +282,13 @@ public class Calculator extends BaseStep implements StepInterface {
             calcData[index] = ValueDataUtil.sqrt( metaA, dataA );
             break;
           case CalculatorMetaFunction.CALC_PERCENT_1: // 100 * A / B
-            calcData[index] = ValueDataUtil.percent1( metaA, dataA, metaB, dataB );
+            calcData[index] = ValueDataUtil.percent1( metaA, dataA, metaB, dataB, this );
             break;
           case CalculatorMetaFunction.CALC_PERCENT_2: // A - ( A * B / 100 )
-            calcData[index] = ValueDataUtil.percent2( metaA, dataA, metaB, dataB );
+            calcData[index] = ValueDataUtil.percent2( metaA, dataA, metaB, dataB, this );
             break;
           case CalculatorMetaFunction.CALC_PERCENT_3: // A + ( A * B / 100 )
-            calcData[index] = ValueDataUtil.percent3( metaA, dataA, metaB, dataB );
+            calcData[index] = ValueDataUtil.percent3( metaA, dataA, metaB, dataB, this );
             break;
           case CalculatorMetaFunction.CALC_COMBINATION_1: // A + B * C
             calcData[index] = ValueDataUtil.combination1( metaA, dataA, metaB, dataB, metaC, dataC );

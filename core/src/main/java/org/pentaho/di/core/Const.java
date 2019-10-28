@@ -1302,6 +1302,20 @@ public class Const {
   public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT = "true";
 
   /**
+   * <p>This environment variable is used to define the default division result precision between BigDecimals.</p>
+   * <p>By default, and when precision is -1, precision is unlimited.</p>
+   */
+  public static final String KETTLE_BIGDECIMAL_DIVISION_PRECISION = "KETTLE_BIGDECIMAL_DIVISION_PRECISION";
+  public static final String KETTLE_BIGDECIMAL_DIVISION_PRECISION_DEFAULT = "-1";
+
+  /**
+   * <p>This environment variable is used to define the default division result rounding mode between BigDecimals.</p>
+   * <p>By default, rouding mode is half even.</p>
+   */
+  public static final String KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE = "KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE";
+  public static final String KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE_DEFAULT = "HALF_EVEN";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *
