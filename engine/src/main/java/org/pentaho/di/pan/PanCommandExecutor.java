@@ -24,7 +24,6 @@ package org.pentaho.di.pan;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.MDC;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.KettleConstants;
@@ -188,8 +187,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       final List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>(  );
 
-      MDC.put( KettleConstants.UUID, params.getUuid() );  // Add the UUID to log4j MDC so it can be inserted in log lines
-
       // allocate & run the required sub-threads
       try {
         trans.prepareExecution( convert(  KettleConstants.toTransMap( params ) ) );
@@ -277,7 +274,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       if ( isEnabled( params.getTrustRepoUser() ) ) {
         System.clearProperty( "pentaho.repository.client.attemptTrust" ); // we set it, now we sanitize it
       }
-      MDC.remove( KettleConstants.UUID );  // cleanup log4j MDC
     }
   }
 
