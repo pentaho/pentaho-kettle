@@ -517,5 +517,11 @@
     <variable>SHIM_DRIVER_DEPLOYMENT_LOCATION</variable>
     <default-value>./</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to define if a Timestamp should be converted to nanoseconds or milliseconds.</description>
+    <variable>KETTLE_TIMESTAMP_OUTPUT_FORMAT</variable>
+    <default-value>NANOSECONDS</default-value>
+  </kettle-variable>
 </kettle-variables>
 
