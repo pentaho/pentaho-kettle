@@ -62,9 +62,9 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.ui.xul.util.XmlParserFactoryProducer;
 import org.w3c.dom.Node;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -364,8 +364,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       String sRowMeta = rep.getStepAttributeString( id_step, RowMeta.XML_META_TAG );
       if ( sRowMeta != null ) {
-        Node node = DocumentBuilderFactory
-          .newInstance()
+        Node node = XmlParserFactoryProducer.createSecureDocBuilderFactory()
           .newDocumentBuilder()
           .parse( new ByteArrayInputStream( sRowMeta.getBytes() ) )
           .getDocumentElement();

@@ -117,7 +117,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   /**
    * The clustering database password prefix
    */
-  public static final String ATTRIBUTE_CLUSTER_PASSWORD_PREFIX = "CLUSTER_PASSWORD_";
+  @SuppressWarnings( "squid:S2068" ) public static final String ATTRIBUTE_CLUSTER_PASSWORD_PREFIX = "CLUSTER_PASSWORD_";
 
   /** The pooling parameters */
   public static final String ATTRIBUTE_POOLING_PARAMETER_PREFIX = "POOLING_";

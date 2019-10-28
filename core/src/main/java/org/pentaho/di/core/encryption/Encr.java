@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -115,7 +115,7 @@ public class Encr {
    * The word that is put before a password to indicate an encrypted form. If this word is not present, the password is
    * considered to be NOT encrypted
    */
-  public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
+  @SuppressWarnings( "squid:S2068" ) public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
 
   /**
    * Encrypt the password, but only if the password doesn't contain any variables.
