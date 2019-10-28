@@ -22,6 +22,16 @@
 
 package org.pentaho.di.www;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.Job;
+import org.pentaho.di.trans.Trans;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.management.OperatingSystemMXBean;
@@ -31,17 +41,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.Job;
-import org.pentaho.di.trans.Trans;
 
 public class GetStatusServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = GetStatusServlet.class; // for i18n purposes, needed by Translator2!!
@@ -627,12 +626,13 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
       out.println( "window.location.replace( '"
           + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "'"
-          + " + '?name=' + document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex ).innerHTML"
+        + " + '?name=' + encodeURIComponent(document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex )"
+        + ".innerHTML)"
           + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerHTML );" );
       out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
       out.println( "window.location.replace( '"
           + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "'"
-          + " + '?name=' + document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex ).innerHTML"
+        + " + '?name=' + encodeURIComponent(document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex ).innerHTML)"
           + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerHTML );" );
       out.println( "}" );
       out.println( "}" );
@@ -898,13 +898,13 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
   private String setupTransURI( String context ) {
     return "'" + context + "'"
-      + " + '?name=' + document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex ).innerHTML"
+      + " + '?name=' + encodeURIComponent(document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex ).innerHTML)"
       + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerHTML";
   }
 
   private String setupJobURI( String context ) {
     return "'" + context + "'"
-      + " + '?name=' + document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex ).innerHTML"
+      + " + '?name=' + encodeURIComponent(document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex ).innerHTML)"
       + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerHTML";
   }
 }
