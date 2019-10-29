@@ -25,7 +25,6 @@ package org.pentaho.di.ui.util;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -40,9 +39,6 @@ public class ParameterTableHelper {
   private static final int PARAM_COL_1 = 1;
   private static final int PARAM_COL_2 = 2;
   private static final int PARAM_COL_3 = 3;
-
-  private static final Color GRAY = GUIResource.getInstance().getColorLightGray();
-  private static final Color WHITE = GUIResource.getInstance().getColorWhite();
 
   private int paramRowNum = -1;
   private int paramColNum = -1;
@@ -90,25 +86,33 @@ public class ParameterTableHelper {
   }
 
   public void checkTableOnMod( ModifyEvent modifyEvent ) {
+    String value = "";
     if ( paramColNum == PARAM_COL_3 && modifyEvent.widget instanceof Text ) {
       Text text = (Text) modifyEvent.widget;
-      String value = text.getText();
+      value = text.getText();
       parameterTableView.table.getItem( paramRowNum ).setBackground( PARAM_COL_2,
-          fieldDisabledListener.isFieldDisabled( value ) ? GRAY : WHITE );
-    } else if ( paramColNum  == PARAM_COL_2 && modifyEvent.widget instanceof CCombo ) {
-      CCombo cCombo = (CCombo) modifyEvent.widget;
-      String value = cCombo.getText();
+          fieldDisabledListener.isFieldDisabled( value ) ? GUIResource.getInstance().getColorLightGray()
+            : GUIResource.getInstance().getColorWhite() );
+    } else if ( paramColNum  == PARAM_COL_2 ) {
+      if ( modifyEvent.widget instanceof CCombo ) {
+        CCombo cCombo = (CCombo) modifyEvent.widget;
+        value = cCombo.getText();
+      } else if ( modifyEvent.widget instanceof Text ) {
+        Text text = (Text) modifyEvent.widget;
+        value = text.getText();
+      }
       parameterTableView.table.getItem( paramRowNum ).setBackground( PARAM_COL_3,
-          inputDisabledListener.isFieldDisabled( value ) ? GRAY : WHITE );
+          inputDisabledListener.isFieldDisabled( value ) ? GUIResource.getInstance().getColorLightGray()
+            : GUIResource.getInstance().getColorWhite() );
     }
   }
 
   public void checkTableOnOpen( TableItem tableItem, int i ) {
     if ( fieldDisabledListener.isFieldDisabled( i ) ) {
-      tableItem.setBackground( PARAM_COL_2, GRAY );
+      tableItem.setBackground( PARAM_COL_2, GUIResource.getInstance().getColorLightGray() );
     }
     if ( inputDisabledListener.isFieldDisabled( i ) ) {
-      tableItem.setBackground( PARAM_COL_3, GRAY );
+      tableItem.setBackground( PARAM_COL_3, GUIResource.getInstance().getColorLightGray() );
     }
   }
 
