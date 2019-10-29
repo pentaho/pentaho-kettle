@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@
  */
 package org.pentaho.di.ui.shapefilereader;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -85,6 +86,11 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
+    //set encoding based on environment variable or empty otherwise
+    if ( StringUtils.isBlank( input.getEncoding() ) ) {
+      input.setEncoding( StringUtils.isNotBlank( transMeta.getVariable( "ESRI.encoding" ) )
+        ? transMeta.getVariable( "ESRI.encoding" ) : "" );
+    }
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );

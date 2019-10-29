@@ -27,6 +27,7 @@
 
 package org.pentaho.di.shapefilereader;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -352,7 +353,11 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
         return false;
       }
 
-      data.shapeFile = new ShapeFile( log, meta.getShapeFilename(), meta.getDbfFilename() );
+      if ( StringUtils.isBlank( meta.getEncoding() ) ) {
+        meta.setEncoding( getTransMeta().getVariable( "ESRI.encoding" ) );
+      }
+
+      data.shapeFile = new ShapeFile( log, meta.getShapeFilename(), meta.getDbfFilename(), meta.getEncoding() );
       try {
         data.shapeFile.readFile();
       } catch ( Exception e ) {
