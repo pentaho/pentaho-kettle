@@ -97,9 +97,10 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
     Shell parent = getParent();
     Display display = parent.getDisplay();
     //set encoding based on environment variable or empty otherwise
-    input.setEncoding( StringUtils.isNotBlank( transMeta.getVariable( "ESRI.encoding" ) )
-      ? transMeta.getVariable( "ESRI.encoding" ) : "" );
-
+    if ( StringUtils.isBlank( input.getEncoding() ) ) {
+      input.setEncoding( StringUtils.isNotBlank( transMeta.getVariable( "ESRI.encoding" ) )
+        ? transMeta.getVariable( "ESRI.encoding" ) : "" );
+    }
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
