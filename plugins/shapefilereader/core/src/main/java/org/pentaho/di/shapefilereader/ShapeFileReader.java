@@ -352,7 +352,7 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
         return false;
       }
 
-      data.shapeFile = new ShapeFile( log, meta.getShapeFilename(), meta.getDbfFilename() );
+      data.shapeFile = new ShapeFile( log, meta.getShapeFilename(), meta.getDbfFilename(), meta.getEncoding() );
       try {
         data.shapeFile.readFile();
       } catch ( Exception e ) {

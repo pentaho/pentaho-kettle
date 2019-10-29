@@ -25,6 +25,7 @@ package org.pentaho.di.shapefilereader;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -75,6 +76,11 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
    */
   public String dbfFilename;
 
+  /**
+   * The encoding to use for reading: null or empty string means system default encoding
+   */
+  private String encoding;
+
   public ShapeFileReaderMeta() {
     super(); // allocate BaseStepMeta
   }
@@ -107,6 +113,21 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
     this.dbfFilename = dbfFilename;
   }
 
+  /**
+   * @return Returns the encoding.
+   */
+  public String getEncoding() {
+    return encoding;
+  }
+
+  /**
+   * @param encoding The encoding to set.
+   */
+  public void setEncoding( String encoding ) {
+    this.encoding = encoding;
+  }
+
+
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters )
     throws KettleXMLException {
     readData( stepnode );
@@ -122,6 +143,7 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
     try {
       shapeFilename = XMLHandler.getTagValue( stepnode, "shapefilename" );
       dbfFilename = XMLHandler.getTagValue( stepnode, "dbffilename" );
+      encoding = XMLHandler.getTagValue( stepnode, "encoding" );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
@@ -130,6 +152,7 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
   public void setDefault() {
     shapeFilename = "";
     dbfFilename = "";
+    encoding = "";
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
@@ -193,6 +216,12 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
       try {
         xbase.setDbfFile( getDbfFilename() );
         xbase.open();
+
+        //Set encoding
+        if ( StringUtils.isNotBlank( encoding ) ) {
+          xbase.getReader().setCharactersetName( encoding );
+        }
+
         RowMetaInterface fields = xbase.getFields();
         for ( int i = 0; i < fields.size(); i++ ) {
           fields.getValueMeta( i ).setOrigin( name );
@@ -214,6 +243,7 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
 
     retval += "    " + XMLHandler.addTagValue( "shapefilename", shapeFilename );
     retval += "    " + XMLHandler.addTagValue( "dbffilename", dbfFilename );
+    retval += "    " + XMLHandler.addTagValue( "encoding", encoding );
 
     return retval;
   }
@@ -223,6 +253,7 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
     try {
       shapeFilename = rep.getStepAttributeString( id_step, "shapefilename" );
       dbfFilename = rep.getStepAttributeString( id_step, "dbffilename" );
+      encoding = rep.getStepAttributeString( id_step, "encoding" );
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
@@ -233,6 +264,7 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
     try {
       rep.saveStepAttribute( id_transformation, id_step, "shapefilename", shapeFilename );
       rep.saveStepAttribute( id_transformation, id_step, "dbffilename", dbfFilename );
+      rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
