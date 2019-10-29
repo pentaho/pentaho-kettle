@@ -212,7 +212,7 @@ public class Calculator extends BaseStep implements StepInterface {
 
         if ( data.getFieldIndexes()[i].indexA >= 0 ) {
           metaA = data.getCalcRowMeta().getValueMeta( data.getFieldIndexes()[ i ].indexA );
-          dataA = calcData[ data.getFieldIndexes()[i].indexA];
+          dataA = metaA.convertToNormalStorageType( calcData[ data.getFieldIndexes()[i].indexA] );
         }
 
         ValueMetaInterface metaB = null;
@@ -220,7 +220,7 @@ public class Calculator extends BaseStep implements StepInterface {
 
         if ( data.getFieldIndexes()[i].indexB >= 0 ) {
           metaB = data.getCalcRowMeta().getValueMeta( data.getFieldIndexes()[ i ].indexB );
-          dataB = calcData[ data.getFieldIndexes()[i].indexB];
+          dataB = metaB.convertToNormalStorageType( calcData[ data.getFieldIndexes()[i].indexB] );
         }
 
         ValueMetaInterface metaC = null;
