@@ -1301,6 +1301,9 @@ public class Const {
   public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION = "ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION";
   public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT = "true";
 
+  /** A variable to configure a timeout for Karaf provider delays on kitchen */
+  public static final String KITCHEN_KARAF_TIMEOUT_SECONDS = "KITCHEN_KARAF_TIMEOUT_SECONDS";
+
   /**
    * <p>This environment variable is used to define the default division result precision between BigDecimals.</p>
    * <p>By default, and when precision is -1, precision is unlimited.</p>
