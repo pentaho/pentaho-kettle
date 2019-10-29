@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
  *
  */
 public class SslConfiguration {
-  private static Class<?> PKG = SslConfiguration.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = SslConfiguration.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "sslConfig";
 
@@ -42,9 +42,9 @@ public class SslConfiguration {
 
   private static final String XML_TAG_KEY_STORE_TYPE = "keyStoreType";
 
-  private static final String XML_TAG_KEY_PASSWORD = "keyPassword";
+  @SuppressWarnings( "squid:S2068" ) private static final String XML_TAG_KEY_PASSWORD = "keyPassword";
 
-  private static final String XML_TAG_KEY_STORE_PASSWORD = "keyStorePassword";
+  @SuppressWarnings( "squid:S2068" ) private static final String XML_TAG_KEY_STORE_PASSWORD = "keyStorePassword";
 
   private static final String EMPTY = "empty";
 

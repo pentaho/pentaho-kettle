@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTXf;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 
 /**
  * Streaming reader for XLSX sheets.<br>
@@ -89,9 +90,9 @@ public class StaxPoiSheet implements KSheet {
     sst = reader.getSharedStringsTable();
     styles = reader.getStylesTable();
     sheetStream = reader.getSheet( sheetID );
-    XMLInputFactory factory = XMLInputFactory.newInstance();
+    XMLInputFactory factory = XMLParserFactoryProducer.createSecureXMLInputFactory();
     sheetReader = factory.createXMLStreamReader( sheetStream );
-    headerRow = new ArrayList<String>();
+    headerRow = new ArrayList<>();
     while ( sheetReader.hasNext() ) {
       int event = sheetReader.next();
       if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "dimension" ) ) {
@@ -379,7 +380,7 @@ public class StaxPoiSheet implements KSheet {
     sheetReader.close();
     sheetStream.close();
     sheetStream = xssfReader.getSheet( sheetId );
-    XMLInputFactory factory = XMLInputFactory.newInstance();
+    XMLInputFactory factory = XMLParserFactoryProducer.createSecureXMLInputFactory();
     sheetReader = factory.createXMLStreamReader( sheetStream );
   }
 
