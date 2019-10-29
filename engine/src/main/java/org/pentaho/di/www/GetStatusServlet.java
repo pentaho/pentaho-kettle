@@ -627,13 +627,14 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "window.location.replace( '"
           + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "'"
         + " + '?name=' + encodeURIComponent(document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex )"
-        + ".innerHTML)"
+        + ".innerText)"
           + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerHTML );" );
       out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
       out.println( "window.location.replace( '"
           + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "'"
-        + " + '?name=' + encodeURIComponent(document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex ).innerHTML)"
-          + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerHTML );" );
+        + " + '?name=' + encodeURIComponent(document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex )"
+        + ".innerText)"
+        + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerText );" );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );
@@ -898,13 +899,15 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
   private String setupTransURI( String context ) {
     return "'" + context + "'"
-      + " + '?name=' + encodeURIComponent(document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex ).innerHTML)"
-      + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerHTML";
+      + " + '?name=' + encodeURIComponent(document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex )"
+      + ".innerText)"
+      + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerText";
   }
 
   private String setupJobURI( String context ) {
     return "'" + context + "'"
-      + " + '?name=' + encodeURIComponent(document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex ).innerHTML)"
-      + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerHTML";
+      + " + '?name=' + encodeURIComponent(document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex )"
+      + ".innerText)"
+      + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerText";
   }
 }
