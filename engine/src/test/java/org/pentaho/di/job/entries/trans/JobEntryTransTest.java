@@ -269,23 +269,25 @@ public class JobEntryTransTest {
   public void testPrepareFieldNamesParametersWithNulls() throws UnknownParamException {
     //NOTE: this only tests the prepareFieldNamesParameters function not all variable substitution logic
     // array of params
-    String[] parameterNames = new String[6];
+    String[] parameterNames = new String[7];
     parameterNames[0] = "param1";
     parameterNames[1] = "param2";
     parameterNames[2] = "param3";
     parameterNames[3] = "param4";
     parameterNames[4] = "param5";
     parameterNames[5] = "param6";
+    parameterNames[6] = "param7";
 
     // array of fieldNames params
-    String[] parameterFieldNames = new String[6];
+    String[] parameterFieldNames = new String[7];
     parameterFieldNames[0] = null;
     parameterFieldNames[2] = "ValueParam3";
     parameterFieldNames[3] = "FieldValueParam4";
     parameterFieldNames[4] = "FieldValueParam5";
+    parameterFieldNames[6] = "FieldValueParam7";
 
     // array of parameterValues params
-    String[] parameterValues = new String[6];
+    String[] parameterValues = new String[7];
     parameterValues[1] = "ValueParam2";
     parameterValues[3] = "";
     parameterValues[4] = "StaticValueParam5";
@@ -296,7 +298,8 @@ public class JobEntryTransTest {
     VariableSpace variableSpace = new Variables();
     jet.copyVariablesFrom( variableSpace );
 
-    jet.setVariable( "param6", "someDummyPreviousValue" );
+    jet.setVariable( "param6", "someDummyPreviousValue6" );
+    jet.setVariable( "param7", "someDummyPreviousValue7" );
 
     //at this point StreamColumnNameParams are already inserted in namedParams
     NamedParams namedParam = Mockito.mock( NamedParamsDefault.class );
@@ -306,6 +309,7 @@ public class JobEntryTransTest {
     Mockito.doReturn( "value4" ).when( namedParam ).getParameterValue(  "param4" );
     Mockito.doReturn( "value5" ).when( namedParam ).getParameterValue(  "param5" );
     Mockito.doReturn( "" ).when( namedParam ).getParameterValue(  "param6" );
+    Mockito.doReturn( "" ).when( namedParam ).getParameterValue(  "param7" );
 
     jet.prepareFieldNamesParameters( parameterNames, parameterFieldNames, parameterValues, namedParam, jet );
     // "param1" has parameterFieldName value = null and no parameterValues defined so it should be null
@@ -318,9 +322,12 @@ public class JobEntryTransTest {
     Assert.assertEquals( "value4", jet.getVariable( "param4" ) );
     // "param5" has parameterFieldName and also parameterValues defined with a not empty value so it should return null
     Assert.assertEquals( null, jet.getVariable( "param5" ) );
-    // "param6" only has a parameterValues defined with a not empty value and has a previous value on it (someDummyPreviousValue)
-    // so it should return "" since the mockedValue is not empty - PDI-18227
-    Assert.assertEquals( "", jet.getVariable( "param6" ) );
+    // "param6" only has a parameterValues defined with a not empty value and has a previous value on it ( someDummyPreviousValue6 )
+    // so it should keep "someDummyPreviousValue6" since there is no parameterFieldNames definition
+    Assert.assertEquals( "someDummyPreviousValue6", jet.getVariable( "param6" ) );
+    // "param7" only has a parameterFieldNames defined and has a previous value on it ( someDummyPreviousValue7 )
+    // so it should update to the new value mocked = "" even it is a blank value - PDI-18227
+    Assert.assertEquals( "", jet.getVariable( "param7" ) );
   }
 
   @Test
