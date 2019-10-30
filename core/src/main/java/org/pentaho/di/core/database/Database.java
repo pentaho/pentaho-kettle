@@ -1529,22 +1529,26 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     // comments.
     String sql = databaseMeta.getDatabaseInterface().createSqlScriptParser().removeComments( rawsql ).trim();
     try {
-      boolean resultSet;
-      int count;
+	  String sqlStripped = databaseMeta.stripCR( sql );
+	  Statement stmt;
       if ( params != null ) {
-        PreparedStatement prep_stmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
-        setValues( params, data, prep_stmt ); // set the parameters!
-        resultSet = prep_stmt.execute();
-        count = prep_stmt.getUpdateCount();
-        prep_stmt.close();
+        stmt = connection.prepareStatement( sqlStripped );
+        setValues( params, data, (PreparedStatement)stmt ); // set the parameters!
       } else {
-        String sqlStripped = databaseMeta.stripCR( sql );
         // log.logDetailed("Executing SQL Statement: ["+sqlStripped+"]");
-        Statement stmt = connection.createStatement();
-        resultSet = stmt.execute( sqlStripped );
-        count = stmt.getUpdateCount();
-        stmt.close();
+        stmt = connection.createStatement();
       }
+      boolean resultSet = stmt.execute( sqlStripped );
+      int count = stmt.getUpdateCount();
+
+      // Some odd SQL Servers by the global market leader (for desktop operating systems)
+      // return an exception only if you ask for the resultset for the statement in which
+      // the error has occoured. We therefore have to ask for all resultsets. I guess nobody will
+      // interested in the actual results to we discard them right away.
+      // s. https://github.com/Microsoft/mssql-jdbc/issues/995
+      while (stmt.getMoreResults()) {}
+      stmt.close();
+
       String upperSql = sql.toUpperCase();
       if ( !resultSet ) {
         // if the result is a resultset, we don't do anything with it!
