@@ -44,9 +44,7 @@ ee:
         - pentaho-workernodes-${platform.version}.tar.gz
     shims:
         - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-cdh514-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-hdp26-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
     upgrade:
         - PentahoServer-UP-${platform.version}-Linux.zip
