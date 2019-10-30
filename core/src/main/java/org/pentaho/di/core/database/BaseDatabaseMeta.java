@@ -650,7 +650,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   }
 
   @Override
-  public int getNotFoundTK( boolean use_autoinc ) {
+  public int getNotFoundTK( boolean useAutoinc ) {
     return 0;
   }
 
@@ -780,15 +780,15 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    * Get the schema-table combination to query the right table. Usually that is SCHEMA.TABLENAME, however there are
    * exceptions to this rule...
    *
-   * @param schema_name
+   * @param schemaName
    *          The schema name
-   * @param table_part
+   * @param tablePart
    *          The tablename
    * @return the schema-table combination to query the right table.
    */
   @Override
-  public String getSchemaTableCombination( String schema_name, String table_part ) {
-    return schema_name + "." + table_part;
+  public String getSchemaTableCombination( String schemaName, String tablePart ) {
+    return schemaName + "." + tablePart;
   }
 
   /**
@@ -900,7 +900,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    *          The column defined as a value
    * @param tk
    *          the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *          whether or not this field uses auto increment
    * @param pk
    *          the name of the primary key field
@@ -909,7 +909,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    * @return the SQL statement to drop a column from the specified table
    */
   @Override
-  public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP " + v.getName() + Const.CR;
   }
@@ -1157,7 +1157,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    */
   @Override
   public Map<String, String> getExtraOptions() {
-    Map<String, String> map = new Hashtable<String, String>();
+    Map<String, String> map = new Hashtable<>();
 
     for ( Enumeration<Object> keys = attributes.keys(); keys.hasMoreElements(); ) {
       String attribute = (String) keys.nextElement();
@@ -1602,16 +1602,16 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    *          a connected database
    * @param schemaName
    * @param tableName
-   * @param idx_fields
+   * @param idxFields
    * @return true if the index exists, false if it doesn't.
    * @throws KettleDatabaseException
    */
   @Override
-  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
+  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idxFields ) throws KettleDatabaseException {
 
     String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination( schemaName, tableName );
 
-    boolean[] exists = new boolean[idx_fields.length];
+    boolean[] exists = new boolean[idxFields.length];
     for ( int i = 0; i < exists.length; i++ ) {
       exists[i] = false;
     }
@@ -1628,7 +1628,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
           // int pos = indexList.getShort("ORDINAL_POSITION");
           // int type = indexList.getShort("TYPE");
 
-          int idx = Const.indexOfString( column, idx_fields );
+          int idx = Const.indexOfString( column, idxFields );
           if ( idx >= 0 ) {
             exists[idx] = true;
           }
@@ -1825,7 +1825,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   public List<String> parseStatements( String sqlScript ) {
 
     List<SqlScriptStatement> scriptStatements = getSqlScriptStatements( sqlScript );
-    List<String> statements = new ArrayList<String>();
+    List<String> statements = new ArrayList<>();
     for ( SqlScriptStatement scriptStatement : scriptStatements ) {
       statements.add( scriptStatement.getStatement() );
     }
@@ -1841,7 +1841,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    */
   @Override
   public List<SqlScriptStatement> getSqlScriptStatements( String sqlScript ) {
-    List<SqlScriptStatement> statements = new ArrayList<SqlScriptStatement>();
+    List<SqlScriptStatement> statements = new ArrayList<>();
     String all = sqlScript;
     int from = 0;
     int to = 0;
@@ -2216,19 +2216,19 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    * <li>Prefixes a string with underscore that begins with a number</li>
    * </ul>
    *
-   * @param fieldname
+   * @param fieldName
    *          value to sanitize
    * @return
    */
   @Override
-  public String getSafeFieldname( String fieldname ) {
-    StringBuilder newName = new StringBuilder( fieldname.length() );
+  public String getSafeFieldname( String fieldName ) {
+    StringBuilder newName = new StringBuilder( fieldName.length() );
 
     char[] protectors = getFieldnameProtector().toCharArray();
 
     // alpha numerics , underscores, field protectors only
-    for ( int idx = 0; idx < fieldname.length(); idx++ ) {
-      char c = fieldname.charAt( idx );
+    for ( int idx = 0; idx < fieldName.length(); idx++ ) {
+      char c = fieldName.charAt( idx );
       if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) || ( c >= '0' && c <= '9' ) || ( c == '_' ) ) {
         newName.append( c );
       } else if ( c == ' ' ) {
@@ -2245,22 +2245,22 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
       // swallow this character
       // }
     }
-    fieldname = newName.toString();
+    fieldName = newName.toString();
 
     // don't allow reserved words
     for ( String reservedWord : getReservedWords() ) {
-      if ( fieldname.equalsIgnoreCase( reservedWord ) ) {
-        fieldname = fieldname + getFieldnameProtector();
+      if ( fieldName.equalsIgnoreCase( reservedWord ) ) {
+        fieldName = fieldName + getFieldnameProtector();
       }
     }
 
-    fieldname = fieldname.replace( " ", getFieldnameProtector() );
+    fieldName = fieldName.replace( " ", getFieldnameProtector() );
 
     // can't start with a number
-    if ( fieldname.matches( "^[0-9].*" ) ) {
-      fieldname = getFieldnameProtector() + fieldname;
+    if ( fieldName.matches( "^[0-9].*" ) ) {
+      fieldName = getFieldnameProtector() + fieldName;
     }
-    return fieldname;
+    return fieldName;
   }
 
   /**
