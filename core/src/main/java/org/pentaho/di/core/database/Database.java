@@ -122,33 +122,32 @@ import org.pentaho.di.repository.RepositoryDirectory;
  * @author Matt
  * @since 05-04-2003
  */
-@SuppressWarnings ( "WeakerAccess" )
+@SuppressWarnings( { "WeakerAccess", "squid:S1192" } )
 public class Database implements VariableSpace, LoggingObjectInterface, Closeable {
   /**
    * for i18n purposes, needed by Translator2!!
    */
   private static final Class<?> PKG = Database.class;
 
-  private static final Map<String, Set<String>> registeredDrivers = new HashMap<String, Set<String>>();
+  private static final Map<String, Set<String>> registeredDrivers = new HashMap<>();
 
   private DatabaseMeta databaseMeta;
 
-  private final String DATA_SERVICES_PLUGIN_ID = "KettleThin";
+  private static final String DATA_SERVICES_PLUGIN_ID = "KettleThin";
 
   private int rowlimit;
   private int commitsize;
 
   private Connection connection;
 
-  private Statement sel_stmt;
+  private Statement selStmt;
   private PreparedStatement pstmt;
   private PreparedStatement prepStatementLookup;
   private PreparedStatement prepStatementUpdate;
   private PreparedStatement prepStatementInsert;
-  private PreparedStatement pstmt_seq;
+  private PreparedStatement pstmtSeq;
   private CallableStatement cstmt;
 
-  // private ResultSetMetaData rsmd;
   private DatabaseMetaData dbmd;
 
   private RowMetaInterface rowMeta;
@@ -517,7 +516,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
             PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
           Set<String> registeredDriversFromPlugin = registeredDrivers.get( pluginId );
           if ( registeredDriversFromPlugin == null ) {
-            registeredDriversFromPlugin = new HashSet<String>();
+            registeredDriversFromPlugin = new HashSet<>();
             registeredDrivers.put( pluginId, registeredDriversFromPlugin );
           }
           // Prevent registering multiple delegating drivers for same class, plugin
@@ -530,10 +529,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           Class.forName( classname );
         }
       }
-    } catch ( NoClassDefFoundError e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-        "Database.Exception.UnableToFindClassMissingDriver", classname, plugin.getName() ), e );
-    } catch ( ClassNotFoundException e ) {
+    } catch ( NoClassDefFoundError | ClassNotFoundException e ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG,
         "Database.Exception.UnableToFindClassMissingDriver", classname, plugin.getName() ), e );
     } catch ( Exception e ) {
@@ -601,9 +597,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
         connection = DriverManager.getConnection( url, properties );
       }
-    } catch ( SQLException e ) {
-      throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
-    } catch ( Throwable e ) {
+    } catch ( Exception e ) {
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
     }
   }
@@ -665,15 +659,15 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       }
       prepStatementUpdate = null;
     }
-    if ( pstmt_seq != null ) {
+    if ( pstmtSeq != null ) {
       try {
-        pstmt_seq.close();
+        pstmtSeq.close();
       } catch ( SQLException ex ) {
         // cannot do anything about this but log it
         log.logError( "Error closing seq statement:" + Const.CR + ex.getMessage() );
         log.logError( Const.getStackTracker( ex ) );
       }
-      pstmt_seq = null;
+      pstmtSeq = null;
     }
 
     // See if there are other steps using this connection in a connection
@@ -753,7 +747,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
 
     cancelStatement( pstmt );
-    cancelStatement( sel_stmt );
+    cancelStatement( selStmt );
   }
 
   /**
@@ -1135,9 +1129,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @throws KettleDatabaseException in case something goes wrong retrieving the keys.
    */
   public RowMetaAndData getGeneratedKeys( PreparedStatement ps ) throws KettleDatabaseException {
-    ResultSet keys = null;
-    try {
-      keys = ps.getGeneratedKeys(); // 1 row of keys
+    try ( ResultSet keys = ps.getGeneratedKeys() ) {
       ResultSetMetaData resultSetMetaData = keys.getMetaData();
       if ( resultSetMetaData == null ) {
         resultSetMetaData = ps.getMetaData();
@@ -1153,14 +1145,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       return new RowMetaAndData( rowMeta, getRow( keys, resultSetMetaData, rowMeta ) );
     } catch ( Exception ex ) {
       throw new KettleDatabaseException( "Unable to retrieve key(s) from auto-increment field(s)", ex );
-    } finally {
-      if ( keys != null ) {
-        try {
-          keys.close();
-        } catch ( SQLException e ) {
-          throw new KettleDatabaseException( "Unable to close resultset of auto-generated keys", e );
-        }
-      }
     }
   }
 
@@ -1175,13 +1159,13 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     String schemaSequence = databaseMeta.getQuotedSchemaTableCombination( schemaName, sequenceName );
 
     try {
-      if ( pstmt_seq == null ) {
-        pstmt_seq =
+      if ( pstmtSeq == null ) {
+        pstmtSeq =
           connection.prepareStatement( databaseMeta.getSeqNextvalSQL( databaseMeta.stripCR( schemaSequence ) ) );
       }
       ResultSet rs = null;
       try {
-        rs = pstmt_seq.executeQuery();
+        rs = pstmtSeq.executeQuery();
         if ( rs.next() ) {
           retval = Long.valueOf( rs.getLong( 1 ) );
         }
@@ -1345,7 +1329,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         throw new KettleDatabaseException( "Error inserting/updating row", ex );
       }
     } catch ( Exception e ) {
-      // System.out.println("Unexpected exception in ["+debug+"] : "+e.getMessage());
       throw new KettleDatabaseException( "Unexpected error inserting/updating row in part [" + debug + "]", e );
     }
   }
@@ -1455,7 +1438,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       // Null update count forces rollback of batch
       kdbe.setUpdateCounts( null );
     }
-    List<Exception> exceptions = new ArrayList<Exception>();
+    List<Exception> exceptions = new ArrayList<>();
     SQLException nextException = ex.getNextException();
     SQLException oldException = null;
 
@@ -1547,14 +1530,13 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       boolean resultSet;
       int count;
       if ( params != null ) {
-        PreparedStatement prep_stmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
-        setValues( params, data, prep_stmt ); // set the parameters!
-        resultSet = prep_stmt.execute();
-        count = prep_stmt.getUpdateCount();
-        prep_stmt.close();
+        try ( PreparedStatement prepStmt = connection.prepareStatement( databaseMeta.stripCR( sql ) ) ) {
+          setValues( params, data, prepStmt ); // set the parameters!
+          resultSet = prepStmt.execute();
+          count = prepStmt.getUpdateCount();
+        }
       } else {
         String sqlStripped = databaseMeta.stripCR( sql );
-        // log.logDetailed("Executing SQL Statement: ["+sqlStripped+"]");
         try ( Statement stmt = connection.createStatement() ) {
           resultSet = stmt.execute( sqlStripped );
           count = stmt.getUpdateCount();
@@ -1564,7 +1546,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       if ( !resultSet ) {
         // if the result is a resultset, we don't do anything with it!
         // You should have called something else!
-        // log.logDetailed("What to do with ResultSet??? (count="+count+")");
         if ( count > 0 ) {
           if ( upperSql.startsWith( "INSERT" ) ) {
             result.setNrLinesOutput( count );
@@ -1714,12 +1695,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     return openQuery( sql, params, data, ResultSet.FETCH_FORWARD );
   }
 
-  public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetch_mode )
+  public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetchMode )
     throws KettleDatabaseException {
-    return openQuery( sql, params, data, fetch_mode, false );
+    return openQuery( sql, params, data, fetchMode, false );
   }
 
-  public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetch_mode,
+  public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetchMode,
                               boolean lazyConversion ) throws KettleDatabaseException {
     ResultSet res;
 
@@ -1746,7 +1727,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
             pstmt.setFetchSize( fs );
           }
 
-          pstmt.setFetchDirection( fetch_mode );
+          pstmt.setFetchDirection( fetchMode );
         }
 
         if ( rowlimit > 0 && databaseMeta.supportsSetMaxRows() ) {
@@ -1758,24 +1739,24 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         log.snap( Metrics.METRIC_DATABASE_EXECUTE_SQL_STOP, databaseMeta.getName() );
       } else {
         log.snap( Metrics.METRIC_DATABASE_CREATE_SQL_START, databaseMeta.getName() );
-        sel_stmt = connection.createStatement();
+        selStmt = connection.createStatement();
         log.snap( Metrics.METRIC_DATABASE_CREATE_SQL_STOP, databaseMeta.getName() );
-        if ( canWeSetFetchSize( sel_stmt ) ) {
-          int fs = Const.FETCH_SIZE <= sel_stmt.getMaxRows() ? sel_stmt.getMaxRows() : Const.FETCH_SIZE;
+        if ( canWeSetFetchSize( selStmt ) ) {
+          int fs = Const.FETCH_SIZE <= selStmt.getMaxRows() ? selStmt.getMaxRows() : Const.FETCH_SIZE;
           if ( databaseMeta.getDatabaseInterface().isMySQLVariant()
             && databaseMeta.isStreamingResults() ) {
-            sel_stmt.setFetchSize( Integer.MIN_VALUE );
+            selStmt.setFetchSize( Integer.MIN_VALUE );
           } else {
-            sel_stmt.setFetchSize( fs );
+            selStmt.setFetchSize( fs );
           }
-          sel_stmt.setFetchDirection( fetch_mode );
+          selStmt.setFetchDirection( fetchMode );
         }
         if ( rowlimit > 0 && databaseMeta.supportsSetMaxRows() ) {
-          sel_stmt.setMaxRows( rowlimit );
+          selStmt.setMaxRows( rowlimit );
         }
 
         log.snap( Metrics.METRIC_DATABASE_EXECUTE_SQL_START, databaseMeta.getName() );
-        res = sel_stmt.executeQuery( databaseMeta.stripCR( sql ) );
+        res = selStmt.executeQuery( databaseMeta.stripCR( sql ) );
         log.snap( Metrics.METRIC_DATABASE_EXECUTE_SQL_STOP, databaseMeta.getName() );
       }
 
@@ -1894,6 +1875,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @return true if the table exists, false if it doesn't.
    * @deprecated Deprecated in favor of {@link #checkTableExists(String, String)}
    */
+  @Deprecated
   public boolean checkTableExists( String tablename ) throws KettleDatabaseException {
     try {
       if ( log.isDebug() ) {
@@ -1945,6 +1927,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @throws KettleDatabaseException
    * @deprecated Deprecated in favor of {@link #checkTableExists(String, String)}
    */
+  @Deprecated
   public boolean checkTableExistsByDbMeta( String schema, String tablename ) throws KettleDatabaseException {
     boolean isTableExist = false;
     if ( log.isDebug() ) {
@@ -2074,6 +2057,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @return true if the table exists, false if it doesn't.
    * @deprecated Deprecated in favor of the smarter {@link #checkColumnExists(String, String, String)}
    */
+  @Deprecated
   public boolean checkColumnExists( String columnname, String tablename ) throws KettleDatabaseException {
     try {
       if ( log.isDebug() ) {
@@ -2143,22 +2127,22 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * Check if an index on certain fields in a table exists.
    *
-   * @param tableName  The table on which the index is checked
-   * @param idx_fields The fields on which the indexe is checked
+   * @param tableName The table on which the index is checked
+   * @param idxFields The fields on which the indexe is checked
    * @return True if the index exists
    */
-  public boolean checkIndexExists( String tableName, String[] idx_fields ) throws KettleDatabaseException {
-    return checkIndexExists( null, tableName, idx_fields );
+  public boolean checkIndexExists( String tableName, String[] idxFields ) throws KettleDatabaseException {
+    return checkIndexExists( null, tableName, idxFields );
   }
 
   /**
    * Check if an index on certain fields in a table exists.
    *
-   * @param tablename  The table on which the index is checked
-   * @param idx_fields The fields on which the indexe is checked
+   * @param tableName The table on which the index is checked
+   * @param idxFields The fields on which the indexe is checked
    * @return True if the index exists
    */
-  public boolean checkIndexExists( String schemaName, String tableName, String[] idx_fields )
+  public boolean checkIndexExists( String schemaName, String tableName, String[] idxFields )
     throws KettleDatabaseException {
     String tablename = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
     if ( !checkTableExists( tablename ) ) {
@@ -2169,112 +2153,112 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       log.logDebug( "CheckIndexExists() tablename = " + tablename + " type = " + databaseMeta.getPluginId() );
     }
 
-    return databaseMeta.getDatabaseInterface().checkIndexExists( this, schemaName, tableName, idx_fields );
+    return databaseMeta.getDatabaseInterface().checkIndexExists( this, schemaName, tableName, idxFields );
   }
 
-  public String getCreateIndexStatement( String tablename, String indexname, String[] idx_fields, boolean tk,
-                                         boolean unique, boolean bitmap, boolean semi_colon ) {
-    return getCreateIndexStatement( null, tablename, indexname, idx_fields, tk, unique, bitmap, semi_colon );
+  public String getCreateIndexStatement( String tablename, String indexname, String[] idxFields, boolean tk,
+                                         boolean unique, boolean bitmap, boolean semiColon ) {
+    return getCreateIndexStatement( null, tablename, indexname, idxFields, tk, unique, bitmap, semiColon );
   }
 
   public String getCreateIndexStatement( String schemaname, String tablename, String indexname,
-                                         String[] idx_fields, boolean tk, boolean unique, boolean bitmap,
-                                         boolean semi_colon ) {
-    String cr_index = "";
+                                         String[] idxFields, boolean tk, boolean unique, boolean bitmap,
+                                         boolean semiColon ) {
+    StringBuilder crIndex = new StringBuilder();
     DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
 
     if ( !databaseInterface.supportsIndexes() ) {
       return "";
     }
 
-    cr_index += "CREATE ";
+    crIndex.append( "CREATE " );
 
     if ( unique || ( tk && databaseInterface instanceof SybaseDatabaseMeta ) ) {
-      cr_index += "UNIQUE ";
+      crIndex.append( "UNIQUE " );
     }
 
     if ( bitmap && databaseMeta.supportsBitmapIndex() ) {
-      cr_index += "BITMAP ";
+      crIndex.append( "BITMAP " );
     }
 
-    cr_index += "INDEX " + databaseMeta.quoteField( indexname ) + " ";
-    cr_index += "ON ";
+    crIndex.append( "INDEX " ).append( databaseMeta.quoteField( indexname ) ).append( " " );
+    crIndex.append( "ON " );
     // assume table has already been quoted (and possibly includes schema)
-    cr_index += tablename;
-    cr_index += "(";
-    for ( int i = 0; i < idx_fields.length; i++ ) {
+    crIndex.append( tablename );
+    crIndex.append( "(" );
+    for ( int i = 0; i < idxFields.length; i++ ) {
       if ( i > 0 ) {
-        cr_index += ", ";
+        crIndex.append( ", " );
       }
-      cr_index += databaseMeta.quoteField( idx_fields[ i ] );
+      crIndex.append( databaseMeta.quoteField( idxFields[ i ] ) );
     }
-    cr_index += ")" + Const.CR;
+    crIndex.append( ")" ).append( Const.CR );
 
-    cr_index += databaseInterface.getIndexTablespaceDDL( variables, databaseMeta );
+    crIndex.append( databaseInterface.getIndexTablespaceDDL( variables, databaseMeta ) );
 
-    if ( semi_colon ) {
-      cr_index += ";" + Const.CR;
+    if ( semiColon ) {
+      crIndex.append( ";" ).append( Const.CR );
     }
 
-    return cr_index;
+    return crIndex.toString();
   }
 
-  public String getCreateSequenceStatement( String sequence, long start_at, long increment_by, long max_value,
-                                            boolean semi_colon ) {
+  public String getCreateSequenceStatement( String sequence, long startAt, long incrementBy, long maxValue,
+                                            boolean semiColon ) {
     return getCreateSequenceStatement(
-      null, sequence, Long.toString( start_at ), Long.toString( increment_by ), Long.toString( max_value ),
-      semi_colon );
+      null, sequence, Long.toString( startAt ), Long.toString( incrementBy ), Long.toString( maxValue ),
+      semiColon );
   }
 
-  public String getCreateSequenceStatement( String sequence, String start_at, String increment_by,
-                                            String max_value, boolean semi_colon ) {
-    return getCreateSequenceStatement( null, sequence, start_at, increment_by, max_value, semi_colon );
+  public String getCreateSequenceStatement( String sequence, String startAt, String incrementBy,
+                                            String maxValue, boolean semiColon ) {
+    return getCreateSequenceStatement( null, sequence, startAt, incrementBy, maxValue, semiColon );
   }
 
-  public String getCreateSequenceStatement( String schemaName, String sequence, long start_at, long increment_by,
-                                            long max_value, boolean semi_colon ) {
-    return getCreateSequenceStatement( schemaName, sequence, Long.toString( start_at ), Long
-      .toString( increment_by ), Long.toString( max_value ), semi_colon );
+  public String getCreateSequenceStatement( String schemaName, String sequence, long startAt, long incrementBy,
+                                            long maxValue, boolean semiColon ) {
+    return getCreateSequenceStatement( schemaName, sequence, Long.toString( startAt ), Long
+      .toString( incrementBy ), Long.toString( maxValue ), semiColon );
   }
 
-  public String getCreateSequenceStatement( String schemaName, String sequenceName, String start_at,
-                                            String increment_by, String max_value, boolean semi_colon ) {
-    String cr_seq = "";
+  public String getCreateSequenceStatement( String schemaName, String sequenceName, String startAt,
+                                            String incrementBy, String maxValue, boolean semiColon ) {
+    String crSeq = "";
 
     if ( Utils.isEmpty( sequenceName ) ) {
-      return cr_seq;
+      return crSeq;
     }
 
     if ( databaseMeta.supportsSequences() ) {
       String schemaSequence = databaseMeta.getQuotedSchemaTableCombination( schemaName, sequenceName );
-      cr_seq += "CREATE SEQUENCE " + schemaSequence + " " + Const.CR; // Works
+      crSeq += "CREATE SEQUENCE " + schemaSequence + " " + Const.CR; // Works
       // for
       // both
       // Oracle
       // and
       // PostgreSQL
       // :-)
-      cr_seq += "START WITH " + start_at + " " + Const.CR;
-      cr_seq += "INCREMENT BY " + increment_by + " " + Const.CR;
-      if ( max_value != null ) {
+      crSeq += "START WITH " + startAt + " " + Const.CR;
+      crSeq += "INCREMENT BY " + incrementBy + " " + Const.CR;
+      if ( maxValue != null ) {
         // "-1" means there is no maxvalue, must be handles different by DB2 /
         // AS400
         //
-        if ( databaseMeta.supportsSequenceNoMaxValueOption() && max_value.trim().equals( "-1" ) ) {
+        if ( databaseMeta.supportsSequenceNoMaxValueOption() && maxValue.trim().equals( "-1" ) ) {
           DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
-          cr_seq += databaseInterface.getSequenceNoMaxValueOption() + Const.CR;
+          crSeq += databaseInterface.getSequenceNoMaxValueOption() + Const.CR;
         } else {
           // set the max value
-          cr_seq += "MAXVALUE " + max_value + Const.CR;
+          crSeq += "MAXVALUE " + maxValue + Const.CR;
         }
       }
 
-      if ( semi_colon ) {
-        cr_seq += ";" + Const.CR;
+      if ( semiColon ) {
+        crSeq += ";" + Const.CR;
       }
     }
 
-    return cr_seq;
+    return crSeq;
   }
 
   /**
@@ -2370,10 +2354,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       }
 
       // Store in cache!!
-      if ( dbcache != null && entry != null ) {
-        if ( fields != null ) {
-          dbcache.put( entry, fields );
-        }
+      if ( dbcache != null && entry != null && fields != null ) {
+        dbcache.put( entry, fields );
       }
 
       return fields;
@@ -2429,17 +2411,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         }
       }
     } catch ( Exception e ) {
-      /*
-       * databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SYBASEIQ ) {
-       */
       fields = getQueryFieldsFallback( sql, param, inform, data );
     }
 
     // Store in cache!!
-    if ( dbcache != null && entry != null ) {
-      if ( fields != null ) {
-        dbcache.put( entry, fields );
-      }
+    if ( dbcache != null && entry != null && fields != null ) {
+      dbcache.put( entry, fields );
     }
 
     return fields;
@@ -2450,24 +2427,14 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   public RowMetaInterface getQueryFieldsFromPreparedStatement( String sql ) throws Exception {
-    PreparedStatement preparedStatement = null;
-    try {
-      preparedStatement =
-        connection.prepareStatement( databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY,
-          ResultSet.CONCUR_READ_ONLY );
+    try ( PreparedStatement preparedStatement = connection
+      .prepareStatement( databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY,
+        ResultSet.CONCUR_READ_ONLY ) ) {
       preparedStatement.setMaxRows( 1 );
       ResultSetMetaData rsmd = preparedStatement.getMetaData();
       return getRowInfo( rsmd, false, false );
     } catch ( Exception e ) {
       throw new Exception( e );
-    } finally {
-      if ( preparedStatement != null ) {
-        try {
-          preparedStatement.close();
-        } catch ( SQLException e ) {
-          throw new KettleDatabaseException( "Unable to close prepared statement after determining SQL layout", e );
-        }
-      }
     }
   }
 
@@ -2539,28 +2506,28 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         // prepared statement (see BugID 3214)
         && databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta )
         || databaseMeta.getDatabaseInterface().supportsResultSetMetadataRetrievalOnly() ) {
-        sel_stmt = connection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
+        selStmt = connection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
         try {
-          if ( databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows() >= 1 ) {
+          if ( databaseMeta.isFetchSizeSupported() && selStmt.getMaxRows() >= 1 ) {
             if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
-              sel_stmt.setFetchSize( Integer.MIN_VALUE );
+              selStmt.setFetchSize( Integer.MIN_VALUE );
             } else {
-              sel_stmt.setFetchSize( 1 );
+              selStmt.setFetchSize( 1 );
             }
           }
           if ( databaseMeta.supportsSetMaxRows() ) {
-            sel_stmt.setMaxRows( 1 );
+            selStmt.setMaxRows( 1 );
           }
 
-          ResultSet r = sel_stmt.executeQuery( databaseMeta.stripCR( sql ) );
+          ResultSet r = selStmt.executeQuery( databaseMeta.stripCR( sql ) );
           try {
             fields = getRowInfo( r.getMetaData(), false, false );
           } finally { // avoid leaking resources
             r.close();
           }
         } finally { // avoid leaking resources
-          sel_stmt.close();
-          sel_stmt = null;
+          selStmt.close();
+          selStmt = null;
         }
       } else {
         PreparedStatement ps = connection.prepareStatement( databaseMeta.stripCR( sql ) );
@@ -2587,11 +2554,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
             // it the other way. In either case, there is no reason for us to ever try getting the prepared
             // statement's metadata. The right answer is to directly get the resultset metadata.
             //
-            // ResultSetMetaData metadata = ps.getMetaData();
-            // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
-            // if ( metadata == null ) {
-            //  metadata = r.getMetaData();
-            // }
             ResultSetMetaData metadata = r.getMetaData();
             fields = getRowInfo( metadata, false, false );
           } finally { // should always use a try/finally to avoid leaks
@@ -2614,9 +2576,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       if ( res != null ) {
         res.close();
       }
-      if ( sel_stmt != null ) {
-        sel_stmt.close();
-        sel_stmt = null;
+      if ( selStmt != null ) {
+        selStmt.close();
+        selStmt = null;
       }
       if ( pstmt != null ) {
         pstmt.close();
@@ -2840,43 +2802,43 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
       String table = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
 
-      String sql = "SELECT ";
+      StringBuilder sql = new StringBuilder( "SELECT " );
 
       for ( int i = 0; i < gets.length; i++ ) {
         if ( i != 0 ) {
-          sql += ", ";
+          sql.append( ", " );
         }
-        sql += databaseMeta.quoteField( gets[ i ] );
+        sql.append( databaseMeta.quoteField( gets[ i ] ) );
         if ( rename != null && rename[ i ] != null && !gets[ i ].equalsIgnoreCase( rename[ i ] ) ) {
-          sql += " AS " + databaseMeta.quoteField( rename[ i ] );
+          sql.append( " AS " ).append( databaseMeta.quoteField( rename[ i ] ) );
         }
       }
 
-      sql += " FROM " + table + " WHERE ";
+      sql.append( " FROM " ).append( table ).append( " WHERE " );
 
       for ( int i = 0; i < codes.length; i++ ) {
         if ( i != 0 ) {
-          sql += " AND ";
+          sql.append( " AND " );
         }
-        sql += databaseMeta.quoteField( codes[ i ] );
+        sql.append( databaseMeta.quoteField( codes[ i ] ) );
         if ( "BETWEEN".equalsIgnoreCase( condition[ i ] ) ) {
-          sql += " BETWEEN ? AND ? ";
+          sql.append( " BETWEEN ? AND ? " );
         } else if ( "IS NULL".equalsIgnoreCase( condition[ i ] ) || "IS NOT NULL".equalsIgnoreCase( condition[ i ] ) ) {
-          sql += " " + condition[ i ] + " ";
+          sql.append( " " ).append( condition[ i ] ).append( " " );
         } else {
-          sql += " " + condition[ i ] + " ? ";
+          sql.append( " " ).append( condition[ i ] ).append( " ? " );
         }
       }
 
       if ( orderby != null && orderby.length() != 0 ) {
-        sql += " ORDER BY " + orderby;
+        sql.append( " ORDER BY " ).append( orderby );
       }
 
       try {
         if ( log.isDetailed() ) {
           log.logDetailed( "Setting preparedStatement to [" + sql + "]" );
         }
-        prepStatementLookup = connection.prepareStatement( databaseMeta.stripCR( sql ) );
+        prepStatementLookup = connection.prepareStatement( databaseMeta.stripCR( sql.toString() ) );
         if ( !checkForMultipleResults && databaseMeta.supportsSetMaxRows() ) {
           prepStatementLookup.setMaxRows( 1 ); // alywas get only 1 line back!
         }
@@ -2970,23 +2932,23 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     try {
       log.snap( Metrics.METRIC_DATABASE_PREPARE_DELETE_START, databaseMeta.getName() );
 
-      String sql;
+      StringBuilder sql;
 
       String table = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
-      sql = "DELETE FROM " + table + Const.CR;
-      sql += "WHERE ";
+      sql = new StringBuilder( "DELETE FROM " + table + Const.CR );
+      sql.append( "WHERE " );
 
       for ( int i = 0; i < codes.length; i++ ) {
         if ( i != 0 ) {
-          sql += "AND   ";
+          sql.append( "AND   " );
         }
-        sql += codes[ i ];
+        sql.append( codes[ i ] );
         if ( "BETWEEN".equalsIgnoreCase( condition[ i ] ) ) {
-          sql += " BETWEEN ? AND ? ";
+          sql.append( " BETWEEN ? AND ? " );
         } else if ( "IS NULL".equalsIgnoreCase( condition[ i ] ) || "IS NOT NULL".equalsIgnoreCase( condition[ i ] ) ) {
-          sql += " " + condition[ i ] + " ";
+          sql.append( " " ).append( condition[ i ] ).append( " " );
         } else {
-          sql += " " + condition[ i ] + " ? ";
+          sql.append( " " ).append( condition[ i ] ).append( " ? " );
         }
       }
 
@@ -2994,7 +2956,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         if ( log.isDetailed() ) {
           log.logDetailed( "Setting update preparedStatement to [" + sql + "]" );
         }
-        prepStatementUpdate = connection.prepareStatement( databaseMeta.stripCR( sql ) );
+        prepStatementUpdate = connection.prepareStatement( databaseMeta.stripCR( sql.toString() ) );
       } catch ( SQLException ex ) {
         printSQLException( ex );
         return false;
@@ -3010,37 +2972,37 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
                              int returntype ) throws KettleDatabaseException {
     try {
       log.snap( Metrics.METRIC_DATABASE_PREPARE_DBPROC_START, databaseMeta.getName() );
-      String sql;
+      StringBuilder sql;
       int pos = 0;
 
-      sql = "{ ";
+      sql = new StringBuilder( "{ " );
       if ( returnvalue != null && returnvalue.length() != 0 ) {
-        sql += "? = ";
+        sql.append( "? = " );
       }
-      sql += "call " + proc + " ";
+      sql.append( "call " ).append( proc ).append( " " );
 
       if ( arg.length > 0 ) {
-        sql += "(";
+        sql.append( "(" );
       }
 
       for ( int i = 0; i < arg.length; i++ ) {
         if ( i != 0 ) {
-          sql += ", ";
+          sql.append( ", " );
         }
-        sql += " ?";
+        sql.append( " ?" );
       }
 
       if ( arg.length > 0 ) {
-        sql += ")";
+        sql.append( ")" );
       }
 
-      sql += "}";
+      sql.append( "}" );
 
       try {
         if ( log.isDetailed() ) {
           log.logDetailed( "DBA setting callableStatement to [" + sql + "]" );
         }
-        cstmt = connection.prepareCall( sql );
+        cstmt = connection.prepareCall( sql.toString() );
         pos = 1;
         if ( !Utils.isEmpty( returnvalue ) ) {
           switch ( returntype ) {
@@ -3127,11 +3089,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public Object[] getLookup( PreparedStatement ps, boolean failOnMultipleResults, boolean lazyConversion )
     throws KettleDatabaseException {
-    ResultSet res = null;
-    try {
-      log.snap( Metrics.METRIC_DATABASE_GET_LOOKUP_START, databaseMeta.getName() );
-      res = ps.executeQuery();
-
+    log.snap( Metrics.METRIC_DATABASE_GET_LOOKUP_START, databaseMeta.getName() );
+    try ( ResultSet res = ps.executeQuery() ) {
       Object[] ret = getRow( res, lazyConversion );
 
       if ( failOnMultipleResults ) {
@@ -3148,15 +3107,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     } catch ( SQLException ex ) {
       throw new KettleDatabaseException( "Error looking up row in database", ex );
     } finally {
-      try {
-        if ( res != null ) {
-          res.close(); // close resultset!
-        }
-      } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Unable to close resultset after looking up data", e );
-      } finally {
-        log.snap( Metrics.METRIC_DATABASE_GET_LOOKUP_STOP, databaseMeta.getName() );
-      }
+      log.snap( Metrics.METRIC_DATABASE_GET_LOOKUP_STOP, databaseMeta.getName() );
     }
   }
 
@@ -3185,12 +3136,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     return getDDL( tablename, fields, null, false, null, true );
   }
 
-  public String getDDL( String tablename, RowMetaInterface fields, String tk, boolean use_autoinc, String pk )
+  public String getDDL( String tablename, RowMetaInterface fields, String tk, boolean useAutoinc, String pk )
     throws KettleDatabaseException {
-    return getDDL( tablename, fields, tk, use_autoinc, pk, true );
+    return getDDL( tablename, fields, tk, useAutoinc, pk, true );
   }
 
-  public String getDDL( String tableName, RowMetaInterface fields, String tk, boolean use_autoinc, String pk,
+  public String getDDL( String tableName, RowMetaInterface fields, String tk, boolean useAutoinc, String pk,
                         boolean semicolon ) throws KettleDatabaseException {
     String retval;
 
@@ -3199,9 +3150,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     String quotedTk = tk != null ? databaseMeta.quoteField( tk ) : null;
 
     if ( checkTableExists( tableName ) ) {
-      retval = getAlterTableStatement( tableName, fields, quotedTk, use_autoinc, pk, semicolon );
+      retval = getAlterTableStatement( tableName, fields, quotedTk, useAutoinc, pk, semicolon );
     } else {
-      retval = getCreateTableStatement( tableName, fields, quotedTk, use_autoinc, pk, semicolon );
+      retval = getCreateTableStatement( tableName, fields, quotedTk, useAutoinc, pk, semicolon );
     }
 
     return retval;
@@ -3210,16 +3161,16 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * Generates SQL
    *
-   * @param tableName   the table name or schema/table combination: this needs to be quoted properly in advance.
-   * @param fields      the fields
-   * @param tk          the name of the technical key field
-   * @param use_autoinc true if we need to use auto-increment fields for a primary key
-   * @param pk          the name of the primary/technical key field
-   * @param semicolon   append semicolon to the statement
+   * @param tableName  the table name or schema/table combination: this needs to be quoted properly in advance.
+   * @param fields     the fields
+   * @param tk         the name of the technical key field
+   * @param useAutoinc true if we need to use auto-increment fields for a primary key
+   * @param pk         the name of the primary/technical key field
+   * @param semicolon  append semicolon to the statement
    * @return the SQL needed to create the specified table and fields.
    */
   public String getCreateTableStatement( String tableName, RowMetaInterface fields, String tk,
-                                         boolean use_autoinc, String pk, boolean semicolon ) {
+                                         boolean useAutoinc, String pk, boolean semicolon ) {
     StringBuilder retval = new StringBuilder();
     DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
     retval.append( databaseInterface.getCreateTableStatement() );
@@ -3234,7 +3185,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       }
 
       ValueMetaInterface v = fields.getValueMeta( i );
-      retval.append( databaseMeta.getFieldDefinition( v, tk, pk, use_autoinc ) );
+      retval.append( databaseMeta.getFieldDefinition( v, tk, pk, useAutoinc ) );
     }
     // At the end, before the closing of the statement, we might need to add
     // some constraints...
@@ -3267,9 +3218,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     return retval.toString();
   }
 
-  public String getAlterTableStatement( String tableName, RowMetaInterface fields, String tk, boolean use_autoinc,
+  public String getAlterTableStatement( String tableName, RowMetaInterface fields, String tk, boolean useAutoinc,
                                         String pk, boolean semicolon ) throws KettleDatabaseException {
-    String retval = "";
+    StringBuilder retval = new StringBuilder();
 
     // Get the fields that are in the table now:
     RowMetaInterface tabFields = getTableFields( tableName );
@@ -3290,7 +3241,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     if ( missing.size() != 0 ) {
       for ( int i = 0; i < missing.size(); i++ ) {
         ValueMetaInterface v = missing.getValueMeta( i );
-        retval += databaseMeta.getAddColumnStatement( tableName, v, tk, use_autoinc, pk, true );
+        retval.append( databaseMeta.getAddColumnStatement( tableName, v, tk, useAutoinc, pk, true ) );
       }
     }
 
@@ -3307,7 +3258,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     if ( surplus.size() != 0 ) {
       for ( int i = 0; i < surplus.size(); i++ ) {
         ValueMetaInterface v = surplus.getValueMeta( i );
-        retval += databaseMeta.getDropColumnStatement( tableName, v, tk, use_autoinc, pk, true );
+        retval.append( databaseMeta.getDropColumnStatement( tableName, v, tk, useAutoinc, pk, true ) );
       }
     }
 
@@ -3320,8 +3271,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       ValueMetaInterface desiredField = fields.getValueMeta( i );
       ValueMetaInterface currentField = tabFields.searchValueMeta( desiredField.getName() );
       if ( desiredField != null && currentField != null ) {
-        String desiredDDL = databaseMeta.getFieldDefinition( desiredField, tk, pk, use_autoinc );
-        String currentDDL = databaseMeta.getFieldDefinition( currentField, tk, pk, use_autoinc );
+        String desiredDDL = databaseMeta.getFieldDefinition( desiredField, tk, pk, useAutoinc );
+        String currentDDL = databaseMeta.getFieldDefinition( currentField, tk, pk, useAutoinc );
 
         boolean mod = !desiredDDL.equalsIgnoreCase( currentDDL );
         if ( mod ) {
@@ -3333,11 +3284,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     if ( modify.size() > 0 ) {
       for ( int i = 0; i < modify.size(); i++ ) {
         ValueMetaInterface v = modify.getValueMeta( i );
-        retval += databaseMeta.getModifyColumnStatement( tableName, v, tk, use_autoinc, pk, true );
+        retval.append( databaseMeta.getModifyColumnStatement( tableName, v, tk, useAutoinc, pk, true ) );
       }
     }
 
-    return retval;
+    return retval.toString();
   }
 
   public void truncateTable( String tablename ) throws KettleDatabaseException {
@@ -3375,7 +3326,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   public RowMetaAndData getOneRow( String sql ) throws KettleDatabaseException {
     ResultSet rs = openQuery( sql );
     if ( rs != null ) {
-      Object[] row = getRow( rs ); // One row only;
+      Object[] row = getRow( rs ); // One row only
 
       try {
         rs.close();
@@ -3391,13 +3342,13 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         }
         pstmt = null;
       }
-      if ( sel_stmt != null ) {
+      if ( selStmt != null ) {
         try {
-          sel_stmt.close();
+          selStmt.close();
         } catch ( Exception e ) {
           throw new KettleDatabaseException( "Unable to close prepared statement sel_stmt", e );
         }
-        sel_stmt = null;
+        selStmt = null;
       }
       return new RowMetaAndData( rowMeta, row );
     } else {
@@ -3429,7 +3380,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         tmpMeta = getMetaFromRow( row, md );
 
       } catch ( Exception e ) {
-        e.printStackTrace();
+        log.logError( e.getMessage(), e );
       } finally {
         try {
           rs.close();
@@ -3445,13 +3396,13 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           }
           pstmt = null;
         }
-        if ( sel_stmt != null ) {
+        if ( selStmt != null ) {
           try {
-            sel_stmt.close();
+            selStmt.close();
           } catch ( Exception e ) {
             throw new KettleDatabaseException( "Unable to close prepared statement sel_stmt", e );
           }
-          sel_stmt = null;
+          selStmt = null;
         }
 
       }
@@ -3511,35 +3462,29 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
         par.addValueMeta( val );
       }
-    } catch ( AbstractMethodError e ) {
-      // Oops: probably the database or JDBC doesn't support it.
-      return null;
-    } catch ( SQLException e ) {
-      return null;
-    } catch ( Exception e ) {
+    } catch ( AbstractMethodError | Exception e ) {
       return null;
     }
-
     return par;
   }
 
   public int countParameters( String sql ) {
     int q = 0;
-    boolean quote_opened = false;
-    boolean dquote_opened = false;
+    boolean quoteOpened = false;
+    boolean dquoteOpened = false;
 
     for ( int x = 0; x < sql.length(); x++ ) {
       char c = sql.charAt( x );
 
       switch ( c ) {
         case '\'':
-          quote_opened = !quote_opened;
+          quoteOpened = !quoteOpened;
           break;
         case '"':
-          dquote_opened = !dquote_opened;
+          dquoteOpened = !dquoteOpened;
           break;
         case '?':
-          if ( !quote_opened && !dquote_opened ) {
+          if ( !quoteOpened && !dquoteOpened ) {
             q++;
           }
           break;
@@ -3587,18 +3532,18 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         databaseMeta.getQuotedSchemaTableCombination(
           environmentSubstitute( logTable.getActualSchemaName() ), environmentSubstitute( logTable
             .getActualTableName() ) );
-      RowMetaInterface rowMeta = logRecord.getRowMeta();
+      RowMetaInterface rowMetaInterface = logRecord.getRowMeta();
       Object[] rowData = logRecord.getData();
 
       if ( update ) {
         RowMetaInterface updateRowMeta = new RowMeta();
-        Object[] updateRowData = new Object[ rowMeta.size() ];
-        ValueMetaInterface keyValueMeta = rowMeta.getValueMeta( 0 );
+        Object[] updateRowData = new Object[ rowMetaInterface.size() ];
+        ValueMetaInterface keyValueMeta = rowMetaInterface.getValueMeta( 0 );
         StringBuilder sqlBuff = new StringBuilder( 250 );
         sqlBuff.append( "UPDATE " ).append( schemaTable ).append( " SET " );
 
-        for ( int i = 1; i < rowMeta.size(); i++ ) { // Without ID_JOB or ID_BATCH
-          ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
+        for ( int i = 1; i < rowMetaInterface.size(); i++ ) { // Without ID_JOB or ID_BATCH
+          ValueMetaInterface valueMeta = rowMetaInterface.getValueMeta( i );
           if ( i > 1 ) {
             sqlBuff.append( ", " );
           }
@@ -3610,7 +3555,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         sqlBuff.append( "WHERE " ).append( databaseMeta.quoteField( keyValueMeta.getName() ) ).append( "=? " );
 
         updateRowMeta.addValueMeta( keyValueMeta );
-        updateRowData[ rowMeta.size() - 1 ] = rowData[ 0 ];
+        updateRowData[ rowMetaInterface.size() - 1 ] = rowData[ 0 ];
 
         String sql = sqlBuff.toString();
         execStatement( sql, updateRowMeta, updateRowData );
@@ -3707,18 +3652,18 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     return row;
   }
 
-  public synchronized Long getNextValue( Hashtable<String, Counter> counters, String tableName, String val_key )
+  public synchronized Long getNextValue( Hashtable<String, Counter> counters, String tableName, String valKey )
     throws KettleDatabaseException {
-    return getNextValue( counters, null, tableName, val_key );
+    return getNextValue( counters, null, tableName, valKey );
   }
 
   public synchronized Long getNextValue( Hashtable<String, Counter> counters, String schemaName, String tableName,
-                                         String val_key ) throws KettleDatabaseException {
+                                         String valKey ) throws KettleDatabaseException {
     Long nextValue = null;
 
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
 
-    String lookup = schemaTable + "." + databaseMeta.quoteField( val_key );
+    String lookup = schemaTable + "." + databaseMeta.quoteField( valKey );
 
     // Try to find the previous sequence value...
     Counter counter = null;
@@ -3728,7 +3673,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
     if ( counter == null ) {
       RowMetaAndData rmad =
-        getOneRow( "SELECT MAX(" + databaseMeta.quoteField( val_key ) + ") FROM " + schemaTable );
+        getOneRow( "SELECT MAX(" + databaseMeta.quoteField( valKey ) + ") FROM " + schemaTable );
       if ( rmad != null ) {
         long previous;
         try {
@@ -3769,8 +3714,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
-  public boolean isSystemTable( String table_name ) {
-    return databaseMeta.isSystemTable( table_name );
+  public boolean isSystemTable( String tableName ) {
+    return databaseMeta.isSystemTable( tableName );
   }
 
   /**
@@ -3806,20 +3751,20 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @param sql            The SQL to launch
    * @param params         The types of any parameters to be passed to the query
    * @param data           The values of any parameters to be passed to the query
-   * @param fetch_mode     The fetch mode for the query (ResultSet.FETCH_FORWARD, e.g.)
+   * @param fetchMode      The fetch mode for the query (ResultSet.FETCH_FORWARD, e.g.)
    * @param lazyConversion Whether to perform lazy conversion of the values
    * @param limit          <=0 means unlimited, otherwise this specifies the maximum number of rows read.
    * @param monitor        The progress monitor to update while getting the rows.
    * @return An ArrayList of rows.
    * @throws KettleDatabaseException if something goes wrong.
    */
-  public List<Object[]> getRows( String sql, RowMetaInterface params, Object[] data, int fetch_mode,
+  public List<Object[]> getRows( String sql, RowMetaInterface params, Object[] data, int fetchMode,
                                  boolean lazyConversion, int limit, ProgressMonitorListener monitor )
     throws KettleDatabaseException {
     if ( monitor != null ) {
       monitor.setTaskName( "Opening query..." );
     }
-    ResultSet rset = openQuery( sql, params, data, fetch_mode, lazyConversion );
+    ResultSet rset = openQuery( sql, params, data, fetchMode, lazyConversion );
 
     return getRows( rset, limit, monitor );
   }
@@ -3836,7 +3781,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   public List<Object[]> getRows( ResultSet rset, int limit, ProgressMonitorListener monitor )
     throws KettleDatabaseException {
     try {
-      List<Object[]> result = new ArrayList<Object[]>();
+      List<Object[]> result = new ArrayList<>();
       boolean stop = false;
       int i = 0;
 
@@ -3871,20 +3816,20 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
-  public List<Object[]> getFirstRows( String table_name, int limit ) throws KettleDatabaseException {
-    return getFirstRows( table_name, limit, null );
+  public List<Object[]> getFirstRows( String tableName, int limit ) throws KettleDatabaseException {
+    return getFirstRows( tableName, limit, null );
   }
 
   /**
    * Get the first rows from a table (for preview)
    *
-   * @param table_name The table name (or schema/table combination): this needs to be quoted properly
-   * @param limit      limit <=0 means unlimited, otherwise this specifies the maximum number of rows read.
-   * @param monitor    The progress monitor to update while getting the rows.
+   * @param tableName The table name (or schema/table combination): this needs to be quoted properly
+   * @param limit     limit <=0 means unlimited, otherwise this specifies the maximum number of rows read.
+   * @param monitor   The progress monitor to update while getting the rows.
    * @return An ArrayList of rows.
    * @throws KettleDatabaseException in case something goes wrong
    */
-  public List<Object[]> getFirstRows( String table_name, int limit, ProgressMonitorListener monitor )
+  public List<Object[]> getFirstRows( String tableName, int limit, ProgressMonitorListener monitor )
     throws KettleDatabaseException {
     String sql = "SELECT";
     if ( databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta ) {
@@ -3893,7 +3838,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       // improve support for Sybase IQ
       sql += " TOP " + limit + " ";
     }
-    sql += " * FROM " + table_name;
+    sql += " * FROM " + tableName;
 
     if ( limit > 0 ) {
       sql += databaseMeta.getLimitClause( limit );
@@ -3908,7 +3853,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public String[] getTableTypes() throws KettleDatabaseException {
     try {
-      ArrayList<String> types = new ArrayList<String>();
+      ArrayList<String> types = new ArrayList<>();
 
       ResultSet rstt = getDatabaseMetaData().getTableTypes();
       while ( rstt.next() ) {
@@ -3937,7 +3882,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   public String[] getTablenames( String schemanamein, boolean includeSchema, Map<String, String> props )
     throws KettleDatabaseException {
     Map<String, Collection<String>> tableMap = getTableMap( schemanamein, props );
-    List<String> res = new ArrayList<String>();
+    List<String> res = new ArrayList<>();
     for ( String schema : tableMap.keySet() ) {
       Collection<String> tables = tableMap.get( schema );
       for ( String table : tables ) {
@@ -3962,12 +3907,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   public Map<String, Collection<String>> getTableMap( String schemanamein, Map<String, String> props )
     throws KettleDatabaseException {
     String schemaname = schemanamein;
-    if ( schemaname == null ) {
-      if ( databaseMeta.useSchemaNameForTableList() ) {
-        schemaname = environmentSubstitute( databaseMeta.getUsername() ).toUpperCase();
-      }
+    if ( schemaname == null && databaseMeta.useSchemaNameForTableList() ) {
+      schemaname = environmentSubstitute( databaseMeta.getUsername() ).toUpperCase();
     }
-    Map<String, Collection<String>> tableMap = new HashMap<String, Collection<String>>();
+    Map<String, Collection<String>> tableMap = new HashMap<>();
     ResultSet alltables = null;
     try {
       alltables = databaseMeta.getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getTableTypes() );
@@ -4053,7 +3996,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public String[] getViews( String schemanamein, boolean includeSchema ) throws KettleDatabaseException {
     Map<String, Collection<String>> viewMap = getViewMap( schemanamein );
-    List<String> res = new ArrayList<String>();
+    List<String> res = new ArrayList<>();
     for ( String schema : viewMap.keySet() ) {
       Collection<String> views = viewMap.get( schema );
       for ( String view : views ) {
@@ -4083,10 +4026,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       }
     }
 
-    Map<String, Collection<String>> viewMap = new HashMap<String, Collection<String>>();
-    ResultSet allviews = null;
-    try {
-      allviews = getDatabaseMeta().getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getViewTypes() );
+    Map<String, Collection<String>> viewMap = new HashMap<>();
+    try ( ResultSet allviews = getDatabaseMeta()
+      .getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getViewTypes() ) ) {
       while ( allviews.next() ) {
         // due to PDI-743 with ODBC and MS SQL Server the order is changed and
         // try/catch included for safety
@@ -4124,15 +4066,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       }
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Error getting views from schema [" + schemaname + "]", e );
-    } finally {
-      try {
-        if ( allviews != null ) {
-          allviews.close();
-        }
-      } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Error closing resultset after getting views from schema ["
-          + schemaname + "]", e );
-      }
     }
 
     if ( log.isDetailed() ) {
@@ -4152,7 +4085,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public String[] getSynonyms( String schemanamein, boolean includeSchema ) throws KettleDatabaseException {
     Map<String, Collection<String>> synonymMap = getSynonymMap( schemanamein );
-    List<String> res = new ArrayList<String>();
+    List<String> res = new ArrayList<>();
     for ( String schema : synonymMap.keySet() ) {
       Collection<String> synonyms = synonymMap.get( schema );
       for ( String synonym : synonyms ) {
@@ -4181,8 +4114,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         schemaname = environmentSubstitute( databaseMeta.getUsername() ).toUpperCase();
       }
     }
-    Map<String, Collection<String>> synonymMap = new HashMap<String, Collection<String>>();
-    // ArrayList<String> names = new ArrayList<String>();
+    Map<String, Collection<String>> synonymMap = new HashMap<>();
     ResultSet alltables = null;
     try {
       alltables =
@@ -4245,7 +4177,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   private <K, V> void multimapPut( final K key, final V value, final Map<K, Collection<V>> map ) {
     Collection<V> valueCollection = map.get( key );
     if ( valueCollection == null ) {
-      valueCollection = new HashSet<V>();
+      valueCollection = new HashSet<>();
     }
     valueCollection.add( value );
     map.put( key, valueCollection );
@@ -4260,7 +4192,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   public String[] getSchemas() throws KettleDatabaseException {
-    ArrayList<String> catalogList = new ArrayList<String>();
+    ArrayList<String> catalogList = new ArrayList<>();
     ResultSet catalogResultSet = null;
     try {
       catalogResultSet = databaseMeta.getSchemas( getDatabaseMetaData() );
@@ -4288,7 +4220,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   public String[] getCatalogs() throws KettleDatabaseException {
-    ArrayList<String> catalogList = new ArrayList<String>();
+    ArrayList<String> catalogList = new ArrayList<>();
     ResultSet catalogResultSet = null;
     try {
       catalogResultSet = getDatabaseMetaData().getCatalogs();
@@ -4318,9 +4250,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   public String[] getProcedures() throws KettleDatabaseException {
     String sql = databaseMeta.getSQLListOfProcedures();
     if ( sql != null ) {
-      // System.out.println("SQL= "+sql);
       List<Object[]> procs = getRows( sql, 1000 );
-      // System.out.println("Found "+procs.size()+" rows");
       String[] str = new String[ procs.size() ];
       for ( int i = 0; i < procs.size(); i++ ) {
         str[ i ] = procs.get( i )[ 0 ].toString();
@@ -4576,16 +4506,16 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         Object v = null;
         switch ( resulttype ) {
           case ValueMetaInterface.TYPE_BOOLEAN:
-            v = Boolean.valueOf( cstmt.getBoolean( pos ) );
+            v = cstmt.getBoolean( pos );
             break;
           case ValueMetaInterface.TYPE_NUMBER:
-            v = new Double( cstmt.getDouble( pos ) );
+            v = cstmt.getDouble( pos );
             break;
           case ValueMetaInterface.TYPE_BIGNUMBER:
             v = cstmt.getBigDecimal( pos );
             break;
           case ValueMetaInterface.TYPE_INTEGER:
-            v = Long.valueOf( cstmt.getLong( pos ) );
+            v = cstmt.getLong( pos );
             break;
           case ValueMetaInterface.TYPE_STRING:
             v = cstmt.getString( pos );
@@ -4621,16 +4551,16 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           Object v = null;
           switch ( argtype[ i ] ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
-              v = Boolean.valueOf( cstmt.getBoolean( pos + i ) );
+              v = cstmt.getBoolean( pos + i );
               break;
             case ValueMetaInterface.TYPE_NUMBER:
-              v = new Double( cstmt.getDouble( pos + i ) );
+              v = cstmt.getDouble( pos + i );
               break;
             case ValueMetaInterface.TYPE_BIGNUMBER:
               v = cstmt.getBigDecimal( pos + i );
               break;
             case ValueMetaInterface.TYPE_INTEGER:
-              v = Long.valueOf( cstmt.getLong( pos + i ) );
+              v = cstmt.getLong( pos + i );
               break;
             case ValueMetaInterface.TYPE_STRING:
               v = cstmt.getString( pos + i );
@@ -4735,8 +4665,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * Return SQL TRUNCATE statement for a Table
    *
-   * @param schema              The schema
-   * @param tableNameWithSchema The table to create
+   * @param schema    The schema
+   * @param tablename The table to create
    * @throws KettleDatabaseException
    */
   public String getDDLTruncateTable( String schema, String tablename ) throws KettleDatabaseException {
@@ -4893,18 +4823,18 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @throws KettleDatabaseException
    */
   public String[] getPrimaryKeyColumnNames( String tablename ) throws KettleDatabaseException {
-    List<String> names = new ArrayList<String>();
+    List<String> names = new ArrayList<>();
     ResultSet allkeys = null;
     try {
       allkeys = getDatabaseMetaData().getPrimaryKeys( null, null, tablename );
       while ( allkeys.next() ) {
         String keyname = allkeys.getString( "PK_NAME" );
-        String col_name = allkeys.getString( "COLUMN_NAME" );
-        if ( !names.contains( col_name ) ) {
-          names.add( col_name );
+        String columnName = allkeys.getString( "COLUMN_NAME" );
+        if ( !names.contains( columnName ) ) {
+          names.add( columnName );
         }
         if ( log.isRowLevel() ) {
-          log.logRowlevel( toString(), "getting key : " + keyname + " on column " + col_name );
+          log.logRowlevel( toString(), "getting key : " + keyname + " on column " + columnName );
         }
       }
     } catch ( SQLException e ) {
@@ -5065,20 +4995,20 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
       BufferedReader buff = new BufferedReader( bis );
       String sLine = null;
-      String sql = Const.CR;
+      StringBuilder sql = new StringBuilder( Const.CR );
 
       while ( ( sLine = buff.readLine() ) != null ) {
         if ( Utils.isEmpty( sLine ) ) {
-          sql = sql + Const.CR;
+          sql.append( Const.CR );
         } else {
-          sql = sql + Const.CR + sLine;
+          sql.append( Const.CR ).append( sLine );
         }
       }
 
       if ( sendSinglestatement ) {
-        return execStatement( sql );
+        return execStatement( sql.toString() );
       } else {
-        return execStatements( sql );
+        return execStatements( sql.toString() );
       }
 
     } catch ( Exception e ) {
