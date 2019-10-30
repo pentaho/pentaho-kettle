@@ -61,6 +61,7 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
   public synchronized boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleStepException {
     meta = (ShapeFileReaderMeta) smi;
     data = (ShapeFileReaderData) sdi;
+    int partnr;
 
     boolean retval = true;
 
@@ -86,10 +87,10 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
     //
     ShapeInterface si = data.shapeFile.getShape( data.shapeNr );
     switch ( si.getType() ) {
-      case Shape.SHAPE_TYPE_POLYLINE_M: {
+      case Shape.SHAPE_TYPE_POLYLINE_M:
         // PolyLimeM";
         ShapePolyLineM eplm = (ShapePolyLineM) si;
-        int partnr = 0;
+        partnr = 0;
         for ( int j = 0; j < eplm.nrpoints; j++ ) {
           // PolyLimeM, point #"+j;
           for ( int k = 0; k < eplm.nrparts; k++ ) {
@@ -149,16 +150,15 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
             throw new KettleStepException( "Unable to clone row", e );
           }
         }
-      }
-      break;
-      case Shape.SHAPE_TYPE_POLYGON: {
+        break;
+      case Shape.SHAPE_TYPE_POLYGON:
         // ShapePolygon";
-        ShapePolygon epl = (ShapePolygon) si;
-        int partnr = 0;
-        for ( int j = 0; j < epl.nrpoints; j++ ) {
+        ShapePolygon eplg = (ShapePolygon) si;
+        partnr = 0;
+        for ( int j = 0; j < eplg.nrpoints; j++ ) {
           // PolyLime, point #"+j;
-          for ( int k = 0; k < epl.nrparts; k++ ) {
-            if ( j == epl.part_starts[ k ] ) {
+          for ( int k = 0; k < eplg.nrparts; k++ ) {
+            if ( j == eplg.part_starts[ k ] ) {
               partnr++;
             }
           }
@@ -180,19 +180,19 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
           outputRow[ outputIndex++ ] = new Long( partnr );
 
           // The nr of parts
-          outputRow[ outputIndex++ ] = new Long( epl.nrparts );
+          outputRow[ outputIndex++ ] = new Long( eplg.nrparts );
 
           // The point nr
           outputRow[ outputIndex++ ] = new Long( j + 1 );
 
           // The nr of points
-          outputRow[ outputIndex++ ] = new Long( epl.nrpoints );
+          outputRow[ outputIndex++ ] = new Long( eplg.nrpoints );
 
           // The X coordinate
-          outputRow[ outputIndex++ ] = new Double( epl.point[ j ].x );
+          outputRow[ outputIndex++ ] = new Double( eplg.point[ j ].x );
 
           // The Y coordinate
-          outputRow[ outputIndex++ ] = new Double( epl.point[ j ].y );
+          outputRow[ outputIndex++ ] = new Double( eplg.point[ j ].y );
 
           // The measure
           outputRow[ outputIndex++ ] = new Double( 0.0 );
@@ -214,13 +214,12 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
             throw new KettleStepException( "Unable to clone row", e );
           }
         }
-      }
-      break;
+        break;
 
-      case Shape.SHAPE_TYPE_POLYLINE: {
+      case Shape.SHAPE_TYPE_POLYLINE:
         // PolyLime";
         ShapePolyLine epl = (ShapePolyLine) si;
-        int partnr = 0;
+        partnr = 0;
         for ( int j = 0; j < epl.nrpoints; j++ ) {
           // PolyLime, point #"+j;
           for ( int k = 0; k < epl.nrparts; k++ ) {
@@ -280,9 +279,8 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
             throw new KettleStepException( "Unable to clone row", e );
           }
         }
-      }
-      break;
-      case Shape.SHAPE_TYPE_POINT: {
+        break;
+      case Shape.SHAPE_TYPE_POINT:
         // Point";
         ShapePoint ep = (ShapePoint) si;
 
@@ -337,8 +335,7 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
         } catch ( KettleValueException e ) {
           throw new KettleStepException( "Unable to clone row", e );
         }
-      }
-      break;
+        break;
       default:
         System.out.println(
           "Unable to parse shape type [" + Shape.getEsriTypeDesc( si.getType() ) + "] : not yet implemented." );
@@ -402,8 +399,10 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
     logBasic( "Starting to run..." );
 
     try {
-      while ( processRow( meta, data ) && !isStopped() ) {
-        ;
+      while ( processRow( meta, data ) ) {
+        if ( isStopped() ) {
+          break;
+        }
       }
     } catch ( Exception e ) {
       logError( "Unexpected error", e );
