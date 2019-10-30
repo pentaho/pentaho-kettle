@@ -66,6 +66,13 @@ public class VFSFile extends BaseEntity implements File {
     return ConnectionFileProvider.SCHEME + "://" + connection + "/" + getPath().replaceAll( "[\\w]+://", "" );
   }
 
+  public String getConnectionParentPath() {
+    if ( getParent() == null || connection == null ) {
+      return null;
+    }
+    return ConnectionFileProvider.SCHEME + "://" + connection + "/" + getParent().replaceAll( "[\\w]+://", "" );
+  }
+
   public static VFSFile create( String parent, FileObject fileObject, String connection ) {
     VFSFile vfsFile = new VFSFile();
     vfsFile.setName( fileObject.getName().getBaseName() );

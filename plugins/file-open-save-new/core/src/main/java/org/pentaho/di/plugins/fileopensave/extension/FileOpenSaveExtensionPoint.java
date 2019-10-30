@@ -63,32 +63,10 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
     FileDialogOperation fileDialogOperation = (FileDialogOperation) o;
 
     FileOpenSaveDialog repositoryOpenSaveDialog =
-      new FileOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
+      new FileOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT, logChannelInterface );
 
-    String path = fileDialogOperation.getPath() != null
-      ? fileDialogOperation.getPath()
-      : fileDialogOperation.getStartDir();
-    String connection = fileDialogOperation.getConnection();
-    String provider = fileDialogOperation.getProvider();
-    String command = fileDialogOperation.getCommand();
-    String title = fileDialogOperation.getTitle();
-    String filter = fileDialogOperation.getFilter();
-    String origin = fileDialogOperation.getOrigin();
-    String filename = fileDialogOperation.getFilename();
-    String type = fileDialogOperation.getFileType();
-
-    // TODO: Move to a provider resolver
-    if ( provider == null ) {
-      if ( connection != null ) {
-        provider = VFSFileProvider.TYPE;
-      } else if ( spoonSupplier.get().rep != null ) {
-        provider = RepositoryFileProvider.TYPE;
-      } else {
-        provider = LocalFileProvider.TYPE;
-      }
-    }
-
-    repositoryOpenSaveDialog.open( path, connection, provider, command, title, filter, origin, filename, type );
+    resolveProvider( fileDialogOperation );
+    repositoryOpenSaveDialog.open( fileDialogOperation );
 
     if ( repositoryOpenSaveDialog.getProvider() != null && repositoryOpenSaveDialog.getProvider()
       .equalsIgnoreCase( REPOSITORY ) ) {
@@ -105,14 +83,26 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
       fileDialogOperation.setRepositoryObject( repositoryObject );
       fileDialogOperation.setProvider( repositoryOpenSaveDialog.getProvider() );
     } else {
-      if ( command.equals( FileDialogOperation.OPEN ) ) {
-        fileDialogOperation.setPath( repositoryOpenSaveDialog.getPath() );
-      } else {
+      if ( fileDialogOperation.getCommand().equals( FileDialogOperation.SAVE ) ) {
         fileDialogOperation.setPath( repositoryOpenSaveDialog.getParentPath() );
+      } else {
+        fileDialogOperation.setPath( repositoryOpenSaveDialog.getPath() );
       }
       fileDialogOperation.setFilename( repositoryOpenSaveDialog.getName() );
       fileDialogOperation.setConnection( repositoryOpenSaveDialog.getConnection() );
       fileDialogOperation.setProvider( repositoryOpenSaveDialog.getProvider() );
+    }
+  }
+
+  private void resolveProvider( FileDialogOperation op ) {
+    if ( op.getProvider() == null ) {
+      if ( op.getConnection() != null ) {
+        op.setProvider( VFSFileProvider.TYPE );
+      } else if ( spoonSupplier.get().rep != null ) {
+        op.setProvider( RepositoryFileProvider.TYPE );
+      } else {
+        op.setProvider( LocalFileProvider.TYPE );
+      }
     }
   }
 

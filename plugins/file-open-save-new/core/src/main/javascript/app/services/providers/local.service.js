@@ -67,12 +67,13 @@ define(
         }
 
         function resolvePath(path, properties) {
-           var self = this;
+          var self = this;
+          var varRoot = this.root;
           return $q(function (resolve, reject) {
             if (fileutil.isWindows(path)) {
               path = fileutil.convertWindowsPath(path);
             }
-            resolve(self.root + path);
+            resolve(varRoot + path);
           });
         }
 
@@ -160,7 +161,13 @@ define(
         }
 
         function open(file) {
-          select(null, file.name, file.path, file.parent, file.connection, file.provider, null);
+          select(JSON.stringify({
+            name: file.name,
+            path: file.path,
+            parent: file.parent,
+            connection: file.connection,
+            provider: file.provider
+          }));
         }
 
         function save(filename, folder, currentFilename, override) {

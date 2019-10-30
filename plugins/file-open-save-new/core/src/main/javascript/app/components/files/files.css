@@ -121,6 +121,13 @@ files tbody tr.selected .fileType {
   color: #FFFFFF;
 }
 
+files tbody tr.non-selectable td,
+files tbody tr.non-selectable:hover td,
+files tbody tr.non-selectable .fileModified,
+files tbody tr.non-selectable .fileType {
+  color: #B2B2B2;
+}
+
 files tbody tr.selected.highlighted td,
 files tbody tr.selected.highlighted:hover td,
 files tbody tr.selected.highlighted .fileModified,

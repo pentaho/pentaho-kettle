@@ -38,10 +38,12 @@ public class FileDialogOperation {
   public static final String ORIGIN_OTHER = "other";
   public static final String TRANSFORMATION = "transformation";
   public static final String JOB = "job";
+  public static final String PROVIDER_REPO = "repository";
 
   private Repository repository;
   private String command;
   private String filter;
+  private String defaultFilter;
   private String origin;
   private RepositoryObjectInterface repositoryObject;
   private String startDir;
@@ -51,6 +53,8 @@ public class FileDialogOperation {
   private String path;
   private String connection;
   private String provider;
+  private String providerFilter;
+  private boolean useSchemaPath;
 
   public FileDialogOperation( String command ) {
     this.command = command;
@@ -75,6 +79,14 @@ public class FileDialogOperation {
 
   public void setFilter( String filter ) {
     this.filter = filter;
+  }
+
+  public String getDefaultFilter() {
+    return defaultFilter;
+  }
+
+  public void setDefaultFilter( String defaultFilter ) {
+    this.defaultFilter = defaultFilter;
   }
 
   public String getOrigin() {
@@ -149,6 +161,13 @@ public class FileDialogOperation {
     this.connection = connection;
   }
 
+  public boolean getUseSchemaPath() {
+    return useSchemaPath;
+  }
+
+  public void setUseSchemaPath( boolean useSchemaPath ) {
+    this.useSchemaPath = useSchemaPath;
+  }
 
   public String getProvider() {
     return provider;
@@ -156,6 +175,18 @@ public class FileDialogOperation {
 
   public void setProvider( String provider ) {
     this.provider = provider;
+  }
+
+  public String getProviderFilter() {
+    return providerFilter;
+  }
+
+  public void setProviderFilter( String providerFilter ) {
+    this.providerFilter = providerFilter;
+  }
+
+  public boolean isProviderRepository() {
+    return provider.equalsIgnoreCase( PROVIDER_REPO );
   }
 
   public static void handleOpen( TextVar textVar, FileDialogOperation fileDialogOperation ) {

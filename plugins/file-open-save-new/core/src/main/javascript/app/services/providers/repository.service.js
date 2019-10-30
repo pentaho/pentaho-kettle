@@ -185,7 +185,15 @@ define(
         }
 
         function open(file) {
-          select(file.objectId, file.name, file.path, file.parent,null, file.provider, file.type);
+          select(JSON.stringify({
+            objectId: file.objectId,
+            name: file.name,
+            path: file.path,
+            parent: file.parent,
+            connection: file.connection,
+            provider: file.provider,
+            type: file.type
+          }));
         }
 
         function save(filename, folder, currentFilename, override) {

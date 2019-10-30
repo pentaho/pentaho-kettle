@@ -30,7 +30,7 @@ define(
     function (utils, i18n) {
       "use strict";
 
-      var factoryArray = ["helperService", "$http", "$q", factory];
+      var factoryArray = ["helperService", "$http", "$q", "$location", factory];
       var module = {
         name: "vfsService",
         factory: factoryArray
@@ -47,7 +47,7 @@ define(
        *
        * @return {Object} The dataService api
        */
-      function factory(helperService, $http, $q) {
+      function factory(helperService, $http, $q, $location) {
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "vfs",
@@ -148,11 +148,24 @@ define(
           return path;
         }
 
+        /**
+         *  Returns the pvfs or vfs schema based file path based on the useSchema parameter
+         */
         function _getFilePath(file) {
-          if (file.connectionPath) {
-            return file.connectionPath;
+          if ($location.search().useSchema && $location.search().useSchema.toLowerCase() === "true") {
+            return file.path ? file.path : null;
           }
-          return file.path ? file.path : null;
+          return file.connectionPath ? file.connectionPath : null;
+        }
+
+        /**
+         *  Returns the pvfs or vfs schema based parent path based on the useSchema parameter
+         */
+        function _getFileParentPath(file) {
+          if ($location.search().useSchema && $location.search().useSchema.toLowerCase() === "true") {
+            return file.parent ? file.parent : null;
+          }
+          return file.connectionParentPath ? file.connectionParentPath : null;
         }
 
         function _justThePath(url) {
@@ -216,7 +229,13 @@ define(
         }
 
         function open(file) {
-          select(null, file.name, _getFilePath(file), file.parent, file.connection, file.provider, null);
+          select(JSON.stringify({
+            name: file.name,
+            path: _getFilePath(file),
+            parent: _getFileParentPath(file),
+            connection: file.connection,
+            provider: file.provider
+          }));
         }
 
         function save(filename, folder, currentFilename, override) {
