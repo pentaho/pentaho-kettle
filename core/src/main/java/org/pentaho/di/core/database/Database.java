@@ -45,7 +45,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +57,8 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.PluginTypeListener;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
@@ -121,7 +122,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
  * @author Matt
  * @since 05-04-2003
  */
-@SuppressWarnings( "WeakerAccess" )
+@SuppressWarnings ( "WeakerAccess" )
 public class Database implements VariableSpace, LoggingObjectInterface, Closeable {
   /**
    * for i18n purposes, needed by Translator2!!
@@ -183,17 +184,31 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   private static List<ValueMetaInterface> valueMetaPluginClasses;
 
   static {
+    initValueMetaPluginClasses();
+    // listen for changes to make sure the valueMetaPluginClasses list is accurate.
+    PluginRegistry.getInstance().addPluginListener( ValueMetaPluginType.class, new PluginTypeListener() {
+        @Override public void pluginAdded( Object serviceObject ) {
+          initValueMetaPluginClasses();
+        }
+
+        @Override public void pluginRemoved( Object serviceObject ) {
+          initValueMetaPluginClasses();
+        }
+
+        @Override public void pluginChanged( Object serviceObject ) {
+          initValueMetaPluginClasses();
+        }
+      }
+    );
+  }
+
+  private static void initValueMetaPluginClasses() {
     try {
       valueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
-      Collections.sort( valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
-        @Override
-        public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
-          // Reverse the sort list
-          return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
-        }
-      } );
+      // Reverse the sort list
+      valueMetaPluginClasses.sort( ( o1, o2 ) -> ( Integer.compare( o1.getType(), o2.getType() ) ) * -1 );
     } catch ( Exception e ) {
-      throw new RuntimeException( "Unable to get list of instantiated value meta plugin classes", e );
+      throw new IllegalStateException( "Unable to get list of instantiated value meta plugin classes", e );
     }
   }
 
@@ -915,8 +930,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * Prepare inserting values into a table, using the fields & values in a Row
    *
-   * @param rowMeta The row metadata to determine which values need to be inserted
-   * @param table   The name of the table in which we want to insert rows
+   * @param rowMeta   The row metadata to determine which values need to be inserted
+   * @param tableName The name of the table in which we want to insert rows
    * @throws KettleDatabaseException if something went wrong.
    */
   public void prepareInsert( RowMetaInterface rowMeta, String tableName ) throws KettleDatabaseException {
@@ -1540,10 +1555,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       } else {
         String sqlStripped = databaseMeta.stripCR( sql );
         // log.logDetailed("Executing SQL Statement: ["+sqlStripped+"]");
-        Statement stmt = connection.createStatement();
-        resultSet = stmt.execute( sqlStripped );
-        count = stmt.getUpdateCount();
-        stmt.close();
+        try ( Statement stmt = connection.createStatement() ) {
+          resultSet = stmt.execute( sqlStripped );
+          count = stmt.getUpdateCount();
+        }
       }
       String upperSql = sql.toUpperCase();
       if ( !resultSet ) {
@@ -1958,7 +1973,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * Retrieves the table description matching the schema and table name.
    *
    * @param schema the schema name pattern
-   * @param table the table name pattern
+   * @param table  the table name pattern
    * @return table description row set
    * @throws KettleDatabaseException if DatabaseMetaData is null or some database error occurs
    */
@@ -1983,7 +1998,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * Retrieves the columns metadata matching the schema and table name.
    *
    * @param schema the schema name pattern
-   * @param table the table name pattern
+   * @param table  the table name pattern
    * @return columns description row set
    * @throws KettleDatabaseException if DatabaseMetaData is null or some database error occurs
    */
@@ -3681,14 +3696,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       r.addValueMeta( new ValueMetaString( "TRANSNAME", 255, -1 ) );
       setValues( r, new Object[] { name } );
 
-      ResultSet res = pstmt.executeQuery();
-      if ( res != null ) {
+      try ( ResultSet res = pstmt.executeQuery() ) {
         rowMeta = getRowInfo( res.getMetaData(), false, false );
         row = getRow( res );
-        res.close();
       }
-      pstmt.close();
-      pstmt = null;
     } catch ( SQLException ex ) {
       throw new KettleDatabaseException( "Unable to obtain last logdate from table " + logtable, ex );
     }
@@ -4174,7 +4185,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     // ArrayList<String> names = new ArrayList<String>();
     ResultSet alltables = null;
     try {
-      alltables = getDatabaseMeta().getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getSynonymTypes() );
+      alltables =
+        getDatabaseMeta().getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getSynonymTypes() );
       while ( alltables.next() ) {
         // due to PDI-743 with ODBC and MS SQL Server the order is changed and
         // try/catch included for safety
