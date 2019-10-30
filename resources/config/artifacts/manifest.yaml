@@ -14,6 +14,7 @@ ee:
         - pad-ee-${platform.version}-dist.zip
         - pdi-ee-client-${platform.version}-dist.zip
         - pentaho-analysis-ee-${platform.version}-dist.zip
+        - pentaho-big-data-ee-package-${platform.version}-dist.zip
         - pme-ee-${platform.version}-dist.zip
         - prd-ee-${platform.version}-dist.zip
         - psw-ee-${mondrian.version}-dist.zip
