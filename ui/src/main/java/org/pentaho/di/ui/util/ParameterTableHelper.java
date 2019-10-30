@@ -137,13 +137,15 @@ public class ParameterTableHelper {
    * @return true if missing Var/Param name, false otherwise
    */
   public boolean checkParams( Shell shell ) {
-    for ( int i = 0; i < parameterTableView.getItemCount(); i++ ) {
-      String[] params = parameterTableView.getItem( i );
-      if ( Utils.isEmpty( params[ 0 ] ) && ( !Utils.isEmpty( params[ 1 ] ) || !Utils.isEmpty( params[ 2 ] ) ) ) {
-        new SimpleMessageDialog( shell, BaseMessages.getString( "Dialog.Parameters.Missing.Title" ),
-          BaseMessages.getString( "Dialog.Parameters.Missing.Message" ), MessageDialog.ERROR,
-          BaseMessages.getString( "System.Button.OK" ), 350, SimpleMessageDialog.BUTTON_WIDTH ).open();
-        return true;
+    if ( parameterTableView != null ) {
+      for ( int i = 0; i < parameterTableView.getItemCount(); i++ ) {
+        String[] params = parameterTableView.getItem( i );
+        if ( Utils.isEmpty( params[ 0 ] ) && ( !Utils.isEmpty( params[ 1 ] ) || !Utils.isEmpty( params[ 2 ] ) ) ) {
+          new SimpleMessageDialog( shell, BaseMessages.getString( "Dialog.Parameters.Missing.Title" ),
+            BaseMessages.getString( "Dialog.Parameters.Missing.Message" ), MessageDialog.ERROR,
+            BaseMessages.getString( "System.Button.OK" ), 350, SimpleMessageDialog.BUTTON_WIDTH ).open();
+          return true;
+        }
       }
     }
     return false;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,7 +84,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
   public static Class<?> PKG = JobEntryTrans.class;
   public static final int IS_PENTAHO = 1;
 
-  ParameterTableHelper parameterTableHelper = new ParameterTableHelper();
+  protected ParameterTableHelper parameterTableHelper = new ParameterTableHelper();
 
   protected Label wlPath;
   protected TextVar wPath;
