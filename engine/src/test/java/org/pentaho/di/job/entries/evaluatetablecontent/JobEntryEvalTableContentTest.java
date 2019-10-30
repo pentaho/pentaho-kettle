@@ -77,8 +77,8 @@ public class JobEntryEvalTableContentTest {
     }
 
     @Override
-    public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-        boolean add_fieldname, boolean add_cr ) {
+    public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean useAutoinc,
+                                      boolean addFieldName, boolean addCr ) {
       // TODO Auto-generated method stub
       return null;
     }
@@ -94,7 +94,7 @@ public class JobEntryEvalTableContentTest {
     }
 
     @Override
-    public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+    public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
         String pk, boolean semicolon ) {
       // TODO Auto-generated method stub
       return null;
@@ -102,7 +102,7 @@ public class JobEntryEvalTableContentTest {
 
     @Override
     public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk,
-        boolean use_autoinc, String pk, boolean semicolon ) {
+                                            boolean useAutoinc, String pk, boolean semicolon ) {
       // TODO Auto-generated method stub
       return null;
     }
