@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -584,7 +584,7 @@ public class WebService extends BaseStep implements StepInterface {
        * continues working as intended
        */
 
-      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      TransformerFactory transformerFactory = XMLParserFactoryProducer.createSecureTransformerFactory();
       transformer = transformerFactory.newTransformer();
 
       transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
@@ -794,11 +794,10 @@ public class WebService extends BaseStep implements StepInterface {
 
     // Create a new reader to feed into the XML Input Factory below...
     //
-    StringReader stringReader = new StringReader( response.toString() );
+    StringReader stringReader = new StringReader( response );
 
-    // TODO Very empirical : see if we can do something better here
     try {
-      XMLInputFactory vFactory = XMLInputFactory.newInstance();
+      XMLInputFactory vFactory = XMLParserFactoryProducer.createSecureXMLInputFactory();
       XMLStreamReader vReader = vFactory.createXMLStreamReader( stringReader );
 
       Object[] outputRowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );

@@ -917,7 +917,7 @@ public class ValueDataUtil {
         return new MathContext( precision, roundingMode );
       }
     }
-    return null;
+    return MathContext.UNLIMITED;
   }
 
   public static Object sqrt( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {

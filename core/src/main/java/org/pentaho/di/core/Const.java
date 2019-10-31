@@ -1300,6 +1300,11 @@ public class Const {
   public static final String SHARED_STREAMING_BATCH_POOL_SIZE = "SHARED_STREAMING_BATCH_POOL_SIZE";
 
   /**
+   * <p>This environment variable is used to specify a location used to deploy a shim driver into PDI.</p>
+   */
+  public static final String SHIM_DRIVER_DEPLOYMENT_LOCATION = "SHIM_DRIVER_DEPLOYMENT_LOCATION";
+
+  /**
    * <p>This environment variable is used by XSD validation steps to enable or disable external entities.</p>
    * <p>By default external entities are allowed.</p>
    */

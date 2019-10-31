@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -414,6 +414,8 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
           ti.setText( 1, Const.NVL( jobEntry.parameters[ i ], "" ) );
           ti.setText( 2, Const.NVL( jobEntry.parameterFieldNames[ i ], "" ) );
           ti.setText( 3, Const.NVL( jobEntry.parameterValues[ i ], "" ) );
+          // Check disable listeners to shade fields gray
+          parameterTableHelper.checkTableOnOpen( ti, i );
         }
       }
       wParameters.setRowNums();
@@ -637,6 +639,11 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
       dialog.open();
       return;
     }
+    // Check if all parameters have names. If so, continue on.
+    if ( parameterTableHelper.checkParams( shell ) ) {
+      return;
+    }
+
     jobEntry.setName( wName.getText() );
 
     try {
