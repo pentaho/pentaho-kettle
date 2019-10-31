@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,13 +37,13 @@ import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class SchedulerRequestTest {
   // input file
   private static final String TEST_REPOSITORY_DIRECTORY = "/home/admin";
-  private static final String TEST_JOB_NAME = "jobName";
+  private static final String TEST_JOB_NAME = "jobName and special characters & < >";
   private static final String JOB_EXTENSION = "kjb";
 
   // job parameters
@@ -66,33 +66,37 @@ public class SchedulerRequestTest {
   private static final String TEST_PDI_PARAM_VALUE = "paramValue";
   private static final String[] ARRAY_WITH_TEST_PDI_PARAM_NAME = new String[]{TEST_PDI_PARAM_NAME};
 
-  private static final String REFERENCE_TEST_REQUEST = String.format( "<jobScheduleRequest>\n"
-          + "<inputFile>%s/%s.%s</inputFile>\n"
-          + "<jobParameters>\n"
-          + "<name>%s</name>\n" + "<type>%s</type>\n" + "<stringValue>%s</stringValue>\n"
-          + "</jobParameters>\n"
-          + "<jobParameters>\n"
-          + "<name>%s</name>\n" + "<type>%s</type>\n" + "<stringValue>%s</stringValue>\n"
-          + "</jobParameters>\n"
-          + "<jobParameters>\n"
-          + "<name>%s</name>\n" + "<type>%s</type>\n" + "<stringValue>%s</stringValue>\n"
-          + "</jobParameters>\n"
-          + "<jobParameters>\n"
-          + "<name>%s</name>\n" + "<type>%s</type>\n" + "<stringValue>%s</stringValue>\n"
-          + "</jobParameters>\n"
-          + "<jobParameters>\n"
-          + "<name>%s</name>\n" + "<type>%s</type>\n" + "<stringValue>%s</stringValue>\n"
-          + "</jobParameters>\n"
-          + "<jobParameters>\n"
-          + "<name>%s</name>\n" + "<type>%s</type>\n" + "<stringValue>%s</stringValue>\n"
-          + "</jobParameters>\n"
-          + "<pdiParameters>\n"
-          + "<entry>\n"
-          + "<key>%s</key>\n" + "<value>%s</value>\n"
-          + "</entry>\n"
-          + "</pdiParameters>\n"
-          + "</jobScheduleRequest>", TEST_REPOSITORY_DIRECTORY, TEST_JOB_NAME, JOB_EXTENSION,
-        LOG_LEVEL_PARAM_NAME, STRING_PARAM_TYPE, TEST_LOG_LEVEL_PARAM_VALUE,
+  private static final String REFERENCE_TEST_REQUEST = String.format(
+    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+      + "<jobScheduleRequest>"
+      + "<inputFile>%s/%s.%s</inputFile>"
+      + "<jobParameters>"
+      + "<name>%s</name>" + "<type>%s</type>" + "<stringValue>%s</stringValue>"
+      + "</jobParameters>"
+      + "<jobParameters>"
+      + "<name>%s</name>" + "<type>%s</type>" + "<stringValue>%s</stringValue>"
+      + "</jobParameters>"
+      + "<jobParameters>"
+      + "<name>%s</name>" + "<type>%s</type>" + "<stringValue>%s</stringValue>"
+      + "</jobParameters>"
+      + "<jobParameters>"
+      + "<name>%s</name>" + "<type>%s</type>" + "<stringValue>%s</stringValue>"
+      + "</jobParameters>"
+      + "<jobParameters>"
+      + "<name>%s</name>" + "<type>%s</type>" + "<stringValue>%s</stringValue>"
+      + "</jobParameters>"
+      + "<jobParameters>"
+      + "<name>%s</name>" + "<type>%s</type>" + "<stringValue>%s</stringValue>"
+      + "</jobParameters>"
+      + "<pdiParameters>"
+      + "<entry>"
+      + "<key>%s</key>" + "<value>%s</value>"
+      + "</entry>"
+      + "</pdiParameters>"
+      + "</jobScheduleRequest>", TEST_REPOSITORY_DIRECTORY,
+    TEST_JOB_NAME.replace( "&", "&amp;" ).replace( "<", "&lt;" )
+      .replace( ">", "&gt;" ),
+    JOB_EXTENSION, LOG_LEVEL_PARAM_NAME, STRING_PARAM_TYPE, TEST_LOG_LEVEL_PARAM_VALUE,
         CLEAR_LOG_PARAM_NAME, STRING_PARAM_TYPE, TEST_CLEAR_LOG_PARAM_VALUE,
         RUN_SAFE_MODE_PARAM_NAME, STRING_PARAM_TYPE, TEST_RUN_SAFE_MODE_PARAM_VALUE,
         GATHERING_METRICS_PARAM_NAME, STRING_PARAM_TYPE, TEST_GATHERING_METRICS_PARAM_VALUE,
