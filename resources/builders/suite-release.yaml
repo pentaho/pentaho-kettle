@@ -607,7 +607,7 @@ jobGroups:
   3900:
      - jobID           :  big-data-plugin-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
-       directives      :  += -DskipDefault -P assemblies
+       directives      :  += -DskipDefault -P assemblies -Deula-wrap
        testable        :  false
        archivable      :  true
        atomicScmCheckout: true
