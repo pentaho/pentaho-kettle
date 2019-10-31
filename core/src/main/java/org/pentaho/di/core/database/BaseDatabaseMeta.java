@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1157,7 +1157,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    */
   @Override
   public Map<String, String> getExtraOptions() {
-    Map<String, String> map = new Hashtable<>();
+    Map<String, String> map = new HashMap<>();
 
     for ( Enumeration<Object> keys = attributes.keys(); keys.hasMoreElements(); ) {
       String attribute = (String) keys.nextElement();
@@ -1622,11 +1622,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
       try {
         indexList = database.getDatabaseMetaData().getIndexInfo( null, null, tablename, false, true );
         while ( indexList.next() ) {
-          // String tablen = indexList.getString("TABLE_NAME");
-          // String indexn = indexList.getString("INDEX_NAME");
           String column = indexList.getString( "COLUMN_NAME" );
-          // int pos = indexList.getShort("ORDINAL_POSITION");
-          // int type = indexList.getShort("TYPE");
 
           int idx = Const.indexOfString( column, idxFields );
           if ( idx >= 0 ) {
@@ -1852,7 +1848,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
 
       // Skip comment lines...
       //
-      while ( all.substring( from ).startsWith( "--" ) ) {
+      while ( all.startsWith( "--", from ) ) {
         int nextLineIndex = all.indexOf( Const.CR, from );
         from = nextLineIndex + Const.CR.length();
         if ( to >= length ) {
@@ -2241,9 +2237,6 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
           }
         }
       }
-      // else {
-      // swallow this character
-      // }
     }
     fieldName = newName.toString();
 
