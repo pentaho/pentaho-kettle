@@ -1699,7 +1699,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       // so we have to ask if that same variable had a value before and if it had - and the new value is empty -
       // we should set it as a blank value instead of ignoring it.
       // NOTE: we should only replace it if we have a parameterFieldNames defined -> parameterFieldNames[ idx ] ) != null
-      if ( !Utils.isEmpty( jobEntryTrans.getVariable( parameters[ idx ] ) ) && Utils.isEmpty( thisValue ) && idx < parameterFieldNames.length && Const.trim( parameterFieldNames[ idx ] ) != null  ) {
+      if ( !Utils.isEmpty( jobEntryTrans.getVariable( parameters[ idx ] ) ) && Utils.isEmpty( thisValue )
+        && idx < parameterFieldNames.length && !Utils.isEmpty( Const.trim( parameterFieldNames[ idx ] ) ) ) {
         jobEntryTrans.setVariable( parameters[ idx ], "" );
       }
       // Set value only if is not empty at namedParam and exists in parameterFieldNames
