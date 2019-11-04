@@ -133,16 +133,23 @@ public class ParameterTableHelper {
   }
 
   /**
-   * Checks to determine if the user has entered a Variable/Parameter name. If not, Show Dialog and return true.
-   * @return true if missing Var/Param name, false otherwise
+   * If user has not entered a parameter name, but has entered a value/variable, OR
+   * if user has entered a parameter name, but not entered a value/variable.
+   * If either is true, present error dialog and return true, else return false.
+   * @return true if conditions above are met, false otherwise
    */
   public boolean checkParams( Shell shell ) {
     if ( parameterTableView != null ) {
       for ( int i = 0; i < parameterTableView.getItemCount(); i++ ) {
         String[] params = parameterTableView.getItem( i );
         if ( Utils.isEmpty( params[ 0 ] ) && ( !Utils.isEmpty( params[ 1 ] ) || !Utils.isEmpty( params[ 2 ] ) ) ) {
-          new SimpleMessageDialog( shell, BaseMessages.getString( "Dialog.Parameters.Missing.Title" ),
-            BaseMessages.getString( "Dialog.Parameters.Missing.Message" ), MessageDialog.ERROR,
+          new SimpleMessageDialog( shell, BaseMessages.getString( "Dialog.Parameters.Missing.Parameter.Title" ),
+            BaseMessages.getString( "Dialog.Parameters.Missing.Parameter.Message" ), MessageDialog.ERROR,
+            BaseMessages.getString( "System.Button.OK" ), 350, SimpleMessageDialog.BUTTON_WIDTH ).open();
+          return true;
+        } else if ( !Utils.isEmpty( params[ 0 ] ) && Utils.isEmpty( params[ 1 ] ) && Utils.isEmpty( params[ 2 ] ) ) {
+          new SimpleMessageDialog( shell, BaseMessages.getString( "Dialog.Parameters.Missing.Value.Title" ),
+            BaseMessages.getString( "Dialog.Parameters.Missing.Value.Message" ), MessageDialog.ERROR,
             BaseMessages.getString( "System.Button.OK" ), 350, SimpleMessageDialog.BUTTON_WIDTH ).open();
           return true;
         }
