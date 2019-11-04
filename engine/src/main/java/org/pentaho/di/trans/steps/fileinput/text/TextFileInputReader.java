@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -420,6 +420,21 @@ public class TextFileInputReader implements IBaseFileInputReader {
   protected boolean tryToReadLine( boolean applyFilter ) throws KettleFileException {
     String line;
     line = TextFileInputUtils.getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
+
+    while ( line != null ) {
+        /*
+        Check that the number of enclosures in a line is even.
+        If not even it means that there was an enclosed line break.
+        We need to read the next line(s) to get the remaining data in this row.
+        */
+      if ( TextFileInputUtils.checkPattern( line, meta.getEnclosure() ) % 2 != 0 ) {
+        line = line + TextFileInputUtils.getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
+        lineNumberInFile++;
+      } else {
+        break;
+      }
+    }
+
     if ( line != null ) {
       // when there is no header, check the filter for the first line
       if ( applyFilter ) {

@@ -889,7 +889,7 @@ public class TextFileInputUtils {
 
     int matches = 0;
 
-    if ( StringUtils.isBlank( text ) ) {
+    if ( StringUtils.isBlank( text ) || StringUtils.isBlank( regex ) ) {
       return matches;
     }
 
