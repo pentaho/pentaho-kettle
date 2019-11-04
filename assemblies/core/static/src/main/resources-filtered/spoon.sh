@@ -230,6 +230,16 @@ esac
 
 export LIBPATH
 
+# **************************************************
+# ** Setup Karaf endorsed libraries directory     **
+# **************************************************
+
+JAVA_ENDORSED_DIRS=""
+if [ ! -z "$_PENTAHO_JAVA_HOME" ]; then
+	JAVA_ENDORSED_DIRS="${_PENTAHO_JAVA_HOME}/jre/lib/endorsed:${_PENTAHO_JAVA_HOME}/lib/endorsed:"
+fi
+JAVA_ENDORSED_DIRS="${JAVA_ENDORSED_DIRS}${BASEDIR}/system/karaf/lib/endorsed"
+
 # ******************************************************************
 # ** Set java runtime options                                     **
 # ** Change 2048m to higher values in case you run out of memory  **
@@ -240,7 +250,7 @@ if [ -z "$PENTAHO_DI_JAVA_OPTIONS" ]; then
     PENTAHO_DI_JAVA_OPTIONS="-Xms1024m -Xmx2048m -XX:MaxPermSize=256m"
 fi
 
-OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT -DKETTLE_JNDI_ROOT=$KETTLE_JNDI_ROOT"
+OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djava.library.path=$LIBPATH -Djava.endorsed.dirs=$JAVA_ENDORSED_DIRS -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT -DKETTLE_JNDI_ROOT=$KETTLE_JNDI_ROOT"
 
 # optional line for attaching a debugger
 # OPT="$OPT -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"

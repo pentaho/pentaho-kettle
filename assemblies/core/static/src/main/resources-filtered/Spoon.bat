@@ -96,6 +96,14 @@ set SWTJAR=..\libswt\win64
 :CONTINUE
 popd
 
+REM **************************************************
+REM ** Setup Karaf endorsed libraries directory     **
+REM **************************************************
+
+set JAVA_ENDORSED_DIRS=
+if not "%_PENTAHO_JAVA_HOME%" == "" set JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;
+set JAVA_ENDORSED_DIRS=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed
+
 REM **********************
 REM   Collect arguments
 REM **********************
@@ -116,7 +124,7 @@ REM ******************************************************************
 
 if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xms1024m" "-Xmx2048m" "-XX:MaxPermSize=256m"
 
-set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" "-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
+set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" "-Djava.library.path=%LIBSPATH%" "-Djava.endorsed.dirs=%JAVA_ENDORSED_DIRS%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
 
 REM ***************
 REM ** Run...    **

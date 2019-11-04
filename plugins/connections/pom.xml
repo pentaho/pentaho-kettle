@@ -30,7 +30,6 @@
     <angular-animate.version>${angular.version}</angular-animate.version>
     <pentaho-osgi-bundles.version>9.0.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <angular-ui-router.version>0.4.2</angular-ui-router.version>
-    <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
     <cxf.karaf.version>3.0.13</cxf.karaf.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
     <require-css.version>0.1.8</require-css.version>
@@ -136,6 +135,11 @@
         <artifactId>require-css</artifactId>
         <version>${require-css.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.pentaho.di.plugins</groupId>
+        <artifactId>core-ui</artifactId>
+        <version>${pdi.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -28,7 +28,6 @@
     <angular.version>1.5.8</angular.version>
     <pentaho-osgi-bundles.version>9.0.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <angular-ui-router.version>0.4.2</angular-ui-router.version>
-    <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
     <require-css.version>0.1.8</require-css.version>
     <angular-i18n.version>1.5.6</angular-i18n.version>
@@ -169,6 +168,11 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.pentaho.di.plugins</groupId>
+        <artifactId>core-ui</artifactId>
+        <version>${pdi.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

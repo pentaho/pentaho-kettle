@@ -36,7 +36,7 @@
         <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
         <sapdbc.version>7.4.4</sapdbc.version>
         <sqlite-jdbc.version>3.7.2</sqlite-jdbc.version>
-        <geronimo-servlet_3.0_spec.version>1.0</geronimo-servlet_3.0_spec.version>
+        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <webservices-api.version>2.3.1</webservices-api.version>
         <webservices-rt.version>2.3.1</webservices-rt.version>
         <asm.version>3.2</asm.version>
@@ -351,6 +351,26 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.diagnostic</groupId>
+            <artifactId>org.apache.karaf.diagnostic.boot</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.specs</groupId>
+            <artifactId>org.apache.karaf.specs.activator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- Third-party JDBC dependencies -->
         <dependency>
@@ -450,15 +470,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_3.0_spec</artifactId>
-            <version>${geronimo-servlet_3.0_spec.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
         </dependency>
 
         <!-- Spring -->
