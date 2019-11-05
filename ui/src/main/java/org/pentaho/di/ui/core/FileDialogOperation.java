@@ -15,22 +15,29 @@
 
 package org.pentaho.di.ui.core;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectInterface;
+import org.pentaho.di.ui.core.widget.TextVar;
+
+import java.util.function.Consumer;
 
 /**
  * Created by bmorrise on 8/17/17.
  */
 public class FileDialogOperation {
 
-  public static String SELECT_FOLDER = "selectFolder";
-  public static String SELECT_FILE = "selectFile";
-  public static String OPEN = "open";
-  public static String SAVE = "save";
-  public static String ORIGIN_SPOON = "spoon";
-  public static String ORIGIN_OTHER = "other";
-  public static String TRANSFORMATION = "transformation";
-  public static String JOB = "job";
+  public static final String SELECT_FOLDER = "selectFolder";
+  public static final String SELECT_FILE = "selectFile";
+  public static final String OPEN = "open";
+  public static final String SAVE = "save";
+  public static final String ORIGIN_SPOON = "spoon";
+  public static final String ORIGIN_OTHER = "other";
+  public static final String TRANSFORMATION = "transformation";
+  public static final String JOB = "job";
 
   private Repository repository;
   private String command;
@@ -149,5 +156,30 @@ public class FileDialogOperation {
 
   public void setProvider( String provider ) {
     this.provider = provider;
+  }
+
+  public static void simpleBrowse( TextVar textVar ) {
+    browse( textVar, fileDialogOperation -> { }, fileDialogOperation -> { } );
+  }
+
+  public static void browse(
+    TextVar textVar, Consumer<FileDialogOperation> before, Consumer<FileDialogOperation> after ) {
+    FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.OPEN );
+    fileDialogOperation.setProvider( "vfs" );
+    if ( !Utils.isEmpty( textVar.getText() ) ) {
+      fileDialogOperation
+        .setPath( textVar.getText().substring( 0, textVar.getText().lastIndexOf( '/' ) ) );
+    }
+    before.accept( fileDialogOperation );
+    try {
+      ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.SpoonOpenSaveNew.id, fileDialogOperation );
+    } catch ( KettleException ignored ) {
+      // Do nothing
+    }
+    String path = fileDialogOperation.getPath();
+    if ( path != null ) {
+      textVar.setText( fileDialogOperation.getPath() );
+    }
+    after.accept( fileDialogOperation );
   }
 }
