@@ -513,6 +513,8 @@ public class Kitchen {
         exitJVM( 7 ); // same as the other list options
       }
 
+      checkTimeoutVariable();
+
       job.start();
       job.waitUntilFinished();
       result = job.getResult(); // Execute the selected job.
@@ -633,5 +635,14 @@ public class Kitchen {
   private static final void exitJVM( int status ) {
 
     System.exit( status );
+  }
+
+  private static void checkTimeoutVariable() {
+    try {
+      int val = Integer.parseInt( EnvUtil.getSystemProperty( Const.KITCHEN_KARAF_TIMEOUT_SECONDS, "0" ) );
+      Thread.sleep( val * 1000 );
+    } catch ( InterruptedException e ) {
+      Thread.currentThread().interrupt();
+    }
   }
 }
