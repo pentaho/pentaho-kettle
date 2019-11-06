@@ -23,7 +23,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.ui.core.widget.TextVar;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * Created by bmorrise on 8/17/17.
@@ -158,28 +158,47 @@ public class FileDialogOperation {
     this.provider = provider;
   }
 
-  public static void simpleBrowse( TextVar textVar ) {
-    browse( textVar, fileDialogOperation -> { }, fileDialogOperation -> { } );
+  public static void handleOpen( TextVar textVar, FileDialogOperation fileDialogOperation ) {
+    String path = fileDialogOperation.getPath();
+    if ( path != null ) {
+      textVar.setText( fileDialogOperation.getPath() );
+    }
   }
 
-  public static void browse(
-    TextVar textVar, Consumer<FileDialogOperation> before, Consumer<FileDialogOperation> after ) {
-    FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.OPEN );
-    fileDialogOperation.setProvider( "vfs" );
-    if ( !Utils.isEmpty( textVar.getText() ) ) {
-      fileDialogOperation
-        .setPath( textVar.getText().substring( 0, textVar.getText().lastIndexOf( '/' ) ) );
+  public static void handleSave( TextVar textVar, FileDialogOperation fileDialogOperation ) {
+    String path = fileDialogOperation.getPath();
+    String fileName = fileDialogOperation.getFilename();
+    if ( path != null && fileName != null ) {
+      textVar.setText( fileDialogOperation.getPath() + "/" + fileDialogOperation.getFilename() );
     }
-    before.accept( fileDialogOperation );
+  }
+
+  public static void setStartLocation( TextVar textVar, FileDialogOperation fileDialogOperation ) {
+    String fullPath = textVar.getText();
+    if ( !Utils.isEmpty( fullPath ) ) {
+      fileDialogOperation
+        .setPath( fullPath.substring( 0, fullPath.lastIndexOf( '/' ) ) );
+      fileDialogOperation
+        .setFilename( fullPath.substring( fullPath.lastIndexOf( '/' ) + 1 ) );
+      if ( fullPath.startsWith( "hc://" ) ) {
+        fileDialogOperation.setProvider( "clusters" );
+      } else if ( fullPath.startsWith( "pvfs://" ) ) {
+        fileDialogOperation.setProvider( "vfs" );
+      } else if ( fullPath.startsWith( "/" ) ) {
+        fileDialogOperation.setProvider( "local" );
+      }
+    }
+  }
+
+  public static void browse( String command, TextVar textVar, BiConsumer<TextVar, FileDialogOperation> before,
+                             BiConsumer<TextVar, FileDialogOperation> after ) {
+    FileDialogOperation fileDialogOperation = new FileDialogOperation( command );
+    before.accept( textVar, fileDialogOperation );
     try {
       ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.SpoonOpenSaveNew.id, fileDialogOperation );
     } catch ( KettleException ignored ) {
       // Do nothing
     }
-    String path = fileDialogOperation.getPath();
-    if ( path != null ) {
-      textVar.setText( fileDialogOperation.getPath() );
-    }
-    after.accept( fileDialogOperation );
+    after.accept( textVar, fileDialogOperation );
   }
 }
