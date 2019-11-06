@@ -3384,6 +3384,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       objectTransformer.saveSharedObjects( element, versionComment );
     }
 
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.BeforeSaveToRepository.id, element );
+
     final boolean isUpdate = ( element.getObjectId() != null );
     RepositoryFile file = null;
     if ( isUpdate ) {

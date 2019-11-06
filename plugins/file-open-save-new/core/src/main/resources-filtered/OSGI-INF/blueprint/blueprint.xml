@@ -3,6 +3,8 @@
            xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
            xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs" default-timeout="20000">
 
+  <reference id="metaStoreLocator" interface="org.pentaho.osgi.metastore.locator.api.MetastoreLocator" />
+
   <bean id="repositoryBrowserController" scope="singleton"
         class="org.pentaho.di.plugins.fileopensave.controllers.RepositoryBrowserController">
     <argument ref="RepositoryFileProvider" />
@@ -45,6 +47,36 @@
 
   <bean id="RepositoryOpenSaveExtensionPoint" scope="singleton"
         class="org.pentaho.di.plugins.fileopensave.extension.FileOpenSaveExtensionPoint">
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="TransBeforeSaveExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.TransBeforeSaveExtensionPoint">
+    <argument ref="metaStoreLocator" />
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="JobBeforeSaveExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.JobBeforeSaveExtensionPoint">
+    <argument ref="metaStoreLocator" />
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="TransAfterOpenExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.TransAfterOpenExtensionPoint">
+    <argument ref="metaStoreLocator" />
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="JobAfterOpenExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.JobAfterOpenExtensionPoint">
+    <argument ref="metaStoreLocator" />
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="BeforeSaveToRepositoryExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.BeforeSaveToRepositoryExtensionPoint">
+    <argument ref="metaStoreLocator" />
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
