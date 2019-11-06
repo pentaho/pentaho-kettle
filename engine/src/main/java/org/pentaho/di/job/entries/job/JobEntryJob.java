@@ -1374,7 +1374,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
-  private JobMeta getJobMetaFromRepository( Repository rep, CurrentDirectoryResolver r, String transPath ) throws KettleException {
+  protected JobMeta getJobMetaFromRepository( Repository rep, CurrentDirectoryResolver r, String transPath, VariableSpace tmpSpace ) throws KettleException {
     String realJobName = "";
     String realDirectory = "/";
 
@@ -1389,7 +1389,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     if ( repositoryDirectory == null ) {
       throw new KettleException( "Unable to find repository directory [" + Const.NVL( realDirectory, "" ) + "]" );
     }
-    return rep.loadJob( realJobName, repositoryDirectory, null, null ); // reads
+    JobMeta jobMeta = rep.loadJob( realJobName, repositoryDirectory, null, null ); //reads
+    if ( jobMeta != null ) {
+      jobMeta.initializeVariablesFrom( tmpSpace );
+    }
+    return jobMeta;
   }
 
   public JobMeta getJobMeta( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
@@ -1406,7 +1410,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             jobMeta = new JobMeta( tmpSpace, realFilename, rep, metaStore, null );
           } catch ( KettleException e ) {
             // try to load from repository, this job may have been developed locally and later uploaded to the repository
-            jobMeta = getJobMetaFromRepository( rep, r, realFilename );
+            jobMeta = getJobMetaFromRepository( rep, r, realFilename, tmpSpace );
           }
           break;
         case REPOSITORY_BY_NAME:
@@ -1421,7 +1425,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             }
             jobMeta = new JobMeta( tmpSpace, transPath, rep, metaStore, null );
           } else {
-            jobMeta = getJobMetaFromRepository( rep, r, transPath );
+            jobMeta = getJobMetaFromRepository( rep, r, transPath, tmpSpace );
           }
           break;
         case REPOSITORY_BY_REFERENCE:
