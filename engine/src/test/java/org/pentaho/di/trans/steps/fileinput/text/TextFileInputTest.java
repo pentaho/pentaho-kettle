@@ -65,9 +65,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 public class TextFileInputTest {
@@ -332,8 +330,76 @@ public class TextFileInputTest {
     assertEquals( 0, mockTFID.lineBuffer.size() );
   }
 
+  @Test
+  public void fieldsWithLineBreaksTest() throws Exception {
+
+    final String content = new StringBuilder()
+      .append( "aaa,\"b" ).append( '\n' )
+      .append( "bb\",ccc" ).append( '\n' )
+      .append( "zzz,yyy,xxx" ).toString();
+    final String virtualFile = createVirtualFile( "pdi-18175.txt", content );
+
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ), field( "col3" ) );
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2", "col3" );
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 1 ) );
+
+    deleteVfsFile( virtualFile );
+  }
+
+  @Test
+  public void fieldsWithLineBreaksAndNoEmptyLinesTest() throws Exception {
+
+    final String content = new StringBuilder()
+      .append( "aaa,\"b" ).append( '\n' )
+      .append( "bb\",ccc" ).append( '\n' )
+      .append( '\n' )
+      .append( "zzz,yyy,xxx" ).toString();
+    final String virtualFile = createVirtualFile( "pdi-18175.txt", content );
+
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ), field( "col3" ) );
+    meta.content.noEmptyLines = true;
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2", "col3" );
+
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 1 ) );
+
+    deleteVfsFile( virtualFile );
+  }
+
+  @Test
+  public void fieldsWithLineBreaksWithEmptyLinesTest() throws Exception {
+
+    final String content = new StringBuilder()
+      .append( "aaa,\"b" ).append( '\n' )
+      .append( "bb\",ccc" ).append( '\n' )
+      .append( '\n' )
+      .append( "zzz,yyy,xxx" ).toString();
+    final String virtualFile = createVirtualFile( "pdi-18175.txt", content );
+
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ), field( "col3" ) );
+    meta.content.noEmptyLines = false;
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2", "col3" );
+
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 3, false );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { null }, output.get( 1 ) );
+    TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 2 ) );
+
+    deleteVfsFile( virtualFile );
+  }
+
   private TextFileInputMeta createMetaObject( BaseFileField... fields ) {
     TextFileInputMeta meta = new TextFileInputMeta();
+    meta.content.enclosure = "\"";
     meta.content.fileCompression = "None";
     meta.content.fileType = "CSV";
     meta.content.header = false;
