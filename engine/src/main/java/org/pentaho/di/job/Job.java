@@ -46,6 +46,7 @@ import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ExecutorInterface;
 import org.pentaho.di.core.ExtensionDataInterface;
@@ -374,6 +375,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       setInternalKettleVariables( variables );
       copyParametersFrom( jobMeta );
       activateParameters();
+      ConnectionUtil.init( jobMeta );
 
       // Run the job
       //
