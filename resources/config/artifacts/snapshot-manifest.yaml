@@ -41,8 +41,8 @@ ee:
     server:
         - pentaho-server-ee-${platform.version}.zip
         - pentaho-server-manual-ee-${platform.version}.zip
-        - pentaho-workernodes-${platform.version}.zip
-        - pentaho-workernodes-${platform.version}.tar.gz
+        - pentaho-workernodes-components-${platform.version}.zip
+        - pentaho-workernodes-components-${platform.version}.tar.gz
     shims:
         - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.kar
         - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
