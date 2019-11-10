@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -960,45 +958,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     return result;
   }
 
-  public String getFullFilename( String filename, boolean add_date, boolean add_time, boolean specify_format,
-    String datetime_folder ) {
-    String retval;
-    if ( Utils.isEmpty( filename ) ) {
-      return null;
-    }
+  public String getFullFilename( String filename, boolean addDate, boolean addTime, boolean specifyFormat,
+    String datetimeFormat ) {
 
-    // Replace possible environment variables...
-    String realfilename = environmentSubstitute( filename );
-    int lenstring = realfilename.length();
-    int lastindexOfDot = realfilename.lastIndexOf( '.' );
-    if ( lastindexOfDot == -1 ) {
-      lastindexOfDot = lenstring;
-    }
-
-    retval = realfilename.substring( 0, lastindexOfDot );
-
-    final SimpleDateFormat daf = new SimpleDateFormat();
-    Date now = new Date();
-
-    if ( specify_format && !Utils.isEmpty( datetime_folder ) ) {
-      daf.applyPattern( datetime_folder );
-      String dt = daf.format( now );
-      retval += dt;
-    } else {
-      if ( add_date ) {
-        daf.applyPattern( "yyyyMMdd" );
-        String d = daf.format( now );
-        retval += "_" + d;
-      }
-      if ( add_time ) {
-        daf.applyPattern( "HHmmssSSS" );
-        String t = daf.format( now );
-        retval += "_" + t;
-      }
-    }
-    retval += realfilename.substring( lastindexOfDot, lenstring );
-    return retval;
-
+    return addDatetimeToFilename( filename, addDate, "yyyyMMdd", addTime, "HHmmssSSS", specifyFormat,
+      datetimeFormat );
   }
 
   public boolean evaluates() {
