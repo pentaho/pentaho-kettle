@@ -28,5 +28,10 @@
     "id": "CUBE",
     "value": "\\.cube$",
     "label": "*.cube"
+  },
+  {
+    "id": "XML",
+    "value": "\\.xml$",
+    "label": "*.xml"
   }
 ]
