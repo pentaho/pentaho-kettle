@@ -6,6 +6,12 @@
   </formats>
   <includeBaseDirectory>true</includeBaseDirectory>
   <baseDirectory>data-integration</baseDirectory>
+  <files>
+    <file>
+      <source>${project.basedir}/src/main/resources/drivers/README</source>
+      <outputDirectory>./drivers</outputDirectory>
+    </file>
+  </files>
   <fileSets>
     <!-- the staging dir -->
     <fileSet>
