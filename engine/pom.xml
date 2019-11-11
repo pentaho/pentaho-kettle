@@ -81,13 +81,24 @@
     <snappy-java.version>1.1.0</snappy-java.version>
     <commons-cli.version>1.2</commons-cli.version>
     <log4jdbc.version>1.2</log4jdbc.version>
-    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+    <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <oro.version>2.0.8</oro.version>
     <javax.websocket-api.version>1.1</javax.websocket-api.version>
     <rxjava.version>2.2.3</rxjava.version>
     <xmlunit.version>1.5</xmlunit.version>
     <wiremock.version>2.25.0</wiremock.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${javax.servlet-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <!-- Kettle dependencies -->
@@ -837,14 +848,6 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>${javax.servlet-api.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.websocket</groupId>
@@ -933,12 +936,6 @@
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-jre8-standalone</artifactId>
       <version>${wiremock.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
