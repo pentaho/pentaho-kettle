@@ -1,0 +1,32 @@
+[
+  {
+    "id": "ALL",
+    "value": "*",
+    "label": "All Files"
+  },
+  {
+    "id": "KETTLE_FILES",
+    "value": "\\.kjb$|\\.ktr$",
+    "label": "Kettle Files"
+  },
+  {
+    "id": "CSV",
+    "value": "\\.csv$",
+    "label": "*.csv"
+  },
+  {
+    "id": "TXT",
+    "value": "\\.txt$",
+    "label": "*.txt"
+  },
+  {
+    "id": "JSON",
+    "value": "\\.json$",
+    "label": "*.json"
+  },
+  {
+    "id": "CUBE",
+    "value": "\\.cube$",
+    "label": "*.cube"
+  }
+]

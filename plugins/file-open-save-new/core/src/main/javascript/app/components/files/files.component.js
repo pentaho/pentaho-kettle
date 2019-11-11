@@ -135,7 +135,6 @@ define([
         parentNode = parentNode.parentNode;
       }
       if (!found) {
-        vm.selectedFiles = [];
         vm.highlighted = [];
       }
     }
@@ -542,7 +541,9 @@ define([
     }
 
     function fileFilter(file) {
-      return file.type === "folder" || vm.filter === "all" || file.path.match(vm.filter);
+      return file.type === "folder"
+          || vm.filter === "*"
+          || file.path.toLowerCase().match(vm.filter.toLowerCase());
     }
 
     /**

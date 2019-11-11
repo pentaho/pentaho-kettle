@@ -85,9 +85,11 @@
       state="vm.state"
       path="vm.folder.path"
       filename="vm.fileToSave"
-      on-open-click="vm.onOpenClick()"
+      selected-file="vm.myfile"
+      file-types="vm.fileTypes"
+      default-filter="vm.defaultFilter"
       on-select-filter="vm.onSelectFilter(filter)"
-      on-ok-click="vm.onOKClick()"
+      on-open-click="vm.onOpenClick()"
       on-save-click="vm.onSaveClick()"
       on-cancel-click="vm.onCancelClick()"
   ></filebar>

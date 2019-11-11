@@ -98,7 +98,9 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
 
   @Override
   public List<RepositoryFile> getFiles( RepositoryFile file, String filters ) {
-    RepositoryDirectoryInterface repositoryDirectoryInterface = findDirectory( file.getPath() );
+    RepositoryDirectoryInterface repositoryDirectoryInterface =
+      findDirectory( file.getType().equalsIgnoreCase( RepositoryDirectory.DIRECTORY ) ? file.getPath() : file.getParent() );
+
     RepositoryDirectory repositoryDirectory = RepositoryDirectory.build( null, repositoryDirectoryInterface );
     populateFolders( repositoryDirectory, repositoryDirectoryInterface );
     try {
