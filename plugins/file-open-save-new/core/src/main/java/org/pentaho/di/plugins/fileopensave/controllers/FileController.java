@@ -134,8 +134,10 @@ public class FileController {
       File newFile = fileProvider.add( folder );
       if ( newFile != null ) {
         fileCache.addFile( fileProvider.getParent( folder ), newFile );
+        return Result.success( "", newFile );
+      } else {
+        return Result.error( "Unable to create folder", folder );
       }
-      return Result.success( "", newFile );
     } catch ( FileExistsException fee ) {
       return Result.fileCollision( "", folder );
     } catch ( FileException | InvalidFileProviderException fe ) {

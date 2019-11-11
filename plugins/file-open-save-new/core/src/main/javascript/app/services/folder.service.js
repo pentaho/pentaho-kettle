@@ -74,14 +74,14 @@ define(
          */
         function selectFolder(folder, filters, useCache) {
           var self = this;
-          return $q(function(resolve, reject) {
+          return $q(function (resolve, reject) {
             if (folder !== self.folder || self.folder.loaded === false) {
               self.folder = folder;
               self.folder.open = true;
               if (folder.provider !== "recents") {
                 _selectFolder(folder, filters, useCache).then(function () {
                   resolve(self.folder);
-                }, function(err) {
+                }, function (err) {
                   reject(err);
                 });
               } else {
@@ -102,17 +102,13 @@ define(
          */
         function selectFolderByPath(path, props) {
           var self = this;
-          return $q(function(resolve, reject) {
-            self.findFolderByPath(path, props).then(function (selectedFile) {
-              fileService.files = [];
-              if (selectedFile.type === "file") {
-                self.selectFolderByPath(path.substr(0, path.lastIndexOf("/"))).then(function() {
-                  fileService.files = [selectedFile];
-                  resolve();
-                });
-              } else {
-                self.selectFolder(selectedFile).then(resolve);
-              }
+          return $q(function (resolve, reject) {
+            fileService.files = [];
+            self.findFolderByPath(path).then(function (folder) {
+              self.selectFolder(folder).then(resolve);
+            }, function (folderFile) {
+              fileService.files = [folderFile.file];
+              self.selectFolder(folderFile.folder).then(resolve);
             });
           });
         }
@@ -124,7 +120,7 @@ define(
          */
         function refreshFolder() {
           var self = this;
-          return $q(function(resolve, reject) {
+          return $q(function (resolve, reject) {
             if (self.folder) {
               self.folder.loaded = false;
               if (self.folder.provider) {
@@ -146,15 +142,15 @@ define(
          */
         function openPath(path, props) {
           var self = this;
-          return $q(function(resolve, reject) {
+          return $q(function (resolve, reject) {
             path = utils.cleanPath(path);
             var serviceResolve = self.resolvePath(path, props);
             if (serviceResolve !== null) {
               serviceResolve.then(function (path) {
-                self.selectFolderByPath(path).then(function() {
+                self.selectFolderByPath(path).then(function () {
                   resolve();
                 });
-              }).catch(function (path) {
+              }, function (path) {
                 self.loadFile(path, props, resolve, reject);
               });
             } else {
@@ -173,7 +169,7 @@ define(
         function loadFile(path, props, resolve, reject) {
           var self = this;
           self.folder = {path: path};
-          fileService.get({ path: path }).then(function (file) {
+          fileService.get({path: path}).then(function (file) {
             var filename = null;
             if (file.type === "file") {
               filename = utils.getFilename(path);
@@ -188,8 +184,13 @@ define(
               fileService.files = [];
               _selectFile(filename, self);
               resolve();
-            }, function(error) {
+            }, function (error) {
               reject(error);
+            });
+          }, function () {
+            reject({
+              title: i18n.get('file-open-save-plugin.vfs.unable-to-connect.title'),
+              message: i18n.get('file-open-save-plugin.vfs.unable-to-connect.message')
             });
           });
         }
@@ -219,7 +220,7 @@ define(
          */
         function findFolderByPath(path) {
           var self = this;
-          return $q(function(resolve, reject) {
+          return $q(function (resolve, reject) {
             var parts = path.split("/");
             var root = _findRoot(self.tree, parts.shift());
             if (parts.length === 0) {
@@ -232,8 +233,10 @@ define(
               root = root.children[0];
             }
             root.open = true;
-            _findFolder(root, parts).then(function(folder) {
+            _findFolder(root, parts).then(function (folder) {
               resolve(folder);
+            }, function (folderFile) {
+              reject(folderFile);
             });
           });
         }
@@ -254,20 +257,33 @@ define(
           }
         }
 
+        /**
+         * Iterate through path parts and look for the matching folder
+         *
+         * @param node folder object
+         * @param parts path parts
+         * @private
+         */
         function _findFolder(node, parts) {
-          return $q(function(resolve, reject) {
-            _doFind(node, parts.shift()).then(function(folder) {
-              if (parts.length > 0) {
-                resolve(_findFolder(folder, parts));
+          return $q(function (resolve, reject) {
+            _doFind(node, parts.shift()).then(function (file) {
+              if (file === null) {
+                resolve(node);
+              } else if (file.type === "file") {
+                reject({folder: node, file: file});
               } else {
-                resolve(folder);
+                if (parts.length > 0) {
+                  resolve(_findFolder(file, parts));
+                } else {
+                  resolve(file);
+                }
               }
             });
           });
         }
 
         /**
-         * Find child folder for node in tree
+         * Find child folder for node in tree and update status of node
          *
          * @param node
          * @param name
@@ -275,7 +291,7 @@ define(
          * @private
          */
         function _doFind(node, name) {
-          return $q(function(resolve, reject) {
+          return $q(function (resolve, reject) {
             var folder = null;
             for (var i = 0; i < node.children.length; i++) {
               if (node.children[i].name.trim() === name.trim()) {
@@ -306,11 +322,11 @@ define(
          */
         function _populateFolder(node, name, resolve) {
           node.loading = true;
-          providerService.get(node.provider).createFolder(node, name).then(function(children) {
+          providerService.get(node.provider).createFolder(node, name).then(function (children) {
             node.children = children;
             node.loading = false;
             resolve(_doFind(node, name));
-          }, function() {
+          }, function () {
             resolve(null);
           });
         }
@@ -318,19 +334,18 @@ define(
         /**
          * Delete a folder by object
          *
-         * @param tree
          * @param folder
          * @returns {*}
          */
         function deleteFolder(folder) {
           var self = this;
-          return $q(function(resolve, reject) {
-            var parentFolder = self.findFolderByPath(folder, _getParent(folder.path)).then(function(parent) {
-              providerService.get(folder.provider).deleteFiles([folder]).then(function(response) {
+          return $q(function (resolve, reject) {
+            self.findFolderByPath(folder).then(function (parent) {
+              providerService.get(folder.provider).deleteFiles([folder]).then(function () {
                 var index = parent.children.indexOf(folder);
                 parent.children.splice(index, 1);
                 resolve(parent);
-              }, function(response) {
+              }, function (response) {
                 reject(response);
               });
             });
@@ -339,8 +354,6 @@ define(
 
         /**
          * Navigate up one directory in the tree
-         *
-         * @returns {*}
          */
         function upDirectory() {
           if (!this.folder) {
@@ -350,7 +363,7 @@ define(
           path = utils.getParentPath(path);
           fileService.files = [];
           var self = this;
-          return $q(function(resolve, reject) {
+          return $q(function (resolve, reject) {
             if (self.folder.root) {
               self.selectFolderByPath(path).then(resolve);
             } else {
@@ -359,6 +372,12 @@ define(
           });
         }
 
+        /**
+         * Resolve a path from plugin
+         *
+         * @param path The path to resolve
+         * @param properties The properties that may include the provider
+         */
         function resolvePath(path, properties) {
           var service;
           if (properties && properties.provider) {
@@ -372,6 +391,12 @@ define(
           return null;
         }
 
+        /**
+         * Get tree path folder folder
+         *
+         * @param folder The folder from which to get path
+         * @returns {*} Folder path
+         */
         function getPath(folder) {
           var service = folder.provider ? providerService.get(folder.provider) : null;
           if (!service) {
@@ -380,6 +405,12 @@ define(
           return service.getPath(folder);
         }
 
+        /**
+         * Get bread crumb path
+         *
+         * @param file
+         * @returns {*} - Object representing path
+         */
         function getBreadcrumbPath(file) {
           var service = file.provider ? providerService.get(file.provider) : null;
           if (!service) {
@@ -407,10 +438,10 @@ define(
          */
         function _getFilesByPath(path, useCache) {
           var service = providerService.getByPath(path);
-          return $q(function(resolve, reject) {
+          return $q(function (resolve, reject) {
             service.getFilesByPath(path, useCache).then(function (files) {
               resolve(files);
-            }, function(err) {
+            }, function (err) {
               reject({
                 title: i18n.get('file-open-save-plugin.vfs.unable-to-connect.title'),
                 message: i18n.get('file-open-save-plugin.vfs.unable-to-connect.message')
@@ -427,11 +458,11 @@ define(
          * @param {Boolean} useCache - Clear the cache on the server
          */
         function _selectFolder(folder, filters, useCache) {
-          return $q(function(resolve, reject) {
+          return $q(function (resolve, reject) {
             var service = providerService.get(folder.provider);
             if (service) {
               folder.loading = true;
-              service.selectFolder(folder, filters, useCache).then(function() {
+              service.selectFolder(folder, filters, useCache).then(function () {
                 folder.loading = false;
                 resolve();
               }, function (err) {
@@ -443,13 +474,15 @@ define(
           });
         }
 
-        function _getParent(path) {
-          return path.substr(0, path.lastIndexOf("/"));
-        }
-
+        /**
+         * Creates a folder in the folder
+         *
+         * @param folder - The folder in which to create a path
+         * @returns {*}
+         */
         function createFolder(folder) {
-          return $q(function(resolve, reject) {
-            providerService.get(folder.provider).addFolder(folder).then(function(response) {
+          return $q(function (resolve, reject) {
+            providerService.get(folder.provider).addFolder(folder).then(function (response) {
               var result = response.data;
               if (result.status === "SUCCESS") {
                 folder.new = false;
@@ -458,7 +491,7 @@ define(
               } else {
                 reject(result);
               }
-            }, function(response) {
+            }, function (response) {
               reject(response.status);
             });
           });

@@ -248,7 +248,7 @@ define([
     function selectFolder(folder, useCache) {
       vm.searchResults = null;
       if (vm.searching) {
-        _clearSearch();
+        vm.searchValue = "";
       }
       _resetFileAreaMessage();
       fileService.files = [];
@@ -259,10 +259,12 @@ define([
         vm.fileLoading = false;
         vm.showRecents = folder.provider === "recents";
         _update();
-      }).catch(function(error) {
-        folder.loading = false;
-        vm.fileLoading = false;
-        modalService.open("error-dialog", error.title, error.message).then(_update);
+      }, function(error) {
+        modalService.open("error-dialog", error.title, error.message).then(function() {
+          folder.loading = false;
+          vm.fileLoading = false;
+          _update();
+        });
       });
     }
 
@@ -281,21 +283,29 @@ define([
       });
     }
 
+    function _resetFolder() {
+      if (vm.folder.provider) {
+        selectFolder(vm.folder, true);
+      } else {
+        selectFolderByPath(vm.folder.path, null);
+      }
+    }
+
     function openPath(path, properties) {
       vm.fileLoading = true;
       vm.showRecents = false;
       folderService.openPath(path, properties).then(function() {
         vm.fileLoading = false;
         _update();
-      }).catch(function(error) {
+      }, function(error) {
         vm.fileLoading = false;
-        modalService.open("error-dialog", error.title, error.message).then(function () {
-          if (vm.folder.provider) {
-            selectFolder(vm.folder);
-          } else {
-            selectFolderByPath(vm.folder.path);
-          }
-        });
+        if (error) {
+          modalService.open("error-dialog", error.title, error.message).then(function () {
+            _resetFolder();
+          });
+        } else {
+          _resetFolder();
+        }
       });
     }
 
@@ -328,11 +338,10 @@ define([
      * @param {Object} file - file object
      */
     function onSelectFile(file) {
-
       if (file.type === "folder") {
         vm.searchString = "";
         selectFolder(file);
-      } else if ($state.is("open") || $state.is("selectFile") || $state.is("selectFolder")) {
+      } else if (!$state.is("save")) {
         _open(file);
       }
     }
@@ -625,7 +634,7 @@ define([
           fileService.files = [];
           dt.getRecentFiles().then(_populateRecentFiles);
         }, function (response) {
-          if (vm.file.type === "folder") {
+          if (fileService.files[0].type === "folder") {
             if (response.status === 406) {// folder has open file
               _triggerError(13);
             } else {
@@ -664,7 +673,11 @@ define([
               // TODO: This should be a file already exists error
               _triggerError(4);
               break;
+            case "ERROR":
+              _triggerError(4);
+              break;
           }
+          _resetFolder();
           reject(result.status);
         });
       });
@@ -777,12 +790,10 @@ define([
      */
     function onKeyUp(event) {
       if (event.keyCode === 13 && event.target.tagName !== "INPUT") {
-        if ($state.is("open")) {
-          if (vm.selectedFiles.length === 1) {
-            onSelectFile(vm.selectedFiles[0]);
-          }
-        } else if (!vm.showRecents) {
+        if ($state.is("save") && !vm.showRecents) {
           _save(false);
+        } else if (vm.selectedFiles.length === 1) {
+          onSelectFile(vm.selectedFiles[0]);
         }
       }
     }
