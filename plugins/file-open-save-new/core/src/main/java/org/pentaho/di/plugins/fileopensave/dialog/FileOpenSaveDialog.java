@@ -94,8 +94,8 @@ public class FileOpenSaveDialog extends ThinDialog {
     this.log = logger;
   }
 
-  private void addParameter( String path, List<NameValuePair> parameters, String name, String value ) {
-    if ( !Utils.isEmpty( path ) && !Utils.isEmpty( value ) ) {
+  private void addParameter( List<NameValuePair> parameters, String name, String value ) {
+    if ( !Utils.isEmpty( value ) ) {
       parameters.add( new BasicNameValuePair( name, value ) );
     }
   }
@@ -117,18 +117,18 @@ public class FileOpenSaveDialog extends ThinDialog {
     clientPath.append( !Utils.isEmpty( fileDialogOperation.getCommand() ) ? "#/" + fileDialogOperation.getCommand() : "" );
 
     List<NameValuePair> parameters = new ArrayList<>();
-    addParameter( dialogPath, parameters, PATH_PARAM, dialogPath );
-    addParameter( dialogPath, parameters, CONNECTION_PARAM, fileDialogOperation.getConnection() );
-    addParameter( dialogPath, parameters, PROVIDER_PARAM, fileDialogOperation.getProvider() );
-    addParameter( dialogPath, parameters, PROVIDER_FILTER_PARAM, fileDialogOperation.getProviderFilter() );
-    addParameter( dialogPath, parameters, FILTER_PARAM, fileDialogOperation.getFilter() );
-    addParameter( dialogPath, parameters, DEFAULT_FILTER_PARAM, fileDialogOperation.getDefaultFilter() );
-    addParameter( dialogPath, parameters, ORIGIN_PARAM, fileDialogOperation.getOrigin() );
-    addParameter( dialogPath, parameters, FILENAME_PARAM, fileDialogOperation.getFilename() );
-    addParameter( dialogPath, parameters, FILE_TYPE_PARM, fileDialogOperation.getFileType() );
+    addParameter( parameters, PATH_PARAM, dialogPath );
+    addParameter( parameters, CONNECTION_PARAM, fileDialogOperation.getConnection() );
+    addParameter( parameters, PROVIDER_PARAM, fileDialogOperation.getProvider() );
+    addParameter( parameters, PROVIDER_FILTER_PARAM, fileDialogOperation.getProviderFilter() );
+    addParameter( parameters, FILTER_PARAM, fileDialogOperation.getFilter() );
+    addParameter( parameters, DEFAULT_FILTER_PARAM, fileDialogOperation.getDefaultFilter() );
+    addParameter( parameters, ORIGIN_PARAM, fileDialogOperation.getOrigin() );
+    addParameter( parameters, FILENAME_PARAM, fileDialogOperation.getFilename() );
+    addParameter( parameters, FILE_TYPE_PARM, fileDialogOperation.getFileType() );
 
     if ( fileDialogOperation.getUseSchemaPath() ) {
-      addParameter( dialogPath, parameters, USE_SCHEMA_PARAM, "true" );
+      addParameter( parameters, USE_SCHEMA_PARAM, "true" );
     }
 
     String queryParams = URLEncodedUtils.format( parameters, "UTF-8" );

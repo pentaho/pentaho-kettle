@@ -83,6 +83,7 @@ define([
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
 
       var filterSet = new Set(null);
+      filterSet.add("ALL");
 
       for (var i = 0; i < vm.fileTypes.length; i++) {
         filterSet.add(vm.fileTypes[i]);
