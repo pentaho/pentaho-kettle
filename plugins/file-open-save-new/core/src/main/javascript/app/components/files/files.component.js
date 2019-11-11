@@ -120,8 +120,7 @@ define([
     function onChanges(changes) {
       $timeout(function () {
         vm.selectedFile = null;
-        _setSort(0, false, "name");
-      }, 200);
+      });
     }
 
     function onBodyClick(e, id) {
@@ -541,6 +540,9 @@ define([
     }
 
     function fileFilter(file) {
+      if (!vm.filter) {
+        return true;
+      }
       return file.type === "folder"
           || vm.filter === "*"
           || file.path.toLowerCase().match(vm.filter.toLowerCase());

@@ -90,7 +90,11 @@ public class FileBrowserEndpoint {
   @Path( "/getFile" )
   @Produces( { MediaType.APPLICATION_JSON } )
   public Response getFile( File file ) {
-    return Response.ok( fileController.getFile( file ) ).build();
+    File result = fileController.getFile( file );
+    if ( result == null ) {
+      return Response.status( Response.Status.NOT_FOUND ).build();
+    }
+    return Response.ok( result ).build();
   }
 
   @POST

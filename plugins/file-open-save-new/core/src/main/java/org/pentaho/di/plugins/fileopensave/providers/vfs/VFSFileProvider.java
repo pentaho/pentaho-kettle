@@ -114,7 +114,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    * @param file
    * @return
    */
-  private List<VFSFile> getRoot( VFSFile file ) {
+  private List<VFSFile> getRoot( VFSFile file ) throws FileNotFoundException {
     if ( this.roots.containsKey( file.getConnection() ) ) {
       return this.roots.get( file.getConnection() );
     }
@@ -129,6 +129,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         .getConnectionProvider( vfsConnectionDetails.getType() );
 
     List<VFSRoot> vfsRoots = vfsConnectionProvider.getLocations( vfsConnectionDetails );
+    if ( vfsRoots.isEmpty() ) {
+      throw new FileNotFoundException( file.getPath(), file.getProvider() );
+    }
+
     for ( VFSRoot root : vfsRoots ) {
       VFSDirectory vfsDirectory = new VFSDirectory();
       vfsDirectory.setName( root.getName() );
@@ -221,6 +225,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     try {
       FileObject fileObject = KettleVFS
         .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection() ) );
+      if ( !fileObject.exists() ) {
+        return null;
+      }
       if ( fileObject.getType().equals( FileType.FOLDER ) ) {
         return VFSDirectory.create( null, fileObject, null );
       } else {
