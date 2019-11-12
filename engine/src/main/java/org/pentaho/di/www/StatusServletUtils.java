@@ -22,18 +22,26 @@
 
 package org.pentaho.di.www;
 
+import org.pentaho.ui.xul.util.XmlParserFactoryProducer;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.Optional;
 
 public class StatusServletUtils {
 
-  public static final String RESOURCES_PATH = "/content/common-ui/resources/themes";
-  public static final String STATIC_PATH = "/static";
+  @SuppressWarnings( "squid:S1075" ) public static final String RESOURCES_PATH = "/content/common-ui/resources/themes";
+  @SuppressWarnings( "squid:S1075" ) public static final String STATIC_PATH = "/static";
   public static final String PENTAHO_ROOT = "/pentaho";
+  public static final String LINK_HTML_PREFIX = "<link rel=\"stylesheet\" type=\"text/css\" href=\"";
 
+  private StatusServletUtils() {
+  }
+
+  @SuppressWarnings( "javasecurity:S2083" )
+  // root is ultimately derived from the servlet uri, which must be correct otherwise we couldn't have ended up here
   public static String getPentahoStyles( String root ) {
     StringBuilder sb = new StringBuilder();
     String themeName = "ruby"; // default pentaho theme
@@ -53,7 +61,7 @@ public class StatusServletUtils {
         relativePathSeparator = ".." + File.separator;
       }
 
-      DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory dbFactory = XmlParserFactoryProducer.createSecureDocBuilderFactory();
       DocumentBuilder db = dbFactory.newDocumentBuilder();
       Document doc = db.parse( f );
       themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
@@ -64,7 +72,7 @@ public class StatusServletUtils {
           + "common-ui" + File.separator + "resources" + File.separator
           + "themes" + File.separator + themeName + File.separator;
       File themeDir = new File( themeDirStr );
-      for ( File fName : themeDir.listFiles() ) {
+      for ( File fName : Optional.ofNullable( themeDir.listFiles() ).orElse( new File[0] ) ) {
         if ( fName.getName().contains( ".css" ) ) {
           themeCss = fName.getName();
           break;
@@ -78,7 +86,7 @@ public class StatusServletUtils {
       String mantleThemeDirStr = relativePathSeparator + "webapps" + root + File.separator + "mantle" + File.separator
           + "themes" + File.separator + themeName + File.separator;
       File mantleThemeDir = new File( mantleThemeDirStr );
-      for ( File fName : mantleThemeDir.listFiles() ) {
+      for ( File fName : Optional.ofNullable( mantleThemeDir.listFiles() ).orElse( new File[0] ) ) {
         if ( fName.getName().contains( ".css" ) ) {
           mantleThemeCss = fName.getName();
           break;
@@ -88,11 +96,11 @@ public class StatusServletUtils {
       // log here
     }
 
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + root
-      + "/content/common-ui/resources/themes/" + themeName + "/" + themeCss + "\"/>" );
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + root
-      + "/mantle/themes/" + themeName + "/" + mantleThemeCss + "\"/>" );
-    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + root + "/mantle/MantleStyle.css\"/>" );
+    sb.append( LINK_HTML_PREFIX ).append( root ).append( "/content/common-ui/resources/themes/" ).append( themeName )
+      .append( "/" ).append( themeCss ).append( "\"/>" );
+    sb.append( LINK_HTML_PREFIX ).append( root ).append( "/mantle/themes/" ).append( themeName ).append( "/" )
+      .append( mantleThemeCss ).append( "\"/>" );
+    sb.append( LINK_HTML_PREFIX ).append( root ).append( "/mantle/MantleStyle.css\"/>" );
     return sb.toString();
   }
 }
