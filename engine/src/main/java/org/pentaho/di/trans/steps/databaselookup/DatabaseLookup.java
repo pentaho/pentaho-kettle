@@ -174,8 +174,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       // Only verify the data types if the data comes from the DB, NOT when we have a cache hit
       // In that case, we already know the data type is OK.
       if ( !cacheHit ) {
-        incrementLinesInput();
-
+        incrementLines();
         int[] types = meta.getReturnValueDefaultType();
 
         // The assumption here is that the types are in the same order
@@ -206,6 +205,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     }
 
     return outputRow;
+  }
+
+  @VisibleForTesting
+  void incrementLines() {
+    if ( !getStepMeta().isClustered() || ( getStepMeta().isClustered() && !getTrans().isExecutingClustered() ) ) {
+      incrementLinesInput();
+    }
   }
 
   // visible for testing purposes

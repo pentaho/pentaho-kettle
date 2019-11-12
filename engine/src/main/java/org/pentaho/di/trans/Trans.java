@@ -555,6 +555,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   private ExecutorService heartbeat = null; // this transformations's heartbeat scheduled executor
 
+  private boolean executingClustered;
+
   /**
    * Instantiates a new transformation.
    */
@@ -5686,6 +5688,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   public boolean isResultRowsSet() {
     return resultRowsSet;
+  }
+
+  public boolean isExecutingClustered() {
+    return executingClustered;
+  }
+
+  public void setExecutingClustered( boolean executingClustered ) {
+    this.executingClustered = executingClustered;
   }
 
   @Override

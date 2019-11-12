@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,11 +35,13 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -439,6 +441,75 @@ public class DatabaseLookupUTest {
 
     assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 1L } ) );
     assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
+  }
+
+  @Test
+  public void testIncrementLinesNotClustered() {
+
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+
+    doCallRealMethod().when( dbLookup ).incrementLines();
+    doReturn( stepMeta ).when( dbLookup ).getStepMeta();
+    doReturn( false ).when( stepMeta ).isClustered();
+
+    dbLookup.incrementLines();
+
+    verify( dbLookup, times( 1 ) ).incrementLinesInput();
+  }
+
+  @Test
+  public void testIncrementLinesClusteredNotRunningClustered() {
+
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    Trans trans = mock( Trans.class );
+
+    doCallRealMethod().when( dbLookup ).incrementLines();
+    doReturn( stepMeta ).when( dbLookup ).getStepMeta();
+    doReturn( trans ).when( dbLookup ).getTrans();
+    doReturn( true ).when( stepMeta ).isClustered();
+    doReturn( false ).when( trans ).isExecutingClustered();
+
+    dbLookup.incrementLines();
+
+    verify( dbLookup, times( 1 ) ).incrementLinesInput();
+  }
+
+  @Test
+  public void testIncrementLinesNotClusteredRunningClustered() {
+
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    Trans trans = mock( Trans.class );
+
+    doCallRealMethod().when( dbLookup ).incrementLines();
+    doReturn( stepMeta ).when( dbLookup ).getStepMeta();
+    doReturn( trans ).when( dbLookup ).getTrans();
+    doReturn( false ).when( stepMeta ).isClustered();
+    doReturn( true ).when( trans ).isExecutingClustered();
+
+    dbLookup.incrementLines();
+
+    verify( dbLookup, times( 1 ) ).incrementLinesInput();
+  }
+
+  @Test
+  public void testIncrementLinesClusteredRunningClustered() {
+
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    Trans trans = mock( Trans.class );
+
+    doCallRealMethod().when( dbLookup ).incrementLines();
+    doReturn( stepMeta ).when( dbLookup ).getStepMeta();
+    doReturn( trans ).when( dbLookup ).getTrans();
+    doReturn( true ).when( stepMeta ).isClustered();
+    doReturn( true ).when( trans ).isExecutingClustered();
+
+    dbLookup.incrementLines();
+
+    verify( dbLookup, times( 0 ) ).incrementLinesInput();
   }
 
   public class MockDatabaseLookup extends DatabaseLookup {
