@@ -239,7 +239,13 @@ define(
         }
 
         function save(filename, folder, currentFilename, override) {
-          select(null, filename, null, folder.path, folder.connection, folder.provider, null);
+          select(JSON.stringify({
+            name: filename,
+            parent: folder.path,
+            connection: folder.connection,
+            provider: folder.provider
+          }));
+
           return $q.resolve();
         }
       }
