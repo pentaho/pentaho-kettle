@@ -200,7 +200,11 @@ define(
           return $q(function(resolve, reject) {
             dt.checkForSecurityOrDupeIssues(folder.path, filename, currentFilename, override ? override : false).then(function(response) {
               if (response.status === 200) {
-                select(null, filename, null, folder.path, null, folder.provider, null);
+                select(JSON.stringify({
+                  name: filename,
+                  parent: folder.path,
+                  provider: folder.provider
+                }));
                 resolve();
               } else {
                 reject();
