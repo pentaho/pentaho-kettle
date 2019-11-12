@@ -324,7 +324,10 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         retval.append( "    " + cachedRowMeta.getMetaXML() );
       }
     } catch ( IOException e ) {
-      throw new RuntimeException( "Unexpected error stored cached row meta data.", e );
+      // [PDI-18401] Changing from RuntimeException to an error log due to the problem of adding an extra/redundant
+      // dialog box. This also affects Hive when an error occurs. For previous Kettle uses, it keeps the same data flow
+      // that would usually occur, but now with added error logging.
+      logError( BaseMessages.getString( PKG, "TableInputMeta.CacheMeta.ErrorStoringCachedRowMetaData" ), e );
     }
   }
 
@@ -336,7 +339,10 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       ProgressNullMonitorListener progressMonitor = new ProgressNullMonitorListener();
       cachedRowMeta = parentStepMeta.getParentTransMeta().getStepFields( parentStepMeta, progressMonitor );
     } catch ( KettleStepException e ) {
-      throw new RuntimeException( "Unexpected error fetching row meta data.", e );
+      // [PDI-18401] Changing from RuntimeException to an error log due to the problem of adding an extra/redundant
+      // dialog box. This also affects Hive when an error occurs. For previous Kettle uses, it keeps the same data flow
+      // that would usually occur, but now with added error logging.
+      logError( BaseMessages.getString( PKG, "TableInputMeta.CacheMeta.ErrorUpdatingCachedRowMetaData" ), e );
     } finally {
       this.cachedRowMetaActive = originalCachedFlag;
     }
