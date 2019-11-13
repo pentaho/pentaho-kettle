@@ -299,7 +299,7 @@ jobGroups:
      - jobID           :  platform-base
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
        directives      :  += -DskipDefault -P platform-base -Djavadoc
-       parallelize     :  true
+       parallelize     :  false
        archivable      :  true
        versionProperty :  platform.version
 
@@ -336,7 +336,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
        directives      :  += -DskipDefault -P highdeps
        root            :  plugins
-       parallelize     :  true
+       parallelize     :  false
        versionProperty :  pdi.version
 
      - jobID           :  pdi-monitoring-plugin
@@ -420,7 +420,7 @@ jobGroups:
      - jobID           :  platform-user-console
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
        directives      :  += -DskipDefault -P platform-user-console -Djavadoc
-       #parallelize     :  true
+       parallelize     :  false
        versionProperty :  platform.version
 
      - jobID           :  big-data-plugin-highdeps
@@ -456,7 +456,7 @@ jobGroups:
 
      - jobID           :  platform-reporting-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-reporting.git
-       #parallelize     :  true
+       parallelize     : false
        versionProperty :  pentaho-reporting-plugin.version
 
   3000:
@@ -713,7 +713,7 @@ jobGroups:
        dockerImage     :  jenkins-build/bitrock-installbuilder-8
        archivable      :  true
        testable        :  false
-       parallelize     :  true
+       parallelize     :  false
        versionProperty :  pentaho.version
 
   # Don't build, only here for branching purposes
