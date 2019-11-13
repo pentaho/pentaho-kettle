@@ -28,9 +28,9 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by bmorrise on 7/9/18.
@@ -38,8 +38,8 @@ import java.util.Map;
 public class RootNode extends TreeNode {
 
   private List<TreeFolderProvider> treeFolderProviders = new ArrayList<>();
-  private Map<AbstractMeta, TreeNode> abstractMetas = new HashMap<>();
-  private Map<AbstractMeta, String> updates = new HashMap<>();
+  private Map<AbstractMeta, TreeNode> abstractMetas = new ConcurrentHashMap<>();
+  private Map<AbstractMeta, String> updates = new ConcurrentHashMap<>();
 
   public RootNode( String label, Image image, boolean expanded ) {
     super( label, image, expanded );
@@ -68,14 +68,25 @@ public class RootNode extends TreeNode {
   public void checkUpdate( AbstractMeta abstractMeta, String filter ) {
     TreeNode treeNode = abstractMetas.get( abstractMeta );
     if ( treeNode != null ) {
-      for ( int i = 0; i < treeFolderProviders.size(); i++ ) {
-        TreeNode childTreeNode = treeNode.getChildren().get( i );
-        treeFolderProviders.get( i ).checkUpdate( abstractMeta, childTreeNode, filter );
-        if ( !Utils.isEmpty( filter ) ) {
-          childTreeNode.setExpanded( true );
+      for ( TreeFolderProvider treeFolderProvider : treeFolderProviders ) {
+        TreeNode childTreeNode = getChildTreeNode( treeNode, treeFolderProvider.getTitle() );
+        if ( childTreeNode != null ) {
+          treeFolderProvider.checkUpdate( abstractMeta, childTreeNode, filter );
+          if ( !Utils.isEmpty( filter ) ) {
+            childTreeNode.setExpanded( true );
+          }
         }
       }
     }
+  }
+
+  private TreeNode getChildTreeNode( TreeNode treeNode, String label ) {
+    for ( TreeNode childTreeNode : treeNode.getChildren() ) {
+      if ( childTreeNode.getLabel().equals( label ) ) {
+        return childTreeNode;
+      }
+    }
+    return null;
   }
 
   public String getNameByType( Class clazz ) {
