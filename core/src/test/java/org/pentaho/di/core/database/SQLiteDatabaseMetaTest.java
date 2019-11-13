@@ -66,6 +66,7 @@ public class SQLiteDatabaseMetaTest {
     assertFalse( nativeMeta.supportsBitmapIndex() );
     assertFalse( nativeMeta.supportsSynonyms() );
     assertFalse( nativeMeta.supportsErrorHandling() );
+    assertFalse( nativeMeta.supportsGetBlob() );
     assertArrayEquals( new String[] { "sqlite-jdbc-3.7.2.jar" }, nativeMeta.getUsedLibraries() );
 
     assertEquals( "\"FOO\".\"BAR\"", nativeMeta.getSchemaTableCombination( "FOO", "BAR" ) );

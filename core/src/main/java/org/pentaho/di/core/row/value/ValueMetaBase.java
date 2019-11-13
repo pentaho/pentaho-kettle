@@ -4909,8 +4909,6 @@ public class ValueMetaBase implements ValueMetaInterface {
             // PDI-6677 - don't call 'length = rm.getColumnDisplaySize(index);'
             length = -1; // keep the length to -1, e.g. for string functions (e.g.
             // CONCAT see PDI-4812)
-          } else if ( databaseMeta.getDatabaseInterface() instanceof SQLiteDatabaseMeta ) {
-            valtype = ValueMetaInterface.TYPE_STRING;
           } else {
             length = -1;
           }
