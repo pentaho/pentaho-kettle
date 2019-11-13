@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Old code, copied from {@linkplain DatabaseLookup}
@@ -73,7 +74,8 @@ public class DefaultCache implements DatabaseLookupData.Cache {
         // Not all conditions are "=" so we are going to have to evaluate row by row
         // A sorted list or index might be a good solution here...
         //
-        for ( RowMetaAndData key : map.keySet() ) {
+        for ( Map.Entry<RowMetaAndData, TimedRow> entry : map.entrySet() ) {
+          final RowMetaAndData key = entry.getKey();
           // Now verify that the key is matching our conditions...
           //
           boolean match = true;
@@ -130,7 +132,7 @@ public class DefaultCache implements DatabaseLookupData.Cache {
             lookupIndex++;
           }
           if ( match ) {
-            TimedRow timedRow = map.get( key );
+            TimedRow timedRow = entry.getValue();
             if ( timedRow != null ) {
               return timedRow.getRow();
             }
