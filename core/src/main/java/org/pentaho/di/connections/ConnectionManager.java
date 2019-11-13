@@ -323,7 +323,7 @@ public class ConnectionManager {
    * @return A boolean whether or not the connection exists
    */
   public boolean exists( String name ) {
-    return getNames().contains( name );
+    return getNames().stream().anyMatch( name::equalsIgnoreCase );
   }
 
   /**
