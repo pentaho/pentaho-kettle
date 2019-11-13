@@ -22,11 +22,11 @@
 package org.pentaho.di.ui.core.events.dialog;
 
 import org.junit.Test;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialog.FilterType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 public class SelectionAdapterOptionsTest {
 
@@ -50,5 +50,66 @@ public class SelectionAdapterOptionsTest {
     opts.setSelectionOperation( SelectionOperation.FOLDER ).setUseSchemaPath( true );
     assertEquals( SelectionOperation.FOLDER, opts.getSelectionOperation() );
     assertTrue( opts.getUseSchemaPath() );
+  }
+
+  @Test
+  public void toStringArray() {
+    FilterType[] filterTypes = new FilterType[] { FilterType.ALL, FilterType.CSV, FilterType.TXT };
+    String[] expectedFilterTypes =  new String[] { "ALL", "CSV", "TXT" };
+    assertArrayEquals( expectedFilterTypes, SelectionAdapterOptions.toStringArray( filterTypes ) );
+  }
+
+  @Test
+  public void setFilters() {
+    FilterType[] filterTypes = new FilterType[] { FilterType.ALL, FilterType.CSV, FilterType.TXT };
+    String[] expectedFilterTypes =  new String[] { "ALL", "CSV", "TXT" };
+
+    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( SelectionOperation.FILE );
+    selectionAdapterOptions.setFilters( filterTypes );
+
+    assertArrayEquals( expectedFilterTypes, selectionAdapterOptions.getFilters() );
+  }
+
+  @Test
+  public void testSelectionAdapterOptions() {
+    SelectionOperation selectionOperation = SelectionOperation.FILE;
+    FilterType[] filterTypes = new FilterType[] { FilterType.ALL, FilterType.CSV, FilterType.TXT };
+    FilterType defaultFilter = FilterType.CSV;
+    String[] providerFilters = new String[] { "local" };
+    boolean useSchemaPath = true;
+    String[] expectedFilterTypes =  new String[] { "ALL", "CSV", "TXT" };
+
+    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( selectionOperation, filterTypes,
+        defaultFilter, providerFilters, useSchemaPath );
+
+    assertEquals( SelectionOperation.FILE, selectionAdapterOptions.getSelectionOperation() );
+    assertArrayEquals( expectedFilterTypes, selectionAdapterOptions.getFilters() );
+    assertEquals( defaultFilter.toString(), selectionAdapterOptions.getDefaultFilter() );
+    assertArrayEquals( providerFilters , selectionAdapterOptions.getProviderFilters() );
+    assertTrue( selectionAdapterOptions.getUseSchemaPath() );
+  }
+
+  @Test
+  public void testSelectionAdapterOptions2() {
+    SelectionOperation selectionOperation = SelectionOperation.FILE;
+    String[] filterTypes =  new String[] { "ALL", "CSV", "TXT" };
+    String defaultFilter = "TXT";
+    String[] providerFilters = new String[] { "local" };
+    boolean useSchemaPath = true;
+
+    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( selectionOperation, filterTypes,
+      defaultFilter, providerFilters, useSchemaPath );
+
+    assertEquals( SelectionOperation.FILE, selectionAdapterOptions.getSelectionOperation() );
+    assertArrayEquals( filterTypes, selectionAdapterOptions.getFilters() );
+    assertEquals( defaultFilter, selectionAdapterOptions.getDefaultFilter() );
+    assertArrayEquals( providerFilters , selectionAdapterOptions.getProviderFilters() );
+    assertTrue( selectionAdapterOptions.getUseSchemaPath() );
+  }
+
+  @Test
+  public void testToString_FilterType() {
+    assertNull( SelectionAdapterOptions.toString( null ) );
+    assertEquals( "TXT", SelectionAdapterOptions.toString( FilterType.TXT ) );
   }
 }

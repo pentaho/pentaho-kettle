@@ -50,7 +50,7 @@ import org.pentaho.di.trans.steps.cubeinput.CubeInputMeta;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
@@ -208,7 +208,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
     // Listen to the Browse... button
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
       new SelectionAdapterOptions( SelectionOperation.FILE,
-        new String[] { FilterType.CUBE.toString(), FilterType.ALL.toString() }, FilterType.CUBE.toString() ) ) );
+        new FilterType[] { FilterType.CUBE, FilterType.ALL }, FilterType.CUBE ) ) );
 
     lsDef = new SelectionAdapter() {
       public void widgetDefaultSelected( SelectionEvent e ) {
