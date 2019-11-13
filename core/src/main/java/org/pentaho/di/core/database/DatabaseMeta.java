@@ -1265,8 +1265,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     final Map<String, String> extraOptions = getExtraOptions();
 
     final Map<String, String> defaultOptions = databaseInterface.getDefaultOptions();
-    for ( String option : defaultOptions.keySet() ) {
-      String value = defaultOptions.get( option );
+    for ( Map.Entry<String, String> entry : defaultOptions.entrySet() ) {
+      String option = entry.getKey();
+      String value = entry.getValue();
       String[] split = option.split( "[.]", 2 );
       if ( !extraOptions.containsKey( option ) && split.length == 2 ) {
         addExtraOption( split[0], split[1], value );

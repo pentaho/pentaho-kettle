@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -126,9 +126,9 @@ public class EnvUtil {
 
   public static void applyKettleProperties( Map<?, ?> kettleProperties, boolean override ) {
     Variables variables = new Variables();
-    for ( Object key : kettleProperties.keySet() ) {
-      String variable = (String) key;
-      String value = variables.environmentSubstitute( (String) kettleProperties.get( key ) );
+    for ( Map.Entry entry : kettleProperties.entrySet() ) {
+      String variable = (String) entry.getKey();
+      String value = variables.environmentSubstitute( (String) entry.getValue() );
       variables.setVariable( variable, value );
     }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -184,8 +184,9 @@ public class StringSearcher {
     Object parentObject, Object grandParentObject, Field field ) {
 
     String fieldName = field.getName();
-    for ( Object key : map.keySet() ) {
-      Object value = map.get( key );
+    for ( Map.Entry entry : map.entrySet() ) {
+      Object value = entry.getValue();
+      Object key = entry.getKey();
       if ( key != null ) {
         stringList.add( new StringSearchResult( key.toString(), parentObject, grandParentObject, fieldName
           + " (Map key)" ) );

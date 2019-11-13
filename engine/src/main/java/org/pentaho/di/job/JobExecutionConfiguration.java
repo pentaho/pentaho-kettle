@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -708,11 +708,8 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
         try {
           TransMeta transMeta = jobEntryTrans.getTransMeta( repository, metaStore, jobMeta );
           Map<String, String> map = transMeta.getUsedArguments( commandLineArguments );
-          for ( String key : map.keySet() ) {
-            String value = map.get( key );
-            if ( !arguments.containsKey( key ) ) {
-              arguments.put( key, value );
-            }
+          for ( Map.Entry<String, String> entry : map.entrySet() ) {
+            arguments.putIfAbsent( entry.getKey(), entry.getValue() );
           }
         } catch ( KettleException ke ) {
           // suppress exceptions at this time - we will let the runtime report on any errors

@@ -271,10 +271,11 @@ public class LoggingRegistry {
 
       ConcurrentHashMap<LogChannelFileWriterBuffer, List<String>> possibleWriters = new ConcurrentHashMap<>();
 
-      for ( String bufferId : this.fileWriterBuffers.keySet() ) {
+      for ( Map.Entry<String, LogChannelFileWriterBuffer> entry : this.fileWriterBuffers.entrySet() ) {
+        final String bufferId = entry.getKey();
         List<String> logChannelChildren = getLogChannelChildren( bufferId );
         if ( logChannelChildren.contains( id ) ) {
-          possibleWriters.put( this.fileWriterBuffers.get( bufferId ), logChannelChildren );
+          possibleWriters.put( entry.getValue(), logChannelChildren );
         }
       }
 

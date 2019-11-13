@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -226,9 +226,8 @@ public class TransformationResource {
       // Also copy the parameters over...
       //
       Map<String, String> params = transExecutionConfiguration.getParams();
-      for ( String param : params.keySet() ) {
-        String value = params.get( param );
-        transMeta.setParameterValue( param, value );
+      for ( Map.Entry<String, String> entry : params.entrySet() ) {
+        transMeta.setParameterValue( entry.getKey(), entry.getValue() );
       }
 
       // If there was a repository, we know about it at this point in time.
