@@ -33,7 +33,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.events.dialog.extension.ExtensionPointWrapper;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;

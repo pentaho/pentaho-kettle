@@ -70,14 +70,6 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   private final ExtensionPointWrapper extensionPointWrapper;
   private final SelectionAdapterOptions options;
 
-  /**
-   * Filter option to allow all file types.
-   * Defined in javascript section of code in json file.
-   */
-  public enum FilterType {
-    ALL, CSV, CUBE, JSON, KETTLE_FILES, TXT
-  }
-
   public SelectionAdapterFileDialog( LogChannelInterface log, T textWidget, AbstractMeta meta,
                                      SelectionAdapterOptions options, RepositoryUtility repositoryUtility,
                                      ExtensionPointWrapper extensionPointWrapper  ) {
