@@ -22,27 +22,31 @@
 
 package org.pentaho.di.www;
 
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.ui.xul.util.XmlParserFactoryProducer;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
-public class StatusServletUtils {
+class StatusServletUtils {
 
-  @SuppressWarnings( "squid:S1075" ) public static final String RESOURCES_PATH = "/content/common-ui/resources/themes";
-  @SuppressWarnings( "squid:S1075" ) public static final String STATIC_PATH = "/static";
-  public static final String PENTAHO_ROOT = "/pentaho";
-  public static final String LINK_HTML_PREFIX = "<link rel=\"stylesheet\" type=\"text/css\" href=\"";
+  @SuppressWarnings( "squid:S1075" ) static final String RESOURCES_PATH = "/content/common-ui/resources/themes";
+  @SuppressWarnings( "squid:S1075" ) static final String STATIC_PATH = "/static";
+  static final String PENTAHO_ROOT = "/pentaho";
+  private static final String LINK_HTML_PREFIX = "<link rel=\"stylesheet\" type=\"text/css\" href=\"";
 
   private StatusServletUtils() {
   }
 
   @SuppressWarnings( "javasecurity:S2083" )
   // root is ultimately derived from the servlet uri, which must be correct otherwise we couldn't have ended up here
-  public static String getPentahoStyles( String root ) {
+  static String getPentahoStyles( String root ) {
     StringBuilder sb = new StringBuilder();
     String themeName = "ruby"; // default pentaho theme
     String themeCss = "globalRuby.css";
@@ -53,7 +57,7 @@ public class StatusServletUtils {
 
       // Read in currently set theme from pentaho.xml file
       String themeSetting = relativePathSeparator
-          + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
+        + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
       File f = new File( themeSetting );
 
       // Check if file exists (may be different location depending on how server was started)
@@ -68,11 +72,11 @@ public class StatusServletUtils {
 
       // Get theme CSS file
       String themeDirStr = relativePathSeparator
-          + "pentaho-solutions" + File.separator + "system" + File.separator
-          + "common-ui" + File.separator + "resources" + File.separator
-          + "themes" + File.separator + themeName + File.separator;
+        + "pentaho-solutions" + File.separator + "system" + File.separator
+        + "common-ui" + File.separator + "resources" + File.separator
+        + "themes" + File.separator + themeName + File.separator;
       File themeDir = new File( themeDirStr );
-      for ( File fName : Optional.ofNullable( themeDir.listFiles() ).orElse( new File[0] ) ) {
+      for ( File fName : Optional.ofNullable( themeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
         if ( fName.getName().contains( ".css" ) ) {
           themeCss = fName.getName();
           break;
@@ -84,16 +88,16 @@ public class StatusServletUtils {
 
       // Get mantle theme CSS file
       String mantleThemeDirStr = relativePathSeparator + "webapps" + root + File.separator + "mantle" + File.separator
-          + "themes" + File.separator + themeName + File.separator;
+        + "themes" + File.separator + themeName + File.separator;
       File mantleThemeDir = new File( mantleThemeDirStr );
-      for ( File fName : Optional.ofNullable( mantleThemeDir.listFiles() ).orElse( new File[0] ) ) {
+      for ( File fName : Optional.ofNullable( mantleThemeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
         if ( fName.getName().contains( ".css" ) ) {
           mantleThemeCss = fName.getName();
           break;
         }
       }
-    } catch ( Exception ex ) {
-      // log here
+    } catch ( ParserConfigurationException | IOException | SAXException e ) {
+      LogChannel.GENERAL.logError( e.getMessage(), e );
     }
 
     sb.append( LINK_HTML_PREFIX ).append( root ).append( "/content/common-ui/resources/themes/" ).append( themeName )

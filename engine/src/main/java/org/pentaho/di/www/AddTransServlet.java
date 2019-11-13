@@ -22,6 +22,7 @@
 
 package org.pentaho.di.www;
 
+import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelFileWriter;
@@ -47,7 +48,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//has been replaced by RegisterTransServlet
+/**
+ * @deprecated has been replaced by RegisterTransServlet
+ */
 @Deprecated
 public class AddTransServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = -6850701762586992604L;
@@ -60,6 +63,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
   public AddTransServlet( TransformationMap transformationMap, SocketRepository socketRepository ) {
     super( transformationMap, socketRepository );
   }
+
   /**
 
     <div id="mindtouch">
@@ -263,7 +267,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
         } );
       }
 
-      String message = "Transformation '" + trans.getName() + "' was added to Carte with id " + carteObjectId;
+      String message =
+        Encode.forHtml( "Transformation '" + trans.getName() + "' was added to Carte with id " + carteObjectId );
 
       if ( useXML ) {
         // Return the log channel id as well
@@ -272,7 +277,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       } else {
         out.println( "<H1>" + message + "</H1>" );
         out.println( "<p><a href=\""
-          + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name=" + trans.getName() + "&id="
+          + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name=" + Encode.forUriComponent( trans.getName() ) + "&id="
           + carteObjectId + "\">Go to the transformation status page</a><p>" );
       }
     } catch ( Exception ex ) {

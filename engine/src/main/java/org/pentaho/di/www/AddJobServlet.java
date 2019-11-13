@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.www;
 
+import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -46,7 +47,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//has been replaced by RegisterJobServlet
+/**
+ * @deprecated has been replaced by RegisterJobServlet
+ */
 @Deprecated
 public class AddJobServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = -6850701762586992604L;
@@ -188,8 +191,6 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
 
       // Parse the XML, create a job configuration
       //
-      // System.out.println(xml);
-      //
       JobConfiguration jobConfiguration = JobConfiguration.fromXML( xml.toString() );
       JobMeta jobMeta = jobConfiguration.getJobMeta();
       JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
@@ -225,11 +226,11 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       for ( int idx = 0; idx < parameterNames.length; idx++ ) {
         // Grab the parameter value set in the job entry
         //
-        String thisValue = jobExecutionConfiguration.getParams().get( parameterNames[idx] );
+        String thisValue = jobExecutionConfiguration.getParams().get( parameterNames[ idx ] );
         if ( !Utils.isEmpty( thisValue ) ) {
           // Set the value as specified by the user in the job entry
           //
-          jobMeta.setParameterValue( parameterNames[idx], thisValue );
+          jobMeta.setParameterValue( parameterNames[ idx ], thisValue );
         }
       }
       jobMeta.activateParameters();
@@ -256,20 +257,23 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       //
       if ( repository != null ) {
         job.addJobListener( new JobAdapter() {
+          @Override
           public void jobFinished( Job job ) {
             repository.disconnect();
           }
         } );
       }
 
-      String message = "Job '" + job.getJobname() + "' was added to the list with id " + carteObjectId;
-
+      String message =
+        Encode.forHtml( "Job '" + job.getJobname() + "' was added to the list with id " + carteObjectId );
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_OK, message, carteObjectId ) );
       } else {
         out.println( "<H1>" + message + "</H1>" );
         out.println( "<p><a href=\""
-          + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name=" + job.getJobname() + "&id="
+          + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name=" + Encode
+          .forUriComponent( job.getJobname() )
+          + "&id="
           + carteObjectId + "\">Go to the job status page</a><p>" );
       }
     } catch ( Exception ex ) {
@@ -295,12 +299,12 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       return null;
     }
 
-    String[] argNames = arguments.keySet().toArray( new String[arguments.size()] );
+    String[] argNames = arguments.keySet().toArray( new String[ arguments.size() ] );
     Arrays.sort( argNames );
 
-    String[] values = new String[argNames.length];
+    String[] values = new String[ argNames.length ];
     for ( int i = 0; i < argNames.length; i++ ) {
-      values[i] = arguments.get( argNames[i] );
+      values[ i ] = arguments.get( argNames[ i ] );
     }
 
     return values;
