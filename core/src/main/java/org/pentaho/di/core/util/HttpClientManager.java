@@ -65,7 +65,9 @@ public class HttpClientManager {
   }
 
   public CloseableHttpClient createDefaultClient() {
-    return HttpClients.custom().setConnectionManager( manager )
+    return HttpClients.custom()
+      .setConnectionManager( manager )
+      .setConnectionManagerShared( true )
       .build();
   }
 
