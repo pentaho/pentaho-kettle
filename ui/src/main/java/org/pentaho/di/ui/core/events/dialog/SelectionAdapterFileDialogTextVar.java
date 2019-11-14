@@ -23,9 +23,16 @@ package org.pentaho.di.ui.core.events.dialog;
 
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.ui.core.events.dialog.extension.ExtensionPointWrapper;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 public class SelectionAdapterFileDialogTextVar extends SelectionAdapterFileDialog<TextVar> {
+
+  SelectionAdapterFileDialogTextVar( LogChannelInterface log, TextVar textUiWidget, AbstractMeta meta,
+                                     SelectionAdapterOptions options, RepositoryUtility repositoryUtility,
+                                     ExtensionPointWrapper extensionPointWrapper ) {
+    super( log, textUiWidget, meta, options, repositoryUtility, extensionPointWrapper );
+  }
 
   public SelectionAdapterFileDialogTextVar( LogChannelInterface log, TextVar textUiWidget, AbstractMeta meta,
                                             SelectionAdapterOptions options ) {
