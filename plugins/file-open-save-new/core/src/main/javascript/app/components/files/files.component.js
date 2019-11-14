@@ -53,7 +53,7 @@ define([
     controller: filesController
   };
 
-  filesController.$inject = [clipboardService.name, "$timeout", "$filter", "$document", "$scope"];
+  filesController.$inject = [clipboardService.name, "$timeout", "$filter", "$document", "$scope", "$state"];
 
   /**
    * The Files Controller.
@@ -63,7 +63,7 @@ define([
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    * @param $filter
    */
-  function filesController(clipboardService, $timeout, $filter, $document, $scope) {
+  function filesController(clipboardService, $timeout, $filter, $document, $scope, $state) {
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
@@ -95,6 +95,7 @@ define([
     vm.errorType = 0;
     vm.onKeyDown = onKeyDown;
     vm.onKeyUp = onKeyUp;
+    vm.state = $state;
     vm.highlighted = [];
     var targetFiles = [];
 
@@ -540,6 +541,11 @@ define([
     }
 
     function fileFilter(file) {
+
+      if (vm.state.is('selectFolder')) {
+        return file.type === "folder"
+      }
+
       if (!vm.filter) {
         return true;
       }

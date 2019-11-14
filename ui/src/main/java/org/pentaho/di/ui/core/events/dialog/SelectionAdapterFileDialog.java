@@ -68,7 +68,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   private final AbstractMeta meta;
   private final RepositoryUtility repositoryUtility;
   private final ExtensionPointWrapper extensionPointWrapper;
-  private final SelectionAdapterOptions options;
+  private SelectionAdapterOptions options;
 
   public SelectionAdapterFileDialog( LogChannelInterface log, T textWidget, AbstractMeta meta,
                                      SelectionAdapterOptions options, RepositoryUtility repositoryUtility,
@@ -111,6 +111,22 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
    * @param text text to be set
    */
   protected abstract void setText( String text );
+
+  /**
+   * Setter for SelectionAdapterOptions
+   * @param options
+   */
+  void setSelectionOptions( SelectionAdapterOptions options ) {
+    this.options = options;
+  }
+
+  /**
+   * Getter for SelectionAdapterOptions
+   * @return
+   */
+  SelectionAdapterOptions getSelectionOptions( ) {
+    return options;
+  }
 
 
   private void widgetSelectedHelper( ) {

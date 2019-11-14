@@ -150,16 +150,13 @@ define([
       $timeout(function () {
         var state = $state.current.name;
         vm.headerTitle = i18n.get("file-open-save-plugin.app.header." + state + ".title");
-        if (!$state.is('selectFolder')) {
-          dt.getDirectoryTree(undefined).then(function(response) {
-            _populateTree(response);
-            _init();
-          });
-          dt.getRecentFiles().then(_populateRecentFiles);
-          vm.showRecents = true;
-        } else {
-          dt.getDirectoryTree(undefined).then(_populateTree);
-        }
+        dt.getDirectoryTree(undefined).then(function(response) {
+          _populateTree(response);
+          _init();
+        });
+        dt.getRecentFiles().then(_populateRecentFiles);
+        vm.showRecents = true;
+
         dt.getRecentSearches().then(_populateRecentSearches);
         vm.loading = false;
       });
@@ -387,11 +384,19 @@ define([
      * Called when user clicks "Open"
      */
     function onOpenClick() {
-      if (fileService.files.length === 1 && fileService.files[0].type === "folder") {
-        vm.searchString = "";
-        selectFolder(fileService.files[0]);
-      } else if (fileService.files.length === 1) {
-        _open(fileService.files[0]);
+      if (fileService.files.length === 1) {
+        // If something is selected either open the folder or return it depending on state
+        if (fileService.files[0].type === "folder" && !$state.is("selectFolder")) {
+          vm.searchString = "";
+          selectFolder(fileService.files[0]);
+        } else {
+          _open(fileService.files[0]);
+        }
+      } else {
+        // Nothing is selected return the folder path if in Select Folder state
+        if ($state.is("selectFolder")) {
+          _open(folderService.folder)
+        }
       }
     }
 

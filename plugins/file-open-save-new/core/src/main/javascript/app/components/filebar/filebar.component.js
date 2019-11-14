@@ -136,7 +136,7 @@ define([
     function _isDisabled() {
       var enabled = true;
       if (vm.state.is('selectFolder')) {
-        enabled = _hasFileType(vm.selectedFile) && _isFolder(vm.selectedFile);
+        enabled = _isFolder(vm.selectedFile);
       } else if (vm.state.is('selectFile')) {
         enabled = _hasFileType(vm.selectedFile) && !_isFolder(vm.selectedFile);
       } else if (vm.state.is('open')) {
