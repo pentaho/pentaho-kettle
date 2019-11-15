@@ -62,7 +62,7 @@ public class FileBrowserEndpoint {
   @Path( "/loadDirectoryTree{filter : (/filter)?}" )
   @Produces( { MediaType.APPLICATION_JSON } )
   public Response loadDirectoryTree( @PathParam( "filter" ) String filter ) {
-    List<Tree> trees = fileController.load();
+    List<Tree> trees = fileController.load( filter );
     return Response.ok( trees ).build();
   }
 

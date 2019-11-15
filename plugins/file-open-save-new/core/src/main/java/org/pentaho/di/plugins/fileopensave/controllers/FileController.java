@@ -22,21 +22,23 @@
 
 package org.pentaho.di.plugins.fileopensave.controllers;
 
+import org.pentaho.di.core.util.Utils;
+
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Result;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
-import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileNotFoundException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -71,11 +73,25 @@ public class FileController {
       .orElseThrow( InvalidFileProviderException::new );
   }
 
-  public List<Tree> load() {
+  List<Tree> load() {
+    return load( null );
+  }
+
+  public List<Tree> load( String filter ) {
     List<Tree> trees = new ArrayList<>();
-    for ( FileProvider fileProvider : fileProviders ) {
-      if ( fileProvider.isAvailable() ) {
-        trees.add( fileProvider.getTree() );
+    List<String> filters = !Utils.isEmpty( filter ) ? Arrays.asList( filter.split( "[,]" ) ) : null;
+    // If there are no filters or all filters, load all available providers. Else load only providers found in filter
+    if ( filters == null || filters.contains( ProviderFilterType.ALL_PROVIDERS.toString() ) ) {
+      for ( FileProvider fileProvider : fileProviders ) {
+        if ( fileProvider.isAvailable() ) {
+          trees.add( fileProvider.getTree() );
+        }
+      }
+    } else {
+      for ( FileProvider fileProvider : fileProviders ) {
+        if ( fileProvider.isAvailable() && filters.contains( fileProvider.getType() ) ) {
+          trees.add( fileProvider.getTree() );
+        }
       }
     }
     return trees;

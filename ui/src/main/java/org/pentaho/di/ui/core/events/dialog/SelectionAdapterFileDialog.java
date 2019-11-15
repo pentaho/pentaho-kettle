@@ -147,7 +147,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
 
       try {
         fileDialogOperation = constructFileDialogOperation( options.getSelectionOperation(), initialFilePath,
-          initialFile, options.getFilters() );
+          initialFile, options.getFilters(), options.getProviderFilters() );
 
         // open dialog
         extensionPointWrapper.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveNew.id, fileDialogOperation );
@@ -166,7 +166,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   private FileDialogOperation constructFileDialogOperation( SelectionOperation selectionOperation, String initialFilePath,
-                                                              FileObject initialFile, String[] filter ) throws KettleException {
+                                                              FileObject initialFile, String[] filter,
+                                                              String[] providerFilters ) throws KettleException {
     FileDialogOperation fileDialogOperation = createFileDialogOperation( selectionOperation );
     setProvider( fileDialogOperation );
 
@@ -182,6 +183,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     }
 
     setFilter( fileDialogOperation, filter );
+    setProviderFilters( fileDialogOperation, providerFilters );
     fileDialogOperation.setDefaultFilter( options.getDefaultFilter() );
     fileDialogOperation.setUseSchemaPath( options.getUseSchemaPath() );
 
@@ -232,6 +234,21 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         : String.join( ",", cleanedFilters );
 
     fileDialogOperation.setFilter( filterString );
+  }
+
+  /**
+   * Helper function for {@link FileDialogOperation#setProviderFilter} . Blank entries in <code>setProviderFilter</code> will be removed.
+   * If a "blank" array is entered, the less restrictive filters option {ProviderFilterType.ALL_PROVIDERS} will be applied.
+   * @param fileDialogOperation - FileDialogOperation
+   * @param providerFilters - Array of providerFilters
+   */
+  private void setProviderFilters( FileDialogOperation fileDialogOperation, String[] providerFilters ) {
+    String[] cleanedFilters = cleanFilters( providerFilters );
+    String providerFilterString = ArrayUtils.isEmpty( cleanedFilters )
+      ? ProviderFilterType.ALL_PROVIDERS.toString()
+      : String.join( ",", cleanedFilters );
+
+    fileDialogOperation.setProviderFilter( providerFilterString );
   }
 
   /**
