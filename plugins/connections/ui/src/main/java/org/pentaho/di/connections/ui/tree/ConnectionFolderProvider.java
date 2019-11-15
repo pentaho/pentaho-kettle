@@ -22,19 +22,13 @@
 
 package org.pentaho.di.connections.ui.tree;
 
-import org.eclipse.swt.graphics.Image;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
-import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
-
-import java.util.function.Supplier;
 
 /**
  * Created by bmorrise on 7/6/18.
@@ -44,7 +38,6 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
   private static final Class<?> PKG = ConnectionFolderProvider.class;
   public static final String STRING_VFS_CONNECTIONS = BaseMessages.getString( PKG, "VFSConnectionsTree.Title" );
   private ConnectionManager connectionManager;
-  private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
   public ConnectionFolderProvider( MetastoreLocator metastoreLocator ) {
     this.connectionManager = ConnectionManager.getInstance();
@@ -64,11 +57,5 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
   @Override
   public String getTitle() {
     return STRING_VFS_CONNECTIONS;
-  }
-
-  @Override protected Image getTreeImage() {
-    return SwtSvgImageUtil
-      .getImage( spoonSupplier.get().getShell().getDisplay(), getClass().getClassLoader(), "images/environments.svg",
-        ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
   }
 }

@@ -73,11 +73,17 @@ define(
             if (fileutil.isWindows(path)) {
               path = fileutil.convertWindowsPath(path);
             }
+            if (path && path.indexOf("file://") === 0) {
+              path = path.replace("file://", "");
+            }
             resolve(varRoot + path);
           });
         }
 
         function matchPath(path) {
+          if (path && path.indexOf("file://") === 0) {
+            return 1;
+          }
           var isUnix = fileutil.isUnix(path);
           var isWindows = fileutil.isWindows(path);
           return (isUnix || isWindows) ? 1 : 0;
@@ -109,6 +115,7 @@ define(
             path: _getTreePath(file)
           };
         }
+
 
         function _getTreePath(folder) {
           if (!folder.path) {
