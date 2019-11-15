@@ -299,7 +299,7 @@ jobGroups:
      - jobID           :  platform-base
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
        directives      :  += -DskipDefault -P platform-base -Djavadoc
-       parallelize     :  false
+       parallelize     :  true
        archivable      :  true
        versionProperty :  platform.version
 
@@ -456,7 +456,7 @@ jobGroups:
 
      - jobID           :  platform-reporting-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-reporting.git
-       parallelize     : false
+       parallelize     :  false
        versionProperty :  pentaho-reporting-plugin.version
 
   3000:
@@ -713,7 +713,7 @@ jobGroups:
        dockerImage     :  jenkins-build/bitrock-installbuilder-8
        archivable      :  true
        testable        :  false
-       parallelize     :  false
+       parallelize     :  true
        versionProperty :  pentaho.version
 
   # Don't build, only here for branching purposes
