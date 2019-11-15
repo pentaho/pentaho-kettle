@@ -39,7 +39,9 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.events.dialog.extension.ExtensionPointWrapper;
 import org.pentaho.di.ui.core.events.dialog.extension.SpoonOpenExtensionPointWrapper;
+import org.pentaho.platform.api.ui.UIException;
 
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -173,6 +175,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
 
     if ( initialFile != null ) {
       // Attempt to set path and dir based on File object
+      fileDialogOperation.setFilename( initialFile.getName().getBaseName() );
       setPath( fileDialogOperation, initialFile, initialFilePath );
       setStartDir( fileDialogOperation, initialFile, initialFilePath );
     }
@@ -195,9 +198,22 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   FileDialogOperation createFileDialogOperation( SelectionOperation selectionOperation ) {
-    String selectOperation = selectionOperation == SelectionOperation.FILE
-        ? FileDialogOperation.SELECT_FILE
-        : FileDialogOperation.SELECT_FOLDER;
+
+    String selectOperation;
+    switch ( selectionOperation ) {
+      case FILE:
+        selectOperation = FileDialogOperation.SELECT_FILE;
+        break;
+      case FOLDER:
+        selectOperation = FileDialogOperation.SELECT_FOLDER;
+        break;
+      case SAVE:
+        selectOperation = FileDialogOperation.SAVE;
+        break;
+      default:
+        throw new UIException( "Unsupported selection operation.  Should never happen." );
+    }
+
     return new FileDialogOperation( selectOperation, FileDialogOperation.ORIGIN_SPOON );
   }
 
@@ -271,15 +287,21 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   private String constructPath( FileDialogOperation fileDialogOperation ) {
-    String path;
+
     try {
-      path = fileDialogOperation.isProviderRepository( )
-        ? getRepositoryFilePath( fileDialogOperation )
-        : fileDialogOperation.getPath();
+      if ( fileDialogOperation.isProviderRepository() ) {
+        return getRepositoryFilePath( fileDialogOperation );
+      } else {
+        if ( fileDialogOperation.getCommand().equals( FileDialogOperation.SAVE ) ) {
+          return fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
+        } else {
+          return fileDialogOperation.getPath();
+        }
+      }
     } catch ( Exception e ) {
-      path = null;
+      return null;
     }
-    return path;
+
   }
 
   String getRepositoryFilePath( FileDialogOperation fileDialogOperation ) {
