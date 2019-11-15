@@ -173,9 +173,12 @@ define([
 
       if (path && path !== "undefined") {
         vm.autoExpand = true;
-        openPath(path, $location.search());
+        openPath(path, $location.search()).then(function() {
+          _setFileToSaveName();
+        });
+      } else {
+        _setFileToSaveName();
       }
-      _setFileToSaveName();
     }
 
     /**
@@ -291,20 +294,24 @@ define([
     }
 
     function openPath(path, properties) {
-      vm.fileLoading = true;
-      vm.showRecents = false;
-      folderService.openPath(path, properties).then(function() {
-        vm.fileLoading = false;
-        _update();
-      }, function(error) {
-        vm.fileLoading = false;
-        if (error) {
-          modalService.open("error-dialog", error.title, error.message).then(function () {
+      return $q(function(resolve) {
+        vm.fileLoading = true;
+        vm.showRecents = false;
+        folderService.openPath(path, properties).then(function() {
+          vm.fileLoading = false;
+          _update();
+          resolve();
+        }, function(error) {
+          vm.fileLoading = false;
+          if (error) {
+            modalService.open("error-dialog", error.title, error.message).then(function () {
+              _resetFolder();
+            });
+          } else {
             _resetFolder();
-          });
-        } else {
-          _resetFolder();
-        }
+          }
+          resolve();
+        });
       });
     }
 

@@ -140,12 +140,25 @@ public class ConnectionManager {
    */
   @SuppressWarnings( "unchecked" )
   public <T extends ConnectionDetails> boolean save( IMetaStore metaStore, T connectionDetails ) {
+    return save( metaStore, connectionDetails, true );
+  }
+
+  /**
+   * Save a named connection to a specific meta store
+   *
+   * @param metaStore         A meta store
+   * @param connectionDetails The named connection details to save
+   * @param prepare           Prepare the named connection
+   * @return A boolean signifying the success of the save operation
+   */
+  @SuppressWarnings( "unchecked" )
+  public <T extends ConnectionDetails> boolean save( IMetaStore metaStore, T connectionDetails, boolean prepare ) {
     if ( connectionDetails.getType() == null ) {
       return false;
     }
     ConnectionProvider<T> connectionProvider =
       (ConnectionProvider<T>) connectionProviders.get( connectionDetails.getType() );
-    if ( connectionProvider.prepare( connectionDetails ) == null ) {
+    if ( prepare && connectionProvider.prepare( connectionDetails ) == null ) {
       return false;
     }
     if ( !saveElement( getMetaStoreFactory( metaStore, (Class<T>) connectionDetails.getClass() ),
@@ -518,7 +531,7 @@ public class ConnectionManager {
     for ( String sourceName : sourceNames ) {
       if ( !destinationNames.contains( sourceName ) ) {
         ConnectionDetails connectionDetails = getConnectionDetails( sourceMetaStore, sourceName );
-        save( destinationMetaStore, connectionDetails );
+        save( destinationMetaStore, connectionDetails, false );
       }
     }
   }

@@ -138,12 +138,12 @@ define(
         }
 
         function _getTreePath(folder) {
-          if (!folder.path) {
+          if (!folder.parent) {
             return folder.root ? folder.root + "/" + folder.name : folder.name;
           }
-          var path = _justThePath(folder.path);
+          var path = _justThePath(folder.connectionPath ? folder.connectionPath : folder.path);
           if (folder.connection) {
-            return folder.root + "/" + (folder.connection ? folder.connection + "/" : "") + path;
+            return folder.root + "/" + path;
           }
           return path;
         }
@@ -155,7 +155,7 @@ define(
           if ($location.search().useSchema && $location.search().useSchema.toLowerCase() === "true") {
             return file.path ? file.path : null;
           }
-          return file.connectionPath ? file.connectionPath : null;
+          return file.connectionPath ? file.connectionPath : file.path;
         }
 
         /**

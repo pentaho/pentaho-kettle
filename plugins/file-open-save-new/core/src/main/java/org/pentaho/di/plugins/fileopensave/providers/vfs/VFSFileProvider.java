@@ -63,6 +63,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
   public static final String NAME = "VFS Connections";
   public static final String TYPE = "vfs";
+  public static final String DOMAIN_ROOT = "[\\w]+://";
 
   private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
   private Map<String, List<VFSFile>> roots = new HashMap<>();
@@ -102,6 +103,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         vfsLocation.setRoot( NAME );
         vfsLocation.setHasChildren( true );
         vfsLocation.setCanDelete( true );
+        vfsLocation.setPath( connectionDetails.getType() + "://" + connectionDetails.getDomain() );
+        vfsLocation.setDomain( connectionDetails.getDomain() );
         vfsLocation.setConnection( connectionDetails.getName() );
         vfsTree.addChild( vfsLocation );
       }
@@ -114,7 +117,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    * @param file
    * @return
    */
-  private List<VFSFile> getRoot( VFSFile file ) throws FileNotFoundException {
+  private List<VFSFile> getRoot( VFSFile file ) throws FileException {
     if ( this.roots.containsKey( file.getConnection() ) ) {
       return this.roots.get( file.getConnection() );
     }
@@ -139,6 +142,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       vfsDirectory.setDate( root.getModifiedDate() );
       vfsDirectory.setHasChildren( true );
       vfsDirectory.setCanAddChildren( true );
+      vfsDirectory.setDomain( vfsConnectionDetails.getDomain() );
       vfsDirectory.setConnection( vfsConnectionDetails.getName() );
       vfsDirectory.setPath( vfsConnectionProvider.getProtocol( vfsConnectionDetails ) + "://" + root.getName() );
       vfsDirectory.setRoot( NAME );
@@ -155,7 +159,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    */
   @Override
   public List<VFSFile> getFiles( VFSFile file, String filters ) throws FileException {
-    if ( file.getPath() == null ) {
+    if ( file.getPath().matches( DOMAIN_ROOT ) ) {
       return getRoot( file );
     }
     FileObject fileObject;
@@ -210,10 +214,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       FileObject[] children = getChildren( fileObject );
       for ( FileObject child : children ) {
         if ( hasChildren( child ) ) {
-          files.add( VFSDirectory.create( parent.getPath(), child, parent.getConnection() ) );
+          files.add( VFSDirectory.create( parent.getPath(), child, parent.getConnection(), parent.getDomain() ) );
         } else {
           if ( child != null && Utils.matches( child.getName().getBaseName(), filters ) ) {
-            files.add( VFSFile.create( parent.getPath(), child, parent.getConnection() ) );
+            files.add( VFSFile.create( parent.getPath(), child, parent.getConnection(), parent.getDomain() ) );
           }
         }
       }
@@ -229,9 +233,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         return null;
       }
       if ( fileObject.getType().equals( FileType.FOLDER ) ) {
-        return VFSDirectory.create( null, fileObject, null );
+        return VFSDirectory.create( null, fileObject, null, file.getDomain() );
       } else {
-        return VFSFile.create( null, fileObject, null );
+        return VFSFile.create( null, fileObject, null, file.getDomain() );
       }
     } catch ( KettleFileException | FileSystemException e ) {
       // File does not exist
@@ -270,7 +274,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
           VFSHelper.getOpts( folder.getPath(), folder.getConnection() ) );
       fileObject.createFolder();
       String parent = folder.getPath().substring( 0, folder.getPath().length() - 1 );
-      return VFSDirectory.create( parent, fileObject, folder.getConnection() );
+      return VFSDirectory.create( parent, fileObject, folder.getConnection(), folder.getDomain() );
     } catch ( KettleFileException | FileSystemException ignored ) {
       // Ignored
     }
@@ -315,9 +319,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       }
       fileObject.moveTo( renameObject );
       if ( file instanceof VFSDirectory ) {
-        return VFSDirectory.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection() );
+        return VFSDirectory.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection(), file.getDomain() );
       } else {
-        return VFSFile.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection() );
+        return VFSFile.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection(), file.getDomain() );
       }
     } catch ( KettleFileException | FileSystemException e ) {
       return null;
@@ -340,9 +344,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         KettleVFS.getFileObject( toPath, new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection() ) );
       copyObject.copyFrom( fileObject, Selectors.SELECT_SELF );
       if ( file instanceof VFSDirectory ) {
-        return VFSDirectory.create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection() );
+        return VFSDirectory.create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection(), file.getDomain() );
       } else {
-        return VFSFile.create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection() );
+        return VFSFile.create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection(), file.getDomain() );
       }
     } catch ( KettleFileException | FileSystemException e ) {
       throw new FileException();
@@ -402,7 +406,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       try ( OutputStream outputStream = fileObject.getContent().getOutputStream(); ) {
         IOUtils.copy( inputStream, outputStream );
         outputStream.flush();
-        return VFSFile.create( destDir.getPath(), fileObject, destDir.getConnection() );
+        return VFSFile.create( destDir.getPath(), fileObject, destDir.getConnection(), destDir.getDomain() );
       } catch ( IOException e ) {
         return null;
       }

@@ -52,7 +52,11 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     ConnectionDetails connectionDetails = connectionManager.get().getConnectionDetails( connectionName );
 
     if ( connectionDetails != null ) {
-      String url = connectionDetails.getType() + ":/" + abstractFileName.getPath();
+      String domain = connectionDetails.getDomain();
+      if ( !domain.equals( "" ) ) {
+        domain = "/" + domain;
+      }
+      String url = connectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
       Variables variables = new Variables();
       variables.setVariable( CONNECTION, connectionName );
       return KettleVFS.getFileObject( url, variables );
