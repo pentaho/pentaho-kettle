@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,37 +19,15 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
-package org.pentaho.di.connections;
-
-import java.util.Collections;
-import java.util.Map;
+package org.pentaho.di.ui.core.events.dialog;
 
 /**
- * Created by bmorrise on 2/13/19.
+ * Interface used by ConditionSelectionAdapterFileDialogTextVar
  */
-public interface ConnectionDetails {
-  String getName();
-
-  void setName( String name );
-
-  String getType();
-
-  String getDescription();
-
+public interface DetermineSelectionOperationOp {
   /**
-   * Allow for returning of domain for non-bucket vfs connections
+   * Operator that returns a SelectionOperation based on a condition.
+   * @return SelectionOperation
    */
-  default String getDomain() {
-    return "";
-  }
-
-  /**
-   * Gets props associated with this ConnectionDetails.
-   * Allows implementors to expose connection properties without
-   * requiring clients to have the implementation as a dependency.
-   */
-  default Map<String, String> getProperties() {
-    return Collections.emptyMap();
-  }
+  SelectionOperation op();
 }

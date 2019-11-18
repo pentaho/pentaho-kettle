@@ -39,14 +39,21 @@ public class SelectionAdapterOptions {
     this.useSchemaPath = useSchemaPath;
   }
 
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters, FilterType defaultFilter,
+                                  String[] providerFilters, boolean useSchemaPath  ) {
+    this( selectionOperation, toStringArray( filters ), toString( defaultFilter ), providerFilters, useSchemaPath );
+  }
+
   public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters, String defaultFilter ) {
-    this.selectionOperation = selectionOperation;
-    this.filters = filters;
-    this.defaultFilter = defaultFilter;
+    this( selectionOperation, filters, defaultFilter, null, false );
+  }
+
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters, FilterType defaultFilter ) {
+    this( selectionOperation, toStringArray( filters ), toString( defaultFilter ), null, false );
   }
 
   public SelectionAdapterOptions( SelectionOperation selectionOperation ) {
-    this.selectionOperation = selectionOperation;
+    this( selectionOperation, (String[]) null, null, null, false );
   }
 
   public SelectionOperation getSelectionOperation() {
@@ -58,6 +65,14 @@ public class SelectionAdapterOptions {
     return this;
   }
 
+  protected static String[] toStringArray( FilterType[] filterTypes ) {
+    return Arrays.stream( filterTypes ).map( Enum::toString ).toArray( String[]::new );
+  }
+
+  protected static String toString( FilterType filterType ) {
+    return filterType == null ? null : filterType.toString();
+  }
+
   public String[] getFilters() {
     return filters;
   }
@@ -67,9 +82,8 @@ public class SelectionAdapterOptions {
     return this;
   }
 
-  public SelectionAdapterOptions setFilters( SelectionAdapterFileDialog.FilterType[] filters ) {
-    this.filters = Arrays.stream( filters ).map( Enum::toString ).toArray( String[]::new );
-    return this;
+  public SelectionAdapterOptions setFilters( FilterType[] filters ) {
+    return setFilters( toStringArray( filters ) );
   }
 
   public String getDefaultFilter() {

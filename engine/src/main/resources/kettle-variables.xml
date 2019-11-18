@@ -515,7 +515,7 @@
   <kettle-variable>
     <description>This environment variable is used to specify a location used to deploy a shim driver into PDI.</description>
     <variable>SHIM_DRIVER_DEPLOYMENT_LOCATION</variable>
-    <default-value>./</default-value>
+    <default-value>./drivers</default-value>
   </kettle-variable>
 </kettle-variables>
 

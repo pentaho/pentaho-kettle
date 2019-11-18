@@ -232,4 +232,12 @@ public class FileDialogOperation {
     }
     after.accept( textVar, fileDialogOperation );
   }
+
+  public static void browseForSave( TextVar textVar ) {
+    browse( FileDialogOperation.SAVE, textVar, FileDialogOperation::setStartLocation, FileDialogOperation::handleSave );
+  }
+
+  public static void browseForOpen( TextVar textVar ) {
+    browse( FileDialogOperation.OPEN, textVar, FileDialogOperation::setStartLocation, FileDialogOperation::handleOpen );
+  }
 }

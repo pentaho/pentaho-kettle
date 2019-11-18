@@ -31,10 +31,40 @@ public class VFSFileTest {
   @Test
   public void getConnectionPathTest() {
     VFSFile file = new VFSFile();
-    file.setPath( "ts://path/to/file/file.txt" );
+    file.setPath( "ts://bucket/to/file/file.txt" );
     file.setConnection( "Connection Name" );
-    Assert.assertEquals( file.getConnectionPath(),
-      ConnectionFileProvider.SCHEME + "://" + file.getConnection() + "/path/to/file/file.txt" );
+    Assert.assertEquals( ConnectionFileProvider.SCHEME + "://" + file.getConnection() + "/bucket/to/file/file.txt",
+      file.getConnectionPath() );
+    System.out.println( file.getConnectionPath() );
+  }
+
+  @Test
+  public void getConnectionPathRootTest() {
+    VFSFile file = new VFSFile();
+    file.setPath( "ts://bucket" );
+    file.setConnection( "Connection Name" );
+    Assert.assertEquals( ConnectionFileProvider.SCHEME + "://" + file.getConnection() + "/bucket",
+      file.getConnectionPath() );
+  }
+
+  @Test
+  public void getConnectionPathWithDomainTest() {
+    VFSFile file = new VFSFile();
+    file.setPath( "ts://fake.com/path/to/file/file.txt" );
+    file.setConnection( "Connection Name" );
+    file.setDomain( "fake.com" );
+    Assert.assertEquals( ConnectionFileProvider.SCHEME + "://" + file.getConnection() + "/path/to/file/file.txt",
+      file.getConnectionPath() );
+
+  }
+
+  @Test
+  public void getConnectionPathWithDomainRootTest() {
+    VFSFile file = new VFSFile();
+    file.setPath( "ts://fake.com" );
+    file.setConnection( "Connection Name" );
+    file.setDomain( "fake.com" );
+    Assert.assertEquals( ConnectionFileProvider.SCHEME + "://" + file.getConnection(), file.getConnectionPath() );
   }
 
 }

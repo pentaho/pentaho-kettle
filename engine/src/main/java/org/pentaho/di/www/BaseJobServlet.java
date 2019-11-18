@@ -180,10 +180,10 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
   }
 
   private void copyParameters( final AbstractMeta meta, final Map<String, String> params  ) throws UnknownParamException {
-    for ( String parameterName : params.keySet() ) {
-      String thisValue = params.get( parameterName );
+    for ( Map.Entry<String, String> entry : params.entrySet() ) {
+      String thisValue = entry.getValue();
       if ( !StringUtils.isBlank( thisValue ) ) {
-        meta.setParameterValue( parameterName, thisValue );
+        meta.setParameterValue( entry.getKey(), thisValue );
       }
     }
   }

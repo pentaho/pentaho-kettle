@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -118,8 +118,9 @@ public class ResourceUtil {
         //
         out = new ZipOutputStream( KettleVFS.getOutputStream( fileObject, false ) );
 
-        for ( String filename : definitions.keySet() ) {
-          ResourceDefinition resourceDefinition = definitions.get( filename );
+        for ( Map.Entry<String, ResourceDefinition> entry : definitions.entrySet() ) {
+          String filename = entry.getKey();
+          ResourceDefinition resourceDefinition = entry.getValue();
 
           ZipEntry zipEntry = new ZipEntry( resourceDefinition.getFilename() );
 

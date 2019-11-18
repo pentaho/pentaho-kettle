@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -249,12 +249,12 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       repository.connectionDelegate.closeTransAttributeLookupPreparedStatement();
       repository.connectionDelegate.closeLookupJobEntryAttribute();
 
-      for ( String sql : sqlMap.keySet() ) {
-        PreparedStatement ps = sqlMap.get( sql );
+      for ( Map.Entry<String, PreparedStatement> entry : sqlMap.entrySet() ) {
+        PreparedStatement ps = entry.getValue();
         try {
           ps.close();
         } catch ( SQLException e ) {
-          log.logError( "Error closing prepared statement: " + sql, e );
+          log.logError( "Error closing prepared statement: " + entry.getKey(), e );
         }
       }
 

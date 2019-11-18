@@ -3883,8 +3883,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     throws KettleDatabaseException {
     Map<String, Collection<String>> tableMap = getTableMap( schemanamein, props );
     List<String> res = new ArrayList<>();
-    for ( String schema : tableMap.keySet() ) {
-      Collection<String> tables = tableMap.get( schema );
+    for ( Map.Entry<String, Collection<String>> entry : tableMap.entrySet() ) {
+      String schema = entry.getKey();
+      Collection<String> tables = entry.getValue();
       for ( String table : tables ) {
         if ( includeSchema ) {
           res.add( databaseMeta.getQuotedSchemaTableCombination( schema, table ) );
@@ -3997,8 +3998,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   public String[] getViews( String schemanamein, boolean includeSchema ) throws KettleDatabaseException {
     Map<String, Collection<String>> viewMap = getViewMap( schemanamein );
     List<String> res = new ArrayList<>();
-    for ( String schema : viewMap.keySet() ) {
-      Collection<String> views = viewMap.get( schema );
+    for ( Map.Entry<String, Collection<String>> entry : viewMap.entrySet() ) {
+      String schema = entry.getKey();
+      Collection<String> views = entry.getValue();
       for ( String view : views ) {
         if ( includeSchema ) {
           res.add( databaseMeta.getQuotedSchemaTableCombination( schema, view ) );
@@ -4086,8 +4088,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   public String[] getSynonyms( String schemanamein, boolean includeSchema ) throws KettleDatabaseException {
     Map<String, Collection<String>> synonymMap = getSynonymMap( schemanamein );
     List<String> res = new ArrayList<>();
-    for ( String schema : synonymMap.keySet() ) {
-      Collection<String> synonyms = synonymMap.get( schema );
+    for ( Map.Entry<String, Collection<String>> entry : synonymMap.entrySet() ) {
+      String schema = entry.getKey();
+      Collection<String> synonyms = entry.getValue();
       for ( String synonym : synonyms ) {
         if ( includeSchema ) {
           res.add( databaseMeta.getQuotedSchemaTableCombination( schema, synonym ) );

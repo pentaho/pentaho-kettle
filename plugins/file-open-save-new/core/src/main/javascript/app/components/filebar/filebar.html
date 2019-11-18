@@ -6,8 +6,8 @@
     <input id="fileNameEntryTextBox" ng-change="vm.onChange()" type="text" class="fileNameEntryTextBox" ng-model="vm.filename" focus/>
   </div>
 </div>
-<div class="flex" ng-show="vm.state.is('open') || vm.state.is('selectFile')"></div>
-<div id="fileFilter">
+<div class="flex" ng-hide="vm.state.is('save')"></div>
+<div id="fileFilter" ng-hide="vm.state.is('selectFolder')">
   <label id="fileTypeLabel">
     {{::vm.fileFilterLabel}}
   </label>
