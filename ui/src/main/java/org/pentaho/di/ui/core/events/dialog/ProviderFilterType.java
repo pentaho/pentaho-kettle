@@ -22,7 +22,7 @@
 package org.pentaho.di.ui.core.events.dialog;
 
 /**
- * Provider Filter options.
+ * Provider Filter options for providers that are desired to be included.
  */
 public enum ProviderFilterType {
   ALL_PROVIDERS, CLUSTERS, LOCAL, REPOSITORY, VFS;
