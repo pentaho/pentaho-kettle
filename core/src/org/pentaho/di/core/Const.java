@@ -1100,9 +1100,6 @@ public class Const {
   // See PDI-17203 for details
   public static final String KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES = "KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES";
 
-  /** A variable to configure a timeout for Karaf provider delays on kitchen */
-  public static final String KITCHEN_KARAF_TIMEOUT_SECONDS = "KITCHEN_KARAF_TIMEOUT_SECONDS";
-
   /**
    * The XML file that contains the list of native import rules
    */
