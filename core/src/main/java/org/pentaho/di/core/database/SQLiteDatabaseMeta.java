@@ -212,6 +212,15 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return retval;
   }
 
+  /**
+   * @return true if the database JDBC driver supports getBlob on the resultset. If not we must use getBytes() to get
+   *         the data.
+   */
+  @Override
+  public boolean supportsGetBlob() {
+    return false;
+  }
+
   @Override
   public String[] getUsedLibraries() {
     return new String[] { "sqlite-jdbc-3.27.2.1.jar" };
