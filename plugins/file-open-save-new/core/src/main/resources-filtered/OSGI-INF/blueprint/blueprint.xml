@@ -80,6 +80,18 @@
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
+  <bean id="JobFinishExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.JobFinishExtensionPoint">
+    <argument ref="fileCache"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="TransFinishExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.TransFinishExtensionPoint">
+    <argument ref="fileCache"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
   <reference-list id="fileProviders"
                   interface="org.pentaho.di.plugins.fileopensave.api.providers.FileProvider" availability="optional"/>
 
