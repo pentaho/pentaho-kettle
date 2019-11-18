@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2825,30 +2825,22 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         if ( skipHeaders ) {
           // Skip the header lines first if more then one, it helps us position
           if ( meta.content.layoutPaged && meta.content.nrLinesDocHeader > 0 ) {
-            int skipped = 0;
-            String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            while ( line != null && skipped < meta.content.nrLinesDocHeader - 1 ) {
-              skipped++;
-              line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            }
+            TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType,
+              lineStringBuilder,  meta.content.nrLinesDocHeader - 1, meta.getEnclosure(), 0 );
           }
 
           // Skip the header lines first if more then one, it helps us position
           if ( meta.content.header && meta.content.nrHeaderLines > 0 ) {
-            int skipped = 0;
-            String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            while ( line != null && skipped < meta.content.nrHeaderLines - 1 ) {
-              skipped++;
-              line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            }
+            TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType,
+              lineStringBuilder,  meta.content.nrHeaderLines - 1, meta.getEnclosure(), 0 );
           }
         }
 
-        String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+        String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure() );
         while ( line != null && ( linenr < maxnr || nrlines == 0 ) ) {
           retval.add( line );
           linenr++;
-          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure() );
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString( PKG, "TextFileInputDialog.Exception.ErrorGettingFirstLines",

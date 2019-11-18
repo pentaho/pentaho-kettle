@@ -289,6 +289,48 @@ public class TextFileInputUtils {
   }
 
   public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                      int fileFormatType, StringBuilder line, String regex )
+    throws KettleFileException {
+
+    return getLine( log, reader, encodingType, fileFormatType, line, regex, 0 )[0];
+
+  }
+
+  /**
+   *
+   * Returns in the first position a line; ;
+   * on the second position how many lines from file were read to get a full line
+   *
+   */
+  public static final String[] getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                      int fileFormatType, StringBuilder line, String regex, long lineNumberInFile )
+    throws KettleFileException {
+
+    String sline = getLine( log, reader, encodingType, fileFormatType, line );
+
+    while ( sline != null ) {
+    /*
+    Check that the number of enclosures in a line is even.
+    If not even it means that there was an enclosed line break.
+    We need to read the next line(s) to get the remaining data in this row.
+    */
+      if ( checkPattern( sline, regex ) % 2 == 0 ) {
+        return new String[] { sline, String.valueOf( lineNumberInFile ) };
+      }
+
+      String nextLine = getLine( log, reader, encodingType, fileFormatType, line );
+
+      if ( nextLine == null ) {
+        break;
+      }
+
+      sline = sline + nextLine;
+      lineNumberInFile++;
+    }
+    return new String[] { sline, String.valueOf( lineNumberInFile ) };
+  }
+
+  public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
       int formatNr, StringBuilder line ) throws KettleFileException {
     int c = 0;
     line.setLength( 0 );
@@ -901,5 +943,26 @@ public class TextFileInputUtils {
     }
 
     return matches;
+  }
+
+  /**
+   *
+   * Returns the line number in file
+   *
+   */
+
+  public static long skipLines( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                int fileFormatType, StringBuilder line, int nrLinesToSkip,
+                                String regex, long lineNumberInFile ) throws KettleFileException {
+
+    String[] oGetline = getLine( log, reader, encodingType, fileFormatType, line, regex, lineNumberInFile );
+    int skipped = 1;
+
+    while ( oGetline[0] != null && skipped < nrLinesToSkip ) {
+      oGetline = getLine( log, reader, encodingType, fileFormatType, line, regex, Long.parseLong( oGetline[ 1 ] ) );
+      skipped++;
+    }
+
+    return Long.parseLong( oGetline[ 1 ] );
   }
 }
