@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.common;
+package org.pentaho.di.connections.common.bucket;
 
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;

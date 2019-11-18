@@ -28,9 +28,10 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
+import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.provider.AbstractFileSystem;
-import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -40,6 +41,7 @@ import java.util.function.Supplier;
 public class ConnectionFileSystem extends AbstractFileSystem implements FileSystem {
 
   public static final String CONNECTION = "connection";
+  public static final String DOMAIN_ROOT = "[\\w]+://";
   private Supplier<ConnectionManager> connectionManager = ConnectionManager::getInstance;
 
   public ConnectionFileSystem( FileName rootName, FileSystemOptions fileSystemOptions ) {
@@ -49,7 +51,8 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
   @Override
   protected FileObject createFile( AbstractFileName abstractFileName ) throws Exception {
     String connectionName = ( (ConnectionFileName) abstractFileName ).getConnection();
-    ConnectionDetails connectionDetails = connectionManager.get().getConnectionDetails( connectionName );
+    VFSConnectionDetails connectionDetails =
+      (VFSConnectionDetails) connectionManager.get().getConnectionDetails( connectionName );
 
     if ( connectionDetails != null ) {
       String domain = connectionDetails.getDomain();
@@ -59,10 +62,14 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
       String url = connectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
       Variables variables = new Variables();
       variables.setVariable( CONNECTION, connectionName );
-      return KettleVFS.getFileObject( url, variables );
+      if ( url.matches( DOMAIN_ROOT ) ) {
+        url += connectionName;
+      }
+      AbstractFileObject fileObject = (AbstractFileObject) KettleVFS.getFileObject( url, variables );
+      return new ConnectionFileObject( abstractFileName, this, fileObject, domain );
     }
 
-    return KettleVFS.getFileObject( abstractFileName.getPath() );
+    return new ConnectionFileObject( abstractFileName, this, null, null );
   }
 
   @Override protected void addCapabilities( Collection<Capability> collection ) {

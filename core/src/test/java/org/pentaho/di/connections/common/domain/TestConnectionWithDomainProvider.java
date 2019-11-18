@@ -20,23 +20,23 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.common;
+package org.pentaho.di.connections.common.domain;
 
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ConnectionProvider;
 
 import java.util.List;
 
-public class TestConnectionProvider implements ConnectionProvider<TestConnectionDetails> {
+public class TestConnectionWithDomainProvider implements ConnectionProvider<TestConnectionWithDomainDetails> {
 
   private ConnectionManager connectionManager;
 
-  public TestConnectionProvider( ConnectionManager connectionManager ) {
+  public TestConnectionWithDomainProvider( ConnectionManager connectionManager ) {
     this.connectionManager = connectionManager;
   }
 
-  public static final String NAME = "Test";
-  public static final String SCHEME = "test";
+  public static final String NAME = "Test2";
+  public static final String SCHEME = "test2";
 
   @Override public String getName() {
     return NAME;
@@ -46,8 +46,8 @@ public class TestConnectionProvider implements ConnectionProvider<TestConnection
     return SCHEME;
   }
 
-  @Override public Class<TestConnectionDetails> getClassType() {
-    return TestConnectionDetails.class;
+  @Override public Class<TestConnectionWithDomainDetails> getClassType() {
+    return TestConnectionWithDomainDetails.class;
   }
 
   @Override public List<String> getNames() {
@@ -55,15 +55,15 @@ public class TestConnectionProvider implements ConnectionProvider<TestConnection
   }
 
   @SuppressWarnings( "unchecked" )
-  @Override public List<TestConnectionDetails> getConnectionDetails() {
-    return (List<TestConnectionDetails>) connectionManager.getConnectionDetailsByScheme( getKey() );
+  @Override public List<TestConnectionWithDomainDetails> getConnectionDetails() {
+    return (List<TestConnectionWithDomainDetails>) connectionManager.getConnectionDetailsByScheme( getKey() );
   }
 
-  @Override public boolean test( TestConnectionDetails connectionDetails ) {
+  @Override public boolean test( TestConnectionWithDomainDetails connectionDetails ) {
     return true;
   }
 
-  @Override public TestConnectionDetails prepare( TestConnectionDetails connectionDetails ) {
+  @Override public TestConnectionWithDomainDetails prepare( TestConnectionWithDomainDetails connectionDetails ) {
     return connectionDetails;
   }
 }

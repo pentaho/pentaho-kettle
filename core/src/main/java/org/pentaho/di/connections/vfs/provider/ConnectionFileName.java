@@ -44,6 +44,7 @@ public class ConnectionFileName extends AbstractFileName {
   protected void appendRootUri( StringBuilder buffer, boolean addPassword ) {
     buffer.append( getScheme() );
     buffer.append( "://" );
+    buffer.append( connection );
   }
 
   public String getConnection() {
