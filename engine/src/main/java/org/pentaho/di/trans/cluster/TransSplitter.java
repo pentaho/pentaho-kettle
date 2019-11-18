@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1474,11 +1474,6 @@ public class TransSplitter {
       //
       copy.setCopies( 1 );
     }
-
-    // Remove the clustering information on the slave transformation step
-    // We don't need it anymore, it only confuses.
-    //
-    copy.setClusterSchema( null );
 
     transMeta.addStep( copy );
     return copy;
