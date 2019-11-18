@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -343,7 +343,9 @@ public class XMLOutput extends BaseStep implements StepInterface {
 
   void closeOutputStream( OutputStream stream ) {
     try {
-      stream.close();
+      if ( stream != null ) {
+        stream.close();
+      }
     } catch ( Exception e ) {
       logError( "Error closing output stream : " + e.toString() );
     }
