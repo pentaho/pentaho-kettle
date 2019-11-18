@@ -7,21 +7,21 @@ Map defaultParams = [
   WORKSPACE           : '$properties.getString('WORKSPACE')',
   BUILD_DATA_ROOT_PATH: '$properties.getString('BUILD_DATA_ROOT_PATH')',
   BUILD_DATA_FILE     : '$properties.getString('BUILD_DATA_FILE')',
-  RUN_CHECKOUTS       : $properties.getBool('RUN_CHECKOUTS'),
-  RUN_BUILDS          : $properties.getBool('RUN_BUILDS') ,
-  RUN_UNIT_TESTS      : $properties.getBool('RUN_UNIT_TESTS'),
-  ARCHIVE_ARTIFACTS   : $properties.getBool('ARCHIVE_ARTIFACTS'),
+
+  RUN_STAGE_CHECKOUT  : $properties.getBool('RUN_STAGE_CHECKOUT'),
+  RUN_STAGE_TEST     : $properties.getBool('RUN_STAGE_TEST'),
+
   OVERRIDE_PARAMS     : [:],
   OVERRIDE_JOB_PARAMS : [:]
 ]
 
 node(params.SLAVE_NODE_LABEL ?: defaultParams.SLAVE_NODE_LABEL) {
   timestamps {
-    config.stage(defaultParams)
+    stages.configure(defaultParams)
 
     timeout(config.get().timeout) {
-      checkoutStage()
-      buildStage2()
+      stages.checkout()
+      stages.test()
     }
   }
 }
