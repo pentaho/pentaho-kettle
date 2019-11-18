@@ -98,13 +98,14 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
     for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
       for ( ConnectionDetails connectionDetails : provider.getConnectionDetails() ) {
+        VFSConnectionDetails vfsConnectionDetails = (VFSConnectionDetails) connectionDetails;
         VFSLocation vfsLocation = new VFSLocation();
         vfsLocation.setName( connectionDetails.getName() );
         vfsLocation.setRoot( NAME );
         vfsLocation.setHasChildren( true );
         vfsLocation.setCanDelete( true );
-        vfsLocation.setPath( connectionDetails.getType() + "://" + connectionDetails.getDomain() );
-        vfsLocation.setDomain( connectionDetails.getDomain() );
+        vfsLocation.setPath( vfsConnectionDetails.getType() + "://" + vfsConnectionDetails.getDomain() );
+        vfsLocation.setDomain( vfsConnectionDetails.getDomain() );
         vfsLocation.setConnection( connectionDetails.getName() );
         vfsTree.addChild( vfsLocation );
       }
@@ -319,9 +320,11 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       }
       fileObject.moveTo( renameObject );
       if ( file instanceof VFSDirectory ) {
-        return VFSDirectory.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection(), file.getDomain() );
+        return VFSDirectory.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection(),
+          file.getDomain() );
       } else {
-        return VFSFile.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection(), file.getDomain() );
+        return VFSFile.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection(),
+          file.getDomain() );
       }
     } catch ( KettleFileException | FileSystemException e ) {
       return null;
@@ -344,9 +347,11 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         KettleVFS.getFileObject( toPath, new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection() ) );
       copyObject.copyFrom( fileObject, Selectors.SELECT_SELF );
       if ( file instanceof VFSDirectory ) {
-        return VFSDirectory.create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection(), file.getDomain() );
+        return VFSDirectory
+          .create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection(), file.getDomain() );
       } else {
-        return VFSFile.create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection(), file.getDomain() );
+        return VFSFile
+          .create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection(), file.getDomain() );
       }
     } catch ( KettleFileException | FileSystemException e ) {
       throw new FileException();

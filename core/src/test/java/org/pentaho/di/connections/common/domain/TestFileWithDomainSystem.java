@@ -20,39 +20,29 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.common;
+package org.pentaho.di.connections.common.domain;
 
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.Capability;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystem;
+import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
-import org.apache.commons.vfs2.provider.AbstractFileObject;
+import org.apache.commons.vfs2.provider.AbstractFileSystem;
 
-import java.io.InputStream;
+import java.util.Collection;
 
-public class TestFileObject extends AbstractFileObject<TestFileSystem> {
+public class TestFileWithDomainSystem extends AbstractFileSystem implements FileSystem {
 
-  public TestFileObject( AbstractFileName name,
-                         TestFileSystem fs ) {
-    super( name, fs );
+  public TestFileWithDomainSystem( FileName rootName, FileSystemOptions fileSystemOptions ) {
+    super( rootName, null, fileSystemOptions );
   }
 
-  @Override public boolean exists() throws FileSystemException {
-    return true;
+  @Override protected FileObject createFile( AbstractFileName abstractFileName ) throws Exception {
+    return new TestFileWithDomainObject( abstractFileName, this );
   }
 
-  @Override protected long doGetContentSize() throws Exception {
-    return 0;
-  }
-
-  @Override protected InputStream doGetInputStream() throws Exception {
-    return null;
-  }
-
-  @Override protected FileType doGetType() throws Exception {
-    return FileType.FILE;
-  }
-
-  @Override protected String[] doListChildren() throws Exception {
-    return new String[ 0 ];
+  @Override protected void addCapabilities( Collection<Capability> collection ) {
+    collection.addAll( TestFileWithDomainProvider.capabilities );
   }
 }
