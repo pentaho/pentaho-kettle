@@ -180,7 +180,8 @@ define(
         function save(filename, folder, currentFilename, override) {
           select(JSON.stringify({
             name: filename,
-            parent: folder.path,
+            path: folder.path,
+            parent: folder.parent,
             provider: folder.provider
           }));
 

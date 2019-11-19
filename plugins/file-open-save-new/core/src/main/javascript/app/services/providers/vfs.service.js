@@ -241,7 +241,8 @@ define(
         function save(filename, folder, currentFilename, override) {
           select(JSON.stringify({
             name: filename,
-            parent: folder.path,
+            path: _getFilePath(folder),
+            parent: _getFilePath(folder),
             connection: folder.connection,
             provider: folder.provider
           }));
