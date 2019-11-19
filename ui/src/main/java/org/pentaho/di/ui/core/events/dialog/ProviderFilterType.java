@@ -22,13 +22,17 @@
 package org.pentaho.di.ui.core.events.dialog;
 
 /**
- * Provider Filter options.
+ * Provider Filter options for providers that are desired to be included.
  */
 public enum ProviderFilterType {
-  ALL_PROVIDERS, CLUSTERS, LOCAL, REPOSITORY, VFS;
+  ALL_PROVIDERS, DEFAULT, CLUSTERS, LOCAL, REPOSITORY, VFS;
 
   @Override
   public String toString() {
     return name().toLowerCase();
+  }
+
+  public static String[] getDefaults() {
+    return new String[] { LOCAL.toString(), VFS.toString(), CLUSTERS.toString() };
   }
 }

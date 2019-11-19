@@ -79,9 +79,10 @@ public class FileController {
 
   public List<Tree> load( String filter ) {
     List<Tree> trees = new ArrayList<>();
-    List<String> filters = !Utils.isEmpty( filter ) ? Arrays.asList( filter.split( "[,]" ) ) : null;
-    // If there are no filters or all filters, load all available providers. Else load only providers found in filter
-    if ( filters == null || filters.contains( ProviderFilterType.ALL_PROVIDERS.toString() ) ) {
+    List<String> filters = Utils.isEmpty( filter ) || filter.equalsIgnoreCase( ProviderFilterType.DEFAULT.toString() )
+      ? Arrays.asList( ProviderFilterType.getDefaults() ) : Arrays.asList( filter.split( "[,]" ) );
+    // If there are no filters or default filter, use default list of providers. Else load only providers found in filter
+    if ( filters.contains( ProviderFilterType.ALL_PROVIDERS.toString() ) ) {
       for ( FileProvider fileProvider : fileProviders ) {
         if ( fileProvider.isAvailable() ) {
           trees.add( fileProvider.getTree() );

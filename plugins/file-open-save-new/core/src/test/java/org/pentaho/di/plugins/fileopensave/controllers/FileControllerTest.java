@@ -33,6 +33,7 @@ import org.pentaho.di.plugins.fileopensave.cache.FileCache;
 import org.pentaho.di.plugins.fileopensave.providers.TestFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.model.TestDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.model.TestFile;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ public class FileControllerTest {
 
   @Test
   public void testLoad() {
-    List<Tree> trees = fileController.load();
+    List<Tree> trees = fileController.load( ProviderFilterType.ALL_PROVIDERS.toString() );
     Assert.assertEquals( 1, trees.size() );
     Assert.assertEquals( TestFileProvider.TYPE, trees.get( 0 ).getProvider() );
   }

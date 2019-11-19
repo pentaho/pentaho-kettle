@@ -169,6 +169,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
                                                               FileObject initialFile, String[] filter,
                                                               String[] providerFilters ) throws KettleException {
     FileDialogOperation fileDialogOperation = createFileDialogOperation( selectionOperation );
+
+    setProviderFilters( fileDialogOperation, providerFilters );
     setProvider( fileDialogOperation );
 
     if ( initialFile != null ) {
@@ -183,7 +185,6 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     }
 
     setFilter( fileDialogOperation, filter );
-    setProviderFilters( fileDialogOperation, providerFilters );
     fileDialogOperation.setDefaultFilter( options.getDefaultFilter() );
     fileDialogOperation.setUseSchemaPath( options.getUseSchemaPath() );
 
@@ -218,7 +219,14 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   void setProvider( FileDialogOperation fileDialogOperation ) {
-    fileDialogOperation.setProvider( isConnectedToRepository() ? "repository" : "" );
+    if ( ( fileDialogOperation.getProviderFilter() == null
+         || fileDialogOperation.getProviderFilter().contains( ProviderFilterType.REPOSITORY.toString() )
+         || fileDialogOperation.getProviderFilter().contains( ProviderFilterType.ALL_PROVIDERS.toString() ) )
+         && isConnectedToRepository() ) {
+      fileDialogOperation.setProvider( ProviderFilterType.REPOSITORY.toString() );
+    } else {
+      fileDialogOperation.setProvider( "" );
+    }
   }
 
   /**
@@ -245,7 +253,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   private void setProviderFilters( FileDialogOperation fileDialogOperation, String[] providerFilters ) {
     String[] cleanedFilters = cleanFilters( providerFilters );
     String providerFilterString = ArrayUtils.isEmpty( cleanedFilters )
-      ? ProviderFilterType.ALL_PROVIDERS.toString()
+      ? ProviderFilterType.DEFAULT.toString()
       : String.join( ",", cleanedFilters );
 
     fileDialogOperation.setProviderFilter( providerFilterString );
