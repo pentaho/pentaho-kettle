@@ -177,7 +177,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     if ( initialFile != null ) {
       // Attempt to set path and dir based on File object
       setPath( fileDialogOperation, initialFile, initialFilePath );
-      setFilename(fileDialogOperation, initialFile);
+      setFilename( fileDialogOperation, initialFile );
       setStartDir( fileDialogOperation, initialFile, initialFilePath );
     }
 
@@ -199,7 +199,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
 
   FileDialogOperation createFileDialogOperation( SelectionOperation selectionOperation ) {
 
-    switch(selectionOperation){
+    switch ( selectionOperation ) {
       case FILE:
         return new FileDialogOperation( FileDialogOperation.SELECT_FILE, FileDialogOperation.ORIGIN_SPOON );
       case FOLDER:
@@ -222,8 +222,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     }
   }
 
-  void setFilename(FileDialogOperation fileDialogOperation, FileObject fileObject){
-      fileDialogOperation.setFilename( fileObject.getName().getBaseName()  );
+  void setFilename( FileDialogOperation fileDialogOperation, FileObject fileObject ) {
+    fileDialogOperation.setFilename( fileObject.getName().getBaseName() );
   }
 
   void setStartDir( FileDialogOperation fileDialogOperation, FileObject fileObject, String filePath ) throws KettleException {
