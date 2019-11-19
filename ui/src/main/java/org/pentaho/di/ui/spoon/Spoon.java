@@ -5447,7 +5447,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             props.addLastFile(
               meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true,
               getRepositoryName(), getUsername(), null, null );
-             saveSettings();
+            saveSettings();
             addMenuLast();
 
             setShellText();
