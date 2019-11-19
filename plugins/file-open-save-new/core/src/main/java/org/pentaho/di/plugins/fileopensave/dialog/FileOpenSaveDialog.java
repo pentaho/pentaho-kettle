@@ -35,6 +35,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -53,6 +54,7 @@ import java.util.Properties;
  * Created by bmorrise on 5/23/17.
  */
 public class FileOpenSaveDialog extends ThinDialog {
+  private static final Class<?> PKG = FileOpenSaveDialog.class;
 
   public static final String STATE_SAVE = "save";
   public static final String STATE_OPEN = "open";
@@ -113,8 +115,10 @@ public class FileOpenSaveDialog extends ThinDialog {
     }
 
     StringBuilder clientPath = new StringBuilder();
+    String cmd = fileDialogOperation.getCommand();
+
     clientPath.append( getClientPath() );
-    clientPath.append( !Utils.isEmpty( fileDialogOperation.getCommand() ) ? "#/" + fileDialogOperation.getCommand() : "" );
+    clientPath.append( !Utils.isEmpty( cmd ) ? "#/" + cmd : "" );
 
     List<NameValuePair> parameters = new ArrayList<>();
     addParameter( parameters, PATH_PARAM, dialogPath );
@@ -134,8 +138,11 @@ public class FileOpenSaveDialog extends ThinDialog {
     String queryParams = URLEncodedUtils.format( parameters, "UTF-8" );
     clientPath.append( "?" ).append( queryParams );
 
+    String title = Utils.isEmpty( cmd ) ? "" : BaseMessages.getString( PKG,
+      ( "FileOpenSaveDialog.dialog." + cmd + ".title" ) );
+
     super.createDialog( fileDialogOperation.getTitle() != null ? fileDialogOperation.getTitle()
-        : StringUtils.capitalize( fileDialogOperation.getCommand() ), getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
+        : StringUtils.capitalize( title ), getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
     super.dialog.setMinimumSize( 545, 458 );
 
     new BrowserFunction( browser, "close" ) {
