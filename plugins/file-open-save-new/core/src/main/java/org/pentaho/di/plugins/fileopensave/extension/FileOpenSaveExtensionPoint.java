@@ -82,12 +82,9 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
       }
       fileDialogOperation.setRepositoryObject( repositoryObject );
       fileDialogOperation.setProvider( repositoryOpenSaveDialog.getProvider() );
+      fileDialogOperation.setFilename( repositoryOpenSaveDialog.getName() );
     } else {
-      if ( fileDialogOperation.getCommand().equals( FileDialogOperation.SAVE ) ) {
-        fileDialogOperation.setPath( repositoryOpenSaveDialog.getParentPath() );
-      } else {
-        fileDialogOperation.setPath( repositoryOpenSaveDialog.getPath() );
-      }
+      fileDialogOperation.setPath( repositoryOpenSaveDialog.getPath() );
       fileDialogOperation.setFilename( repositoryOpenSaveDialog.getName() );
       fileDialogOperation.setConnection( repositoryOpenSaveDialog.getConnection() );
       fileDialogOperation.setProvider( repositoryOpenSaveDialog.getProvider() );

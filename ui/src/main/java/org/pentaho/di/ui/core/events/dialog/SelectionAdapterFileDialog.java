@@ -40,6 +40,7 @@ import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.events.dialog.extension.ExtensionPointWrapper;
 import org.pentaho.di.ui.core.events.dialog.extension.SpoonOpenExtensionPointWrapper;
 
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -176,6 +177,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     if ( initialFile != null ) {
       // Attempt to set path and dir based on File object
       setPath( fileDialogOperation, initialFile, initialFilePath );
+      setFilename( fileDialogOperation, initialFile );
       setStartDir( fileDialogOperation, initialFile, initialFilePath );
     }
 
@@ -196,10 +198,20 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   FileDialogOperation createFileDialogOperation( SelectionOperation selectionOperation ) {
-    String selectOperation = selectionOperation == SelectionOperation.FILE
-        ? FileDialogOperation.SELECT_FILE
-        : FileDialogOperation.SELECT_FOLDER;
-    return new FileDialogOperation( selectOperation, FileDialogOperation.ORIGIN_SPOON );
+
+    switch ( selectionOperation ) {
+      case FILE:
+        return new FileDialogOperation( FileDialogOperation.SELECT_FILE, FileDialogOperation.ORIGIN_SPOON );
+      case FOLDER:
+        return new FileDialogOperation( FileDialogOperation.SELECT_FOLDER, FileDialogOperation.ORIGIN_SPOON );
+      case SAVE:
+        return new FileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
+      case OPEN:
+        return new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
+      default:
+        throw new IllegalArgumentException( "Unexpected SelectionOperation: " + selectionOperation );
+    }
+
   }
 
   void setPath( FileDialogOperation fileDialogOperation, FileObject fileObject, String filePath ) throws KettleException {
@@ -208,6 +220,10 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     } catch ( FileSystemException fse ) {
       throw new KettleException( "failed to check isFile in setPath()", fse );
     }
+  }
+
+  void setFilename( FileDialogOperation fileDialogOperation, FileObject fileObject ) {
+    fileDialogOperation.setFilename( fileObject.getName().getBaseName() );
   }
 
   void setStartDir( FileDialogOperation fileDialogOperation, FileObject fileObject, String filePath ) throws KettleException {
@@ -279,15 +295,21 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   private String constructPath( FileDialogOperation fileDialogOperation ) {
-    String path;
+
     try {
-      path = fileDialogOperation.isProviderRepository( )
-        ? getRepositoryFilePath( fileDialogOperation )
-        : fileDialogOperation.getPath();
+      if ( fileDialogOperation.isProviderRepository() ) {
+        return getRepositoryFilePath( fileDialogOperation );
+      } else {
+        if ( fileDialogOperation.getCommand().equals( FileDialogOperation.SAVE ) ) {
+          return fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
+        } else {
+          return fileDialogOperation.getPath();
+        }
+      }
     } catch ( Exception e ) {
-      path = null;
+      return null;
     }
-    return path;
+
   }
 
   String getRepositoryFilePath( FileDialogOperation fileDialogOperation ) {
