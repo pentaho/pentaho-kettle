@@ -40,6 +40,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -51,7 +52,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 
 public class ValueMetaTimestamp extends ValueMetaDate {
-  private final String format = System.getProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, "NANOSECONDS" );
+  private final String format =
+    Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT ), "NANOSECONDS" );
   private static final String MILLISECONDS = "MILLISECONDS";
 
   public ValueMetaTimestamp() {
@@ -120,10 +122,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       return BigDecimal.valueOf( milliseconds );
     } else {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
-      BigDecimal nanos =
-        BigDecimal.valueOf( seconds ).multiply( BigDecimal.valueOf( 1000000000L ) ).add(
+      return BigDecimal.valueOf( seconds ).multiply( BigDecimal.valueOf( 1000000000L ) ).add(
           BigDecimal.valueOf( timestamp.getNanos() ) );
-      return nanos;
     }
   }
 
