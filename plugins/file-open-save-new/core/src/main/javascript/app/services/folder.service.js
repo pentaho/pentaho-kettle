@@ -486,7 +486,7 @@ define(
               var result = response.data;
               if (result.status === "SUCCESS") {
                 folder.new = false;
-                folder.date = response.data.date;
+                folder.date = result.data.date;
                 resolve(result);
               } else {
                 reject(result);
@@ -508,10 +508,13 @@ define(
           folder.type = "folder";
           folder.children = [];
           folder.provider = parentFolder.provider;
-          folder.connection = parentFolder.connection; //TODO: Needs to be abstracted out
           folder.canEdit = true;
           folder.canAddChildren = true;
           folder.root = parentFolder.root;
+          var provider = providerService.get(parentFolder.provider);
+          if (provider.setFolderParams) {
+            provider.setFolderParams(parentFolder, folder);
+          }
           parentFolder.children.splice(0, 0, folder);
         }
 

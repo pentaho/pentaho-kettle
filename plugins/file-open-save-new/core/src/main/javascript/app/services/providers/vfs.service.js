@@ -60,6 +60,7 @@ define(
           getFilesByPath: getFilesByPath,
           createFolder: createFolder,
           addFolder: addFolder,
+          setFolderParams: setFolderParams,
           deleteFiles: deleteFiles,
           renameFile: renameFile,
           isCopy: isCopy,
@@ -210,6 +211,14 @@ define(
 
         function addFolder(folder) {
           return helperService.httpPut([baseUrl, "add"].join("/"), folder);
+        }
+
+        function setFolderParams(parentFolder, folder) {
+          if (parentFolder.connectionPath) {
+            folder.connection = parentFolder.connection;
+            folder.connectionParentPath = parentFolder.connectionPath;
+            folder.connectionPath = parentFolder.connectionPath + (parentFolder.connectionPath.charAt(parentFolder.connectionPath.length - 1) === "/" ? "" : "/") + folder.name;
+          }
         }
 
         function deleteFiles(files) {
