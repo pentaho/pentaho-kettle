@@ -29,12 +29,17 @@ define(
       }
 
       function isWindows(path) {
-        return path && path.match(/[A-Za-z]:\\/);
+        return path && (path.match(/[A-Za-z]:\\/) || path.match(/^\/[A-Za-z]:/));
       }
 
       function convertWindowsPath(path) {
+        var parts = path.match(/^\/[A-Za-z]:/);
+        if (parts) {
+          var prefix = parts[0];
+          return path.replace(prefix, prefix + "\\");
+        }
         var index = path.indexOf("\\");
-        var drive = path.substr(0, index+1);
+        var drive = path.substr(0, index + 1);
         var path = path.substr(index, path.length).replace(/\\/g, '/');
         if (path === '/') {
           path = "";
