@@ -51,11 +51,11 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileLine;
 import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileLine;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.common.CsvInputAwareImportProgressDialog;
 
@@ -169,7 +169,6 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     }
 
     String line = "";
-    String[] saGetLine;
     long fileLineNumber = 0;
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols();
@@ -342,9 +341,10 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
       }
 
       // Grab another line...
-      saGetLine = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, fileLineNumber );
-      line = saGetLine[0];
-      fileLineNumber = Long.parseLong( saGetLine[1] );
+      TextFileLine
+        textFileLine = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, fileLineNumber );
+      line = textFileLine.getLine();
+      fileLineNumber = textFileLine.getLineNumber();
     }
 
     monitor.worked( 1 );

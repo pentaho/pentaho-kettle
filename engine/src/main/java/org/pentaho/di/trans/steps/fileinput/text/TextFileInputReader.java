@@ -412,10 +412,12 @@ public class TextFileInputReader implements IBaseFileInputReader {
   }
 
   protected boolean tryToReadLine( boolean applyFilter ) throws KettleFileException {
-    String[] saGetLine =  TextFileInputUtils.getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder,
+
+    TextFileLine textFileLine = TextFileInputUtils
+      .getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder,
       meta.getEnclosure(), lineNumberInFile );
-    String line = saGetLine[0];
-    lineNumberInFile = Long.parseLong( saGetLine[1] );
+    String line = textFileLine.line;
+    lineNumberInFile = textFileLine.lineNumber;
 
     if ( line != null ) {
       // when there is no header, check the filter for the first line

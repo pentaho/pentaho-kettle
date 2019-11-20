@@ -166,7 +166,6 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     }
 
     String line = "";
-    String[] saGetLine;
     StringBuilder sbLine = new StringBuilder();
     long fileLineNumber = 0;
 
@@ -341,9 +340,10 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
       }
 
       // Grab another line...
-      saGetLine = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, fileLineNumber );
-      line = saGetLine[0];
-      fileLineNumber = Long.parseLong( saGetLine[1] );
+      TextFileLine textFileLine = TextFileInputUtils
+        .getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, fileLineNumber );
+      line = textFileLine.getLine();
+      fileLineNumber = textFileLine.getLineNumber();
     }
 
     monitor.worked( 1 );

@@ -292,7 +292,7 @@ public class TextFileInputUtils {
                                       int fileFormatType, StringBuilder line, String regex )
     throws KettleFileException {
 
-    return getLine( log, reader, encodingType, fileFormatType, line, regex, 0 )[0];
+    return getLine( log, reader, encodingType, fileFormatType, line, regex, 0 ).line;
 
   }
 
@@ -302,7 +302,7 @@ public class TextFileInputUtils {
    * on the second position how many lines from file were read to get a full line
    *
    */
-  public static final String[] getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+  public static final TextFileLine getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
                                       int fileFormatType, StringBuilder line, String regex, long lineNumberInFile )
     throws KettleFileException {
 
@@ -315,7 +315,7 @@ public class TextFileInputUtils {
     We need to read the next line(s) to get the remaining data in this row.
     */
       if ( checkPattern( sline, regex ) % 2 == 0 ) {
-        return new String[] { sline, String.valueOf( lineNumberInFile ) };
+        return new TextFileLine( sline, lineNumberInFile, null );
       }
 
       String nextLine = getLine( log, reader, encodingType, fileFormatType, line );
@@ -327,7 +327,7 @@ public class TextFileInputUtils {
       sline = sline + nextLine;
       lineNumberInFile++;
     }
-    return new String[] { sline, String.valueOf( lineNumberInFile ) };
+    return new TextFileLine( sline, lineNumberInFile, null );
   }
 
   public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
@@ -955,14 +955,14 @@ public class TextFileInputUtils {
                                 int fileFormatType, StringBuilder line, int nrLinesToSkip,
                                 String regex, long lineNumberInFile ) throws KettleFileException {
 
-    String[] oGetline = getLine( log, reader, encodingType, fileFormatType, line, regex, lineNumberInFile );
+    TextFileLine textFileLine = getLine( log, reader, encodingType, fileFormatType, line, regex, lineNumberInFile );
     int skipped = 1;
 
-    while ( oGetline[0] != null && skipped < nrLinesToSkip ) {
-      oGetline = getLine( log, reader, encodingType, fileFormatType, line, regex, Long.parseLong( oGetline[ 1 ] ) );
+    while ( textFileLine.line != null && skipped < nrLinesToSkip ) {
+      textFileLine = getLine( log, reader, encodingType, fileFormatType, line, regex, textFileLine.lineNumber );
       skipped++;
     }
 
-    return Long.parseLong( oGetline[ 1 ] );
+    return textFileLine.lineNumber;
   }
 }
