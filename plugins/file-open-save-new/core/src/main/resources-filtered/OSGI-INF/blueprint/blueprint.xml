@@ -92,6 +92,12 @@
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
+  <bean id="RepoConnectionExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.lifecycle.FileBrowserLifecyclePlugin">
+    <argument ref="fileCache"/>
+    <pen:di-plugin type="org.pentaho.di.ui.spoon.SpoonPluginType"/>
+  </bean>
+
   <reference-list id="fileProviders"
                   interface="org.pentaho.di.plugins.fileopensave.api.providers.FileProvider" availability="optional"/>
 
