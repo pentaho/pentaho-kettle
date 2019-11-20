@@ -15,15 +15,8 @@
 
 package org.pentaho.di.ui.core;
 
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectInterface;
-import org.pentaho.di.ui.core.widget.TextVar;
-
-import java.util.function.BiConsumer;
 
 /**
  * Created by bmorrise on 8/17/17.
@@ -189,55 +182,4 @@ public class FileDialogOperation {
     return provider.equalsIgnoreCase( PROVIDER_REPO );
   }
 
-  public static void handleOpen( TextVar textVar, FileDialogOperation fileDialogOperation ) {
-    String path = fileDialogOperation.getPath();
-    if ( path != null ) {
-      textVar.setText( fileDialogOperation.getPath() );
-    }
-  }
-
-  public static void handleSave( TextVar textVar, FileDialogOperation fileDialogOperation ) {
-    String path = fileDialogOperation.getPath();
-    String fileName = fileDialogOperation.getFilename();
-    if ( path != null && fileName != null ) {
-      textVar.setText( fileDialogOperation.getPath() + "/" + fileDialogOperation.getFilename() );
-    }
-  }
-
-  public static void setStartLocation( TextVar textVar, FileDialogOperation fileDialogOperation ) {
-    String fullPath = textVar.getText();
-    if ( !Utils.isEmpty( fullPath ) ) {
-      fileDialogOperation
-        .setPath( fullPath.substring( 0, fullPath.lastIndexOf( '/' ) ) );
-      fileDialogOperation
-        .setFilename( fullPath.substring( fullPath.lastIndexOf( '/' ) + 1 ) );
-      if ( fullPath.startsWith( "hc://" ) ) {
-        fileDialogOperation.setProvider( "clusters" );
-      } else if ( fullPath.startsWith( "pvfs://" ) ) {
-        fileDialogOperation.setProvider( "vfs" );
-      } else if ( fullPath.startsWith( "/" ) ) {
-        fileDialogOperation.setProvider( "local" );
-      }
-    }
-  }
-
-  public static void browse( String command, TextVar textVar, BiConsumer<TextVar, FileDialogOperation> before,
-                             BiConsumer<TextVar, FileDialogOperation> after ) {
-    FileDialogOperation fileDialogOperation = new FileDialogOperation( command );
-    before.accept( textVar, fileDialogOperation );
-    try {
-      ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.SpoonOpenSaveNew.id, fileDialogOperation );
-    } catch ( KettleException ignored ) {
-      // Do nothing
-    }
-    after.accept( textVar, fileDialogOperation );
-  }
-
-  public static void browseForSave( TextVar textVar ) {
-    browse( FileDialogOperation.SAVE, textVar, FileDialogOperation::setStartLocation, FileDialogOperation::handleSave );
-  }
-
-  public static void browseForOpen( TextVar textVar ) {
-    browse( FileDialogOperation.OPEN, textVar, FileDialogOperation::setStartLocation, FileDialogOperation::handleOpen );
-  }
 }
