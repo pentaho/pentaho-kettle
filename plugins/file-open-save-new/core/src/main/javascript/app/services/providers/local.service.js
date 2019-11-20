@@ -70,11 +70,11 @@ define(
           var self = this;
           var varRoot = this.root;
           return $q(function (resolve, reject) {
-            if (fileutil.isWindows(path)) {
-              path = fileutil.convertWindowsPath(path);
-            }
             if (path && path.indexOf("file://") === 0) {
               path = path.replace("file://", "");
+            }
+            if (fileutil.isWindows(path)) {
+              path = fileutil.convertWindowsPath(path);
             }
             resolve(varRoot + path);
           });
