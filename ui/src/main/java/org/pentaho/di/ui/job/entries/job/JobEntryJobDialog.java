@@ -62,13 +62,17 @@ import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entries.trans.JobEntryBaseDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.util.DialogHelper;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
@@ -218,15 +222,10 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
       }
     } );
 
-    wbBrowse.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        if ( rep != null ) {
-          selectJob();
-        } else {
-          pickFileVFS();
-        }
-      }
-    } );
+    wbBrowse.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wPath, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.KJB, FilterType.XML, FilterType.ALL }, FilterType.KJB,
+        new ProviderFilterType[] { ProviderFilterType.LOCAL, ProviderFilterType.REPOSITORY } ) ) );
 
     wbLogFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -281,17 +280,6 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Title" ), BaseMessages
         .getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Message" ), e );
-    }
-  }
-
-  private void selectJob() {
-    RepositoryObject repositoryObject = DialogHelper.selectRepositoryObject( "*.kjb", log );
-
-    if ( repositoryObject != null ) {
-      String path = DialogUtils
-        .getPath( jobMeta.getRepositoryDirectory().getPath(), repositoryObject.getRepositoryDirectory().getPath() );
-      String fullPath = ( path.equals( "/" ) ? "/" : path + "/" ) + repositoryObject.getName();
-      wPath.setText( fullPath );
     }
   }
 
