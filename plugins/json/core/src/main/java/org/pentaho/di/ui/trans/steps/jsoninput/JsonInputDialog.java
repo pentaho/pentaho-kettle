@@ -26,7 +26,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,10 +38,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
@@ -85,7 +82,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
+
+  private static Class<?> PKG = JsonInputMeta.class;
+  private static final String YES = BaseMessages.getString( PKG, "System.Combo.Yes" );
+  private static final String NO = BaseMessages.getString( PKG, "System.Combo.No" );
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -237,11 +237,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( shell );
     setShellImage( shell, input );
 
-    lsMod = new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        input.setChanged();
-      }
-    };
+    lsMod = e -> input.setChanged();
     changed = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -303,26 +299,10 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     setButtonPositions( new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder );
 
     // Add listeners
-    lsOK = new Listener() {
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
-    lsGet = new Listener() {
-      public void handleEvent( Event e ) {
-        get();
-      }
-    };
-    lsPreview = new Listener() {
-      public void handleEvent( Event e ) {
-        preview();
-      }
-    };
-    lsCancel = new Listener() {
-      public void handleEvent( Event e ) {
-        cancel();
-      }
-    };
+    lsOK = e -> ok();
+    lsGet = e -> get();
+    lsPreview = e -> preview();
+    lsCancel = e -> cancel();
 
     wOK.addListener( SWT.Selection, lsOK );
     wGet.addListener( SWT.Selection, lsGet );
@@ -330,6 +310,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -342,10 +323,12 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] {
+        String[] items = new String[] {
           wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
-          JsonInputMeta.RequiredFilesCode[0], JsonInputMeta.RequiredFilesCode[0] } );
+          JsonInputMeta.RequiredFilesCode[0], JsonInputMeta.RequiredFilesCode[0] };
+        wFilenameList.add( items );
         wFilename.setText( "" );
         wFilemask.setText( "" );
         wExcludeFilemask.setText( "" );
@@ -359,6 +342,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Delete files from the list of files...
     wbdFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         int[] idx = wFilenameList.getSelectionIndices();
         wFilenameList.remove( idx );
@@ -369,6 +353,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Edit the selected file & remove from the list...
     wbeFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         int idx = wFilenameList.getSelectionIndex();
         if ( idx >= 0 ) {
@@ -385,6 +370,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Show the files that are selected at this time...
     wbShowFiles.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         try {
           JsonInputMeta tfii = new JsonInputMeta();
@@ -411,6 +397,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     } );
     // Enable/disable the right fields to allow a filename to be added to each row...
     wInclFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setIncludeFilename();
       }
@@ -418,17 +405,14 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Enable/disable the right fields to allow a row number to be added to each row...
     wInclRownum.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setIncludeRownum();
       }
     } );
 
     // Whenever something changes, set the tooltip to the expanded version of the filename:
-    wFilename.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        wFilename.setToolTipText( wFilename.getText() );
-      }
-    } );
+    wFilename.addModifyListener( e -> wFilename.setToolTipText( wFilename.getText() ) );
 
     // Listen to the Browse... button
     SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE,
@@ -441,6 +425,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -525,10 +510,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
           ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaBase.trimTypeDesc, true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Repeat.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
-            BaseMessages.getString( PKG, "System.Combo.Yes" ),
-            BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
-
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {YES, NO }, true ),
       };
 
     colinf[0].setUsingVariables( true );
@@ -580,10 +562,10 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wConf );
     wConf.setText( BaseMessages.getString( PKG, "JsonInputDialog.wConf.Label" ) );
 
-    FormLayout ConfgroupLayout = new FormLayout();
-    ConfgroupLayout.marginWidth = 10;
-    ConfgroupLayout.marginHeight = 10;
-    wConf.setLayout( ConfgroupLayout );
+    FormLayout confgroupLayout = new FormLayout();
+    confgroupLayout.marginWidth = 10;
+    confgroupLayout.marginHeight = 10;
+    wConf.setLayout( confgroupLayout );
 
     // Ignore Empty File
     wlIgnoreEmptyFile = new Label( wConf, SWT.RIGHT );
@@ -631,6 +613,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wIgnoreMissingPath = new Button( wConf, SWT.CHECK );
     props.setLook( wIgnoreMissingPath );
     wIgnoreMissingPath.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -653,6 +636,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wDefaultPathLeafToNull = new Button( wConf, SWT.CHECK );
     props.setLook( wDefaultPathLeafToNull );
     wDefaultPathLeafToNull.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -699,10 +683,10 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wAdditionalFields );
     wAdditionalFields.setText( BaseMessages.getString( PKG, "JsonInputDialog.wAdditionalFields.Label" ) );
 
-    FormLayout AdditionalFieldsgroupLayout = new FormLayout();
-    AdditionalFieldsgroupLayout.marginWidth = 10;
-    AdditionalFieldsgroupLayout.marginHeight = 10;
-    wAdditionalFields.setLayout( AdditionalFieldsgroupLayout );
+    FormLayout additionalFieldsgroupLayout = new FormLayout();
+    additionalFieldsgroupLayout.marginWidth = 10;
+    additionalFieldsgroupLayout.marginHeight = 10;
+    wAdditionalFields.setLayout( additionalFieldsgroupLayout );
 
     wlInclFilename = new Label( wAdditionalFields, SWT.RIGHT );
     wlInclFilename.setText( BaseMessages.getString( PKG, "JsonInputDialog.InclFilename.Label" ) );
@@ -786,10 +770,10 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wAddFileResult );
     wAddFileResult.setText( BaseMessages.getString( PKG, "JsonInputDialog.wAddFileResult.Label" ) );
 
-    FormLayout AddFileResultgroupLayout = new FormLayout();
-    AddFileResultgroupLayout.marginWidth = 10;
-    AddFileResultgroupLayout.marginHeight = 10;
-    wAddFileResult.setLayout( AddFileResultgroupLayout );
+    FormLayout addFileResultgroupLayout = new FormLayout();
+    addFileResultgroupLayout.marginWidth = 10;
+    addFileResultgroupLayout.marginHeight = 10;
+    wAddFileResult.setLayout( addFileResultgroupLayout );
 
     wlAddResult = new Label( wAddFileResult, SWT.RIGHT );
     wlAddResult.setText( BaseMessages.getString( PKG, "JsonInputDialog.AddResult.Label" ) );
@@ -879,6 +863,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdSourceStreamField.top = new FormAttachment( 0, margin );
     wSourceStreamField.setLayoutData( fdSourceStreamField );
     SelectionAdapter lsstream = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         activeStreamField();
         input.setChanged();
@@ -931,6 +916,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdSourceIsAFile.top = new FormAttachment( wFieldValue, margin );
     wSourceIsAFile.setLayoutData( fdSourceIsAFile );
     SelectionAdapter lssourceisafile = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         if ( wSourceIsAFile.getSelection() ) {
           wreadUrl.setSelection( false );
@@ -957,6 +943,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdreadUrl.top = new FormAttachment( wlSourceIsAFile, margin );
     wreadUrl.setLayoutData( fdreadUrl );
     SelectionAdapter lsreadurl = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         if ( wreadUrl.getSelection() ) {
           wSourceIsAFile.setSelection( false );
@@ -1222,7 +1209,6 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private void setCompositeEnabled( Composite comp, boolean enabled ) {
-    // TODO: move to TableView?
     comp.setEnabled( enabled );
     for ( Control child : comp.getChildren() ) {
       child.setEnabled( enabled );
@@ -1250,10 +1236,11 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       wFilenameList.removeAll();
 
       for ( int i = 0; i < in.getFileName().length; i++ ) {
-        wFilenameList.add( new String[] {
+        String[] items = new String[] {
           in.getFileName()[i], in.getFileMask()[i], in.getExcludeFileMask()[i],
           in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) };
+        wFilenameList.add( items );
       }
 
       wFilenameList.removeEmptyRows();
@@ -1303,8 +1290,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-          field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
-            PKG, "System.Combo.No" );
+          field.isRepeated() ? YES : NO;
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1440,7 +1426,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setDecimalSymbol( item.getText( 8 ) );
       field.setGroupSymbol( item.getText( 9 ) );
       field.setTrimType( ValueMetaBase.getTrimTypeByDesc( item.getText( 10 ) ) );
-      field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
+      field.setRepeated( YES.equalsIgnoreCase( item.getText( 11 ) ) );
 
       in.getInputFields()[i] = field;
     }
