@@ -52,6 +52,16 @@ public class SelectionAdapterOptions {
     this( selectionOperation, toStringArray( filters ), toString( defaultFilter ), null, false );
   }
 
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters, String defaultFilter,
+                                  String[] providerFilters ) {
+    this( selectionOperation, filters, defaultFilter, providerFilters, false );
+  }
+
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters, FilterType defaultFilter,
+                                  ProviderFilterType[] providerFilters ) {
+    this( selectionOperation, toStringArray( filters ), toString( defaultFilter ), toStringArray( providerFilters ), false );
+  }
+
   public SelectionAdapterOptions( SelectionOperation selectionOperation ) {
     this( selectionOperation, (String[]) null, null, null, false );
   }
@@ -67,6 +77,10 @@ public class SelectionAdapterOptions {
 
   protected static String[] toStringArray( FilterType[] filterTypes ) {
     return Arrays.stream( filterTypes ).map( Enum::toString ).toArray( String[]::new );
+  }
+
+  protected static String[] toStringArray( ProviderFilterType[] providerFilterTypes ) {
+    return Arrays.stream( providerFilterTypes ).map( Enum::toString ).toArray( String[]::new );
   }
 
   protected static String toString( FilterType filterType ) {
@@ -102,6 +116,10 @@ public class SelectionAdapterOptions {
   public SelectionAdapterOptions setProviderFilters( String[] providerFilters ) {
     this.providerFilters = providerFilters;
     return this;
+  }
+
+  public SelectionAdapterOptions setProviderFilters( ProviderFilterType[] providerFilters ) {
+    return setProviderFilters( toStringArray( providerFilters ) );
   }
 
   public boolean getUseSchemaPath() {

@@ -26,6 +26,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 public class SelectionAdapterOptionsTest {
@@ -46,6 +47,9 @@ public class SelectionAdapterOptionsTest {
 
     opts.setProviderFilters( new String[] { "VFS", "LOCAL" } );
     assertArrayEquals( new String[] {"VFS", "LOCAL"}, opts.getProviderFilters() );
+
+    opts.setProviderFilters( new ProviderFilterType[] { ProviderFilterType.VFS, ProviderFilterType.LOCAL } );
+    assertArrayEquals( new String[] {"vfs", "local" }, opts.getProviderFilters()  );
 
     opts.setSelectionOperation( SelectionOperation.FOLDER ).setUseSchemaPath( true );
     assertEquals( SelectionOperation.FOLDER, opts.getSelectionOperation() );
@@ -103,8 +107,27 @@ public class SelectionAdapterOptionsTest {
     assertEquals( SelectionOperation.FILE, selectionAdapterOptions.getSelectionOperation() );
     assertArrayEquals( filterTypes, selectionAdapterOptions.getFilters() );
     assertEquals( defaultFilter, selectionAdapterOptions.getDefaultFilter() );
-    assertArrayEquals( providerFilters , selectionAdapterOptions.getProviderFilters() );
+    assertArrayEquals( providerFilters, selectionAdapterOptions.getProviderFilters() );
     assertTrue( selectionAdapterOptions.getUseSchemaPath() );
+  }
+
+  @Test
+  public void testSelectionAdapterOptions3() {
+    SelectionOperation selectionOperation = SelectionOperation.FILE;
+    FilterType[] filterTypes = new FilterType[] { FilterType.ALL, FilterType.CSV, FilterType.TXT };
+    FilterType defaultFilter = FilterType.CSV;
+    ProviderFilterType[] providerFilters = new ProviderFilterType[] { ProviderFilterType.LOCAL };
+    String[] expectedProviderFilters = new String[] { "local" };
+    String[] expectedFilterTypes =  new String[] { "ALL", "CSV", "TXT" };
+
+    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( selectionOperation, filterTypes,
+      defaultFilter, providerFilters );
+
+    assertEquals( SelectionOperation.FILE, selectionAdapterOptions.getSelectionOperation() );
+    assertArrayEquals( expectedFilterTypes, selectionAdapterOptions.getFilters() );
+    assertEquals( defaultFilter.toString(), selectionAdapterOptions.getDefaultFilter() );
+    assertArrayEquals( expectedProviderFilters, selectionAdapterOptions.getProviderFilters() );
+    assertFalse( selectionAdapterOptions.getUseSchemaPath() );
   }
 
   @Test
