@@ -90,63 +90,97 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
 
-  private CTabItem wFileTab, wContentTab, wFieldsTab;
+  private CTabItem wFileTab;
+  private CTabItem wContentTab;
+  private CTabItem wFieldsTab;
 
-  private Composite wFileComp, wContentComp, wFieldsComp;
-  private FormData fdFileComp, fdContentComp, fdFieldsComp;
+  private Composite wFileComp;
+  private Composite wContentComp;
+  private Composite wFieldsComp;
+  private FormData fdFileComp;
+  private FormData fdContentComp;
+  private FormData fdFieldsComp;
 
-  private Label wlFilename, wlSourceIsAFile;
+  private Label wlFilename;
+  private Label wlSourceIsAFile;
   private Button wbbFilename; // Browse: add file or directory
   private Button wbdFilename; // Delete
   private Button wbeFilename; // Edit
   private Button wbaFilename; // Add or change
   private TextVar wFilename;
-  private FormData fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
+  private FormData fdlFilename;
+  private FormData fdbFilename;
+  private FormData fdbdFilename;
+  private FormData fdbeFilename;
+  private FormData fdbaFilename;
+  private FormData fdFilename;
 
   private Label wlFilenameList;
   private TableView wFilenameList;
-  private FormData fdlFilenameList, fdFilenameList;
+  private FormData fdlFilenameList;
+  private FormData fdFilenameList;
 
   private Label wlFilemask;
   private TextVar wFilemask;
-  private FormData fdlFilemask, fdFilemask;
+  private FormData fdlFilemask;
+  private FormData fdFilemask;
 
   private Button wbShowFiles;
   private FormData fdbShowFiles;
 
-  private FormData fdlFieldValue, fdlSourceStreamField, fdlSourceIsAFile;
-  private FormData fdFieldValue, fdSourceStreamField;
-  private FormData fdOutputField, fdSourceIsAFile, fdAdditionalFields, fdAddFileResult, fdConf;
-  private Label wlSourceField, wlSourceStreamField;
+  private FormData fdlFieldValue;
+  private FormData fdlSourceStreamField;
+  private FormData fdlSourceIsAFile;
+  private FormData fdFieldValue;
+  private FormData fdSourceStreamField;
+  private FormData fdOutputField;
+  private FormData fdSourceIsAFile;
+  private FormData fdAdditionalFields;
+  private FormData fdAddFileResult;
+  private FormData fdConf;
+  private Label wlSourceField;
+  private Label wlSourceStreamField;
   private CCombo wFieldValue;
-  private Button wSourceStreamField, wSourceIsAFile;
+  private Button wSourceStreamField;
+  private Button wSourceIsAFile;
 
   private Label wlInclFilename;
-  private Button wInclFilename, wAddResult;
-  private FormData fdlInclFilename, fdInclFilename, fdAddResult, fdlAddResult;
+  private Button wInclFilename;
+  private Button wAddResult;
+  private FormData fdlInclFilename;
+  private FormData fdInclFilename;
+  private FormData fdAddResult;
+  private FormData fdlAddResult;
 
   private Label wlreadUrl;
   private Button wreadUrl;
-  private FormData fdlreadUrl, fdreadUrl;
+  private FormData fdlreadUrl;
+  private FormData fdreadUrl;
 
   private Label wlremoveSourceField;
   private Button wremoveSourceField;
-  private FormData fdlremoveSourceField, fdremoveSourceField;
+  private FormData fdlremoveSourceField;
+  private FormData fdremoveSourceField;
   private Label wlInclFilenameField;
   private TextVar wInclFilenameField;
-  private FormData fdlInclFilenameField, fdInclFilenameField;
+  private FormData fdlInclFilenameField;
+  private FormData fdInclFilenameField;
 
-  private Label wlInclRownum, wlAddResult;
+  private Label wlInclRownum;
+  private Label wlAddResult;
   private Button wInclRownum;
-  private FormData fdlInclRownum, fdRownum;
+  private FormData fdlInclRownum;
+  private FormData fdRownum;
 
   private Label wlInclRownumField;
   private TextVar wInclRownumField;
-  private FormData fdlInclRownumField, fdInclRownumField;
+  private FormData fdlInclRownumField;
+  private FormData fdInclRownumField;
 
   private Label wlLimit;
   private Text wLimit;
-  private FormData fdlLimit, fdLimit;
+  private FormData fdlLimit;
+  private FormData fdLimit;
 
   private TableView wFields;
   private FormData fdFields;
@@ -158,27 +192,32 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   private Label wlExcludeFilemask;
   private TextVar wExcludeFilemask;
-  private FormData fdlExcludeFilemask, fdExcludeFilemask;
+  private FormData fdlExcludeFilemask;
+  private FormData fdExcludeFilemask;
 
   // ignore empty files flag
   private Label wlIgnoreEmptyFile;
   private Button wIgnoreEmptyFile;
-  private FormData fdlIgnoreEmptyFile, fdIgnoreEmptyFile;
+  private FormData fdlIgnoreEmptyFile;
+  private FormData fdIgnoreEmptyFile;
 
   // ignore missing path
   private Label wlIgnoreMissingPath;
   private Button wIgnoreMissingPath;
-  private FormData fdlIgnoreMissingPath, fdIgnoreMissingPath;
+  private FormData fdlIgnoreMissingPath;
+  private FormData fdIgnoreMissingPath;
 
   // default path leaf to null
   private Label wlDefaultPathLeafToNull;
   private Button wDefaultPathLeafToNull;
-  private FormData fdlDefaultPathLeafToNull, fdDefaultPathLeafToNull;
+  private FormData fdlDefaultPathLeafToNull;
+  private FormData fdDefaultPathLeafToNull;
 
   // do not fail if no files?
   private Label wldoNotFailIfNoFile;
   private Button wdoNotFailIfNoFile;
-  private FormData fdldoNotFailIfNoFile, fddoNotFailIfNoFile;
+  private FormData fdldoNotFailIfNoFile;
+  private FormData fddoNotFailIfNoFile;
 
   private CTabItem wAdditionalFieldsTab;
   private Composite wAdditionalFieldsComp;
