@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -453,7 +453,9 @@ public class TextFileInputTest {
   }
 
   private static void deleteVfsFile( String path ) throws Exception {
-    TestUtils.getFileObject( path ).delete();
+    FileObject fileObject = TestUtils.getFileObject( path );
+    fileObject.close();
+    fileObject.delete();
   }
 
   private static BaseFileField field( String name ) {
