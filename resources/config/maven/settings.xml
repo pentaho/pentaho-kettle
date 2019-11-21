@@ -62,11 +62,17 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <maven-surefire-plugin.testFailureIgnore>true</maven-surefire-plugin.testFailureIgnore>
+        <!-- Artifact repositories -->
         <pentaho.public.release.repo>${env.PUBLIC_RELEASE_REPO_URL}</pentaho.public.release.repo>
         <pentaho.public.snapshot.repo>${env.PUBLIC_SNAPSHOT_REPO_URL}</pentaho.public.snapshot.repo>
         <pentaho.private.release.repo>${env.PRIVATE_RELEASE_REPO_URL}</pentaho.private.release.repo>
         <pentaho.private.snapshot.repo>${env.PRIVATE_SNAPSHOT_REPO_URL}</pentaho.private.snapshot.repo>
+
+        <!-- hide test output clutter -->
+        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+
+        <!-- let the build become unstable with failed tests instead of failing -->
+        <maven.test.failure.ignore>true</maven.test.failure.ignore>
       </properties>
       <repositories>
         <repository>
@@ -100,9 +106,4 @@
       </pluginRepositories>
     </profile>
   </profiles>
-  
-  <activeProfiles>
-    <activeProfile>unit-test-output-redirect</activeProfile>
-  </activeProfiles>
-
 </settings>
