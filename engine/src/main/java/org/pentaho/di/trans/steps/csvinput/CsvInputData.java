@@ -299,7 +299,8 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
     return crLfMatcher.isReturn( byteBuffer, endBuffer ) || crLfMatcher.isLineFeed( byteBuffer, endBuffer );
   }
 
-  boolean delimiterFound() {
+  boolean delimiterFound() throws IOException {
+    checkMinimumBytesAvailable( delimiter.length );
     return delimiterMatcher.matchesPattern( byteBuffer, endBuffer, delimiter );
   }
 
@@ -310,4 +311,35 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
   boolean endOfBuffer() {
     return endBuffer >= bufferSize;
   }
+
+  /**
+   * Ensure there are at least a minimum number of bytes in the buffer.  If not then pull in another block of data.
+   * @param bytesNeeded bytes to ensure are present in the buffer
+   */
+  private void checkMinimumBytesAvailable( int bytesNeeded ) throws IOException {
+    if ( bufferSize - endBuffer < bytesNeeded ) {
+
+      int newSize = bufferSize - startBuffer + Math.max( preferredBufferSize, bytesNeeded );
+      byte[] newByteBuffer = new byte[ newSize + 100 ];
+
+      // copy over the old data...
+      System.arraycopy( byteBuffer, startBuffer, newByteBuffer, 0, bufferSize - startBuffer );
+
+      // replace the old byte buffer...
+      byteBuffer = newByteBuffer;
+
+      // Adjust start and end point of data in the byte buffer
+      //
+      int newEndBuffer = endBuffer - startBuffer;
+      bufferSize =
+        endBuffer = bufferSize - startBuffer;  //Set endBuffer to bufferSize temporarily so readBufferFromFile works
+      startBuffer = 0;
+
+      readBufferFromFile();
+
+      endBuffer = newEndBuffer;
+
+    }
+  }
+
 }
