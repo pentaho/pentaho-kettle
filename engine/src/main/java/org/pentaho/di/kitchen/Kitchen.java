@@ -25,6 +25,7 @@ package org.pentaho.di.kitchen;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -52,6 +53,7 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
@@ -69,7 +71,7 @@ public class Kitchen {
   public static void main( String[] a ) throws Exception {
     final ExecutorService executor = ExecutorUtil.getExecutor();
     final RepositoryPluginType repositoryPluginType = RepositoryPluginType.getInstance();
-
+    Locale.setDefault( LanguageChoice.getInstance().getDefaultLocale() );
     final Future<Map.Entry<KettlePluginException, Future<KettleException>>> repositoryRegisterFuture =
       executor.submit( new Callable<Map.Entry<KettlePluginException, Future<KettleException>>>() {
 
