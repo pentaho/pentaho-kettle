@@ -4570,12 +4570,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void openFileNew() throws Exception {
     FileDialogOperation fileDialogOperation =
       getFileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
+    fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
     if ( !Utils.isEmpty( lastFileOpened ) ) {
       String folder = lastFileOpened.substring( 0, lastFileOpened.lastIndexOf( File.separator ) );
       fileDialogOperation.setPath( folder );
       fileDialogOperation.setConnection( lastFileOpenedConnection );
       fileDialogOperation.setProvider( lastFileOpenedProvider );
-      fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
     }
     try {
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
