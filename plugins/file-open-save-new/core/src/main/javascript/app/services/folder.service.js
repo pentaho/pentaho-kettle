@@ -323,9 +323,13 @@ define(
         function _populateFolder(node, name, resolve) {
           node.loading = true;
           providerService.get(node.provider).createFolder(node, name).then(function (children) {
-            node.children = children;
-            node.loading = false;
-            resolve(_doFind(node, name));
+            if (children.length === 0) {
+              resolve(null);
+            } else {
+              node.children = children;
+              node.loading = false;
+              resolve(_doFind(node, name));
+            }
           }, function () {
             resolve(null);
           });
