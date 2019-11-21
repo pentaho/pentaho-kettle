@@ -1,16 +1,16 @@
-library(identifier: "jenkins-shared-libraries@20190816", changelog: false)
+library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20191121'}", changelog: false)
 
 node(params.SLAVE_NODE_LABEL ?: 'non-master') {
   timestamps {
-    config.stage()
+    stages.configure()
 
     catchError {
-      clean.preStage()
-      checkoutStage()
-      buildStage2()
-      clean.postStage()
+      stages.preClean()
+      stages.checkout()
+      stages.test()
+      stages.postClean()
     }
 
-    reportStage()
+    stages.report()
   }
 }

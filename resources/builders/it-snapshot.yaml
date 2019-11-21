@@ -1,18 +1,22 @@
 buildProperties:
   BUILD_PLAN_ID                 : Suite Integration Test Build
 
-  IGNORE_PIPELINE_FAILURE       : true
-  PARALLEL_CHUNKSIZE            : 0 # unlimited chunk size
-
   USE_MINION_JOBS               : true
+  BUILD_RETRIES                 : 3
   MINION_PIPELINE_TEMPLATE      : resources/templates/minion-pipeline-it.vm
+  IGNORE_PIPELINE_FAILURE       : true
 
-  MAVEN_DEFAULT_COMMAND_OPTIONS : -B -e -U -DsurefireArgLine=-Xmx1g -Dmaven.test.failure.ignore
-  MAVEN_DEFAULT_DIRECTIVES      : clean verify project-info-reports:dependencies -DrunITs -Daudit
+  MAVEN_DEFAULT_COMMAND_OPTIONS : -B -e -U -DrunITs
+  MAVEN_DEFAULT_DIRECTIVES      : clean verify project-info-reports:dependencies
 
-  JOB_ITEM_DEFAULTS             :
-    scmBranch                   : master
-    archivable                  : false
+  # Slack Reporting
+  SLACK_INTEGRATION: true
+  SLACK_CHANNEL: 'buildteam-alerts'
+
+  JOB_ITEM_DEFAULTS:
+    dockerImage : jenkins-build/maven/oracle-jdk/8
+    scmBranch   : master
+    archivable  : false
 
 jobGroups:
   All Projects:
@@ -114,7 +118,7 @@ jobGroups:
 
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       directives      :  += -DskipDefault -P shim-api,common,shims,all -Dsonar.test.exclusions=**/*generated-test-sources*/**
+       directives      :  += -DskipDefault -P shim-api,common,shims,all
 
      - jobID           :  big-data-splunk-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
