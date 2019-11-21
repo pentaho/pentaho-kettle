@@ -356,7 +356,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Listen to the Browse... button
     SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE,
-      new FilterType[] { FilterType.JSON, FilterType.TXT, FilterType.ALL }, FilterType.JSON );
+      new FilterType[] { FilterType.JSON, FilterType.JS, FilterType.ALL }, FilterType.JSON );
 
     wbbFilename
       .addSelectionListener( new ConditionSelectionAdapterFileDialogTextVar( log, wFilename, transMeta, options,
