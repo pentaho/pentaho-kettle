@@ -135,7 +135,7 @@ public class RegisterPackageServletTest {
   public void testGetStartFileUrl() {
     String archiveUrl = "/tmp/some/path";
     String requestLoad = "export_33b89rnd04mglfh.zip";
-    String expectedUrl = "/tmp/some/path/export_33b89rnd04mglfh.zip";
+    String expectedUrl = applyFileSeperator( "/tmp/some/path/export_33b89rnd04mglfh.zip" );
 
     assertEquals( expectedUrl, servlet.getStartFileUrl( archiveUrl, requestLoad) );
   }
@@ -144,7 +144,7 @@ public class RegisterPackageServletTest {
   public void testConcat() {
     String basePath = "/tmp/some/path";
     String relativePath = "that/is/temporary";
-    String expectedPath = "/tmp/some/path/that/is/temporary";
+    String expectedPath = applyFileSeperator( "/tmp/some/path/that/is/temporary" );
 
     // CASE 1: Add separator
     assertEquals( expectedPath, servlet.concat( basePath, relativePath ) );
@@ -159,7 +159,7 @@ public class RegisterPackageServletTest {
     String archiveUrl = "/tmp/dafajfkdh/somePath/sub";
     String fileName = "execution_configuration__.xml";
     String xmlTag = "execution_configuration";
-    String configUrl = "/tmp/dafajfkdh/somePath/sub/execution_configuration__.xml";
+    String configUrl = applyFileSeperator( "/tmp/dafajfkdh/somePath/sub/execution_configuration__.xml" );
 
     Document configDoc = mock( Document.class );
     Node node = mock ( Node.class );
@@ -203,7 +203,7 @@ public class RegisterPackageServletTest {
 
     String baseDirectory = "/root/somePath/anotherPath";
     String folderName = "folderName";
-    String expectedPath = "/root/somePath/anotherPath/folderName";
+    String expectedPath = applyFileSeperator( "/root/somePath/anotherPath/folderName" );
 
     assertEquals( expectedPath, servlet.createTempDirString( baseDirectory, folderName) );
   }
@@ -267,7 +267,7 @@ public class RegisterPackageServletTest {
     servlet.setZipService( mockZipService );
     // a valid filepath is not necessary for test
     String path1 = "/root/subPath1/subPath2/zipFilePath002.zip";
-    String expectedDirectory = "/root/subPath1/subPath2";
+    String expectedDirectory = applyFileSeperator( "/root/subPath1/subPath2" );
 
     assertEquals( expectedDirectory, servlet.extract( path1 ) );
   }
@@ -300,6 +300,10 @@ public class RegisterPackageServletTest {
     PowerMockito.verifyStatic( FileUtils.class);
     FileUtils.deleteQuietly( expectedFile );
 
+  }
+
+  private String applyFileSeperator( String path ){
+    return path.replace( "/", File.separator );
   }
   
 }
