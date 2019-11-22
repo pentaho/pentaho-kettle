@@ -4629,15 +4629,21 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       if ( fileDialogOperation.getRepositoryObject() != null ) {
         RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
-        final RepositoryDirectoryInterface oldDir = meta.getRepositoryDirectory();
-        final String oldName = meta.getName();
+        final RepositoryDirectoryInterface originalDir = meta.getRepositoryDirectory();
+        final String originalName = meta.getName();
+        final ObjectId originalObjectId = meta.getObjectId();
+        final String originalFilename = meta.getFilename();
+        meta.setObjectId( null );
+        meta.setFilename( null );
         meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
         meta.setName( repositoryObject.getName() );
         saved = saveToRepositoryConfirmed( meta );
         if ( !saved ) {
           // if the object wasn't successfully saved, set the name and directory back to their original values
-          meta.setRepositoryDirectory( oldDir );
-          meta.setName( oldName );
+          meta.setRepositoryDirectory( originalDir );
+          meta.setName( originalName );
+          meta.setObjectId( originalObjectId );
+          meta.setFilename( originalFilename );
         }
       } else if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
         String filename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
