@@ -26,6 +26,7 @@ class GithubCommits {
     println "End Date:              ${endDate}"
     println "Max Number of Commits: ${maxNumberOfCommits}\n"
 
+    def auth = GITHUB_API_TOKEN
     def noChangesList = []
 
     // Stat variables
@@ -43,7 +44,10 @@ class GithubCommits {
       def organization = githubProject.getOrg()
       def repository = githubProject.getName()
       def branch = githubProject.getBranch()
-      def auth = GITHUB_API_TOKEN
+      if (branch == "undefined_branch") {
+        println "ERROR: Undefined branch for ${organization}/${repository}."
+        continue
+      }
 
       def apiURL = "https://api.github.com/repos/${organization}/${repository}/commits?sha=${branch}&since=${startDate}&until=${endDate}&per_page=${maxNumberOfCommits}"
       //println apiURL
