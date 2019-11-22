@@ -20,6 +20,7 @@ buildProperties:
   RELEASE_VERSION                : 9.0.0.0
   DEPLOYMENT_FOLDER              : 9.0-QAT
   RELEASE_MODE                   : true
+  DEFAULT_BRANCH                 : master
   SUITE_BUILD_RESOURCES_BRANCH   : 9.0.0.0
   SERVICEPACK_BRANCH             : master
   JENKINS_FOLDER_NAME            : '9.0'
