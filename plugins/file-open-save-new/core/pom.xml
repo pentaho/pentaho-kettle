@@ -174,7 +174,7 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Import-Package>org.pentaho.di.osgi, *</Import-Package>
+            <Import-Package>org.apache.xerces.parsers, org.pentaho.di.osgi, *</Import-Package>
             <Provide-Capability>
               org.pentaho.webpackage;root=/app
             </Provide-Capability>
