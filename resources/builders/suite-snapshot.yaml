@@ -159,10 +159,9 @@ jobGroups:
      - jobID           :  archetypes-ee
        scmUrl          :  https://github.com/pentaho/maven-project-archetypes-ee.git
 
-     - jobID           :  big-data-hadoop-shims-common
-       scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       directives      :  += -DskipDefault -P common 
-       archivable      :  false
+     - jobID           :  big-data-plugin-lowdeps
+       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+       directives      :  += -DskipDefault -P lowdeps
 
   1410:
      - jobID           :  big-data-hadoop-shims-common
