@@ -322,8 +322,7 @@ define([
           && (!vm.showMessage
           && vm.showRecents
           && vm.recentFiles.length > 0
-          && !$state.is('selectFolder')
-          && !$state.is('selectFile'));
+          && !isSelectState());
 
       vm.placeholder = utils.getPlaceholder(i18n.get("file-open-save-plugin.app.header.search.placeholder"), vm.folder, vm.currentRepo);
       vm.fileList = _getFiles();
@@ -394,7 +393,7 @@ define([
     function onOpenClick() {
       if (fileService.files.length === 1) {
         // If something is selected either open the folder or return it depending on state
-        if (fileService.files[0].type === "folder" && !$state.is("selectFolder")) {
+        if (fileService.files[0].type === "folder" && !$state.is("selectFolder") && !$state.is("selectFileFolder")) {
           vm.searchString = "";
           selectFolder(fileService.files[0]);
         } else {
@@ -402,7 +401,7 @@ define([
         }
       } else {
         // Nothing is selected return the folder path if in Select Folder state
-        if ($state.is("selectFolder")) {
+        if ($state.is("selectFolder") || $state.is("selectFileFolder")) {
           _open(folderService.folder)
         }
       }
@@ -628,6 +627,10 @@ define([
         });
       }
       _update();
+    }
+
+    function isSelectState() {
+      return (vm.$state.is('selectFile') || vm.$state.is('selectFolder') || vm.$state.is('selectFileFolder'));
     }
 
     /**
