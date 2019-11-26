@@ -25,17 +25,23 @@ package org.pentaho.di.connections.vfs.provider;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileNameParser;
+import org.apache.commons.vfs2.provider.FileNameParser;
 import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.provider.VfsComponentContext;
 
 public class ConnectionFileNameParser extends AbstractFileNameParser {
   @Override public FileName parseUri( VfsComponentContext vfsComponentContext, FileName fileName, String uri )
     throws FileSystemException {
+    return parseUri( uri, this );
+  }
+
+  public static AbstractFileName parseUri( String uri, FileNameParser fileNameParser ) throws FileSystemException {
     StringBuilder name = new StringBuilder();
 
     String scheme = UriParser.extractScheme( uri, name );
-    UriParser.canonicalizePath( name, 0, name.length(), this );
+    UriParser.canonicalizePath( name, 0, name.length(), fileNameParser );
 
     UriParser.fixSeparators( name );
 
