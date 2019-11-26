@@ -204,6 +204,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         return new FileDialogOperation( FileDialogOperation.SELECT_FILE, FileDialogOperation.ORIGIN_SPOON );
       case FOLDER:
         return new FileDialogOperation( FileDialogOperation.SELECT_FOLDER, FileDialogOperation.ORIGIN_SPOON );
+      case FILE_OR_FOLDER:
+        return new FileDialogOperation( FileDialogOperation.SELECT_FILE_FOLDER, FileDialogOperation.ORIGIN_SPOON );
       case SAVE:
         return new FileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
       case OPEN:

@@ -30,6 +30,7 @@ package org.pentaho.di.ui.core.events.dialog;
 public enum SelectionOperation {
   FILE,
   FOLDER,
+  FILE_OR_FOLDER,
   SAVE,
   OPEN;
 }

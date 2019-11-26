@@ -26,6 +26,11 @@
         {{::vm.okButton}}
       </span>
   </button>
+  <button class="primary" ng-if="vm.state.is('selectFileFolder')" ng-click="vm.onOpenClick()" ng-disabled="vm.disabled">
+      <span>
+        {{::vm.okButton}}
+      </span>
+  </button>
   <button class="primary" ng-if="vm.state.is('selectFile')" ng-click="vm.onOpenClick()" ng-disabled="vm.disabled">
       <span>
         {{::vm.okButton}}

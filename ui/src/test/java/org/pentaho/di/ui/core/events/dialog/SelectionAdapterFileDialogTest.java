@@ -96,6 +96,12 @@ public class SelectionAdapterFileDialogTest {
     assertNotNull( fdo2 );
     assertEquals( FileDialogOperation.SELECT_FOLDER, fdo2.getCommand() );
     assertEquals( FileDialogOperation.ORIGIN_SPOON, fdo2.getOrigin() );
+
+    // TEST : SELECT folder
+    FileDialogOperation fdo3 = testInstance.createFileDialogOperation( SelectionOperation.FILE_OR_FOLDER );
+    assertNotNull( fdo3 );
+    assertEquals( FileDialogOperation.SELECT_FILE_FOLDER, fdo3.getCommand() );
+    assertEquals( FileDialogOperation.ORIGIN_SPOON, fdo3.getOrigin() );
   }
 
   @Test

@@ -135,12 +135,22 @@ define([
 
     function _isDisabled() {
       var enabled = true;
-      if (vm.state.is('selectFolder')) {
-        enabled = _isFolder(vm.selectedFile);
-      } else if (vm.state.is('selectFile')) {
-        enabled = _hasFileType(vm.selectedFile) && !_isFolder(vm.selectedFile);
-      } else if (vm.state.is('open')) {
-        enabled = vm.filename;
+
+      switch (vm.state.current.name) {
+        case 'selectFolder':
+          enabled = _isFolder(vm.selectedFile);
+          break;
+        case 'selectFile':
+          enabled = _hasFileType(vm.selectedFile) && !_isFolder(vm.selectedFile);
+          break;
+        case 'selectFileFolder':
+          enabled = _hasFileType(vm.selectedFile) || _isFolder(vm.selectedFile);
+          break;
+        case 'open':
+          enabled = vm.filename;
+          break;
+        default:
+          break;
       }
       vm.disabled = !enabled;
     }

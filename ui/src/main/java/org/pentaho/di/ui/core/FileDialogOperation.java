@@ -25,6 +25,7 @@ public class FileDialogOperation {
 
   public static final String SELECT_FOLDER = "selectFolder";
   public static final String SELECT_FILE = "selectFile";
+  public static final String SELECT_FILE_FOLDER = "selectFileFolder";
   public static final String OPEN = "open";
   public static final String SAVE = "save";
   public static final String ORIGIN_SPOON = "spoon";
