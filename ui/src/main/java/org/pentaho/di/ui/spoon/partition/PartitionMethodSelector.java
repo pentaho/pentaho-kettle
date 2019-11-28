@@ -31,7 +31,7 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
  */
 public class PartitionMethodSelector {
 
-  private static Class<?> PKG = PartitionMethodSelector.class;
+  private static final Class<?> PKG = PartitionMethodSelector.class;
 
   public static final String STRING_PARTITION_METHOD_SELECTOR_DIALOG_TITLE =
           BaseMessages.getString( PKG, "PartitionMethodSelector.DIALOG_TITLE" );
