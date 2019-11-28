@@ -1051,7 +1051,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // things as well...
           if ( stepMeta.isPartitioned() ) {
             List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-            if ( partitionIDs != null && partitionIDs.size() > 0 ) {
+            if ( partitionIDs != null && !partitionIDs.isEmpty() ) {
               step.setPartitionID( partitionIDs.get( c ) ); // Pass the partition ID
               // to the step
             }
@@ -1546,14 +1546,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 for ( int i = 0; i < steps.size() && !isStopped(); i++ ) {
                   StepMetaDataCombi combi = steps.get( i );
                   if ( !stepDone[ i ] ) {
-                    // if (combi.step.canProcessOneRow() ||
-                    // !combi.step.isRunning()) {
                     boolean cont = combi.step.processRow( combi.meta, combi.data );
                     if ( !cont ) {
                       stepDone[ i ] = true;
                       nrDone++;
                     }
-                    // }
                   }
                 }
               }
@@ -1561,8 +1558,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               errors.addAndGet( 1 );
               log.logError( "Error executing single threaded", e );
             } finally {
-              for ( int i = 0; i < steps.size(); i++ ) {
-                StepMetaDataCombi combi = steps.get( i );
+              for ( StepMetaDataCombi combi : steps ) {
                 combi.step.dispose( combi.meta, combi.data );
                 combi.step.markStop();
               }
@@ -1703,6 +1699,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     for ( StepMetaDataCombi combi : steps ) {
+      // PDI-18214/CDA-243: Check if the steps have been disposed
+      if ( !combi.data.isDisposed() ) {
+        combi.step.setOutputDone();
+        combi.step.dispose( combi.meta, combi.data );
+        combi.step.markStop();
+      }
       combi.step.cleanup();
     }
   }
