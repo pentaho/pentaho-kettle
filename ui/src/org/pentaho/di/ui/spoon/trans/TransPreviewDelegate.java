@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
@@ -74,6 +75,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandler {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
@@ -87,7 +92,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   private Composite transPreviewComposite;
 
   protected Map<StepMeta, RowMetaInterface> previewMetaMap;
-  protected Map<StepMeta, List<Object[]>> previewDataMap;
+  protected Map<StepMeta, List<RowMetaAndData>> previewDataMap;
   protected Map<StepMeta, StringBuffer> previewLogMap;
   private Composite previewComposite;
 
@@ -114,9 +119,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     super( spoon );
     this.transGraph = transGraph;
 
-    previewMetaMap = new HashMap<StepMeta, RowMetaInterface>();
-    previewDataMap = new HashMap<StepMeta, List<Object[]>>();
-    previewLogMap = new HashMap<StepMeta, StringBuffer>();
+    previewMetaMap = new HashMap<>();
+    previewDataMap = new HashMap<>();
+    previewLogMap = new HashMap<>();
 
     previewMode = PreviewMode.FIRST;
   }
@@ -280,7 +285,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     //
     RowMetaInterface rowMeta = previewMetaMap.get( stepMeta );
     if ( rowMeta != null ) {
-      List<Object[]> rowData = previewDataMap.get( stepMeta );
+      List<RowMetaAndData> rowData = previewDataMap.get( stepMeta );
 
       try {
         showPreviewGrid( transGraph.getManagedObject(), stepMeta, rowMeta, rowData );
@@ -299,7 +304,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   }
 
   protected void showPreviewGrid( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface rowMeta,
-    List<Object[]> rowsData ) throws KettleException {
+    List<RowMetaAndData> rowsData ) throws KettleException {
     clearPreviewComposite();
 
     ColumnInfo[] columnInfo = new ColumnInfo[rowMeta.size()];
@@ -316,7 +321,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     // Put data on it...
     //
     for ( int rowNr = 0; rowNr < rowsData.size(); rowNr++ ) {
-      Object[] rowData = rowsData.get( rowNr );
+      RowMetaAndData rowMetaAndData = rowsData.get( rowNr );
+      RowMetaInterface dataRowMeta = rowMetaAndData.getRowMeta();
+      Object[] rowData = rowMetaAndData.getData();
       TableItem item;
       if ( rowNr < tableView.table.getItemCount() ) {
         item = tableView.table.getItem( rowNr );
@@ -324,15 +331,16 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
         item = new TableItem( tableView.table, SWT.NONE );
       }
       for ( int colNr = 0; colNr < rowMeta.size(); colNr++ ) {
+        int dataIndex = dataRowMeta.indexOfValue( rowMeta.getValueMeta( colNr ).getName() );
         String string;
         ValueMetaInterface valueMetaInterface;
         try {
-          valueMetaInterface = rowMeta.getValueMeta( colNr );
+          valueMetaInterface = dataRowMeta.getValueMeta( dataIndex );
           if ( valueMetaInterface.isStorageBinaryString() ) {
-            Object nativeType = valueMetaInterface.convertBinaryStringToNativeType( (byte[]) rowData[colNr] );
+            Object nativeType = valueMetaInterface.convertBinaryStringToNativeType( (byte[]) rowData[dataIndex] );
             string = valueMetaInterface.getStorageMetadata().getString( nativeType );
           } else {
-            string = rowMeta.getString( rowData, colNr );
+            string = dataRowMeta.getString( rowData, dataIndex );
           }
         } catch ( Exception e ) {
           string = "Conversion error: " + e.getMessage();
@@ -461,11 +469,11 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
         final RowMetaInterface rowMeta = transMeta.getStepFields( stepMeta ).clone();
         previewMetaMap.put( stepMeta, rowMeta );
-        final List<Object[]> rowsData;
+        final List<RowMetaAndData> rowsData;
         if ( previewMode == PreviewMode.LAST ) {
-          rowsData = new LinkedList<Object[]>();
+          rowsData = new LinkedList<>();
         } else {
-          rowsData = new ArrayList<Object[]>();
+          rowsData = new ArrayList<>();
         }
 
         previewDataMap.put( stepMeta, rowsData );
@@ -481,7 +489,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
                 @Override
                 public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
                   try {
-                    rowsData.add( rowMeta.cloneRow( row ) );
+                    rowsData.add( new RowMetaAndData( rowMeta, rowMeta.cloneRow( row ) ) );
                     if ( rowsData.size() > PropsUI.getInstance().getDefaultPreviewSize() ) {
                       rowsData.remove( 0 );
                     }
@@ -498,7 +506,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
                 public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
                   if ( rowsData.size() < PropsUI.getInstance().getDefaultPreviewSize() ) {
                     try {
-                      rowsData.add( rowMeta.cloneRow( row ) );
+                      rowsData.add( new RowMetaAndData( rowMeta, rowMeta.cloneRow( row ) ) );
                     } catch ( Exception e ) {
                       throw new KettleStepException( "Unable to clone row for metadata : " + rowMeta, e );
                     }
@@ -540,7 +548,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     StringBuffer buffer ) {
     previewLogMap.put( stepMeta, buffer );
     previewMetaMap.put( stepMeta, rowMeta );
-    previewDataMap.put( stepMeta, rowsData );
+    List<RowMetaAndData> rowsMetaAndData =
+      rowsData.stream().map( data -> new RowMetaAndData( rowMeta, data ) ).collect( toList() );
+    previewDataMap.put( stepMeta, rowsMetaAndData );
   }
 
   /**
@@ -584,6 +594,10 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   }
 
   public Map<StepMeta, List<Object[]>> getPreviewDataMap() {
-    return previewDataMap;
+    // Note this method is unused, but sincie it's public, we will keep the original signature after change to type of
+    // this map, just in case.
+    return previewDataMap.keySet().stream().collect(
+      toMap(
+        identity(), key -> previewDataMap.get( key ).stream().map( RowMetaAndData::getData ).collect( toList() ) ) );
   }
 }
