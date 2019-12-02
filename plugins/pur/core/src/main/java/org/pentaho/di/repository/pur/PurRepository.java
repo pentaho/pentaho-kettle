@@ -103,6 +103,8 @@ import javax.xml.ws.Service;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,6 +118,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -363,6 +366,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     metaStore = null;
     purRepositoryConnector.disconnect();
   }
+
+  @Override public Optional<URI> getUri() {
+    String url = Optional.ofNullable( repositoryMeta.getRepositoryLocation() )
+      .orElseThrow( () -> new IllegalStateException( getName() + " does not have a defined location." ) )
+      .getUrl();
+    try {
+      return Optional.of( new URI( url ) );
+    } catch ( URISyntaxException e ) {
+      log.logError( e.getMessage(), e );
+    }
+    return Optional.empty();
+  }
+
 
   @Override public int countNrJobEntryAttributes( ObjectId idJobentry, String code ) throws KettleException {
     // implemented by RepositoryProxy
