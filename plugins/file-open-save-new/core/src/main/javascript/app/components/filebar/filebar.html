@@ -1,4 +1,4 @@
-<div id="fileName" class="flex" ng-show="vm.state.is('save')">
+<div id="fileName" class="flex" ng-show="vm.isSaveState()">
   <label id="fileNameLabel">
     {{::vm.saveFileNameLabel}}
   </label>
@@ -6,7 +6,7 @@
     <input id="fileNameEntryTextBox" ng-change="vm.onChange()" type="text" class="fileNameEntryTextBox" ng-model="vm.filename" focus/>
   </div>
 </div>
-<div class="flex" ng-hide="vm.state.is('save')"></div>
+<div class="flex" ng-hide="vm.isSaveState()"></div>
 <div id="fileFilter" ng-hide="vm.state.is('selectFolder')">
   <label id="fileTypeLabel">
     {{::vm.fileFilterLabel}}
@@ -44,6 +44,11 @@
   <button class="primary" ng-if="vm.state.is('save')" ng-click="vm.onSaveClick()" ng-disabled="vm.isSaveEnabled">
       <span>
         {{::vm.saveButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('saveTo')" ng-click="vm.onSaveClick()" ng-disabled="vm.isSaveEnabled">
+      <span>
+        {{::vm.okButton}}
       </span>
   </button>
 </div>
