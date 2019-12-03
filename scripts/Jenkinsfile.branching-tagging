@@ -10,11 +10,14 @@ properties(
      string(defaultValue: '', description: 'Target branch or tag', name: 'TARGET_BRANCH_TAG'),
      booleanParam(defaultValue: true, description: '', name: 'BRANCHES'),
      booleanParam(defaultValue: false, description: '', name: 'TAGS'),
-     booleanParam(defaultValue: false, description: '', name: 'NOOP')]
+     booleanParam(defaultValue: false, description: '', name: 'NOOP'),
+     string(defaultValue: 'non-master', description: 'Agent label of where to run job', name: 'AGENT_LABEL')]
   )])
 
-node {
+node(params.AGENT_LABEL) {
     stage('Branch/Tag'){
+        cleanWs()
+
         git(url: params.PIPELINE_URL, branch: params.PIPELINE_BRANCH, credentialsId: 'github-buildguy')
 
         def buildData = config.load(BUILD_DATA_FILE: params.BUILD_DATA_FILE)

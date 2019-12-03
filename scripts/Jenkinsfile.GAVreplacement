@@ -14,11 +14,14 @@ properties(
      string(defaultValue: '', description: '', name: 'CURRENT_VERSION'),
      string(defaultValue: '', description: '', name: 'DESIRED_GROUP_ID'),
      string(defaultValue: '', description: '', name: 'DESIRED_ARTIFACT_ID'),
-     string(defaultValue: '', description: '', name: 'DESIRED_VERSION')]
+     string(defaultValue: '', description: '', name: 'DESIRED_VERSION'),
+     string(defaultValue: 'non-master', description: 'Agent label of where to run job', name: 'AGENT_LABEL')]
   )])
 
-node {
+node(params.AGENT_LABEL) {
     stage('Branch/Tag'){
+        cleanWs()
+
         git(url: params.PIPELINE_URL, branch: params.PIPELINE_BRANCH, credentialsId: 'github-buildguy')
 
         def buildData = config.load(BUILD_DATA_FILE: params.BUILD_DATA_FILE)

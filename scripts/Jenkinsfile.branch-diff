@@ -7,10 +7,11 @@ properties(
      string(defaultValue: 'master', description: 'Jenkins pipeline branch', name: 'PIPELINE_BRANCH'),
      string(defaultValue: 'sample-pipeline.yaml', description: 'Build data file', name: 'BUILD_DATA_FILE'),
      string(defaultValue: '', description: 'Source branch for diff', name: 'SOURCE_BRANCH'),
-     string(defaultValue: '', description: 'Target branch for diff', name: 'TARGET_BRANCH')]
+     string(defaultValue: '', description: 'Target branch for diff', name: 'TARGET_BRANCH'),
+     string(defaultValue: 'non-master', description: 'Agent label of where to run job', name: 'AGENT_LABEL')]
   )])
 
-node {
+node(params.AGENT_LABEL) {
     stage('Branch Diff'){
         cleanWs()
 
