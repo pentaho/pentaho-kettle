@@ -29,7 +29,7 @@ define([
       link: function(scope, element, attrs) {
         var scrollClass = "";
         $timeout(function() {
-          scrollClass = $state.is("save") ? "scrollTableSave" : "scrollTableOpen";
+          scrollClass = ($state.is("save") || $state.is("saveTo")) ? "scrollTableSave" : "scrollTableOpen";
         });
 
         var table = angular.element(element[0].querySelector("#filesTableBody"));

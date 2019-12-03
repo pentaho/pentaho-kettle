@@ -28,6 +28,7 @@ public class FileDialogOperation {
   public static final String SELECT_FILE_FOLDER = "selectFileFolder";
   public static final String OPEN = "open";
   public static final String SAVE = "save";
+  public static final String SAVE_TO = "saveTo";
   public static final String ORIGIN_SPOON = "spoon";
   public static final String ORIGIN_OTHER = "other";
   public static final String TRANSFORMATION = "transformation";
@@ -181,6 +182,10 @@ public class FileDialogOperation {
 
   public boolean isProviderRepository() {
     return provider.equalsIgnoreCase( PROVIDER_REPO );
+  }
+
+  public boolean isSaveCommand() {
+    return ( command.equalsIgnoreCase( SAVE ) || command.equalsIgnoreCase( SAVE_TO ) );
   }
 
 }

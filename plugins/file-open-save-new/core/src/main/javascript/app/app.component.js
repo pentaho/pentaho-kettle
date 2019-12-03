@@ -218,7 +218,7 @@ define([
      * @private
      */
     function _setFileToSaveName() {
-      if ($state.is("save")) {
+      if (isSaveState()) {
         if (vm.filename !== undefined) {
           vm.fileToSave = vm.filename;
         } else {
@@ -344,7 +344,7 @@ define([
       if (file.type === "folder") {
         vm.searchString = "";
         selectFolder(file);
-      } else if (!$state.is("save")) {
+      } else if (!isSaveState()) {
         _open(file);
       }
     }
@@ -630,7 +630,11 @@ define([
     }
 
     function isSelectState() {
-      return (vm.$state.is('selectFile') || vm.$state.is('selectFolder') || vm.$state.is('selectFileFolder'));
+      return (vm.state.is('selectFile') || vm.state.is('selectFolder') || vm.state.is('selectFileFolder'));
+    }
+
+    function isSaveState() {
+      return (vm.state.is('save') || vm.state.is('saveTo'));
     }
 
     /**
@@ -773,7 +777,7 @@ define([
      */
     function onKeyUp(event) {
       if (event.keyCode === 13 && event.target.tagName !== "INPUT") {
-        if ($state.is("save") && !vm.showRecents) {
+        if (isSaveState("save") && !vm.showRecents) {
           _save(false);
         } else if (vm.selectedFiles.length === 1) {
           onSelectFile(vm.selectedFiles[0]);

@@ -62,6 +62,7 @@ define([
     vm.$onChanges = onChanges;
     vm.onSelect = onSelect;
     vm.onChange = onChange;
+    vm.isSaveState = isSaveState;
 
     vm.disabled = true;
     vm.fileFilters = [];
@@ -131,6 +132,10 @@ define([
     function _update() {
       vm.isSaveEnabled = vm.filename === '' || !vm.path;
       _isDisabled();
+    }
+
+    function isSaveState() {
+      return (vm.state.is('save') || vm.state.is('saveTo'));
     }
 
     function _isDisabled() {

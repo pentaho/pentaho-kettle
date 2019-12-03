@@ -208,6 +208,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         return new FileDialogOperation( FileDialogOperation.SELECT_FILE_FOLDER, FileDialogOperation.ORIGIN_SPOON );
       case SAVE:
         return new FileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
+      case SAVE_TO:
+        return new FileDialogOperation( FileDialogOperation.SAVE_TO, FileDialogOperation.ORIGIN_SPOON );
       case OPEN:
         return new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
       default:
@@ -302,7 +304,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
       if ( fileDialogOperation.isProviderRepository() ) {
         return getRepositoryFilePath( fileDialogOperation );
       } else {
-        if ( fileDialogOperation.getCommand().equals( FileDialogOperation.SAVE ) ) {
+        if ( fileDialogOperation.isSaveCommand() ) {
           return fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
         } else {
           return fileDialogOperation.getPath();
