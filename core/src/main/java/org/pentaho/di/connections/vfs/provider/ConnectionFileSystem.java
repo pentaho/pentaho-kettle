@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.provider.AbstractFileSystem;
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.core.variables.Variables;
@@ -48,28 +49,51 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     super( rootName, null, fileSystemOptions );
   }
 
+  /**
+   * Creates a url for {@link ConnectionFileName}
+   *
+   * @param abstractFileName File name
+   * @param connectionDetails Connection details for the file name
+   * @return created url otherwise null
+   */
+  public static String getUrl( AbstractFileName abstractFileName, ConnectionDetails connectionDetails ) {
+    VFSConnectionDetails vfsConnectionDetails = (VFSConnectionDetails) connectionDetails;
+    String url = null;
+
+    if ( vfsConnectionDetails != null ) {
+      String domain = vfsConnectionDetails.getDomain();
+      if ( !domain.equals( "" ) ) {
+        domain = "/" + domain;
+      }
+      url = vfsConnectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
+      if ( url.matches( DOMAIN_ROOT ) ) {
+        url += vfsConnectionDetails.getName();
+      }
+    }
+
+    return url;
+  }
+
   @Override
   protected FileObject createFile( AbstractFileName abstractFileName ) throws Exception {
+
     String connectionName = ( (ConnectionFileName) abstractFileName ).getConnection();
     VFSConnectionDetails connectionDetails =
       (VFSConnectionDetails) connectionManager.get().getConnectionDetails( connectionName );
 
-    if ( connectionDetails != null ) {
-      String domain = connectionDetails.getDomain();
-      if ( !domain.equals( "" ) ) {
-        domain = "/" + domain;
-      }
-      String url = connectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
+    String url = getUrl( abstractFileName, connectionDetails );
+
+    AbstractFileObject fileObject = null;
+    String domain = null;
+
+    if ( url != null ) {
+      domain = connectionDetails.getDomain();
       Variables variables = new Variables();
       variables.setVariable( CONNECTION, connectionName );
-      if ( url.matches( DOMAIN_ROOT ) ) {
-        url += connectionName;
-      }
-      AbstractFileObject fileObject = (AbstractFileObject) KettleVFS.getFileObject( url, variables );
-      return new ConnectionFileObject( abstractFileName, this, fileObject, domain );
+      fileObject = (AbstractFileObject) KettleVFS.getFileObject( url, variables );
     }
 
-    return new ConnectionFileObject( abstractFileName, this, null, null );
+    return new ConnectionFileObject( abstractFileName, this, fileObject, domain );
   }
 
   @Override protected void addCapabilities( Collection<Capability> collection ) {
