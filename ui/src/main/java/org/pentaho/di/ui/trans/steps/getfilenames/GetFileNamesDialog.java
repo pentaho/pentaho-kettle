@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,8 +63,8 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.ui.core.events.dialog.ConditionSelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -857,12 +857,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     } );
 
     // Listen to the Browse... button
-    SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE,
-      new FilterType[] { FilterType.ALL, FilterType.CSV_TXT, FilterType.CSV, FilterType.TXT }, FilterType.CSV_TXT );
-
-    wbbFilename.addSelectionListener( new ConditionSelectionAdapterFileDialogTextVar( log, wFilename, transMeta, options,
-      () -> ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) )
-        ? SelectionOperation.FOLDER : SelectionOperation.FILE ) );
+    wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+        new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.CSV_TXT, FilterType.ALL }, FilterType.CSV_TXT ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
