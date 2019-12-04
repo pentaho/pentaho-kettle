@@ -329,7 +329,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE, new FilterType[] { FilterType.TXT, FilterType.ALL },
+      new SelectionAdapterOptions( SelectionOperation.SAVE_TO, new FilterType[] { FilterType.TXT, FilterType.ALL },
         FilterType.TXT, new ProviderFilterType[] { ProviderFilterType.LOCAL } ) ) );
 
     // High Priority ?
