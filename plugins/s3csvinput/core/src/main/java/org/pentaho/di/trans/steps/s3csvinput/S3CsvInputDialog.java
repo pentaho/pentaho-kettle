@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -70,7 +72,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -80,8 +81,6 @@ import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDial
 public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterface {
   private S3CsvInputMeta inputMeta;
 
-  private TextVar      wAccessKey;
-  private TextVar      wSecretKey;
   private TextVar      wBucket;
   private Button       wbBucket; // browse for a bucket.
   private TextVar      wFilename;
@@ -152,48 +151,6 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     fdStepname.right = new FormAttachment( 100, 0 );
     wStepname.setLayoutData( fdStepname );
     Control lastControl = wStepname;
-
-    // Access key
-    Label wlAccessKey = new Label( shell, SWT.RIGHT );
-    wlAccessKey.setText( Messages.getString( "S3CsvInputDialog.AccessKey.Label" ) ); //$NON-NLS-1$
-    props.setLook( wlAccessKey );
-    FormData fdlAccessKey = new FormData();
-    fdlAccessKey.top = new FormAttachment( lastControl, margin );
-    fdlAccessKey.left = new FormAttachment( 0, 0 );
-    fdlAccessKey.right = new FormAttachment( middle, -margin );
-    wlAccessKey.setLayoutData( fdlAccessKey );
-
-    wAccessKey = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-
-    props.setLook( wAccessKey );
-    wAccessKey.addModifyListener( lsMod );
-    FormData fdAccessKey = new FormData();
-    fdAccessKey.top = new FormAttachment( lastControl, margin );
-    fdAccessKey.left = new FormAttachment( middle, 0 );
-    fdAccessKey.right = new FormAttachment( 100, 0 );
-    wAccessKey.setLayoutData( fdAccessKey );
-    lastControl = wAccessKey;
-
-    // Secret key
-    Label wlSecretKey = new Label( shell, SWT.RIGHT );
-    wlSecretKey.setText( Messages.getString( "S3CsvInputDialog.SecretKey.Label" ) ); //$NON-NLS-1$
-    props.setLook( wlSecretKey );
-    FormData fdlSecretKey = new FormData();
-    fdlSecretKey.top = new FormAttachment( lastControl, margin );
-    fdlSecretKey.left = new FormAttachment( 0, 0 );
-    fdlSecretKey.right = new FormAttachment( middle, -margin );
-    wlSecretKey.setLayoutData( fdlSecretKey );
-
-    wSecretKey = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-
-    props.setLook( wSecretKey );
-    wSecretKey.addModifyListener( lsMod );
-    FormData fdSecretKey = new FormData();
-    fdSecretKey.top = new FormAttachment( lastControl, margin );
-    fdSecretKey.left = new FormAttachment( middle, 0 );
-    fdSecretKey.right = new FormAttachment( 100, 0 );
-    wSecretKey.setLayoutData( fdSecretKey );
-    lastControl = wSecretKey;
 
     // Bucket name
     Label wlBucket = new Label( shell, SWT.RIGHT );
@@ -580,6 +537,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
         //
         try {
           S3CsvInputMeta meta = new S3CsvInputMeta();
+          setAwsCredentials( meta );
           getInfo( meta );
           S3ObjectsProvider s3ObjProvider = new S3ObjectsProvider( meta.getS3Client( transMeta ) );
 
@@ -607,8 +565,8 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
         public void widgetSelected( SelectionEvent event ) {
           try {
             S3CsvInputMeta meta = new S3CsvInputMeta();
+            setAwsCredentials( meta );
             getInfo( meta );
-
             S3ObjectsProvider s3ObjProvider = new S3ObjectsProvider( meta.getS3Client( transMeta ) );
             String[] objectnames = s3ObjProvider.getS3ObjectsNames( meta.getBucket() );
 
@@ -622,6 +580,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
                 dialog.setSelectedNrs( new int[] { index, } );
               }
             }
+
             String objectname = dialog.open();
             if ( objectname != null ) {
               wFilename.setText( objectname );
@@ -634,8 +593,6 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
         }
       } );
     }
-
-
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
       @Override
@@ -660,6 +617,16 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     return stepname;
   }
 
+  private void setAwsCredentials( S3CsvInputMeta meta ) {
+    /* For legacy transformations containing AWS S3 access credentials, {@link Const#KETTLE_USE_AWS_DEFAULT_CREDENTIALS} can force Spoon to use
+     * the Amazon Default Credentials Provider Chain instead of using the credentials embedded in the transformation metadata. */
+    if ( !ValueMetaBase.convertStringToBoolean(
+      Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_USE_AWS_DEFAULT_CREDENTIALS ), "N" ) ) ) {
+      meta.setAwsAccessKey( transMeta.environmentSubstitute( Const.NVL( inputMeta.getAwsAccessKey(), "" ) ) );
+      meta.setAwsSecretKey( transMeta.environmentSubstitute( Const.NVL( inputMeta.getAwsSecretKey(), "" ) ) );
+    }
+  }
+
   public void getData() {
     getData( inputMeta );
   }
@@ -668,8 +635,6 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
    */
   public void getData( S3CsvInputMeta inputMeta ) {
     wStepname.setText( stepname );
-    wAccessKey.setText( Const.NVL( inputMeta.getAwsAccessKey(), "" ) );
-    wSecretKey.setText( Const.NVL( inputMeta.getAwsSecretKey(), "" ) );
     wBucket.setText( Const.NVL( inputMeta.getBucket(), "" ) );
 
     if ( isReceivingInput ) {
@@ -715,8 +680,6 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void getInfo( S3CsvInputMeta inputMeta ) {
-    inputMeta.setAwsAccessKey( wAccessKey.getText() );
-    inputMeta.setAwsSecretKey( wSecretKey.getText() );
     inputMeta.setBucket( wBucket.getText() );
 
     if ( isReceivingInput ) {
