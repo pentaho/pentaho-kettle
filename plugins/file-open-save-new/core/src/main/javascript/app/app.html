@@ -41,7 +41,6 @@
       <folder auto-expand="vm.autoExpand"
           on-open="vm.openFolder(openFolder)"
           on-select="vm.selectFolder(selectedFolder, true)"
-          show-recents="vm.showRecents"
           selected-folder="vm.folder"
           ng-class="{dark: vm.selectedFiles.length !== 0}"
           on-move="vm.onMoveFiles(from, to)"
@@ -50,26 +49,23 @@
           tree="vm.tree"></folder>
     </div>
 
-    <div class="fileArea"
-        ng-class="{recentsView: vm.showRecents && !vm.showMessage,
-                    scrolling: vm.recentsHasScrollBar,
-                    hasMessage: vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage}">
-      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">
+    <div class="fileArea">
+      <div class="fileAreaMessageView" ng-if="vm.fileAreaMessage">
         {{vm.fileAreaMessage}}
       </div>
-      <card ng-if="vm.isShowRecents"
-          recent-files="vm.recentFiles"
+      <card ng-if="!vm.folder.root && !vm.folder.hasChildren"
+          recent-files="vm.fileList"
           folder="vm.folder"
-          on-click="vm.selectFile(file)"
-          on-select="vm.highlightFile(selectedFile)"
+          on-click="vm.onSelectFile(file)"
+          on-select="vm.onHighlight(selectedFile)"
           selected-file="vm.file"
-          resize-cards="vm.showRecents"></card>
-      <files ng-show="!vm.showMessage && !vm.showRecents"
+          resize-cards="true"></card>
+      <files ng-show="!vm.showMessage && (vm.folder.hasChildren || vm.folder.root)"
           filter="vm.selectedFilter"
           folder="vm.folder"
           files="vm.fileList"
           selected-files="vm.selectedFiles"
-          on-select-file="vm.onSelectFile(file, true)"
+          on-select-file="vm.onSelectFile(file)"
           on-highlight="vm.onHighlight(selectedFiles)"
           on-rename="vm.onRenameFile(file, newPath)"
           on-move="vm.onMoveFiles(from, to)"

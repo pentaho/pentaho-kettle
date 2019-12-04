@@ -66,7 +66,7 @@ define([
          * Sets the class of the element if scrolling is needed. Also, sets css for the elements within file area.
          */
         function setScrollTableClass() {
-          if (scope.vm.folder.name === "Recents" && scope.vm.folder.path === "Recents") {
+          if (!scope.vm.folder) {
             return;
           }
           bodyWrapper.css("height", "calc(100% - 31px)");

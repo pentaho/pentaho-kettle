@@ -177,7 +177,7 @@ define(
           }));
         }
 
-        function save(filename, folder, currentFilename, override) {
+        function save(filename, folder) {
           select(JSON.stringify({
             name: filename,
             path: folder.path,

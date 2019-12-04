@@ -45,13 +45,15 @@ define([
   "./services/folder.service",
   "./services/provider.service",
   "./services/clipboard.service",
+  "./services/message.service",
   "./services/modal.service",
   "./shared/shared.module",
   "angular-ui-router"
 ], function (angular, fileServices, appConfig, appComponent, cardComponent, folderComponent, errorComponent,
              loadingComponent, addressbarComponent, filesComponent, searchComponent, modalsComponent, selectBoxComponent,
              filebarComponent, fileControls, helperService, dataService, repositoryService, vfsService, localService,
-             searchService, fileService, folderService, servicesService, clipboardService, modalService, sharedModule) {
+             searchService, fileService, folderService, servicesService, clipboardService, messageService, modalService,
+             sharedModule) {
   "use strict";
 
   var module = {
@@ -89,6 +91,7 @@ define([
         .service(searchService.name, searchService.factory)
         .service(servicesService.name, servicesService.factory)
         .service(clipboardService.name, clipboardService.factory)
+        .service(messageService.name, messageService.factory)
         .service(modalService.name, modalService.factory)
         .config(appConfig);
 

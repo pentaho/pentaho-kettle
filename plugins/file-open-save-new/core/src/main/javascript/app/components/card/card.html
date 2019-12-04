@@ -3,7 +3,7 @@
      ng-hide="file.inResult === false"
      ng-click="vm.selectFile(file)"
      ng-dblclick="vm.onClick({file: file})"
-     title="{{file.name}}&#013;{{file.path}}"
+     title="{{file.name}}&#013;{{file.parent}}"
      ng-class="{cardTrans: file.type === 'transformation',
                 cardJob: file.type === 'job',
                 selected: vm.selectedFile === file}">

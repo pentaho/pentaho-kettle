@@ -78,15 +78,11 @@ define(
             if (folder !== self.folder || self.folder.loaded === false) {
               self.folder = folder;
               self.folder.open = true;
-              if (folder.provider !== "recents") {
-                _selectFolder(folder, filters, useCache).then(function () {
-                  resolve(self.folder);
-                }, function (err) {
-                  reject(err);
-                });
-              } else {
+              _selectFolder(folder, filters, useCache).then(function () {
                 resolve(self.folder);
-              }
+              }, function (err) {
+                reject(err);
+              });
             } else {
               resolve(self.folder);
             }
@@ -464,7 +460,7 @@ define(
         function _selectFolder(folder, filters, useCache) {
           return $q(function (resolve, reject) {
             var service = providerService.get(folder.provider);
-            if (service) {
+            if (service && service.selectFolder) {
               folder.loading = true;
               service.selectFolder(folder, filters, useCache).then(function () {
                 folder.loading = false;

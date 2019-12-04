@@ -20,29 +20,21 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.plugins.fileopensave.providers.local.model;
+package org.pentaho.di.plugins.fileopensave.providers.recents.model;
 
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
-import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
+import org.pentaho.di.plugins.fileopensave.providers.recents.RecentFileProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by bmorrise on 2/16/19.
- */
-public class LocalTree implements Tree<LocalFile> {
+public class RecentTree implements Tree<RecentFile> {
 
-  private static final int ORDER = 2;
-
-  @Override public String getProvider() {
-    return LocalFileProvider.TYPE;
-  }
-
-  private List<LocalFile> localFiles = new ArrayList<>();
+  private static final int ORDER = 0;
   private String name;
+  private List<RecentFile> recentFiles = new ArrayList<>();
 
-  public LocalTree( String name ) {
+  public RecentTree( String name ) {
     this.name = name;
   }
 
@@ -50,27 +42,27 @@ public class LocalTree implements Tree<LocalFile> {
     return name;
   }
 
-  @Override public List<LocalFile> getChildren() {
-    return localFiles;
+  @Override public List<RecentFile> getChildren() {
+    return recentFiles;
   }
 
-  @Override public void addChild( LocalFile child ) {
-    localFiles.add( child );
-  }
-
-  public void setFiles( List<LocalFile> localFiles ) {
-    this.localFiles = localFiles;
+  @Override public void addChild( RecentFile child ) {
+    recentFiles.add( child );
   }
 
   @Override public boolean isCanAddChildren() {
-    return true;
+    return false;
   }
 
   @Override public int getOrder() {
     return ORDER;
   }
 
+  @Override public String getProvider() {
+    return RecentFileProvider.TYPE;
+  }
+
   @Override public boolean isHasChildren() {
-    return true;
+    return false;
   }
 }

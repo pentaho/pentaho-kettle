@@ -30,6 +30,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
+import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.TestFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.model.TestDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.model.TestFile;
@@ -46,7 +47,8 @@ public class FileControllerTest {
   public void setup() {
     List<FileProvider> fileProviders = new ArrayList<>();
     fileProviders.add( new TestFileProvider() );
-    fileController = new FileController( new FileCache(), fileProviders );
+    ProviderService providerService = new ProviderService( fileProviders );
+    fileController = new FileController( new FileCache(), providerService );
   }
 
   @Test

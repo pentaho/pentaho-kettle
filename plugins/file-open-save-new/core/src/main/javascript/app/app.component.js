@@ -29,11 +29,13 @@ define([
   "./services/folder.service",
   "./services/modal.service",
   "./services/search.service",
+  "./services/message.service",
   "text!./app.html",
   "pentaho/i18n-osgi!file-open-save-new.messages",
   "./components/utils",
   "css!./app.css"
-], function (angular, dataService, fileService, folderService, modalService, searchService, template, i18n, utils) {
+], function (angular, dataService, fileService, folderService, modalService, searchService, messageService, template,
+             i18n, utils) {
   "use strict";
 
   var options = {
@@ -44,7 +46,7 @@ define([
   };
 
   appController.$inject = [dataService.name, fileService.name, folderService.name,
-    modalService.name, searchService.name, "$location", "$timeout", "$interval", "$state", "$q"];
+    modalService.name, searchService.name, messageService.name, "$location", "$timeout", "$interval", "$state", "$q"];
 
   /**
    * The App Controller.
@@ -62,7 +64,8 @@ define([
    * @param $state
    * @param $q
    */
-  function appController(dt, fileService, folderService, modalService, searchService, $location, $timeout, $interval, $state, $q) {
+  function appController(dt, fileService, folderService, modalService, searchService, messageService,$location,
+                         $timeout, $interval, $state, $q) {
     var vm = this;
     vm.$onInit = onInit;
     vm.openFolder = openFolder;
@@ -82,14 +85,11 @@ define([
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
     vm.renameError = renameError;
-    vm.recentsHasScrollBar = recentsHasScrollBar;
     vm.onKeyUp = onKeyUp;
     vm.onKeyDown = onKeyDown;
     vm.onSelectFilter = selectFilter;
 
-    vm.isShowRecents = true;
     vm.isSaveEnabled = false;
-
     vm.addDisabled = true;
     vm.deleteDisabled = true;
     vm.upDisabled = true;
@@ -115,7 +115,7 @@ define([
     vm.state = $state;
     vm.searchResults = null;
     vm.status = "";
-    vm.breadcrumbPath = { prefix: null, path: "Recents", uri: null };
+    vm.breadcrumbPath = null;
     vm.type = null;
 
     /**
@@ -126,15 +126,13 @@ define([
     function onInit() {
       vm.loadingTitle = i18n.get("file-open-save-plugin.loading.title");
       vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
-      vm.showRecents = false;
       vm.selectedFiles = [];
       vm.errorFiles = [];
       vm.autoExpand = false;
       vm.searchString = "";
-      _resetFileAreaMessage();
-
       vm.myfile = "";
 
+      vm.tree = [];
       vm.filename = $location.search().filename;
       vm.fileType = $location.search().fileType;
       vm.origin = $location.search().origin;
@@ -142,12 +140,7 @@ define([
       vm.defaultFilter = $location.search().defaultFilter;
       vm.connectionTypes = $location.search().connectionTypes;
       vm.fileTypes = vm.filter ? vm.filter.split(',') : false;
-      vm.tree = [
-        {name: "Recents", hasChildren: false, provider: "recents", order: 0}
-      ];
       vm.providerFilter = $location.search().providerFilter;
-      folderService.folder = vm.tree[0];
-      _update();
       vm.selectedFolder = "";
       $timeout(function () {
         var state = $state.current.name;
@@ -156,10 +149,6 @@ define([
           _populateTree(response);
           _init();
         });
-        dt.getRecentFiles().then(_populateRecentFiles);
-        vm.showRecents = true;
-
-        dt.getRecentSearches().then(_populateRecentSearches);
         vm.loading = false;
       });
     }
@@ -189,25 +178,11 @@ define([
     function _populateTree(response) {
       vm.tree = vm.tree.concat(response.data);
       folderService.tree = vm.tree;
-    }
-
-    /**
-     * Sets the recents folders
-     *
-     * @param {Object} response - $http response from call to the data service
-     * @private
-     */
-    function _populateRecentFiles(response) {
-      vm.recentFiles = response.data;
-    }
-
-    /**
-     * Determines if the Recents view has a vertical scrollbar
-     * @return {boolean} - true if Recents view has a vertical scrollbar, false otherwise
-     */
-    function recentsHasScrollBar() {
-      var recentsView = document.getElementsByClassName("recentsView");
-      return recentsView.scrollHeight > recentsView.clientHeight;
+      for (var i = 0; i < vm.tree.length; i++) {
+        if (vm.tree[i].order === 0) {
+          selectFolder(vm.tree[i], true);
+        }
+      }
     }
 
     function selectFilter(value) {
@@ -251,14 +226,11 @@ define([
       if (vm.searching) {
         vm.searchValue = "";
       }
-      _resetFileAreaMessage();
       fileService.files = [];
-      vm.showRecents = folder.provider === "recents";
       vm.fileLoading = true;
       vm.folder = folder;
       folderService.selectFolder(folder, undefined, useCache).then(function(folder) {
         vm.fileLoading = false;
-        vm.showRecents = folder.provider === "recents";
         _update();
       }, function(error) {
         modalService.open("error-dialog", error.title, error.message).then(function() {
@@ -277,7 +249,6 @@ define([
      */
     function selectFolderByPath(path, props) {
       vm.fileLoading = true;
-      vm.showRecents = false;
       folderService.selectFolderByPath(path, props).then(function() {
         vm.fileLoading = false;
         _update();
@@ -295,7 +266,6 @@ define([
     function openPath(path, properties) {
       return $q(function(resolve) {
         vm.fileLoading = true;
-        vm.showRecents = false;
         folderService.openPath(path, properties).then(function() {
           vm.fileLoading = false;
           _update();
@@ -319,12 +289,6 @@ define([
       vm.selectedFiles = fileService.files;
       vm.breadcrumbPath = folderService.getBreadcrumbPath(vm.selectedFiles.length === 1 ? vm.selectedFiles[0] : vm.folder);
       vm.myfile = vm.selectedFiles.length === 1 ? vm.selectedFiles[0] : vm.folder;
-      vm.isShowRecents = vm.recentFiles
-          && (!vm.showMessage
-          && vm.showRecents
-          && vm.recentFiles.length > 0
-          && !isSelectState());
-
       vm.placeholder = utils.getPlaceholder(i18n.get("file-open-save-plugin.app.header.search.placeholder"), vm.folder, vm.currentRepo);
       vm.fileList = _getFiles();
       if (vm.selectedFiles.length === 1) {
@@ -333,6 +297,7 @@ define([
         vm.fileToSave = "";
       }
       vm.errorFiles = vm.selectedFiles;
+      vm.fileAreaMessage = messageService.get("file");
     }
 
     /**
@@ -344,7 +309,7 @@ define([
     function onSelectFile(file) {
       if (file.type === "folder") {
         vm.searchString = "";
-        selectFolder(file);
+        selectFolder(file, true);
       } else if (!isSaveState()) {
         _open(file);
       }
@@ -356,25 +321,6 @@ define([
      */
     function _getFiles() {
       return vm.searchResults !== null ? vm.searchResults : vm.folder.children;
-    }
-
-    /**
-     * Sets the message for the file area to No Results
-     * @private
-     */
-    function _setFileAreaMessage() {
-      if (vm.showMessage) {
-        vm.fileAreaMessage = i18n.get("file-open-save-plugin.app.middle.no-results.message");
-      }
-    }
-
-    /**
-     * Resets the showMessage and file area message to default values
-     * @private
-     */
-    function _resetFileAreaMessage() {
-      vm.showMessage = false;
-      vm.fileAreaMessage = i18n.get("file-open-save-plugin.app.middle.no-recents.message");
     }
 
     /**
@@ -396,7 +342,7 @@ define([
         // If something is selected either open the folder or return it depending on state
         if (fileService.files[0].type === "folder" && !$state.is("selectFolder") && !$state.is("selectFileFolder")) {
           vm.searchString = "";
-          selectFolder(fileService.files[0]);
+          selectFolder(fileService.files[0], true);
         } else {
           _open(fileService.files[0]);
         }
@@ -421,31 +367,7 @@ define([
      * @private
      */
     function _open(file) {
-      try {
-        if (vm.selectedFolder === "Recents" && vm.origin === "spoon") {
-          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
-              file.objectId).then(function (response) {
-            _closeBrowser();
-          }, function (response) {
-            _triggerError(16);
-          });
-        } else {
-          fileService.open(file);
-        }
-      } catch (e) {
-        if (file.repository) {
-          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
-              file.objectId).then(function (response) {
-            _closeBrowser();
-          }, function (response) {
-            _triggerError(16);
-          });
-        } else {
-          dt.openFile(file.objectId, file.type, file.path).then(function (response) {
-            _closeBrowser();
-          });
-        }
-      }
+      fileService.open(file);
     }
 
     /**
@@ -458,8 +380,7 @@ define([
       if (_isInvalidName()) {
         _triggerError(17);
       } else if (override || duplicate === null) {
-        var currentFilename = duplicate !== null ? duplicate.name : null;
-        fileService.save(vm.fileToSave, vm.folder, currentFilename, override).then(function() {
+        fileService.save(vm.fileToSave, vm.folder).then(function() {
           // Dialog should close
         }, function() {
           _triggerError(3);
@@ -601,7 +522,6 @@ define([
           vm.selectedFiles = null;
           vm.searchString = "";
           vm.showMessage = false;
-          dt.getRecentFiles().then(_populateRecentFiles);
         }, function (response) {
           if (response.status === 406) {// folder has open file
             _triggerError(13);
@@ -612,7 +532,6 @@ define([
       } else {
         fileService.deleteFiles(vm.folder, vm.selectedFiles).then(function (response) {
           fileService.files = [];
-          dt.getRecentFiles().then(_populateRecentFiles);
         }, function (response) {
           if (fileService.files[0].type === "folder") {
             if (response.status === 406) {// folder has open file
@@ -779,7 +698,7 @@ define([
      */
     function onKeyUp(event) {
       if (event.keyCode === 13 && event.target.tagName !== "INPUT") {
-        if (isSaveState("save") && !vm.showRecents) {
+        if (isSaveState("save")) {
           _save(false);
         } else if (vm.selectedFiles.length === 1) {
           onSelectFile(vm.selectedFiles[0]);
