@@ -25,6 +25,7 @@ package org.pentaho.di.engine.configuration.impl.spark;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PropertiesComboDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
@@ -44,6 +45,9 @@ public class SparkTuningStepHandler extends AbstractXulEventHandler {
     return HANDLER_NAME;
   }
 
+  // Catching throwable in this case because the Help Browser may not be available and
+  // if not catch here XUL will swallow the exception and produce no error to the user.
+  @SuppressWarnings( "squid:S1181" )
   public void openSparkTuning() {
     TransGraph transGraph = Spoon.getInstance().getActiveTransGraph();
     StepMeta stepMeta = transGraph.getCurrentStep();
@@ -62,13 +66,19 @@ public class SparkTuningStepHandler extends AbstractXulEventHandler {
       BaseMessages.getString( PKG, "SparkTuning.Help.Header" )
     );
     dialog.setComboOptions( tuningProperties );
-    Map<String, String> properties = dialog.open();
+    try {
+      Map<String, String> properties = dialog.open();
 
-    // null means the cancel button was clicked otherwise ok was clicked
-    if ( null != properties ) {
-      stepMeta.setAttributes( SPARK_TUNING_PROPERTIES, properties );
-      stepMeta.setChanged();
-      transGraph.getSpoon().setShellText();
+      // null means the cancel button was clicked otherwise ok was clicked
+      if ( null != properties ) {
+        stepMeta.setAttributes( SPARK_TUNING_PROPERTIES, properties );
+        stepMeta.setChanged();
+        transGraph.getSpoon().setShellText();
+      }
+    } catch ( Throwable e ) {
+      new ErrorDialog(
+        Spoon.getInstance().getShell(), BaseMessages.getString( PKG, "SparkTuning.UnexpectedError" ), BaseMessages
+        .getString( PKG, "SparkTuning.UnexpectedError" ), e );
     }
   }
 }
