@@ -459,7 +459,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, jobMeta,
       new SelectionAdapterOptions( SelectionOperation.FILE,
-        new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL }, FilterType.TXT,
+        new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.DAT, FilterType.ALL }, FilterType.TXT,
         new ProviderFilterType[] { ProviderFilterType.LOCAL } ) ) );
 
     // Data file type
