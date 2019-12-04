@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.lifecycle;
 
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener;
 import org.pentaho.di.ui.spoon.SpoonPerspective;
 import org.pentaho.di.ui.spoon.SpoonPlugin;
@@ -30,13 +31,17 @@ import org.pentaho.di.ui.spoon.SpoonPluginInterface;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 
+import java.util.function.Supplier;
+
 /**
  * Listens for spoon lifecycle events
  */
 @SpoonPlugin( id = "FileBrowserLifecyclePlugin", image = "" )
 public class FileBrowserLifecyclePlugin implements SpoonPluginInterface, SpoonLifecycleListener {
 
+  public static final String VFS_CONNECTIONS = "VFS Connections";
   private final FileCache fileCache;
+  private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
   public FileBrowserLifecyclePlugin( FileCache fileCache ) {
     this.fileCache = fileCache;
@@ -50,6 +55,10 @@ public class FileBrowserLifecyclePlugin implements SpoonPluginInterface, SpoonLi
   @Override public void onEvent( SpoonLifeCycleEvent evt ) {
     if ( evt == SpoonLifeCycleEvent.REPOSITORY_CHANGED ) {
       fileCache.clearAll();
+      spoonSupplier.get().refreshTree( VFS_CONNECTIONS );
+    }
+    if ( evt == SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED ) {
+      spoonSupplier.get().refreshTree( VFS_CONNECTIONS );
     }
   }
 
