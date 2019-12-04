@@ -132,7 +132,7 @@ define([
     }
 
     function _update() {
-      vm.isSaveEnabled = vm.filename === '' || !vm.path;
+      vm.isSaveEnabled = vm.filename === '';
       _isDisabled();
     }
 

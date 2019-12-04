@@ -151,15 +151,17 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       throw new FileNotFoundException( file.getPath(), file.getProvider() );
     }
 
+    String scheme = vfsConnectionProvider.getProtocol( vfsConnectionDetails );
     for ( VFSRoot root : vfsRoots ) {
       VFSDirectory vfsDirectory = new VFSDirectory();
       vfsDirectory.setName( root.getName() );
       vfsDirectory.setDate( root.getModifiedDate() );
       vfsDirectory.setHasChildren( true );
       vfsDirectory.setCanAddChildren( true );
+      vfsDirectory.setParent( scheme + "://" );
       vfsDirectory.setDomain( vfsConnectionDetails.getDomain() );
       vfsDirectory.setConnection( vfsConnectionDetails.getName() );
-      vfsDirectory.setPath( vfsConnectionProvider.getProtocol( vfsConnectionDetails ) + "://" + root.getName() );
+      vfsDirectory.setPath( scheme + "://" + root.getName() );
       vfsDirectory.setRoot( NAME );
       files.add( vfsDirectory );
     }
@@ -247,10 +249,16 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       if ( !fileObject.exists() ) {
         return null;
       }
-      if ( fileObject.getType().equals( FileType.FOLDER ) ) {
-        return VFSDirectory.create( null, fileObject, null, file.getDomain() );
+      String parent = null;
+      if ( fileObject.getParent() != null && fileObject.getParent().getName() != null ) {
+        parent = fileObject.getParent().getName().getURI();
       } else {
-        return VFSFile.create( null, fileObject, null, file.getDomain() );
+        parent = fileObject.getURL().getProtocol() + "://";
+      }
+      if ( fileObject.getType().equals( FileType.FOLDER ) ) {
+        return VFSDirectory.create( parent, fileObject, null, file.getDomain() );
+      } else {
+        return VFSFile.create( parent, fileObject, null, file.getDomain() );
       }
     } catch ( KettleFileException | FileSystemException e ) {
       // File does not exist

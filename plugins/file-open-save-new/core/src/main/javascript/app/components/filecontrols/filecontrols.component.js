@@ -73,7 +73,9 @@ define([
      */
     function onChanges(changes) {
       $timeout(function() {
-        _update();
+        if (vm.folder) {
+          _update();
+        }
       });
     }
 

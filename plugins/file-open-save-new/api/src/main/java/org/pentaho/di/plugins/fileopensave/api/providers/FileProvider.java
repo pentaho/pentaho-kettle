@@ -22,7 +22,9 @@
 
 package org.pentaho.di.plugins.fileopensave.api.providers;
 
+import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
+import org.pentaho.di.ui.core.FileDialogOperation;
 
 import java.io.InputStream;
 import java.util.List;
@@ -86,4 +88,6 @@ public interface FileProvider<T extends File> {
   T getParent( T file );
 
   void clearProviderCache();
+
+  void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation );
 }

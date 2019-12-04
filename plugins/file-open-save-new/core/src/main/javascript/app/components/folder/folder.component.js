@@ -39,7 +39,6 @@ define([
       onMove: "&",
       onCopy: "&",
       onDelete: "&",
-      showRecents: "<",
       selectedFolder: "<",
       autoExpand: "<"
     },

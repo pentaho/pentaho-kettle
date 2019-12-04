@@ -52,7 +52,6 @@ public class FileBrowserEndpoint {
   private final RepositoryBrowserController repositoryBrowserController;
   private final FileController fileController;
 
-  // TODO: Move properties into the post p
   public FileBrowserEndpoint( RepositoryBrowserController repositoryBrowserController,
                               FileController fileController ) {
     this.repositoryBrowserController = repositoryBrowserController;
@@ -239,13 +238,6 @@ public class FileBrowserEndpoint {
   @Produces( { MediaType.APPLICATION_JSON } )
   public Response search( @PathParam( "path" ) String path, @PathParam( "filter" ) String filter ) {
     return Response.ok( repositoryBrowserController.search( path, filter ) ).build();
-  }
-
-  @GET
-  @Path( "/recentFiles" )
-  @Produces( { MediaType.APPLICATION_JSON } )
-  public Response recentFiles() {
-    return Response.ok( repositoryBrowserController.getRecentFiles() ).build();
   }
 
   @GET

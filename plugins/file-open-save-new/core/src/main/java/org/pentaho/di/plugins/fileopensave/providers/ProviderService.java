@@ -19,20 +19,31 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.ui.core.events.dialog;
 
-/**
- * Provider Filter options for providers that are desired to be included.
- */
-public enum ProviderFilterType {
-  ALL_PROVIDERS, DEFAULT, CLUSTERS, LOCAL, REPOSITORY, VFS, RECENTS;
+package org.pentaho.di.plugins.fileopensave.providers;
 
-  @Override
-  public String toString() {
-    return name().toLowerCase();
+import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
+
+import java.util.List;
+
+public class ProviderService {
+
+  private final List<FileProvider> fileProviders;
+
+  public ProviderService( List<FileProvider> fileProviders ) {
+    this.fileProviders = fileProviders;
   }
 
-  public static String[] getDefaults() {
-    return new String[] { LOCAL.toString(), VFS.toString(), CLUSTERS.toString() };
+  public FileProvider get( String provider ) throws InvalidFileProviderException {
+    return fileProviders.stream().filter( fileProvider1 ->
+      fileProvider1.getType().equalsIgnoreCase( provider ) && fileProvider1.isAvailable() )
+      .findFirst()
+      .orElseThrow( InvalidFileProviderException::new );
   }
+
+  public List<FileProvider> get() {
+    return fileProviders;
+  }
+
 }

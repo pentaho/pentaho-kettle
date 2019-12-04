@@ -176,6 +176,13 @@ addressbar .breadcrumb .vfs {
   background-size: 32px;
 }
 
+addressbar .breadcrumb .recents {
+  background: url("../../img/Time.S_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 32px;
+}
+
 addressbar .breadcrumb:hover .dropdown,
 addressbar .breadcrumb.selected .dropdown {
   background-image: url('../../img/DropDown.XS_D.svg');

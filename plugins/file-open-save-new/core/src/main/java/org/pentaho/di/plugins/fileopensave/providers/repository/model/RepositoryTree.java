@@ -83,4 +83,8 @@ public class RepositoryTree implements Tree<RepositoryFile> {
   @Override public int getOrder() {
     return ORDER;
   }
+
+  @Override public boolean isHasChildren() {
+    return true;
+  }
 }

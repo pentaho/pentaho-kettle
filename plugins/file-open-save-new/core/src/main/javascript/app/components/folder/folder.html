@@ -17,7 +17,7 @@
                  opened: folder.open === true}"
       ng-style="{paddingLeft: indent + 'px', width: vm.width === 0 ? 'auto' : vm.width - indent + 'px'}">
     <div class="folderArrowWrapper" ng-click="vm.openFolder(folder); $event.stopPropagation();">
-      <div class="folderArrow"></div>
+      <div class="folderArrow" ng-if="folder.hasChildren"></div>
     </div>
     <div class="folderImage"
         ng-class="{loading: folder.loading}"></div>

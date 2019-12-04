@@ -27,14 +27,13 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.plugins.fileopensave.controllers.RepositoryBrowserController;
+import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.dialog.FileOpenSaveDialog;
+import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryObject;
-import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -51,43 +50,30 @@ import java.util.function.Supplier;
 )
 public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
 
-  private static final String TRANSFORMATION = "transformation";
-  private static final String REPOSITORY = "repository";
-
   private static final int WIDTH = ( Const.isOSX() || Const.isLinux() ) ? 930 : 947;
   private static final int HEIGHT = ( Const.isOSX() || Const.isLinux() ) ? 618 : 626;
 
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
+  private final ProviderService providerService;
+
+  public FileOpenSaveExtensionPoint( ProviderService providerService ) {
+    this.providerService = providerService;
+  }
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     FileDialogOperation fileDialogOperation = (FileDialogOperation) o;
 
-    FileOpenSaveDialog repositoryOpenSaveDialog =
+    final FileOpenSaveDialog fileOpenSaveDialog =
       new FileOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT, logChannelInterface );
 
     resolveProvider( fileDialogOperation );
-    repositoryOpenSaveDialog.open( fileDialogOperation );
+    fileOpenSaveDialog.open( fileDialogOperation );
 
-    if ( repositoryOpenSaveDialog.getProvider() != null && repositoryOpenSaveDialog.getProvider()
-      .equalsIgnoreCase( REPOSITORY ) ) {
-      RepositoryObject repositoryObject = new RepositoryObject();
-      repositoryObject.setObjectId( repositoryOpenSaveDialog::getObjectId );
-      repositoryObject.setName( repositoryOpenSaveDialog.getName() );
-      repositoryObject
-        .setRepositoryDirectory( getRepository().findDirectory( repositoryOpenSaveDialog.getParentPath() ) );
-      if ( repositoryOpenSaveDialog.getType() != null ) {
-        repositoryObject.setObjectType(
-          repositoryOpenSaveDialog.getType().equals( TRANSFORMATION ) ? RepositoryObjectType.TRANSFORMATION
-            : RepositoryObjectType.JOB );
-      }
-      fileDialogOperation.setRepositoryObject( repositoryObject );
-      fileDialogOperation.setProvider( repositoryOpenSaveDialog.getProvider() );
-      fileDialogOperation.setFilename( repositoryOpenSaveDialog.getName() );
-    } else {
-      fileDialogOperation.setPath( repositoryOpenSaveDialog.getPath() );
-      fileDialogOperation.setFilename( repositoryOpenSaveDialog.getName() );
-      fileDialogOperation.setConnection( repositoryOpenSaveDialog.getConnection() );
-      fileDialogOperation.setProvider( repositoryOpenSaveDialog.getProvider() );
+    try {
+      FileProvider fileProvider = providerService.get( fileOpenSaveDialog.getProvider() );
+      fileProvider.setFileProperties( fileOpenSaveDialog, fileDialogOperation );
+    } catch ( InvalidFileProviderException e ) {
+      throw new KettleException( e );
     }
   }
 
@@ -101,10 +87,5 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
         op.setProvider( LocalFileProvider.TYPE );
       }
     }
-  }
-
-  private Repository getRepository() {
-    return RepositoryBrowserController.repository != null ? RepositoryBrowserController.repository
-      : spoonSupplier.get().getRepository();
   }
 }

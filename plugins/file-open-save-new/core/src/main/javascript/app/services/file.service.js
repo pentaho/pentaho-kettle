@@ -296,7 +296,15 @@ define(
         }
 
         function open(file) {
-          providerService.get(file.provider).open(file);
+          if (file.provider) {
+            providerService.get(file.provider).open(file);
+          } else {
+            select(JSON.stringify({
+              name: file.name,
+              path: file.path,
+              parent: file.parent
+            }));
+          }
         }
 
         function save(filename, folder, currentFilename, override) {

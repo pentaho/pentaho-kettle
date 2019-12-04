@@ -66,4 +66,8 @@ public class VFSTree implements Tree<VFSLocation> {
   @Override public int getOrder() {
     return ORDER;
   }
+
+  @Override public boolean isHasChildren() {
+    return true;
+  }
 }

@@ -33,4 +33,7 @@ public interface Tree<T extends Entity> extends Providerable {
   void addChild( T child );
   boolean isCanAddChildren();
   int getOrder();
+  default boolean isHasChildren() {
+    return true;
+  }
 }
