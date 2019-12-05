@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1204,7 +1204,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     wbFilename.addSelectionListener(
       new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-        new SelectionAdapterOptions( SelectionOperation.SAVE,
+        new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
           new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL },
           FilterType.TXT ) ) );
 
