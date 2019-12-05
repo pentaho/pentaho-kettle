@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,7 +53,6 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -68,8 +67,8 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.ui.core.events.dialog.ConditionSelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -355,13 +354,9 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wFilename.addModifyListener( e -> wFilename.setToolTipText( wFilename.getText() ) );
 
     // Listen to the Browse... button
-    SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE,
-      new FilterType[] { FilterType.JSON, FilterType.JS, FilterType.ALL }, FilterType.JSON );
-
-    wbbFilename
-      .addSelectionListener( new ConditionSelectionAdapterFileDialogTextVar( log, wFilename, transMeta, options,
-        () -> ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) )
-          ? SelectionOperation.FOLDER : SelectionOperation.FILE ) );
+    wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+        new FilterType[] { FilterType.JSON, FilterType.JS, FilterType.ALL }, FilterType.JSON  ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
