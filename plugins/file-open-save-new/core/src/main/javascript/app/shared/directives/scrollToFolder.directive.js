@@ -32,7 +32,7 @@ define([
           }
           $timeout(function() {
             scrollToSelectedFolder();
-          });
+          }, 1);
         });
 
         function scrollToSelectedFolder() {
