@@ -77,8 +77,8 @@ import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.ui.core.events.dialog.ConditionSelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -1219,13 +1219,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
       }
     } );
 
-    SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE,
-      new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML );
-
-    wbbFilename.addSelectionListener( new ConditionSelectionAdapterFileDialogTextVar( log, wFilename, transMeta, options,
-      () -> ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) )
-        ? SelectionOperation.FOLDER : SelectionOperation.FILE ) );
-
+    wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+        new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
