@@ -21,6 +21,11 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
+::remove any existing quotes from PENTAHO_JAVA, PENTAHO_JAVA_HOME and JAVA_HOME env vars if present
+for /f "delims=" %%G IN ("%PENTAHO_JAVA%") DO SET "PENTAHO_JAVA=%%~G"
+for /f "delims=" %%G IN ("%PENTAHO_JAVA_HOME%") DO SET "PENTAHO_JAVA_HOME=%%~G"
+for /f "delims=" %%G IN ("%JAVA_HOME%") DO SET "JAVA_HOME=%%~G"
+
 rem ---------------------------------------------------------------------------
 rem Finds a suitable Java
 rem
