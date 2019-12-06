@@ -16,13 +16,13 @@
  */
 package org.pentaho.di.repository.pur;
 
-import java.util.Date;
-
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
+
+import java.util.Date;
 
 public abstract class AbstractDelegate {
 
@@ -69,7 +69,15 @@ public abstract class AbstractDelegate {
     if ( node.hasProperty( name ) ) {
       return node.getProperty( name ).getString();
     } else {
-      return null;
+      return "";
+    }
+  }
+
+  protected int getInt( DataNode node, String name ) {
+    if ( node.hasProperty( name ) ) {
+      return (int) node.getProperty( name ).getLong();
+    } else {
+      return 0;
     }
   }
 
@@ -89,12 +97,28 @@ public abstract class AbstractDelegate {
     }
   }
 
+  protected boolean getBoolean( DataNode node, String name ) {
+    if ( node.hasProperty( name ) ) {
+      return node.getProperty( name ).getBoolean();
+    } else {
+      return false;
+    }
+  }
+
   protected boolean getBoolean( DataNode node, String name, boolean defaultValue ) {
     if ( node.hasProperty( name ) ) {
       return node.getProperty( name ).getBoolean();
     } else {
       return defaultValue;
     }
+  }
+
+  protected String setNull( String value ) {
+    String response = value;
+    if ( value == null ) {
+      response = "";
+    }
+    return response;
   }
 
   public abstract DataNode elementToDataNode( RepositoryElementInterface element ) throws KettleException;

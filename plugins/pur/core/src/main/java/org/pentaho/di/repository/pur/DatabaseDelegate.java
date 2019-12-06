@@ -16,10 +16,8 @@
  */
 package org.pentaho.di.repository.pur;
 
-import java.util.Enumeration;
-import java.util.Properties;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -32,6 +30,9 @@ import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
+
+import java.util.Enumeration;
+import java.util.Properties;
 
 public class DatabaseDelegate extends AbstractDelegate implements ITransformer, SharedObjectAssembler<DatabaseMeta>,
     java.io.Serializable {
@@ -64,6 +65,27 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
 
   private static final String NODE_ATTRIBUTES = "attributes"; //$NON-NLS-1$
 
+  private static final String NODE_POOLING_PROPS = "poolProps"; //$NON-NLS-1$
+
+  private static final String NODE_EXTRA_OPTIONS = "extraOptions"; //$NON-NLS-1$
+
+  private static final String PROP_CONNECT_SQL = "connectionSQL"; //$NON-NLS-1$
+
+  private static final String PROP_INITIAL_POOL_SIZE = "initialPoolSize"; //$NON-NLS-1$
+
+  private static final String PROP_MAX_POOL_SIZE = "maxPoolSize"; //$NON-NLS-1$
+
+  private static final String PROP_IS_POOLING = "isPooling"; //$NON-NLS-1$
+
+  private static final String PROP_IS_FORCING_TO_LOWER = "isForcingLower"; //$NON-NLS-1$
+
+  private static final String PROP_IS_FORCING_TO_UPPER = "isForcingUpper"; //$NON-NLS-1$
+
+  private static final String PROP_IS_QUOTE_FIELDS = "isQuoteFields"; //$NON-NLS-1$
+
+  private static final String PROP_IS_DECIMAL_SEPERATOR = "isUsingDecimalSeperator"; //$NON-NLS-1$
+
+
   // ~ Instance fields =================================================================================================
 
   private PurRepository repo;
@@ -94,24 +116,42 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_DATA_TBS, databaseMeta.getDataTablespace() );
     rootNode.setProperty( PROP_INDEX_TBS, databaseMeta.getIndexTablespace() );
 
-    DataNode attrNode = rootNode.addNode( NODE_ATTRIBUTES );
+    rootNode.setProperty( PROP_CONNECT_SQL, setNull( databaseMeta.getConnectSQL() ) );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_SQL_CONNECT );
+    rootNode.setProperty( PROP_INITIAL_POOL_SIZE, databaseMeta.getInitialPoolSize() );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_INITIAL_POOL_SIZE );
+    rootNode.setProperty( PROP_MAX_POOL_SIZE, databaseMeta.getMaximumPoolSize() );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_MAXIMUM_POOL_SIZE );
+    rootNode.setProperty( PROP_IS_POOLING, databaseMeta.isUsingConnectionPool() );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_USE_POOLING );
+    rootNode.setProperty( PROP_IS_FORCING_TO_LOWER, databaseMeta.isForcingIdentifiersToLowerCase() );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE );
+    rootNode.setProperty( PROP_IS_FORCING_TO_UPPER, databaseMeta.isForcingIdentifiersToUpperCase() );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE );
+    rootNode.setProperty( PROP_IS_QUOTE_FIELDS, databaseMeta.isQuoteAllFields() );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_QUOTE_ALL_FIELDS );
+    rootNode.setProperty( PROP_IS_DECIMAL_SEPERATOR, databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator() );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR );
 
-    // Now store all the attributes set on the database connection...
-    //
-    Properties attributes = databaseMeta.getAttributes();
-    Enumeration<Object> keys = databaseMeta.getAttributes().keys();
+    addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes() );
+    addNodeToElement( NODE_POOLING_PROPS, rootNode, databaseMeta.getConnectionPoolingProperties() );
+    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_USE_POOLING );
+
+    return rootNode;
+  }
+
+  private void addNodeToElement( String nodeName, DataNode rootNode, Properties attributes ) {
+    DataNode attrNode = rootNode.addNode( nodeName );
+    Enumeration<Object> keys = attributes.keys();
     while ( keys.hasMoreElements() ) {
       String code = (String) keys.nextElement();
       String attribute = (String) attributes.get( code );
-
       // Save this attribute
       //
       // Escape the code as it might contain invalid JCR characters like '/' as in AS/400
       String escapedCode = RepositoryFilenameUtils.escape( code, repo.getUnderlyingRepository().getReservedChars() );
       attrNode.setProperty( escapedCode, attribute );
     }
-    return rootNode;
-
   }
 
   public RepositoryElementInterface dataNodeToElement( final DataNode rootNode ) throws KettleException {
@@ -134,6 +174,16 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     databaseMeta.setDataTablespace( getString( rootNode, PROP_DATA_TBS ) );
     databaseMeta.setIndexTablespace( getString( rootNode, PROP_INDEX_TBS ) );
 
+    databaseMeta.setConnectSQL( getString( rootNode, PROP_CONNECT_SQL ) );
+    databaseMeta.setInitialPoolSize( getInt( rootNode, PROP_INITIAL_POOL_SIZE ) );
+    databaseMeta.setMaximumPoolSize( getInt( rootNode, PROP_MAX_POOL_SIZE ) );
+    databaseMeta.setUsingConnectionPool( getBoolean( rootNode, PROP_IS_POOLING ) );
+    databaseMeta.setForcingIdentifiersToLowerCase( getBoolean( rootNode, PROP_IS_FORCING_TO_LOWER ) );
+    databaseMeta.setForcingIdentifiersToUpperCase( getBoolean( rootNode, PROP_IS_FORCING_TO_UPPER ) );
+    databaseMeta.setQuoteAllFields( getBoolean( rootNode, PROP_IS_QUOTE_FIELDS ) );
+    databaseMeta.setUsingDoubleDecimalAsSchemaTableSeparator( getBoolean( rootNode, PROP_IS_DECIMAL_SEPERATOR ) );
+
+
     // Also, load all the properties we can find...
 
     DataNode attrNode = rootNode.getNode( NODE_ATTRIBUTES );
@@ -144,6 +194,29 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
       // We need to unescape the code as it was escaped to handle characters that JCR does not handle
       String unescapeCode = RepositoryFilenameUtils.unescape( code );
       databaseMeta.getAttributes().put( unescapeCode, Const.NVL( attribute, "" ) ); //$NON-NLS-1$
+    }
+
+    // Also, load any pooling params
+    attrNode = rootNode.getNode( NODE_POOLING_PROPS );
+    if ( attrNode != null ) {
+      Properties properties = new Properties();
+      for ( DataProperty property : attrNode.getProperties() ) {
+        String code = property.getName();
+        String attribute = property.getString();
+        properties.put( code, ( attribute == null || attribute.length() == 0 ) ? "" : attribute );
+      }
+      databaseMeta.setConnectionPoolingProperties( properties );
+    }
+
+    // Load extra options
+    attrNode = rootNode.getNode( NODE_EXTRA_OPTIONS );
+    if ( attrNode != null ) {
+      for ( DataProperty property : attrNode.getProperties() ) {
+        String code = property.getName();
+        String attribute = property.getString();
+        databaseMeta.getExtraOptions().put( code,
+          ( attribute == null || attribute.length() == 0 ) ? "" : attribute ); //$NON-NLS-1$
+      }
     }
   }
 
