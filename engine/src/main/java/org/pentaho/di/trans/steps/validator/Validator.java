@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -542,7 +542,7 @@ public class Validator extends BaseStep implements StepInterface {
     }
     return new KettleValidatorException( this, field, KettleValidatorException.ERROR_NON_NUMERIC_DATA,
       BaseMessages.getString( PKG, "Validator.Exception.NonNumericDataNotAllowed", field.getFieldName(),
-        valueMeta.toStringMeta() ), field.getFieldName() );
+        valueMeta.toStringMeta(), valueMeta.getString( valueData ) ), field.getFieldName() );
   }
 
   private boolean containsOnlyDigits( String string ) {
