@@ -653,6 +653,7 @@ define([
     function onCreateFolder(folder) {
       return $q(function (resolve, reject) {
         folderService.createFolder(folder).then(function () {
+          _update();
           resolve();
         }, function (result) {
           switch (result.status) {
