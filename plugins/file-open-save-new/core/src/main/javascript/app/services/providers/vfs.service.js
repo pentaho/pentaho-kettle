@@ -210,7 +210,16 @@ define(
         }
 
         function addFolder(folder) {
-          return helperService.httpPut([baseUrl, "add"].join("/"), folder);
+          return $q(function (resolve, reject) {
+            helperService.httpPut([baseUrl, "add"].join("/"), folder).then(function (response) {
+              var newFolder = response.data.data;
+              folder.connectionPath = newFolder.connectionPath;
+              folder.connectionParentPath = newFolder.connectionParentPath;
+              resolve(response);
+            }, function() {
+              reject();
+            });
+          });
         }
 
         function setFolderParams(parentFolder, folder) {
