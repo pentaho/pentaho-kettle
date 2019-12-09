@@ -286,6 +286,9 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
         SelectionOperation.FILE, new FilterType[] { FilterType.KTR, FilterType.XML, FilterType.ALL }, FilterType.KTR,
         new ProviderFilterType[] { providerFilterType } ) );
     selectionAdapterFileDialogTextVar.widgetSelected( null );
+    if ( wPath.getText() != null && Const.isWindows() ) {
+      wPath.setText( wPath.getText().replace( '\\', '/' ) );
+    }
   }
 
   private void pickFileVFS() {
