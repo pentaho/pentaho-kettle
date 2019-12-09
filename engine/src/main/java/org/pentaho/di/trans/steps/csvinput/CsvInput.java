@@ -877,7 +877,8 @@ public class CsvInput extends BaseStep implements StepInterface {
       // Otherwise, we'll grab the list of file names later...
       //
       if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 ) {
-        String filename = environmentSubstitute( meta.getFilename() );
+
+        String filename = filenameValidatorForInputFiles( meta.getFilename() );
 
         if ( Utils.isEmpty( filename ) ) {
           logError( BaseMessages.getString( PKG, "CsvInput.MissingFilename.Message" ) );
@@ -1161,4 +1162,15 @@ public class CsvInput extends BaseStep implements StepInterface {
 
     return strings.toArray( new String[ strings.size() ] );
   }
+
+  String filenameValidatorForInputFiles( String filename ) {
+    if ( getTransMeta().getRepository() != null && getTransMeta().getRepository().isConnected() && filename
+      .contains( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) {
+      return environmentSubstitute( filename.replace( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
+    } else {
+      return environmentSubstitute( filename );
+    }
+  }
+
 }
