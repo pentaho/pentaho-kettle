@@ -2379,7 +2379,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       if ( insertAtTop ) {
         item = new TableItem( wFields.table, SWT.NONE, i );
       } else {
-        item = getTableItem( field.getName() );
+        item = getTableItem( field.getName(), reloadAllFields );
       }
       if ( !reloadAllFields && !lowerCaseNewFieldNames.contains( field.getName().toLowerCase() ) ) {
         continue;
