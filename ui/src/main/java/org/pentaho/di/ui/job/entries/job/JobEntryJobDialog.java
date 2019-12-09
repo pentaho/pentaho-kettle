@@ -293,6 +293,9 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
         new FilterType[] { FilterType.KJB, FilterType.XML, FilterType.ALL }, FilterType.KJB,
         new ProviderFilterType[] { providerFilterType } ) );
     selectionAdapterFileDialogTextVar.widgetSelected( null );
+    if ( wPath.getText() != null && Const.isWindows() ) {
+      wPath.setText( wPath.getText().replace( '\\', '/' ) );
+    }
   }
 
   private void updateByReferenceField( RepositoryElementMetaInterface element ) {
