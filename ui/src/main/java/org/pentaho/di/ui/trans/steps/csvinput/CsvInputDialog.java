@@ -812,7 +812,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       : newFieldNames.stream().map( String::toString ).collect( Collectors.toList() );
     for ( int i = 0; i < inputMeta.getInputFields().length; i++ ) {
       TextFileInputField field = inputMeta.getInputFields()[i];
-      final TableItem item = getTableItem( field.getName() );
+      final TableItem item = getTableItem( field.getName(), reloadAllFields );
       // update the item only if we are reloading all fields, or the field is new
       if ( !reloadAllFields && !fieldName.contains( field.getName() ) ) {
         continue;
