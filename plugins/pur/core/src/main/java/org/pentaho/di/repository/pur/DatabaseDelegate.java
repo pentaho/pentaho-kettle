@@ -141,6 +141,10 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
   }
 
   private void addNodeToElement( String nodeName, DataNode rootNode, Properties attributes ) {
+    if ( attributes == null ) {
+      return;
+    }
+
     DataNode attrNode = rootNode.addNode( nodeName );
     Enumeration<Object> keys = attributes.keys();
     while ( keys.hasMoreElements() ) {
