@@ -25,6 +25,7 @@ package org.pentaho.di.engine.configuration.impl.spark;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.pentaho.di.core.util.Assert.assertFalse;
@@ -57,8 +58,13 @@ public class SparkTunablePropertiesTest {
 
   @Test
   public void testNonTunable() {
-    List<String> properties = SparkTunableProperties.getProperties( "AvroInputNew" );
-    assertTrue( properties.isEmpty() );
+    Arrays.stream( new String[] {"AvroInputNew", "JobExecutor", "SingleThreader",
+        "PrioritizeStreams", "BlockUntilStepsFinish", "Append", "S3CSVINPUT", "S3FileOutputPlugin" } ).forEach(
+            str -> {
+              List<String> properties = SparkTunableProperties.getProperties( str );
+              assertTrue( properties.isEmpty() );
+            }
+    );
   }
 
   @Test

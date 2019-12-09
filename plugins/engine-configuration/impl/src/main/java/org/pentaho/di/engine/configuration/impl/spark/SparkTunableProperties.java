@@ -89,6 +89,15 @@ public class SparkTunableProperties {
 
     // Step List Pulled from pdi-spark-engine-operations-ee beans.xml
     .put( "AmqpConsumer", nonTunable() )
+
+    // Steps that are not supported with Spark
+    .put( "JobExecutor", nonTunable() )
+    .put( "SingleThreader", nonTunable() )
+    .put( "PrioritizeStreams", nonTunable() )
+    .put( "Append", nonTunable() )
+    .put( "BlockUntilStepsFinish", nonTunable() )
+    .put( "S3CSVINPUT", nonTunable() )
+    .put( "S3FileOutputPlugin", nonTunable() )
     .build();
 
   /**
