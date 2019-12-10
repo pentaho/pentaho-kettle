@@ -21,13 +21,16 @@
  ******************************************************************************/
 package org.pentaho.di.ui.core.events.dialog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class SelectionAdapterOptions {
   private SelectionOperation selectionOperation;
   private String[] filters;
   private String defaultFilter;
   private String[] providerFilters;
+  private List<ConnectionFilterType> connectionFilters = new ArrayList<>();
   private boolean useSchemaPath;
 
   public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters, String defaultFilter,
@@ -130,4 +133,13 @@ public class SelectionAdapterOptions {
     this.useSchemaPath = useSchemaPath;
     return this;
   }
+
+  public List<ConnectionFilterType> getConnectionFilters() {
+    return connectionFilters;
+  }
+
+  public void setConnectionFilters( List<ConnectionFilterType> connectionFilters ) {
+    this.connectionFilters = connectionFilters;
+  }
+
 }

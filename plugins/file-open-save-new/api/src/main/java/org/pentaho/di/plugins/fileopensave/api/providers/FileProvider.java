@@ -40,7 +40,22 @@ public interface FileProvider<T extends File> {
 
   boolean isAvailable();
 
+  /**
+   * Get entire tree (no filter)
+   *
+   * @return
+   */
   Tree getTree();
+
+  /**
+   * Optional method to get a filtered tree based on the connection type
+   *
+   * @param connectionTypes
+   * @return filteredTree
+   */
+  default Tree getTree( List<String> connectionTypes ) {
+    return getTree();
+  }
 
   List<T> getFiles( T file, String filters ) throws FileException;
 

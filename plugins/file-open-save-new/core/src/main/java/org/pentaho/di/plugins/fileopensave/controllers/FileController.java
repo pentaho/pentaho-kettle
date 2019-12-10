@@ -60,7 +60,7 @@ public class FileController {
     try {
       FileProvider<File> fileProvider = getFileProvider( file.getProvider() );
       fileProvider.clearProviderCache();
-    } catch (  InvalidFileProviderException e ) {
+    } catch ( InvalidFileProviderException e ) {
       return isCleared;
     }
     return isCleared;
@@ -74,24 +74,29 @@ public class FileController {
   }
 
   List<Tree> load() {
-    return load( null );
+    return load( null, null );
   }
 
   public List<Tree> load( String filter ) {
+    return load( filter, new ArrayList<>() );
+  }
+
+  public List<Tree> load( String filter, List<String> connectionTypes ) {
     List<Tree> trees = new ArrayList<>();
     List<String> filters = Utils.isEmpty( filter ) || filter.equalsIgnoreCase( ProviderFilterType.DEFAULT.toString() )
       ? Arrays.asList( ProviderFilterType.getDefaults() ) : Arrays.asList( filter.split( "[,]" ) );
-    // If there are no filters or default filter, use default list of providers. Else load only providers found in filter
+    // If there are no filters or default filter, use default list of providers. Else load only providers found in
+    // filter
     if ( filters.contains( ProviderFilterType.ALL_PROVIDERS.toString() ) ) {
       for ( FileProvider fileProvider : fileProviders ) {
         if ( fileProvider.isAvailable() ) {
-          trees.add( fileProvider.getTree() );
+          trees.add( fileProvider.getTree( connectionTypes ) );
         }
       }
     } else {
       for ( FileProvider fileProvider : fileProviders ) {
         if ( fileProvider.isAvailable() && filters.contains( fileProvider.getType() ) ) {
-          trees.add( fileProvider.getTree() );
+          trees.add( fileProvider.getTree( connectionTypes ) );
         }
       }
     }

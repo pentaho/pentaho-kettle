@@ -40,6 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,8 +62,13 @@ public class FileBrowserEndpoint {
   @GET
   @Path( "/loadDirectoryTree{filter : (/filter)?}" )
   @Produces( { MediaType.APPLICATION_JSON } )
-  public Response loadDirectoryTree( @PathParam( "filter" ) String filter ) {
-    List<Tree> trees = fileController.load( filter );
+  public Response loadDirectoryTree( @PathParam( "filter" ) String filter,
+                                     @QueryParam( "connectionTypes" ) String connectionTypes ) {
+    List<String> connectionTypeList = new ArrayList<>();
+    if ( connectionTypes != null ) {
+      Collections.addAll( connectionTypeList, connectionTypes.split( "," ) );
+    }
+    List<Tree> trees = fileController.load( filter, connectionTypeList );
     return Response.ok( trees ).build();
   }
 

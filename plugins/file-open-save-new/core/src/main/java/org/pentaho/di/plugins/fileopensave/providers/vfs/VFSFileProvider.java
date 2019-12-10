@@ -39,6 +39,7 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
+import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileNotFoundException;
@@ -88,9 +89,20 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   }
 
   /**
-   * @return
+   * Default implementation; typically not called.
+   *
+   * @return Unfiltered Tree
    */
-  @Override public VFSTree getTree() {
+  @Override public Tree getTree() {
+    return getTree( new ArrayList<>() );
+  }
+
+  /**
+   * Filtered implementation
+   *
+   * @return Filter Tree
+   */
+  @Override public VFSTree getTree( List<String> connectionTypes ) {
     VFSTree vfsTree = new VFSTree( NAME );
 
     List<ConnectionProvider<? extends ConnectionDetails>> providers =
@@ -107,7 +119,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         vfsLocation.setPath( vfsConnectionDetails.getType() + "://" + vfsConnectionDetails.getDomain() );
         vfsLocation.setDomain( vfsConnectionDetails.getDomain() );
         vfsLocation.setConnection( connectionDetails.getName() );
-        vfsTree.addChild( vfsLocation );
+        if ( connectionTypes.isEmpty() || connectionTypes.contains( connectionDetails.getType() ) ) {
+          vfsTree.addChild( vfsLocation );
+        }
       }
     }
 
