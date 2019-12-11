@@ -1419,6 +1419,7 @@ public class DataHandler extends AbstractXulEventHandler {
         namedClusterList.setElements( namedClusters );
         if ( meta.getNamedCluster() != null ) {
           namedClusterList.setSelectedItem( meta.getDatabaseInterface().getNamedCluster() );
+          namedClusterList.setValue( meta.getDatabaseInterface().getNamedCluster() );
         }
       }
     }
