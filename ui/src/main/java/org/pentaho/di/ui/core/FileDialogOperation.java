@@ -49,6 +49,7 @@ public class FileDialogOperation {
   private String connection;
   private String provider;
   private String providerFilter;
+  private String connectionTypeFilter;
   private boolean useSchemaPath;
 
   public FileDialogOperation( String command ) {
@@ -178,6 +179,14 @@ public class FileDialogOperation {
 
   public void setProviderFilter( String providerFilter ) {
     this.providerFilter = providerFilter;
+  }
+
+  public String getConnectionTypeFilter() {
+    return connectionTypeFilter;
+  }
+
+  public void setConnectionTypeFilter( String connectionTypeFilter ) {
+    this.connectionTypeFilter = connectionTypeFilter;
   }
 
   public boolean isProviderRepository() {

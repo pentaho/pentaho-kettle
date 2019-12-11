@@ -73,6 +73,7 @@ public class FileOpenSaveDialog extends ThinDialog {
   public static final String PROVIDER_FILTER_PARAM = "providerFilter";
   public static final String FILTER_PARAM = "filter";
   public static final String DEFAULT_FILTER_PARAM = "defaultFilter";
+  public static final String CONNECTION_FILTER_PARAM = "connectionTypes";
   public static final String ORIGIN_PARAM = "origin";
   public static final String FILENAME_PARAM = "filename";
   public static final String FILE_TYPE_PARM = "fileType";
@@ -130,6 +131,7 @@ public class FileOpenSaveDialog extends ThinDialog {
     addParameter( parameters, ORIGIN_PARAM, fileDialogOperation.getOrigin() );
     addParameter( parameters, FILENAME_PARAM, fileDialogOperation.getFilename() );
     addParameter( parameters, FILE_TYPE_PARM, fileDialogOperation.getFileType() );
+    addParameter( parameters, CONNECTION_FILTER_PARAM, fileDialogOperation.getConnectionTypeFilter()  );
 
     if ( fileDialogOperation.getUseSchemaPath() ) {
       addParameter( parameters, USE_SCHEMA_PARAM, "true" );

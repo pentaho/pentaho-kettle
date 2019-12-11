@@ -42,6 +42,8 @@ import org.pentaho.di.ui.core.events.dialog.extension.SpoonOpenExtensionPointWra
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This adapter class opens up the VFS file dialog, where the primary goal is to select a file.
@@ -148,7 +150,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
 
       try {
         fileDialogOperation = constructFileDialogOperation( options.getSelectionOperation(), initialFilePath,
-          initialFile, options.getFilters(), options.getProviderFilters() );
+          initialFile, options.getFilters(), options.getProviderFilters(), options.getConnectionFilters() );
 
         // open dialog
         extensionPointWrapper.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveNew.id, fileDialogOperation );
@@ -168,11 +170,15 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
 
   private FileDialogOperation constructFileDialogOperation( SelectionOperation selectionOperation, String initialFilePath,
                                                               FileObject initialFile, String[] filter,
-                                                              String[] providerFilters ) throws KettleException {
+                                                              String[] providerFilters, List<ConnectionFilterType> connectionFilterTypes ) throws KettleException {
     FileDialogOperation fileDialogOperation = createFileDialogOperation( selectionOperation );
 
     setProviderFilters( fileDialogOperation, providerFilters );
     setProvider( fileDialogOperation );
+
+    String connectionFilter = connectionFilterTypes.stream()
+      .map( Enum::toString ).collect( Collectors.joining( "," ) );
+    fileDialogOperation.setConnectionTypeFilter( connectionFilter );
 
     if ( initialFile != null ) {
       // Attempt to set path and dir based on File object

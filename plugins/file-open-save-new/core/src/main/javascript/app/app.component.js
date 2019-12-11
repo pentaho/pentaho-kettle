@@ -140,6 +140,7 @@ define([
       vm.origin = $location.search().origin;
       vm.filter = $location.search().filter;
       vm.defaultFilter = $location.search().defaultFilter;
+      vm.connectionTypes = $location.search().connectionTypes;
       vm.fileTypes = vm.filter ? vm.filter.split(',') : false;
       vm.tree = [
         {name: "Recents", hasChildren: false, provider: "recents", order: 0}
@@ -151,7 +152,7 @@ define([
       $timeout(function () {
         var state = $state.current.name;
         vm.headerTitle = i18n.get("file-open-save-plugin.app.header." + state + ".title");
-        dt.getDirectoryTree(vm.providerFilter).then(function(response) {
+        dt.getDirectoryTree(vm.providerFilter, vm.connectionTypes).then(function(response) {
           _populateTree(response);
           _init();
         });
