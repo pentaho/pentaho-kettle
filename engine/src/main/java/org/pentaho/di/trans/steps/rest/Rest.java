@@ -28,9 +28,9 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.uri.UriComponent;
-import com.sun.jersey.client.apache4.ApacheHttpClient4;
-import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
-import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
+import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.http.auth.AuthScope;
@@ -115,7 +115,7 @@ public class Rest extends BaseStep implements StepInterface {
         logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
       }
       // create an instance of the com.sun.jersey.api.client.Client class
-      client = ApacheHttpClient4.create( data.config );
+      client = ApacheHttpClient.create( data.config );
       if ( data.basicAuthentication != null ) {
         client.addFilter( data.basicAuthentication );
       }
@@ -285,16 +285,16 @@ public class Rest extends BaseStep implements StepInterface {
   private void setConfig() throws KettleException {
     if ( data.config == null ) {
       // Use ApacheHttpClient for supporting proxy authentication.
-      data.config = new DefaultApacheHttpClient4Config();
+      data.config = new DefaultApacheHttpClientConfig();
       if ( !Utils.isEmpty( data.realProxyHost ) ) {
         // PROXY CONFIGURATION
-        data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_PROXY_URI, "http://" + data.realProxyHost + ":" + data.realProxyPort );
+        data.config.getProperties().put( ApacheHttpClientConfig.PROPERTY_PROXY_URI, "http://" + data.realProxyHost + ":" + data.realProxyPort );
         if ( !Utils.isEmpty( data.realHttpLogin ) && !Utils.isEmpty( data.realHttpPassword ) ) {
           AuthScope authScope = new AuthScope( data.realProxyHost, data.realProxyPort );
           UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( data.realHttpLogin, data.realHttpPassword );
           CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
           credentialsProvider.setCredentials( authScope, credentials );
-          data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_CREDENTIALS_PROVIDER, credentialsProvider );
+          data.config.getProperties().put( ApacheHttpClientConfig.PROPERTY_CREDENTIALS_PROVIDER, credentialsProvider );
         }
       } else {
         if ( !Utils.isEmpty( data.realHttpLogin ) ) {
@@ -303,7 +303,7 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
       if ( meta.isPreemptive() ) {
-        data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_PREEMPTIVE_BASIC_AUTHENTICATION, true );
+        data.config.getProperties().put( ApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, true );
       }
       // SSL TRUST STORE CONFIGURATION
       if ( !Utils.isEmpty( data.trustStoreFile ) ) {

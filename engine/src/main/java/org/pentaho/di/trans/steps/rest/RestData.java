@@ -24,13 +24,12 @@ package org.pentaho.di.trans.steps.rest;
 
 import javax.ws.rs.core.MediaType;
 
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
-
 /**
  * @author Samatar
  * @since 16-jan-2011
@@ -94,7 +93,7 @@ public class RestData extends BaseStepData implements StepDataInterface {
   public String trustStoreFile;
   public String trustStorePassword;
 
-  public DefaultApacheHttpClient4Config config;
+  public DefaultApacheHttpClientConfig config;
 
   public HTTPBasicAuthFilter basicAuthentication;
 

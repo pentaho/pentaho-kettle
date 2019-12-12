@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.rest;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache4.ApacheHttpClient4;
+import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +54,7 @@ import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith( PowerMockRunner.class )
-@PrepareForTest( ApacheHttpClient4.class )
+@PrepareForTest( ApacheHttpClient.class )
 public class RestTest {
 
   @Test
@@ -87,11 +87,11 @@ public class RestTest {
     WebResource resource = mock( WebResource.class );
     doReturn( builder ).when( resource ).getRequestBuilder();
 
-    ApacheHttpClient4 client = mock( ApacheHttpClient4.class );
+    ApacheHttpClient client = mock( ApacheHttpClient.class );
     doReturn( resource ).when( client ).resource( anyString() );
 
-    mockStatic( ApacheHttpClient4.class );
-    when( ApacheHttpClient4.create( any() ) ).thenReturn( client );
+    mockStatic( ApacheHttpClient.class );
+    when( ApacheHttpClient.create( any() ) ).thenReturn( client );
 
     RestMeta meta = mock( RestMeta.class );
     doReturn( false ).when( meta ).isDetailed();
