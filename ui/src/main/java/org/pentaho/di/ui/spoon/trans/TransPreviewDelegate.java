@@ -332,6 +332,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
       }
       for ( int colNr = 0; colNr < rowMeta.size(); colNr++ ) {
         int dataIndex = dataRowMeta.indexOfValue( rowMeta.getValueMeta( colNr ).getName() );
+        dataIndex = dataIndex < 0 ? colNr : dataIndex;
         String string;
         ValueMetaInterface valueMetaInterface;
         try {
