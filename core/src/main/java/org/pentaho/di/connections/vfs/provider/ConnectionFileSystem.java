@@ -26,6 +26,7 @@ import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystem;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
@@ -52,7 +53,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
   /**
    * Creates a url for {@link ConnectionFileName}
    *
-   * @param abstractFileName File name
+   * @param abstractFileName  File name
    * @param connectionDetails Connection details for the file name
    * @return created url otherwise null
    */
@@ -98,6 +99,15 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
 
   @Override protected void addCapabilities( Collection<Capability> collection ) {
     collection.addAll( ConnectionFileProvider.capabilities );
+  }
+
+  @Override
+  public FileObject resolveFile( FileName name ) throws FileSystemException {
+    try {
+      return this.createFile( (AbstractFileName) name );
+    } catch ( Exception e ) {
+      throw new FileSystemException( "vfs.provider/resolve-file.error", name, e );
+    }
   }
 
 }
