@@ -875,6 +875,11 @@
     "label": "*.jar"
   },
   {
+    "id": "JAR_ZIP",
+    "value": "\\.jar$|\\.zip$",
+    "label": "*.jar, *.zip"
+  },
+  {
     "id": "JAVA",
     "value": "\\.java$",
     "label": "*.java"
