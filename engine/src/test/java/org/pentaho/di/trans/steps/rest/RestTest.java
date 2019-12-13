@@ -25,12 +25,17 @@ package org.pentaho.di.trans.steps.rest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -38,24 +43,28 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith( PowerMockRunner.class )
-@PrepareForTest( ApacheHttpClient.class )
+@PrepareForTest( { ApacheHttpClient.class } )
 public class RestTest {
+
+  private int contentLength;
 
   @Test
   public void testCreateMultivalueMap() {
@@ -122,4 +131,79 @@ public class RestTest {
     assertEquals( 200L, output[2] );
     assertEquals( "{\"Content-Type\":\"application\\/json\"}", output[3] );
   }
+
+  @Test
+  public void testContentLength() throws Exception {
+
+    String bodyContent = "body_value1234567890";
+
+    // Create Server
+    Server server = new Server(8090);
+
+    ContextHandler context = new ContextHandler();
+    context.setContextPath("/test");
+    server.setHandler( new CustomHandler("") );
+    //context.addServlet( new ServletHolder( new CustomServlet() ) ,"/*");
+    // Start Server
+    server.start();
+
+    // Test GET
+    HttpURLConnection http = (HttpURLConnection)new URL("http://localhost:8090/test").openConnection();
+    http.connect();
+    assertEquals( HttpStatus.OK_200, http.getResponseCode() );
+
+    // Mock Rest Step
+    RestMeta meta = mock( RestMeta.class );
+    doReturn( false ).when( meta ).isDetailed();
+    doReturn( false ).when( meta ).isUrlInField();
+    doReturn( false ).when( meta ).isDynamicMethod();
+
+    RowMetaInterface rmi = mock( RowMetaInterface.class );
+    doReturn( 1 ).when( rmi ).size();
+    doReturn( bodyContent ).when( rmi ).getString( any(), anyInt() );
+
+    RestData data = mock( RestData.class );
+    data.method = RestMeta.HTTP_METHOD_POST;
+    data.inputRowMeta = rmi;
+    data.resultFieldName = "result";
+    data.resultCodeFieldName = "status";
+    data.resultHeaderFieldName = "headers";
+    data.config = new DefaultApacheHttpClientConfig();
+    data.realUrl = "http://localhost:8090/test";
+    data.useBody = true;
+    data.mediaType = MediaType.TEXT_PLAIN_TYPE;
+
+    Rest rest = mock( Rest.class );
+    doCallRealMethod().when( rest ).callRest( any() );
+    doCallRealMethod().when( rest ).searchForHeaders( any() );
+
+    setInternalState( rest, "meta", meta );
+    setInternalState( rest, "data", data );
+
+    Object[] params = { bodyContent, "http://localhost:8090/test", "9.0.0.0-SNAPSHOT" };
+
+    contentLength = -1;
+    Object[] output = rest.callRest( params );
+    assertEquals( bodyContent.length(), contentLength );
+  }
+
+  class CustomHandler extends AbstractHandler {
+
+    public CustomHandler(String string) {
+    }
+
+    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+
+
+      response.setContentType("text/html;charset=utf-8");
+      response.setStatus(HttpServletResponse.SC_OK);
+      baseRequest.setHandled(true);
+      if( baseRequest.getHeader( "Content-Length") != null )
+        contentLength = Integer.valueOf(baseRequest.getHeader( "Content-Length"));
+    }
+  }
+
 }
+
+
