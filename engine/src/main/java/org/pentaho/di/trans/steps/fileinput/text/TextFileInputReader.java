@@ -120,14 +120,8 @@ public class TextFileInputReader implements IBaseFileInputReader {
 
     // See if we need to skip the document header lines...
     if ( meta.content.layoutPaged ) {
-      for ( int i = 0; i < meta.content.nrLinesDocHeader; i++ ) {
-        // Just skip these...
-        TextFileInputUtils.getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder ); // header
-                                                                                                                // and
-        // footer: not
-        // wrapped
-        lineNumberInFile++;
-      }
+      lineNumberInFile = TextFileInputUtils.skipLines( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder,
+        meta.content.nrLinesDocHeader, meta.getEnclosure(), lineNumberInFile );
     }
 
     for ( int i = 0; i < bufferSize && !data.doneReading; i++ ) {
@@ -418,22 +412,12 @@ public class TextFileInputReader implements IBaseFileInputReader {
   }
 
   protected boolean tryToReadLine( boolean applyFilter ) throws KettleFileException {
-    String line;
-    line = TextFileInputUtils.getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
 
-    while ( line != null ) {
-        /*
-        Check that the number of enclosures in a line is even.
-        If not even it means that there was an enclosed line break.
-        We need to read the next line(s) to get the remaining data in this row.
-        */
-      if ( TextFileInputUtils.checkPattern( line, meta.getEnclosure() ) % 2 != 0 ) {
-        line = line + TextFileInputUtils.getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
-        lineNumberInFile++;
-      } else {
-        break;
-      }
-    }
+    TextFileLine textFileLine = TextFileInputUtils
+      .getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder,
+      meta.getEnclosure(), lineNumberInFile );
+    String line = textFileLine.line;
+    lineNumberInFile = textFileLine.lineNumber;
 
     if ( line != null ) {
       // when there is no header, check the filter for the first line
