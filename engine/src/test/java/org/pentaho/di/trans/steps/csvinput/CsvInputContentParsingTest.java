@@ -206,6 +206,21 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     );
   }
 
+  @Test
+  public void testEnclosures() throws Exception {
+    meta.setDelimiter( ";" );
+    meta.setEnclosure( "'" );
+    init( "enclosures.csv" );
+
+    setFields( new TextFileInputField( "Field 1", -1, -1 ), new TextFileInputField( "Field 2", -1, -1 ),
+      new TextFileInputField( "Field 3", -1, -1 ) );
+
+    process();
+
+    check( new Object[][] { { "1", "This line is un-even enclosure-wise because I'm using an escaped enclosure", "a" },
+      { "2", "Test isn't even\nhere", "b" } } );
+  }
+
   @Test( expected = KettleStepException.class )
   public void testNoHeaderOptions() throws Exception {
     meta.setHeaderPresent( false );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,26 @@ public class TextFileLine {
     super();
     this.line = line;
     this.lineNumber = lineNumber;
+    this.file = file;
+  }
+
+  public String getLine() {
+    return line;
+  }
+
+  public void setLine( String line ) {
+    this.line = line;
+  }
+
+  public long getLineNumber() {
+    return lineNumber;
+  }
+
+  public FileObject getFile() {
+    return file;
+  }
+
+  public void setFile( FileObject file ) {
     this.file = file;
   }
 }
