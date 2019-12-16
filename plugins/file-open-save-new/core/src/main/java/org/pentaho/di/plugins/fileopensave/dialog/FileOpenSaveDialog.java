@@ -33,12 +33,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
 import org.eclipse.swt.browser.Browser;
@@ -65,6 +67,8 @@ public class FileOpenSaveDialog extends ThinDialog {
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
   private static final String LOCALHOST = "localhost";
+  private static final String HELP_URL =
+    Const.getDocUrl( "Products/Work_with_transformations#Open_a_transformation" );
 
   public static final String PATH_PARAM = "path";
   public static final String USE_SCHEMA_PARAM = "useSchema";
@@ -166,6 +170,13 @@ public class FileOpenSaveDialog extends ThinDialog {
       }
     };
 
+    new BrowserFunction( browser, "help" ) {
+      @Override public Object function( Object[]  arguments ) {
+        openHelpDialog();
+        return true;
+      }
+    };
+
     while ( !dialog.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();
@@ -177,6 +188,10 @@ public class FileOpenSaveDialog extends ThinDialog {
     browser.dispose();
     dialog.close();
     dialog.dispose();
+  }
+
+  private void openHelpDialog() {
+    HelpUtils.openHelpDialog( this.dialog, "", HELP_URL );
   }
 
   private void setProperties( Object[] arguments ) throws ParseException {

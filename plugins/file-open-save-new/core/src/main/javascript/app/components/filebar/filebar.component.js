@@ -63,6 +63,7 @@ define([
     vm.onSelect = onSelect;
     vm.onChange = onChange;
     vm.isSaveState = isSaveState;
+    vm.onHelpClick = onHelpClick;
 
     vm.disabled = true;
     vm.fileFilters = [];
@@ -79,6 +80,7 @@ define([
       vm.saveButton = i18n.get("file-open-save-plugin.app.save.button");
       vm.okButton = i18n.get("file-open-save-plugin.app.ok.button");
       vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
+      vm.helpLabel = i18n.get("file-open-save-plugin.app.help.label");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.fileFilterLabel = i18n.get("file-open-save-plugin.app.save.file-filter.label");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
@@ -136,6 +138,10 @@ define([
 
     function isSaveState() {
       return (vm.state.is('save') || vm.state.is('saveTo'));
+    }
+
+    function onHelpClick() {
+      help();
     }
 
     function _isDisabled() {
