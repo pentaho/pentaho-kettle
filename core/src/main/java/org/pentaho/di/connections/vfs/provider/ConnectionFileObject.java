@@ -148,10 +148,10 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
     connectionPath.append( DELIMITER );
     if ( domain == null || domain.equals( "" ) ) {
       // S3 does not return a URLFleName; but Google does hence the difference here
-      if( fileObject.getName() instanceof URLFileName){
+      if ( fileObject.getName() instanceof URLFileName ) {
         URLFileName urlFileName = (URLFileName) fileObject.getName();
         connectionPath.append( urlFileName.getHostName() );
-      }else{
+      } else {
         connectionPath.append( fileObject.getURL().getHost() );
       }
     }
