@@ -140,7 +140,6 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
    * @throws FileSystemException File doesn't exist
    */
   private FileObject getChild( FileObject fileObject ) throws FileSystemException {
-    URLFileName childFilename = (URLFileName) fileObject.getName();
     String connectionName = ( (ConnectionFileName) this.getName() ).getConnection();
     StringBuilder connectionPath = new StringBuilder();
     connectionPath.append( ConnectionFileProvider.SCHEME );
@@ -148,9 +147,15 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
     connectionPath.append( connectionName );
     connectionPath.append( DELIMITER );
     if ( domain == null || domain.equals( "" ) ) {
-      connectionPath.append( childFilename.getHostName() );
+      // S3 does not return a URLFleName; but Google does hence the difference here
+      if ( fileObject.getName() instanceof URLFileName ) {
+        URLFileName urlFileName = (URLFileName) fileObject.getName();
+        connectionPath.append( urlFileName.getHostName() );
+      } else {
+        connectionPath.append( fileObject.getURL().getHost() );
+      }
     }
-    connectionPath.append( childFilename.getPath() );
+    connectionPath.append( fileObject.getName().getPath() );
 
     return this.resolveFile( connectionPath.toString() );
   }
