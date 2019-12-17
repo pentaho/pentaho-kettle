@@ -180,6 +180,11 @@
     "label": "*.avi"
   },
   {
+    "id": "AVRO",
+    "value": "\\.avro$",
+    "label": "*.avro"
+  },
+  {
     "id": "AXD",
     "value": "\\.axd$",
     "label": "*.axd"
