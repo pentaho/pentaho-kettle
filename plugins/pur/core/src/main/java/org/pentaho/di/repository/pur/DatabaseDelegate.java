@@ -132,9 +132,9 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_IS_DECIMAL_SEPERATOR, databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator() );
     databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR );
 
-    addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes().entrySet());
+    addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes().entrySet() );
     addNodeToElement( NODE_POOLING_PROPS, rootNode, databaseMeta.getConnectionPoolingProperties().entrySet() );
-    addNodeToElement( NODE_EXTRA_OPTIONS, rootNode, new HashMap<Object, Object>(databaseMeta.getExtraOptions()).entrySet() );
+    addNodeToElement( NODE_EXTRA_OPTIONS, rootNode, new HashMap<Object, Object>(databaseMeta.getExtraOptions() ).entrySet() );
     databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_USE_POOLING );
 
     return rootNode;
