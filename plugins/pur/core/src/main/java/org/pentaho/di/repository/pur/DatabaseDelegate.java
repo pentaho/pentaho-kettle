@@ -153,7 +153,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     return rootNode;
   }
 
-  private void addNodeToElement(String nodeName, DataNode rootNode, Set<Map.Entry<Object, Object>> attributes ) {
+  private void addNodeToElement( String nodeName, DataNode rootNode, Set<Map.Entry<Object, Object>> attributes ) {
     if ( attributes == null ) {
       return;
     }
@@ -230,7 +230,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     attrNode = rootNode.getNode( NODE_EXTRA_OPTIONS );
     if ( attrNode != null ) {
       for ( DataProperty property : attrNode.getProperties() ) {
-        String databaseTypeCode = property.getName().substring( 0, property.getName().indexOf('.') );
+        String databaseTypeCode = property.getName().substring( 0, property.getName().indexOf( '.' ) );
         String code = property.getName().replace( databaseTypeCode + ".", "" );
         String attribute = property.getString();
         databaseMeta.addExtraOption( databaseTypeCode, code,
