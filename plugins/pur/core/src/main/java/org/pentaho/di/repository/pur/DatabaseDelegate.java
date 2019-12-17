@@ -132,9 +132,18 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_IS_DECIMAL_SEPERATOR, databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator() );
     databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR );
 
-    addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes().entrySet() );
-    addNodeToElement( NODE_POOLING_PROPS, rootNode, databaseMeta.getConnectionPoolingProperties().entrySet() );
-    addNodeToElement( NODE_EXTRA_OPTIONS, rootNode, new HashMap<Object, Object>(databaseMeta.getExtraOptions() ).entrySet() );
+    if( databaseMeta.getAttributes() != null && !databaseMeta.getAttributes().isEmpty() ) {
+      addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes().entrySet() );
+    }
+
+    if( databaseMeta.getConnectionPoolingProperties() != null && !databaseMeta.getConnectionPoolingProperties().isEmpty() ) {
+      addNodeToElement( NODE_POOLING_PROPS, rootNode, databaseMeta.getConnectionPoolingProperties().entrySet() );
+    }
+
+    if( databaseMeta.getExtraOptions() != null && !databaseMeta.getExtraOptions().isEmpty() ) {
+      addNodeToElement( NODE_EXTRA_OPTIONS, rootNode, new HashMap<Object, Object>( databaseMeta.getExtraOptions() ).entrySet() );
+    }
+
     databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_USE_POOLING );
 
     return rootNode;
