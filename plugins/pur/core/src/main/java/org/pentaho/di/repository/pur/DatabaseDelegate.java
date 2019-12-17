@@ -31,8 +31,7 @@ import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 
-import java.util.Enumeration;
-import java.util.Properties;
+import java.util.*;
 
 public class DatabaseDelegate extends AbstractDelegate implements ITransformer, SharedObjectAssembler<DatabaseMeta>,
     java.io.Serializable {
@@ -133,23 +132,25 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_IS_DECIMAL_SEPERATOR, databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator() );
     databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR );
 
-    addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes() );
-    addNodeToElement( NODE_POOLING_PROPS, rootNode, databaseMeta.getConnectionPoolingProperties() );
+    addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes().entrySet());
+    addNodeToElement( NODE_POOLING_PROPS, rootNode, databaseMeta.getConnectionPoolingProperties().entrySet() );
+    addNodeToElement( NODE_EXTRA_OPTIONS, rootNode, new HashMap<Object, Object>(databaseMeta.getExtraOptions()).entrySet() );
     databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_USE_POOLING );
 
     return rootNode;
   }
 
-  private void addNodeToElement( String nodeName, DataNode rootNode, Properties attributes ) {
+  private void addNodeToElement(String nodeName, DataNode rootNode, Set<Map.Entry<Object, Object>> attributes ) {
     if ( attributes == null ) {
       return;
     }
 
     DataNode attrNode = rootNode.addNode( nodeName );
-    Enumeration<Object> keys = attributes.keys();
-    while ( keys.hasMoreElements() ) {
-      String code = (String) keys.nextElement();
-      String attribute = (String) attributes.get( code );
+    Iterator<Map.Entry<Object, Object>> keys = attributes.iterator();
+    while ( keys.hasNext() ) {
+      Map.Entry<Object, Object> entry = keys.next();
+      String code = (String) entry.getKey();
+      String attribute = (String) entry.getValue();
       // Save this attribute
       //
       // Escape the code as it might contain invalid JCR characters like '/' as in AS/400
@@ -216,10 +217,11 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     attrNode = rootNode.getNode( NODE_EXTRA_OPTIONS );
     if ( attrNode != null ) {
       for ( DataProperty property : attrNode.getProperties() ) {
-        String code = property.getName();
+        String databaseTypeCode = property.getName().substring( 0, property.getName().indexOf('.') );
+        String code = property.getName().replace( databaseTypeCode + ".", "" );
         String attribute = property.getString();
-        databaseMeta.getExtraOptions().put( code,
-          ( attribute == null || attribute.length() == 0 ) ? "" : attribute ); //$NON-NLS-1$
+        databaseMeta.addExtraOption( databaseTypeCode, code,
+                ( attribute == null || attribute.length() == 0 ) ? "" : attribute ); //$NON-NLS-1$
       }
     }
   }
