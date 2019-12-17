@@ -31,7 +31,11 @@ import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class DatabaseDelegate extends AbstractDelegate implements ITransformer, SharedObjectAssembler<DatabaseMeta>,
     java.io.Serializable {
@@ -132,15 +136,15 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_IS_DECIMAL_SEPERATOR, databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator() );
     databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR );
 
-    if( databaseMeta.getAttributes() != null && !databaseMeta.getAttributes().isEmpty() ) {
+    if ( databaseMeta.getAttributes() != null && !databaseMeta.getAttributes().isEmpty() ) {
       addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes().entrySet() );
     }
 
-    if( databaseMeta.getConnectionPoolingProperties() != null && !databaseMeta.getConnectionPoolingProperties().isEmpty() ) {
+    if ( databaseMeta.getConnectionPoolingProperties() != null && !databaseMeta.getConnectionPoolingProperties().isEmpty() ) {
       addNodeToElement( NODE_POOLING_PROPS, rootNode, databaseMeta.getConnectionPoolingProperties().entrySet() );
     }
 
-    if( databaseMeta.getExtraOptions() != null && !databaseMeta.getExtraOptions().isEmpty() ) {
+    if ( databaseMeta.getExtraOptions() != null && !databaseMeta.getExtraOptions().isEmpty() ) {
       addNodeToElement( NODE_EXTRA_OPTIONS, rootNode, new HashMap<Object, Object>( databaseMeta.getExtraOptions() ).entrySet() );
     }
 
