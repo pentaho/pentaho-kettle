@@ -37,9 +37,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.nio.charset.Charset.defaultCharset; //NOSONAR  method is used
 import static org.pentaho.di.core.util.serialization.StepMetaProps.STEP_TAG;
 
 /**
@@ -55,14 +55,14 @@ public class MetaXmlSerializer {
       marshalObj.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, true );
       marshalObj.setProperty( Marshaller.JAXB_FRAGMENT, true );
       marshalObj.marshal( stepMetaProps, baos );
-      return baos.toString( defaultCharset().name() );
+      return baos.toString( StandardCharsets.UTF_8.name() );
     } catch ( JAXBException | IOException e ) {
       throw new RuntimeException( e );
     }
   }
 
   public static StepMetaProps deserialize( String ser ) {
-    try ( ByteArrayInputStream bais = new ByteArrayInputStream( ser.getBytes( defaultCharset() ) ) ) {
+    try ( ByteArrayInputStream bais = new ByteArrayInputStream( ser.getBytes( StandardCharsets.UTF_8 ) ) ) {
       Unmarshaller unmarshaller = JAXBContext.newInstance( StepMetaProps.class ).createUnmarshaller();
       return (StepMetaProps) unmarshaller.unmarshal( bais );
     } catch ( IOException | JAXBException e ) {
