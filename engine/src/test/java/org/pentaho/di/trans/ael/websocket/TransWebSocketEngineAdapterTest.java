@@ -138,7 +138,7 @@ public class TransWebSocketEngineAdapterTest {
     CountDownLatch latch = new CountDownLatch( 1 );
     TransWebSocketEngineAdapter adapter =
       new TransWebSocketEngineAdapter( transMeta, "", -1, false ) {
-        @Override DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
+        @Override public DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
           return daemonEndpoint;
         }
 
