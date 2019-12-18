@@ -86,7 +86,11 @@ define(
 
         function selectFolder(folder, filters, useCache) {
           return $q(function(resolve) {
-            messageService.set("file", i18n.get('file-open-save-plugin.app.middle.no-recents.message'));
+            if (folder.children && folder.children.length > 0) {
+              messageService.set("file", null);
+            } else {
+              messageService.set("file", i18n.get('file-open-save-plugin.app.middle.no-recents.message'));
+            }
             resolve();
           });
         }

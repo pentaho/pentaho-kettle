@@ -385,7 +385,8 @@ define([
       if (_isInvalidName()) {
         _triggerError(17);
       } else if (override || duplicate === null) {
-        fileService.save(vm.fileToSave, vm.folder).then(function() {
+        var currentFilename = duplicate !== null ? duplicate.name : null;
+        fileService.save(vm.fileToSave, vm.folder, currentFilename, override).then(function() {
           // Dialog should close
         }, function() {
           _triggerError(3);
