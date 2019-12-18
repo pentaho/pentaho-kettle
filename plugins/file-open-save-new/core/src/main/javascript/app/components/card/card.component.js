@@ -78,7 +78,7 @@ define([
      */
     function selectFile(file) {
       vm.selectedFile = file;
-      vm.onSelect({selectedFile: file});
+      vm.onSelect({selectedFile: [file]});
     }
   }
 

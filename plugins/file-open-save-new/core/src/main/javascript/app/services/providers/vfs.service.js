@@ -170,7 +170,7 @@ define(
         }
 
         function _justThePath(url) {
-          return url.replace(/^[\w]+:\/\//, "").replace(/.*@/, "");
+          return utils.cleanPath(url.replace(/^[\w]+:\/\//, "").replace(/.*@/, ""));
         }
 
         /**

@@ -26,13 +26,14 @@ define(
     [
       "./provider.service",
       "./file.service",
+      "./message.service",
       "../components/utils",
       "pentaho/i18n-osgi!file-open-save-new.messages"
     ],
-    function (providerService, fileService, utils, i18n) {
+    function (providerService, fileService, messageService, utils, i18n) {
       "use strict";
 
-      var factoryArray = [providerService.name, fileService.name, "$q", factory];
+      var factoryArray = [providerService.name, fileService.name, messageService.name, "$q", factory];
       var module = {
         name: "folderService",
         factory: factoryArray
@@ -45,7 +46,7 @@ define(
        *
        * @return {Object} The fileService api
        */
-      function factory(providerService, fileService, $q) {
+      function factory(providerService, fileService, messageService, $q) {
         return {
           folder: null,
           tree: null,
@@ -73,20 +74,17 @@ define(
          * @returns {*}
          */
         function selectFolder(folder, filters, useCache) {
+          messageService.set("file", null);
           var self = this;
           return $q(function (resolve, reject) {
             if (folder !== self.folder || self.folder.loaded === false) {
               self.folder = folder;
               self.folder.open = true;
-              if (folder.provider !== "recents") {
-                _selectFolder(folder, filters, useCache).then(function () {
-                  resolve(self.folder);
-                }, function (err) {
-                  reject(err);
-                });
-              } else {
+              _selectFolder(folder, filters, useCache).then(function () {
                 resolve(self.folder);
-              }
+              }, function (err) {
+                reject(err);
+              });
             } else {
               resolve(self.folder);
             }
@@ -141,6 +139,7 @@ define(
          * @returns {*}
          */
         function openPath(path, props) {
+          messageService.set("file", null);
           var self = this;
           return $q(function (resolve, reject) {
             path = utils.cleanPath(path);
@@ -174,8 +173,10 @@ define(
             if (file.type === "file") {
               filename = utils.getFilename(path);
               path = utils.getParentPath(path);
+              self.folder = {path: path};
+            } else {
+              self.folder = file;
             }
-            self.folder = {path: path};
             var useCache = props ? props.useCache : false;
             _getFilesByPath(path, useCache).then(function (files) {
               self.folder.loaded = true;
@@ -367,7 +368,7 @@ define(
           path = utils.getParentPath(path);
           fileService.files = [];
           var self = this;
-          return $q(function (resolve, reject) {
+          return $q(function (resolve) {
             if (self.folder.root) {
               self.selectFolderByPath(path).then(resolve);
             } else {
@@ -464,7 +465,7 @@ define(
         function _selectFolder(folder, filters, useCache) {
           return $q(function (resolve, reject) {
             var service = providerService.get(folder.provider);
-            if (service) {
+            if (service && service.selectFolder) {
               folder.loading = true;
               service.selectFolder(folder, filters, useCache).then(function () {
                 folder.loading = false;

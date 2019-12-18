@@ -64,13 +64,15 @@ define(
           var currentValue = -1;
           var currentService = null;
           for (var i = 0; i < services.length; i++) {
-            var matchValue = services[i].matchPath(path);
-            if (matchValue > 0 && matchValue > currentValue && (tree && _inTree(services[i].root, tree))) {
-              currentService = services[i];
-              currentValue = matchValue;
-            } else if (matchValue > 0 && matchValue > currentValue && !tree) {
-              currentService = services[i];
-              currentValue = matchValue;
+            if (services[i].matchPath) {
+              var matchValue = services[i].matchPath(path);
+              if (matchValue > 0 && matchValue > currentValue && (tree && _inTree(services[i].root, tree))) {
+                currentService = services[i];
+                currentValue = matchValue;
+              } else if (matchValue > 0 && matchValue > currentValue && !tree) {
+                currentService = services[i];
+                currentValue = matchValue;
+              }
             }
           }
           return currentService;

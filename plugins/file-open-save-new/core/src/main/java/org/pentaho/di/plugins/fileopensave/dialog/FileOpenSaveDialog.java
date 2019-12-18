@@ -37,6 +37,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -55,7 +56,7 @@ import java.util.Properties;
 /**
  * Created by bmorrise on 5/23/17.
  */
-public class FileOpenSaveDialog extends ThinDialog {
+public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
   private static final Class<?> PKG = FileOpenSaveDialog.class;
 
   public static final String STATE_SAVE = "save";

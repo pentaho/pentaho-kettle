@@ -16,6 +16,10 @@
   <name>PDI File Open and Save New Plugin API</name>
 
   <dependencies>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-ui-swt</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -44,6 +48,7 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
+              org.pentaho.di.plugins.fileopensave.api.file,
               org.pentaho.di.plugins.fileopensave.api.providers,
               org.pentaho.di.plugins.fileopensave.api.providers.exception
             </Export-Package>

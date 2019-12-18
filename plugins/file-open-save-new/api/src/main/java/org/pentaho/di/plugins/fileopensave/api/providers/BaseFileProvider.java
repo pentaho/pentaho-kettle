@@ -22,8 +22,18 @@
 
 package org.pentaho.di.plugins.fileopensave.api.providers;
 
+import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
+import org.pentaho.di.ui.core.FileDialogOperation;
+
 public abstract class BaseFileProvider<T extends File> implements FileProvider<T> {
   @Override public String sanitizeName( T destDir, String newPath ) {
     return newPath;
+  }
+
+  @Override public void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation ) {
+    fileDialogOperation.setPath( fileDetails.getPath() );
+    fileDialogOperation.setFilename( fileDetails.getName() );
+    fileDialogOperation.setConnection( fileDetails.getConnection() );
+    fileDialogOperation.setProvider( fileDetails.getProvider() );
   }
 }
