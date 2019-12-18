@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.dialog.FileOpenSaveDialog;
@@ -69,11 +70,13 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
     resolveProvider( fileDialogOperation );
     fileOpenSaveDialog.open( fileDialogOperation );
 
-    try {
-      FileProvider fileProvider = providerService.get( fileOpenSaveDialog.getProvider() );
-      fileProvider.setFileProperties( fileOpenSaveDialog, fileDialogOperation );
-    } catch ( InvalidFileProviderException e ) {
-      throw new KettleException( e );
+    if ( !Utils.isEmpty( fileOpenSaveDialog.getProvider() ) ) {
+      try {
+        FileProvider fileProvider = providerService.get( fileOpenSaveDialog.getProvider() );
+        fileProvider.setFileProperties( fileOpenSaveDialog, fileDialogOperation );
+      } catch ( InvalidFileProviderException e ) {
+        throw new KettleException( e );
+      }
     }
   }
 
