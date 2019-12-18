@@ -144,6 +144,11 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         // Attempt to set up initial conditions, if fails browse will fallback to default path.
         initialFilePath = resolveFile( meta, getText() );
         initialFile = KettleVFS.getFileObject( initialFilePath );
+
+        // In cases where filePath is empty set it to the default path returned by kettleVFS.
+        if ( Utils.isEmpty( initialFilePath ) && initialFile != null ) {
+          initialFilePath = initialFile.getName().getPath();
+        }
       } catch ( KettleFileException kfe ) {
         log.logError( "Error in widgetSelectedHelper", kfe );
       }
@@ -216,6 +221,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         return new FileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
       case SAVE_TO:
         return new FileDialogOperation( FileDialogOperation.SAVE_TO, FileDialogOperation.ORIGIN_SPOON );
+      case SAVE_TO_FILE_FOLDER:
+        return new FileDialogOperation( FileDialogOperation.SAVE_TO_FILE_FOLDER, FileDialogOperation.ORIGIN_SPOON );
       case OPEN:
         return new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
       default:
@@ -232,8 +239,12 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     }
   }
 
-  void setFilename( FileDialogOperation fileDialogOperation, FileObject fileObject ) {
-    fileDialogOperation.setFilename( fileObject.getName().getBaseName() );
+  void setFilename( FileDialogOperation fileDialogOperation, FileObject fileObject ) throws KettleException {
+    try {
+      fileDialogOperation.setFilename( fileObject.isFile() ? fileObject.getName().getBaseName() : null );
+    } catch ( FileSystemException fse ) {
+      throw new KettleException( "failed to check isFile in setFilename()", fse );
+    }
   }
 
   void setStartDir( FileDialogOperation fileDialogOperation, FileObject fileObject, String filePath ) throws KettleException {
@@ -310,7 +321,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
       if ( fileDialogOperation.isProviderRepository() ) {
         return getRepositoryFilePath( fileDialogOperation );
       } else {
-        if ( fileDialogOperation.isSaveCommand() ) {
+        if ( fileDialogOperation.isSaveCommand() && !Utils.isEmpty( fileDialogOperation.getFilename() ) ) {
           return fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
         } else {
           return fileDialogOperation.getPath();

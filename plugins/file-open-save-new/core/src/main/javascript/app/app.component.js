@@ -88,6 +88,7 @@ define([
     vm.onKeyUp = onKeyUp;
     vm.onKeyDown = onKeyDown;
     vm.onSelectFilter = selectFilter;
+    vm.isSaveState = isSaveState;
 
     vm.isCardView = false;
     vm.isFileView = false;
@@ -197,9 +198,12 @@ define([
      */
     function _setFileToSaveName() {
       if (isSaveState()) {
+        vm.fileToSave = "";
+
         if (vm.filename !== undefined) {
           vm.fileToSave = vm.filename;
-        } else {
+        } else if (vm.state.is('save')) {
+          // Only update with trans/job filename in save state.
           dt.getActiveFileName().then(function (response) {
             vm.fileToSave = response.data.fileName;
           }, function () {
@@ -381,19 +385,36 @@ define([
      * @private
      */
     function _save(override) {
-      var duplicate = folderService.getDuplicate(vm.fileToSave);
+      var duplicate = null;
+      var folderToUse = vm.folder;
+
+      if (vm.fileToSave === "" && vm.state.is("saveToFileFolder") ) {
+        if ( fileService.files.length >= 1 ) {
+          // Set the file/folder to the selected item if fileToSave is blank and something is selected.
+          duplicate = folderService.getDuplicate(fileService.files[0].name);
+          folderToUse = fileService.files[0];
+        } else {
+          // Nothing selected use the current directory which is a duplicate.
+          duplicate = folderService.folder;
+        }
+      }
+      if (duplicate === null ) {
+        // Determine if the file/folder to save is a duplicate to prompt the user to overwrite.
+        duplicate = folderService.getDuplicate(vm.fileToSave);
+      }
+
       if (_isInvalidName()) {
         _triggerError(17);
       } else if (override || duplicate === null) {
         var currentFilename = duplicate !== null ? duplicate.name : null;
-        fileService.save(vm.fileToSave, vm.folder, currentFilename, override).then(function() {
+        fileService.save(vm.fileToSave, folderToUse, currentFilename, override).then(function() {
           // Dialog should close
         }, function() {
           _triggerError(3);
         });
       } else {
         vm.errorFiles = [duplicate];
-        _triggerError(1);
+        vm.state.is("save") ? _triggerError(1) : _triggerError(22);
       }
     }
 
@@ -431,6 +452,7 @@ define([
     function confirmError() {
       switch (vm.errorType) {
         case 1: // File exists...override
+        case 22:
           _save(true);
           break;
         case 5: // Delete File
@@ -560,7 +582,7 @@ define([
     }
 
     function isSaveState() {
-      return (vm.state.is('save') || vm.state.is('saveTo'));
+      return (vm.state.is('save') || vm.state.is('saveTo') || vm.state.is('saveToFileFolder'));
     }
 
     /**
@@ -704,7 +726,7 @@ define([
      */
     function onKeyUp(event) {
       if (event.keyCode === 13 && event.target.tagName !== "INPUT") {
-        if (isSaveState("save")) {
+        if (isSaveState()) {
           _save(false);
         } else if (vm.selectedFiles.length === 1) {
           onSelectFile(vm.selectedFiles[0]);

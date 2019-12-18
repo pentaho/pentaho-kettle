@@ -1204,7 +1204,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     wbFilename.addSelectionListener(
       new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-        new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
+        new SelectionAdapterOptions( SelectionOperation.SAVE_TO_FILE_FOLDER,
           new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL },
           FilterType.TXT ) ) );
 
