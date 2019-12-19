@@ -105,6 +105,16 @@ public class SelectionAdapterFileDialogTest {
   }
 
   @Test
+  public void testIsUrl() {
+    assertTrue( testInstance.isUrl( "hc://test/test.txt" ) );
+    assertTrue( testInstance.isUrl( "pvfs://test/test.txt" ) );
+    assertTrue( testInstance.isUrl( "s3://test/test.txt" ) );
+    assertFalse( testInstance.isUrl( "C:\\\\test\\test.txt " ) );
+    assertFalse( testInstance.isUrl( "/test/test.txt " ) );
+
+  }
+
+  @Test
   public void testSetPath() throws Exception {
     // TEST : is file
     FileDialogOperation fileDialogOperation1 = createFileDialogOperation();

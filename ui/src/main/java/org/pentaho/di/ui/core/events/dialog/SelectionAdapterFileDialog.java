@@ -324,7 +324,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         return getRepositoryFilePath( fileDialogOperation );
       } else {
         if ( fileDialogOperation.isSaveCommand() && !Utils.isEmpty( fileDialogOperation.getFilename() ) ) {
-          return fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
+          String sep = isUrl( fileDialogOperation.getPath() ) ? "/" : File.separator;
+          return fileDialogOperation.getPath() + sep + fileDialogOperation.getFilename();
         } else {
           return fileDialogOperation.getPath();
         }
@@ -346,6 +347,10 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
    */
   private String getRepositoryFilePath( RepositoryElementMetaInterface repositoryElementMeta ) {
     return concat( repositoryElementMeta.getRepositoryDirectory().getPath(), repositoryElementMeta.getName() );
+  }
+
+  protected boolean isUrl( String path ) {
+    return path.matches( "^[\\w]+://.*" );
   }
 
   protected String concat( String path, String name ) {
