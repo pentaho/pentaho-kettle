@@ -598,7 +598,7 @@ define(
           }
           if ($state.is("open") && utils.getTextWidth(retVal) > 435) {
             retVal = utils.truncateString(retVal, 426) + "...";
-          } else if ($state.is("save") || $state.is("saveTo") && utils.getTextWidth(retVal) > 395) {
+          } else if (vm.isSaveState() && utils.getTextWidth(retVal) > 395) {
             retVal = utils.truncateString(retVal, 386) + "...";
           }
           return retVal + "\"";

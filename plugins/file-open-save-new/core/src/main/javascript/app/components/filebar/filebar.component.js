@@ -119,7 +119,7 @@ define([
      */
     function onChanges(changes) {
       $timeout(function () {
-        _update();
+        _isDisabled();
       });
     }
 
@@ -128,16 +128,11 @@ define([
     }
 
     function onChange() {
-      _update();
-    }
-
-    function _update() {
-      vm.isSaveEnabled = vm.filename === '';
       _isDisabled();
     }
 
     function isSaveState() {
-      return (vm.state.is('save') || vm.state.is('saveTo'));
+      return (vm.state.is('save') || vm.state.is('saveTo') || vm.state.is('saveToFileFolder'));
     }
 
     function onHelpClick() {
@@ -159,6 +154,13 @@ define([
           break;
         case 'open':
           enabled = vm.filename;
+          break;
+        case 'save':
+        case 'saveTo':
+          vm.isSaveEnabled = vm.filename === '';
+          break;
+        case 'saveToFileFolder':
+          vm.isSaveEnabled = !vm.path;
           break;
         default:
           break;

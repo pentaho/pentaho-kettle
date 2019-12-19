@@ -29,6 +29,7 @@ public class FileDialogOperation {
   public static final String OPEN = "open";
   public static final String SAVE = "save";
   public static final String SAVE_TO = "saveTo";
+  public static final String SAVE_TO_FILE_FOLDER = "saveToFileFolder";
   public static final String ORIGIN_SPOON = "spoon";
   public static final String ORIGIN_OTHER = "other";
   public static final String TRANSFORMATION = "transformation";
@@ -194,7 +195,8 @@ public class FileDialogOperation {
   }
 
   public boolean isSaveCommand() {
-    return ( command.equalsIgnoreCase( SAVE ) || command.equalsIgnoreCase( SAVE_TO ) );
+    return ( command.equalsIgnoreCase( SAVE ) || command.equalsIgnoreCase( SAVE_TO )
+      || command.equalsIgnoreCase( SAVE_TO_FILE_FOLDER ) );
   }
 
 }

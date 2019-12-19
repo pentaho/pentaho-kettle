@@ -33,5 +33,6 @@ public enum SelectionOperation {
   FILE_OR_FOLDER,
   SAVE,
   SAVE_TO,
+  SAVE_TO_FILE_FOLDER,
   OPEN;
 }
