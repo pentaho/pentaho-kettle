@@ -70,6 +70,11 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
     resolveProvider( fileDialogOperation );
     fileOpenSaveDialog.open( fileDialogOperation );
 
+    fileDialogOperation.setPath( null );
+    fileDialogOperation.setFilename( null );
+    fileDialogOperation.setConnection( null );
+    fileDialogOperation.setProvider( null );
+
     if ( !Utils.isEmpty( fileOpenSaveDialog.getProvider() ) ) {
       try {
         FileProvider fileProvider = providerService.get( fileOpenSaveDialog.getProvider() );
