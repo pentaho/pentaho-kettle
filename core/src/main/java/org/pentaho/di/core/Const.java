@@ -37,6 +37,7 @@ import org.pentaho.di.version.BuildVersion;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -47,6 +48,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -1305,7 +1307,17 @@ public class Const {
   /**
    * <p>This environment variable is used to specify a location used to deploy a shim driver into PDI.</p>
    */
-  public static final String SHIM_DRIVER_DEPLOYMENT_LOCATION = "SHIM_DRIVER_DEPLOYMENT_LOCATION";
+  private static final String SHIM_DRIVER_DEPLOYMENT_LOCATION = "SHIM_DRIVER_DEPLOYMENT_LOCATION";
+  private static final String DEFAULT_DRIVERS_DIR = "DEFAULT";
+  public static String getShimDriverDeploymentLocation() {
+
+    String driversLocation = System.getProperty( Const.SHIM_DRIVER_DEPLOYMENT_LOCATION, DEFAULT_DRIVERS_DIR );
+    if ( driversLocation.equals( DEFAULT_DRIVERS_DIR ) ) {
+      String karafDir = System.getProperty( "karaf.home" );
+      return Paths.get( karafDir ).getParent().getParent().toString() + File.separator + "drivers";
+    }
+    return driversLocation;
+  }
 
   /**
    * <p>This environment variable is used by XSD validation steps to enable or disable external entities.</p>
