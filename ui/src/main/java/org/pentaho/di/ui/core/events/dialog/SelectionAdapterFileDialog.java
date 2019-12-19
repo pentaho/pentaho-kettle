@@ -316,7 +316,9 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   private String constructPath( FileDialogOperation fileDialogOperation ) {
-
+    if ( Utils.isEmpty( fileDialogOperation.getProvider() ) ) {
+      return null;
+    }
     try {
       if ( fileDialogOperation.isProviderRepository() ) {
         return getRepositoryFilePath( fileDialogOperation );
