@@ -10,20 +10,20 @@ buildProperties:
     build: clean deploy -DskipTests -Drelease
     test: test
 
-  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-9.0-qat
-  MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus.pentaho.org/content/repositories/private-9.0-qat
+  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-9.1-qat
+  MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus.pentaho.org/content/repositories/private-9.1-qat
   ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
 
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
-  RELEASE_VERSION                : 9.0.0.0
-  DEPLOYMENT_FOLDER              : 9.0-QAT
+  RELEASE_VERSION                : 9.1.0.0
+  DEPLOYMENT_FOLDER              : 9.1-QAT
   RELEASE_MODE                   : true
   DEFAULT_BRANCH                 : master
-  SUITE_BUILD_RESOURCES_BRANCH   : 9.0.0.0
+  SUITE_BUILD_RESOURCES_BRANCH   : 9.1.0.0
   SERVICEPACK_BRANCH             : master
-  JENKINS_FOLDER_NAME            : '9.0'
+  JENKINS_FOLDER_NAME            : '9.1'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/oracle-jdk/8
