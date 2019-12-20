@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
  *  Dialog.java
  *
  * wbFilename.addSelectionListener(  new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta, new SelectionAdapterOptions(
- * SelectionOperation.FILE, new String[] { FilterType.CUBE.toString(), FilterType.ALL.toString() }, FilterType.CUBE.toString() ) ) );
+ * SelectionOperation.FILE, new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL }, FilterType.TXT ) ) );
  *
  *
  * Side effect:
@@ -175,7 +175,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
 
   private FileDialogOperation constructFileDialogOperation( SelectionOperation selectionOperation, String initialFilePath,
                                                               FileObject initialFile, String[] filter,
-                                                              String[] providerFilters, List<ConnectionFilterType> connectionFilterTypes ) throws KettleException {
+                                                              String[] providerFilters, List<ConnectionFilterType> connectionFilterTypes ) {
     FileDialogOperation fileDialogOperation = createFileDialogOperation( selectionOperation );
 
     setProviderFilters( fileDialogOperation, providerFilters );
@@ -185,11 +185,17 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
       .map( Enum::toString ).collect( Collectors.joining( "," ) );
     fileDialogOperation.setConnectionTypeFilter( connectionFilter );
 
-    if ( initialFile != null ) {
-      // Attempt to set path and dir based on File object
-      setPath( fileDialogOperation, initialFile, initialFilePath );
-      setFilename( fileDialogOperation, initialFile );
-      setStartDir( fileDialogOperation, initialFile, initialFilePath );
+    try {
+      if ( initialFile != null && initialFile.exists() ) {
+        // Attempt to set path and dir based on File object
+        setPath( fileDialogOperation, initialFile, initialFilePath );
+        setFilename( fileDialogOperation, initialFile );
+        setStartDir( fileDialogOperation, initialFile, initialFilePath );
+      }
+    } catch ( Exception e  ) {
+      fileDialogOperation.setPath( null );
+      fileDialogOperation.setFilename( null );
+      fileDialogOperation.setStartDir( null );
     }
 
     if ( fileDialogOperation.getPath() == null && fileDialogOperation.getStartDir() == null ) {
