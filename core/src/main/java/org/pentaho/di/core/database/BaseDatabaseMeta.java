@@ -290,7 +290,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
 
   private String pluginId;
   private String pluginName;
-  
+
   public BaseDatabaseMeta() {
     attributes = new Properties();
     changed = false;
@@ -1438,15 +1438,11 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   @Override
   public void setConnectionPoolingProperties( Properties properties ) {
     // Clear our the previous set of pool parameters
-    ArrayList<String> itemsToRemove = new ArrayList<>();
     for ( Iterator<Object> iter = attributes.keySet().iterator(); iter.hasNext(); ) {
       String key = (String) iter.next();
       if ( key.startsWith( ATTRIBUTE_POOLING_PARAMETER_PREFIX ) ) {
-        itemsToRemove.add( key );
+        iter.remove();
       }
-    }
-    for ( String item : itemsToRemove ) {
-      attributes.remove( item );
     }
 
     for ( Iterator<Object> iter = properties.keySet().iterator(); iter.hasNext(); ) {
