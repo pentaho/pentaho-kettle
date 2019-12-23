@@ -31,7 +31,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -149,8 +148,9 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         if ( Utils.isEmpty( initialFilePath ) && initialFile != null ) {
           initialFilePath = initialFile.getName().getPath();
         }
-      } catch ( KettleFileException kfe ) {
-        log.logError( "Error in widgetSelectedHelper", kfe );
+      } catch ( Exception e ) {
+        log.logError( "Error in widgetSelectedHelper", e );
+        initialFile = null;
       }
 
       try {
