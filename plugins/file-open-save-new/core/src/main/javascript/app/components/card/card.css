@@ -102,8 +102,6 @@ card .cardDate {
   line-height: 17px;
 }
 
-card .bottomSpacer {
-  height: 20px;
-  width: calc(100% + 20px);
-  float: left;
+card .last {
+  margin-bottom: 20px;
 }
