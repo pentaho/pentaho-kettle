@@ -43,7 +43,8 @@
     <dependency org="com.google.guava"                 name="guava"                rev="17.0"            transitive="false"/>
     <dependency org="infobright"                       name="infobright-core"      rev="3.4"             transitive="false"/>
     <dependency org="org.ini4j"                        name="ini4j"                rev="0.5.1"           transitive="false"/>
-    <dependency org="janino"                           name="janino"               rev="2.5.16"          transitive="false"/>
+    <dependency org="org.codehaus.janino"              name="janino"               rev="2.6.1"           transitive="false"/>
+    <dependency org="org.codehaus.janino"              name="commons-compiler"     rev="2.6.1"           transitive="false"/>
     <dependency org="javadbf"                          name="javadbf"              rev="20081125"        transitive="false"/>
     <dependency org="jfree"                            name="jcommon"              rev="1.0.16"          transitive="false"/>
     <dependency org="com.googlecode.json-simple"       name="json-simple"          rev="1.1"             transitive="false"/>
