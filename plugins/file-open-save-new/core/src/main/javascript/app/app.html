@@ -49,7 +49,7 @@
           tree="vm.tree"></folder>
     </div>
 
-    <div class="fileArea">
+    <div class="fileArea" ng-class="{scroll: vm.isCardView}">
       <div class="fileAreaMessageView" ng-if="!vm.loading && vm.fileAreaMessage">
         {{vm.fileAreaMessage}}
       </div>

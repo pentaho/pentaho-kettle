@@ -101,6 +101,10 @@ file-open-save-app .fileArea {
   position: relative;
 }
 
+file-open-save-app .fileArea.scroll {
+  overflow: auto;
+}
+
 file-open-save-app .fileArea.recentsView {
   overflow-y: auto;
   overflow-x: hidden;
