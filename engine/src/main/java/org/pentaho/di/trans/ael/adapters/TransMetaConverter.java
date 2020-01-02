@@ -76,6 +76,11 @@ public class TransMetaConverter {
       // Turn off lazy conversion for AEL for now
       disableLazyConversion( copyTransMeta );
 
+      // This is needed to resolve resources if a parameter is used within steps like text file out or Hadoop out.
+      // It is unclear why this is needed, as the resource location can be resolved on the AEL/Driver/Executor side.
+      // This should be removed a long with org.pentaho.di.workarounds.ResolvableResource which is apparently deprecated
+      // since 8.1
+      copyTransMeta.activateParameters();
       resolveStepMetaResources( copyTransMeta );
 
       copyTransMeta.getSteps().forEach( createOperation( transformation ) );
