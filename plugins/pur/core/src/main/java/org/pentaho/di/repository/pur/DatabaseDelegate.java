@@ -44,49 +44,28 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
 
   // ~ Static fields/initializers ======================================================================================
 
-  private static final String PROP_INDEX_TBS = "INDEX_TBS"; //$NON-NLS-1$
-
-  private static final String PROP_DATA_TBS = "DATA_TBS"; //$NON-NLS-1$
-
-  private static final String PROP_SERVERNAME = "SERVERNAME"; //$NON-NLS-1$
-
-  private static final String PROP_PASSWORD = "PASSWORD"; //$NON-NLS-1$
-
-  private static final String PROP_USERNAME = "USERNAME"; //$NON-NLS-1$
-
-  private static final String PROP_PORT = "PORT"; //$NON-NLS-1$
-
-  private static final String PROP_DATABASE_NAME = "DATABASE_NAME"; //$NON-NLS-1$
-
-  private static final String PROP_HOST_NAME = "HOST_NAME"; //$NON-NLS-1$
-
-  private static final String PROP_CONTYPE = "CONTYPE"; //$NON-NLS-1$
-
-  private static final String PROP_TYPE = "TYPE"; //$NON-NLS-1$
-
-  private static final String NODE_ROOT = "databaseMeta"; //$NON-NLS-1$
-
-  private static final String NODE_ATTRIBUTES = "attributes"; //$NON-NLS-1$
-
-  private static final String NODE_POOLING_PROPS = "poolProps"; //$NON-NLS-1$
-
-  private static final String NODE_EXTRA_OPTIONS = "extraOptions"; //$NON-NLS-1$
-
-  private static final String PROP_CONNECT_SQL = "connectionSQL"; //$NON-NLS-1$
-
-  private static final String PROP_INITIAL_POOL_SIZE = "initialPoolSize"; //$NON-NLS-1$
-
-  private static final String PROP_MAX_POOL_SIZE = "maxPoolSize"; //$NON-NLS-1$
-
-  private static final String PROP_IS_POOLING = "isPooling"; //$NON-NLS-1$
-
-  private static final String PROP_IS_FORCING_TO_LOWER = "isForcingLower"; //$NON-NLS-1$
-
-  private static final String PROP_IS_FORCING_TO_UPPER = "isForcingUpper"; //$NON-NLS-1$
-
-  private static final String PROP_IS_QUOTE_FIELDS = "isQuoteFields"; //$NON-NLS-1$
-
-  private static final String PROP_IS_DECIMAL_SEPERATOR = "isUsingDecimalSeperator"; //$NON-NLS-1$
+  private static final String PROP_INDEX_TBS = "INDEX_TBS";
+  private static final String PROP_DATA_TBS = "DATA_TBS";
+  private static final String PROP_SERVERNAME = "SERVERNAME";
+  private static final String PROP_PASSWORD = "PASSWORD";
+  private static final String PROP_USERNAME = "USERNAME";
+  private static final String PROP_PORT = "PORT";
+  private static final String PROP_DATABASE_NAME = "DATABASE_NAME";
+  private static final String PROP_HOST_NAME = "HOST_NAME";
+  private static final String PROP_CONTYPE = "CONTYPE";
+  private static final String PROP_TYPE = "TYPE";
+  private static final String NODE_ROOT = "databaseMeta";
+  private static final String NODE_ATTRIBUTES = "attributes";
+  private static final String NODE_POOLING_PROPS = "poolProps";
+  private static final String NODE_EXTRA_OPTIONS = "extraOptions";
+  private static final String PROP_CONNECT_SQL = "connectionSQL";
+  private static final String PROP_INITIAL_POOL_SIZE = "initialPoolSize";
+  private static final String PROP_MAX_POOL_SIZE = "maxPoolSize";
+  private static final String PROP_IS_POOLING = "isPooling";
+  private static final String PROP_IS_FORCING_TO_LOWER = "isForcingLower";
+  private static final String PROP_IS_FORCING_TO_UPPER = "isForcingUpper";
+  private static final String PROP_IS_QUOTE_FIELDS = "isQuoteFields";
+  private static final String PROP_IS_DECIMAL_SEPERATOR = "isUsingDecimalSeperator";
 
 
   // ~ Instance fields =================================================================================================
@@ -211,7 +190,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
 
       // We need to unescape the code as it was escaped to handle characters that JCR does not handle
       String unescapeCode = RepositoryFilenameUtils.unescape( code );
-      databaseMeta.getAttributes().put( unescapeCode, Const.NVL( attribute, "" ) ); //$NON-NLS-1$
+      databaseMeta.getAttributes().put( unescapeCode, Const.NVL( attribute, "" ) );
     }
 
     // Also, load any pooling params
@@ -234,7 +213,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
         String code = property.getName().replace( databaseTypeCode + ".", "" );
         String attribute = property.getString();
         databaseMeta.addExtraOption( databaseTypeCode, code,
-                ( attribute == null || attribute.length() == 0 ) ? "" : attribute ); //$NON-NLS-1$
+                ( attribute == null || attribute.length() == 0 ) ? "" : attribute );
       }
     }
   }
