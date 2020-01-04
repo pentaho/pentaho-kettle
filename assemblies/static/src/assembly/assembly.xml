@@ -34,6 +34,14 @@
         <include>docs/**</include>
       </includes>
     </fileSet>
+    <!-- images -->
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources/static</directory>
+      <outputDirectory>content/common-ui/resources/themes</outputDirectory>
+      <includes>
+        <include>**</include>
+      </includes>
+    </fileSet>
 
     <!-- the remaining static resources -->
     <fileSet>
