@@ -26,12 +26,27 @@ define(function() {
    * @private
    */
   var text = {
+
+    /**
+     * Obtains a non-empty string representation of a given value.
+     *
+     * If `value` is {@link Nully}, `null` is returned.
+     * Otherwise, `value` is given to the {@link String} function.
+     * If the result is the empty string, `null` is returned.
+     * Otherwise the string value is returned.
+     *
+     * @param {*} value - The value to convert to a non-empty string.
+     * @return {nonEmptyString} A non-empty string or `null`.
+     */
+    nonEmptyString: function(value) {
+      return value == null ? null : (String(value) || null);
+    },
+
     /**
      * Ensures the first letter is upper case.
      *
      * @param {string} s The string to format.
      * @return {string} The formatted string.
-     * @ignore
      */
     firstUpperCase: function(s) {
       if(s) {
@@ -47,34 +62,40 @@ define(function() {
      *
      * @param {string} name The string to convert to a title.
      * @return {string} The title/label appropriate string.
-     * @ignore
      */
     titleFromName: function(name) {
       if(name) {
         return text.firstUpperCase(name).replace(/([a-z\d])([A-Z])/g, "$1 $2");
       }
+
       return name;
     },
 
     /**
      * Converts a string into a snake-like string.
      *
-     * Slashes, periods, white space and underscores are converted to an hyphen character, `-`.
+     * Slashes, periods, white space, `@` and underscores are converted to an hyphen character, `-`.
      * Camel-case strings are split and joined by an hyphen character as well.
      * Consecutive resulting hyphens are converted to a single hyphen.
      *
+     * If an hyphen would result in the first character, then an underscore is used instead.
+     *
      * @param {string} name - The string to convert to snake-case.
      * @return {string} The snake-case string.
-     * @ignore
      */
     toSnakeCase: function(name) {
       if(name) {
-        return name
+        name = name
             .replace(/([a-z\d])([A-Z])/g, "$1-$2")
-            .replace(/[\/\\_\s\.]+/g, "-")
-            .replace(/-+/g, "-")
-            .toLowerCase();
+            .replace(/[\/\\_\s\.@]+/g, "-")
+            .replace(/-+/g, "-");
+
+        // Replace a leading - with an _.
+        if(name.charAt(0) === "-") {
+          name = "_" + name.substr(1);
+        }
       }
+
       return name;
     },
 

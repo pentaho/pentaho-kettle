@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2010 - 2019 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 define([
-  "module",
-  "./debug/impl/Manager",
-  "./debug/Levels",
-  "./util/domWindow"
-], function(module, Manager, DebugLevels, domWindow) {
+  "../util/requireJS",
+  "./impl/Manager",
+  "./Levels",
+  "../util/domWindow"
+], function(requireJSUtil, Manager, DebugLevels, domWindow) {
 
   "use strict";
 
-  var spec = module.config() || {};
+  var spec = requireJSUtil.config().config["pentaho/debug"] || {};
 
   // URL debugLevel has precedence
   var level = __urlDebugLevel();
@@ -44,7 +44,7 @@ define([
    *       // Per AMD module
    *       "modules": {
    *         "pentaho/lang/Base": "debug",
-   *         "pentaho/type/complex": 3  // <=> "info"
+   *         "pentaho/type/Complex": 3  // <=> "info"
    *       }
    *     }
    *   }
@@ -53,7 +53,7 @@ define([
    *
    * @name manager
    * @memberOf pentaho.debug
-   * @type pentaho.debug.IManager
+   * @type ?pentaho.debug.IManager
    * @amd pentaho/debug
    */
 

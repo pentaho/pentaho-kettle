@@ -18,6 +18,7 @@
     "angular-ui-router": "${angular-ui-router.version}",
     "require-css": "${require-css.version}",
     "requirejs-text": "${requirejs-text.version}",
+    "dojo": "${dojo.version}",
     "jquery": "${jquery.version}"
   },
   "config": {
