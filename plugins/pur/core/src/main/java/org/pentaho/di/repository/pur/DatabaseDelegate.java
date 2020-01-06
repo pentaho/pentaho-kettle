@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.pentaho.di.repository.pur;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -93,7 +92,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_CONTYPE, DatabaseMeta.getAccessTypeDesc( databaseMeta.getAccessType() ) );
     rootNode.setProperty( PROP_HOST_NAME, databaseMeta.getHostname() );
     rootNode.setProperty( PROP_DATABASE_NAME, databaseMeta.getDatabaseName() );
-    rootNode.setProperty( PROP_PORT, new Long( Const.toInt( databaseMeta.getDatabasePortNumberString(), -1 ) ) );
+    rootNode.setProperty( PROP_PORT, Const.toInt( databaseMeta.getDatabasePortNumberString(), -1 ) );
     rootNode.setProperty( PROP_USERNAME, databaseMeta.getUsername() );
     rootNode.setProperty( PROP_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( databaseMeta.getPassword() ) );
     rootNode.setProperty( PROP_SERVERNAME, databaseMeta.getServername() );
