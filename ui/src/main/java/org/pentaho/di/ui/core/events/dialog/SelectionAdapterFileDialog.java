@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,10 +25,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.apache.commons.vfs2.FileSystemException;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -326,20 +328,59 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
       return null;
     }
     try {
+      String result;
+
       if ( fileDialogOperation.isProviderRepository() ) {
-        return getRepositoryFilePath( fileDialogOperation );
+        result = getRepositoryFilePath( fileDialogOperation );
       } else {
         if ( fileDialogOperation.isSaveCommand() && !Utils.isEmpty( fileDialogOperation.getFilename() ) ) {
           String sep = isUrl( fileDialogOperation.getPath() ) ? "/" : File.separator;
-          return fileDialogOperation.getPath() + sep + fileDialogOperation.getFilename();
+          result = fileDialogOperation.getPath() + sep + fileDialogOperation.getFilename();
         } else {
-          return fileDialogOperation.getPath();
+          result = fileDialogOperation.getPath();
         }
       }
+
+      return applyRelativePath( result );
     } catch ( Exception e ) {
       return null;
     }
 
+  }
+
+  /**
+   * Helper method which applies the relative environment var of the current dir if applies to a given path.
+   * @param path string path to be updated
+   * @return updated path
+   */
+  String applyRelativePath( String path ) {
+    String parentFolder = null;
+
+    if ( !Utils.isEmpty( path ) ) {
+
+      // Based on the working environment determine the parent path to compare too.
+      if ( isConnectedToRepository() ) {
+        parentFolder = meta.getRepositoryDirectory().getPath();
+      } else {
+        try {
+          FileObject parentFileObj = KettleVFS.getFileObject( meta.environmentSubstitute( meta.getFilename( ) ) )
+            .getParent();
+
+          if ( parentFileObj instanceof LocalFile ) {
+            parentFolder = parentFileObj.getName().getPath();
+          } else {
+            parentFolder = parentFileObj.toString();
+          }
+        } catch ( Exception e ) {
+          // Take no action
+        }
+      }
+      // Replace the parent path with env path.
+      if ( parentFolder != null && path.startsWith( parentFolder ) ) {
+        path = path.replace( parentFolder, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+      }
+    }
+    return path;
   }
 
   String getRepositoryFilePath( FileDialogOperation fileDialogOperation ) {
