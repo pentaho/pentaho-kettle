@@ -66,6 +66,8 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
   private static final String PROP_IS_FORCING_TO_UPPER = "isForcingUpper";
   private static final String PROP_IS_QUOTE_FIELDS = "isQuoteFields";
   private static final String PROP_IS_DECIMAL_SEPERATOR = "isUsingDecimalSeperator";
+  private static final String PROP_SUPPORT_BOOLEAN_DATA_TYPE = "isSupportBooleanDataType";
+  private static final String PROP_SUPPORT_TIMESTAMP_DATA_TYPE = "isSupportTimestampDataType";
 
 
   // ~ Instance fields =================================================================================================
@@ -99,21 +101,15 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_INDEX_TBS, databaseMeta.getIndexTablespace() );
 
     rootNode.setProperty( PROP_CONNECT_SQL, setNull( databaseMeta.getConnectSQL() ) );
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_SQL_CONNECT );
     rootNode.setProperty( PROP_INITIAL_POOL_SIZE, databaseMeta.getInitialPoolSize() );
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_INITIAL_POOL_SIZE );
     rootNode.setProperty( PROP_MAX_POOL_SIZE, databaseMeta.getMaximumPoolSize() );
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_MAXIMUM_POOL_SIZE );
     rootNode.setProperty( PROP_IS_POOLING, databaseMeta.isUsingConnectionPool() );
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_USE_POOLING );
     rootNode.setProperty( PROP_IS_FORCING_TO_LOWER, databaseMeta.isForcingIdentifiersToLowerCase() );
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE );
     rootNode.setProperty( PROP_IS_FORCING_TO_UPPER, databaseMeta.isForcingIdentifiersToUpperCase() );
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE );
     rootNode.setProperty( PROP_IS_QUOTE_FIELDS, databaseMeta.isQuoteAllFields() );
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_QUOTE_ALL_FIELDS );
     rootNode.setProperty( PROP_IS_DECIMAL_SEPERATOR, databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator() );
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR );
+    rootNode.setProperty( PROP_SUPPORT_BOOLEAN_DATA_TYPE, databaseMeta.supportsBooleanDataType() );
+    rootNode.setProperty( PROP_SUPPORT_TIMESTAMP_DATA_TYPE, databaseMeta.supportsTimestampDataType() );
 
     if ( databaseMeta.getAttributes() != null && !databaseMeta.getAttributes().isEmpty() ) {
       addNodeToElement( NODE_ATTRIBUTES, rootNode, databaseMeta.getAttributes().entrySet() );
@@ -126,8 +122,6 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     if ( databaseMeta.getExtraOptions() != null && !databaseMeta.getExtraOptions().isEmpty() ) {
       addNodeToElement( NODE_EXTRA_OPTIONS, rootNode, new HashMap<Object, Object>( databaseMeta.getExtraOptions() ).entrySet() );
     }
-
-    databaseMeta.getAttributes().remove( BaseDatabaseMeta.ATTRIBUTE_USE_POOLING );
 
     return rootNode;
   }
@@ -179,7 +173,8 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     databaseMeta.setForcingIdentifiersToUpperCase( getBoolean( rootNode, PROP_IS_FORCING_TO_UPPER ) );
     databaseMeta.setQuoteAllFields( getBoolean( rootNode, PROP_IS_QUOTE_FIELDS ) );
     databaseMeta.setUsingDoubleDecimalAsSchemaTableSeparator( getBoolean( rootNode, PROP_IS_DECIMAL_SEPERATOR ) );
-
+    databaseMeta.setSupportsBooleanDataType( getBoolean( rootNode, PROP_SUPPORT_BOOLEAN_DATA_TYPE ) );
+    databaseMeta.setSupportsTimestampDataType( getBoolean( rootNode, PROP_SUPPORT_TIMESTAMP_DATA_TYPE ) );
 
     // Also, load all the properties we can find...
 
