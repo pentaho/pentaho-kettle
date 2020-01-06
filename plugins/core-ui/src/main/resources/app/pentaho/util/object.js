@@ -19,11 +19,14 @@ define(["./has"], function(has) {
   var O_hasOwn = Object.prototype.hasOwnProperty;
   var A_empty = [];
   var setProtoOf = has("Object.setPrototypeOf")
-        ? Object.setPrototypeOf :
-        (has("Object.prototype.__proto__") ? setProtoProp : setProtoCopy);
+    ? Object.setPrototypeOf :
+    (has("Object.prototype.__proto__") ? setProtoProp : setProtoCopy);
   var constPropDesc = {value: undefined, writable: false, configurable: false, enumerable: false};
   var O_root = Object.prototype;
   var O_isProtoOf = Object.prototype.isPrototypeOf;
+
+  var PROP_UNIQUE_ID = "___OBJUID___";
+  var nextUniqueId = 1;
 
   /**
    * The `object` namespace contains functions for
@@ -55,10 +58,10 @@ define(["./has"], function(has) {
      * and is an own property,
      * it is deleted and its _previous_ own value is returned.
      *
-     * @param {?Object} o - The object whose own property is to be deleted.
+     * @param {?(object|function)} o - The object whose own property is to be deleted.
      * @param {string} p - The name of the property.
-     * @param {any} [dv] - The default value. Defaults to `undefined`.
-     * @return {any} The value of the property before deletion.
+     * @param {*} [dv] - The default value. Defaults to `undefined`.
+     * @return {*} The value of the property before deletion.
      *
      * @throws {TypeError} Cannot delete a constant property.
      */
@@ -68,6 +71,7 @@ define(["./has"], function(has) {
         v = o[p];
         delete o[p];
       }
+
       return v;
     },
 
@@ -77,11 +81,11 @@ define(["./has"], function(has) {
      * Returns the function result.
      * The disposable resource is disposed before returning.
      *
-     * @param {!pentaho.lang.IDisposable} disposable The disposable resource.
-     * @param {function(pentaho.lang.IDisposable):any} fun The function to call with the given resource.
-     * @param {Object} [context] The context in which to call `fun`.
+     * @param {pentaho.lang.IDisposable} disposable The disposable resource.
+     * @param {function(pentaho.lang.IDisposable):*} fun The function to call with the given resource.
+     * @param {?object} [context] The context in which to call `fun`.
      *
-     * @return {any} The value returned by `fun`.
+     * @return {*} The value returned by `fun`.
      */
     using: function(disposable, fun, context) {
       try {
@@ -98,7 +102,7 @@ define(["./has"], function(has) {
      *
      * If the specified object is a {@link Nully} value, `false` is returned.
      *
-     * @param {?Object} o - The object to be tested.
+     * @param {?(object|function)} o - The object to be tested.
      * @param {string} p - The name of the property.
      * @return {boolean} `true` if this is a direct/own property, or `false` otherwise.
      */
@@ -113,9 +117,9 @@ define(["./has"], function(has) {
      *
      * If the specified object is a {@link Nully} value, the default value is returned.
      *
-     * @param {?Object} o - The object whose property is to be retrieved.
+     * @param {?(object|function)} o - The object whose property is to be retrieved.
      * @param {string} p - The name of the property.
-     * @param {any} [dv] - The default value. Defaults to `undefined`.
+     * @param {*} [dv] - The default value. Defaults to `undefined`.
      * @return {boolean} The value of the property if it exists in the object and is an own property,
      * otherwise returns `dv`.
      */
@@ -128,20 +132,11 @@ define(["./has"], function(has) {
      *
      * The created property cannot be overwritten, deleted, enumerated or configured.
      *
-     * @param {!Object} o - The object whose property is to be set.
+     * @param {object} o - The object whose property is to be set.
      * @param {string} p - The name of the property.
-     * @param {any} v - The value of the property.
+     * @param {*} v - The value of the property.
      */
-    setConst: function(o, p, v) {
-      // Specifying writable ensures overriding previous writable value.
-      // Otherwise, only new properties receive a default of false...
-      constPropDesc.value = v;
-
-      // Leaks `v` if the following throws, but its an acceptable risk, being an error condition.
-      Object.defineProperty(o, p, constPropDesc);
-
-      constPropDesc.value = undefined;
-    },
+    setConst: setConst,
 
     /**
      * Iterates over all **direct enumerable** properties of an object,
@@ -152,7 +147,7 @@ define(["./has"], function(has) {
      * Each invocation of iteratee is called with two arguments: (propertyValue, propertyName).
      * If the iteratee function returns `false`, the iteration loop is broken out.
      *
-     * @param {!Object} o - The object containing the properties to be iterated.
+     * @param {?(object|function)} o - The object containing the properties to be iterated.
      * @param {function} fun - The function that will be iterated.
      * @param {?object} [x] - The object which will provide the execution context of the iteratee function.
      * If nully, the iteratee will run with the context of the iterated object.
@@ -172,9 +167,9 @@ define(["./has"], function(has) {
     /**
      * Iterates over the own properties of a source object and assigns them to a target object.
      *
-     * @param {!Object} to - The target object.
-     * @param {?Object} from - The source object.
-     * @return {!Object} The target object.
+     * @param {object|function} to - The target object.
+     * @param {?object} from - The source object.
+     * @return {object} The target object.
      */
     assignOwn: function(to, from) {
       for(var p in from) {
@@ -189,13 +184,13 @@ define(["./has"], function(has) {
      * Iterates over the own properties of a source object,
      * checks if their values are defined, and if so, assigns them to a target object.
      *
-     * @param {!Object} to - The target object.
-     * @param {?Object} from - The source object.
-     * @return {!Object} The target object.
+     * @param {object} to - The target object.
+     * @param {?object} from - The source object.
+     * @return {object} The target object.
      * @method
      * @see pentaho.util.object.assignOwn
      */
-    assignOwnDefined: __assignOwnDefined,
+    assignOwnDefined: assignOwnDefined,
 
     /**
      * Creates a shallow clone of a plain object or array.
@@ -204,17 +199,20 @@ define(["./has"], function(has) {
      * If `v` is an instance of a class, or a simple value (e.g. string, number),
      * no clone is created and the original object is returned instead.
      *
-     * @param {Object|Array|any} v - The source object.
-     * @return {any} A shallow copy of the object,
+     * @param {object|Array|*} v - The source object.
+     * @return {*} A shallow copy of the object,
      * or the object itself if it is neither a plain object nor an array.
      */
     cloneShallow: function(v) {
       if(v && typeof v === "object") {
         if(v instanceof Array)
           v = v.slice();
+
+        // TODO: FIXME: take care for objects with a null prototype which do not fall into the following test.
         else if(v.constructor === Object)
-          v = __assignOwnDefined({}, v);
+          v = assignOwnDefined({}, v);
       }
+
       return v;
     },
 
@@ -222,11 +220,12 @@ define(["./has"], function(has) {
     /**
      * Retrieves an object that describes a property, traversing the inheritance chain if necessary.
      *
-     * @param {!Object} object - The object that contains the property.
+     * @param {object} object - The object that contains the property.
      * @param {string} property - The name of property.
-     * @param {Object} lcaExclude - A lowest-common-ancestor object whose inherited properties should
+     * @param {?object} lcaExclude - A lowest-common-ancestor object whose inherited properties should
      * not be returned.
-     * @return {?Object} The [property descriptor]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty}.
+     * @return {?object} The
+     * [property descriptor]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty}.
      * @method
      */
     getPropertyDescriptor: getPropertyDescriptor,
@@ -236,10 +235,10 @@ define(["./has"], function(has) {
      *
      * If one of the objects has a `null` prototype, then there is no common ancestor and `null` is returned.
      *
-     * @param {Object} o1 - The first object.
-     * @param {Object} o2 - The second object.
+     * @param {?object} o1 - The first object.
+     * @param {?object} o2 - The second object.
      *
-     * @return {Object} The lowest common ancestor object, if any; or `null`, if none.
+     * @return {?object} The lowest common ancestor object, if any; or `null`, if none.
      */
     lca: function(o1, o2) {
       if(!o1 || !o2) return null;
@@ -260,7 +259,7 @@ define(["./has"], function(has) {
      *
      * @param {function} Ctor - The constructor function of the class to be instantiated.
      * @param {?Array} [args] - The array of arguments, or arguments object, which will be passed to the constructor.
-     * @return {!Object} The constructed instance.
+     * @return {object} The constructed instance.
      */
     make: function(Ctor, args) {
       /* eslint default-case: 0 */
@@ -284,9 +283,9 @@ define(["./has"], function(has) {
      *
      * Delegates to the native implementation of `Object.setPrototypeOf`, if supported.
      *
-     * @param {!Object} object - The object which is to have its prototype set.
-     * @param {?Object} prototype - The object's new prototype.
-     * @return {!Object} The `object`.
+     * @param {object} object - The object which is to have its prototype set.
+     * @param {?object} prototype - The object's new prototype.
+     * @return {object} The `object`.
      */
     setPrototypeOf: setProtoOf,
 
@@ -296,7 +295,7 @@ define(["./has"], function(has) {
      *
      * In particular, the _prototype_ and _constructor_ properties of a given object are replaced, if necessary.
      *
-     * @param {!Object} inst - The object to be mutated.
+     * @param {object} inst - The object to be mutated.
      * @param {function} Class - The constructor of the class to be applied to the object.
      * @param {?Array} [args] - The array of arguments to be passed to the constructor of the class.
      * @return {object} The mutated object.
@@ -318,10 +317,66 @@ define(["./has"], function(has) {
       }
 
       return Class.apply(inst, args || A_empty) || inst;
+    },
+
+    /**
+     * Gets the unique id of an object, optionally assigning one if it does not have one.
+     *
+     * @param {object} inst - The object.
+     * @param {?boolean} [assignIfMissing=false] - Indicates that a unique id should be assigned if
+     * it does not have one.
+     * @return {?string} The unique id or `null`.
+     */
+    getUniqueId: getUniqueId,
+
+    /**
+     * Gets the key of a value suitable for identifying it amongst values of the same type.
+     *
+     * @param {*} value - The value.
+     * @return {string} The value's key.
+     */
+    getSameTypeKey: getSameTypeKey,
+
+    /**
+     * Gets a key function suitable for identifying values amongst values of the same, given type.
+     *
+     * @param {string} typeName - The name of the type.
+     * Besides the possible known results of JavaScript's `typeof` operator,
+     * the value `date`, representing instances of {@link Date},
+     * is also supported.
+     *
+     * @return {function(*):string} The key function.
+     */
+    getSameTypeKeyFun: function(typeName) {
+      switch(typeName) {
+        case "string":
+          return stringKey;
+        case "number":
+        case "boolean":
+          return numberOrBooleanKey;
+        case "date":
+          return dateKey;
+        default:
+          return getSameTypeKey;
+      }
     }
   };
 
-  function __assignOwnDefined(to, from) {
+  function getUniqueId(inst, assignIfMissing) {
+    var uid = inst[PROP_UNIQUE_ID];
+    if(uid == null) {
+      if(assignIfMissing) {
+        uid = "i" + (nextUniqueId++);
+        setConst(inst, PROP_UNIQUE_ID, uid);
+      } else {
+        uid = null;
+      }
+    }
+
+    return uid;
+  }
+
+  function assignOwnDefined(to, from) {
     var v;
     for(var p in from) {
       if(O_hasOwn.call(from, p) && (v = from[p]) !== undefined)
@@ -331,17 +386,28 @@ define(["./has"], function(has) {
     return to;
   }
 
+  function setConst(o, p, v) {
+    // Specifying writable ensures overriding previous writable value.
+    // Otherwise, only new properties receive a default of false...
+    constPropDesc.value = v;
+
+    // Leaks `v` if the following throws, but its an acceptable risk, being an error condition.
+    Object.defineProperty(o, p, constPropDesc);
+
+    constPropDesc.value = undefined;
+  }
+
   /**
    * Copies a single property from a source object to a target object, provided it is defined.
    * A property is defined if either its value, getter or setter are defined.
    *
-   * @param {!Object} to - The target object.
-   * @param {!Object} from - The source object.
+   * @param {object} to - The target object.
+   * @param {object} from - The source object.
    * @param {string} p - the name of the property.
-   * @return {!Object} The target object.
+   * @return {object} The target object.
    * @private
    */
-  function __copyOneDefined(to, from, p) {
+  function copyOneDefined(to, from, p) {
     var pd = getPropertyDescriptor(from, p);
     if(pd && pd.get || pd.set || pd.value !== undefined)
       Object.defineProperty(to, p, pd);
@@ -363,7 +429,62 @@ define(["./has"], function(has) {
 
   function setProtoCopy(o, proto) {
     /* eslint guard-for-in: 0 */
-    for(var p in proto) __copyOneDefined(o, proto, p);
+    for(var p in proto) copyOneDefined(o, proto, p);
     return o;
+  }
+
+  /**
+   * Gets the key of a string value.
+   *
+   * @param {?string} v - The value.
+   * @return {string} The key.
+   */
+  function stringKey(v) {
+    return v == null ? "" : v;
+  }
+
+  /**
+   * Gets the key of a number or boolean value.
+   *
+   * @param {null|number|boolean} v - The value.
+   * @return {string} The key.
+   */
+  function numberOrBooleanKey(v) {
+    return v == null ? "" : v.toString();
+  }
+
+  /**
+   * Gets the key of a `Date` value.
+   *
+   * @param {Date} v - The value.
+   * @return {string} The key.
+   */
+  function dateKey(v) {
+    // The normal toString ignores ms...
+    return v == null ? "" : v.toISOString();
+  }
+
+  function getSameTypeKey(value) {
+
+    if(value == null) {
+      // null, undefined
+      return "";
+    }
+
+    // eslint-disable-next-line default-case
+    switch(typeof value) {
+      case "string": return value;
+      case "number":
+      case "boolean": return value.toString();
+    }
+
+    // function, object (Array included)
+
+    if(value instanceof Date) {
+      // Use toISOString(), because Date#toString does not include ms.
+      return value.toISOString();
+    }
+
+    return getUniqueId(value, /* assignIfMissing: */ true);
   }
 });
