@@ -1307,7 +1307,7 @@ public class Const {
   /**
    * <p>This environment variable is used to specify a location used to deploy a shim driver into PDI.</p>
    */
-  private static final String SHIM_DRIVER_DEPLOYMENT_LOCATION = "SHIM_DRIVER_DEPLOYMENT_LOCATION";
+  public static final String SHIM_DRIVER_DEPLOYMENT_LOCATION = "SHIM_DRIVER_DEPLOYMENT_LOCATION";
   private static final String DEFAULT_DRIVERS_DIR = "DEFAULT";
   public static String getShimDriverDeploymentLocation() {
 
