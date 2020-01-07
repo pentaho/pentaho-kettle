@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2408,7 +2408,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       if ( insertAtTop ) {
         item = new TableItem( wFields.table, SWT.NONE, i );
       } else {
-        item = getTableItem( field.getName() );
+        item = getTableItem( field.getName(), reloadAllFields );
       }
       if ( !reloadAllFields && !lowerCaseNewFieldNames.contains( field.getName().toLowerCase() ) ) {
         continue;
