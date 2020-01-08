@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -59,8 +59,8 @@ public class StopMessageEventHandler implements MessageEventHandler {
     StopMessage stopMessage = (StopMessage) message;
 
     if ( stopMessage.operationFailed() ) {
-      log.logError( "Could not finalize execution: " + stopMessage.getReasonPhrase() );
-      log.logError( "Contact cluster administrator to stop execution!" );
+      log.logError( "Could not verify termination status: " + stopMessage.getReasonPhrase() );
+      log.logError( "Please check with cluster administrator." );
     } else if ( stopMessage.sessionWasKilled() ) {
       log.logError( "Finalizing execution: " + stopMessage.getReasonPhrase() );
       errors.incrementAndGet();
