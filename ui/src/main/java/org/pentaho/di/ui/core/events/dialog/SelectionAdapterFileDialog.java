@@ -392,6 +392,12 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   private static String replaceCurrentDir( String path, String parentPath ) {
     if ( !Utils.isEmpty( path ) && !Utils.isEmpty( parentPath ) && path.startsWith( parentPath ) ) {
       path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+
+      // Ensure the path is uniform for windows. Path's using the internal variable need to use forward slash
+      if ( Const.isWindows() ) {
+        path = path.replace( '\\', '/' );
+      }
+
     }
     return path;
   }
