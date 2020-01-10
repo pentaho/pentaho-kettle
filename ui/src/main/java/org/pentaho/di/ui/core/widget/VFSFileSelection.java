@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,8 @@ import java.util.function.Supplier;
 
 public class VFSFileSelection extends Composite {
   private static final Class<?> PKG = VFSFileSelection.class;
+  private static final String S3_DEFAULT_PATH = "s3:///";
+
   public final TextVar wFileName;
   public final Button wBrowse;
   private String initialScheme;
@@ -117,7 +119,7 @@ public class VFSFileSelection extends Composite {
     FileObject root;
 
     try {
-      root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
+      root = KettleVFS.getFileObject( !StringUtil.isEmpty( curFile ) ? curFile : S3_DEFAULT_PATH );
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
       if ( StringUtil.isEmpty( initialScheme ) ) {
         initialScheme = "file";
