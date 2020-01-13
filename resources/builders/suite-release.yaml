@@ -42,14 +42,14 @@ buildProperties:
   BUILD_SLACK_CHANNEL : 'buildteam-alerts'
   SLACK_INTEGRATION   : true
   SLACK_CHANNEL:
-    BUILD_FAILURE     : 'qat-builds,buildteam-alerts'
+    BUILD_FAILURE     : 'buildteam-alerts'
     BUILD_ABORTED     : 'buildteam-alerts'
-    BUILD_UNSTABLE    : 'qat-builds,buildteam-alerts'
-    BUILD_SUCCESS     : 'qat-builds,buildteam-alerts'
+    BUILD_UNSTABLE    : 'buildteam-alerts'
+    BUILD_SUCCESS     : 'buildteam-alerts'
 
   # SP specific parameters
   PREVIOUS_RELEASE_VERSION       : ''
-  SP_RELEASE_VERSION             : '201910'
+  SP_RELEASE_VERSION             : '202001'
   DO_AUTO_PATCH                  : false
 
 jobGroups:
