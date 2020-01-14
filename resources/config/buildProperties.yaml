@@ -16,7 +16,7 @@ JENKINS_MAVEN_FOR_BUILDS: maven3-auto
 JENKINS_GRADLE_FOR_BUILDS: gradle-auto
 
 # Maven
-MAVEN_RESOLVE_REPO_URL: https://nexus.pentaho.org/content/groups/omni
+MAVEN_RESOLVE_REPO_URL: http://orl-jfrog-lb.pentaho.net/artifactory/pntprv-mvn
 MAVEN_TEST_OPTS: -DsurefireArgLine=-Xmx1g
 MAVEN_SETTINGS: ${BUILD_CONFIG_ROOT_PATH}/maven/settings.xml
 

@@ -10,8 +10,10 @@ buildProperties:
 
   MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
 
-  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://nexus.pentaho.org/content/repositories/public-9.1-snapshot
-  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://nexus.pentaho.org/content/repositories/private-9.1-snapshot
+  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : http://orl-jfrog-lb.pentaho.net/artifactory/pntpub-mvn-snapshot-orl/
+  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: http://orl-jfrog-lb.pentaho.net/artifactory/pntprv-mvn-snapshot-orl/
+  DOCKER_IMAGE_HOST              : pntprv-docker-release.orl-jfrog-lb.pentaho.net
+  DOCKER_REGISTRY_URL            : http://pntprv-docker-release.orl-jfrog-lb.pentaho.net
 
   MAVEN_DEFAULT_DIRECTIVES:
     build: clean deploy -DskipTests
