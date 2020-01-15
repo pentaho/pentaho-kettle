@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webspoon.fullname" . }}
+  labels:
+{{ include "webspoon.labels" . | indent 4}}
+spec:
+  replicas: {{ .Values.components.webspoon.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "webspoon.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "webspoon.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ template "webspoon.fullname" . }}
+{{- if .Values.securityContext.enabled }}
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup }}
+{{- end }}
+      containers:
+      - name: {{ template "webspoon.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          privileged: false
+        volumeMounts:
+          - name: target-nfs-volume
+            mountPath: {{ .Values.dataFlowStudio.volume.pdi.mountPath }}
+          - name: pentaho-pvc
+            mountPath: /home/tomcat/.pentaho
+
+
+          # # When you created your own config file, uncomment each section depending on file.
+          # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/web.xml
+          #   name: webspoon-config-cm
+          #   subPath: web.xml
+          # - mountPath: /usr/local/tomcat/conf/catalina.policy
+          #   name: webspoon-config-cm
+          #   subPath: catalina.policy
+          # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/spring/security.xml
+          #   name: webspoon-config-cm
+          #   subPath: security.xml
+
+        ports:
+          - containerPort: {{ .Values.components.webspoon.containerPort }}
+        env:
+          - name: JAVA_OPTS
+            value: -Xms1024m -Xmx2048m
+          - name: KEYCLOAK_CLIENT_ID
+            value: {{ template "webspoon.gatekeeper.clientId" . }}
+          - name: KEYCLOAK_SERVER_URL
+            value: {{ .Values.keycloak.server }}
+          - name: KEYCLOAK_REALM
+            value: {{ .Values.keycloak.realm }}
+        resources: {}
+
+      volumes:
+        - name: target-nfs-volume
+          {{ if eq .Values.dataFlowStudio.volume.pdi.host "" }}
+          emptyDir: {}
+          {{ else }}
+          nfs:
+            server: {{ .Values.dataFlowStudio.volume.pdi.host }}
+            path: {{ .Values.dataFlowStudio.volume.pdi.path }}
+          {{ end }}
+        - name: pentaho-pvc
+          persistentVolumeClaim:
+            claimName: pentaho-pvc
+
+      restartPolicy: Always
+

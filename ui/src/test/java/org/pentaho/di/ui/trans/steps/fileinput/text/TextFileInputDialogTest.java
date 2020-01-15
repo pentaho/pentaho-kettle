@@ -37,15 +37,19 @@ import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
+import org.eclipse.rap.rwt.testfixture.TestContext;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.WebSpoonUtils;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.row.RowMeta;
@@ -72,6 +76,14 @@ public class TextFileInputDialogTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static boolean changedPropsUi;
+
+  @Rule
+  public TestContext context = new TestContext();
+
+  @Before
+  public void before(){
+    WebSpoonUtils.setUISession( context.getUISession() );
+  }
 
   @BeforeClass
   public static void initKettle() throws Exception {

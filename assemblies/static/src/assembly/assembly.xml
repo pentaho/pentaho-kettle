@@ -26,36 +26,42 @@
         <exclude>**/*.command</exclude>
       </excludes>
     </fileSet>
-    <!-- .sh files that need execution permissions -->
+    <!-- docs -->
     <fileSet>
       <directory>${project.basedir}/src/main/resources</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>**/*.sh</include>
+        <include>docs/**</include>
       </includes>
-      <fileMode>0755</fileMode>
     </fileSet>
+    <!-- images -->
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources/static</directory>
+      <outputDirectory>static</outputDirectory>
+      <includes>
+        <include>**</include>
+      </includes>
+    </fileSet>
+
     <!-- the remaining static resources -->
     <fileSet>
       <directory>${project.basedir}/src/main/resources</directory>
+      <outputDirectory>WEB-INF/classes</outputDirectory>
+      <includes>
+        <include>ui/*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources/classes</directory>
+      <outputDirectory>WEB-INF/classes</outputDirectory>
+      <includes>
+        <include>**</include>
+      </includes>
+    </fileSet>
+    <!-- the staging dir -->
+    <fileSet>
+      <directory>${assembly.dir}</directory>
       <outputDirectory>.</outputDirectory>
     </fileSet>
   </fileSets>
-  <dependencySets>
-    <!-- get the laf.properties file -->
-    <dependencySet>
-      <includes>
-        <include>pentaho-kettle:kettle-ui-swt</include>
-      </includes>
-      <unpack>true</unpack>
-      <unpackOptions>
-        <includes>
-          <include>ui/laf.properties</include>
-        </includes>
-      </unpackOptions>
-      <outputDirectory>.</outputDirectory>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-  </dependencySets>
 </assembly>

@@ -42,7 +42,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   public static final String STATE_SAVE = "save";
   public static final String STATE_OPEN = "open";
   public static final String SELECT_FOLDER = "selectFolder";
-  private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
+  private final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
@@ -89,9 +89,12 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
-        browser.dispose();
-        dialog.close();
-        dialog.dispose();
+        Runnable execute = () -> {
+          browser.dispose();
+          dialog.close();
+          dialog.dispose();
+        };
+        display.asyncExec( execute );
         return true;
       }
     };
@@ -103,9 +106,12 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
         objectDirectory = (String) arguments[ 2 ];
         objectType = (String) arguments[ 3 ];
 
-        browser.dispose();
-        dialog.close();
-        dialog.dispose();
+        Runnable execute = () -> {
+          browser.dispose();
+          dialog.close();
+          dialog.dispose();
+        };
+        display.asyncExec( execute );
         return true;
       }
     };
@@ -148,7 +154,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
       host = LOCALHOST;
       port = getOsgiServicePort();
     }
-    return "http://" + host + ":" + port + path;
+    return System.getProperty( "KETTLE_CONTEXT_PATH" ) + "/osgi" + path;
   }
 
   private static String getKettleProperty( String propertyName ) throws KettleException {

@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
@@ -191,9 +192,9 @@ public class TransMetricsDelegate extends SpoonDelegate {
         if ( transGraph.trans != null && transGraph.trans.isFinished() ) {
           refreshImage( event.gc );
 
-          if ( image != null && !image.isDisposed() ) {
-            event.gc.drawImage( image, 0, 0 );
-          }
+//          if ( image != null && !image.isDisposed() ) {
+//            event.gc.drawImage( image, 0, 0 );
+//          }
         } else {
           Rectangle bounds = canvas.getBounds();
           if ( bounds.width <= 0 || bounds.height <= 0 ) {
@@ -225,6 +226,14 @@ public class TransMetricsDelegate extends SpoonDelegate {
     //
     transMetricsTab.addDisposeListener( new DisposeListener() {
       public void widgetDisposed( DisposeEvent arg0 ) {
+        timer.cancel();
+      }
+    } );
+
+    // When the browser tab/window is closed, we remove the update timer
+    transGraph.getDisplay().disposeExec( new Runnable() {
+      @Override
+      public void run() {
         timer.cancel();
       }
     } );
@@ -282,6 +291,9 @@ public class TransMetricsDelegate extends SpoonDelegate {
   }
 
   public void updateGraph() {
+    if ( transGraph.getDisplay().isDisposed() ) {
+      return;
+    }
 
     transGraph.getDisplay().asyncExec( new Runnable() {
       public void run() {
@@ -349,12 +361,12 @@ public class TransMetricsDelegate extends SpoonDelegate {
     bounds.height = Math.max( durations.size() * height, bounds.height );
     canvas.setSize( bounds.width, bounds.height );
 
-    SWTGC gc =
-      new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI
+    GCInterface gc =
+      new SWTGC( canvasGc, new Point( bounds.width, bounds.height ), PropsUI
         .getInstance().getIconSize() );
     MetricsPainter painter = new MetricsPainter( gc, height );
     drawAreas = painter.paint( durations );
-    image = (Image) gc.getImage();
+//    image = (Image) gc.getImage();
 
     // refresh the scrolled composite
     //
@@ -364,7 +376,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
 
     // Draw the image on the canvas...
     //
-    canvas.redraw();
+//    canvas.redraw();
 
     // close shop on the SWT GC side.
     //

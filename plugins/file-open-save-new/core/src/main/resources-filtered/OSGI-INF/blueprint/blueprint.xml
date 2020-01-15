@@ -47,6 +47,7 @@
       <bean class="org.pentaho.di.plugins.fileopensave.endpoints.JsonProvider">
         <argument ref="providerService" />
       </bean>
+      <bean class="org.pentaho.di.ui.repo.endpoints.WebSpoonFilter"/>
     </jaxrs:providers>
 
   </jaxrs:server>

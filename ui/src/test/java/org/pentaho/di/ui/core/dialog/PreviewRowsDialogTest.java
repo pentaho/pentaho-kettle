@@ -22,14 +22,18 @@
 
 package org.pentaho.di.ui.core.dialog;
 
+import org.eclipse.rap.rwt.testfixture.TestContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.WebSpoonUtils;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -42,6 +46,14 @@ import java.util.Collections;
 
 public class PreviewRowsDialogTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
+  @Rule
+  public TestContext context = new TestContext();
+
+  @Before
+  public void setUp() {
+    WebSpoonUtils.setUISession( context.getUISession() );
+  }
 
   @Test
   public void getDataForRow() throws Exception {

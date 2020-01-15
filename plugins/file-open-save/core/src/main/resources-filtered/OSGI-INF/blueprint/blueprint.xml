@@ -20,6 +20,7 @@
 
     <jaxrs:providers>
       <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+      <bean class="org.pentaho.di.ui.repo.endpoints.WebSpoonFilter"/>
     </jaxrs:providers>
 
   </jaxrs:server>

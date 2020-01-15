@@ -33,6 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
+import org.eclipse.rap.rwt.internal.textsize.TextSizeUtil;
+import org.eclipse.rap.rwt.widgets.WidgetUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CCombo;
@@ -102,6 +107,8 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterConditionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.spoon.ClipboardListener;
+import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  * Widget to display or modify data, displayed in a Table format.
@@ -165,12 +172,6 @@ public class TableView extends Composite {
   private ModifyListener lsMod, lsUndo, lsContent;
   private Clipboard clipboard;
 
-  // The following Image and Graphics Context are used for font metrics. We only
-  // want them created once.
-  private static Image dummyImage;
-  private static GC dummyGC;
-  private Font gridFont;
-
   // private int last_carret_position;
 
   private ArrayList<TransAction> undo;
@@ -212,6 +213,25 @@ public class TableView extends Composite {
     @Override
     public void delete( int[] items ) {
 
+    }
+  };
+
+  private String widgetId = WidgetUtil.getId( this );
+  private ClipboardListener listener = new ClipboardListener() {
+
+    @Override
+    public void pasteListener( String text ) {
+      pasteSelected( text );
+    }
+
+    @Override
+    public String getWidgetId() {
+      return widgetId;
+    }
+
+    @Override
+    public void cutListener() {
+      delSelected();
     }
   };
 
@@ -272,15 +292,6 @@ public class TableView extends Composite {
         fieldChanged = true;
       }
     };
-    if ( TableView.dummyGC == null ) {
-      Display disp = parent.getDisplay();
-      TableView.dummyImage = new Image( disp, 1, 1 );
-      TableView.dummyGC = new GC( TableView.dummyImage );
-
-      gridFont = new Font( disp, props.getGridFont() );
-      TableView.dummyGC.setFont( gridFont );
-
-    }
 
     FormLayout controlLayout = new FormLayout();
     controlLayout.marginLeft = 0;
@@ -464,7 +475,7 @@ public class TableView extends Composite {
     SelectionAdapter lsClipAll = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        clipSelected();
+        Spoon.getInstance().instructShortcuts();
       }
     };
     SelectionAdapter lsCopyToAll = new SelectionAdapter() {
@@ -488,13 +499,13 @@ public class TableView extends Composite {
     SelectionAdapter lsPasteAll = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        pasteSelected();
+        Spoon.getInstance().instructShortcuts();
       }
     };
     SelectionAdapter lsCutAll = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        cutSelected();
+        Spoon.getInstance().instructShortcuts();
       }
     };
     SelectionAdapter lsDelAll = new SelectionAdapter() {
@@ -997,31 +1008,10 @@ public class TableView extends Composite {
           return;
         }
 
-        // CTRL-C --> Copy selected lines to clipboard
-        if ( e.keyCode == 'c' && ctrl ) {
-          e.doit = false;
-          clipSelected();
-          return;
-        }
-
         // CTRL-K --> keep only selected lines
         if ( !readonly && e.keyCode == 'k' && ctrl ) {
           e.doit = false;
           keepSelected();
-          return;
-        }
-
-        // CTRL-X --> Cut selected infomation...
-        if ( !readonly && e.keyCode == 'x' && ctrl ) {
-          e.doit = false;
-          cutSelected();
-          return;
-        }
-
-        // CTRL-V --> Paste selected infomation...
-        if ( !readonly && e.keyCode == 'v' && ctrl ) {
-          e.doit = false;
-          pasteSelected();
           return;
         }
 
@@ -1204,7 +1194,12 @@ public class TableView extends Composite {
       }
     };
 
+    Spoon.getInstance().getClipboard().addClipboardListener( listener );
     table.addMouseListener( lsMouseT );
+    table.addListener( SWT.Selection, ( e ) -> {
+      Spoon.getInstance().getClipboard().setContents( getSelectedText() );
+      Spoon.getInstance().getClipboard().attachToClipboard( this );
+    });
 
     // Add support for sorted columns!
     //
@@ -1230,18 +1225,17 @@ public class TableView extends Composite {
       }
     };
     table.addTraverseListener( lsTraverse );
+    table.setData( RWT.CANCEL_KEYS, new String[] { "TAB", "SHIFT+TAB" } );
     // cursor.addTraverseListener(lsTraverse);
 
     // Clean up the clipboard
     addDisposeListener( new DisposeListener() {
       @Override
       public void widgetDisposed( DisposeEvent e ) {
+        Spoon.getInstance().getClipboard().removeClipboardListener( listener );
         if ( clipboard != null ) {
           clipboard.dispose();
           clipboard = null;
-        }
-        if ( gridFont != null ) {
-          gridFont.dispose();
         }
       }
     } );
@@ -1830,7 +1824,8 @@ public class TableView extends Composite {
       return null;
     }
 
-    for ( int r = 0; r < items.length; r++ ) {
+    // Table.getSelection() of RWT are ordered reversely.
+    for ( int r = items.length - 1; r >= 0; r-- ) {
       TableItem ti = items[r];
       for ( int c = 1; c < table.getColumnCount(); c++ ) {
         if ( c > 1 ) {
@@ -1869,18 +1864,8 @@ public class TableView extends Composite {
     return rownr;
   }
 
-  private void pasteSelected() {
+  private void pasteSelected( String text ) {
     int rownr = getCurrentRownr();
-
-    if ( clipboard != null ) {
-      clipboard.dispose();
-      clipboard = null;
-    }
-
-    clipboard = new Clipboard( getDisplay() );
-    TextTransfer tran = TextTransfer.getInstance();
-
-    String text = (String) clipboard.getContents( tran );
 
     if ( text != null ) {
       String[] lines = text.split( Const.CR );
@@ -2220,6 +2205,7 @@ public class TableView extends Composite {
         textWidget.setToolTipText( "" );
       }
       textWidget.addTraverseListener( lsTraverse );
+      textWidget.setData( RWT.CANCEL_KEYS, new String[] { "TAB", "SHIFT+TAB" } );
       textWidget.addFocusListener( lsFocusText );
     } else {
       Text textWidget = new Text( table, SWT.NONE );
@@ -2243,6 +2229,7 @@ public class TableView extends Composite {
         textWidget.setToolTipText( "" );
       }
       textWidget.addTraverseListener( lsTraverse );
+      textWidget.setData( RWT.CANCEL_KEYS, new String[] { "TAB", "SHIFT+TAB" } );
       textWidget.addFocusListener( lsFocusText );
     }
     props.setLook( text, Props.WIDGET_STYLE_TABLE );
@@ -2267,12 +2254,9 @@ public class TableView extends Composite {
     }
     String str = getTextWidgetValue( colnr );
 
-    int strmax = TableView.dummyGC.textExtent( str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER ).x + 20;
+    int strmax = TextSizeUtil.textExtent( getFont(), str, 0 ).x + 20;
     int colmax = tablecolumn[colnr].getWidth();
     if ( strmax > colmax ) {
-      if ( Const.isOSX() || Const.isLinux() ) {
-        strmax *= 1.4;
-      }
       tablecolumn[colnr].setWidth( strmax + 30 );
 
       // On linux, this causes the text to select everything...
@@ -2372,6 +2356,7 @@ public class TableView extends Composite {
       }
       props.setLook( widget, Props.WIDGET_STYLE_TABLE );
       widget.addTraverseListener( lsTraverse );
+      widget.setData( RWT.CANCEL_KEYS, new String[] { "TAB", "SHIFT+TAB" } );
       widget.addModifyListener( lsModCombo );
       widget.addFocusListener( lsFocusCombo );
 
@@ -2400,6 +2385,7 @@ public class TableView extends Composite {
       CCombo widget = (CCombo) combo;
       props.setLook( widget, Props.WIDGET_STYLE_TABLE );
       widget.addTraverseListener( lsTraverse );
+      widget.setData( RWT.CANCEL_KEYS, new String[] { "TAB", "SHIFT+TAB" } );
       widget.addModifyListener( lsModCombo );
       widget.addFocusListener( lsFocusCombo );
 
@@ -2469,6 +2455,7 @@ public class TableView extends Composite {
       button.setToolTipText( "" );
     }
     button.addTraverseListener( lsTraverse ); // hop to next field
+    button.setData( RWT.CANCEL_KEYS, new String[] { "TAB", "SHIFT+TAB" } );
     button.addTraverseListener( new TraverseListener() {
       @Override
       public void keyTraversed( TraverseEvent arg0 ) {
@@ -2521,7 +2508,7 @@ public class TableView extends Composite {
       TableColumn tc = table.getColumn( c );
       int max = 0;
       if ( header ) {
-        max = TableView.dummyGC.textExtent( tc.getText(), SWT.DRAW_TAB | SWT.DRAW_DELIMITER ).x;
+        max = TextSizeUtil.textExtent( getFont(), tc.getText(), 0 ).x;
 
         // Check if the column has a sorted mark set. In that case, we need the
         // header to be a bit wider...
@@ -2571,7 +2558,7 @@ public class TableView extends Composite {
       }
 
       for ( String str : columnStrings ) {
-        int len = TableView.dummyGC.textExtent( str == null ? "" : str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER ).x;
+        int len = TextSizeUtil.textExtent( getFont(), str == null ? "" : str, 0 ).x;
         if ( len > max ) {
           max = len;
         }

@@ -154,19 +154,25 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
+        Runnable execute = () -> {
         closeBrowser( browser );
+        };
+        display.asyncExec( execute );
         return true;
       }
     };
 
     new BrowserFunction( browser, "select" ) {
       @Override public Object function( Object[] arguments ) {
+        Runnable execute = () -> {
         try {
           setProperties( arguments );
           closeBrowser( browser );
         } catch ( Exception e ) {
           log.logError( "Error in processing select() from file-open-save app: ", e );
         }
+        };
+        display.asyncExec( execute );
         return true;
       }
     };
@@ -240,7 +246,7 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
       host = LOCALHOST;
       port = getOsgiServicePort();
     }
-    return "http://" + host + ":" + port + path;
+    return System.getProperty( "KETTLE_CONTEXT_PATH" ) + "/osgi" + path;
   }
 
   private static String getKettleProperty( String propertyName ) {

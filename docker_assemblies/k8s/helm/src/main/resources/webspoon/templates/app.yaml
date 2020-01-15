@@ -1,0 +1,16 @@
+apiVersion: "hitachivantara.com/v2"
+kind: App
+metadata:
+  name: {{ template "webspoon.fullname" . }}-app
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  name: {{ .Values.components.webspoon.appName }}
+  description: "Link to access {{ .Values.components.webspoon.appName }} application."
+  serviceNamespace: {{ .Release.Namespace }}
+  sso: {{ template "webspoon.sso" . }}
+  generateNetworkRoute: true
+  exposeLink: false
+  rewritePath: "/"
+  fixedPath: spoon/spoon
+  protocol: "https"

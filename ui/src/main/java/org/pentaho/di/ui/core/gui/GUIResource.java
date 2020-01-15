@@ -25,6 +25,7 @@ package org.pentaho.di.ui.core.gui;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -74,9 +75,9 @@ public class GUIResource {
 
   private static LogChannelInterface log = new LogChannel( "GUIResource" );
 
-  private static GUIResource guiResource;
-
   private Display display;
+
+  private static boolean initialized = false;
 
   // 33 resources
 
@@ -153,13 +154,13 @@ public class GUIResource {
   private ManagedFont fontBold;
 
   /* * * Images * * */
-  private Map<String, SwtUniversalImage> imagesSteps = new ConcurrentHashMap<>();
+  private static Map<String, SwtUniversalImage> imagesSteps = new ConcurrentHashMap<>();
 
-  private Map<String, Image> imagesStepsSmall = new ConcurrentHashMap<>();
+  private static Map<String, Image> imagesStepsSmall = new ConcurrentHashMap<>();
 
-  private Map<String, SwtUniversalImage> imagesJobentries;
+  private static Map<String, SwtUniversalImage> imagesJobentries = new ConcurrentHashMap<String, SwtUniversalImage>();
 
-  private Map<String, Image> imagesJobentriesSmall;
+  private static Map<String, Image> imagesJobentriesSmall = new ConcurrentHashMap<String, Image>();
 
   private SwtUniversalImage imageHop;
 
@@ -428,7 +429,15 @@ public class GUIResource {
    */
   private Clipboard clipboard;
 
-  private GUIResource( Display display ) {
+  private GUIResource() {
+    initialize( PropsUI.getDisplay() );
+  }
+
+//  private GUIResource( Display display ) {
+//    initialize( display );
+//  }
+
+  public void initialize( Display display ) {
     this.display = display;
 
     getResources();
@@ -470,15 +479,11 @@ public class GUIResource {
         // nothing needed here
       }
     } );
-
+    initialized = true;
   }
 
   public static GUIResource getInstance() {
-    if ( guiResource != null ) {
-      return guiResource;
-    }
-    guiResource = new GUIResource( PropsUI.getDisplay() );
-    return guiResource;
+    return SingletonUtil.getSessionInstance( GUIResource.class );
   }
 
   /**
@@ -531,8 +536,10 @@ public class GUIResource {
     // Load all images from files...
     loadFonts();
     loadCommonImages();
-    loadStepImages();
-    loadJobEntryImages();
+    if ( !initialized ) {
+      loadStepImages();
+      loadJobEntryImages();
+    }
   }
 
   private void dispose( boolean reload ) {
@@ -718,10 +725,10 @@ public class GUIResource {
       disposeImage( imageShowErrorLines );
 
       // big images
-      disposeUniversalImages( imagesSteps.values() );
+//      disposeUniversalImages( imagesSteps.values() );
 
       // Small images
-      disposeImages( imagesStepsSmall.values() );
+//      disposeImages( imagesStepsSmall.values() );
 
       // Dispose of the images in the map
       disposeImages( imageMap.values() );
@@ -946,7 +953,7 @@ public class GUIResource {
         .getProperty( "MIS_image" ) );
 
     // "ui/images/spoon.ico"
-    imageSpoon = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ), 0 );
+    imageSpoon = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ), 32 );
 
     // "ui/images/spoon_lowres.ico"
     imageSpoonLow = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image_low" ), 48 );
@@ -1324,9 +1331,6 @@ public class GUIResource {
    * Load all step images from files.
    */
   private void loadJobEntryImages() {
-    imagesJobentries = new Hashtable<>();
-    imagesJobentriesSmall = new Hashtable<>();
-
     // //
     // // JOB ENTRY IMAGES TO LOAD
     // //

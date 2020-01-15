@@ -44,6 +44,7 @@ import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeListener;
+import org.pentaho.di.security.WebSpoonSecurityManager;
 
 public class CarteServlet extends HttpServlet {
 
@@ -65,6 +66,10 @@ public class CarteServlet extends HttpServlet {
   }
 
   public void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
+    SecurityManager securityManager = System.getSecurityManager();
+    if ( securityManager instanceof WebSpoonSecurityManager ) {
+      ( (WebSpoonSecurityManager) securityManager ).setUserName( req.getRemoteUser() );
+    }
     String servletPath = req.getPathInfo();
     if ( servletPath != null && servletPath.endsWith( "/" ) ) {
       servletPath = servletPath.substring( 0, servletPath.length() - 1 );

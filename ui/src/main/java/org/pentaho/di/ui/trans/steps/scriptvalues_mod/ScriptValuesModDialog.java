@@ -221,7 +221,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
   private TreeItem itemoutput;
 
-  private static GUIResource guiresource = GUIResource.getInstance();
+  private GUIResource guiresource = GUIResource.getInstance();
 
   private TreeItem itemWaitFieldsIn, itemWaitFieldsOut;
 
@@ -647,6 +647,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
               setInputOutputFields();
             } else {
               // Can not get fields...end of wait message
+              if ( iteminput.isDisposed() || itemoutput.isDisposed()) {
+                return;
+              }
               iteminput.removeAll();
               itemoutput.removeAll();
             }
@@ -1682,6 +1685,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     shell.getDisplay().syncExec( new Runnable() {
       public void run() {
         // fields are got...end of wait message
+        if ( iteminput.isDisposed() || itemoutput.isDisposed() ) {
+          return;
+        }
         iteminput.removeAll();
         itemoutput.removeAll();
 

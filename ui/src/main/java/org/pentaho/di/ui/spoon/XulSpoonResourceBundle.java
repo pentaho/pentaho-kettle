@@ -62,7 +62,7 @@ public class XulSpoonResourceBundle extends ResourceBundle {
     }
     URLClassLoader classLoader = URLClassLoader.newInstance( new URL[] { url } );
 
-    lafBundle = ResourceBundle.getBundle( "ui/laf", Locale.getDefault(), classLoader );
+    lafBundle = ResourceBundle.getBundle( "ui/laf", Locale.getDefault() );
   }
 
   @Override

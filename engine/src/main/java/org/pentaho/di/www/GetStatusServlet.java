@@ -195,7 +195,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
     response.setStatus( HttpServletResponse.SC_OK );
     String root = request.getRequestURI() == null ? StatusServletUtils.PENTAHO_ROOT
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
-    String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
+    String prefix = root + StatusServletUtils.STATIC_PATH;
     prefix = encodeUriComponents( prefix );
     root = encodeUriComponents( root );
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
@@ -254,8 +254,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
       int tableBorder = 1;
       if ( !useLightTheme ) {
-        if ( isJettyMode() ) {
-          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );
+        if ( true ) {
+          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + root + "/static/css/carte.css\" />" );
         } else {
           out.print( StatusServletUtils.getPentahoStyles( root ) );
           out.println( "<style>" );

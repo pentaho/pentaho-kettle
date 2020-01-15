@@ -23,14 +23,18 @@
 package org.pentaho.di.ui.repo.controller;
 
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.rap.rwt.testfixture.TestContext;
 import org.json.simple.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.WebSpoonUtils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -62,6 +66,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +76,9 @@ import static org.mockito.Mockito.when;
  */
 @RunWith( MockitoJUnitRunner.class )
 public class RepositoryConnectControllerTest {
+
+  @Rule
+  public TestContext context = new TestContext();
 
   public static final String PLUGIN_NAME = "PLUGIN NAME";
   public static final String ID = "ID";
@@ -115,7 +123,9 @@ public class RepositoryConnectControllerTest {
 
   @Before
   public void setUp() {
-    controller = new RepositoryConnectController( pluginRegistry, () -> spoon, repositoriesMeta );
+    WebSpoonUtils.setUISession( context.getUISession() );
+    controller = spy( new RepositoryConnectController( pluginRegistry, () -> spoon ) );
+    when( controller.getRepositoriesMeta() ).thenReturn( repositoriesMeta );
 
     when( pluginInterface.getName() ).thenReturn( PLUGIN_NAME );
     when( pluginInterface.getIds() ).thenReturn( new String[] { ID } );
@@ -129,6 +139,11 @@ public class RepositoryConnectControllerTest {
     when( repositoryMeta.getId() ).thenReturn( ID );
     when( repositoryMeta.getName() ).thenReturn( PLUGIN_NAME );
     when( repositoryMeta.getDescription() ).thenReturn( PLUGIN_DESCRIPTION );
+  }
+
+  @After
+  public void tearDown() {
+    controller.setConnectedRepository( null );
   }
 
   @Test

@@ -1,0 +1,33 @@
+apiVersion: hitachivantara.com/v2
+kind: SSO
+metadata:
+  name: {{ template "webspoon.sso" . }}
+  labels:
+{{ include "webspoon.labels" . | indent 4 }}
+spec:
+  client:
+    id: {{ template "webspoon.gatekeeper.clientId" . }}
+  app:
+    name: {{ template "webspoon.fullname" . }}-app
+    scheme: "https"
+    serviceName: {{ template "webspoon.fullname" . }}
+  gatekeeperConfig:
+    resources:
+      - uri: /*
+        # the methods that will be protected, if no methods are defined all methods will be protected. In this example POST, PUT, etc will allowed.
+        methods:
+          - GET
+          - HEAD
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+          - TRACE
+          - PATCH
+        roles:
+          - {{ template "webspoon.gatekeeper.clientId" . }}:executespoon
+        require-any-role: true
+      - uri: /api/*
+        roles:
+          - {{ template "webspoon.gatekeeper.clientId" . }}:api
+        require-any-role: true

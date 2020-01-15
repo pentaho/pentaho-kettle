@@ -17,16 +17,19 @@
   </parent>
 
   <properties>
+    <!-- webSpoon specific dependencies -->
+    <rap.version>3.12.0.pentaho</rap.version>
+
     <!-- Test running configuration -->
     <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
 
     <!-- Pentaho dependencies -->
-    <pentaho-vfs-browser.version>9.2.0.0-SNAPSHOT</pentaho-vfs-browser.version>
-    <pentaho-capability-manager.version>${project.version}</pentaho-capability-manager.version>
+    <kettle.version>9.2.0.0-SNAPSHOT</kettle.version>
+    <pentaho-vfs-browser.version>${project.version}</pentaho-vfs-browser.version>
+    <pentaho-capability-manager.version>${kettle.version}</pentaho-capability-manager.version>
 
     <!-- Third-party dependencies -->
     <common.version>3.3.0-v20070426</common.version>
-    <jface.version>3.3.0-I20070606-0010</jface.version>
     <commands.version>3.3.0-I20070605-0010</commands.version>
     <jfreechart.version>1.0.13</jfreechart.version>
   </properties>
@@ -43,11 +46,33 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>jsp-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-dbdialog</artifactId>
+      <version>${kettle.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>webspoon-security</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Pentaho dependencies -->
@@ -63,6 +88,13 @@
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>commons-xul-swt</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>jface</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
@@ -83,24 +115,35 @@
 
     <!-- Third-party dependencies -->
     <dependency>
-      <groupId>org.eclipse.swt</groupId>
-      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.rwt</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.filedialog</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.jface</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.fileupload</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.equinox</groupId>
       <artifactId>common</artifactId>
       <version>${common.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse</groupId>
-      <artifactId>jface</artifactId>
-      <version>${jface.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -138,19 +181,24 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.mitre.dsmiley.httpproxy</groupId>
+      <artifactId>smiley-http-proxy-servlet</artifactId>
+      <version>1.11</version>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
+      <version>${kettle.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>${project.parent.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -168,6 +216,18 @@
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-mockito</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.rwt.testfixture</artifactId>
+      <version>${rap.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

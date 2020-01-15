@@ -87,7 +87,7 @@ public class TextVar extends Composite {
 
   public TextVar( VariableSpace space, Composite composite, int flags, String toolTipText,
       GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
-    super( composite, SWT.NONE );
+    super( composite, SWT.NO_FOCUS );
     initialize( space, composite, flags, toolTipText, getCaretPositionInterface, insertTextInterface, null );
   }
 
@@ -100,7 +100,7 @@ public class TextVar extends Composite {
   public TextVar( VariableSpace space, Composite composite, int flags, String toolTipText,
       GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface,
       SelectionListener selectionListener ) {
-    super( composite, SWT.NONE );
+    super( composite, SWT.NO_FOCUS );
     initialize( space, composite, flags, toolTipText, getCaretPositionInterface, insertTextInterface, selectionListener );
   }
 

@@ -43,7 +43,7 @@ define(
      * @return {Object} The dataService api
      */
     function factory($http, $q) {
-      var baseUrl = "/cxf/get-fields";
+      var baseUrl = "../../cxf/get-fields";
       var httpRequestCancellers = [];
       return {
         sample: sample,

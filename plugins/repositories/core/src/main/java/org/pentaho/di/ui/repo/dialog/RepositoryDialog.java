@@ -60,7 +60,7 @@ public class RepositoryDialog extends ThinDialog {
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
   private static final String LOCALHOST = "127.0.0.1";
-  private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
+  private Image LOGO;
 
 
   private RepositoryConnectController controller;
@@ -71,10 +71,16 @@ public class RepositoryDialog extends ThinDialog {
     super( shell, WIDTH, HEIGHT );
     this.controller = controller;
     this.shell = shell;
+    this.LOGO = GUIResource.getInstance().getImageLogoSmall();
   }
 
   private boolean open() {
-    return open( null );
+    /**
+     *  RWT version of Dialog has a method `Dialog.open(DialogCallback)`.
+     *  Thus open( null ) is confusing. It needed to be clearer.
+     */
+    RepositoryMeta repositoryMeta = null;
+    return open( repositoryMeta );
   }
 
   private boolean open( RepositoryMeta repositoryMeta ) {
@@ -85,9 +91,12 @@ public class RepositoryDialog extends ThinDialog {
 
     new BrowserFunction( browser, "closeWindow" ) {
       @Override public Object function( Object[] arguments ) {
-        browser.dispose();
-        dialog.close();
-        dialog.dispose();
+        Runnable execute = () -> {
+          browser.dispose();
+          dialog.close();
+          dialog.dispose();
+        };
+        display.asyncExec( execute );
         return true;
       }
     };
@@ -150,16 +159,7 @@ public class RepositoryDialog extends ThinDialog {
   }
 
   private static String getRepoURL( String path ) {
-    String host;
-    Integer port;
-    try {
-      host = getKettleProperty( THIN_CLIENT_HOST );
-      port = Integer.valueOf( getKettleProperty( THIN_CLIENT_PORT ) );
-    } catch ( Exception e ) {
-      host = LOCALHOST;
-      port = getOsgiServicePort();
-    }
-    return "http://" + host + ":" + port + getClientPath() + path;
+    return System.getProperty( "KETTLE_CONTEXT_PATH", "" ) + "/osgi" + getClientPath() + path;
   }
 
   private static String getKettleProperty( String propertyName ) throws KettleException {

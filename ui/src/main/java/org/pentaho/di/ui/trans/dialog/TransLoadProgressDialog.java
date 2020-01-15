@@ -27,12 +27,14 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
@@ -89,44 +91,49 @@ public class TransLoadProgressDialog {
   }
 
   public TransMeta open() {
+    final LogChannelInterface log = Spoon.getInstance().getLog();
+    final ServerPushSession pushSession = new ServerPushSession();
+    final Display display = Spoon.getInstance().getDisplay();
     IRunnableWithProgress op = new IRunnableWithProgress() {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
-        Spoon spoon = Spoon.getInstance();
-        try {
-          // Call extension point(s) before the file has been opened
-          ExtensionPointHandler.callExtensionPoint(
-            spoon.getLog(),
-            KettleExtensionPoint.TransBeforeOpen.id,
-            ( objectId == null ) ? transname : objectId.toString() );
+        display.asyncExec( () -> {
+          try {
+            // Call extension point(s) before the file has been opened
+            ExtensionPointHandler.callExtensionPoint(
+              log,
+              KettleExtensionPoint.TransBeforeOpen.id,
+              ( objectId == null ) ? transname : objectId.toString() );
 
-          if ( objectId != null ) {
-            transInfo = rep.loadTransformation( objectId, versionLabel );
-          } else {
-            transInfo =
-              rep.loadTransformation(
-                transname, repdir, new ProgressMonitorAdapter( monitor ), true, versionLabel );
-          }
-          // Call extension point(s) now that the file has been opened
-          ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransAfterOpen.id, transInfo );
-          if ( transInfo.hasMissingPlugins() ) {
-            StepMeta stepMeta = transInfo.getStep( 0 );
-            Display.getDefault().syncExec( () -> {
+            if ( objectId != null ) {
+              transInfo = rep.loadTransformation( objectId, versionLabel );
+            } else {
+              transInfo =
+                rep.loadTransformation(
+                  transname, repdir, new ProgressMonitorAdapter( monitor ), true, versionLabel );
+            }
+            // Call extension point(s) now that the file has been opened
+            ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransAfterOpen.id, transInfo );
+            if ( transInfo.hasMissingPlugins() ) {
+              StepMeta stepMeta = transInfo.getStep( 0 );
               MissingTransDialog missingTransDialog =
-                new MissingTransDialog( shell, transInfo.getMissingTrans(), stepMeta.getStepMetaInterface(), transInfo,
-                  stepMeta.getName() );
+                  new MissingTransDialog( shell, transInfo.getMissingTrans(), stepMeta.getStepMetaInterface(), transInfo,
+                      stepMeta.getName() );
               if ( missingTransDialog.open() == null ) {
                 transInfo = null;
               }
-            } );
+            }
+          } catch ( KettleException e ) {
+            new ErrorDialog( shell,
+                BaseMessages.getString( PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ),
+                BaseMessages.getString( PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
           }
-        } catch ( KettleException e ) {
-          throw new InvocationTargetException( e, BaseMessages.getString(
-            PKG, "TransLoadProgressDialog.Exception.ErrorLoadingTransformation" ) );
-        }
+          pushSession.stop();
+        } );
       }
     };
 
     try {
+      pushSession.start();
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( true, false, op );
     } catch ( InvocationTargetException e ) {

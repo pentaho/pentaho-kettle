@@ -274,7 +274,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
             if ( uiObj instanceof UIRepositoryDirectory ) {
               if ( uiObj.getName().equalsIgnoreCase( homePath[ currentDir ] ) ) {
                 // We have a match. Let's move on to the next
-                ( (UIRepositoryDirectory) uiObj ).populateChildren();
+                if ( !( (UIRepositoryDirectory) uiObj ).isPopulated() ) {
+                  ( (UIRepositoryDirectory) uiObj ).populateChildren();
+                }
                 directoryBinding.fireSourceChanged();
                 tempRoot = (UIRepositoryDirectory) uiObj;
                 break;

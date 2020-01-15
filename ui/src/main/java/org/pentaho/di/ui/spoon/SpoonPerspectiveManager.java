@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon;
 
+import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.pentaho.di.core.WebSpoonUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -175,7 +177,7 @@ public class SpoonPerspectiveManager {
    * @return SpoonPerspectiveManager instance.
    */
   public static SpoonPerspectiveManager getInstance() {
-    return instance;
+    return SingletonUtil.getUniqueInstance( SpoonPerspectiveManager.class, WebSpoonUtils.getUISession() );
   }
 
   /**

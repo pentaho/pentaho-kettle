@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webspoon.fullname" . }}
+  labels:
+    {{- include "webspoon.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.components.webspoon.service.type }}
+  ports:
+    - port: {{ .Values.components.webspoon.service.port }}
+      targetPort: {{ .Values.components.webspoon.containerPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "webspoon.selectorLabels" . | nindent 4 }}

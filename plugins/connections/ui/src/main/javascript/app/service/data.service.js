@@ -43,7 +43,7 @@ define(
      * @return {Object} The dataService api
      */
     function factory(helperService) {
-      var baseUrl = "/cxf/connection";
+      var baseUrl = "/spoon/osgi/cxf/connection";
       return {
         getTypes: getTypes,
         getFields: getFields,

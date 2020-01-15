@@ -33,6 +33,7 @@ import java.util.List;
 import org.junit.Assert;
 
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.widgets.Canvas;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
@@ -55,6 +56,8 @@ public class TransGraphTest {
 
     TransGraph transGraph = mock( TransGraph.class );
     StepMeta stepMeta = mock( StepMeta.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    Canvas canvas = mock( Canvas.class );
     StepErrorMeta errorMeta = new StepErrorMeta( null, null );
     TransHopMeta selectedHop = new TransHopMeta();
     selectedHop.setErrorHop( true );
@@ -64,8 +67,13 @@ public class TransGraphTest {
     when( stepMeta.getStepErrorMeta() ).thenReturn( errorMeta );
     when( transGraph.findHop( x, y ) ).thenReturn( selectedHop );
     when( transGraph.screen2real( any( Integer.class ), any( Integer.class ) ) ).thenReturn( new Point( x, y ) );
+    when( transMeta.getStep( any( Integer.class ), any( Integer.class ), any( Integer.class ) ) ).thenReturn( null );
 
+    doCallRealMethod().when( transGraph ).setTransMeta( transMeta );
+    transGraph.setTransMeta( transMeta );
     doCallRealMethod().when( transGraph ).mouseUp( event );
+    doCallRealMethod().when( transGraph ).setCanvas( canvas );
+    transGraph.setCanvas( canvas );
     transGraph.mouseUp( event );
 
     Assert.assertTrue( errorMeta.isEnabled() );

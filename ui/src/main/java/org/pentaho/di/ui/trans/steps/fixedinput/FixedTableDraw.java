@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.rap.rwt.internal.textsize.TextSizeUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -64,14 +65,11 @@ public class FixedTableDraw extends Canvas {
   private Point offset;
   private ScrollBar hori;
   private ScrollBar vert;
-  private Image dummy_image;
-  private GC dummy_gc;
   private int maxlen;
 
   private int fontheight;
   private int fontwidth;
 
-  private Image cache_image;
   private int prev_fromx, prev_tox, prev_fromy, prev_toy;
 
   private List<FixedFileInputField> fields;
@@ -96,8 +94,6 @@ public class FixedTableDraw extends Canvas {
 
     potential_click = -1;
 
-    // Cache displayed text...
-    cache_image = null;
     prev_fromx = -1;
     prev_tox = -1;
     prev_fromy = -1;
@@ -117,11 +113,9 @@ public class FixedTableDraw extends Canvas {
     vert = getVerticalBar();
 
     // Determine font width...
-    dummy_image = new Image( display, 1, 1 );
-    dummy_gc = new GC( dummy_image );
     // dummy_gc.setFont(font);
     String teststring = "ABCDEF";
-    fontwidth = Math.round( dummy_gc.textExtent( teststring ).x / teststring.length() );
+    fontwidth = Math.round( TextSizeUtil.textExtent( getFont(), teststring, 0 ).x / teststring.length() );
 
     setBackground( bg );
     // setFont(font);
@@ -129,17 +123,6 @@ public class FixedTableDraw extends Canvas {
     addPaintListener( new PaintListener() {
       public void paintControl( PaintEvent e ) {
         FixedTableDraw.this.paintControl( e );
-      }
-    } );
-
-    addDisposeListener( new DisposeListener() {
-      public void widgetDisposed( DisposeEvent arg0 ) {
-        dummy_gc.dispose();
-        dummy_image.dispose();
-
-        if ( cache_image != null ) {
-          cache_image.dispose();
-        }
       }
     } );
 
@@ -346,17 +329,10 @@ public class FixedTableDraw extends Canvas {
     int fromx = -offset.x / fontwidth;
     int tox = fromx + ( area.x / fontwidth );
 
-    Image image = new Image( display, area.x, area.y );
+    // Directly draw on the canvas
+    GC gc = new GC( this );
 
     if ( fromx != prev_fromx || fromy != prev_fromy || tox != prev_tox || toy != prev_toy ) {
-      if ( cache_image != null ) {
-        cache_image.dispose();
-        cache_image = null;
-      }
-      cache_image = new Image( display, area.x, area.y );
-
-      GC gc = new GC( cache_image );
-
       // We have a cached image: draw onto it!
       int linepos = TOP - 5;
 
@@ -431,13 +407,7 @@ public class FixedTableDraw extends Canvas {
           + ( i + 1 ) * ( fontheight + 2 ) + offset.y );
       }
 
-      gc.dispose();
     }
-
-    GC gc = new GC( image );
-
-    // Draw the cached image onto the canvas image:
-    gc.drawImage( cache_image, 0, 0 );
 
     // Also draw the markers...
     gc.setForeground( red );
@@ -456,10 +426,7 @@ public class FixedTableDraw extends Canvas {
       drawMarker( gc, potential_click, area.y );
     }
 
-    // Draw the image:
-    e.gc.drawImage( image, 0, 0 );
     gc.dispose();
-    image.dispose();
   }
 
   private void drawMarker( GC gc, int x, int maxy ) {

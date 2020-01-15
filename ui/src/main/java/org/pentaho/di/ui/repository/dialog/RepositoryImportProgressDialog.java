@@ -26,6 +26,7 @@ import java.util.Date;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -186,6 +187,8 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
     shell.open();
 
+    final ServerPushSession pushSession = new ServerPushSession();
+    pushSession.start();
     ExecutorUtil.getExecutor().submit( new Runnable() {
       @Override
       public void run() {
@@ -200,6 +203,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
             @Override
             public void run() {
               wClose.setEnabled( true );
+              pushSession.stop();
             }
           } );
         }

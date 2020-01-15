@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <window id="label-test" title="Flow Test" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:pen="http://www.pentaho.org/2008/xul" onload="spoon.onLoad()">
-  <menubar id="spoon-menubar">
+  <menubar id="spoon-menubar" disabled="false">
 
     <menu id="file" label="${Spoon.Menu.File}" accesskey="alt-f">
       <menupopup id="file-popup">
@@ -30,7 +30,7 @@
         <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveAsNew()" />        
         <!-- <menuitem id="file-publish" label="${Spoon.Menu.File.Publish}"/> -->
         <menuseparator id="file-separator-2"/>
-        <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
+        <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" disabled="true" />
 
         <menuseparator id="file-separator-3"/>
         <menuitem id="file-import-from-xml" acceltext="CTRL-I" accesskey="ctrl-i" label="${Spoon.Menu.File.Import}"
@@ -45,7 +45,8 @@
           </menupopup>
         </menu>
         <menuseparator id="file-separator-4"/>
-        <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile(true)" />
+        <menuitem id="file-logout" label="${Spoon.Menu.File.Logout}" command="spoon.logoutFile()" />
+        <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile(true)" disabled="true" />
       </menupopup>
     </menu>
 
@@ -56,12 +57,12 @@
         <menuitem id="edit-redo" acceltext="CTRL-Y" accesskey="ctrl-y" label="${Spoon.Menu.Redo.NotAvailable}"
           command="spoon.redoAction()" />
         <menuseparator />
-        <menuitem id="edit-cut-steps" acceltext="CTRL-X" accesskey="ctrl-x" label="${Spoon.Menu.Edit.Cut}" command="spoon.cut()" />
-        <menuitem id="edit-copy-steps" acceltext="CTRL-C" accesskey="ctrl-c" label="${Spoon.Menu.Edit.CopyToClipboard}"
-          command="spoon.copy()" />
-        <menuitem id="edit.copy-file" label="${Spoon.Menu.Edit.Copy.File}" command="spoon.copyFile()" />
-        <menuitem id="edit-paste-steps" acceltext="CTRL-V" accesskey="ctrl-v" label="${Spoon.Menu.Edit.PasteFromClipboard}"
-          command="spoon.paste()" />
+        <menuitem id="edit-cut-steps" label="${Spoon.Menu.Edit.Cut}" command="spoon.instructShortcuts()" />
+        <menuitem id="edit-copy-steps" label="${Spoon.Menu.Edit.CopyToClipboard}"
+          command="spoon.instructShortcuts()" />
+        <menuitem id="edit.copy-file" label="${Spoon.Menu.Edit.Copy.File}" command="spoon.copyFile()" disabled="true" />
+        <menuitem id="edit-paste-steps" label="${Spoon.Menu.Edit.PasteFromClipboard}"
+          command="spoon.instructShortcuts()" />
         <menuseparator />
         <menuitem id="trans-copy-image" acceltext="CTRL-ALT-I" accesskey="ctrl-alt-i"
           label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyTransformationImage()" />
@@ -147,10 +148,10 @@
         </menu>
         <menu id="repository" label="${Spoon.Menu.Repository}">
           <menupopup id="repository-popup">
-            <menuitem id="repository-explore" acceltext="CTRL-E" accesskey="ctrl-e" disabled="true"
+            <menuitem id="repository-explore" acceltext="CTRL-E" accesskey="ctrl-e"
               label="${Spoon.Menu.Repository.ExploreRepository}" command="spoon.exploreRepository()" />
             <menuseparator />
-            <menuitem id="repository-clear-shared-object-cache" disabled="true"
+            <menuitem id="repository-clear-shared-object-cache"
               label="${Spoon.Menu.Repository.ClearSharedObjectCache}" command="spoon.clearSharedObjectCache()" />
             <menuseparator />
             <menuitem id="repository-export-all" label="${Spoon.Menu.Repository.ExportAll}" command="spoon.exportRepositoryAll()" />

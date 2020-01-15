@@ -60,6 +60,9 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   }
 
   public UIRepositoryDirectories getChildren() {
+    if ( !this.isPopulated() ) {
+      this.populateChildren();
+    }
     if ( kidDirectoryCache == null ) {
       kidDirectoryCache = new UIRepositoryDirectories();
 

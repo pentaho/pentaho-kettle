@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -95,10 +96,11 @@ public class LogBrowser {
 
     // Refresh the log every second or so
     //
+    final ServerPushSession pushSession = new ServerPushSession();
     final Timer logRefreshTimer = new Timer( "log sniffer Timer" );
     TimerTask timerTask = new TimerTask() {
       public void run() {
-        if ( text.isDisposed() ) {
+        if ( text.isDisposed() || text.getDisplay().isDisposed() ) {
           return;
         }
 
@@ -130,7 +132,7 @@ public class LogBrowser {
                 lastNr = Math.min( lastNr, lastLogId.get() + MAX_NR_LOG_LINES_CHUNK );
 
                 List<KettleLoggingEvent> logLines =
-                  KettleLogStore.getLogBufferFromTo( childIds, true, lastLogId.get(), lastNr );
+                  KettleLogStore.getLogBufferFromTo( childIds, false, lastLogId.get(), lastNr );
 
                 synchronized ( text ) {
 
@@ -194,6 +196,7 @@ public class LogBrowser {
       }
     };
 
+    pushSession.start();
     // Refresh every often enough
     //
     logRefreshTimer
@@ -220,6 +223,16 @@ public class LogBrowser {
     text.addDisposeListener( new DisposeListener() {
       public void widgetDisposed( DisposeEvent event ) {
         logRefreshTimer.cancel();
+        pushSession.stop();
+      }
+    } );
+
+    // Make sure the timer goes down when the Display is disposed
+    text.getDisplay().disposeExec( new Runnable() {
+      @Override
+      public void run() {
+        logRefreshTimer.cancel();
+        pushSession.stop();
       }
     } );
 

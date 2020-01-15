@@ -306,7 +306,14 @@ define(
           return $q(function (resolve, reject) {
             var folder = null;
             for (var i = 0; i < node.children.length; i++) {
-              if (node.children[i].name.trim() === name.trim()) {
+              var parts = node.children[i].name.trim().split("/");
+              var foundPart = false;
+              for (var p = 0; p < parts.length; p++) {
+                if (parts[p].trim() === name.trim()) {
+                  foundPart = true;
+                }
+              }
+              if (node.children[i].name.trim() === name.trim() || foundPart === true) {
                 folder = node.children[i];
                 folder.open = true;
                 folder.loading = false;

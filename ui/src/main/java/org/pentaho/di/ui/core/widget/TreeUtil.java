@@ -22,9 +22,11 @@
 
 package org.pentaho.di.ui.core.widget;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -33,8 +35,8 @@ public class TreeUtil {
   public static final void setOptimalWidthOnColumns( Tree tree ) {
     int nrCols = tree.getColumnCount();
     int[] max = new int[nrCols];
-    Image image = new Image( tree.getDisplay(), 10, 10 );
-    GC gc = new GC( image );
+    Canvas dummy_canvas = new Canvas( tree, SWT.NO_REDRAW_RESIZE );
+    GC gc = new GC( dummy_canvas );
 
     for ( int i = 0; i < max.length; i++ ) {
       TreeColumn treeColumn = tree.getColumn( i );
@@ -45,7 +47,7 @@ public class TreeUtil {
     getMaxWidths( tree.getItems(), max, gc );
 
     gc.dispose();
-    image.dispose();
+    dummy_canvas.dispose();
 
     for ( int i = 0; i < max.length; i++ ) {
       TreeColumn treeColumn = tree.getColumn( i );

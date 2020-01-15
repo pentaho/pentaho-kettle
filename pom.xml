@@ -73,6 +73,13 @@
     <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
     <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
+
+    <!-- Helm -->
+    <com.kiwigrid.helm-maven-plugin.version>5.6</com.kiwigrid.helm-maven-plugin.version>
+    <helm.repository.url>https://repo.orl.eng.hitachivantara.com/artifactory/dataflowstudio-helm-dev-orl</helm.repository.url>
+    <helm.repository.type>ARTIFACTORY</helm.repository.type>
+    <helm.username></helm.username>
+    <helm.password></helm.password>
   </properties>
 
   <dependencyManagement>
@@ -239,6 +246,56 @@
   </dependencyManagement>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>helm-chart-version-property-variable</id>
+              <phase>initialize</phase>
+              <goals>
+                <goal>regex-property</goal>
+              </goals>
+              <configuration>
+                <name>helm.chart.version</name>
+                <value>${project.version}</value>
+                <regex>${project.version}</regex>
+                <replacement>${project.version}</replacement>
+                <toLowerCase>true</toLowerCase>
+                <failIfNoMatch>false</failIfNoMatch>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>${fabric8.docker.maven.plugin.version}</version>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.kiwigrid</groupId>
+          <artifactId>helm-maven-plugin</artifactId>
+          <version>${com.kiwigrid.helm-maven-plugin.version}</version>
+          <configuration>
+            <skip>true</skip>
+            <chartDirectory>${project.basedir}/target</chartDirectory>
+            <useLocalHelmBinary>true</useLocalHelmBinary>
+            <uploadRepoStable>
+              <name>stable-repo</name>
+              <url>${helm.repository.url}</url>
+              <type>${helm.repository.type}</type>
+              <username>${helm.username}</username>
+              <password>${helm.password}</password>
+            </uploadRepoStable>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -272,6 +329,7 @@
         <module>engine</module>
         <module>dbdialog</module>
         <module>ui</module>
+        <module>security</module>
         <module>utilities</module>
       </modules>
     </profile>
@@ -295,6 +353,17 @@
       </activation>
       <modules>
         <module>assemblies</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>docker_assemblies</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>docker_assemblies</module>
       </modules>
     </profile>
   </profiles>

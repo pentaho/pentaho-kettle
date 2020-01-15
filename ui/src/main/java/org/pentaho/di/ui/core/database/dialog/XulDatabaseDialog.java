@@ -111,9 +111,7 @@ public class XulDatabaseDialog {
    * @return databaseName (or NULL on error or cancel) TODO: Fix deprecation warning in v3.2 by using the new dialog
    */
   public String open() {
-    if ( databaseDialogInstance == null ) {
-      createDialog();
-    }
+    createDialog();
 
     try {
 

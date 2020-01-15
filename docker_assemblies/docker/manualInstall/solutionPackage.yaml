@@ -1,0 +1,12 @@
+apiVersion: hitachivantara.com/v1
+kind: solutionpackage
+metadata:
+  name: "data-transformation-editor-CHANGE_ME"
+spec:
+  chartName: "data-transformation-editor"
+  chartVersion: "CHANGE_ME"
+  # optional:
+  appVersion: "CHANGE_ME"
+  # optional:
+  images:
+    - "hiromuhota/webspoon:CHANGE_ME"

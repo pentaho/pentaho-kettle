@@ -41,7 +41,6 @@ import java.util.Properties;
  */
 public class ConnectionDialog extends ThinDialog {
 
-  private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
@@ -68,7 +67,7 @@ public class ConnectionDialog extends ThinDialog {
       clientPath.append( "#!/intro" );
     }
     super.createDialog( title, getRepoURL( clientPath.toString() ),
-      OPTIONS, LOGO );
+      OPTIONS, GUIResource.getInstance().getImageLogoSmall() );
     super.dialog.setMinimumSize( 630, 630 );
 
     new BrowserFunction( browser, "close" ) {
@@ -131,7 +130,7 @@ public class ConnectionDialog extends ThinDialog {
       host = LOCALHOST;
       port = getOsgiServicePort();
     }
-    return "http://" + host + ":" + port + path;
+    return System.getProperty( "KETTLE_CONTEXT_PATH" ) + "/osgi" + path;
   }
 
   private static String getKettleProperty( String propertyName ) {

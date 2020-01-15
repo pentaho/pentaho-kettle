@@ -1,0 +1,42 @@
+# Default values for webspoon.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+enabled: true
+
+image:
+  repository: ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: CHANGE_ME
+
+dataFlowStudio:
+  volume:
+    pdi:
+      host: ""
+      path: ""
+      mountPath: "/home/di_user/.kettle"
+
+keycloak:
+  server: "http://keycloak-http:8080/auth"
+  realm: "default"
+
+components:
+  webspoon:
+    appName: Data Transformation Editor
+    name: data-transformation-editor
+    containerPort: 8080
+    service:
+      type: ClusterIP
+      port: 8084
+    logLevel: "INFO"
+    replicaCount: 1
+
+## Add stateful containers to have security context, if enabled provider will run as this
+## user and group
+securityContext:
+  enabled: false
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+

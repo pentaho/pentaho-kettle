@@ -1,0 +1,57 @@
+<b:beans xmlns="http://www.springframework.org/schema/security"
+     xmlns:b="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+  <b:bean id="firewall" class="org.springframework.security.web.firewall.StrictHttpFirewall">
+    <b:property name="allowUrlEncodedSlash" value="true"/>
+  </b:bean>
+  <http-firewall ref="firewall"/>
+
+  <!-- BASIC-Auth for Carte endpoints -->
+  <http pattern="/kettle/**">
+    <intercept-url pattern="/**" access="hasRole('USER')"/>
+    <http-basic />
+    <!-- Disable CSRF because org.pentaho.di.cluster.SlaveServer does not seem to be able to handle CSRF token issued by Spring Security -->
+    <csrf disabled="true"/>
+  </http>
+
+  <!-- Form-based for the rest -->
+  <http>
+    <intercept-url pattern="/favicon.ico" access="permitAll"/>
+    <intercept-url pattern="/rwt-resources/**" access="permitAll"/>
+    <intercept-url pattern="/**" access="hasRole('USER')" />
+    <form-login default-target-url="/spoon"/>
+    <logout />
+    <!-- Spring Security's CSRF protection is disabled because RAP/RWT does not handle the CSRF token issued by Spring Security.
+         RAP/RWT has its own CSRF protection. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=413668 for more details -->
+    <csrf disabled="true"/>
+    <headers>
+      <frame-options policy="SAMEORIGIN"/>
+    </headers>
+  </http>
+
+  <!-- LDAP Authentication -->
+  <!--
+  <ldap-server url="ldap://localhost:389/dc=example,dc=org" manager-dn="cn=admin,dc=example,dc=org" manager-password="admin" />
+  <authentication-manager>
+    <ldap-authentication-provider
+      user-dn-pattern="uid={0},ou=people"
+      group-search-base="ou=groups"
+      group-role-attribute="cn"
+      group-search-filter="uniqueMember={0}"
+    />
+  </authentication-manager>
+  -->
+
+  <!-- In-Memory Authentication -->
+  <authentication-manager>
+    <authentication-provider>
+      <user-service>
+        <user name="user" password="password" authorities="ROLE_USER" />
+      </user-service>
+    </authentication-provider>
+  </authentication-manager>
+
+</b:beans>

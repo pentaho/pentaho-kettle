@@ -1,0 +1,5 @@
+<slave_config>
+  <max_log_lines>10000</max_log_lines>
+  <max_log_timeout_minutes>2880</max_log_timeout_minutes>
+  <object_timeout_minutes>240</object_timeout_minutes>
+</slave_config>

@@ -69,13 +69,20 @@ public class MetaStoreConst {
     if ( Utils.isEmpty( rootFolder ) ) {
       rootFolder = getDefaultPentahoMetaStoreLocation();
     }
+    if ( Const.getUser() != null ) { // when no user authentication is used
+      rootFolder += File.separator + "users" + File.separator + Const.getUser();
+    }
     File rootFolderFile = new File( rootFolder );
     File metaFolder = new File( rootFolder + File.separator + XmlUtil.META_FOLDER_NAME );
     if ( !allowCreate && !metaFolder.exists() ) {
       return null;
     }
     if ( !rootFolderFile.exists() ) {
-      rootFolderFile.mkdirs();
+      try {
+        rootFolderFile.mkdirs();
+      } catch ( SecurityException e ) {
+        throw new MetaStoreException( e.getMessage() );
+      }
     }
 
     XmlMetaStore metaStore = new XmlMetaStore( rootFolder );
