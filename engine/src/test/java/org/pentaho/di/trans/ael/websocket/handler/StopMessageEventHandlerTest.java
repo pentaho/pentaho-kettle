@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -128,7 +128,7 @@ public class StopMessageEventHandlerTest {
 
     verify( logChannel, times( 2 ) ).logError( anyString() );
     verify( logChannel, times( 1 ) )
-        .logError( "Contact cluster administrator to stop execution!" );
+        .logError( "Please check with cluster administrator." );
   }
 
   @Test

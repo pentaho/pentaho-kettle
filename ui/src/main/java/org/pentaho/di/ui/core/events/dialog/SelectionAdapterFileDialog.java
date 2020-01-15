@@ -341,7 +341,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         }
       }
 
-      return applyRelativePath( result );
+      return applyRelativePathEnvVar( result );
     } catch ( Exception e ) {
       return null;
     }
@@ -353,32 +353,51 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
    * @param path string path to be updated
    * @return updated path
    */
-  String applyRelativePath( String path ) {
+  String applyRelativePathEnvVar( String path ) {
     String parentFolder = null;
 
     if ( !Utils.isEmpty( path ) ) {
 
       // Based on the working environment determine the parent path to compare too.
       if ( isConnectedToRepository() ) {
-        parentFolder = meta.getRepositoryDirectory().getPath();
-      } else {
-        try {
-          FileObject parentFileObj = KettleVFS.getFileObject( meta.environmentSubstitute( meta.getFilename( ) ) )
-            .getParent();
+        return replaceCurrentDir( path.replace( '\\', '/' ), meta.getRepositoryDirectory().getPath() );
+      }
 
-          if ( parentFileObj instanceof LocalFile ) {
-            parentFolder = parentFileObj.getName().getPath();
-          } else {
-            parentFolder = parentFileObj.toString();
-          }
+      // Attempt to match using current file as is
+      String currentFile = meta.environmentSubstitute( meta.getFilename() );
+      try {
+        parentFolder = ( new File( currentFile ) ).getParent();
+        parentFolder = ( path.startsWith( parentFolder ) ) ? parentFolder : null;
+      } catch ( Exception e ) {
+        // Ignore
+      }
+
+      // If no match, attempt to compare to kettleVFS object
+      if ( Utils.isEmpty( parentFolder ) ) {
+        try {
+          FileObject parentFileObj = KettleVFS.getFileObject( currentFile ).getParent();
+
+          // Non-local files should include the schema i.e. pvfs://
+          parentFolder = ( parentFileObj instanceof LocalFile ) ? parentFileObj.getName().getPath()
+            : parentFileObj.toString();
+
         } catch ( Exception e ) {
-          // Take no action
+          // Ignore
         }
       }
-      // Replace the parent path with env path.
-      if ( parentFolder != null && path.startsWith( parentFolder ) ) {
-        path = path.replace( parentFolder, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+    }
+    return replaceCurrentDir( path, parentFolder );
+  }
+
+  private static String replaceCurrentDir( String path, String parentPath ) {
+    if ( !Utils.isEmpty( path ) && !Utils.isEmpty( parentPath ) && path.startsWith( parentPath ) ) {
+      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+
+      // Ensure the path is uniform for windows. Path's using the internal variable need to use forward slash
+      if ( Const.isWindows() ) {
+        path = path.replace( '\\', '/' );
       }
+
     }
     return path;
   }

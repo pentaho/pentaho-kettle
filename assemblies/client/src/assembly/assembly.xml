@@ -27,7 +27,7 @@
         <include>*:pentaho-hadoop-shims-hdp30-kar:*</include>
         <include>*:pentaho-hadoop-shims-emr521-kar:*</include>
       </includes>
-      <outputDirectory>./drivers</outputDirectory>
+      <outputDirectory>./ADDITIONAL-FILES/drivers</outputDirectory>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>

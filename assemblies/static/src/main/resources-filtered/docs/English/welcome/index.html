@@ -56,8 +56,7 @@
             font-family: 'OpenSansRegular', sans-serif;
             margin: 0;
             padding: 34px 0;
-            border-top: 4px solid #005DA6;
-            /* min-width: 992px; */
+            background-color: #f5f5f5;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             -khtml-user-select: none;
@@ -70,19 +69,16 @@
         body a.external.arrow:hover,
         body a:hover,
         body a:hover:after {
-            color: #0F2B5B;
+            color: #555555;
             text-transform: none;
         }
 
         h2 {
-            font-family: 'OpenSansLight', sans-serif;
+            font-family: 'OpenSansRegular', sans-serif;
             text-align: center;
-            font-size: 28px;
-            margin-top: 20px;
-            margin-bottom: 1em;
-            color: #000;
+            font-size: 35px;
+            color: #414141;
             margin: 2rem 0 .5rem;
-            padding: 0;
             -webkit-margin-before: 0;
             -webkit-margin-after: 0;
             -webkit-margin-start: 0;
@@ -95,16 +91,18 @@
         a:visited,
         a:focus,
         a:active {
-            color: #005DA6;
+            color: #555555;
             text-decoration: none;
         }
         /* CARDS  */
 
         a.card-link {
-            color: #005DA6;
+            font-family: 'OpenSansSemiBold', sans-serif;
+            color: #414141;
             text-decoration: none;
             display: block;
             line-height: 30px;
+            font-weight: 600;
         }
 
         .cards-container {
@@ -120,16 +118,18 @@
 
         .card-title {
             display: block;
-            font-family: 'OpenSansLight', sans-serif;
+            font-family: 'OpenSansRegular', sans-serif;
             color: #414141;
             font-size: 1.75em;
-            font-weight: 300;
+            font-weight: 400;
             text-transform: uppercase;
             margin: 0 0 15px;
+            line-height: 40px;
         }
 
         .card-description {
-            background: #F5F6F7;
+            border-top: 2px solid #cc0000;
+            background-color: #ffffff;
             -webkit-transition: background-color .1s ease-out;
             -moz-transition: background-color .1s ease-out;
             -o-transition: background-color .1s ease-out;
@@ -143,8 +143,8 @@
         }
 
         .card-description img {
-            margin: 1em 0 2em;
-            height: 60px;
+            margin: 1em 0 1em;
+            height: 80px;
         }
         /* EXTRAS BAR */
 
@@ -157,9 +157,11 @@
         }
 
         .h-extras-bar .extras-container span {
+            font-family: 'OpenSansSemiBold', sans-serif;
             display: block;
-            font-size: 1.175em;
-            font-weight: 500;
+            font-size: 1em;
+            font-weight: 600;
+            letter-spacing: 0.02em;
         }
 
         .h-extras-bar,
@@ -168,7 +170,11 @@
         }
 
         .h-extras-bar .extras-container a {
-            font-size: 1em;
+            font-size: 0.9em;
+            font-family: 'OpenSansRegular', sans-serif;
+            font-weight: 600;
+            color: #146BD2;
+            letter-spacing: 0.02em;
         }
 
         .h-extras-bar .extras-container a:hover {
@@ -179,7 +185,7 @@
             float: left;
             width: auto;
             height: 40px;
-            margin: 0 20px 10px 0 !important;
+            margin: 0 10px 10px 0 !important;
         }
 
         .h-extras-bar .extras-container {
@@ -191,6 +197,10 @@
             text-align: left;
             white-space: nowrap;
             max-width: 215px;
+        }
+
+        hr {
+            border-top: 1px solid #dedede;
         }
     </style>
 </head>
@@ -208,7 +218,7 @@
 
             <div class="col-xs-3 card-content">
                 <div class="card-description">
-                    <img alt="Work" class="internal" src="assets/open.svg">
+                    <img alt="Work" class="internal" src="assets/Archive.L_D.svg">
                     <div class="card-title">Work</div>
                     <hr/>
                     <a href="#" onclick="javascript:openFileFunction(); return false;" class="card-link">Open files</a>
@@ -218,29 +228,31 @@
             </div>
             <div class="col-xs-3 card-content">
                 <div class="card-description">
-                    <img alt="Learn" class="internal" src="assets/learn.svg">
+                    <img alt="Learn" class="internal" src="assets/LightOn.L_D.svg">
                     <div class="card-title">Learn</div>
                     <hr/>
-                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/8.3/Products/Pentaho_Data_Integration'); return false;" class="card-link">Documentation</a>
-                    <a href="#" onclick="javascript:openURL('http://www.pentaho.com/evaluation-path#data-integration'); return false;" class="card-link">Watch tutorials</a>
-                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/8.3/What\'s_new_in_Pentaho_8.3'); return false;" class="card-link">Release notes</a>
+                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/9.0/Products/Pentaho_Data_Integration?ecid=ms_glo_bd_en_sscepen01'); return false;" class="card-link">Documentation</a>
+                    <a href="#" onclick="javascript:openURL('https://www.hitachivantara.com/en-us/products/data-management-analytics/pentaho-platform/pentaho-data-integration/evaluation-support.html?ecid=ms_glo_bd_en_sscepen02'); return false;" class="card-link">Watch tutorials</a>
+                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/9.0/What\'s_new_in_Pentaho_9.0?ecid=ms_glo_bd_en_sscepen03'); return false;" class="card-link">Release notes</a>
                 </div>
             </div>
             <div class="col-xs-3 card-content">
                 <div class="card-description">
-                    <img alt="Extend" class="internal" src="assets/extend.svg">
+                    <img alt="Extend" class="internal" src="assets/Components.L_D.svg">
                     <div class="card-title">Extend</div>
                     <hr/>
                     <a href="#" onclick="javascript:genericFunction('openMarketplace'); return false;" class="card-link">Marketplace</a>
-                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/8.3/Developer_center/Extend_Pentaho_Data_Integration'); return false;" class="card-link">Build plugins</a>
+                    <a href="#" onclick="javascript:openURL('https://help.pentaho.com/Documentation/9.0/Developer_center/Extend_Pentaho_Data_Integration'); return false;" class="card-link">Build plugins</a>
                 </div>
             </div>
             <div class="col-xs-3 card-content">
                 <div class="card-description">
-                    <img alt="Upgrade" class="internal" src="assets/upgrade.svg">
-                    <div class="card-title">Upgrade</div>
+                    <img alt="Upgrade" class="internal" src="assets/Binoculars.L_D.svg">
+                    <div class="card-title">Discover</div>
                     <hr/>
-                    <a href="#" onclick="javascript:openURL('https://www.hitachivantara.com/en-us/products/big-data-integration-analytics/pentaho-data-integration.html'); return false;" class="card-link">Enterprise Edition</a>
+                    <a href="#" onclick="javascript:openURL('http://events.pentaho.com/cp-lp-community-edition-whats-new.html?ecid=ms_glo_bd_en_sscepen04'); return false;" class="card-link">Pentaho News</a>
+                    <a href="#" onclick="javascript:openURL('http://events.pentaho.com/cp-lp-community-edition-roadmap.html?ecid=ms_glo_bd_en_sscepen05'); return false;" class="card-link">Pentaho Roadmap</a>
+                    <a href="#" onclick="javascript:openURL('https://www.hitachivantara.com/en-us/news-resources/events-webcasts.html?ecid=ms_glo_bd_en_sscepen06'); return false;" class="card-link">Events & Webcasts</a>
                 </div>
             </div>
         </div>
@@ -250,23 +262,23 @@
         <div class="row h-extras-bar">
             <div class="col-xs-4 extras-container">
                 <div class="extras">
-                    <img class="internal" alt="Community" src="assets/community_small.svg">
+                    <img class="internal" alt="Community" src="assets/People.M_D-1.3.0.svg">
                     <span>Community</span>
-                    <a href="#" onclick="javascript:openURL('https://community.hitachivantara.com/s/pentaho'); return false;" class="arrow">Join the discussion<i class="icon-arrow-right"></i></a>
+                    <a href="#" onclick="javascript:openURL('https://community.hitachivantara.com/s/pentaho?ecid=ms_glo_bd_en_sscepen07'); return false;" class="arrow">Join the discussion<i class="icon-arrow-right"></i></a>
                 </div>
             </div>
             <div class="col-xs-4 extras-container">
                 <div class="extras">
-                    <img class="internal" alt="Pentaho Forums" src="assets/forums_small.svg">
+                    <img class="internal" alt="Pentaho Forums" src="assets/Chat.M_D-1.3.0.svg">
                     <span>Pentaho Forums</span>
-                    <a href="#" onclick="javascript:openURL('https://community.hitachivantara.com/s/topic/0TO1J0000017kVOWAY/data-integration?tabset-bf944=1'); return false;" class="arrow">Join the discussion<i class="icon-arrow-right"></i></a>
+                    <a href="#" onclick="javascript:openURL('https://community.hitachivantara.com/s/topic/0TO1J0000017kUqWAI/pentaho?ecid=ms_glo_bd_en_sscepen08'); return false;" class="arrow">Join the discussion<i class="icon-arrow-right"></i></a>
                 </div>
             </div>
             <div class="col-xs-4 extras-container">
                 <div class="extras">
-                    <img class="internal" alt="hitachivantara.com" src="assets/pentahosite_small.svg">
+                    <img class="internal" alt="hitachivantara.com" src="assets/WorldGlobe.M_D-1.3.0.svg">
                     <span>hitachivantara.com</span>
-                    <a href="#" onclick="javascript:openURL('https://www.hitachivantara.com/go/pentaho.html'); return false;" class="arrow">Visit us<i class="icon-arrow-right"></i></a>
+                    <a href="#" onclick="javascript:openURL('https://www.hitachivantara.com/en-us/products/data-management-analytics/pentaho-platform.html?ecid=ms_glo_bd_en_sscepen09'); return false;" class="arrow">Visit us<i class="icon-arrow-right"></i></a>
                 </div>
             </div>
         </div>
