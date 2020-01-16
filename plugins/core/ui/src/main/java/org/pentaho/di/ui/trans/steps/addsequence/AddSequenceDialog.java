@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,7 +59,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 @PluginDialog( id = "Sequence", image = "SEQ.svg", pluginType = PluginDialog.PluginType.STEP,
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Add+sequence" )
+  documentationUrl = "Products/Add_sequence" )
 public class AddSequenceDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = AddSequenceDialog.class; // for i18n purposes, needed by Translator2!!
 
