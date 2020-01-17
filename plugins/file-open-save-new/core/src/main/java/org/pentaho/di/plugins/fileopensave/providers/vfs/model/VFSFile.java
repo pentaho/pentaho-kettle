@@ -39,7 +39,7 @@ import java.util.Objects;
 public class VFSFile extends BaseEntity implements File {
 
   public static final String TYPE = "file";
-  public static final String DOMAIN_ROOT = "[\\w]+://";
+  public static final String DOMAIN_ROOT = "[\\w]+:///?";
   public static final String PROTOCOL_SEPARATOR = "://";
   public static final String DELIMITER = "/";
 
