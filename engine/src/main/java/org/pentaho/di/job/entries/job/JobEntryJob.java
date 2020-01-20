@@ -974,6 +974,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
               //
               if ( isPassingAllParameters() ) {
                 String parentValue = parentJob.getParameterValue( parameterNames[idx] );
+                if ( Utils.isEmpty( parentValue ) ) {
+                  parentValue = parentJob.getParameterDefault( parameterNames[idx] );
+                }
                 if ( !Utils.isEmpty( parentValue ) ) {
                   job.setParameterValue( parameterNames[idx], parentValue );
                 }
