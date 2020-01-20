@@ -90,17 +90,17 @@
     <ul>
       <li ng-click="vm.onDeleteClick()">Delete</li>
       <li ng-click="vm.onRenameClick()" ng-show="vm.highlighted.length==1">Rename</li>
-      <li class="divider"></li>
-      <li ng-click="vm.onCopyStart()">Copy</li>
-      <li ng-click="vm.onCut()">Cut</li>
-      <li ng-click="vm.onPaste()" ng-show="vm.canPaste()">Paste</li>
+      <!--<li class="divider"></li>-->
+      <!--<li ng-click="vm.onCopyStart()">Copy</li>-->
+      <!--<li ng-click="vm.onCut()">Cut</li>-->
+      <!--<li ng-click="vm.onPaste()" ng-show="vm.canPaste()">Paste</li>-->
     </ul>
   </div>
   <div id="filesFolderContext" class="context-menu">
     <ul>
       <li ng-click="vm.onAddFolderClick()">Add Folder</li>
-      <li class="divider" ng-show="vm.canPaste()"></li>
-      <li ng-click="vm.onPasteFolder()" ng-show="vm.canPaste()">Paste</li>
+      <!--<li class="divider" ng-show="vm.canPaste()"></li>-->
+      <!--<li ng-click="vm.onPasteFolder()" ng-show="vm.canPaste()">Paste</li>-->
     </ul>
   </div>
 </div>
