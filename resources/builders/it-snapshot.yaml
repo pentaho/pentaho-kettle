@@ -89,9 +89,9 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/mondrian.git
 
      # Disable ITs for platform because it is filling up the docker containers
-     - jobID           :  platform
-       scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-       directives      :  -= -DrunITs
+     #- jobID           :  platform
+     #  scmUrl          :  https://github.com/pentaho/pentaho-platform.git
+     #  directives      :  -= -DrunITs
 
      - jobID           :  pdi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
@@ -169,9 +169,9 @@ jobGroups:
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
 
-     - jobID           :  pdi-plugins-ee
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       directives      :  -= -DrunITs
+     #- jobID           :  pdi-plugins-ee
+     #  scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+     #  directives      :  -= -DrunITs
 
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
