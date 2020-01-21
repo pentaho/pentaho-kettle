@@ -4572,7 +4572,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       getFileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
     fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
     if ( !Utils.isEmpty( lastFileOpened ) ) {
-      String folder = lastFileOpened.substring( 0, lastFileOpened.lastIndexOf( File.separator ) );
+      // Test for Windows vs Linux/Remote parent path
+      int parentIndex = lastFileOpened.lastIndexOf( '\\' );
+      if ( parentIndex == -1 ) {
+        parentIndex = lastFileOpened.lastIndexOf( '/' );
+      }
+      String folder = lastFileOpened.substring( 0, parentIndex );
       fileDialogOperation.setPath( folder );
       fileDialogOperation.setConnection( lastFileOpenedConnection );
       fileDialogOperation.setProvider( lastFileOpenedProvider );
