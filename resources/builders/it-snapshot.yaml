@@ -88,7 +88,8 @@ jobGroups:
      - jobID           :  mondrian
        scmUrl          :  https://github.com/pentaho/mondrian.git
 
-     # Disable ITs for platform because it is filling up the docker containers
+     # Disable ITs for platform because it is filling up docker container
+     # by creating a large file in /tmp. See BISERVER-14405
      #- jobID           :  platform
      #  scmUrl          :  https://github.com/pentaho/pentaho-platform.git
      #  directives      :  -= -DrunITs
