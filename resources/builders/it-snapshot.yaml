@@ -1,5 +1,5 @@
 buildProperties:
-  BUILD_PLAN_ID                 : Suite Integration Test Build
+  BUILD_PLAN_ID                 : Master Branch IT Suite Build
 
   USE_MINION_JOBS               : true
   BUILD_RETRIES                 : 3
@@ -88,8 +88,10 @@ jobGroups:
      - jobID           :  mondrian
        scmUrl          :  https://github.com/pentaho/mondrian.git
 
+     # Disable ITs for platform because it is filling up the docker containers
      - jobID           :  platform
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
+       directives      :  -= -DrunITs
 
      - jobID           :  pdi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
@@ -169,6 +171,7 @@ jobGroups:
 
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+       directives      :  -= -DrunITs
 
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
