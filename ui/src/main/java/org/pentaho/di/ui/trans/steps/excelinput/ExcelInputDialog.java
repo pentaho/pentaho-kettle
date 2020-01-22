@@ -1,5 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
-/*! ******************************************************************************
+/*******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -33,7 +32,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -48,17 +46,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -67,7 +64,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
@@ -101,80 +97,64 @@ import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListener
 import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 
 public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * Marker put on tab to indicate attention required
    */
   private static final String TAB_FLAG = "!";
 
-  private static final String[] YES_NO_COMBO = new String[] {
-    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  private static final String BROWSE = BaseMessages.getString( PKG, "System.Button.Browse" );
+  private static final String BROWSE_FOR_DIR = BaseMessages.getString( PKG, "System.Tooltip.BrowseForDir" );
+  private static final String EXTENSION = BaseMessages.getString( PKG, "System.Label.Extension" );
+  private static final String VARIABLE = BaseMessages.getString( PKG, "System.Button.Variable" );
+  private static final String VARIABLE_TO_DIR = BaseMessages.getString( PKG, "System.Tooltip.VariableToDir" );
+  private static final String ERROR_TITLE = BaseMessages.getString( PKG, "System.Dialog.Error.Title" );
+  private static final String NO = BaseMessages.getString( PKG, "System.Combo.No" );
+  private static final String YES = BaseMessages.getString( PKG, "System.Combo.Yes" );
+  private static final String[] YES_NO_COMBO = new String[] { NO, YES };
 
   private CTabFolder wTabFolder;
-
   private CTabItem wFileTab;
   private CTabItem wSheetTab;
   private CTabItem wFieldsTab;
-
   private Label wlStatusMessage;
-
   private Label wlFilename;
   private Button wbbFilename; // Browse: add file or directory
   private Button wbdFilename; // Delete
   private Button wbeFilename; // Edit
   private Button wbaFilename; // Add or change
   private TextVar wFilename;
-
   private Label wlFilenameList;
   private TableView wFilenameList;
-
   private Label wlFilemask;
   private Text wFilemask;
-
   private TextVar wPassword;
-
   private Label wlExcludeFilemask;
   private TextVar wExcludeFilemask;
-
   private Button wAccFilenames;
-
   private Label wlAccField;
   private CCombo wAccField;
-
   private Label wlAccStep;
   private CCombo wAccStep;
-
   private Button wbShowFiles;
-
   private TableView wSheetnameList;
-
   private Button wHeader;
   private Button wNoempty;
-
   private Button wStoponempty;
-
   private Text wInclFilenameField;
   private Text wInclSheetnameField;
   private Text wInclRownumField;
-
   private Text wInclSheetRownumField;
-
   private Text wLimit;
-
   private CCombo wSpreadSheetType;
-
   private CCombo wEncoding;
-
   private Button wbGetFields;
-
   private TableView wFields;
 
   // ERROR HANDLING...
   private Button wStrictTypes;
-
   private Button wErrorIgnored;
-
   private Label wlSkipErrorLines;
   private Button wSkipErrorLines;
 
@@ -207,14 +187,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
   private int middle;
   private int margin;
   private boolean gotEncodings = false;
-
   private Button wAddResult;
-
   private ModifyListener lsMod;
-
   private Text wShortFileFieldName;
   private Text wPathFieldName;
-
   private Text wIsHiddenName;
   private Text wLastModificationTimeName;
   private Text wUriName;
@@ -236,12 +212,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     props.setLook( shell );
     setShellImage( shell, input );
 
-    lsMod = new ModifyListener() {
-      @Override
-      public void modifyText( ModifyEvent e ) {
-        input.setChanged();
-        checkAlerts();
-      }
+    lsMod = e -> {
+      input.setChanged();
+      checkAlerts();
     };
     changed = input.hasChanged();
 
@@ -338,7 +311,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wbbFilename = new Button( wFileComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbbFilename );
-    wbbFilename.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
+    wbbFilename.setText( BROWSE );
     wbbFilename.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
     FormData fdbFilename = new FormData();
     fdbFilename.right = new FormAttachment( 100, 0 );
@@ -554,7 +527,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdAccepting.left = new FormAttachment( middle, 0 );
     fdAccepting.right = new FormAttachment( 100, 0 );
     fdAccepting.bottom = new FormAttachment( wbShowFiles, -margin * 2 );
-    // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
     gAccepting.setLayoutData( fdAccepting );
 
     ColumnInfo[] colinfo = new ColumnInfo[ 5 ];
@@ -660,12 +632,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdFilenameList.bottom = new FormAttachment( wbGetSheets, -margin );
     wSheetnameList.setLayoutData( fdFilenameList );
 
-    wSheetnameList.addModifyListener( new ModifyListener() {
-      @Override
-      public void modifyText( ModifyEvent arg0 ) {
-        checkAlerts();
-      }
-    } );
+    wSheetnameList.addModifyListener( arg0 -> checkAlerts() );
 
     FormData fdSheetComp = new FormData();
     fdSheetComp.left = new FormAttachment( 0, 0 );
@@ -791,6 +758,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wEncoding.addFocusListener( new FocusListener() {
       @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
+        // NO-OP
       }
 
       @Override
@@ -810,10 +778,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     props.setLook( wAddFileResult );
     wAddFileResult.setText( BaseMessages.getString( PKG, "ExcelInputDialog.AddFileResult.Label" ) );
 
-    FormLayout AddFileResultgroupLayout = new FormLayout();
-    AddFileResultgroupLayout.marginWidth = 10;
-    AddFileResultgroupLayout.marginHeight = 10;
-    wAddFileResult.setLayout( AddFileResultgroupLayout );
+    FormLayout addFileResultgroupLayout = new FormLayout();
+    addFileResultgroupLayout.marginWidth = 10;
+    addFileResultgroupLayout.marginHeight = 10;
+    wAddFileResult.setLayout( addFileResultgroupLayout );
 
     Label wlAddResult = new Label( wAddFileResult, SWT.RIGHT );
     wlAddResult.setText( BaseMessages.getString( PKG, "ExcelInputDialog.AddResult.Label" ) );
@@ -878,8 +846,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     setButtonPositions( new Button[] { wbGetFields }, margin, null );
 
     final int FieldsRows = input.getField().length;
-    int FieldsWidth = 600;
-    int FieldsHeight = 150;
+    int fieldsWidth = 600;
+    int fieldsHeight = 150;
 
     ColumnInfo[] colinf =
       new ColumnInfo[] {
@@ -896,12 +864,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
           false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ExcelInputDialog.TrimType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMetaString.trimTypeDesc ),
+          ValueMetaBase.trimTypeDesc ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ExcelInputDialog.Repeat.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          new String[] {
-            BaseMessages.getString( PKG, "System.Combo.Yes" ),
-            BaseMessages.getString( PKG, "System.Combo.No" ) } ),
+          new String[] { YES, NO } ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ExcelInputDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
         new ColumnInfo(
@@ -915,15 +881,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wFields =
       new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
-    wFields.setSize( FieldsWidth, FieldsHeight );
-    wFields.addModifyListener( new ModifyListener() {
-
-      @Override
-      public void modifyText( ModifyEvent arg0 ) {
-        checkAlerts();
-      }
-
-    } );
+    wFields.setSize( fieldsWidth, fieldsHeight );
+    wFields.addModifyListener( arg0 -> checkAlerts() );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -962,24 +921,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     setButtonPositions( new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder );
 
     // Add listeners
-    lsOK = new Listener() {
-      @Override
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
-    lsPreview = new Listener() {
-      @Override
-      public void handleEvent( Event e ) {
-        preview();
-      }
-    };
-    lsCancel = new Listener() {
-      @Override
-      public void handleEvent( Event e ) {
-        cancel();
-      }
-    };
+    lsOK = e -> ok();
+    lsPreview = e -> preview();
+    lsCancel = e -> cancel();
 
     wOK.addListener( SWT.Selection, lsOK );
     wPreview.addListener( SWT.Selection, lsPreview );
@@ -1004,9 +948,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     SelectionAdapter selA = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] {
-          wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
-          ExcelInputMeta.RequiredFilesCode[ 0 ], ExcelInputMeta.RequiredFilesCode[ 0 ] } );
+        wFilenameList.add(
+          wFilename.getText(),
+          wFilemask.getText(),
+          wExcludeFilemask.getText(),
+          ExcelInputMeta.RequiredFilesCode[ 0 ],
+          ExcelInputMeta.RequiredFilesCode[ 0 ] );
         wFilename.setText( "" );
         wFilemask.setText( "" );
         wExcludeFilemask.setText( "" );
@@ -1057,12 +1004,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     } );
 
     // Whenever something changes, set the tooltip to the expanded version of the filename:
-    wFilename.addModifyListener( new ModifyListener() {
-      @Override
-      public void modifyText( ModifyEvent e ) {
-        wFilename.setToolTipText( transMeta.environmentSubstitute( wFilename.getText() ) );
-      }
-    } );
+    wFilename.addModifyListener(
+      e -> wFilename.setToolTipText( transMeta.environmentSubstitute( wFilename.getText() ) ) );
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapter() {
@@ -1082,7 +1025,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
           }
         } else {
           FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-          String[] extentions = new String[] { "*.xls;*.XLS", "*" };
+          String[] extentions;
           SpreadSheetType type = SpreadSheetType.getStpreadSheetTypeByDescription( wSpreadSheetType.getText() );
           switch ( type ) {
             case POI:
@@ -1220,10 +1163,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       wFilenameList.removeAll();
 
       for ( int i = 0; i < meta.getFileName().length; i++ ) {
-        wFilenameList.add( new String[] {
-          meta.getFileName()[ i ], meta.getFileMask()[ i ], meta.getExludeFileMask()[ i ],
+        wFilenameList.add(
+          meta.getFileName()[ i ],
+          meta.getFileMask()[ i ],
+          meta.getExludeFileMask()[ i ],
           meta.getRequiredFilesDesc( meta.getFileRequired()[ i ] ),
-          meta.getRequiredFilesDesc( meta.getIncludeSubFolders()[ i ] ) } );
+          meta.getRequiredFilesDesc( meta.getIncludeSubFolders()[ i ] ) );
       }
       wFilenameList.removeEmptyRows();
       wFilenameList.setRowNums();
@@ -1270,8 +1215,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       String prec = "" + meta.getField()[ i ].getPrecision();
       String trim = meta.getField()[ i ].getTrimTypeDesc();
       String rep =
-        meta.getField()[ i ].isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-          .getString( PKG, "System.Combo.No" );
+        meta.getField()[ i ].isRepeated() ? YES : NO;
       String format = meta.getField()[ i ].getFormat();
       String currency = meta.getField()[ i ].getCurrencySymbol();
       String decimal = meta.getField()[ i ].getDecimalSymbol();
@@ -1467,8 +1411,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       String slength = item.getText( 3 );
       String sprec = item.getText( 4 );
       meta.getField()[ i ].setTrimType( ExcelInputMeta.getTrimTypeByDesc( item.getText( 5 ) ) );
-      meta.getField()[ i ].setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase(
-        item.getText( 6 ) ) );
+      meta.getField()[ i ].setRepeated( YES.equalsIgnoreCase( item.getText( 6 ) ) );
 
       meta.getField()[ i ].setLength( Const.toInt( slength, -1 ) );
       meta.getField()[ i ].setPrecision( Const.toInt( sprec, -1 ) );
@@ -1596,8 +1539,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wbbWarningDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbbWarningDestDir );
-    wbbWarningDestDir.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
-    wbbWarningDestDir.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForDir" ) );
+    wbbWarningDestDir.setText( BROWSE );
+    wbbWarningDestDir.setToolTipText( BROWSE_FOR_DIR );
     FormData fdbWarningDestDir = new FormData();
     fdbWarningDestDir.right = new FormAttachment( 100, 0 );
     fdbWarningDestDir.top = new FormAttachment( previous, margin * 4 );
@@ -1605,8 +1548,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wbvWarningDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbvWarningDestDir );
-    wbvWarningDestDir.setText( BaseMessages.getString( PKG, "System.Button.Variable" ) );
-    wbvWarningDestDir.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.VariableToDir" ) );
+    wbvWarningDestDir.setText( VARIABLE );
+    wbvWarningDestDir.setToolTipText( VARIABLE_TO_DIR );
     FormData fdbvWarningDestDir = new FormData();
     fdbvWarningDestDir.right = new FormAttachment( wbbWarningDestDir, -margin );
     fdbvWarningDestDir.top = new FormAttachment( previous, margin * 4 );
@@ -1622,7 +1565,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wWarningExt.setLayoutData( fdWarningDestExt );
 
     wlWarningExt = new Label( wErrorComp, SWT.RIGHT );
-    wlWarningExt.setText( BaseMessages.getString( PKG, "System.Label.Extension" ) );
+    wlWarningExt.setText( EXTENSION );
     props.setLook( wlWarningExt );
     FormData fdlWarningDestExt = new FormData();
     fdlWarningDestExt.top = new FormAttachment( previous, margin * 4 );
@@ -1664,8 +1607,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wbbErrorDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbbErrorDestDir );
-    wbbErrorDestDir.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
-    wbbErrorDestDir.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForDir" ) );
+    wbbErrorDestDir.setText( BROWSE );
+    wbbErrorDestDir.setToolTipText( BROWSE_FOR_DIR );
     FormData fdbErrorDestDir = new FormData();
     fdbErrorDestDir.right = new FormAttachment( 100, 0 );
     fdbErrorDestDir.top = new FormAttachment( previous, margin );
@@ -1673,8 +1616,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wbvErrorDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbvErrorDestDir );
-    wbvErrorDestDir.setText( BaseMessages.getString( PKG, "System.Button.Variable" ) );
-    wbvErrorDestDir.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.VariableToDir" ) );
+    wbvErrorDestDir.setText( VARIABLE );
+    wbvErrorDestDir.setToolTipText( VARIABLE_TO_DIR );
     FormData fdbvErrorDestDir = new FormData();
     fdbvErrorDestDir.right = new FormAttachment( wbbErrorDestDir, -margin );
     fdbvErrorDestDir.top = new FormAttachment( previous, margin );
@@ -1690,7 +1633,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wErrorExt.setLayoutData( fdErrorDestExt );
 
     wlErrorExt = new Label( wErrorComp, SWT.RIGHT );
-    wlErrorExt.setText( BaseMessages.getString( PKG, "System.Label.Extension" ) );
+    wlErrorExt.setText( EXTENSION );
     props.setLook( wlErrorExt );
     FormData fdlErrorDestExt = new FormData();
     fdlErrorDestExt.top = new FormAttachment( previous, margin );
@@ -1732,8 +1675,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wbbLineNrDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbbLineNrDestDir );
-    wbbLineNrDestDir.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
-    wbbLineNrDestDir.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForDir" ) );
+    wbbLineNrDestDir.setText( BROWSE );
+    wbbLineNrDestDir.setToolTipText( BROWSE_FOR_DIR );
     FormData fdbLineNrDestDir = new FormData();
     fdbLineNrDestDir.right = new FormAttachment( 100, 0 );
     fdbLineNrDestDir.top = new FormAttachment( previous, margin );
@@ -1741,8 +1684,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wbvLineNrDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbvLineNrDestDir );
-    wbvLineNrDestDir.setText( BaseMessages.getString( PKG, "System.Button.Variable" ) );
-    wbvLineNrDestDir.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.VariableToDir" ) );
+    wbvLineNrDestDir.setText( VARIABLE );
+    wbvLineNrDestDir.setToolTipText( VARIABLE_TO_DIR );
     FormData fdbvLineNrDestDir = new FormData();
     fdbvLineNrDestDir.right = new FormAttachment( wbbLineNrDestDir, -margin );
     fdbvLineNrDestDir.top = new FormAttachment( previous, margin );
@@ -1758,7 +1701,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wLineNrExt.setLayoutData( fdLineNrDestExt );
 
     wlLineNrExt = new Label( wErrorComp, SWT.RIGHT );
-    wlLineNrExt.setText( BaseMessages.getString( PKG, "System.Label.Extension" ) );
+    wlLineNrExt.setText( EXTENSION );
     props.setLook( wlLineNrExt );
     FormData fdlLineNrDestExt = new FormData();
     fdlLineNrDestExt.top = new FormAttachment( previous, margin );
@@ -1832,15 +1775,15 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       Trans trans = progressDialog.getTrans();
       String loggingText = progressDialog.getLoggingText();
 
-      if ( !progressDialog.isCancelled() ) {
-        if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
-          EnterTextDialog etd =
-            new EnterTextDialog(
-              shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
-              .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
-          etd.setReadOnly();
-          etd.open();
-        }
+      boolean notCancelled = !progressDialog.isCancelled();
+      boolean hasResultErrors = trans.getResult() != null && trans.getResult().getNrErrors() > 0;
+      if ( notCancelled && hasResultErrors ) {
+        EnterTextDialog etd =
+          new EnterTextDialog(
+            shell, ERROR_TITLE, BaseMessages
+            .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+        etd.setReadOnly();
+        etd.open();
       }
 
       PreviewRowsDialog prd =
@@ -1855,7 +1798,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
    * Get the names of the sheets from the Excel workbooks and let the user select some or all of them.
    */
   public void getSheets() {
-    List<String> sheetnames = new ArrayList<String>();
+    List<String> sheetnames = new ArrayList<>();
 
     ExcelInputMeta info = new ExcelInputMeta();
     getInfo( info );
@@ -1880,7 +1823,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         workbook.close();
       } catch ( Exception e ) {
         new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
+          shell, ERROR_TITLE, BaseMessages.getString(
           PKG, "ExcelInputDialog.ErrorReadingFile.DialogMessage", KettleVFS.getFilename( fileObject ) ), e );
       }
     }
@@ -1893,7 +1836,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     String[] selection = esd.open();
     if ( selection != null ) {
       for ( int j = 0; j < selection.length; j++ ) {
-        wSheetnameList.add( new String[] { selection[ j ], "" } );
+        wSheetnameList.add( selection[ j ], "" );
       }
       wSheetnameList.removeEmptyRows();
       wSheetnameList.setRowNums();
@@ -1931,7 +1874,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         processingWorkbook( fields, info, workbook );
         workbook.close();
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+        new ErrorDialog( shell, ERROR_TITLE, BaseMessages
           .getString( PKG, "ExcelInputDialog.ErrorReadingFile2.DialogMessage", KettleVFS.getFilename( file ), e
             .toString() ), e );
       }
@@ -1943,7 +1886,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       }
       for ( int j = 0; j < fields.size(); j++ ) {
         ValueMetaInterface field = fields.getValueMeta( j );
-        wFields.add( new String[] { field.getName(), field.getTypeDesc(), "", "", "none", "N" } );
+        wFields.add( field.getName(), field.getTypeDesc(), "", "", "none", "N" );
       }
       wFields.removeEmptyRows();
       wFields.setRowNums();
@@ -2000,7 +1943,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         for ( int colnr = startcol; !stop; colnr++ ) {
           try {
             String fieldname = null;
-            int fieldtype = ValueMetaInterface.TYPE_NONE;
 
             KCell cell = sheet.getCell( colnr, rownr );
             if ( cell == null ) {
@@ -2011,10 +1953,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                 fieldname = cell.getContents();
               }
 
-              // System.out.println("Fieldname = "+fieldname);
-
               KCell below = sheet.getCell( colnr, rownr + 1 );
 
+              int fieldtype;
               if ( below != null ) {
                 if ( below.getType() == KCellType.BOOLEAN ) {
                   fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
@@ -2041,7 +1982,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
               }
             }
           } catch ( ArrayIndexOutOfBoundsException aioobe ) {
-            // System.out.println("index out of bounds at column "+colnr+" : "+aioobe.toString());
             stop = true;
           }
         }
@@ -2063,7 +2003,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "ExcelInputDialog.NoFilesFound.DialogMessage" ) );
-      mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
+      mb.setText( ERROR_TITLE );
       mb.open();
     }
   }
@@ -2075,7 +2015,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
       wEncoding.removeAll();
 
-      List<Charset> values = new ArrayList<Charset>( Charset.availableCharsets().values() );
+      List<Charset> values = new ArrayList<>( Charset.availableCharsets().values() );
       for ( int i = 0; i < values.size(); i++ ) {
         Charset charSet = values.get( i );
         wEncoding.add( charSet.displayName() );
@@ -2117,13 +2057,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Assign the highest-priority action message.
     if ( !fieldsOk ) {
-      // TODO: NLS
       msgText = ( BaseMessages.getString( PKG, "ExcelInputDialog.AddFields" ) );
     } else if ( !sheetsOk ) {
-      // TODO: NLS
       msgText = ( BaseMessages.getString( PKG, "ExcelInputDialog.AddSheets" ) );
     } else if ( !filesOk ) {
-      // TODO: NLS
       msgText = ( BaseMessages.getString( PKG, "ExcelInputDialog.AddFilenames" ) );
     }
     tagTab( !fieldsOk, wFieldsTab, BaseMessages.getString( PKG, "ExcelInputDialog.FieldsTab.TabTitle" ) );
