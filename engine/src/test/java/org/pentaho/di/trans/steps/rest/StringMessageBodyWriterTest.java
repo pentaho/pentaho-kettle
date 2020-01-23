@@ -1,26 +1,37 @@
 package org.pentaho.di.trans.steps.rest;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
 
 public class StringMessageBodyWriterTest {
 
-  @Test
-  public void getSize() {
-    checkGetSize( "0123456789" );
-    checkGetSize( null );
-    checkGetSize( "" );
+
+  private StringMessageBodyWriter stringMessageBodyWriter;
+
+  @Before
+  public void init() {
+    stringMessageBodyWriter = new StringMessageBodyWriter();
   }
 
-  private void checkGetSize( String entity ) {
-    StringMessageBodyWriter stringMessageBodyWriter = mock( StringMessageBodyWriter.class );
-    doReturn( Long.valueOf( entity == null ? -1 : entity.length() ) ).when( stringMessageBodyWriter ).getSize( any(), any(), any(), any(), any() );
-    long size = stringMessageBodyWriter.getSize( entity, null, null, null, null );
-    assertEquals( entity == null ? -1 : entity.length(), size );
+  @Test
+  public void verifyIfNullStringReturnsMinusOne() {
+    long size = stringMessageBodyWriter.getSize( null, null, null, null, null );
+    assertEquals( -1, size );
   }
+
+  @Test
+  public void verifyIfEmptyStringReturnsZero() {
+    long size = stringMessageBodyWriter.getSize( "", null, null, null, null );
+    assertEquals( 0, size );
+  }
+
+  @Test
+  public void verifyIfStringReturnCorrectLength() {
+    String entity = "0123456789";
+    long size = stringMessageBodyWriter.getSize( entity, null, null, null, null );
+    assertEquals( entity.getBytes().length, size );
+  }
+
 }

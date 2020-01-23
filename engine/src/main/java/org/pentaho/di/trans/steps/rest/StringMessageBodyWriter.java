@@ -51,7 +51,7 @@ class StringMessageBodyWriter implements MessageBodyWriter<String> {
 
   @Override
   public long getSize( String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType ) {
-    return s == null ? -1 : s.length();
+    return s == null ? -1 : s.getBytes().length;
   }
 
   @Override
