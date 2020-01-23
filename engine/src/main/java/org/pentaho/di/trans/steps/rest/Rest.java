@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -114,6 +114,9 @@ public class Rest extends BaseStep implements StepInterface {
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
       }
+      // Register a custom StringMessageBodyWriter to solve PDI-17423
+      StringMessageBodyWriter stringMessageBodyWriter = new StringMessageBodyWriter();
+      data.config.getSingletons().add( stringMessageBodyWriter );
       // create an instance of the com.sun.jersey.api.client.Client class
       client = ApacheHttpClient4.create( data.config );
       if ( data.basicAuthentication != null ) {
