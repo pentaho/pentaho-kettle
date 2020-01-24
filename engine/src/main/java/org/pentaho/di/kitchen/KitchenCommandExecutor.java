@@ -76,8 +76,6 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Starting" ) );
 
-    Date start = Calendar.getInstance().getTime();
-
     logDebug( "Kitchen.Log.AllocateNewJob" );
 
     Job job = null;
@@ -175,6 +173,8 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         return exitWithStatus( CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR.getCode() );
       }
     }
+
+    Date start = Calendar.getInstance().getTime();
 
     try {
 
