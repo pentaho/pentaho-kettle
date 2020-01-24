@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -41,7 +40,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
  *
  */
 @Produces( { "text/plain", "*/*" } )
-class StringMessageBodyWriter implements MessageBodyWriter<String> {
+final class StringMessageBodyWriter implements MessageBodyWriter<String> {
 
   private StringProvider stringProvider;
 
@@ -62,7 +61,7 @@ class StringMessageBodyWriter implements MessageBodyWriter<String> {
   @Override
   public void writeTo( String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream )
-    throws IOException, WebApplicationException {
+    throws IOException {
     this.stringProvider.writeTo( s, type, genericType, annotations, mediaType, httpHeaders, entityStream );
   }
 

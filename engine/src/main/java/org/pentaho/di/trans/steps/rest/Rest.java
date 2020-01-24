@@ -59,6 +59,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class Rest extends BaseStep implements StepInterface {
         logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
       }
       // Register a custom StringMessageBodyWriter to solve PDI-17423
-      StringMessageBodyWriter stringMessageBodyWriter = new StringMessageBodyWriter();
+      MessageBodyWriter<String> stringMessageBodyWriter = new StringMessageBodyWriter();
       data.config.getSingletons().add( stringMessageBodyWriter );
       // create an instance of the com.sun.jersey.api.client.Client class
       client = ApacheHttpClient4.create( data.config );
