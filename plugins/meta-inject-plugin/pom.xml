@@ -2,74 +2,26 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  
   <parent>
     <groupId>pentaho-kettle</groupId>
     <artifactId>plugins</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.32-246</version>
   </parent>
-  
   <groupId>org.pentaho</groupId>
   <artifactId>meta-inject-plugin</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.1.0.32-246</version>
   <packaging>bundle</packaging>
-  
   <name>meta-inject-plugin</name>
   <description>Metadata Injection as an OSGi Plugin</description>
   <url>http://www.pentaho.com</url>
-  
   <properties>
     <servlet-api.version>2.3</servlet-api.version>
-    <dependency.pentaho-kettle.version>7.1-SNAPSHOT</dependency.pentaho-kettle.version>
     <mockito.version>1.9.5</mockito.version>
+    <dependency.pentaho-kettle.version>7.1.0.32-246</dependency.pentaho-kettle.version>
     <guava.version>17.0</guava.version>
-    <swt.version>4.6</swt.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
+    <swt.version>4.6</swt.version>
   </properties>
-  
-  <build>
-  
-    <plugins>
-    
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <formats>
-            <format>html</format>
-            <format>xml</format>
-          </formats>
-          <check>
-            <branchRate>80</branchRate>
-            <lineRate>90</lineRate>
-            <haltOnFailure>false</haltOnFailure>
-            <totalBranchRate>80</totalBranchRate>
-            <totalLineRate>90</totalLineRate>
-            <packageLineRate>90</packageLineRate>
-            <packageBranchRate>80</packageBranchRate>
-          </check>
-        </configuration>
-      </plugin>
-            
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.7</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Import-Package>org.pentaho.di.osgi, !org.junit, !org.mockito, !org.mockito.*, org.eclipse.swt*;resolution:=optional, *</Import-Package>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-          </instructions>
-        </configuration>
-      </plugin>
-      
-    </plugins>
-    
-  </build>
-  
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -177,5 +129,41 @@
       </exclusions>
     </dependency>
   </dependencies>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <formats>
+            <format>html</format>
+            <format>xml</format>
+          </formats>
+          <check>
+            <branchRate>80</branchRate>
+            <lineRate>90</lineRate>
+            <haltOnFailure>false</haltOnFailure>
+            <totalBranchRate>80</totalBranchRate>
+            <totalLineRate>90</totalLineRate>
+            <packageLineRate>90</packageLineRate>
+            <packageBranchRate>80</packageBranchRate>
+          </check>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.3.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Import-Package>org.pentaho.di.osgi, !org.junit, !org.mockito, !org.mockito.*, org.eclipse.swt*;resolution:=optional, *</Import-Package>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
