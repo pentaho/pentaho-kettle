@@ -42,7 +42,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 @Produces( { "text/plain", "*/*" } )
 final class StringMessageBodyWriter implements MessageBodyWriter<String> {
 
-  private StringProvider stringProvider;
+  private final StringProvider stringProvider;
 
   public StringMessageBodyWriter() {
     this.stringProvider = new StringProvider();
