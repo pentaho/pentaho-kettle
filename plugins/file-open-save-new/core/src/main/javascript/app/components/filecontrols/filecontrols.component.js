@@ -63,6 +63,8 @@ define([
     function onInit() {
       vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
       vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
+      vm.refreshText = i18n.get("file-open-save-plugin.app.refresh.button");
+      vm.upDirectoryText = i18n.get("file-open-save-plugin.app.up-directory.button");
     }
 
     /**
