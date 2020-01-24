@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -67,7 +67,7 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
-  private static final String LOCALHOST = "localhost";
+  private static final String LOCALHOST = "127.0.0.1";
   private static final String HELP_URL =
     Const.getDocUrl( "Products/Work_with_transformations#Open_a_transformation" );
 
