@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -115,7 +115,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         vfsLocation.setName( connectionDetails.getName() );
         vfsLocation.setRoot( NAME );
         vfsLocation.setHasChildren( true );
-        vfsLocation.setCanDelete( true );
+        vfsLocation.setCanDelete( false );
         vfsLocation.setPath( vfsConnectionDetails.getType() + "://" + vfsConnectionDetails.getDomain() );
         vfsLocation.setDomain( vfsConnectionDetails.getDomain() );
         vfsLocation.setConnection( connectionDetails.getName() );
