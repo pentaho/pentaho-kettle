@@ -33,9 +33,9 @@
   </div>
 </script>
 <div id="folders" ng-body-click="vm.onBodyClick(e, id)" ng-repeat="folder in vm.getTree() | orderBy: 'order'" ng-include="'tree_item.html'" ng-init="indent=0" ng-if="folder.name != '' && !folder.hidden"></div>
-<div id="foldersFolderContext" class="context-menu" ng-show="vm.targetFolder.canDelete || vm.canPaste()">
+<div id="foldersFolderContext" class="context-menu" ng-show="vm.canShowContext()">
   <ul>
-    <li ng-click="vm.onDeleteFolder()" ng-show="vm.targetFolder.canDelete">Delete</li>
+    <li ng-click="vm.onDeleteFolder()" ng-show="vm.targetFolder.canEdit">Delete</li>
     <li ng-click="vm.onPaste()" ng-show="vm.canPaste()">Paste</li>
   </ul>
 </div>

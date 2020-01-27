@@ -86,7 +86,7 @@
       </tbody>
     </table>
   </div>
-  <div id="filesFileContext" class="context-menu">
+  <div id="filesFileContext" class="context-menu" ng-show="vm.showFileContext()">
     <ul>
       <li ng-click="vm.onDeleteClick()">Delete</li>
       <li ng-click="vm.onRenameClick()" ng-show="vm.highlighted.length==1">Rename</li>
@@ -96,7 +96,7 @@
       <li ng-click="vm.onPaste()" ng-show="vm.canPaste()">Paste</li>
     </ul>
   </div>
-  <div id="filesFolderContext" class="context-menu">
+  <div id="filesFolderContext" class="context-menu" ng-show="vm.showFolderContext()">
     <ul>
       <li ng-click="vm.onAddFolderClick()">Add Folder</li>
       <li class="divider" ng-show="vm.canPaste()"></li>

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,7 @@ define([
     vm.onPaste = onPaste;
     vm.canPaste = canPaste;
     vm.onRightClick = onRightClick;
+    vm.canShowContext = canShowContext;
     vm.onDeleteFolder = onDeleteFolder;
     vm.onBodyClick = onBodyClick;
     vm.onKeyDown = onKeyDown;
@@ -260,6 +261,17 @@ define([
 
     function onRightClick(folder) {
       vm.targetFolder = folder;
+    }
+
+    /**
+     * Determines if the context menu should be shown.
+     * @returns {boolean}
+     */
+    function canShowContext( ) {
+      if (vm.targetFolder) {
+        return vm.targetFolder.canEdit || vm.canPaste();
+      }
+      return false;
     }
 
     function onDeleteFolder() {
