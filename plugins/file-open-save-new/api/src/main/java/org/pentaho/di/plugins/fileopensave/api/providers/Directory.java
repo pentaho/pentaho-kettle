@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,4 +27,7 @@ package org.pentaho.di.plugins.fileopensave.api.providers;
  */
 public interface Directory extends File {
   boolean isCanAddChildren();
+  default boolean isHasChildren() {
+    return true;
+  }
 }
