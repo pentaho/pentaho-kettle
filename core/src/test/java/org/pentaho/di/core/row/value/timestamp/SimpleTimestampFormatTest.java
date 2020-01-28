@@ -39,6 +39,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -259,7 +260,7 @@ public class SimpleTimestampFormatTest {
   }
 
   @Test
-  public void testParseMultiThread() {
+  public void testParseMultiThread() throws InterruptedException {
     Integer threadPoolSize = 10;
     Locale.setDefault( Locale.Category.FORMAT, Locale.US );
     SimpleTimestampFormat simpleTimestampFormat = new SimpleTimestampFormat( "yyyy-MM-dd HH:mm:ss.SSS" );
@@ -273,8 +274,12 @@ public class SimpleTimestampFormatTest {
       executor.execute( task );
     }
     executor.shutdown();
-  }
 
+    if ( !executor.awaitTermination( 5000, TimeUnit.MILLISECONDS ) ) {
+      System.out.println( "Failed by timeout" );
+      Assert.fail();
+    }
+  }
 }
 
 class TaskSimpleTimestampFormatTest implements Runnable {
