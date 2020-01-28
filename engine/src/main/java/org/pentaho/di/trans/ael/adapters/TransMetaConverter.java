@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -49,10 +49,8 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
-import org.pentaho.di.workarounds.ResolvableResource;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -75,13 +73,7 @@ public class TransMetaConverter {
 
       // Turn off lazy conversion for AEL for now
       disableLazyConversion( copyTransMeta );
-
-      // This is needed to resolve resources if a parameter is used within steps like text file out or Hadoop out.
-      // It is unclear why this is needed, as the resource location can be resolved on the AEL/Driver/Executor side.
-      // This should be removed a long with org.pentaho.di.workarounds.ResolvableResource which is apparently deprecated
-      // since 8.1
       copyTransMeta.activateParameters();
-      resolveStepMetaResources( copyTransMeta );
 
       copyTransMeta.getSteps().forEach( createOperation( transformation ) );
       findHops( copyTransMeta, hop -> true ).forEach( createHop( transformation ) );
@@ -239,15 +231,4 @@ public class TransMetaConverter {
 
     return ( nrEnabledOutHops == 0 && nrDisabledOutHops > 0 && nrInputHops == 0 );
   }
-
-  private static void resolveStepMetaResources( TransMeta transMeta ) {
-    for ( StepMeta stepMeta : transMeta.getSteps() ) {
-      StepMetaInterface smi = stepMeta.getStepMetaInterface();
-      if ( smi instanceof ResolvableResource ) {
-        ResolvableResource resolvableMeta = (ResolvableResource) smi;
-        resolvableMeta.resolve();
-      }
-    }
-  }
-
 }

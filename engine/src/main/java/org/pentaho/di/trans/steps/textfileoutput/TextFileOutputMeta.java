@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
@@ -43,7 +42,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.AliasedFileObject;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -59,7 +57,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.file.BaseFileOutputMeta;
-import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -68,7 +65,7 @@ import org.w3c.dom.Node;
  *
  */
 @InjectionSupported( localizationPrefix = "TextFileOutput.Injection.", groups = { "OUTPUT_FIELDS" } )
-public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaInterface, ResolvableResource {
+public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaInterface {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   protected static final int FILE_COMPRESSION_TYPE_NONE = 0;
@@ -1135,17 +1132,4 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
     return servletOutput;
   }
 
-  @Override
-  public void resolve() {
-    if ( fileName != null && !fileName.isEmpty() ) {
-      try {
-        FileObject fileObject = KettleVFS.getFileObject( getParentStepMeta().getParentTransMeta().environmentSubstitute( fileName ) );
-        if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-          fileName = ( (AliasedFileObject) fileObject ).getOriginalURIString();
-        }
-      } catch ( KettleFileException e ) {
-        throw new RuntimeException( e );
-      }
-    }
-  }
 }

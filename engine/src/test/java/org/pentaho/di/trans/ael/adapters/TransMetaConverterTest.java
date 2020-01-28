@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -42,7 +42,6 @@ import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
@@ -51,19 +50,13 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
-import org.pentaho.di.workarounds.ResolvableResource;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -83,7 +76,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -413,47 +405,5 @@ public class TransMetaConverterTest {
     assertThat( cloneTransMeta.getName(), is( originalTransMeta.getName() ) );
     verify( originalTransMeta, never() ).getXML();
     verify( cloneTransMeta ).getXML();
-  }
-  @Test
-  public void testResolveStepMetaResources() throws KettleException, MetaStoreException {
-    Variables variables = new Variables();
-    TransMeta transMeta = spy( new TransMeta() );
-    transMeta.setParentVariableSpace( variables );
-
-    doReturn( transMeta ).when( transMeta ).realClone( false );
-
-    TestMetaResolvableResource testMetaResolvableResource = spy( new TestMetaResolvableResource() );
-    TestMetaResolvableResource testMetaResolvableResourceTwo = spy( new TestMetaResolvableResource() );
-
-    StepMeta testMeta = new StepMeta( "TestMeta", testMetaResolvableResource );
-    StepMeta testMetaTwo = new StepMeta( "TestMeta2", testMetaResolvableResourceTwo );
-
-    transMeta.addStep( testMeta );
-    transMeta.addStep( testMetaTwo );
-    transMeta.addTransHop( new TransHopMeta( testMeta, testMetaTwo ) );
-    TransMetaConverter.convert( transMeta );
-
-    verify( testMetaResolvableResource ).resolve();
-    verify( testMetaResolvableResourceTwo ).resolve();
-  }
-  private static class TestMetaResolvableResource extends BaseStepMeta
-    implements StepMetaInterface, ResolvableResource {
-
-    @Override public void resolve() {
-    }
-
-    @Override public void setDefault() {
-    }
-
-    @Override
-    public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-                                  TransMeta transMeta,
-                                  Trans trans ) {
-      return null;
-    }
-
-    @Override public StepDataInterface getStepData() {
-      return null;
-    }
   }
 }

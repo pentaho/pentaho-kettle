@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,6 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.AliasedFileObject;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -70,7 +69,6 @@ import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
 import org.pentaho.di.trans.steps.file.BaseFileInputMeta;
-import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -79,7 +77,7 @@ import com.google.common.annotations.VisibleForTesting;
 @SuppressWarnings( "deprecation" )
 @InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
 public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditionalField, BaseFileInputFiles, BaseFileField>
-    implements StepMetaInterface, ResolvableResource, CsvInputAwareMeta {
+    implements StepMetaInterface, CsvInputAwareMeta {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! TODO: check i18n
                                                          // for base
 
@@ -1363,22 +1361,6 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
    */
   FileObject getFileObject( String vfsFileName, VariableSpace variableSpace ) throws KettleFileException {
     return KettleVFS.getFileObject( variableSpace.environmentSubstitute( vfsFileName ), variableSpace );
-  }
-
-  @Override
-  public void resolve() {
-    for ( int i = 0; i < inputFiles.fileName.length; i++ ) {
-      if ( inputFiles.fileName[i] != null && !inputFiles.fileName[i].isEmpty() ) {
-        try {
-          FileObject fileObject = KettleVFS.getFileObject( getParentStepMeta().getParentTransMeta().environmentSubstitute( inputFiles.fileName[i] ) );
-          if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-            inputFiles.fileName[i] = ( (AliasedFileObject) fileObject ).getOriginalURIString();
-          }
-        } catch ( KettleFileException e ) {
-          throw new RuntimeException( e );
-        }
-      }
-    }
   }
 
   @Override
