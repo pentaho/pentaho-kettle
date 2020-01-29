@@ -139,4 +139,8 @@ public interface NamedClusterOsgi extends VariableSpace {
 
   boolean isUseGateway();
 
+  String decodePassword( String password );
+
+  String encodePassword( String password );
+
 }
