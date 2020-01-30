@@ -149,6 +149,24 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Prevents Kettle from converting null strings to empty strings when KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL is set to "Y".</description>
+    <variable>KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Prevent Kettle from yielding null as the value of an empty value.</description>
+    <variable>KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Cause the "Get XML data" step to yield null values on missing elements and empty values on empty elements when set to "Y".</description>
+    <variable>KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>The maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all rows
       (default)
     </description>
