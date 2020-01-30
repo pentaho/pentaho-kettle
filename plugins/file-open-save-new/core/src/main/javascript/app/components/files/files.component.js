@@ -24,11 +24,12 @@
  **/
 define([
   "../../services/clipboard.service",
+  "../../services/providers/fileutil",
   "../utils",
   "text!./files.html",
   "pentaho/i18n-osgi!file-open-save-new.messages",
   "css!./files.css"
-], function (clipboardService, utils, filesTemplate, i18n) {
+], function (clipboardService, fileUtils, utils, filesTemplate, i18n) {
   "use strict";
 
   var options = {
@@ -281,7 +282,8 @@ define([
      */
     function _createFolder(folder, current) {
       folder.name = current;
-      folder.path = _getNewPath(folder.path, current);
+      folder.path = fileUtils.replaceFilename(folder.path, current);
+
       vm.onCreateFolder({
         folder: folder
       }).then(function () {
@@ -307,7 +309,7 @@ define([
      * @private
      */
     function _renameFile(file, current, previous) {
-      var newPath = _getNewPath(file.path, current);
+      var newPath = fileUtils.replaceFilename(file.path, current);
       file.name = current;
       vm.onRename({
         file: file,
@@ -317,10 +319,6 @@ define([
       }, function () {
         file.name = previous;
       });
-    }
-
-    function _getNewPath(path, newName) {
-      return path.substr(0, path.lastIndexOf("/")) + "/" + newName;
     }
 
     /**
