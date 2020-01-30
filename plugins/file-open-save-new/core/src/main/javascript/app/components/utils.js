@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,8 @@ define(
         truncateString: truncateString,
         buildParameters: buildParameters,
         concatParameters: concatParameters,
-        getFilename: getFilename,
-        cleanPath: cleanPath,
-        getParentPath: getParentPath,
         getPlaceholder: getPlaceholder
       };
-
-      function cleanPath(path) {
-        return path.lastIndexOf("/") === path.length - 1 ? path.substr(0, path.length - 1) : path;
-      }
 
       /**
        * String comparison with arithmetic comparison of numbers
@@ -141,14 +134,6 @@ define(
           second[key] = first[key];
         }
         return second;
-      }
-
-      function getFilename(path) {
-        return path.substr(path.lastIndexOf("/") + 1, path.length);
-      }
-
-      function getParentPath(path) {
-        return path.substr(0, path.lastIndexOf("/"));
       }
 
       /**

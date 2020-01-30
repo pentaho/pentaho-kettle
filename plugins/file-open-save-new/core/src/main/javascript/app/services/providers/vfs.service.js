@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,11 @@
  */
 define(
     [
+      "./fileutil",
       "../../components/utils",
       "pentaho/i18n-osgi!file-open-save-new.messages"
     ],
-    function (utils, i18n) {
+    function (fileUtils, utils, i18n) {
       "use strict";
 
       var factoryArray = ["helperService", "$http", "$q", "$location", factory];
@@ -170,7 +171,7 @@ define(
         }
 
         function _justThePath(url) {
-          return utils.cleanPath(url.replace(/^[\w]+:\/\//, "").replace(/.*@/, ""));
+          return fileUtils.cleanPath(url.replace(/^[\w]+:\/\//, "").replace(/.*@/, ""));
         }
 
         /**
