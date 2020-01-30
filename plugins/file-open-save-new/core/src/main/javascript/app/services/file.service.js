@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ define(
       "./provider.service",
       "./helper.service",
       "./modal.service",
-      "../components/utils"
+      "./providers/fileutil"
     ],
-    function (i18n, providerService, helperService, modalService, utils) {
+    function (i18n, providerService, helperService, modalService, fileUtils) {
       "use strict";
 
       var factoryArray = [providerService.name, helperService.name, modalService.name, "$q", "$interval", "$timeout", factory];
@@ -213,9 +213,10 @@ define(
             reject();
             return;
           }
-          var filename = utils.getFilename(from[index].path);
-          var newPath = to.path + "/" + filename;
-          console.log(overwrite);
+
+          var filename = from[index].name;
+          var newPath = fileUtils.concatPath(to.path, filename);
+
           switch (overwrite) {
             case "replace_one":
               overwrite = "";

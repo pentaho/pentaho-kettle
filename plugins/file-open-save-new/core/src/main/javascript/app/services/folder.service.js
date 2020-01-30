@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,11 @@ define(
       "./provider.service",
       "./file.service",
       "./message.service",
+      "./providers/fileutil",
       "../components/utils",
       "pentaho/i18n-osgi!file-open-save-new.messages"
     ],
-    function (providerService, fileService, messageService, utils, i18n) {
+    function (providerService, fileService, messageService, fileUtils, utils, i18n) {
       "use strict";
 
       var factoryArray = [providerService.name, fileService.name, messageService.name, "$q", factory];
@@ -142,7 +143,7 @@ define(
           messageService.set("file", null);
           var self = this;
           return $q(function (resolve, reject) {
-            path = utils.cleanPath(path);
+            path = fileUtils.cleanPath(path);
             var serviceResolve = self.resolvePath(path, props);
             if (serviceResolve !== null) {
               serviceResolve.then(function (path) {
@@ -171,8 +172,8 @@ define(
           fileService.get({path: path}).then(function (file) {
             var filename = null;
             if (file.type === "file") {
-              filename = utils.getFilename(path);
-              path = utils.getParentPath(path);
+              filename = fileUtils.getFilename(path);
+              path = fileUtils.getParentPath(path);
               self.folder = {path: path};
             } else {
               self.folder = file;
@@ -365,7 +366,7 @@ define(
             return;
           }
           var path = getPath(this.folder);
-          path = utils.getParentPath(path);
+          path = fileUtils.getParentPath(path);
           fileService.files = [];
           var self = this;
           return $q(function (resolve) {
@@ -506,7 +507,7 @@ define(
           var folder = {};
           var name = _getFolderName(parentFolder);
           folder.parent = parentFolder.path;
-          folder.path = parentFolder.path + (parentFolder.path.charAt(parentFolder.path.length - 1) === "/" ? "" : "/") + name;
+          folder.path = fileUtils.concatPath(fileUtils.cleanPath(parentFolder.path), name);
           folder.name = name;
           folder.new = true;
           folder.autoEdit = true;
