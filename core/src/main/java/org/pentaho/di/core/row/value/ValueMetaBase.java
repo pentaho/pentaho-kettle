@@ -4033,8 +4033,13 @@ public class ValueMetaBase implements ValueMetaInterface {
     Boolean isEmptyAndNullDiffer = convertStringToBoolean(
         Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
 
-    if ( pol == null && isStringValue && isEmptyAndNullDiffer ) {
-      pol = Const.NULL_STRING;
+    Boolean normalizeNullStringToEmpty = !convertStringToBoolean(
+      Const.NVL( System.getProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "N" ), "N" ) );
+
+    if ( normalizeNullStringToEmpty ) {
+      if ( pol == null && isStringValue && isEmptyAndNullDiffer ) {
+        pol = Const.NULL_STRING;
+      }
     }
 
     if ( pol == null ) {

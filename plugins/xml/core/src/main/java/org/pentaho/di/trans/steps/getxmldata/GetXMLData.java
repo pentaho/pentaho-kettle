@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,6 +65,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import static org.pentaho.di.core.row.value.ValueMetaBase.convertStringToBoolean;
 
 /**
  * Read XML files, parse them and convert them to rows and writes these to one or more output streams.
@@ -753,31 +755,40 @@ public class GetXMLData extends BaseStep implements StepInterface {
         // Get node value
         String nodevalue;
 
+        Boolean xmlMissingTagYieldsNullValue = convertStringToBoolean(
+          Const.NVL( System.getProperty( Const.KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE, "N" ), "N" ) );
+
         // Handle namespaces
         if ( meta.isNamespaceAware() ) {
           XPath xpathField = node.createXPath( addNSPrefix( XPathValue, data.PathValue ) );
           xpathField.setNamespaceURIs( data.NAMESPACE );
           if ( xmlDataField.getResultType() == GetXMLDataField.RESULT_TYPE_VALUE_OF ) {
-            nodevalue = xpathField.valueOf( node );
+            if ( xmlMissingTagYieldsNullValue ) {
+              nodevalue = xpathField.selectSingleNode( node ) != null ? xpathField.valueOf( node ) : null;
+            } else {
+              nodevalue = xpathField.valueOf( node );
+            }
           } else {
-            // nodevalue=xpathField.selectSingleNode(node).asXML();
             Node n = xpathField.selectSingleNode( node );
             if ( n != null ) {
               nodevalue = n.asXML();
             } else {
-              nodevalue = "";
+              nodevalue = xmlMissingTagYieldsNullValue ? null : "";
             }
           }
         } else {
           if ( xmlDataField.getResultType() == GetXMLDataField.RESULT_TYPE_VALUE_OF ) {
-            nodevalue = node.valueOf( XPathValue );
+            if ( xmlMissingTagYieldsNullValue ) {
+              nodevalue = node.selectSingleNode( XPathValue ) != null ? node.valueOf( XPathValue ) : null;
+            } else {
+              nodevalue = node.valueOf( XPathValue );
+            }
           } else {
-            // nodevalue=node.selectSingleNode(XPathValue).asXML();
             Node n = node.selectSingleNode( XPathValue );
             if ( n != null ) {
               nodevalue = n.asXML();
             } else {
-              nodevalue = "";
+              nodevalue = xmlMissingTagYieldsNullValue ? null : "";
             }
           }
         }
