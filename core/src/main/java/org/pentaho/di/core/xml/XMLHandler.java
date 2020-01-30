@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,6 +70,8 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import static org.pentaho.di.core.row.value.ValueMetaBase.convertStringToBoolean;
+
 
 /**
  * This class contains a number of (static) methods to facilitate the retrieval of information from XML Node(s).
@@ -131,12 +133,19 @@ public class XMLHandler {
       return null;
     }
 
+    Boolean xmlEmptyTagYieldsEmptyValue = convertStringToBoolean(
+      Const.NVL( System.getProperty( Const.KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE, "N" ), "N" ) );
+
     children = n.getChildNodes();
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
       if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) {
-        if ( childnode.getFirstChild() != null ) {
-          return childnode.getFirstChild().getNodeValue();
+        if ( xmlEmptyTagYieldsEmptyValue ) {
+          return childnode.getTextContent();
+        } else {
+          if ( childnode.getFirstChild() != null ) {
+            return childnode.getFirstChild().getNodeValue();
+          }
         }
       }
     }
