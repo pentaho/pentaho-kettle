@@ -446,7 +446,7 @@ public abstract class ConfigurationDialog extends Dialog {
     fdlRunConfiguration.left = new FormAttachment( 0 );
     wlRunConfiguration.setLayoutData( fdlRunConfiguration );
 
-    wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER );
+    wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER | SWT.READ_ONLY );
     props.setLook( wRunConfiguration );
     FormData fdRunConfiguration = new FormData();
     fdRunConfiguration.width = 200;
