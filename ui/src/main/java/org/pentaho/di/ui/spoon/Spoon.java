@@ -1160,6 +1160,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  /*
+   Fix for PDI-18593 Hadoop cluster items not refreshed when switching from local<->repo.
+   Updates the tree on repository connection or disconnection without closing active Jobs or Transformations.
+   */
+  public void updateTreeForActiveAbstractMetas() {
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      Object managedObject = entry.getObject().getManagedObject();
+      if ( managedObject instanceof AbstractMeta ) {
+        if ( managedObject instanceof TransMeta ) {
+          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_TRANSFORMATIONS, props.isOnlyActiveFileShownInTree() );
+        }
+        if ( managedObject instanceof JobMeta ) {
+          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_JOBS, props.isOnlyActiveFileShownInTree() );
+        }
+        selectionTreeManager.show( (AbstractMeta) managedObject );
+        refreshTree( (AbstractMeta) managedObject );
+      }
+    }
+  }
+
   /**
    * Search the transformation meta-data.
    *
@@ -4255,6 +4275,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         setShellText();
         SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
         enableMenus();
+        updateTreeForActiveAbstractMetas();
       }
     }
   }
