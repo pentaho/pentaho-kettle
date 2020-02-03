@@ -1,9 +1,10 @@
-@Grab(group='org.apache.commons', module='commons-compress', version='1.13')
+@GrabResolver(name='pentaho', root='http://orl-jfrog-lb.pentaho.net/artifactory/pnt-mvn/')
+@Grab(group='org.apache.commons', module='commons-compress', version='1.19')
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
-@Grab(group='commons-io', module='commons-io', version='2.5')
+@Grab(group='commons-io', module='commons-io', version='2.6')
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
