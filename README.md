@@ -20,7 +20,7 @@ Depending on how it is deployed, the IP address and port number might be differe
 Please refer to the [wiki](https://github.com/HiromuHota/pentaho-kettle/wiki) and [issues](https://github.com/HiromuHota/pentaho-kettle/issues) for how to use it.
 
 Carte is available at `http://localhost:8080/spoon/kettle`.
-Refer to [Carte APIs](https://help.pentaho.com/Documentation/8.3/Developer_center/REST_API_Reference/Carte) for how to use it.
+Refer to [Carte APIs](https://help.pentaho.com/Documentation/9.0/Developer_center/REST_API_Reference/Carte) for how to use it.
 
 # How to deploy
 
@@ -37,7 +37,7 @@ $ docker run -d -p 8080:8080 hiromuhota/webspoon
 
 Please refer to the [wiki](https://github.com/HiromuHota/pentaho-kettle/wiki/System-Requirements) for system requirements.
 
-1. Unzip `pdi-ce-8.3.0.0-371.zip`, then copy `system` and `plugins` folders to `$CATALINA_HOME`.
+1. Unzip `pdi-ce-9.0.0.0-423.zip`, then copy `system` and `plugins` folders to `$CATALINA_HOME`.
 2. Run install.sh at `$CATALINA_HOME`.
 3. Allow encoded slash (`org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true`).
 3. (Re)start the Tomcat.
@@ -45,8 +45,8 @@ Please refer to the [wiki](https://github.com/HiromuHota/pentaho-kettle/wiki/Sys
 The actual commands look like below:
 
 ```bash
-$ export version=0.8.3.20
-$ export dist=8.3.0.0-371
+$ export version=0.9.0.21
+$ export dist=9.0.0.0-423
 $ export CATALINA_HOME=/home/vagrant/apache-tomcat-8.5.23
 
 $ cd ~/
@@ -156,7 +156,7 @@ Please build and locally-publish the following dependent libraries.
 ### pentaho-xul-swt
 
 ```bash
-$ git clone -b webspoon-8.3 https://github.com/HiromuHota/pentaho-commons-xul.git
+$ git clone -b webspoon-9.0 https://github.com/HiromuHota/pentaho-commons-xul.git
 $ cd pentaho-commons-xul
 $ mvn clean install -pl swt
 ```
@@ -164,7 +164,7 @@ $ mvn clean install -pl swt
 ### rap
 
 ```bash
-$ git clone -b webspoon-3.9.0 https://github.com/HiromuHota/rap.git
+$ git clone -b webspoon-3.11.0 https://github.com/HiromuHota/rap.git
 $ cd rap
 $ mvn clean install
 ```
@@ -172,7 +172,7 @@ $ mvn clean install
 ### pentaho-vfs-browser
 
 ```bash
-$ git clone -b webspoon-8.3 https://github.com/HiromuHota/apache-vfs-browser.git
+$ git clone -b webspoon-9.0 https://github.com/HiromuHota/apache-vfs-browser.git
 $ cd apache-vfs-browser
 $ mvn clean install
 ```
@@ -182,7 +182,7 @@ $ mvn clean install
 **Make sure patched dependent libraries have been published locally**
 
 ```bash
-$ git clone -b webspoon-8.3 https://github.com/HiromuHota/pentaho-kettle.git
+$ git clone -b webspoon-9.0 https://github.com/HiromuHota/pentaho-kettle.git
 $ cd pentaho-kettle
 $ mvn clean install
 ```

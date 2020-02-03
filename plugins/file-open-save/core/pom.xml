@@ -17,7 +17,7 @@
 
   <properties>
     <maven-replacer-plugin.version>1.5.2</maven-replacer-plugin.version>
-    <webspoon.version>8.3.0.0-371-19</webspoon.version>
+    <webspoon.version>9.0.0.0-423-21</webspoon.version>
   </properties>
 
   <dependencies>
