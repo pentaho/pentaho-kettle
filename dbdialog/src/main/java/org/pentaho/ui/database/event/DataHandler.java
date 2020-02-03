@@ -270,7 +270,7 @@ public class DataHandler extends AbstractXulEventHandler {
   private XulTextbox iamSecretKeyId;
   private XulTextbox iamSessionToken;
   private XulTextbox iamProfileName;
-  private XulMenuList namedClusterList;
+  protected XulMenuList namedClusterList;
 
   public DataHandler() {
     databaseDialects = new ArrayList<String>();
