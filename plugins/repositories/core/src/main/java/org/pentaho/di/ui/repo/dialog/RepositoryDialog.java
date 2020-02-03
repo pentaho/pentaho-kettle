@@ -60,7 +60,6 @@ public class RepositoryDialog extends ThinDialog {
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
   private static final String LOCALHOST = "127.0.0.1";
-  private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private Image LOGO;
 
 
