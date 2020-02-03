@@ -164,11 +164,6 @@ public class ThinDialog extends Dialog {
         .addParameter( "j_password", user.getPassword() );
       log.logDebug( "Authenticating with " + user.getName() );
       HttpResponse resp = client.execute( new HttpPost( builder.build() ) );
-
-      Arrays.stream( resp.getHeaders( "Set-Cookie" ) )
-        .map( Header::getValue )
-        .flatMap( s -> HttpCookie.parse( s ).stream() )
-        .forEach( cookie -> Browser.setCookie( cookie.toString(), uri.toString() ) );
     } catch ( IOException | URISyntaxException e ) {
       log.logError( e.getMessage(), e );
     }
