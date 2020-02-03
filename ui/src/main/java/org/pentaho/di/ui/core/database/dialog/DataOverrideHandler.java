@@ -34,11 +34,13 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseTestResults;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.database.dialog.tags.ExtMenuList;
 import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.ui.database.event.DataHandler;
+import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulTree;
 
@@ -163,6 +165,16 @@ public class DataOverrideHandler extends DataHandler {
       XulTree xulTree = trees[i];
       if ( xulTree != null ) {
         xulTree.setData( databaseMeta );
+      }
+    }
+
+    XulMenuList[] menus = new XulMenuList[] { namedClusterList };
+
+    for ( int i = 0; i < menus.length; i++ ) {
+      XulMenuList xulMenu = menus[i];
+      if ( xulMenu != null && xulMenu instanceof ExtMenuList ) {
+        ExtMenuList ext = (ExtMenuList) xulMenu;
+        ext.setVariableSpace( databaseMeta );
       }
     }
   }

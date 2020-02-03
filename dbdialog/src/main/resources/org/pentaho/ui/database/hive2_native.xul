@@ -13,7 +13,7 @@
 					<label id="password-label" value="${DatabaseDialog.label.Password}" />
 					<textbox pen:customclass="variabletextbox" id="password-text" type="password"/>
 					<label id="namedcluster-label" value="${DatabaseDialog.label.HadoopCluster}" />
-					<menulist id="named-cluster-list" editable="true">
+					<menulist pen:customclass="variablemenulist" id="named-cluster-list" editable="true">
 						<menupopup>
 							<menuitem label="Not Loaded" selected="true" />
            </menupopup>

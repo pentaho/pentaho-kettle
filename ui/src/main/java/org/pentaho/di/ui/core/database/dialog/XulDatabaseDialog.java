@@ -84,6 +84,12 @@ public class XulDatabaseDialog {
 
   private static final String EXTENDED_WIDGET_ID = "VARIABLETEXTBOX";
 
+  private static final String EXTENDED_MENULIST_WIDGET_ID = "VARIABLEMENULIST";
+
+  private static final String PMD_MENULIST_WIDGET_CLASSNAME = "org.pentaho.ui.xul.jface.tags.JfaceMenuList";
+
+  private static final String EXTENDED_MENULIST_WIDGET_CLASSNAME = "org.pentaho.di.ui.core.database.dialog.tags.ExtMenuList";
+
   private DatabaseConnectionDialog databaseDialogInstance;
 
   private XulDialog xulDialogComponent;
@@ -143,8 +149,10 @@ public class XulDatabaseDialog {
       databaseDialogInstance = new DatabaseConnectionDialog();
       if ( ( (Shell) this.parentShell ).getText().contains( "Metadata Editor" ) ) {
         databaseDialogInstance.registerClass( EXTENDED_WIDGET_ID, PMD_WIDGET_CLASSNAME );
+        databaseDialogInstance.registerClass( EXTENDED_MENULIST_WIDGET_ID, PMD_MENULIST_WIDGET_CLASSNAME );
       } else {
         databaseDialogInstance.registerClass( EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME );
+        databaseDialogInstance.registerClass( EXTENDED_MENULIST_WIDGET_ID, EXTENDED_MENULIST_WIDGET_CLASSNAME );
       }
       /*
        * Attention: onload: loadConnectionData() is called here the first time, see below for second time
