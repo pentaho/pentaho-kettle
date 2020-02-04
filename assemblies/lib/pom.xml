@@ -447,6 +447,17 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.specs</groupId>
+      <artifactId>org.apache.karaf.specs.locator</artifactId>
+      <version>4.2.6</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <!-- Third-party JDBC dependencies -->
     <dependency>
