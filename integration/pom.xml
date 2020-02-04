@@ -22,7 +22,7 @@
     <ftpserver-core.version>1.0.6</ftpserver-core.version>
     <bcprov-jdk14.version>1.51</bcprov-jdk14.version>
     <pdi.version>9.0.0.0-423</pdi.version>
-    <selenium.version>3.14.0</selenium.version>
+    <selenium.version>3.141.59</selenium.version>
     <guava.version>23.0</guava.version>
   </properties>
 
