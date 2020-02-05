@@ -243,7 +243,7 @@ public class WebSpoonTest {
     // Click View
     clickElement( "//div[@test-id = 'exploreSolution']" );
     rightClickElement( "//div[text() = 'Hadoop clusters']" );
-    assertEquals( 1, driver.findElements( By.xpath( "//div[text() = 'New Cluster' and not(contains(@style,'visibility: hidden'))]" ) ).size() );
+    assertEquals( 1, driver.findElements( By.xpath( "//div[text() = 'New cluster' and not(contains(@style,'visibility: hidden'))]" ) ).size() );
   }
 
   private void createNewTrans() {
