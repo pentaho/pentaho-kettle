@@ -1,5 +1,12 @@
 # Change Log
 
+## Unreleased
+### Changed
+- Update RAP/RWT to 3.11.0
+- Remove Notify.js (and jQuery) and notify only at console
+- Rebased to 9.0.0.0-423
+- Update Selenium to 3.141.59
+
 ## 0.8.3.20 - 2019-11-20
 ### Added
 - Add File/Logout menuitem that allows users to logout when they are login (#175)
