@@ -37,7 +37,7 @@
     <!-- images -->
     <fileSet>
       <directory>${project.basedir}/src/main/resources/static</directory>
-      <outputDirectory>content/common-ui/resources/themes</outputDirectory>
+      <outputDirectory>static</outputDirectory>
       <includes>
         <include>**</include>
       </includes>
