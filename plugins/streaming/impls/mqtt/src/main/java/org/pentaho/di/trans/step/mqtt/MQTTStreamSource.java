@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,6 +68,7 @@ public class MQTTStreamSource extends BlockingQueueStreamSource<List<Object>> {
   @Override public void open() {
     try {
       mqttClient = MQTTClientBuilder.builder()
+        .withClientId( mqttConsumerMeta.getClientId() )
         .withBroker( mqttConsumerMeta.getMqttServer() )
         .withTopics( mqttConsumerMeta.getTopics() )
         .withQos( mqttConsumerMeta.getQos() )
