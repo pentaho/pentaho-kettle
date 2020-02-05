@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,29 +30,18 @@ import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFile
 public class SlaveDelegate extends AbstractDelegate implements ITransformer, SharedObjectAssembler<SlaveServer>,
     java.io.Serializable {
 
-  private static final long serialVersionUID = -8084266831877112729L; /* EESOURCE: UPDATE SERIALVERUID */
-
-  private static final String NODE_ROOT = "Slave"; //$NON-NLS-1$
-
-  private static final String PROP_PASSWORD = "PASSWORD"; //$NON-NLS-1$
-
-  private static final String PROP_USERNAME = "USERNAME"; //$NON-NLS-1$
-
-  private static final String PROP_PORT = "PORT"; //$NON-NLS-1$
-
-  private static final String PROP_HOST_NAME = "HOST_NAME"; //$NON-NLS-1$
-
-  private static final String PROP_PROXY_HOST_NAME = "PROXY_HOST_NAME"; //$NON-NLS-1$
-
-  private static final String PROP_PROXY_PORT = "PROXY_PORT"; //$NON-NLS-1$
-
-  private static final String PROP_WEBAPP_NAME = "WEBAPP_NAME"; //$NON-NLS-1$
-
-  private static final String PROP_NON_PROXY_HOSTS = "NON_PROXY_HOSTS"; //$NON-NLS-1$
-
-  private static final String PROP_MASTER = "MASTER"; //$NON-NLS-1$
-
-  private static final String PROP_USE_HTTPS_PROTOCOL = "USE_HTTPS_PROTOCOL"; //$NON-NLS-1$
+  static final long serialVersionUID = -8084266831877112729L; /* EESOURCE: UPDATE SERIALVERUID */
+  static final String NODE_ROOT = "Slave";
+  static final String PROP_PASSWORD = "PASSWORD";
+  static final String PROP_USERNAME = "USERNAME";
+  static final String PROP_PORT = "PORT";
+  static final String PROP_HOST_NAME = "HOST_NAME";
+  static final String PROP_PROXY_HOST_NAME = "PROXY_HOST_NAME";
+  static final String PROP_PROXY_PORT = "PROXY_PORT";
+  static final String PROP_WEBAPP_NAME = "WEBAPP_NAME";
+  static final String PROP_NON_PROXY_HOSTS = "NON_PROXY_HOSTS";
+  static final String PROP_MASTER = "MASTER";
+  static final String PROP_USE_HTTPS_PROTOCOL = "USE_HTTPS_PROTOCOL";
 
   // ~ Instance fields =================================================================================================
 
