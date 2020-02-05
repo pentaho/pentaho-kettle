@@ -223,6 +223,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.nonProxyHosts = nonProxyHosts;
 
     this.master = master;
+    this.sslMode = ssl;
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
   }

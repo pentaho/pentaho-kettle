@@ -52,6 +52,8 @@ public class SlaveDelegate extends AbstractDelegate implements ITransformer, Sha
 
   private static final String PROP_MASTER = "MASTER"; //$NON-NLS-1$
 
+  private static final String PROP_USE_HTTPS_PROTOCOL = "USE_HTTPS_PROTOCOL"; //$NON-NLS-1$
+
   // ~ Instance fields =================================================================================================
 
   private PurRepository repo;
@@ -80,6 +82,7 @@ public class SlaveDelegate extends AbstractDelegate implements ITransformer, Sha
     slaveServer.setWebAppName( getString( rootNode, PROP_WEBAPP_NAME ) );
     slaveServer.setNonProxyHosts( getString( rootNode, PROP_NON_PROXY_HOSTS ) );
     slaveServer.setMaster( rootNode.getProperty( PROP_MASTER ).getBoolean() );
+    slaveServer.setSslMode( rootNode.getProperty( PROP_USE_HTTPS_PROTOCOL ).getBoolean() );
   }
 
   public DataNode elementToDataNode( RepositoryElementInterface element ) throws KettleException {
@@ -104,6 +107,7 @@ public class SlaveDelegate extends AbstractDelegate implements ITransformer, Sha
     rootNode.setProperty( PROP_PROXY_PORT, slaveServer.getProxyPort() );
     rootNode.setProperty( PROP_NON_PROXY_HOSTS, slaveServer.getNonProxyHosts() );
     rootNode.setProperty( PROP_MASTER, slaveServer.isMaster() );
+    rootNode.setProperty( PROP_USE_HTTPS_PROTOCOL, slaveServer.isSslMode() );
     return rootNode;
   }
 
