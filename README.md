@@ -92,13 +92,20 @@ Issues such as [#91](https://github.com/HiromuHota/pentaho-kettle/issues/91) can
 
 See [here](https://github.com/HiromuHota/pentaho-kettle/wiki/Admin%3A-Security) for HTTPS, user authentication/authorization, steps and job entries restriction.
 
-## Third-party plugins and JDBC drivers
+## Third-party plugins, JDBC drivers, and Hadoop drivers
 
-Place third-party plugins in `$CATALINA_HOME/plugins` and JDBC drivers in `$CATALINA_HOME/lib` as below:
+Put
+third-party plugins in `$CATALINA_HOME/plugins`,
+JDBC drivers in `$CATALINA_HOME/lib`,
+Hadoop drivers in `$CATALINA_HOME/system/karaf/deploy`
+as below:
 
 ```
 $CATALINA_HOME
 ├── system
+│   └── karaf
+|       └── deploy
+|           └── YourDriver.kar
 ├── plugins
 │   ├── YourPlugin
 │   │   └── YourPlugin.jar
@@ -107,7 +114,7 @@ $CATALINA_HOME
 │   ├── YourJDBC.jar
 │   ├── ...
 ├── webapps
-│   ├── spoon.war
+│   ├── spoon
 │   ├── ...
 ```
 
