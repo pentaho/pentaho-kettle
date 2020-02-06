@@ -44,6 +44,7 @@
       </activation>
       <modules>
         <module>file-open-save/core</module>
+        <module>file-open-save-new/core</module>
         <module>get-fields/core</module>
         <module>repositories/core</module>
         <module>engine-configuration/ui</module>
