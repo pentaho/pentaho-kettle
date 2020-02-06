@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,11 +85,13 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.DialogHelper;
 import org.pentaho.di.ui.util.DialogUtils;
+import org.pentaho.di.ui.util.MappingUtil;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1014,15 +1016,16 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
           RowMetaInterface targetRowMeta = getFieldsFromStep( wOutputStep.getText(), false, input );
           String[] sourceFields = sourceRowMeta.getFieldNames();
           String[] targetFields = targetRowMeta.getFieldNames();
-
-          EnterMappingDialog dialog = new EnterMappingDialog( shell, sourceFields, targetFields );
+          List<MappingValueRename> mappingValue = definitions.get( wInputList.getSelectionIndex() ).getValueRenames();
+          List<SourceToTargetMapping> currentMappings = MappingUtil.getCurrentMappings( Arrays.asList( sourceFields ), Arrays.asList( targetFields ), mappingValue );
+          EnterMappingDialog dialog = new EnterMappingDialog( shell, sourceFields, targetFields, currentMappings );
           List<SourceToTargetMapping> mappings = dialog.open();
           if ( mappings != null ) {
             // first clear the dialog...
             wFieldMappings.clearAll( false );
 
             //
-            definitions.get( wInputList.getSelectionIndex() ).getValueRenames().clear();
+            mappingValue.clear();
 
             // Now add the new values...
             for ( SourceToTargetMapping mapping : mappings ) {
@@ -1032,7 +1035,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
               String source = input ? item.getText( 1 ) : item.getText( 2 );
               String target = input ? item.getText( 2 ) : item.getText( 1 );
-              definitions.get( wInputList.getSelectionIndex() ).getValueRenames().add( new MappingValueRename( source, target ) );
+              mappingValue.add( new MappingValueRename( source, target ) );
             }
             wFieldMappings.removeEmptyRows();
             wFieldMappings.setRowNums();
