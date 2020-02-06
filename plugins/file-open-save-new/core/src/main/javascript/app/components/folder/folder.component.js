@@ -201,21 +201,21 @@ define([
     function compareFolders(first, second) {
       var folder1 = first.value;
       var folder2 = second.value;
-      if (!folder1.path || !folder2.path) {
+      if (!folder1.name || !folder2.name) {
         return 0;
       }
-      var path1 = folder1.path.split("/");
-      var path2 = folder2.path.split("/");
+      var name1 = folder1.name;
+      var name2 = folder2.name;
       var comp = 0;
-      var len = Math.min(path1.length, path2.length);
+      var len = Math.min(name1.length, name2.length);
       for (var i = 0; i < len; i++) {
-        comp = utils.naturalCompare(path1[i], path2[i]);
+        comp = utils.naturalCompare(name1[i], name2[i]);
         if (comp !== 0) {
           return comp;
         }
       }
-      if (path1.length !== path2.length) {
-        return path1.length - path2.length;
+      if (name1.length !== name2.length) {
+        return name1.length - name2.length;
       }
       return first.index - second.index;
     }
