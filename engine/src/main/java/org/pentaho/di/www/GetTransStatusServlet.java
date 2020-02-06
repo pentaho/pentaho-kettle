@@ -214,7 +214,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     String id = request.getParameter( "id" );
     String root = request.getRequestURI() == null ? StatusServletUtils.PENTAHO_ROOT
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
-    String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
+    String prefix = root + StatusServletUtils.STATIC_PATH;
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
     int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
 
@@ -339,8 +339,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
         }
         out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
 
-        if ( isJettyMode() ) {
-          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );
+        if ( true ) {
+          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + root + "/static/css/carte.css\" />" );
         } else {
           out.print( StatusServletUtils.getPentahoStyles( root ) );
         }
