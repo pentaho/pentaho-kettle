@@ -143,6 +143,16 @@ public class WebSpoonTest {
   }
 
   @Test
+  public void testOpenSaveNewDialog() {
+    clickElement( "//div[text() = 'File']" );
+    assertFalse( isMenuItemDisabled( "//div[text() = 'Open URL...']" ) );
+    clickElement( "//div[text() = 'Open URL...']" ); // Open the new dialog
+    driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[starts-with(@src, '/spoon/osgi/@pentaho/di-plugin-file-open-save-new@9.0.0.0-423/index.html')]") ) );
+    wait.until( ExpectedConditions.presenceOfElementLocated( By.xpath( "//div[contains(text(),'Local')]" ) ) );
+    assertEquals( 1, driver.findElements( By.xpath( "//div[contains(text(),'Local')]" ) ).size() );
+  }
+
+  @Test
   public void testDatabaseConnectionDialog() throws Exception {
     // Create a new transformation
     createNewTrans();
