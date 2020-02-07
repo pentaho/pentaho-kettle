@@ -1,10 +1,18 @@
 # Change Log
 
-## Unreleased
+## 0.9.0.21 - 2020-02-07
 ### Changed
-- Update RAP/RWT to 3.11.0
 - Remove Notify.js (and jQuery) and notify only at console
 - Rebased to 9.0.0.0-423
+
+### Removed
+- Do not show "Add Driver" menuitem of HadoopClusterPopupMenuExtension (see README how to add Hadoop drivers)
+
+### Fixed
+- Fixed static images and css on Carte (#187)
+
+### Security
+- Update RAP/RWT to 3.11.0
 - Update Selenium to 3.141.59
 
 ## 0.8.3.20 - 2019-11-20
