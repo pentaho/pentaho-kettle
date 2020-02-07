@@ -93,6 +93,10 @@
         <pentaho.private.release.repo>${env.PRIVATE_RELEASE_REPO_URL}</pentaho.private.release.repo>
         <pentaho.private.snapshot.repo>${env.PRIVATE_SNAPSHOT_REPO_URL}</pentaho.private.snapshot.repo>
 
+        <pentaho.docker.pull.host>${env.DOCKER_PULL_HOST}</pentaho.docker.pull.host>
+        <pentaho.docker.public.push.host>${env.DOCKER_PUBLIC_PUSH_HOST}</pentaho.docker.public.push.host>
+        <pentaho.docker.private.push.host>${env.DOCKER_PRIVATE_PUSH_HOST}</pentaho.docker.private.push.host>
+
         <!-- hide test output clutter -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 

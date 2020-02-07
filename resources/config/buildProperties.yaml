@@ -20,6 +20,9 @@ MAVEN_RESOLVE_REPO_URL: http://orl-jfrog-lb.pentaho.net/artifactory/pntprv-mvn
 MAVEN_TEST_OPTS: -DsurefireArgLine=-Xmx1g
 MAVEN_SETTINGS: ${BUILD_CONFIG_ROOT_PATH}/maven/settings.xml
 
+# Docker
+DOCKER_RESOLVE_REPO: pnt-docker.orl-jfrog-lb.pentaho.net/
+
 # Stage execution
 RUN_STAGE_CHECKOUT  : true
 RUN_STAGE_VERSION   : false

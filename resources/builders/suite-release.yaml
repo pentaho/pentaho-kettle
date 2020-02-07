@@ -16,6 +16,9 @@ buildProperties:
   DOCKER_REGISTRY_URL            : http://pntprv-docker-release.orl-jfrog-lb.pentaho.net
   ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
 
+  DOCKER_PUBLIC_PUSH_REPO     : pntpub-docker-dev-orl.orl-jfrog-lb.pentaho.net/
+  DOCKER_PRIVATE_PUSH_REPO    : pntprv-docker-dev-orl.orl-jfrog-lb.pentaho.net/
+
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN

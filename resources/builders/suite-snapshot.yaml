@@ -15,6 +15,9 @@ buildProperties:
   DOCKER_IMAGE_HOST              : pntprv-docker-release.orl-jfrog-lb.pentaho.net
   DOCKER_REGISTRY_URL            : http://pntprv-docker-release.orl-jfrog-lb.pentaho.net
 
+  DOCKER_PUBLIC_PUSH_REPO     : pntpub-docker-dev-orl.orl-jfrog-lb.pentaho.net/
+  DOCKER_PRIVATE_PUSH_REPO    : pntprv-docker-dev-orl.orl-jfrog-lb.pentaho.net/
+
   MAVEN_DEFAULT_DIRECTIVES:
     build: clean deploy -DskipTests
     test: test
