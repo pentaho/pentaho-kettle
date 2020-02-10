@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -86,8 +87,10 @@ public abstract class ConfigurationDialog extends Dialog {
   protected int margin = Const.MARGIN;
   protected Group gLocal;
   protected Composite composite;
+  protected Composite cContainer;
   protected Composite cRunConfiguration;
   protected CCombo wRunConfiguration;
+  protected ScrolledComposite scContainer;
 
   private TableView wParams;
   private Display display;
@@ -219,24 +222,40 @@ public abstract class ConfigurationDialog extends Dialog {
 
   protected void mainLayout( Class<?> PKG, String prefix, Image img ) {
     display = parent.getDisplay();
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.APPLICATION_MODAL );
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX );
     props.setLook( shell );
     shell.setImage( img );
     shell.setLayout( new FormLayout() );
     shell.setText( BaseMessages.getString( PKG, prefix + ".Shell.Title" ) );
+
+    scContainer = new ScrolledComposite( shell, SWT.NONE | SWT.H_SCROLL | SWT.V_SCROLL );
+    scContainer.setLayout( new FormLayout() );
+    FormData fd = new FormData();
+    fd.top = new FormAttachment( 0, Const.FORM_MARGIN );
+    fd.bottom = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fd.left = new FormAttachment( 0, Const.FORM_MARGIN );
+    fd.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    scContainer.setLayoutData( fd );
+    scContainer.setExpandHorizontal( true );
+    scContainer.setExpandVertical( true );
+    cContainer = new Composite( scContainer, SWT.NONE );
+    scContainer.setContent( cContainer );
+    cContainer.setLayout( new FormLayout() );
+    cContainer.setBackground( shell.getBackground() );
+    cContainer.setParent( scContainer );
   }
 
   protected void optionsSectionLayout( Class<?> PKG, String prefix ) {
-    gDetails = new Group( shell, SWT.SHADOW_ETCHED_IN );
+    gDetails = new Group( cContainer, SWT.SHADOW_ETCHED_IN );
     gDetails.setText( BaseMessages.getString( PKG, prefix + ".DetailsGroup.Label" ) );
     props.setLook( gDetails );
 
     // The layout
     gDetails.setLayout( new FormLayout() );
     fdDetails = new FormData();
-    fdDetails.top = new FormAttachment( cRunConfiguration, 15 );
-    fdDetails.right = new FormAttachment( 100, -15 );
-    fdDetails.left = new FormAttachment( 0, 15 );
+    fdDetails.top = new FormAttachment( cRunConfiguration, Const.FORM_MARGIN );
+    fdDetails.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fdDetails.left = new FormAttachment( 0, Const.FORM_MARGIN );
     gDetails.setBackground( shell.getBackground() ); // the default looks ugly
     gDetails.setLayoutData( fdDetails );
 
@@ -245,13 +264,13 @@ public abstract class ConfigurationDialog extends Dialog {
 
   protected void parametersSectionLayout( Class<?> PKG, String prefix ) {
 
-    tabFolder = new CTabFolder( shell, SWT.BORDER );
+    tabFolder = new CTabFolder( cContainer, SWT.BORDER );
     props.setLook( tabFolder, Props.WIDGET_STYLE_TAB );
     fd_tabFolder = new FormData();
-    fd_tabFolder.right = new FormAttachment( 100, -15 );
-    fd_tabFolder.left = new FormAttachment( 0, 15 );
-    fd_tabFolder.top = new FormAttachment( gDetails, 15 );
-    fd_tabFolder.bottom = new FormAttachment( gDetails, 370 );
+    fd_tabFolder.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fd_tabFolder.left = new FormAttachment( 0, Const.FORM_MARGIN );
+    fd_tabFolder.top = new FormAttachment( gDetails, Const.FORM_MARGIN );
+    fd_tabFolder.bottom = new FormAttachment( gDetails, getFontSizeFactor( 370 ) );
     tabFolder.setLayoutData( fd_tabFolder );
 
     // Parameters
@@ -280,19 +299,19 @@ public abstract class ConfigurationDialog extends Dialog {
         new TableView( abstractMeta, parametersComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams,
             nrParams, false, null, props, false );
     FormData fdParams = new FormData();
-    fdParams.top = new FormAttachment( 0, 10 );
-    fdParams.right = new FormAttachment( 100, -10 );
-    fdParams.bottom = new FormAttachment( 100, -45 );
-    fdParams.left = new FormAttachment( 0, 10 );
+    fdParams.top = new FormAttachment( 0, Const.FORM_MARGIN );
+    fdParams.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fdParams.bottom = new FormAttachment( 100, -getFontSizeFactor( 45 ) );
+    fdParams.left = new FormAttachment( 0, Const.FORM_MARGIN );
     wParams.setLayoutData( fdParams );
 
     tabFolder.setSelection( 0 );
 
     Button argsButton = new Button( parametersComposite, SWT.NONE );
     FormData fd_argsButton = new FormData();
-    fd_argsButton.right = new FormAttachment( 100, -10 );
-    fd_argsButton.top = new FormAttachment( wParams, 6 );
-    fd_argsButton.bottom = new FormAttachment( 100, -10 );
+    fd_argsButton.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fd_argsButton.top = new FormAttachment( wParams, Const.FORM_MARGIN );
+    fd_argsButton.bottom = new FormAttachment( 100, -Const.FORM_MARGIN );
     argsButton.setLayoutData( fd_argsButton );
     argsButton.setText( BaseMessages.getString( PKG, prefix + ".Arguments.Label" ) );
 
@@ -324,10 +343,10 @@ public abstract class ConfigurationDialog extends Dialog {
             nrVariables, false, null, props, false );
 
     FormData fdVariables = new FormData();
-    fdVariables.top = new FormAttachment( 0, 10 );
-    fdVariables.right = new FormAttachment( 100, -10 );
-    fdVariables.bottom = new FormAttachment( 100, -10 );
-    fdVariables.left = new FormAttachment( 0, 10 );
+    fdVariables.top = new FormAttachment( 0, Const.FORM_MARGIN );
+    fdVariables.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fdVariables.bottom = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fdVariables.left = new FormAttachment( 0, Const.FORM_MARGIN );
 
     wVariables.setLayoutData( fdVariables );
   }
@@ -337,22 +356,18 @@ public abstract class ConfigurationDialog extends Dialog {
 
     // Bottom buttons and separator
 
-    alwaysShowOption = new Button( shell, SWT.CHECK );
+    alwaysShowOption = new Button( cContainer, SWT.CHECK );
     props.setLook( alwaysShowOption );
     alwaysShowOption.setSelection( abstractMeta.isAlwaysShowRunOptions() );
-
     alwaysShowOption.setToolTipText( BaseMessages.getString( PKG, prefix + ".alwaysShowOption" ) );
-
     FormData fd_alwaysShowOption = new FormData();
-    fd_alwaysShowOption.left = new FormAttachment( 0, 15 );
-    fd_alwaysShowOption.top = new FormAttachment( tabFolder, 15 );
+    fd_alwaysShowOption.left = new FormAttachment( 0, Const.FORM_MARGIN );
+    fd_alwaysShowOption.top = new FormAttachment( tabFolder, Const.FORM_MARGIN );
     alwaysShowOption.setLayoutData( fd_alwaysShowOption );
     alwaysShowOption.setText( BaseMessages.getString( PKG, prefix + ".AlwaysOption.Value" ) );
 
-    wCancel = new Button( shell, SWT.PUSH );
+    wCancel = new Button( cContainer, SWT.PUSH );
     FormData fd_wCancel = new FormData();
-    fd_wCancel.bottom = new FormAttachment( 100, -15 );
-    wCancel.setLayoutData( fd_wCancel );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
     wCancel.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -360,11 +375,10 @@ public abstract class ConfigurationDialog extends Dialog {
       }
     } );
 
-    wOK = new Button( shell, SWT.PUSH );
+    wOK = new Button( cContainer, SWT.PUSH );
     FormData fd_wOK = new FormData();
     fd_wOK.top = new FormAttachment( wCancel, 0, SWT.TOP );
-    fd_wOK.right = new FormAttachment( wCancel, -5 );
-    fd_wOK.bottom = new FormAttachment( 100, -15 );
+    fd_wOK.right = new FormAttachment( wCancel, -Const.FORM_MARGIN );
     wOK.setLayoutData( fd_wOK );
     wOK.setText( BaseMessages.getString( PKG, prefix + ".Button.Launch" ) );
     wOK.addSelectionListener( new SelectionAdapter() {
@@ -373,14 +387,12 @@ public abstract class ConfigurationDialog extends Dialog {
       }
     } );
 
-    Button btnHelp = new Button( shell, SWT.NONE );
+    Button btnHelp = new Button( cContainer, SWT.NONE );
     btnHelp.setImage( GUIResource.getInstance().getImageHelpWeb() );
     btnHelp.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
     btnHelp.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.Help" ) );
     FormData fd_btnHelp = new FormData();
-    fd_btnHelp.bottom = new FormAttachment( 100, -15 );
-    fd_btnHelp.left = new FormAttachment( 0, 15 );
-    btnHelp.setLayoutData( fd_btnHelp );
+    fd_btnHelp.left = new FormAttachment( 0, Const.FORM_MARGIN );
     btnHelp.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent evt ) {
@@ -388,7 +400,7 @@ public abstract class ConfigurationDialog extends Dialog {
       }
     } );
 
-    Label separator = new Label( shell, SWT.SEPARATOR | SWT.HORIZONTAL );
+    Label separator = new Label( cContainer, SWT.SEPARATOR | SWT.HORIZONTAL );
     if ( Const.isLinux() ) {
       fd_wCancel.top = new FormAttachment( separator, 10 );
     } else {
@@ -399,16 +411,19 @@ public abstract class ConfigurationDialog extends Dialog {
     } else {
       fd_btnHelp.top = new FormAttachment( separator, 15 );
     }
-    fd_wCancel.right = new FormAttachment( 100, -15 );
+    fd_wCancel.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    wCancel.setLayoutData( fd_wCancel );
+    btnHelp.setLayoutData( fd_btnHelp );
     FormData fd_separator = new FormData();
-    fd_separator.right = new FormAttachment( 100, -15 );
-    fd_separator.left = new FormAttachment( 0, 15 );
-    fd_separator.top = new FormAttachment( alwaysShowOption, 15 );
+    fd_separator.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fd_separator.left = new FormAttachment( 0, Const.FORM_MARGIN );
+    fd_separator.top = new FormAttachment( alwaysShowOption, Const.FORM_MARGIN );
     separator.setLayoutData( fd_separator );
   }
 
   protected void openDialog() {
     shell.pack();
+    scContainer.setMinSize( cContainer.computeSize( SWT.DEFAULT, SWT.DEFAULT ) );
     // Set the focus on the OK button
     wOK.setFocus();
 
@@ -427,13 +442,13 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   protected void runConfigurationSectionLayout( Class<?> PKG, String prefix ) {
-    cRunConfiguration = new Composite( shell, SWT.NONE );
+    cRunConfiguration = new Composite( cContainer, SWT.NONE );
     cRunConfiguration.setLayout( new FormLayout() );
     props.setLook( cRunConfiguration );
     FormData fdLocal = new FormData();
-    fdLocal.top = new FormAttachment( 0, 15 );
-    fdLocal.right = new FormAttachment( 100, -15 );
-    fdLocal.left = new FormAttachment( 0, 15 );
+    fdLocal.top = new FormAttachment( 0, Const.FORM_MARGIN );
+    fdLocal.right = new FormAttachment( 100, -Const.FORM_MARGIN );
+    fdLocal.left = new FormAttachment( 0, Const.FORM_MARGIN );
 
     cRunConfiguration.setBackground( shell.getBackground() ); // the default looks ugly
     cRunConfiguration.setLayoutData( fdLocal );
@@ -449,10 +464,19 @@ public abstract class ConfigurationDialog extends Dialog {
     wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER );
     props.setLook( wRunConfiguration );
     FormData fdRunConfiguration = new FormData();
-    fdRunConfiguration.width = 200;
-    fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, 5 );
+    fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, Const.FORM_MARGIN );
     fdRunConfiguration.left = new FormAttachment( 0 );
+    fdRunConfiguration.right = new FormAttachment( 100, -Const.FORM_MARGIN );
     wRunConfiguration.setLayoutData( fdRunConfiguration );
+  }
+
+  private int getFontSizeFactor( int offset ) {
+    try {
+      int fontSize = display.getSystemFont().getFontData()[0].getHeight() / 10;
+      return fontSize <= 0 ? offset : offset +  offset / fontSize;
+    } catch ( Exception e ) {
+      return offset;
+    }
   }
 
   protected abstract void optionsSectionControls();
