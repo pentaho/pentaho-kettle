@@ -139,13 +139,11 @@ public class KettleVFS {
 
     //  Protect the code below from invalid input.
     if ( vfsFilename == null ) {
-      throw new KettleFileException( "Unexpected null VFS filename",
-        new NullPointerException( "KettleVFS.getFileObject() vfsFilename is NULL" ) );
+      throw new IllegalArgumentException( "Unexpected null VFS filename.");
     }
 
     try {
       FileSystemManager fsManager = getInstance().getFileSystemManager();
-      int timeOut = TIMEOUT_LIMIT;
       String[] schemes = fsManager.getSchemes();
 
       String scheme = getScheme( schemes, vfsFilename );
@@ -155,7 +153,7 @@ public class KettleVFS {
       //be available by getScheme at the time we validate our scheme flag ( Kitchen loading problem )
       //So we check if - even it has not a scheme - our vfsFilename has a possible scheme format (PROVIDER_PATTERN_SCHEME)
       //If it does, then give it some time and tries to load. It stops when timeout is up or a scheme is found.
-
+      int timeOut = TIMEOUT_LIMIT;
       if ( hasSchemePattern( vfsFilename, PROVIDER_PATTERN_SCHEME ) ) {
         while ( scheme == null && timeOut > 0 ) {
           // ask again to refresh schemes list
