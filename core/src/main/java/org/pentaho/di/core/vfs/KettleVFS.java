@@ -139,7 +139,7 @@ public class KettleVFS {
 
     //  Protect the code below from invalid input.
     if ( vfsFilename == null ) {
-      throw new IllegalArgumentException( "Unexpected null VFS filename.");
+      throw new IllegalArgumentException( "Unexpected null VFS filename." );
     }
 
     try {
