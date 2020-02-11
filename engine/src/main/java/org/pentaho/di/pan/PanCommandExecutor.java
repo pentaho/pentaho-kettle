@@ -77,8 +77,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
 
-    Date start = Calendar.getInstance().getTime(); // capture execution start time
-
     logDebug( "Pan.Log.AllocatteNewTrans" );
 
     Trans trans = null;
@@ -167,6 +165,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         return exitWithStatus( CommandExecutorCodes.Pan.SUCCESS.getCode() );
       }
     }
+
+    Date start = Calendar.getInstance().getTime(); // capture execution start time
 
     try {
 
