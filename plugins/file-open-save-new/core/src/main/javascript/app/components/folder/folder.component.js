@@ -206,13 +206,10 @@ define([
       }
       var name1 = folder1.name;
       var name2 = folder2.name;
-      var comp = 0;
-      var len = Math.min(name1.length, name2.length);
-      for (var i = 0; i < len; i++) {
-        comp = utils.naturalCompare(name1[i], name2[i]);
-        if (comp !== 0) {
-          return comp;
-        }
+
+      var comp = utils.naturalCompare(name1, name2);
+      if (comp !== 0) {
+        return comp;
       }
       if (name1.length !== name2.length) {
         return name1.length - name2.length;
