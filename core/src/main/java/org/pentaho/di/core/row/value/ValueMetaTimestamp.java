@@ -53,8 +53,8 @@ import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 
 public class ValueMetaTimestamp extends ValueMetaDate {
   private final String format =
-    Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT ), "NANOSECONDS" );
-  private static final String MILLISECONDS = "MILLISECONDS";
+    Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT ),
+      Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS );
 
   public ValueMetaTimestamp() {
     this( null );
@@ -86,11 +86,11 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     long milliseconds = timestamp.getTime();
-    if ( format.equalsIgnoreCase( MILLISECONDS )  ) {
-      return Long.valueOf( milliseconds );
+    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS.equalsIgnoreCase( format )  ) {
+      return  milliseconds;
     } else {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
-      return seconds * 1000000000 + timestamp.getNanos();
+      return seconds * 1000000000L + timestamp.getNanos();
     }
   }
 
@@ -102,11 +102,11 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     long milliseconds = timestamp.getTime();
-    if ( format.equalsIgnoreCase( MILLISECONDS )  ) {
-      return Double.valueOf( milliseconds );
+    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS.equalsIgnoreCase( format )  ) {
+      return (double) milliseconds;
     } else {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
-      return (double) seconds * 1000000000 + timestamp.getNanos();
+      return (double) seconds * 1000000000L + timestamp.getNanos();
     }
   }
 
@@ -118,7 +118,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     long milliseconds = timestamp.getTime();
-    if ( format.equalsIgnoreCase( MILLISECONDS )  ) {
+    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS.equalsIgnoreCase( format )  ) {
       return BigDecimal.valueOf( milliseconds );
     } else {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
