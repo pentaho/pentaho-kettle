@@ -117,7 +117,7 @@ public class ValueMetaConverterTest {
 
       { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_NONE, timeStamp1, null },
       { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_STRING, timeStamp1, "2001/11/01 20:30:15.123" },
-      { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_INTEGER, timeStamp1, timeStamp1.getTime() },
+      { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_INTEGER, timeStamp1, timeStamp1.getTime() * 1000000 },
       { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_TIMESTAMP, timeStamp1, timeStamp1 },
       { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_DATE, timeStamp1, new Date( timeStamp1.getTime() ) },
 
