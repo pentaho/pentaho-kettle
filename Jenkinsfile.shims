@@ -1,4 +1,4 @@
-library(identifier: "jenkins-shared-libraries@20190816", changelog: false)
+library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20200212'}", changelog: false)
 
 String buildJobName = 'shims-release'
 Map suiteParameters

@@ -722,8 +722,17 @@ jobGroups:
        parallelize     :  true
        versionProperty :  pentaho.version
 
-  # Don't build, only here for branching purposes
   4700:
      - jobID           :  patch-installers
        scmUrl          :  https://github.com/pentaho/pentaho-installer-v2.git
-       execType        :  NOOP
+       buildFramework  :  DSL_SCRIPT
+       script          :  |
+         { -> echo "Don't build only here for branching/tagging" }
+       testable        :  false
+   
+     - jobID           :  jenkins-pipelines
+       scmUrl          :  https://github.com/pentaho/jenkins-pipelines.git
+       buildFramework  :  DSL_SCRIPT
+       script          :  |
+         { -> echo "Don't build only here for branching/tagging" }
+       testable        :  false
