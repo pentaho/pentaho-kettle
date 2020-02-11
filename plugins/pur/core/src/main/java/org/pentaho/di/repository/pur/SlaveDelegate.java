@@ -70,8 +70,8 @@ public class SlaveDelegate extends AbstractDelegate implements ITransformer, Sha
     slaveServer.setProxyPort( getString( rootNode, PROP_PROXY_PORT ) );
     slaveServer.setWebAppName( getString( rootNode, PROP_WEBAPP_NAME ) );
     slaveServer.setNonProxyHosts( getString( rootNode, PROP_NON_PROXY_HOSTS ) );
-    slaveServer.setMaster( rootNode.getProperty( PROP_MASTER ).getBoolean() );
-    slaveServer.setSslMode( rootNode.getProperty( PROP_USE_HTTPS_PROTOCOL ).getBoolean() );
+    slaveServer.setMaster( getBoolean( rootNode, PROP_MASTER ) );
+    slaveServer.setSslMode( getBoolean( rootNode, PROP_USE_HTTPS_PROTOCOL ) );
   }
 
   public DataNode elementToDataNode( RepositoryElementInterface element ) throws KettleException {
