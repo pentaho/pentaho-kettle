@@ -758,6 +758,15 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
             RowMetaInterface targetRowMeta = getFieldsFromStep( false, input );
             String[] sourceFields = sourceRowMeta.getFieldNames();
             String[] targetFields = targetRowMeta.getFieldNames();
+
+            //refresh mappings
+            int nrLines = wFieldMappings.nrNonEmpty();
+            definition.getValueRenames().clear();
+            for ( int i = 0; i < nrLines; i++ ) {
+              TableItem item = wFieldMappings.getNonEmpty( i );
+              definition.getValueRenames().add( new MappingValueRename( item.getText( 1 ), item.getText( 2 ) ) );
+            }
+
             List<MappingValueRename> mappingValue = definition.getValueRenames();
             List<SourceToTargetMapping> currentMappings = MappingUtil.getCurrentMappings( Arrays.asList( sourceFields ), Arrays.asList( targetFields ), mappingValue );
             EnterMappingDialog dialog = new EnterMappingDialog( shell, sourceFields, targetFields, currentMappings );

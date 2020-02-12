@@ -1016,6 +1016,15 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
           RowMetaInterface targetRowMeta = getFieldsFromStep( wOutputStep.getText(), false, input );
           String[] sourceFields = sourceRowMeta.getFieldNames();
           String[] targetFields = targetRowMeta.getFieldNames();
+
+          //Refresh mappings
+          int nrLines = wFieldMappings.nrNonEmpty();
+          definitions.get( wInputList.getSelectionIndex() ).getValueRenames().clear();
+          for ( int i = 0; i < nrLines; i++ ) {
+            TableItem item = wFieldMappings.getNonEmpty( i );
+            definitions.get( wInputList.getSelectionIndex() ).getValueRenames().add( new MappingValueRename( item.getText( 1 ), item.getText( 2 ) ) );
+          }
+
           List<MappingValueRename> mappingValue = definitions.get( wInputList.getSelectionIndex() ).getValueRenames();
           List<SourceToTargetMapping> currentMappings = MappingUtil.getCurrentMappings( Arrays.asList( sourceFields ), Arrays.asList( targetFields ), mappingValue );
           EnterMappingDialog dialog = new EnterMappingDialog( shell, sourceFields, targetFields, currentMappings );
