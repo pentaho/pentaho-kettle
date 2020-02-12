@@ -196,12 +196,18 @@ public class ValueMetaTimestampTest {
   @Test
   public void testConvertTimestampToIntegerInMilliseconds() throws KettleValueException {
     TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
-    System.setProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, "MILLISECONDS" );
+    System.setProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS );
     Timestamp date = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
     long result = valueMetaTimestamp.getInteger( date );
-    long expected = 1567308896123L;
-    assertEquals( expected, result );
-    System.setProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, "NANOSECONDS" );
+    assertEquals( 1567308896123L, result );
+    System.setProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS );
+    valueMetaTimestamp = new ValueMetaTimestamp();
+    result = valueMetaTimestamp.getInteger( date );
+    assertEquals( 1567308896123456789L, result );
+    System.setProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, "Something invalid!" );
+    valueMetaTimestamp = new ValueMetaTimestamp();
+    result = valueMetaTimestamp.getInteger( date );
+    assertEquals( 1567308896123456789L, result );
   }
 }
