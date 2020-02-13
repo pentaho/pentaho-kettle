@@ -88,8 +88,6 @@ import java.util.List;
 public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
-  protected Button wSuppressResultData;
-
   protected JobEntryTrans jobEntry;
 
   private static final String[] FILE_FILTERLOGNAMES = new String[] {
@@ -177,14 +175,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     fdFollow.top = new FormAttachment( wWaitingToFinish, 10 );
     fdFollow.left = new FormAttachment( 0, 0 );
     wFollowingAbortRemotely.setLayoutData( fdFollow );
-
-    wSuppressResultData = new Button( gExecution, SWT.CHECK );
-    props.setLook( wSuppressResultData );
-    wSuppressResultData.setText( BaseMessages.getString( PKG, "JobTrans.SuppressResults.Label" ) );
-    FormData fdSuppress = new FormData();
-    fdSuppress.top = new FormAttachment( wFollowingAbortRemotely, 10 );
-    fdSuppress.left = new FormAttachment( 0, 0 );
-    wSuppressResultData.setLayoutData( fdSuppress );
 
     Composite cRunConfiguration = new Composite( wOptions, SWT.NONE );
     cRunConfiguration.setLayout( new FormLayout() );
@@ -426,7 +416,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     wClearFiles.setSelection( jobEntry.clearResultFiles );
     wWaitingToFinish.setSelection( jobEntry.isWaitingToFinish() );
     wFollowingAbortRemotely.setSelection( jobEntry.isFollowingAbortRemotely() );
-    wSuppressResultData.setSelection( jobEntry.isSuppressResultData() );
     wAppendLogfile.setSelection( jobEntry.setAppendLogfile );
 
     wbLogFilename.setSelection( jobEntry.setAppendLogfile );
@@ -593,7 +582,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     jet.setAppendLogfile = wAppendLogfile.getSelection();
     jet.setWaitingToFinish( wWaitingToFinish.getSelection() );
     jet.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
-    jet.setSuppressResultData( wSuppressResultData.getSelection() );
 
     TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
     executionConfiguration.setRunConfiguration( jet.getRunConfiguration() );
