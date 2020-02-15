@@ -732,6 +732,7 @@ jobGroups:
    
      - jobID           :  jenkins-pipelines
        scmUrl          :  https://github.com/pentaho/jenkins-pipelines.git
+       scmBranch       :  ${RELEASE_VERSION}
        buildFramework  :  DSL_SCRIPT
        script          :  |
          { -> echo "Don't build only here for branching/tagging" }
