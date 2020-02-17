@@ -18,7 +18,6 @@
 
   <properties>
     <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
-    <commons-codec.version>1.9</commons-codec.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
@@ -119,11 +118,6 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>${commons-codec.version}</version>
     </dependency>
 
     <!-- test dependencies -->
