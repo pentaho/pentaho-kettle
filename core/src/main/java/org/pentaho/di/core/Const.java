@@ -1381,7 +1381,7 @@ public class Const {
   /**
    * <p>The default value for the {@link #KETTLE_TIMESTAMP_OUTPUT_FORMAT}.</p>
    */
-  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT = KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS;
+  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT = KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS;
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
