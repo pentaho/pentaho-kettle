@@ -149,7 +149,7 @@ public class ValueMetaTimestampTest {
     Timestamp date = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
     long result = valueMetaTimestamp.getInteger( date );
-    long expected = 1567308896123456789L;
+    long expected = 1567308896123L;
     assertEquals( expected, result );
   }
 
@@ -169,7 +169,7 @@ public class ValueMetaTimestampTest {
     Timestamp date = Timestamp.valueOf( "2019-09-01 04:34:56.123456000" );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
     double result = valueMetaTimestamp.getNumber( date );
-    double expected = 1567308896123456000L;
+    double expected = 1567308896123L;
     assertEquals( expected, result, 0 );
   }
 
@@ -189,7 +189,7 @@ public class ValueMetaTimestampTest {
     Timestamp date = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
     BigDecimal result = valueMetaTimestamp.getBigNumber( date );
-    BigDecimal expected = BigDecimal.valueOf( 1567308896123456789L );
+    BigDecimal expected = BigDecimal.valueOf( 1567308896123L );
     assertEquals( expected, result );
   }
 
@@ -208,6 +208,6 @@ public class ValueMetaTimestampTest {
     System.setProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, "Something invalid!" );
     valueMetaTimestamp = new ValueMetaTimestamp();
     result = valueMetaTimestamp.getInteger( date );
-    assertEquals( 1567308896123456789L, result );
+    assertEquals( 1567308896123L, result );
   }
 }
