@@ -106,8 +106,14 @@ define(
             self.findFolderByPath(path).then(function (folder) {
               self.selectFolder(folder).then(resolve);
             }, function (folderFile) {
-              fileService.files = [folderFile.file];
-              self.selectFolder(folderFile.folder).then(resolve);
+              if (!_isErrorMessage(folderFile)) {
+                fileService.files = [folderFile.file];
+                self.selectFolder(folderFile.folder).then(reject());
+              }
+              else {
+                let message = folderFile;
+                reject(message);
+              }
             });
           });
         }
@@ -149,6 +155,8 @@ define(
               serviceResolve.then(function (path) {
                 self.selectFolderByPath(path).then(function () {
                   resolve();
+                }, function(error) {
+                  reject(error);
                 });
               }, function (path) {
                 self.loadFile(path, props, resolve, reject);
@@ -280,6 +288,8 @@ define(
                   resolve(file);
                 }
               }
+            }, function(error) {
+                reject(error);
             });
           });
         }
@@ -308,7 +318,7 @@ define(
               if (node.children.length > 0) {
                 resolve(node);
               } else {
-                _populateFolder(node, name, resolve);
+                _populateFolder(node, name, resolve, reject);
               }
             }
           });
@@ -322,7 +332,7 @@ define(
          * @param resolve
          * @private
          */
-        function _populateFolder(node, name, resolve) {
+        function _populateFolder(node, name, resolve, reject) {
           node.loading = true;
           providerService.get(node.provider).createFolder(node, name).then(function (children) {
             if (children.length === 0) {
@@ -332,8 +342,9 @@ define(
               node.loading = false;
               resolve(_doFind(node, name));
             }
-          }, function () {
-            resolve(null);
+          }, function (error) {
+            node.loading = false;
+            reject(error);
           });
         }
 
@@ -418,7 +429,7 @@ define(
          * @returns {*} - Object representing path
          */
         function getBreadcrumbPath(file) {
-          var service = file.provider ? providerService.get(file.provider) : null;
+          var service = (file && file.provider) ? providerService.get(file.provider) : null;
           if (!service) {
             service = providerService.getByPath(file.path);
           }
@@ -472,6 +483,7 @@ define(
                 folder.loading = false;
                 resolve();
               }, function (err) {
+                folder.loading = false;
                 reject(err);
               });
             } else {
@@ -620,6 +632,16 @@ define(
             }
           }
           return null;
+        }
+
+        /**
+         * Determine if reason returned from a promise is an error message object.
+         * @param message reason from promise
+         * @returns {boolean} true if error message object, false otherwise
+         * @private
+         */
+        function _isErrorMessage(reason) {
+           return reason && reason.hasOwnProperty("title") && reason.hasOwnProperty("message");
         }
       }
     });

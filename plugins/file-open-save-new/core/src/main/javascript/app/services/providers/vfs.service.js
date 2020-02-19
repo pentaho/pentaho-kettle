@@ -186,6 +186,11 @@ define(
               getFiles(node).then(function (response) {
                 node.loaded = true;
                 resolve(response.data);
+              }, function(err) {
+                reject({
+                  title: i18n.get('file-open-save-plugin.vfs.unable-to-connect.title'),
+                  message: i18n.get('file-open-save-plugin.vfs.unable-to-connect.message')
+                });
               });
             } else {
               reject();
