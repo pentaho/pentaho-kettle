@@ -75,7 +75,7 @@
       <artifactId>angular</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>angular-i18n</artifactId>
     </dependency>
     <dependency>
