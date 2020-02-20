@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -121,7 +121,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
       return false;
     } catch ( RuntimeException re ) {
       stopAll();
-      logError( re.getMessage(), re );
+      logError( re.getMessage() );
       return false;
     }
     return true;
@@ -152,6 +152,9 @@ public class MQTTProducer extends BaseStep implements StepInterface {
     } catch ( MqttException e ) {
       connectionError.set( true );
       throw new IllegalStateException( e );
+    } catch ( IllegalArgumentException iae ) {
+      connectionError.set( true );
+      throw iae;
     }
   }
 
