@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -151,8 +151,7 @@ public class MQTTProducerTest {
     trans.waitUntilFinished();
 
     verify( logChannel )
-      .logError( eq( "MQTT Producer - Quality of Service level hello is invalid. Please set a level of 0, 1, or 2" ),
-        any( IllegalArgumentException.class ) );
+      .logError( eq( "MQTT Producer - Quality of Service level hello is invalid. Please set a level of 0, 1, or 2" ) );
     verify( mqttClient, never() ).publish( any(), any() );
   }
 
@@ -202,7 +201,7 @@ public class MQTTProducerTest {
     trans.startThreads();
     trans.waitUntilFinished();
 
-    verify( logChannel ).logError( eq( "There was an error connecting" ), any( RuntimeException.class ) );
+    verify( logChannel ).logError( eq( "There was an error connecting" ) );
   }
 
   @Test
