@@ -140,8 +140,12 @@ public class StringUtil {
         String varName = rest.substring( i + open.length(), j );
         Object value = variablesValues.get( varName );
         if ( value == null ) {
-          value = open + varName + close;
+          value = "";
         } else {
+          //"self-definition variables" are not supported. See PDI-18227, PDI-18476
+          if ( value.equals( open + varName + close ) ) {
+            value = "";
+          }
           // check for another variable inside this value
           int another = ( (String) value ).indexOf( open ); // check
           // here
