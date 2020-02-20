@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -138,5 +138,9 @@ public interface NamedClusterOsgi extends VariableSpace {
   void setUseGateway( boolean selection );
 
   boolean isUseGateway();
+
+  String decodePassword( String password );
+
+  String encodePassword( String password );
 
 }
