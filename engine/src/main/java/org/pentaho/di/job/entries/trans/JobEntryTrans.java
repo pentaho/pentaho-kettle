@@ -1067,7 +1067,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 // The transformation is finished, get the result...
                 //
                 //get the status with the result ( we don't do it above because of changing PDI-15781)
-                transStatus = remoteSlaveServer.getTransStatus( transMeta.getName(), carteObjectId, 0, true );
+                transStatus = remoteSlaveServer.getTransStatus( transMeta.getName(), carteObjectId, 0,
+                  !isSuppressResultData() );
                 Result remoteResult = transStatus.getResult();
                 result.clear();
                 result.add( remoteResult );
@@ -1723,4 +1724,28 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
   }
 
+  /*
+   * Users may define a named parameter with a name matching SUPPRESS_TRANS_RESULT_DATA_* with a value matching the name
+   * of a JobEntryTrans step.  If such a parameter is found and its value matches this step's name, then do not request
+   * the result row data of the transformation when it finishes running.  Only applies to remote slave servers.
+   */
+  public boolean isSuppressResultData() {
+    boolean returnVal = false;
+    if ( parentJobMeta != null ) {
+      String[] params = parentJobMeta.listParameters();
+      for ( String param : params ) {
+        if ( param.startsWith( "SUPPRESS_TRANS_RESULT_DATA_" ) ) {
+          try {
+            String paramVal = parentJobMeta.getParameterValue( param );
+            if ( paramVal != null ) {
+              returnVal |= paramVal.equals( this.getName() );
+            }
+          } catch ( UnknownParamException e ) {
+            logError( BaseMessages.getString( PKG, "JobTrans.Exception.SuppressResultParam" ), e );
+          }
+        }
+      }
+    }
+    return returnVal;
+  }
 }
