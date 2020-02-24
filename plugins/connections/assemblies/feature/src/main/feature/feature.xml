@@ -11,9 +11,10 @@
 
     <!-- START client side dependencies -->
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular/${angular.version}</bundle>
-    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-i18n/${angular-i18n.version}</bundle>
-    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-ui-router/${angular-ui-router.version}</bundle>
-    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-animate/${angular-animate.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/angular-i18n/${angular.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/uirouter__core/${uirouter-core.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/uirouter__angularjs/${uirouter-angularjs.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-animate/${angular.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/require-css/${require-css.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/requirejs-text/${requirejs-text.version}</bundle>
     <!-- END -->

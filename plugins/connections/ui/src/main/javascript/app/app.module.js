@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2019-2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ define([
   "./directives/showpassword.directive",
   "./service/helper.service",
   "./service/data.service",
-  "angular-ui-router",
+  "@uirouter/angularjs",
   "angular-animate"
 ], function (angular, plugins, appConfig, appAnimation, introComponent, summaryComponent, creatingComponent,
              successComponent, failureComponent, selectboxComponent, controlsComponent, messageComponent, helpComponent,
