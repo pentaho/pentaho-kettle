@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2018-2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@
    "./components/shared/focus/focus.directive",
    "./components/shared/help/help.component",
    "./components/shared/service/helper.service",
-   "angular-ui-router",
+   "@uirouter/angularjs",
    "angular-animate"
  ], function(angular, appConfig, appAnimation, pentahoModule, databaseModule, fileModule, managerComponent, managerService, addComponent, connectComponent, connectService, connectingComponent, otherComponent, otherService, loadingComponent, failureComponent, successComponent, errorComponent, focusDirective, helpComponent, helperService) {
    'use strict';
