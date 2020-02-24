@@ -3,7 +3,7 @@
 <dialog id="general-datasource-window"
 	title="${DatabaseDialog.Shell.title}" 
 	appicon="ui/images/CNC.svg"
-    height="610" width="775"
+    height="755" width="775"
 	orient="vertical"
 	onload="dataHandler.loadConnectionData()"
 	buttons="accept, cancel"
