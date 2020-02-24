@@ -141,6 +141,8 @@ public class StringUtil {
         Object value = variablesValues.get( varName );
         if ( value == null ) {
           value = open + varName + close;
+        } else if ( aString.equals( value ) ) {
+          return (String) value;
         } else {
           // check for another variable inside this value
           int another = ( (String) value ).indexOf( open ); // check
