@@ -6,12 +6,12 @@
     <details>${project.description}</details>
     <!-- START client side dependencies -->
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular/${angular.version}</bundle>
-    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-route/${angular-route.version}</bundle>
-    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-sanitize/${angular-sanitize.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-sanitize/${angular.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-translate/${angular-translate.version}</bundle>
-    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-animate/${angular-animate.version}</bundle>
-    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-ui-router/${angular-ui-router.version}</bundle>
-    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-i18n/${angular-i18n.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-animate/${angular.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/uirouter__core/${uirouter-core.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/uirouter__angularjs/${uirouter-angularjs.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/angular-i18n/${angular.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/require-css/${require-css.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/requirejs-text/${requirejs-text.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/dojo/${dojo.version}</bundle>

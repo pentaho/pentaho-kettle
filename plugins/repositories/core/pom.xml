@@ -41,31 +41,21 @@
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular</artifactId>
-      <version>${angular.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>angular-route</artifactId>
-      <version>${angular-route.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-sanitize</artifactId>
-      <version>${angular-sanitize.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-translate</artifactId>
-      <version>${angular-translate.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-animate</artifactId>
-      <version>${angular-animate.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -163,9 +153,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>angular-i18n</artifactId>
-      <version>${angular-i18n.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
