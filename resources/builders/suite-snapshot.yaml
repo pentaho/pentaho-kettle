@@ -257,10 +257,6 @@ jobGroups:
        root            :  plugins
        parallelize     :  true
 
-     - jobID           :  pdi-monitoring-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
-       archivable      :  true
-
      - jobID           :  modeler
        scmUrl          :  https://github.com/pentaho/modeler.git
 
@@ -272,6 +268,11 @@ jobGroups:
 
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
+
+  2450:
+    - jobID           :  pdi-monitoring-plugin
+      scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
+      archivable      :  true
 
   2500:
      - jobID           :  pdi-plugins-ee

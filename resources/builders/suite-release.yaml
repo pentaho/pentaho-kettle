@@ -345,12 +345,6 @@ jobGroups:
        parallelize     :  false
        versionProperty :  pdi.version
 
-     - jobID           :  pdi-monitoring-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
-       directives      :  += -Deula-wrap
-       archivable      :  true
-       versionProperty :  pdi-monitoring-plugin.version
-
      - jobID           :  modeler
        scmUrl          :  https://github.com/pentaho/modeler.git
        versionProperty :  pentaho-modeler.version
@@ -366,6 +360,13 @@ jobGroups:
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
        versionProperty :  commons-ee.version
+
+  2450:
+    - jobID           :  pdi-monitoring-plugin
+      scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
+      directives      :  += -Deula-wrap
+      archivable      :  true
+      versionProperty :  pdi-monitoring-plugin.version
 
   2500:
      - jobID           :  pdi-plugins-ee
