@@ -234,10 +234,15 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
 
     if ( mappingVariables != null ) {
       for ( int i = 0; i < mappingVariables.length; i++ ) {
-        parameters.put( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
+        String parameterValue = parent.environmentSubstitute( inputFields[ i ] );
+        //Self-defining variables are not supported. See PDI-18227, PDI-18476
+        if ( parameterValue.equals( inputFields[ i ] ) ){
+          parameterValue = "";
+        }
+        parameters.put( mappingVariables[ i ], parameterValue );
         //If inputField value is not empty then create it in variableSpace of step(Parent)
-        if ( !Utils.isEmpty( Const.trim( parent.environmentSubstitute( inputFields[ i ] ) ) ) ) {
-          parent.setVariable( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
+        if ( !Utils.isEmpty( Const.trim( parameterValue ) ) ) {
+          parent.setVariable( mappingVariables[ i ], parameterValue );
         }
       }
     }
