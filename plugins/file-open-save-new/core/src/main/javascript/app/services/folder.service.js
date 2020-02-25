@@ -111,7 +111,7 @@ define(
                 self.selectFolder(folderFile.folder).then(reject());
               }
               else {
-                let message = folderFile;
+                var message = folderFile;
                 reject(message);
               }
             });
