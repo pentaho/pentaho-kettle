@@ -688,6 +688,11 @@ jobGroups:
        archivable      :  true
        versionProperty :  worker-nodes.version
 
+     - jobID           :  worker-nodes-custom-resources
+       scmUrl          :  https://github.com/pentaho/worker-nodes-custom-resources.git
+       testable        :  false
+       archivable      :  true
+
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
        directives      :  += -DskipDefault -P platform-ee-assemble -Deula-wrap
