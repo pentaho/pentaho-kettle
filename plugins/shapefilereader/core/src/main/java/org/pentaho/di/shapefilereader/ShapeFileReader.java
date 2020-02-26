@@ -371,11 +371,21 @@ public class ShapeFileReader extends BaseStep implements StepInterface {
         meta.setEncoding( getTransMeta().getVariable( "ESRI.encoding" ) );
       }
 
-      data.shapeFile = new ShapeFile( log, meta.getShapeFilename(), meta.getDbfFilename(), meta.getEncoding() );
+      String shapeFilename = environmentSubstitute( meta.getShapeFilename() );
+      if ( shapeFilename.startsWith( "file:" ) ) {
+        shapeFilename = shapeFilename.substring( 5 );
+      }
+
+      String dbFilename = environmentSubstitute( meta.getDbfFilename() );
+      if ( dbFilename.startsWith( "file:" ) ) {
+        dbFilename = dbFilename.substring( 5 );
+      }
+
+      data.shapeFile = new ShapeFile( log, shapeFilename, dbFilename, meta.getEncoding() );
       try {
         data.shapeFile.readFile();
       } catch ( Exception e ) {
-        logError( "Unable to read shapefile [" + meta.getShapeFilename() + "] because of an error: " + e.toString() );
+        logError( "Unable to read shapefile [" + shapeFilename + "] because of an error: " + e.toString() );
         return false;
       }
 
