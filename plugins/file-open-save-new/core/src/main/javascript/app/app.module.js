@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2019-2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ define([
   "./services/message.service",
   "./services/modal.service",
   "./shared/shared.module",
-  "angular-ui-router"
+  "@uirouter/angularjs"
 ], function (angular, fileServices, appConfig, appComponent, cardComponent, folderComponent, errorComponent,
              loadingComponent, addressbarComponent, filesComponent, searchComponent, modalsComponent, selectBoxComponent,
              filebarComponent, fileControls, helperService, dataService, repositoryService, vfsService, localService,

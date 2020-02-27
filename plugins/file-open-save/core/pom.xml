@@ -75,7 +75,7 @@
       <artifactId>angular</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>angular-i18n</artifactId>
     </dependency>
     <dependency>
@@ -94,7 +94,7 @@
       <groupId>org.webjars.npm</groupId>
       <artifactId>jquery</artifactId>
       <scope>runtime</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
