@@ -409,7 +409,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
             + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
             + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
             + "id=\"cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">"
-            + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
+            + ( trans.getLogDate() == null ? "-" : dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) ) + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table></table>" );
@@ -512,7 +512,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
             + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
             + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
             + "id=\"j-cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">"
-            + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
+            + ( job.getLogDate() == null ? "-" : dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) ) + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table></table>" );
