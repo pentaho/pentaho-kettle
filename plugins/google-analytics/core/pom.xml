@@ -18,7 +18,6 @@
 
   <properties>
     <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
-    <commons-vfs2.version>2.2</commons-vfs2.version>
     <commons-codec.version>1.9</commons-codec.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
@@ -78,7 +77,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
-      <version>${commons-vfs2.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.swt</groupId>
