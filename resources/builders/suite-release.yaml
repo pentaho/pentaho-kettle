@@ -692,6 +692,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/worker-nodes-custom-resources.git
        testable        :  false
        archivable      :  true
+       versionProperty :  worker-nodes-custom-resources.version
 
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
