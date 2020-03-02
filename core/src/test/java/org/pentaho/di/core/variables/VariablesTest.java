@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,8 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -62,7 +64,7 @@ public class VariablesTest {
    * is occurred.
    */
   @Test
-  public void testinItializeVariablesFrom() {
+  public void testInitializeVariablesFrom() {
     final Variables variablesMock = mock( Variables.class );
     doCallRealMethod().when( variablesMock ).initializeVariablesFrom( any( VariableSpace.class ) );
 
@@ -88,6 +90,9 @@ public class VariablesTest {
     } ).when( propertiesMock ).put( anyString(), anyString() );
 
     variablesMock.initializeVariablesFrom( null );
+    int expectedNumOfProperties = System.getProperties().size() - 1;
+    verify( variablesMock, times( expectedNumOfProperties ) ).getProperties();
+    verify( propertiesMock, times( expectedNumOfProperties * 2 ) ).put( anyString(), anyString() );
   }
 
   private void modifySystemproperties() {
@@ -131,7 +136,7 @@ public class VariablesTest {
         for ( int i = 0; i < 300; i++ ) {
           String key = "key" + i;
           variables.setVariable( key, "value" );
-          assertEquals( variables.environmentSubstitute( "${" + key + "}" ), "value" );
+          assertEquals( "value", variables.environmentSubstitute( "${" + key + "}" ) );
         }
         return true;
       }
