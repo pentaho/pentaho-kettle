@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -597,6 +597,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
         connection = DriverManager.getConnection( url, properties );
       }
+    } catch ( SQLException sqlException ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Exception.ConnectionTestFailed", toString() ), sqlException );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
     }
