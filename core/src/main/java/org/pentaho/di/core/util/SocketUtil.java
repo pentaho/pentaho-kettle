@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,10 @@ import org.pentaho.di.core.exception.KettleException;
  * Utility class for socket related methods
  */
 public class SocketUtil {
+
+  private SocketUtil() {
+  }
+
   /**
    * Attempts to connect to the specified host, wrapping any exceptions in a KettleException
    *
@@ -42,8 +46,7 @@ public class SocketUtil {
    * @throws KettleException
    */
   public static void connectToHost( String host, int port, int timeout ) throws KettleException {
-    Socket socket = new Socket();
-    try {
+    try ( Socket socket = new Socket() ) {
       InetSocketAddress is = new InetSocketAddress( host, port );
       if ( timeout < 0 ) {
         socket.connect( is );
@@ -52,12 +55,6 @@ public class SocketUtil {
       }
     } catch ( Exception e ) {
       throw new KettleException( e );
-    } finally {
-      try {
-        socket.close();
-      } catch ( Exception e ) {
-        // Ignore
-      }
     }
   }
 }

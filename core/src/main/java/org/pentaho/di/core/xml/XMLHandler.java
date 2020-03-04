@@ -23,6 +23,8 @@
 package org.pentaho.di.core.xml;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileObject;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
@@ -88,6 +90,9 @@ public class XMLHandler {
   private static final SimpleTimestampFormat simpleTimeStampFormat =
     new SimpleTimestampFormat( ValueMeta.DEFAULT_TIMESTAMP_FORMAT_MASK );
 
+  private XMLHandler() {
+  }
+
   /**
    * The header string to specify encoding in UTF-8 for XML files
    *
@@ -111,7 +116,7 @@ public class XMLHandler {
    * Get the value of a tag in a node
    *
    * @param n   The node to look in
-   * @param tag The tag to look for
+   * @param code The code to look for
    * @return The value of the tag or null if nothing was found.
    */
   public static String getTagValue( Node n, KettleAttributeInterface code ) {
@@ -171,10 +176,9 @@ public class XMLHandler {
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
       if ( childnode.getNodeName().equalsIgnoreCase( tag )
-        && childnode.getAttributes().getNamedItem( attribute ) != null ) {
-        if ( childnode.getFirstChild() != null ) {
-          return childnode.getFirstChild().getNodeValue();
-        }
+        && childnode.getAttributes().getNamedItem( attribute ) != null
+        && childnode.getFirstChild() != null ) {
+        return childnode.getFirstChild().getNodeValue();
       }
     }
     return null;
@@ -189,8 +193,10 @@ public class XMLHandler {
    * @return The string of the subtag or null if nothing was found.
    */
   public static String getTagValue( Node n, String tag, String subtag ) {
-    NodeList children, tags;
-    Node childnode, tagnode;
+    NodeList children;
+    NodeList tags;
+    Node childnode;
+    Node tagnode;
 
     if ( n == null ) {
       return null;
@@ -204,10 +210,8 @@ public class XMLHandler {
         tags = childnode.getChildNodes();
         for ( int j = 0; j < tags.getLength(); j++ ) {
           tagnode = tags.item( j );
-          if ( tagnode.getNodeName().equalsIgnoreCase( subtag ) ) {
-            if ( tagnode.getFirstChild() != null ) {
-              return tagnode.getFirstChild().getNodeValue();
-            }
+          if ( tagnode.getNodeName().equalsIgnoreCase( subtag ) && tagnode.getFirstChild() != null ) {
+            return tagnode.getFirstChild().getNodeValue();
           }
         }
       }
@@ -283,7 +287,8 @@ public class XMLHandler {
    */
   public static Node getNodeWithTagValue( Node n, String tag, String subtag, String subtagvalue, int nr ) {
     NodeList children;
-    Node childnode, tagnode;
+    Node childnode;
+    Node tagnode;
     String value;
 
     int count = 0;
@@ -295,7 +300,7 @@ public class XMLHandler {
         // <hop>
         tagnode = getSubNode( childnode, subtag );
         value = getNodeValue( tagnode );
-        if ( value.equalsIgnoreCase( subtagvalue ) ) {
+        if ( value != null && value.equalsIgnoreCase( subtagvalue ) ) {
           if ( count == nr ) {
             return childnode;
           }
@@ -954,7 +959,7 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static String addTagValue( String tag, BigDecimal val, boolean cr ) {
-    return addTagValue( tag, val != null ? val.toString() : (String) null, cr );
+    return addTagValue( tag, val != null ? val.toString() : null, cr );
   }
 
   /**
@@ -1198,10 +1203,11 @@ public class XMLHandler {
  * @since 2007-12-21
  */
 class DTDIgnoringEntityResolver implements EntityResolver {
+  private static final Log log = LogFactory.getLog( DTDIgnoringEntityResolver.class );
   @Override
-  public InputSource resolveEntity( java.lang.String publicID, java.lang.String systemID ) throws IOException {
-    System.out.println( "Public-ID: " + publicID.toString() );
-    System.out.println( "System-ID: " + systemID.toString() );
+  public InputSource resolveEntity( String publicID, String systemID ) throws IOException {
+    log.info( "Public-ID: " + publicID );
+    log.info( "System-ID: " + systemID );
     return new InputSource( new ByteArrayInputStream( "<?xml version='1.0' encoding='UTF-8'?>".getBytes() ) );
   }
 
