@@ -10,13 +10,13 @@ buildProperties:
 
   MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
 
-  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : http://orl-jfrog-lb.pentaho.net/artifactory/pntpub-mvn-snapshot-orl/
-  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: http://orl-jfrog-lb.pentaho.net/artifactory/pntprv-mvn-snapshot-orl/
-  DOCKER_IMAGE_HOST              : pntprv-docker-release.orl-jfrog-lb.pentaho.net
-  DOCKER_REGISTRY_URL            : http://pntprv-docker-release.orl-jfrog-lb.pentaho.net
+  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-snapshot-orl/
+  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-snapshot-orl/
+  DOCKER_IMAGE_HOST              : pntprv-docker-release.repo.orl.eng.hitachivantara.com
+  DOCKER_REGISTRY_URL            : https://pntprv-docker-release.repo.orl.eng.hitachivantara.com
 
-  DOCKER_PUBLIC_PUSH_REPO     : pntpub-docker-dev-orl.orl-jfrog-lb.pentaho.net/
-  DOCKER_PRIVATE_PUSH_REPO    : pntprv-docker-dev-orl.orl-jfrog-lb.pentaho.net/
+  DOCKER_PUBLIC_PUSH_REPO     : pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com/
+  DOCKER_PRIVATE_PUSH_REPO    : pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com/
 
   MAVEN_DEFAULT_DIRECTIVES:
     build: clean deploy -DskipTests
