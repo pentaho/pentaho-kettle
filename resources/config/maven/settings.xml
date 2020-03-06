@@ -78,6 +78,31 @@
       <username>${env.NEXUS_DEPLOY_USER}</username>
       <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
+    <server>
+      <id>pnt-docker.repo.orl.eng.hitachivantara.com</id>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
+    </server>
+    <server>
+      <id>pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com</id>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
+    </server>
+    <server>
+      <id>pntprv-docker-release-orl.repo.orl.eng.hitachivantara.com</id>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
+    </server>
+    <server>
+      <id>pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com</id>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
+    </server>
+    <server>
+      <id>pntpub-docker-release-orl.repo.orl.eng.hitachivantara.com</id>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
+    </server>
   </servers>
 
   <profiles>
