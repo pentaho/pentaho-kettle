@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
@@ -42,17 +43,21 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleRepositoryNotFoundException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransAdapter;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -207,6 +212,16 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransRequested" ) );
     }
 
+    PrintWriter out = response.getWriter();
+
+    // Let's see if the user has the required Execute Permission
+    if ( !checkExecutePermission() ) {
+      response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+      String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.ExecutePermissionRequired" );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      return;
+    }
+
     // Options taken from PAN
     //
     String[] knownOptions = new String[] { "rep", "user", "pass", "trans", "level", };
@@ -225,10 +240,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       response.setContentType( "text/html; charset=" + encoding );
     }
 
-    PrintWriter out = response.getWriter();
-
     try {
-
       final Repository repository = openRepository( repOption, userOption, passOption );
       final TransMeta transMeta = loadTransformation( repository, transOption );
 
@@ -335,19 +347,22 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       RepositoryDirectoryInterface directory =
         repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
       if ( directory == null ) {
-        throw new KettleException( "Unable to find directory path '" + directoryPath + "' in the repository" );
+        String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.DirectoryPathNotFoundInRepository", directoryPath );
+        throw new KettleException( message );
       }
 
       ObjectId transformationID = repository.getTransformationID( name, directory );
       if ( transformationID == null ) {
-        throw new KettleException( "Unable to find transformation '" + name + "' in directory :" + directory );
+        String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.TransformationNotFoundInDirectory", name, directoryPath );
+        throw new KettleException( message );
       }
       TransMeta transMeta = repository.loadTransformation( transformationID, null );
       return transMeta;
     }
   }
 
-  private Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
+  @VisibleForTesting
+  Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
 
     if ( Utils.isEmpty( repositoryName ) ) {
       return null;
@@ -357,7 +372,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     repositoriesMeta.readData();
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
     if ( repositoryMeta == null ) {
-      throw new KettleException( "Unable to find repository: " + repositoryName );
+      String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.UnableToFindRepository", repositoryName );
+      throw new KettleRepositoryNotFoundException( message );
     }
     PluginRegistry registry = PluginRegistry.getInstance();
     Repository repository = registry.loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
@@ -366,10 +382,12 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     return repository;
   }
 
+  @Override
   public String toString() {
     return "Start transformation";
   }
 
+  @Override
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
@@ -380,8 +398,12 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     trans.waitUntilFinished();
   }
 
+  protected boolean checkExecutePermission() {
+    return PentahoSystem.get( IAuthorizationPolicy.class )
+      .isAllowed( RepositorySecurityProvider.EXECUTE_CONTENT_ACTION );
+  }
+
   public String getContextPath() {
     return CONTEXT_PATH;
   }
-
 }

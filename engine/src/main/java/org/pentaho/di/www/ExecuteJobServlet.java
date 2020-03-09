@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,9 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -189,6 +192,16 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
       logDebug( BaseMessages.getString( PKG, "ExecuteJobServlet.Log.ExecuteJobRequested" ) );
     }
 
+    PrintWriter out = response.getWriter();
+
+    // Let's see if the user has the required Execute Permission
+    if ( !checkExecutePermission() ) {
+      response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+      String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.ExecutePermissionRequired" );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      return;
+    }
+
     // Options taken from PAN
     //
     String[] knownOptions = new String[] { "rep", "user", "pass", "job", "level", };
@@ -198,8 +211,6 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     String passOption = Encr.decryptPasswordOptionallyEncrypted( request.getParameter( "pass" ) );
     String jobOption = request.getParameter( "job" );
     String levelOption = request.getParameter( "level" );
-
-    PrintWriter out = response.getWriter();
 
     Repository repository;
     try {
@@ -391,10 +402,12 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     return repository;
   }
 
+  @Override
   public String toString() {
     return "Start job";
   }
 
+  @Override
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
@@ -404,9 +417,13 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     //
     job.start();
   }
+  
+  protected boolean checkExecutePermission() {
+    return PentahoSystem.get( IAuthorizationPolicy.class )
+      .isAllowed( RepositorySecurityProvider.EXECUTE_CONTENT_ACTION );
+  }
 
   public String getContextPath() {
     return CONTEXT_PATH;
   }
-
 }
