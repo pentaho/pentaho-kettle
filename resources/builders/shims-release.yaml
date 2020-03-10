@@ -21,10 +21,9 @@ buildProperties:
 
   # Maven
   MAVEN_DEFAULT_DIRECTIVES       : clean deploy
-  MAVEN_PUBLIC_RELEASE_REPO_URL  : http://orl-jfrog-lb.pentaho.net/artifactory/pntpub-mvn-dev-orl/
-  MAVEN_PRIVATE_RELEASE_REPO_URL : http://orl-jfrog-lb.pentaho.net/artifactory/pntprv-mvn-dev-orl/
-  DOCKER_IMAGE_HOST              : pntprv-docker-release.orl-jfrog-lb.pentaho.net
-  DOCKER_REGISTRY_URL            : http://pntprv-docker-release.orl-jfrog-lb.pentaho.net
+  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-dev-orl/
+  MAVEN_PRIVATE_RELEASE_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-dev-orl/
+
   ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
 
   # Version based control properties

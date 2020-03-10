@@ -1,4 +1,4 @@
-@GrabResolver(name='pentaho', root='http://orl-jfrog-lb.pentaho.net/artifactory/pnt-mvn/')
+@GrabResolver(name='pentaho', root='http://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/')
 @Grab(group='org.apache.commons', module='commons-compress', version='1.19')
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;

@@ -16,12 +16,12 @@ JENKINS_MAVEN_FOR_BUILDS: maven3-auto
 JENKINS_GRADLE_FOR_BUILDS: gradle-auto
 
 # Maven
-MAVEN_RESOLVE_REPO_URL: http://orl-jfrog-lb.pentaho.net/artifactory/pntprv-mvn
+MAVEN_RESOLVE_REPO_URL: https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn
 MAVEN_TEST_OPTS: -DsurefireArgLine=-Xmx1g
 MAVEN_SETTINGS: ${BUILD_CONFIG_ROOT_PATH}/maven/settings.xml
 
 # Docker
-DOCKER_RESOLVE_REPO: pnt-docker.orl-jfrog-lb.pentaho.net/
+DOCKER_RESOLVE_REPO: pnt-docker.repo.orl.eng.hitachivantara.com/
 
 # Stage execution
 RUN_STAGE_CHECKOUT  : true
@@ -73,8 +73,8 @@ VULNERABILITY_DATABASE_PATH: '/build/security/national-vulnerability-database'
 DEPENDENCY_CHECK_SUPPRESSION_PATH: '/home/buildguy/suppress.xml'
 
 # Docker
-DOCKER_IMAGE_HOST: nexus.pentaho.org
-DOCKER_REGISTRY_URL: https://nexus.pentaho.org
+DOCKER_IMAGE_HOST: pntprv-docker-release.repo.orl.eng.hitachivantara.com
+DOCKER_REGISTRY_URL: https://pntprv-docker-release.repo.orl.eng.hitachivantara.com
 
 # Minions
 MINION_PIPELINE_TEMPLATE: resources/templates/minion-pipeline-default.vm
