@@ -49,6 +49,6 @@ public class DefaultCacheTest {
     //Only one entry expected
     assertEquals( 1, map.size() );
     //The value expected is the first one inserted
-    assertEquals( map.get( new RowMetaAndData( rowMeta, new Object[]{1} ) ).getRow()[0], 100 );
+    assertEquals( 100, map.get( new RowMetaAndData( rowMeta, new Object[]{1} ) ).getRow()[0] );
   }
 }
