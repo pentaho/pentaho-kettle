@@ -1274,7 +1274,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
       if ( jer.getLogDate() != null ) {
         messageText.append( " (" );
-        messageText.append( XMLHandler.date2string( jer.getLogDate() ) );
+        messageText.append( Const.NVL( XMLHandler.date2string( jer.getLogDate() ), "-" ) );
         messageText.append( ')' );
       }
     }
