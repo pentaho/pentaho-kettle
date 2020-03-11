@@ -9,6 +9,8 @@ buildProperties:
   ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
 
   MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
+  # we are running in containers, let the maven process have most of the memory available
+  MAVEN_OPTS: -Xmx4g -XX:MaxRAMPercentage=90.0
 
   MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-snapshot-orl/
   MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-snapshot-orl/
@@ -174,7 +176,7 @@ jobGroups:
   1420:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       directives      :  += -DskipDefault -P all -Xmx4g
+       directives      :  += -DskipDefault -P all
        archivable      :  true
        root            :  shims
        
