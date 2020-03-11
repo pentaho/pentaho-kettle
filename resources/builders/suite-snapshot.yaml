@@ -174,7 +174,7 @@ jobGroups:
   1420:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
-       directives      :  += -DskipDefault -P all
+       directives      :  += -DskipDefault -P all -Xmx4g
        archivable      :  true
        root            :  shims
        
