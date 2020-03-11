@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
-import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
@@ -79,10 +78,6 @@ public class KettleVFS {
 
   private KettleVFS() {
     fsm = new ConcurrentFileSystemManager();
-    // Forcibly overrides VFS's default StandardFileSystemManager with our Concurrent File System Manager, which will
-    // also allow us to point at our own providers.xml file, instead of the default file that comes with the
-    // commons-vfs2 library.
-    VFS.setManager( fsm );
     try {
       fsm.setFilesCache( new WeakRefFilesCache() );
       fsm.init();
