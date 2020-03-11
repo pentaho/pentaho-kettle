@@ -258,7 +258,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           String logId = trans.getLogChannelId();
           boolean finishedOrStopped = trans.isFinishedOrStopped();
           boolean sendResultXmlWithStatus = "Y".equalsIgnoreCase( request.getParameter( SEND_RESULT ) );
-          if ( finishedOrStopped && ( data = cache.get( logId, startLineNr ) ) != null && !sendResultXmlWithStatus) {
+          if ( finishedOrStopped && ( data = cache.get( logId, startLineNr ) ) != null && !sendResultXmlWithStatus ) {
             response.setContentLength( XML_HEADER.length + data.length );
             out = response.getOutputStream();
             out.write( XML_HEADER );
@@ -310,7 +310,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             out.write( XML_HEADER );
             out.write( data );
             out.flush();
-            if ( finishedOrStopped && ( transStatus.isFinished() || transStatus.isStopped() ) && logId != null && !sendResultXmlWithStatus) {
+            if ( finishedOrStopped && ( transStatus.isFinished() || transStatus.isStopped() ) && logId != null && !sendResultXmlWithStatus ) {
               cache.put( logId, xml, startLineNr );
             }
           }

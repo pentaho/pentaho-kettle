@@ -427,7 +427,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
           PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id ) ) );
       } else {
-        out.println( "<H1>Job " + Encode.forHtml("'" + jobName + "'") + " could not be found.</H1>" );
+        out.println( "<H1>Job " + Encode.forHtml( "'" + jobName + "'" ) + " could not be found.</H1>" );
         out.println( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
           + BaseMessages.getString( PKG, "JobStatusServlet.BackToStatusPage" ) + "</a><p>" );
