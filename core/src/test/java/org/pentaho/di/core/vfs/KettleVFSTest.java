@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,6 @@ package org.pentaho.di.core.vfs;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
@@ -34,6 +32,7 @@ import org.junit.Test;
 
 
 import java.io.File;
+import java.io.IOException;
 
 
 public class KettleVFSTest {
@@ -54,43 +53,62 @@ public class KettleVFSTest {
     assertFalse( KettleVFS.startsWithScheme( fileName ) );
   }
 
+
   @Test
-  public void testCheckForSchemeSuccess() {
+  public void testCheckForSchemeSuccess() throws IOException {
     String[] schemes = {"hdfs"};
     String vfsFilename = "hdfs://hsbcmaster:8020/tmp/acltest/";
 
-    assertNotNull( KettleVFS.getScheme( schemes, vfsFilename ) );
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertFalse( testVfsFilename );
+
   }
 
   @Test
-  public void testCheckForSchemeFail() {
+  public void testCheckForSchemeFail() throws IOException {
     String[] schemes = {"file"};
     String vfsFilename = "hdfs://hsbcmaster:8020/tmp/acltest/";
 
-    assertNull( KettleVFS.getScheme( schemes, vfsFilename ) );
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertTrue( testVfsFilename );
+
   }
 
   @Test
-  public void testCheckForSchemeIfRelativePath() {
+  public void testCheckForSchemeIfRelativePath() throws IOException {
     String[] schemes = {"file"};
     String vfsFilename = "\"/tmp/acltest/\"";
 
-    assertNull( KettleVFS.getScheme( schemes, vfsFilename ) );
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertTrue( testVfsFilename );
+
   }
 
   @Test
-  public void testCheckForSchemeIfBlank() {
+  public void testCheckForSchemeIfBlank() throws IOException {
     String[] schemes = {"file"};
     String vfsFilename = " ";
 
-    assertNull( KettleVFS.getScheme( schemes, vfsFilename ) );
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertTrue( testVfsFilename );
+
+  }
+
+  @Test
+  public void testCheckForSchemeIfNull() throws IOException {
+    String[] schemes = {"file"};
+    String vfsFilename = null;
+
+    boolean testVfsFilename = KettleVFS.checkForSchemeProvider( schemes, true, vfsFilename, null, null );
+    assertTrue( testVfsFilename );
+
   }
 
   @Test
   public void testNormalizePathWithFile() {
     String vfsFilename = "\\\\tmp/acltest.txt";
 
-    String testNormalizePath = KettleVFS.normalizePath( vfsFilename, "someScheme" );
+    String testNormalizePath = KettleVFS.normalizePath( vfsFilename, true );
     assertTrue( testNormalizePath.startsWith( "file:/" )  );
   }
 
@@ -98,7 +116,7 @@ public class KettleVFSTest {
   public void testNormalizePath() {
     String vfsFilename = "tmp/acltest";
 
-    String testNormalizePath = KettleVFS.normalizePath( vfsFilename, null );
+    String testNormalizePath = KettleVFS.normalizePath( vfsFilename, true );
     assertEquals( new File( vfsFilename ).getAbsolutePath(), testNormalizePath );
   }
 
@@ -106,7 +124,7 @@ public class KettleVFSTest {
   public void testHasScheme() {
     String vfsFilename = "hdfs://hsbcmaster:8020/tmp/acltest/";
 
-    boolean testVfsFilename = KettleVFS.hasSchemePattern( vfsFilename, PROVIDER_PATTERN_SCHEME );
+    boolean testVfsFilename = KettleVFS.hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
     assertTrue( testVfsFilename );
 
   }
@@ -116,10 +134,10 @@ public class KettleVFSTest {
     String vfsFilename = "/tmp/This is a text file4551613284841905296.txt";
     String vfsFilenameWithScheme = "hdfs://tmp/This is a text file4551613284841905296.txt";
 
-    boolean testVfsFilename = KettleVFS.hasSchemePattern( vfsFilename, PROVIDER_PATTERN_SCHEME );
+    boolean testVfsFilename = KettleVFS.hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
     assertFalse( testVfsFilename );
 
-    boolean testVfsFilenameWithScheme = KettleVFS.hasSchemePattern( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
+    boolean testVfsFilenameWithScheme = KettleVFS.hasScheme( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
     assertTrue( testVfsFilenameWithScheme );
 
   }
@@ -129,10 +147,10 @@ public class KettleVFSTest {
     String vfsFilename = "${input_file}";
     String vfsFilenameWithScheme = "hdfs://${input_file}";
 
-    boolean testVfsFilename = KettleVFS.hasSchemePattern( vfsFilename, PROVIDER_PATTERN_SCHEME );
+    boolean testVfsFilename = KettleVFS.hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
     assertFalse( testVfsFilename );
 
-    boolean testVfsFilenameWithScheme = KettleVFS.hasSchemePattern( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
+    boolean testVfsFilenameWithScheme = KettleVFS.hasScheme( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
     assertTrue( testVfsFilenameWithScheme );
 
   }
@@ -143,10 +161,10 @@ public class KettleVFSTest {
       + "textMessage \",\"textMessage\":{textMessage}}}";
     String vfsFilenameWithScheme = "hdfs://" + vfsFilename;
 
-    boolean testVfsFilename = KettleVFS.hasSchemePattern( vfsFilename, PROVIDER_PATTERN_SCHEME );
+    boolean testVfsFilename = KettleVFS.hasScheme( vfsFilename, PROVIDER_PATTERN_SCHEME );
     assertFalse( testVfsFilename );
 
-    boolean testVfsFilenameWithScheme = KettleVFS.hasSchemePattern( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
+    boolean testVfsFilenameWithScheme = KettleVFS.hasScheme( vfsFilenameWithScheme, PROVIDER_PATTERN_SCHEME );
     assertTrue( testVfsFilenameWithScheme );
 
   }
