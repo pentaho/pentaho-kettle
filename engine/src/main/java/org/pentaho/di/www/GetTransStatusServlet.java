@@ -310,7 +310,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             out.write( XML_HEADER );
             out.write( data );
             out.flush();
-            if ( finishedOrStopped && ( transStatus.isFinished() || transStatus.isStopped() ) && logId != null && !sendResultXmlWithStatus) {
+            if ( finishedOrStopped && ( transStatus.isFinished() || transStatus.isStopped() ) && logId != null && !sendResultXmlWithStatus ) {
               cache.put( logId, xml, startLineNr );
             }
           }
