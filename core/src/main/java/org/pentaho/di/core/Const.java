@@ -2206,15 +2206,6 @@ public class Const {
   }
 
   /**
-   * Returns the full path to the Kettle properties XML file.
-   *
-   * @return The Kettle properties file.
-   */
-  public static String getKettlePropertiesFilename() {
-    return Const.getKettleDirectory() + FILE_SEPARATOR + Const.KETTLE_PROPERTIES;
-  }
-
-  /**
    * Returns the path to the Kettle local (current directory) Carte password file:
    * <p>
    * ./pwd/kettle.pwd<br>
