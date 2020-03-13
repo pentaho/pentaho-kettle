@@ -1796,10 +1796,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   public boolean isReservedWord( String word ) {
     String[] reserved = getReservedWords();
-    if ( Const.indexOfString( word, reserved ) >= 0 ) {
-      return true;
-    }
-    return false;
+    return Const.indexOfString( word, reserved ) >= 0;
   }
 
   /**
@@ -1813,10 +1810,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     if ( fieldname == null ) {
       return false;
     }
-    if ( fieldname.indexOf( ' ' ) >= 0 ) {
-      return true;
-    }
-    return false;
+     return fieldname.indexOf( ' ' ) >= 0 ;
   }
 
   /**
@@ -1879,10 +1873,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     if ( fieldname == null ) {
       return false;
     }
-    if ( fieldname.indexOf( '.' ) >= 0 ) {
-      return true;
-    }
-    return false;
+    return fieldname.indexOf( '.' ) >= 0;
   }
 
   /**
