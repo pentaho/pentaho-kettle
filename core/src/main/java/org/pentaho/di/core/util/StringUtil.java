@@ -196,6 +196,7 @@ public class StringUtil {
     int i = rest.indexOf( HEX_OPEN );
     while ( i > -1 ) {
       int j = rest.indexOf( HEX_CLOSE, i + HEX_OPEN.length() );
+      if ( i + HEX_OPEN.length() == j ) break; // invalid Hex Expression empty array
       // search for closing string
       if ( j > -1 ) {
         buffer.append( rest.substring( 0, i ) );
