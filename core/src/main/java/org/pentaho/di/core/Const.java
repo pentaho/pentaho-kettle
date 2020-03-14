@@ -1157,6 +1157,9 @@ public class Const {
   // See PDI-17980 for details
   public static final String KETTLE_COMPATIBILITY_USE_JDBC_METADATA = "KETTLE_COMPATIBILITY_USE_JDBC_METADATA";
 
+  // See PDI-18470 for details
+  public static final String KETTLE_COMPATIBILITY_USE_DB_LOOKUP_CHOSEN_RETURN_FIELDS_TYPE = "KETTLE_COMPATIBILITY_USE_DB_LOOKUP_CHOSEN_RETURN_FIELDS_TYPE";
+
   /**
    * The XML file that contains the list of native import rules
    */
