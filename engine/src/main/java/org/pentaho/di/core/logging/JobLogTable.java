@@ -431,26 +431,26 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     RowMetaInterface lookupIndex = new RowMeta();
     LogTableField errorsField = findField( ID.ERRORS );
     if ( errorsField != null ) {
-      ValueMetaInterface valueMeta = new ValueMetaBase( errorsField.getFieldName(), errorsField.getDataType() );
-      valueMeta.setLength( errorsField.getLength() );
-      lookupIndex.addValueMeta( valueMeta );
+      lookupIndex.addValueMeta( getValueMeta( errorsField ) );
     }
     LogTableField statusField = findField( ID.STATUS );
     if ( statusField != null ) {
-      ValueMetaInterface valueMeta = new ValueMetaBase( statusField.getFieldName(), statusField.getDataType() );
-      valueMeta.setLength( statusField.getLength() );
-      lookupIndex.addValueMeta( valueMeta );
+      lookupIndex.addValueMeta( getValueMeta( statusField ) );
     }
     LogTableField transNameField = findField( ID.JOBNAME );
     if ( transNameField != null ) {
-      ValueMetaInterface valueMeta = new ValueMetaBase( transNameField.getFieldName(), transNameField.getDataType() );
-      valueMeta.setLength( transNameField.getLength() );
-      lookupIndex.addValueMeta( valueMeta );
+      lookupIndex.addValueMeta( getValueMeta( transNameField ) );
     }
 
     indexes.add( lookupIndex );
 
     return indexes;
+  }
+
+  private ValueMetaInterface getValueMeta( LogTableField field ) {
+    ValueMetaInterface valueMeta = new ValueMetaBase( field.getFieldName(), field.getDataType() );
+    valueMeta.setLength( field.getLength() );
+    return valueMeta;
   }
 
   public LogTableField getTimeoutField() {
