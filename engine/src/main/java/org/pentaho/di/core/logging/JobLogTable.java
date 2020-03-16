@@ -418,10 +418,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     if ( isBatchIdUsed() ) {
       RowMetaInterface batchIndex = new RowMeta();
       LogTableField keyField = getKeyField();
-
-      ValueMetaInterface keyMeta = new ValueMetaBase( keyField.getFieldName(), keyField.getDataType() );
-      keyMeta.setLength( keyField.getLength() );
-      batchIndex.addValueMeta( keyMeta );
+      batchIndex.addValueMeta( getValueMeta( keyField ) );
 
       indexes.add( batchIndex );
     }
