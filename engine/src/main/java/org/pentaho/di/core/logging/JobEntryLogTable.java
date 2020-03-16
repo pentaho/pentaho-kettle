@@ -306,15 +306,18 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 
     if ( keyField.isEnabled() ) {
       RowMetaInterface batchIndex = new RowMeta();
-
-      ValueMetaInterface keyMeta = new ValueMetaBase( keyField.getFieldName(), keyField.getDataType() );
-      keyMeta.setLength( keyField.getLength() );
-      batchIndex.addValueMeta( keyMeta );
+      batchIndex.addValueMeta( getValueMeta( keyField ) );
 
       indexes.add( batchIndex );
     }
 
     return indexes;
+  }
+
+  private ValueMetaInterface getValueMeta( LogTableField field ) {
+    ValueMetaInterface valueMeta = new ValueMetaBase( field.getFieldName(), field.getDataType() );
+    valueMeta.setLength( field.getLength() );
+    return valueMeta;
   }
 
   public LogTableField getTimeoutField() {
