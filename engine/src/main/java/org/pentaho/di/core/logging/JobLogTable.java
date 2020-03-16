@@ -63,7 +63,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
       "LINES_INPUT" ), LINES_OUTPUT( "LINES_OUTPUT" ), LINES_REJECTED( "LINES_REJECTED" ), ERRORS( "ERRORS" ),
       STARTDATE( "STARTDATE" ), ENDDATE( "ENDDATE" ), LOGDATE( "LOGDATE" ), DEPDATE( "DEPDATE" ), REPLAYDATE(
         "REPLAYDATE" ), LOG_FIELD( "LOG_FIELD" ), EXECUTING_SERVER( "EXECUTING_SERVER" ), EXECUTING_USER(
-        "EXECUTING_USER" ), START_JOB_ENTRY( "START_JOB_ENTRY" ), CLIENT( "CLIENT" );
+        "EXECUTING_USER" ), START_JOB_ENTRY( "START_JOB_ENTRY" ), CLIENT( "CLIENT" ), TIMEOUT( "TIMEOUT" );
 
     private String id;
 
@@ -178,6 +178,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     table.fields.add( new LogTableField( ID.EXECUTING_USER.id, false, false, "EXECUTING_USER", BaseMessages.getString( PKG, "JobLogTable.FieldName.ExecutingUser" ), BaseMessages.getString( PKG, "JobLogTable.FieldDescription.ExecutingUser" ), ValueMetaInterface.TYPE_STRING, 255 ) );
     table.fields.add( new LogTableField( ID.START_JOB_ENTRY.id, false, false, "START_JOB_ENTRY", BaseMessages.getString( PKG, "JobLogTable.FieldName.StartingJobEntry" ), BaseMessages.getString( PKG, "JobLogTable.FieldDescription.StartingJobEntry" ), ValueMetaInterface.TYPE_STRING, 255 ) );
     table.fields.add( new LogTableField( ID.CLIENT.id, false, false, "CLIENT", BaseMessages.getString( PKG, "JobLogTable.FieldName.Client" ), BaseMessages.getString( PKG, "JobLogTable.FieldDescription.Client" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.TIMEOUT.id, false, false, "TIMEOUT", BaseMessages.getString( PKG, "JobLogTable.FieldName.RowTimeout" ), BaseMessages.getString( PKG, "JobLogTable.FieldDescription.RowTimeout" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
 
     table.findField( ID.ID_JOB ).setKey( true );
     table.findField( ID.LOGDATE ).setLogDateField( true );
@@ -187,6 +188,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     table.findField( ID.STATUS ).setStatusField( true );
     table.findField( ID.ERRORS ).setErrorsField( true );
     table.findField( ID.JOBNAME ).setNameField( true );
+    table.findField( ID.TIMEOUT ).setVisible( false );
 
     return table;
   }
@@ -369,6 +371,9 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
                   KettleClientEnvironment.getInstance().getClient() != null ? KettleClientEnvironment
                     .getInstance().getClient().toString() : "unknown";
                 break;
+              case TIMEOUT:
+                value = Long.parseLong( getTimeoutInDays() );
+                break;
               default:
                 break;
             }
@@ -446,6 +451,10 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     indexes.add( lookupIndex );
 
     return indexes;
+  }
+
+  public LogTableField getTimeoutField() {
+    return findField( ID.TIMEOUT );
   }
 
   @Override

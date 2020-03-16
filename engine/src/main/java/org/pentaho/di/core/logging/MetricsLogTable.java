@@ -55,11 +55,12 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
 
     ID_BATCH( "ID_BATCH" ), CHANNEL_ID( "CHANNEL_ID" ), LOG_DATE( "LOG_DATE" ), // The date this record got logged
     METRICS_DATE( "METRICS_DATE" ), // For snapshot: the date/time of snapshot
-      METRICS_CODE( "METRICS_CODE" ), // The unique code of the metric
-      METRICS_DESCRIPTION( "METRICS_DESCRIPTION" ), // The description of the metric
-      METRICS_SUBJECT( "METRICS_SUBJECT" ), // The subject of the metric
-      METRICS_TYPE( "METRICS_TYPE" ), // For snapshots: START or STOP, for metrics: MAX, MIN, SUM
-      METRICS_VALUE( "METRICS_VALUE" ); // For metrics: the value measured (max, min, sum)
+    METRICS_CODE( "METRICS_CODE" ), // The unique code of the metric
+    METRICS_DESCRIPTION( "METRICS_DESCRIPTION" ), // The description of the metric
+    METRICS_SUBJECT( "METRICS_SUBJECT" ), // The subject of the metric
+    METRICS_TYPE( "METRICS_TYPE" ), // For snapshots: START or STOP, for metrics: MAX, MIN, SUM
+    METRICS_VALUE( "METRICS_VALUE" ), // For metrics: the value measured (max, min, sum)
+    TIMEOUT( "TIMEOUT" );
 
     private String id;
 
@@ -136,9 +137,11 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
     table.fields.add( new LogTableField( ID.METRICS_SUBJECT.id, true, false, "METRICS_SUBJECT", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsSubject" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsSubject" ), ValueMetaInterface.TYPE_STRING, 255 ) );
     table.fields.add( new LogTableField( ID.METRICS_TYPE.id, true, false, "METRICS_TYPE", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsType" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsType" ), ValueMetaInterface.TYPE_STRING, 255 ) );
     table.fields.add( new LogTableField( ID.METRICS_VALUE.id, true, false, "METRICS_VALUE", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsValue" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsValue" ), ValueMetaInterface.TYPE_INTEGER, 12 ) );
+    table.fields.add( new LogTableField( ID.TIMEOUT.id, false, false, "TIMEOUT", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.RowTimeout" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.RowTimeout" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
 
     table.findField( ID.LOG_DATE.id ).setLogDateField( true );
     table.findField( ID.ID_BATCH.id ).setKey( true );
+    table.findField( ID.TIMEOUT.id ).setVisible( false );
 
     return table;
   }
@@ -194,6 +197,9 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
               case METRICS_VALUE:
                 value = snapshot.getValue();
                 break;
+              case TIMEOUT:
+                value = Long.parseLong( getTimeoutInDays() );
+                break;
               default:
                 break;
             }
@@ -212,6 +218,10 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
 
   public String getLogTableCode() {
     return "METRICS";
+  }
+
+  public LogTableField getTimeoutField() {
+    return findField( ID.TIMEOUT.id );
   }
 
   public String getLogTableType() {
