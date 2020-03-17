@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -237,25 +237,25 @@ public final class PluginPropertyHandler {
    */
   public static class SaveToPreferences extends AbstractHandler {
 
-    private final Preferences node;
+    private final Preferences preferences;
 
     /**
      * Constructor.
      *
-     * @param node
-     *          node to set.
+     * @param preferences
+     *          preferences to set.
      * @throws IllegalArgumentException
      *           if node is null.
      */
-    public SaveToPreferences( final Preferences node ) throws IllegalArgumentException {
+    public SaveToPreferences( final Preferences preferences ) throws IllegalArgumentException {
       super();
-      Assert.assertNotNull( node, "Node cannot be null" );
-      this.node = node;
+      Assert.assertNotNull( preferences, "Preferences cannot be null" );
+      this.preferences = preferences;
     }
 
     @Override
     protected void handle( final PluginProperty property ) {
-      property.saveToPreferences( this.node );
+      property.saveToPreferences( this.preferences );
     }
 
   }
@@ -266,25 +266,25 @@ public final class PluginPropertyHandler {
    */
   public static class ReadFromPreferences extends AbstractHandler {
 
-    private final Preferences node;
+    private final Preferences preferences;
 
     /**
      * Constructor.
      *
-     * @param node
+     * @param preferences
      *          node to set.
      * @throws IllegalArgumentException
      *           if node is null.
      */
-    public ReadFromPreferences( final Preferences node ) throws IllegalArgumentException {
+    public ReadFromPreferences( final Preferences preferences ) throws IllegalArgumentException {
       super();
-      Assert.assertNotNull( node, "Node cannot be null" );
-      this.node = node;
+      Assert.assertNotNull( preferences, "Preferences cannot be null" );
+      this.preferences = preferences;
     }
 
     @Override
     protected void handle( final PluginProperty property ) {
-      property.readFromPreferences( this.node );
+      property.readFromPreferences( this.preferences );
     }
 
   }
