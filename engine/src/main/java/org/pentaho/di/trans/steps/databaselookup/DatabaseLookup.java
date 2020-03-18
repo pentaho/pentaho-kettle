@@ -239,8 +239,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         }
       }
 
-      if ( shouldReturnTypeBeUpdated() ) {
-        updateReturnValueMeta( fields );
+      if ( shouldDatabaseReturnValueTypeBeUsed() ) {
+        useReturnValueTypeFromDatabase( fields );
       }
 
     } else {
@@ -250,12 +250,23 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     }
   }
 
-  private boolean shouldReturnTypeBeUpdated() {
-    String skipLookupReturnFields = getVariable( Const.KETTLE_COMPATIBILITY_USE_DB_LOOKUP_CHOSEN_RETURN_FIELDS_TYPE, "N" );
+  /*
+   * Checks whether the return value type of fields should use the ones configured in the database instead
+   * of the ones chosen in the step UI
+   * If KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI kettle property is set to "Y"
+   * the return type of the fields is the one chosen in the step UI.
+   * If the kettle property is not set or set to "N" then the return type of the fields is the one configured in the database
+   */
+  private boolean shouldDatabaseReturnValueTypeBeUsed() {
+    String skipLookupReturnFields = getVariable( Const.KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI, "N" );
     return !ValueMetaBase.convertStringToBoolean( Const.NVL( skipLookupReturnFields, "N" ) );
   }
 
-  private void updateReturnValueMeta( RowMetaInterface fields ) {
+  /*
+   * Forces the use of the return value type of fields as they are configured in the database
+   * regardless of what is configured in the step UI
+   */
+  private void useReturnValueTypeFromDatabase( RowMetaInterface fields ) {
     final String[] returnFields = meta.getReturnValueField();
     final int returnFieldsOffset = getInputRowMeta().size();
     for ( int i = 0; i < returnFields.length; i++ ) {
