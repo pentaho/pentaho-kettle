@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -180,10 +180,10 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
   }
 
   private void copyParameters( final AbstractMeta meta, final Map<String, String> params  ) throws UnknownParamException {
-    for ( String parameterName : params.keySet() ) {
-      String thisValue = params.get( parameterName );
+    for ( Map.Entry<String, String> entry : params.entrySet() ) {
+      String thisValue = entry.getValue();
       if ( !StringUtils.isBlank( thisValue ) ) {
-        meta.setParameterValue( parameterName, thisValue );
+        meta.setParameterValue( entry.getKey(), thisValue );
       }
     }
   }
@@ -210,6 +210,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
         new SimpleLoggingObject( getContextPath(), LoggingObjectType.CARTE, null );
     servletLoggingObject.setContainerObjectId( carteObjectId );
     servletLoggingObject.setLogLevel( level );
+    servletLoggingObject.setLogChannelId( carteObjectId );
     return servletLoggingObject;
   }
 

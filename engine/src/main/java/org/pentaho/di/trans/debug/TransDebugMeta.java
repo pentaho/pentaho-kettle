@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.debug;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -92,88 +93,96 @@ public class TransDebugMeta {
 
     // for every step in the map, add a row listener...
     //
-    for ( final StepMeta stepMeta : stepDebugMetaMap.keySet() ) {
-      final StepDebugMeta stepDebugMeta = stepDebugMetaMap.get( stepMeta );
+    for ( final Map.Entry<StepMeta, StepDebugMeta> entry : stepDebugMetaMap.entrySet() ) {
+      final StepMeta stepMeta = entry.getKey();
+      final StepDebugMeta stepDebugMeta = entry.getValue();
 
       // What is the transformation thread to attach a listener to?
       //
       for ( StepInterface baseStep : trans.findBaseSteps( stepMeta.getName() ) ) {
         baseStep.addRowListener( new RowAdapter() {
           public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-            try {
-
-              // This block of code is called whenever there is a row written by the step
-              // So we want to execute the debugging actions that are specified by the step...
-              //
-              int rowCount = stepDebugMeta.getRowCount();
-
-              if ( stepDebugMeta.isReadingFirstRows() && rowCount > 0 ) {
-
-                int bufferSize = stepDebugMeta.getRowBuffer().size();
-                if ( bufferSize < rowCount ) {
-
-                  // This is the classic preview mode.
-                  // We add simply add the row to the buffer.
-                  //
-                  stepDebugMeta.setRowBufferMeta( rowMeta );
-                  stepDebugMeta.getRowBuffer().add( rowMeta.cloneRow( row ) );
-                } else {
-                  // pause the transformation...
-                  //
-                  trans.pauseRunning();
-
-                  // Also call the pause / break-point listeners on the step debugger...
-                  //
-                  stepDebugMeta.fireBreakPointListeners( self );
-                }
-              } else if ( stepDebugMeta.isPausingOnBreakPoint() && stepDebugMeta.getCondition() != null ) {
-                // A break-point is set
-                // Verify the condition and pause if required
-                // Before we do that, see if a row count is set.
-                // If so, keep the last rowCount rows in memory
-                //
-                if ( rowCount > 0 ) {
-                  // Keep a number of rows in memory
-                  // Store them in a reverse order to keep it intuitive for the user.
-                  //
-                  stepDebugMeta.setRowBufferMeta( rowMeta );
-                  stepDebugMeta.getRowBuffer().add( 0, rowMeta.cloneRow( row ) );
-
-                  // Only keep a number of rows in memory
-                  // If we have too many, remove the last (oldest)
-                  //
-                  int bufferSize = stepDebugMeta.getRowBuffer().size();
-                  if ( bufferSize > rowCount ) {
-                    stepDebugMeta.getRowBuffer().remove( bufferSize - 1 );
-                  }
-                } else {
-                  // Just keep one row...
-                  //
-                  if ( stepDebugMeta.getRowBuffer().isEmpty() ) {
-                    stepDebugMeta.getRowBuffer().add( rowMeta.cloneRow( row ) );
-                  } else {
-                    stepDebugMeta.getRowBuffer().set( 0, rowMeta.cloneRow( row ) );
-                  }
-                }
-
-                // Now evaluate the condition and see if we need to pause the transformation
-                //
-                if ( stepDebugMeta.getCondition().evaluate( rowMeta, row ) ) {
-                  // We hit the break-point: pause the transformation
-                  //
-                  trans.pauseRunning();
-
-                  // Also fire off the break point listeners...
-                  //
-                  stepDebugMeta.fireBreakPointListeners( self );
-                }
-              }
-            } catch ( KettleException e ) {
-              throw new KettleStepException( e );
-            }
+            rowWrittenEventHandler( rowMeta, row, stepDebugMeta, trans, self );
           }
         } );
       }
+    }
+  }
+
+  @VisibleForTesting
+  void rowWrittenEventHandler( RowMetaInterface rowMeta, Object[] row, StepDebugMeta stepDebugMeta, Trans trans,
+                                     TransDebugMeta self ) throws KettleStepException {
+    try {
+
+      // This block of code is called whenever there is a row written by the step
+      // So we want to execute the debugging actions that are specified by the step...
+      //
+      int rowCount = stepDebugMeta.getRowCount();
+
+      if ( stepDebugMeta.isReadingFirstRows() && rowCount > 0 ) {
+
+        int bufferSize = stepDebugMeta.getRowBuffer().size();
+        if ( bufferSize < rowCount ) {
+
+          // This is the classic preview mode.
+          // We add simply add the row to the buffer.
+          //
+          stepDebugMeta.setRowBufferMeta( rowMeta );
+          stepDebugMeta.getRowBuffer().add( rowMeta.cloneRow( row ) );
+        } else {
+          // pause the transformation...
+          //
+          if ( !trans.isPaused() ) {
+            trans.pauseRunning();
+            // Also call the pause / break-point listeners on the step debugger...
+            //
+            stepDebugMeta.fireBreakPointListeners( self );
+          }
+        }
+      } else if ( stepDebugMeta.isPausingOnBreakPoint() && stepDebugMeta.getCondition() != null ) {
+        // A break-point is set
+        // Verify the condition and pause if required
+        // Before we do that, see if a row count is set.
+        // If so, keep the last rowCount rows in memory
+        //
+        if ( rowCount > 0 ) {
+          // Keep a number of rows in memory
+          // Store them in a reverse order to keep it intuitive for the user.
+          //
+          stepDebugMeta.setRowBufferMeta( rowMeta );
+          stepDebugMeta.getRowBuffer().add( 0, rowMeta.cloneRow( row ) );
+
+          // Only keep a number of rows in memory
+          // If we have too many, remove the last (oldest)
+          //
+          int bufferSize = stepDebugMeta.getRowBuffer().size();
+          if ( bufferSize > rowCount ) {
+            stepDebugMeta.getRowBuffer().remove( bufferSize - 1 );
+          }
+        } else {
+          // Just keep one row...
+          //
+          if ( stepDebugMeta.getRowBuffer().isEmpty() ) {
+            stepDebugMeta.getRowBuffer().add( rowMeta.cloneRow( row ) );
+          } else {
+            stepDebugMeta.getRowBuffer().set( 0, rowMeta.cloneRow( row ) );
+          }
+        }
+
+        // Now evaluate the condition and see if we need to pause the transformation
+        //
+        if ( stepDebugMeta.getCondition().evaluate( rowMeta, row ) ) {
+          // We hit the break-point: pause the transformation
+          //
+          trans.pauseRunning();
+
+          // Also fire off the break point listeners...
+          //
+          stepDebugMeta.fireBreakPointListeners( self );
+        }
+      }
+    } catch ( KettleException e ) {
+      throw new KettleStepException( e );
     }
   }
 

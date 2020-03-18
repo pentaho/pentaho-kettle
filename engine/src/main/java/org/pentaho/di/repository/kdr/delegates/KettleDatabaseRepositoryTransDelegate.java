@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1564,10 +1564,12 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
   private void saveTransAttributesMap( ObjectId transformationId, Map<String, Map<String, String>> attributesMap ) throws KettleException {
 
-    for ( final String groupName : attributesMap.keySet() ) {
-      Map<String, String> attributes = attributesMap.get( groupName );
-      for ( final String key : attributes.keySet() ) {
-        final String value = attributes.get( key );
+    for ( final Map.Entry<String, Map<String, String>> attributesEntry : attributesMap.entrySet() ) {
+      Map<String, String> attributes = attributesEntry.getValue();
+      String groupName = attributesEntry.getKey();
+      for ( final Map.Entry<String, String> entry : attributes.entrySet() ) {
+        final String value = entry.getValue();
+        final String key = entry.getKey();
         if ( key != null && value != null ) {
           repository.connectionDelegate.insertTransAttribute( transformationId, 0, TRANS_ATTRIBUTE_PREFIX
             + groupName + TRANS_ATTRIBUTE_PREFIX_DELIMITER + key, 0, value );

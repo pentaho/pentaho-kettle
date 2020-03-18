@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,8 +48,6 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 
@@ -77,19 +75,19 @@ public class StringOperationsMetaTest implements InitializerInterface<StepMetaIn
     attrValidatorMap.put( "fieldInStream", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "fieldOutStream", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "trimType",
-        new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( 4 ), 5 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     attrValidatorMap.put( "lowerUpper",
-        new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( StringOperationsMeta.lowerUpperCode.length ), 5 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     attrValidatorMap.put( "initCap",
-        new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( StringOperationsMeta.initCapCode.length ), 5 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     attrValidatorMap.put( "maskXML",
-        new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( StringOperationsMeta.maskXMLCode.length ), 5 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     attrValidatorMap.put( "digits",
-        new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( StringOperationsMeta.digitsCode.length ), 5 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     attrValidatorMap.put( "removeSpecialCharacters",
-        new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( StringOperationsMeta.removeSpecialCharactersCode.length ), 5 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     attrValidatorMap.put( "paddingType",
-        new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( StringOperationsMeta.paddingCode.length ), 5 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -25,19 +25,21 @@
 package org.pentaho.di.engine.configuration.impl.spark;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.engine.configuration.api.RunConfigurationDialog;
 import org.pentaho.di.engine.configuration.api.RunConfigurationUI;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +81,12 @@ public class SparkRunConfigurationUI implements RunConfigurationUI {
     optionLabel.setText( BaseMessages.getString( PKG, "SparkRunConfigurationDialog.Label.URL" ) );
     optionLabel.setLayoutData( urlLabelData );
 
-    CCombo schemaCombo = new CCombo( runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
+    VariableSpace variableSpace = new Variables();
+    variableSpace.initializeVariablesFrom( null );
+
+    ComboVar schemaCombo =
+      new ComboVar( variableSpace, runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
+    schemaCombo.setEditable( true );
     for ( String schema : schemas ) {
       schemaCombo.add( schema );
     }
@@ -92,25 +99,24 @@ public class SparkRunConfigurationUI implements RunConfigurationUI {
 
     int selected = schemas.indexOf( sparkRunConfiguration.getSchema() );
     schemaCombo.select( selected );
-    props.setLook( schemaCombo );
 
     GridData protocolData = new GridData( SWT.NONE, SWT.FILL, false, false );
     schemaCombo.setLayoutData( protocolData );
 
-
-    Text urlText = new Text( runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    TextVar urlText =
+      new TextVar( variableSpace, runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( urlText );
     urlText.setText( sparkRunConfiguration.getUrl() );
 
     GridData urlData = new GridData( SWT.FILL, SWT.FILL, true, false );
-    urlData.heightHint = 16;
     urlText.setLayoutData( urlData );
 
-    urlText.addModifyListener( new ModifyListener() {
-      @Override public void modifyText( ModifyEvent modifyEvent ) {
+    urlText.addModifyListener(
+      modifyEvent -> {
         sparkRunConfiguration.setUrl( urlText.getText() );
-      }
-    } );
+        Button okButton = runConfigurationDialog.getOKButton();
+        okButton.setEnabled( !Utils.isEmpty( sparkRunConfiguration.getUrl() ) );
+      } );
   }
 
 }

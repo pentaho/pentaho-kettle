@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,8 @@ public class TabMapEntry {
 
   private RepositoryDirectoryInterface repositoryDirectory;
 
+  private String connection;
+
   private String versionLabel;
 
   private TabItemInterface object;
@@ -53,8 +55,8 @@ public class TabMapEntry {
    * @param object
    */
   public TabMapEntry( TabItem tabItem, String filename, String objectName,
-    RepositoryDirectoryInterface repositoryDirectory, String versionLabel, TabItemInterface object,
-    ObjectType objectType ) {
+                      RepositoryDirectoryInterface repositoryDirectory, String versionLabel, TabItemInterface object,
+                      ObjectType objectType, String connection ) {
     this.tabItem = tabItem;
     this.filename = filename;
     this.objectName = objectName;
@@ -62,6 +64,19 @@ public class TabMapEntry {
     this.versionLabel = versionLabel;
     this.object = object;
     this.objectType = objectType;
+    this.connection = connection;
+  }
+
+  /**
+   * @param tabName
+   * @param objectName
+   * @param objectType
+   * @param object
+   */
+  public TabMapEntry( TabItem tabItem, String filename, String objectName,
+    RepositoryDirectoryInterface repositoryDirectory, String versionLabel, TabItemInterface object,
+    ObjectType objectType ) {
+    this( tabItem, filename, objectName, repositoryDirectory, versionLabel, object, objectType, null );
   }
 
   public boolean equals( Object obj ) {
@@ -195,4 +210,11 @@ public class TabMapEntry {
     this.showingLocation = showingLocation;
   }
 
+  public String getConnection() {
+    return connection;
+  }
+
+  public void setConnection( String connection ) {
+    this.connection = connection;
+  }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
@@ -70,7 +71,7 @@ public class MQTTProducerTest {
 
     StepPluginType.getInstance().handlePluginAnnotation(
       MQTTProducerMeta.class,
-      MQTTProducerMeta.class.getAnnotation( org.pentaho.di.core.annotations.Step.class ),
+      MQTTProducerMeta.class.getAnnotation( Step.class ),
       Collections.emptyList(), false, null );
     KettleEnvironment.init();
   }
@@ -150,8 +151,7 @@ public class MQTTProducerTest {
     trans.waitUntilFinished();
 
     verify( logChannel )
-      .logError( eq( "MQTT Producer - Quality of Service level hello is invalid. Please set a level of 0, 1, or 2" ),
-        any( IllegalArgumentException.class ) );
+      .logError( eq( "MQTT Producer - Quality of Service level hello is invalid. Please set a level of 0, 1, or 2" ) );
     verify( mqttClient, never() ).publish( any(), any() );
   }
 
@@ -201,7 +201,7 @@ public class MQTTProducerTest {
     trans.startThreads();
     trans.waitUntilFinished();
 
-    verify( logChannel ).logError( eq( "There was an error connecting" ), any( RuntimeException.class ) );
+    verify( logChannel ).logError( eq( "There was an error connecting" ) );
   }
 
   @Test

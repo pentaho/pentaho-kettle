@@ -48,6 +48,7 @@ import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -74,9 +75,19 @@ import org.pentaho.ui.xul.containers.XulRoot;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeItem;
 import org.pentaho.ui.xul.containers.XulTreeRow;
+import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.containers.XulWindow;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
+import static org.pentaho.di.core.database.BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_CREDENTIALS;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_PROFILE_NAME;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SESSION_TOKEN;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.JDBC_AUTH_METHOD;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.PROFILE_CREDENTIALS;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.STANDARD_CREDENTIALS;
 import static org.pentaho.di.core.database.SnowflakeHVDatabaseMeta.WAREHOUSE;
 
 /**
@@ -97,6 +108,9 @@ public class DataHandler extends AbstractXulEventHandler {
   private static final String EXTRA_OPTION_WEB_APPLICATION_NAME = BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION
     + "KettleThin.webappname";
   private static final String DEFAULT_WEB_APPLICATION_NAME = "pentaho";
+  private static final String SNOWFLAKE_TYPE = "SNOWFLAKEHV";
+  private static final String EXTRA_OPT_WAREHOUSE = ATTRIBUTE_PREFIX_EXTRA_OPTION + SNOWFLAKE_TYPE + "." + WAREHOUSE;
+
 
   private List<String> databaseDialects;
 
@@ -251,6 +265,13 @@ public class DataHandler extends AbstractXulEventHandler {
   private XulButton testButton;
   private XulLabel noticeLabel;
 
+  private XulMenuList jdbcAuthMethod;
+  private XulTextbox iamAccessKeyId;
+  private XulTextbox iamSecretKeyId;
+  private XulTextbox iamSessionToken;
+  private XulTextbox iamProfileName;
+  protected XulMenuList namedClusterList;
+
   public DataHandler() {
     databaseDialects = new ArrayList<String>();
     DatabaseInterface[] dialectMetas = DatabaseMeta.getDatabaseInterfaces();
@@ -258,6 +279,7 @@ public class DataHandler extends AbstractXulEventHandler {
       databaseDialects.add( dialect.getPluginName() );
     }
     Collections.sort( databaseDialects );
+
   }
 
   public void loadConnectionData() {
@@ -811,7 +833,6 @@ public class DataHandler extends AbstractXulEventHandler {
         meta.setConnectionPoolingProperties( properties );
       }
     }
-
   }
 
   private void setInfo( DatabaseMeta meta ) {
@@ -938,6 +959,32 @@ public class DataHandler extends AbstractXulEventHandler {
     setDeckChildIndex();
     onPoolingCheck();
     onClusterCheck();
+  }
+
+  @SuppressWarnings ( "unused" )
+  public void setAuthFieldsVisible() {
+    jdbcAuthMethod = (XulMenuList) document.getElementById( "redshift-auth-method-list" );
+    XulVbox standardControls = (XulVbox) document.getElementById( "auth-standard-controls" );
+    XulVbox iamControls = (XulVbox) document.getElementById( "auth-iam-controls" );
+    XulVbox profileControls = (XulVbox) document.getElementById( "auth-profile-controls" );
+    String jdbcAuthMethodValue = jdbcAuthMethod.getValue();
+    switch ( jdbcAuthMethodValue ) {
+      case IAM_CREDENTIALS:
+        standardControls.setVisible( false );
+        iamControls.setVisible( true );
+        profileControls.setVisible( false );
+        break;
+      case PROFILE_CREDENTIALS:
+        standardControls.setVisible( false );
+        iamControls.setVisible( false );
+        profileControls.setVisible( true );
+        break;
+      default:
+        standardControls.setVisible( true );
+        iamControls.setVisible( false );
+        profileControls.setVisible( false );
+        break;
+    }
   }
 
   private void traverseDomSetReadOnly( XulComponent component, boolean readonly ) {
@@ -1215,7 +1262,7 @@ public class DataHandler extends AbstractXulEventHandler {
     }
   }
 
-  private void getConnectionSpecificInfo( DatabaseMeta meta ) {
+  protected void getConnectionSpecificInfo( DatabaseMeta meta ) {
     // Hostname:
     if ( hostNameBox != null ) {
       meta.setHostname( hostNameBox.getValue() );
@@ -1328,12 +1375,33 @@ public class DataHandler extends AbstractXulEventHandler {
         useIntegratedSecurity != null ? useIntegratedSecurity.toString() : "false" );
     }
 
+    if ( jdbcAuthMethod != null ) {
+      meta.getAttributes().put( JDBC_AUTH_METHOD, jdbcAuthMethod.getValue() );
+    }
+    if ( iamAccessKeyId != null ) {
+      meta.getAttributes().put( IAM_ACCESS_KEY_ID, iamAccessKeyId.getValue() );
+    }
+    if ( iamSecretKeyId != null ) {
+      meta.getAttributes().put( IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( iamSecretKeyId.getValue() ) );
+    }
+    if ( iamSessionToken != null ) {
+      meta.getAttributes().put( IAM_SESSION_TOKEN, iamSessionToken.getValue() );
+    }
+    if ( iamProfileName != null ) {
+      meta.getAttributes().put( IAM_PROFILE_NAME, iamProfileName.getValue() );
+    }
+
     if ( webAppName != null ) {
       meta.setDBName( webAppName.getValue() );
     }
+
+    if ( namedClusterList != null ) {
+
+      meta.getDatabaseInterface().setNamedCluster( namedClusterList.getValue() );
+    }
   }
 
-  private void setConnectionSpecificInfo( DatabaseMeta meta ) {
+  protected void setConnectionSpecificInfo( DatabaseMeta meta ) {
 
     getControls();
 
@@ -1342,6 +1410,17 @@ public class DataHandler extends AbstractXulEventHandler {
       DatabaseInterface databaseInterface = meta.getDatabaseInterface();
       if ( databaseInterface instanceof GenericDatabaseMeta ) {
         databaseDialectList.setSelectedItem( ( (GenericDatabaseMeta) databaseInterface ).getDatabaseDialect() );
+      }
+    }
+
+    if ( namedClusterList != null ) {
+      List<String> namedClusters = meta.getDatabaseInterface().getNamedClusterList();
+      if ( namedClusters != null ) {
+        namedClusterList.setElements( namedClusters );
+        if ( meta.getNamedCluster() != null ) {
+          namedClusterList.setSelectedItem( meta.getDatabaseInterface().getNamedCluster() );
+          namedClusterList.setValue( meta.getDatabaseInterface().getNamedCluster() );
+        }
       }
     }
 
@@ -1446,6 +1525,23 @@ public class DataHandler extends AbstractXulEventHandler {
       }
     }
 
+    if ( jdbcAuthMethod != null ) {
+      jdbcAuthMethod.setValue( meta.getAttributes().getProperty( JDBC_AUTH_METHOD, STANDARD_CREDENTIALS ) );
+      setAuthFieldsVisible();
+    }
+    if ( iamAccessKeyId != null ) {
+      iamAccessKeyId.setValue( meta.getAttributes().getProperty( IAM_ACCESS_KEY_ID ) );
+    }
+    if ( iamSecretKeyId != null ) {
+      iamSecretKeyId.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( IAM_SECRET_ACCESS_KEY ) ) );
+    }
+    if ( iamSessionToken != null ) {
+      iamSessionToken.setValue( meta.getAttributes().getProperty( IAM_SESSION_TOKEN ) );
+    }
+    if ( iamProfileName != null ) {
+      iamProfileName.setValue( meta.getAttributes().getProperty( IAM_PROFILE_NAME ) );
+    }
+
     if ( webAppName != null ) {
       // Insert default value only for new connection, allowing it to be empty in case of editing existing one
       if ( databaseMeta == null || Utils.isEmpty( databaseMeta.getDisplayName() ) ) {
@@ -1512,6 +1608,12 @@ public class DataHandler extends AbstractXulEventHandler {
     cancelButton = (XulButton) document.getElementById( "general-datasource-window_cancel" );
     testButton = (XulButton) document.getElementById( "test-button" );
     noticeLabel = (XulLabel) document.getElementById( "notice-label" );
+    jdbcAuthMethod = (XulMenuList) document.getElementById( "redshift-auth-method-list" );
+    iamAccessKeyId = (XulTextbox) document.getElementById( "iam-access-key-id" );
+    iamSecretKeyId = (XulTextbox) document.getElementById( "iam-secret-access-key" );
+    iamSessionToken = (XulTextbox) document.getElementById( "iam-session-token" );
+    iamProfileName = (XulTextbox) document.getElementById( "iam-profile-name" );
+    namedClusterList = (XulMenuList) document.getElementById( "named-cluster-list" );
 
     if ( portNumberBox != null && serverInstanceBox != null ) {
       if ( Boolean.parseBoolean( serverInstanceBox.getAttributeValue( "shouldDisablePortIfPopulated" ) ) ) {

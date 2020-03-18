@@ -247,6 +247,7 @@ public class Params implements IParams {
 
     public Params build() {
       Params params = new Params();
+      params.uuid = uuid;
       params.blockRepoConns = blockRepoConns;
       params.repoName = repoName;
       params.repoUsername = repoUsername;

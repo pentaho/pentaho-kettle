@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 
 /**
  * Streaming reader for XLSX files.<br>
@@ -97,9 +98,9 @@ public class StaxPoiWorkbook implements KWorkbook {
     XMLStreamReader workbookReader = null;
     try {
       reader = new XSSFReader( pkg );
-      sheetNameIDMap = new LinkedHashMap<String, String>();
+      sheetNameIDMap = new LinkedHashMap<>();
       workbookData = reader.getWorkbookData();
-      XMLInputFactory factory = XMLInputFactory.newInstance();
+      XMLInputFactory factory = XMLParserFactoryProducer.createSecureXMLInputFactory();
       workbookReader = factory.createXMLStreamReader( workbookData );
       while ( workbookReader.hasNext() ) {
         if ( workbookReader.next() == XMLStreamConstants.START_ELEMENT

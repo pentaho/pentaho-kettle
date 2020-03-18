@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileNotFoundException;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.util.Utils;
@@ -54,17 +55,21 @@ import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 
 public class ValueDataUtilTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   private static String yyyy_MM_dd = "yyyy-MM-dd";
+  private static VariableSpace space = Variables.getADefaultVariableSpace();
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     KettleEnvironment.init( false );
   }
+
 
   // private enum DateCalc {WORKING_DAYS, DATE_DIFF};
 
@@ -655,10 +660,18 @@ public class ValueDataUtilTest {
     BigDecimal field2 = new BigDecimal( "1.0" );
     BigDecimal field3 = new BigDecimal( "2.0" );
 
-    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
-    BigDecimal expResult2 = new BigDecimal( "246913578024691357802.2469135780246913578" );
+    // PDI-18318 Change - Now that the precision is specified as unlimited, then it's no longer
+    // bound by the arbitrary scale that causes PDI-18318. The correct answer here does include
+    // the trailing zero based on how the scale and precision are set. See the Javadoc on
+    // BigDecimal.
+    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.12345678901234567890" );
+    BigDecimal expResult2 = new BigDecimal( "246913578024691357802.24691357802469135780" );
 
-    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.1200000000000000000" );
+    // PDI-18318 change - note that the precision is specifically set to 21. As a result, the trailing
+    // zeros indicates that it has overridden the scale value and made the number go out further than it
+    // should.
+    // BigDecimal expResult3 = new BigDecimal( "123456789012345678901.1200000000000000000" );
+    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.12" );
     BigDecimal expResult4 = new BigDecimal( "246913578024691357802" );
 
     assertEquals( expResult1, ValueDataUtil.multiplyBigDecimals( field1, field2, null ) );
@@ -666,10 +679,19 @@ public class ValueDataUtilTest {
 
     assertEquals( expResult3, ValueDataUtil.multiplyBigDecimals( field1, field2, new MathContext( 23 ) ) );
     assertEquals( expResult4, ValueDataUtil.multiplyBigDecimals( field1, field3, new MathContext( 21 ) ) );
+
+    // Test PDI-18318 findings
+    assertEquals( new BigDecimal( "132" ), ValueDataUtil.multiplyBigDecimals( new BigDecimal( "3" ), new BigDecimal(  "44" ), null ) );
+    assertEquals( new BigDecimal( "1332" ), ValueDataUtil.multiplyBigDecimals( new BigDecimal( "3" ), new BigDecimal(  "444" ), null ) );
+    assertEquals( new BigDecimal( "495" ), ValueDataUtil.multiplyBigDecimals( new BigDecimal( "99" ), new BigDecimal(  "5" ), null ) );
+    assertEquals( new BigDecimal( "657372927282717615" ), ValueDataUtil.multiplyBigDecimals( new BigDecimal( "657372927282717615" ), new BigDecimal(  "1" ), null ) );
+    assertEquals( new BigDecimal( "495" ), ValueDataUtil.multiplyBigDecimals( new BigDecimal( "99.0000000000000" ), new BigDecimal(  "5.00" ), null ) );
+    assertEquals( new BigDecimal( "99" ), ValueDataUtil.multiplyBigDecimals( new BigDecimal( "99.0000000000000" ), new BigDecimal(  "1" ), null ) );
   }
 
   @Test
-  public void testDivisionBigNumbers() throws  Exception {
+  public void testDivisionBigNumbers() {
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "-1" );
     BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
     BigDecimal field2 = new BigDecimal( "1.0" );
     BigDecimal field3 = new BigDecimal( "2.0" );
@@ -677,14 +699,153 @@ public class ValueDataUtilTest {
     BigDecimal expResult1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
     BigDecimal expResult2 = new BigDecimal( "61728394506172839450.56172839450617283945" );
 
-    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.12" );
-    BigDecimal expResult4 = new BigDecimal( "61728394506172839450.6" );
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field1, field3, space ) );
 
-    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, null ) );
-    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field1, field3, null ) );
+    // Test PDI-18318 findings
+    assertEquals( new BigDecimal( "2.75" ), ValueDataUtil.divideBigDecimals( new BigDecimal( "11" ), new BigDecimal(  "4" ), space ) );
+    assertEquals( new BigDecimal( "2.538461538461538461538461538461538" ), ValueDataUtil.divideBigDecimals( new BigDecimal( "33" ), new BigDecimal(  "13" ), space ) );
+    assertEquals( new BigDecimal( "3.75" ), ValueDataUtil.divideBigDecimals( new BigDecimal( "15" ), new BigDecimal( "4" ), space ) );
+    assertEquals( new BigDecimal( "29.16666666666666666666666666666667" ), ValueDataUtil.divideBigDecimals( new BigDecimal( "875" ), new BigDecimal( "30" ), space ) );
+    assertEquals( new BigDecimal( "3.399690162664601084430673896204493" ), ValueDataUtil.divideBigDecimals( new BigDecimal( "4389" ), new BigDecimal( "1291" ), space ) );
+    assertEquals( new BigDecimal( "484315.25" ), ValueDataUtil.divideBigDecimals( new BigDecimal( "1937261" ), new BigDecimal(  "4" ), space ) );
+  }
 
-    assertEquals( expResult3, ValueDataUtil.divideBigDecimals( field1, field2, new MathContext( 23 ) ) );
-    assertEquals( expResult4, ValueDataUtil.divideBigDecimals( field1, field3, new MathContext( 21 ) ) );
+  @Test
+  public void testDivisionBigNumbersWithDefaultPrecision() {
+    BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal field2 = new BigDecimal( "1.0" );
+    BigDecimal field3 = new BigDecimal( "2.0" );
+
+    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.12" );
+    BigDecimal expResult2 = new BigDecimal( "61728394506172839450.6" );
+
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "23" );
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "21" );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field1, field3, space ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbersWithPrecision1AndRoundingModeHalfDown() {
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "1" );
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE, "HALF_DOWN" );
+
+    BigDecimal field1 = new BigDecimal( "4.8" );
+    BigDecimal field2 = new BigDecimal( "2.0" );
+    BigDecimal field3 = new BigDecimal( "5.0" );
+    BigDecimal field4 = new BigDecimal( "5.2" );
+
+    BigDecimal expResult1 = new BigDecimal( "2" );
+    BigDecimal expResult2 = new BigDecimal( "3" );
+
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field3, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field4, field2, space ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbersWithPrecision1AndRoundingModeHalfUp() {
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "1" );
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE, "HALF_UP" );
+
+    BigDecimal field1 = new BigDecimal( "4.8" );
+    BigDecimal field2 = new BigDecimal( "2.0" );
+    BigDecimal field3 = new BigDecimal( "5.0" );
+    BigDecimal field4 = new BigDecimal( "5.2" );
+
+    BigDecimal expResult1 = new BigDecimal( "2" );
+    BigDecimal expResult2 = new BigDecimal( "3" );
+
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field3, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field4, field2, space ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbersWithPrecision1AndRoundingModeHalfEven() {
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "1" );
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE, "HALF_EVEN" );
+
+    BigDecimal field1 = new BigDecimal( "4.8" );
+    BigDecimal field2 = new BigDecimal( "2.0" );
+    BigDecimal field3 = new BigDecimal( "5.2" );
+    BigDecimal field4 = new BigDecimal( "15.0" );
+    BigDecimal field5 = new BigDecimal( "13.0" );
+
+    BigDecimal expResult1 = new BigDecimal( "2" );
+    BigDecimal expResult2 = new BigDecimal( "3" );
+    BigDecimal expResult3 = new BigDecimal( "8" );
+    BigDecimal expResult4 = new BigDecimal( "6" );
+
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field3, field2, space ) );
+    assertEquals( expResult3, ValueDataUtil.divideBigDecimals( field4, field2, space ) );
+    assertEquals( expResult4, ValueDataUtil.divideBigDecimals( field5, field2, space ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbersWithPrecision1AndRoundingModeCeiling() {
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "1" );
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE, "CEILING" );
+
+    BigDecimal field1 = new BigDecimal( "4.6" );
+    BigDecimal field2 = new BigDecimal( "2.0" );
+    BigDecimal field3 = new BigDecimal( "-4.6" );
+
+    BigDecimal expResult1 = new BigDecimal( "3" );
+    BigDecimal expResult2 = new BigDecimal( "-2" );
+
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field3, field2, space ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbersWithPrecision1AndRoundingModeDown() {
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "1" );
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE, "DOWN" );
+
+    BigDecimal field1 = new BigDecimal( "4.6" );
+    BigDecimal field2 = new BigDecimal( "2.0" );
+    BigDecimal field3 = new BigDecimal( "-4.6" );
+
+    BigDecimal expResult1 = new BigDecimal( "2" );
+    BigDecimal expResult2 = new BigDecimal( "-2" );
+
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field3, field2, space ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbersWithPrecision1AndRoundingModeFloor() {
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "1" );
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE, "FLOOR" );
+
+    BigDecimal field1 = new BigDecimal( "4.6" );
+    BigDecimal field2 = new BigDecimal( "2.0" );
+    BigDecimal field3 = new BigDecimal( "-4.6" );
+
+    BigDecimal expResult1 = new BigDecimal( "2" );
+    BigDecimal expResult2 = new BigDecimal( "-3" );
+
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field3, field2, space ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbersWithPrecision1AndRoundingModeUp() {
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION, "1" );
+    space.setVariable( Const.KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE, "UP" );
+
+    BigDecimal field1 = new BigDecimal( "4.6" );
+    BigDecimal field2 = new BigDecimal( "2.0" );
+    BigDecimal field3 = new BigDecimal( "-4.6" );
+
+    BigDecimal expResult1 = new BigDecimal( "3" );
+    BigDecimal expResult2 = new BigDecimal( "-3" );
+
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, space ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field3, field2, space ) );
   }
 
   @Test
@@ -698,6 +859,9 @@ public class ValueDataUtilTest {
 
     assertEquals( expResult1, ValueDataUtil.remainder( new ValueMetaBigNumber( ), field1, new ValueMetaBigNumber( ), field2 ) );
     assertEquals( expResult2, ValueDataUtil.remainder( new ValueMetaBigNumber( ), field1, new ValueMetaBigNumber( ), field3 ) );
+    // Test PDI-18318 findings
+    assertEquals( new BigDecimal(  "1.90" ), ValueDataUtil.remainder( new ValueMetaBigNumber( ), new BigDecimal(  "23" ), new ValueMetaBigNumber( ), new BigDecimal(  "2.110" ) ) );
+    assertEquals( new BigDecimal(  "5" ), ValueDataUtil.remainder( new ValueMetaBigNumber( ), new BigDecimal(  "875" ), new ValueMetaBigNumber( ), new BigDecimal(  "30" ) ) );
   }
 
   @Test

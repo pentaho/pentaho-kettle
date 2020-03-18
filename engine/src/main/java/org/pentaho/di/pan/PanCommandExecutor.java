@@ -40,8 +40,9 @@ import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -49,14 +50,13 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -76,8 +76,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
   public Result execute( final Params params ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
-
-    Date start = Calendar.getInstance().getTime(); // capture execution start time
 
     logDebug( "Pan.Log.AllocatteNewTrans" );
 
@@ -114,6 +112,11 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to output some repo-related information
           RepositoryMeta repositoryMeta = loadRepositoryConnection( params.getRepoName(), "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined", "Pan.Log.FindingRep" );
+
+          if ( repositoryMeta == null ) {
+            System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotConnectRep" ) );
+            return exitWithStatus( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode() );
+          }
 
           logDebug( "Pan.Log.CheckSuppliedUserPass" );
           repository = establishRepositoryConnection( repositoryMeta, params.getRepoUsername(), params.getRepoPassword(), RepositoryOperation.EXECUTE_TRANSFORMATION );
@@ -162,6 +165,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         return exitWithStatus( CommandExecutorCodes.Pan.SUCCESS.getCode() );
       }
     }
+
+    Date start = Calendar.getInstance().getTime(); // capture execution start time
 
     try {
 
@@ -330,27 +335,14 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     return trans; // return transformation loaded from the repo
   }
 
-  public Trans loadTransFromFilesystem( String initialDir, String filename, String jarFilename, String base64Zip )
-    throws Exception {
+  public Trans loadTransFromFilesystem( String initialDir, String filename, String jarFilename, Serializable base64Zip ) throws Exception {
 
     Trans trans = null;
 
-    if ( !Utils.isEmpty( base64Zip ) ) {
-      //expected form of filename "*.ktr"
-      String zipPath = Const.getUserHomeDirectory() + File.separator + java.util.UUID.randomUUID().toString() + ".zip";
-      filename = "zip:file:" + File.separator + File.separator + zipPath + "!" + filename;
-      File zipFile;
-
-      //responsibly attempt to write to file
-      try {
-        zipFile = decodeBase64StringToFile( base64Zip, zipPath );
-      } catch ( IOException e ) {
-        getLog().logError( e.toString() + "\n" );
-        e.printStackTrace();
-        return null;
-      }
-
-      zipFile.deleteOnExit();
+    File zip;
+    if ( base64Zip != null && ( zip = decodeBase64ToZipFile( base64Zip, true ) ) != null ) {
+      // update filename to a meaningful, 'ETL-file-within-zip' syntax
+      filename = "zip:file:" + File.separator + File.separator + zip.getAbsolutePath() + "!" + filename;
     }
 
     // Try to load the transformation from file

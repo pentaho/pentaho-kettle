@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -241,9 +242,9 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
             ) {
           Properties properties = new Properties();
           properties.load( reader );
-          for ( Object key : properties.keySet() ) {
-            variables.add( (String) key );
-            variableValues.add( (String) properties.get( key ) );
+          for ( Map.Entry entry : properties.entrySet() ) {
+            variables.add( (String) entry.getKey() );
+            variableValues.add( (String) entry.getValue() );
             variableTypes.add( fileVariableType );
           }
         } catch ( Exception e ) {
@@ -251,10 +252,13 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
             PKG, "JobEntrySetVariables.Error.UnableReadPropertiesFile", realFilename ) );
         }
       }
-      for ( int i = 0; i < variableName.length; i++ ) {
-        variables.add( variableName[i] );
-        variableValues.add( variableValue[i] );
-        variableTypes.add( variableType[i] );
+
+      if ( variableName != null ) {
+        for ( int i = 0; i < variableName.length; i++ ) {
+          variables.add( variableName[ i ] );
+          variableValues.add( variableValue[ i ] );
+          variableTypes.add( variableType[ i ] );
+        }
       }
 
       // if parentJob exists - clear/reset all entrySetVariables before applying the actual ones

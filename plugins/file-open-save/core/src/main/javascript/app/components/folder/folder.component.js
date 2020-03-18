@@ -139,9 +139,11 @@ define([
      * @param {Object} folder - folder object
      */
     function selectFolder(folder) {
-      vm.showRecents = folder === null;
-      vm.selectedFolder = folder;
-      vm.onSelect({selectedFolder: folder});
+      if (folder !== undefined) {
+        vm.showRecents = folder === null;
+        vm.selectedFolder = folder;
+        vm.onSelect({selectedFolder: folder});
+      }
     }
 
     /**

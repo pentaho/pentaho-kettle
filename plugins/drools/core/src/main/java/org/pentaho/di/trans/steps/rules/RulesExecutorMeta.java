@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,8 +62,8 @@ import org.w3c.dom.Node;
 @Step( id = "RuleExecutor",
         image = "rules_exec.svg",
         i18nPackageName = "org.pentaho.di.trans.steps.rules",
-        name = "RulesExecutor.StepConfigruationDialog.Title",
-        description = "RulesExecutor.StepConfigruationDialog.TooltipDesc",
+        name = "RulesExecutor.StepConfigurationDialog.Title",
+        description = "RulesExecutor.StepConfigurationDialog.TooltipDesc",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
 public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Rules.class; // for i18n purposes

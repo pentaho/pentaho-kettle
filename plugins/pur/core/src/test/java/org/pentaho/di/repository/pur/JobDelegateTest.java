@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,12 @@
  */
 package org.pentaho.di.repository.pur;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.Point;
@@ -39,10 +33,35 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
-import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.stream.StreamSupport.stream;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+@RunWith ( MockitoJUnitRunner.class )
 public class JobDelegateTest {
-  private PurRepository mockPurRepository;
+
+
+  private static final String MOCK_GROUP = "MOCK_GROUP";
+  private static final String MOCK_PROPERTY = "MOCK_PROPERTY";
+  private static final String MOCK_VALUE = "MOCK_VALUE";
+
+  @Mock private PurRepository mockPurRepository;
+  @Mock private JobMeta mockJobMeta;
+  @Mock private IUnifiedRepository mockUnifiedRepository;
+  @Mock private JobEntryBaseAndInterface mockJobEntry;
+  @Mock private JobLogTable mockJobLogTable;
+  @Mock private JobEntryCopy mockJobEntryCopy;
+
+  private JobDelegate jobDelegate = new JobDelegate( mockPurRepository, mockUnifiedRepository );
+  private Map<String, Map<String, String>> attributes = new HashMap<>();
+  private Map<String, String> group = new HashMap<>();
 
   @BeforeClass
   public static void before() throws KettlePluginException {
@@ -55,110 +74,55 @@ public class JobDelegateTest {
 
   @Before
   public void setup() {
-    mockPurRepository = mock( PurRepository.class );
-  }
+    when( mockJobMeta.listParameters() ).thenReturn( new String[] {} );
+    when( mockJobMeta.getJobLogTable() ).thenReturn( mockJobLogTable );
+    when( mockJobMeta.nrJobEntries() ).thenReturn( 1 );
+    when( mockJobMeta.getJobEntry( 0 ) ).thenReturn( mockJobEntryCopy );
+    when( mockJobEntryCopy.getName() ).thenReturn( "MOCK_NAME" );
+    when( mockJobEntryCopy.getLocation() ).thenReturn( new Point( 0, 0 ) );
+    when( mockJobEntryCopy.getEntry() ).thenReturn( mockJobEntry );
 
-  public static DataNode addSubnode( DataNode rootNode, String name ) {
-    DataNode newNode = mock( DataNode.class );
-    when( rootNode.getNode( name ) ).thenReturn( newNode );
-    return newNode;
-  }
-
-  public static DataProperty addDataProperty( DataNode node, String name ) {
-    DataProperty dataProperty = mock( DataProperty.class );
-    when( node.hasProperty( name ) ).thenReturn( true );
-    when( node.getProperty( name ) ).thenReturn( dataProperty );
-    return dataProperty;
-  }
-
-  public static DataNode setProperty( DataNode node, String name, long value ) {
-    when( addDataProperty( node, name ).getLong() ).thenReturn( value );
-    return node;
-  }
-
-  public static DataNode setProperty( DataNode node, String name, String value ) {
-    when( addDataProperty( node, name ).getString() ).thenReturn( value );
-    return node;
-  }
-
-  public static DataNode setProperty( DataNode node, String name, boolean value ) {
-    when( addDataProperty( node, name ).getBoolean() ).thenReturn( value );
-    return node;
-  }
-
-  public static DataNode setNodes( DataNode node, String nrProperty, Iterable<DataNode> nodes ) {
-    List<DataNode> list = new ArrayList<DataNode>();
-    for ( DataNode subNode : nodes ) {
-      list.add( subNode );
-    }
-    if ( nrProperty != null ) {
-      setProperty( node, nrProperty, list.size() );
-    }
-    when( node.getNodes() ).thenReturn( list );
-    return node;
+    group.put( MOCK_PROPERTY, MOCK_VALUE );
+    attributes.put( MOCK_GROUP, group );
   }
 
   @Test
   public void testElementToDataNodeSavesCopyAttributes() throws KettleException {
-    JobMeta mockJobMeta = mock( JobMeta.class );
-    IUnifiedRepository mockUnifiedRepository = mock( IUnifiedRepository.class );
-    JobDelegate jobDelegate = new JobDelegate( mockPurRepository, mockUnifiedRepository );
-    JobLogTable mockJobLogTable = mock( JobLogTable.class );
-    JobEntryCopy mockJobEntryCopy = mock( JobEntryCopy.class );
-    Map<String, Map<String, String>> attributes = new HashMap<>();
-    Map<String, String> group = new HashMap<>();
-    final String mockGroup = "MOCK_GROUP";
-    final String mockProperty = "MOCK_PROPERTY";
-    final String mockValue = "MOCK_VALUE";
-    group.put( mockProperty, mockValue );
-    attributes.put( mockGroup, group );
     when( mockJobEntryCopy.getAttributesMap() ).thenReturn( attributes );
-    JobEntryBaseAndInterface mockJobEntry = mock( JobEntryBaseAndInterface.class );
-
-    when( mockJobMeta.listParameters() ).thenReturn( new String[] {} );
-    when( mockJobMeta.getJobLogTable() ).thenReturn( mockJobLogTable );
-    when( mockJobMeta.nrJobEntries() ).thenReturn( 1 );
-    when( mockJobMeta.getJobEntry( 0 ) ).thenReturn( mockJobEntryCopy );
-    when( mockJobEntryCopy.getName() ).thenReturn( "MOCK_NAME" );
-    when( mockJobEntryCopy.getLocation() ).thenReturn( new Point( 0, 0 ) );
-    when( mockJobEntryCopy.getEntry() ).thenReturn( mockJobEntry );
 
     DataNode dataNode = jobDelegate.elementToDataNode( mockJobMeta );
     DataNode groups =
       dataNode.getNode( "entries" ).getNodes().iterator().next().getNode( JobDelegate.PROP_ATTRIBUTES_JOB_ENTRY_COPY );
-    DataNode mockGroupNode = groups.getNode( mockGroup );
-    assertEquals( mockValue, mockGroupNode.getProperty( mockProperty ).getString() );
+    DataNode mockGroupNode = groups.getNode( MOCK_GROUP );
+    assertEquals( MOCK_VALUE, mockGroupNode.getProperty( MOCK_PROPERTY ).getString() );
   }
 
   @Test
   public void testElementToDataNodeSavesAttributes() throws KettleException {
-    JobMeta mockJobMeta = mock( JobMeta.class );
-    IUnifiedRepository mockUnifiedRepository = mock( IUnifiedRepository.class );
-    JobDelegate jobDelegate = new JobDelegate( mockPurRepository, mockUnifiedRepository );
-    JobLogTable mockJobLogTable = mock( JobLogTable.class );
-    JobEntryCopy mockJobEntryCopy = mock( JobEntryCopy.class );
-    Map<String, Map<String, String>> attributes = new HashMap<String, Map<String, String>>();
-    Map<String, String> group = new HashMap<String, String>();
-    final String mockGroup = "MOCK_GROUP";
-    final String mockProperty = "MOCK_PROPERTY";
-    final String mockValue = "MOCK_VALUE";
-    group.put( mockProperty, mockValue );
-    attributes.put( mockGroup, group );
-    JobEntryBaseAndInterface mockJobEntry = mock( JobEntryBaseAndInterface.class );
     when( mockJobEntry.getAttributesMap() ).thenReturn( attributes );
-
-    when( mockJobMeta.listParameters() ).thenReturn( new String[] {} );
-    when( mockJobMeta.getJobLogTable() ).thenReturn( mockJobLogTable );
-    when( mockJobMeta.nrJobEntries() ).thenReturn( 1 );
-    when( mockJobMeta.getJobEntry( 0 ) ).thenReturn( mockJobEntryCopy );
-    when( mockJobEntryCopy.getName() ).thenReturn( "MOCK_NAME" );
-    when( mockJobEntryCopy.getLocation() ).thenReturn( new Point( 0, 0 ) );
-    when( mockJobEntryCopy.getEntry() ).thenReturn( mockJobEntry );
 
     DataNode dataNode = jobDelegate.elementToDataNode( mockJobMeta );
     DataNode groups =
-        dataNode.getNode( "entries" ).getNodes().iterator().next().getNode( AttributesMapUtil.NODE_ATTRIBUTE_GROUPS );
-    DataNode mockGroupNode = groups.getNode( mockGroup );
-    assertEquals( mockValue, mockGroupNode.getProperty( mockProperty ).getString() );
+      dataNode.getNode( "entries" ).getNodes().iterator().next().getNode( AttributesMapUtil.NODE_ATTRIBUTE_GROUPS );
+    DataNode mockGroupNode = groups.getNode( MOCK_GROUP );
+    assertEquals( MOCK_VALUE, mockGroupNode.getProperty( MOCK_PROPERTY ).getString() );
+  }
+
+  @Test
+  public void testDataNodeToElement() throws KettleException {
+    DataNode dataNode = jobDelegate.elementToDataNode( mockJobMeta );
+    setIds( dataNode );
+    JobMeta jobMeta = new JobMeta();
+    jobDelegate.dataNodeToElement( dataNode, jobMeta );
+    assertThat( jobMeta.getJobCopies().size(), equalTo( 1 ) );
+    assertThat( jobMeta.getJobEntry( 0 ).getName(), equalTo( "MOCK_NAME" ) );
+
+    assertTrue( "Job Entry should have link back to parent job meta.",
+      jobMeta.getJobEntry( 0 ).getParentJobMeta() == jobMeta );
+  }
+
+  private void setIds( DataNode node ) {
+    node.setId( "mockid" );
+    stream( node.getNodes().spliterator(), false ).forEach( this::setIds );
   }
 }

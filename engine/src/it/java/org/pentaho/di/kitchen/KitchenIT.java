@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.kitchen;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.security.Permission;
+import java.util.Base64;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -267,6 +269,31 @@ public class KitchenIT {
     }
 
     return content;
+  }
+
+  @Test
+  public void testJobExecutionFromWithinProvidedZip() throws Exception {
+
+    String testZipRelativePath = "test-kjb.zip";
+    String testKJBWithinZip = "Job.kjb";
+
+    File zipFile = null;
+
+    try {
+      zipFile = new File( getClass().getResource( testZipRelativePath ).toURI() );
+      String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
+
+      Kitchen.main( new String[] {
+        "/file:" + testKJBWithinZip,
+        "/level:Basic",
+        "/zip:" + base64Zip } );
+
+    } catch ( SecurityException e ) {
+      // All OK / expected: SecurityException is purposely thrown when Kitchen triggers System.exitJVM()
+      Result result = Kitchen.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( CommandExecutorCodes.Kitchen.SUCCESS.getCode(), result.getExitStatus() );
+    }
   }
 
   public class MySecurityManager extends SecurityManager {

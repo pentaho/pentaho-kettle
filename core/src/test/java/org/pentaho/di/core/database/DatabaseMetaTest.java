@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -399,6 +400,27 @@ public class DatabaseMetaTest {
     props.setProperty( "EXTRA_OPTION_Infobright.additional_param", "${someVar}" );
     dbmeta.getURL();
     assertTrue( dbmeta.getURL().contains( "someValue" ) );
+  }
+
+  @Test
+  public void supportsOptionalExtraOptions() throws KettleDatabaseException {
+    DatabaseMeta dbmeta = new DatabaseMeta( "rs", "Redshift", "JDBC", "amazon-host", "stuff", "5432", "jerry", null );
+    Properties props = dbmeta.getAttributes();
+    props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.STANDARD_CREDENTIALS );
+    props.setProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, "key" );
+    props.setProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( "secret" ) );
+    props.setProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, "token" );
+    assertFalse( dbmeta.getURL().contains( "AccessKeyID" ) );
+    assertFalse( dbmeta.getURL().contains( "secret" ) );
+    assertFalse( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
+    props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.IAM_CREDENTIALS );
+    assertTrue( dbmeta.getURL().contains( "AccessKeyID" ) );
+    assertTrue( dbmeta.getURL().contains( "secret" ) );
+    assertTrue( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
+    props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.PROFILE_CREDENTIALS );
+    props.setProperty( RedshiftDatabaseMeta.IAM_PROFILE_NAME, "default" );
+    assertTrue( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
+    assertTrue( dbmeta.getURL().contains( "Profile=default" ) );
   }
 
   @Test

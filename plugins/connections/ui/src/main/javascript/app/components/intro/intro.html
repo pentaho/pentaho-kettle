@@ -4,7 +4,7 @@
   <div class="middle_div margin_bottom_10">
     <div class="margin_bottom_15">
       <label for="connectionName" class="margin_bottom_5 text_left">{{::vm.connectionName}}</label>
-      <input focus="300" id="connectionName" type="text" ng-keyup="vm.resetErrorMsg()" ng-model="vm.name"/>
+      <input focus="300" id="connectionName" type="text" ng-keyup="vm.checkConnectionName()" ng-model="vm.name"/>
     </div>
     <div class="margin_bottom_15">
       <label for="connectionType" class="margin_bottom_5 text_left">{{::vm.connectionType}}</label>
@@ -15,5 +15,5 @@
       <textarea id="connectionDescription" ng-model="vm.data.model.description"></textarea>
     </div>
   </div>
-  <controls data="vm.data" next="vm.next" can-next="vm.canNext()" next-validation="vm.validateName" apply="vm.data.state=='modify'"></controls>
+  <controls buttons="vm.buttons" data="vm.data"></controls>
 </div>

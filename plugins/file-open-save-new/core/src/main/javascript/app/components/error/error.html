@@ -1,0 +1,31 @@
+<div class="errorBackdrop"></div>
+<div class="error">
+  <div class="errorHeader headerText">
+    {{vm.errorTitle}}
+  </div>
+  <div id="errorMiddle" class="errorMiddle">
+    <div class="errorMiddleTopBefore" ng-class="{breakAll : vm.breakAll}">
+      {{vm.errorMessageTopBefore}}
+      <span class="errorMiddleTopAfter">{{vm.errorMessageTopAfter}}</span>
+    </div>
+  </div>
+  <div class="errorMiddleBottom" ng-hide="vm.errorMessageBottom === ''">
+    {{vm.errorMessageBottom}}
+  </div>
+  <div class="errorBottom">
+    <button id="errorCancelButton" class="button2"
+            ng-class="{primary: vm.errorType !== 1, secondary: vm.errorType === 1}"
+            ng-click="vm.errorCancel()">
+      <span>
+        {{vm.errorCancelButton}}
+      </span>
+    </button>
+    <button id="errorConfirmButton" class="primary button1"
+            ng-click="vm.errorConfirm()"
+            ng-hide="vm.hideConfirmButton();">
+      <span>
+        {{vm.errorConfirmButton}}
+      </span>
+    </button>
+  </div>
+</div>

@@ -63,7 +63,7 @@ import org.w3c.dom.Node;
     description = "SalesforceInput.TypeTooltipDesc.SalesforceInput",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
     image = "SFI.svg",
-    documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Salesforce_Input" )
+    documentationUrl = "Products/Salesforce_Input" )
 @InjectionSupported( localizationPrefix = "SalesforceInputMeta.Injection.", groups = { "FIELDS" } )
 public class SalesforceInputMeta extends SalesforceStepMeta {
   public static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,10 @@
 
 package org.pentaho.di.core.util.serialization;
 
-import com.google.common.collect.Maps;
-
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -62,7 +62,7 @@ public class ConfigHelper {
     checkState( keys != null
       && values != null
       && keys.size() == values.size() );
-    return Maps.toMap( keys, key -> values.get( keys.indexOf( key ) ) );
+    return keys.stream().collect( Collectors.toMap( Function.identity(), key -> values.get( keys.indexOf( key ) ) ) );
   }
 
   public List<String> keys() {

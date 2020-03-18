@@ -42,7 +42,7 @@ define([
    *       "level": "warn",
    *
    *       // Per AMD module
-   *       "modules: {
+   *       "modules": {
    *         "pentaho/lang/Base": "debug",
    *         "pentaho/type/complex": 3  // <=> "info"
    *       }

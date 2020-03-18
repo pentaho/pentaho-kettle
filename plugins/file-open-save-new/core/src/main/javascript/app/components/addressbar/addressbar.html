@@ -1,0 +1,26 @@
+<div class="navigation-buttons">
+  <input type="button" class="back" ng-click="vm.onBackHistory()" title="{{::vm.backHistory}}" ng-disabled="vm.index<1"/>
+  <input type="button" class="forward" ng-click="vm.onForwardHistory()" title="{{::vm.forwardHistory}}" ng-disabled="vm.index>=vm.history.length-1" />
+</div>
+<div class="combobox" ng-body-click="vm.onBodyClick()">
+  <div class="breadcrumb flex" ng-if="vm.state=='breadcrumb'" ng-click="vm.onClick($event)" ng-class="{'selected': vm.isShowHistory}">
+    <div ng-if="vm.type" ng-class="vm.type" class="type">&nbsp;</div>
+    <div ng-if="vm.type" class="arrow"></div>
+    <ul class="parts flex">
+      <li ng-if="vm.extras.length>0" style="position:relative" ng-click="vm.onClickExtras($event)">
+        <ul class="extras" ng-if="vm.showExtras">
+          <li ng-repeat="set in vm.extras" ng-click="vm.onNameClick($event, set.path)">{{set.name}}</li>
+        </ul>
+        &hellip;
+      </li>
+      <li class="part" ng-repeat="set in vm.parts" ng-click="vm.onNameClick($event, set.path)">{{set.name == "" ? "/" : set.name}}</li>
+    </ul>
+    <div class="dropdown" ng-click="vm.onDropdownClick($event)">&nbsp;</div>
+  </div>
+  <div class="address flex" ng-if="vm.state=='address'">
+    <input name="address" ng-model="vm.uri" ng-keyup="vm.onKeyUp($event)" ng-blur="vm.onBlur($event)" focus/>
+  </div>
+  <ul class="history" ng-if="vm.isShowHistory">
+    <li ng-repeat="recent in vm.recents | orderBy:'-'" ng-click="vm.onRecentClick($event, $index, recent.path)">{{recent.path.prefix ? recent.path.uri : recent.path.path}}</li>
+  </ul>
+</div>

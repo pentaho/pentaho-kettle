@@ -22,6 +22,7 @@
 
 package org.pentaho.di.kitchen;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.KettleConstants;
@@ -35,6 +36,7 @@ import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
@@ -44,10 +46,9 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
-import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
@@ -74,8 +75,6 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
   public Result execute( Params params ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Starting" ) );
-
-    Date start = Calendar.getInstance().getTime();
 
     logDebug( "Kitchen.Log.AllocateNewJob" );
 
@@ -110,6 +109,11 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
           RepositoryMeta repositoryMeta = loadRepositoryConnection( params.getRepoName(), "Kitchen.Log.LoadingRep", "Kitchen.Error.NoRepDefinied", "Kitchen.Log.FindingRep" );
+
+          if ( repositoryMeta == null ) {
+            System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.CanNotConnectRep" ) );
+            return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+          }
 
           logDebug( "Kitchen.Log.CheckUserPass" );
           repository = establishRepositoryConnection( repositoryMeta, params.getRepoUsername(), params.getRepoPassword(), RepositoryOperation.EXECUTE_JOB );
@@ -170,7 +174,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       }
     }
 
-    int returnCode = CommandExecutorCodes.Kitchen.SUCCESS.getCode();
+    Date start = Calendar.getInstance().getTime();
 
     try {
 
@@ -236,10 +240,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Finished" ) );
 
-    if ( getResult().getNrErrors() != 0 ) {
-      getLog().logError( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.FinishedWithErrors" ) );
-      returnCode = CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
-    }
+    int returnCode = getReturnCode();
 
     Date stop = Calendar.getInstance().getTime();
 
@@ -300,29 +301,17 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     return new Job( repository, jobMeta );
   }
 
-  public Job loadJobFromFilesystem( String initialDir, String filename, String base64Zip ) throws Exception {
+  public Job loadJobFromFilesystem( String initialDir, String filename, Serializable base64Zip ) throws Exception {
 
     if ( Utils.isEmpty( filename ) ) {
       System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
       return null;
     }
 
-    if ( !Utils.isEmpty( base64Zip ) ) {
-      //expected form of filename "*.kjb"
-      String zipPath = Const.getUserHomeDirectory() + File.separator + java.util.UUID.randomUUID().toString() + ".zip";
-      filename = "zip:file:" + File.separator + File.separator + zipPath + "!" + filename;
-      File zipFile;
-
-      //responsibly attempt to write to file
-      try {
-        zipFile = decodeBase64StringToFile( base64Zip, zipPath );
-      } catch ( IOException e ) {
-        getLog().logError( e.toString() + "\n" );
-        e.printStackTrace();
-        return null;
-      }
-
-      zipFile.deleteOnExit();
+    File zip;
+    if ( base64Zip != null && ( zip = decodeBase64ToZipFile( base64Zip, true ) ) != null ) {
+      // update filename to a meaningful, 'ETL-file-within-zip' syntax
+      filename = "zip:file:" + File.separator + File.separator + zip.getAbsolutePath() + "!" + filename;
     }
 
     blockAndThrow( getKettleInit() );
@@ -393,4 +382,19 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
   public void setKettleInit( Future<KettleException> kettleInit ) {
     this.kettleInit = kettleInit;
   }
+
+  @VisibleForTesting
+  int getReturnCode() {
+
+    int successCode = CommandExecutorCodes.Kitchen.SUCCESS.getCode();
+
+    if ( getResult().getNrErrors() != 0 ) {
+      getLog().logError( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.FinishedWithErrors" ) );
+      return CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
+    }
+
+    return getResult().getResult() ? successCode : CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
+
+  }
+
 }

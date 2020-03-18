@@ -1,0 +1,15 @@
+#error-dialog {
+  width: 410px;
+}
+
+modals .body {
+  display: flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -webkit-flex;
+}
+
+modals .body .message {
+  margin-left: 10px;
+  line-height: 20px;
+}

@@ -344,6 +344,7 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
           + value + "'." );
     }
 
+    ValueMetaTimestamp pentahoTimeStamp = new ValueMetaTimestamp();
     Date dateValue;
     try {
       switch ( targetValueMetaType ) {
@@ -351,7 +352,7 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
           dateValue = new Date( ( (Timestamp) value ).getTime() );
           return datePattern.format( dateValue );
         case ValueMetaInterface.TYPE_INTEGER:
-          return ( (Timestamp) value ).getTime();
+          return pentahoTimeStamp.getInteger( value );
         case ValueMetaInterface.TYPE_TIMESTAMP:
           return new Timestamp( ( (Timestamp) value ).getTime() );
         case ValueMetaInterface.TYPE_DATE:

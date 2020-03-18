@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 40 32" style="enable-background:new 0 0 40 32;" xml:space="preserve">
+<style type="text/css">
+	.st0{clip-path:url(#SVGID_2_);}
+	.st1{fill:none;}
+	.st2{fill:#999999;}
+	.st3{clip-path:url(#SVGID_4_);}
+</style>
+<g>
+	<defs>
+		<rect id="SVGID_1_" x="9.8" width="32" height="32"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+	</clipPath>
+	<g id="Archive.S_D" class="st0">
+		<rect id="Rectangle_1002" x="9.8" class="st1" width="32" height="32"/>
+		<g id="Union_36" transform="translate(-2514.5 -1524.5)">
+			<path id="Path_1927" class="st1" d="M2532.3,1547.5v-14h6l2,2h8v12H2532.3z"/>
+			<path id="Path_1928" class="st2" d="M2547.3,1546.5v-10h-7.4l-2-2h-4.6v12H2547.3 M2548.3,1547.5h-16v-14h6l2,2h8V1547.5z"/>
+		</g>
+	</g>
+</g>
+<g>
+	<defs>
+		<rect id="SVGID_3_" x="-5.8" y="-3" width="32" height="32"/>
+	</defs>
+	<clipPath id="SVGID_4_">
+		<use xlink:href="#SVGID_3_"  style="overflow:visible;"/>
+	</clipPath>
+	<g id="DropUp.XS_D" class="st3">
+		<path id="Path_1606" class="st1" d="M-5.8-3h32v32h-32V-3z"/>
+		<g id="Group_3923" transform="translate(-513 -917)">
+			<path id="Path_1606-2" class="st1" d="M524.4,925.8l-4.2,4.2l4.2,4.2"/>
+			<path id="Path_1607" class="st1" d="M522,934.2l4.2-4.2l-4.2-4.2"/>
+			<path id="Path_1992" class="st2" d="M519.3,931.6l-0.7-0.7l4.6-4.6l4.6,4.6l-0.7,0.7l-3.9-3.9L519.3,931.6z"/>
+			<path id="Path_1609" class="st1" d="M519,928.8l4.2,4.2l4.2-4.2"/>
+		</g>
+	</g>
+</g>
+</svg>

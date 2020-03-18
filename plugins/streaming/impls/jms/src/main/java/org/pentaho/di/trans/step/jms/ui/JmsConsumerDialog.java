@@ -34,6 +34,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStreamingDialog;
 
@@ -71,7 +72,7 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     wSetupComp.setLayout( setupLayout );
 
     jmsDialogSecurityLayout = new JmsDialogSecurityLayout(
-      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate, shell );
+      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate );
     jmsDialogSecurityLayout.buildSecurityTab();
 
     connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod, jmsMeta.jmsDelegate,
@@ -106,9 +107,7 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
   }
 
   @Override protected void createAdditionalTabs() {
-    fieldsTab = new FieldsTab(
-      wTabFolder, props, transMeta, lsMod, jmsMeta.messageField, jmsMeta.destinationField );
-
+    fieldsTab = new FieldsTab( wTabFolder, props, transMeta, lsMod, jmsMeta );
     fieldsTab.buildFieldsTab();
   }
 
@@ -123,8 +122,11 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
 
     jmsDelegate.destinationType = destinationForm.getDestinationType();
     jmsDelegate.destinationName = destinationForm.getDestinationName();
-    jmsMeta.messageField = fieldsTab.getFieldNames()[ 0 ];
-    jmsMeta.destinationField = fieldsTab.getFieldNames()[ 1 ];
+    jmsMeta.messageField = getFieldNames()[ 0 ];
+    jmsMeta.destinationField = getFieldNames()[ 1 ];
+    jmsMeta.messageId = getFieldNames()[ 2 ];
+    jmsMeta.jmsTimestamp = getFieldNames()[ 3 ];
+    jmsMeta.jmsRedelivered = getFieldNames()[ 4 ];
     jmsMeta.receiveTimeout = wReceiverTimeout.getText();
 
     jmsDialogSecurityLayout.saveAuthentication();
@@ -138,11 +140,7 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     shell.setSize(  SHELL_MIN_WIDTH, SHELL_MIN_HEIGHT   ); // force initial size
   }
 
-  @Override protected int[] getFieldTypes() {
-    return fieldsTab.getFieldTypes();
-  }
-
-  @Override protected String[] getFieldNames() {
-    return fieldsTab.getFieldNames();
+  @Override protected TableView getFieldsTable() {
+    return fieldsTab.fieldsTable;
   }
 }

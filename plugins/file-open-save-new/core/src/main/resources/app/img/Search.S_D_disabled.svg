@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="32" height="32" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Search.S_D" clip-path="url(#clip-path)">
+    <path id="Path_1651" data-name="Path 1651" d="M0,0H32V32H0Z" fill="none"/>
+    <g id="Ellipse_203" transform="translate(8.1 8.1)">
+      <circle id="Ellipse_233" data-name="Ellipse 233" cx="6" cy="6" r="6" fill="none"/>
+      <path id="Path_2329" data-name="Path 2329" d="M6,12a6,6,0,1,1,6-6A6.018,6.018,0,0,1,6,12ZM6,1A4.951,4.951,0,0,0,1,6a4.951,4.951,0,0,0,5,5,4.951,4.951,0,0,0,5-5A4.951,4.951,0,0,0,6,1Z" fill="#999999"/>
+    </g>
+    <rect id="Rectangle_2066" data-name="Rectangle 2066" width="1" height="6.9" transform="matrix(0.707, -0.707, 0.707, 0.707, 17.587, 18.462)" fill="#999999"/>
+  </g>
+</svg>

@@ -34,10 +34,10 @@ define([
   function introController($location, $state, $q, $stateParams, dataService, vfsTypes, $timeout) {
     var vm = this;
     vm.$onInit = onInit;
-    vm.canNext = canNext;
     vm.onSelect = onSelect;
     vm.validateName = validateName;
     vm.resetErrorMsg = resetErrorMsg;
+    vm.checkConnectionName = checkConnectionName;
     vm.type = null;
     vm.name = "";
     var loaded = false;
@@ -50,7 +50,9 @@ define([
 
       if ($stateParams.data) {
         vm.data = $stateParams.data;
-        vm.title = vm.data.state === "edit" ? i18n.get('connections.intro.edit.label') : i18n.get('connections.intro.new.label');
+        vm.title = vm.data.isSaved === true
+            ? i18n.get('connections.intro.edit.label')
+            : i18n.get('connections.intro.new.label');
         vm.name = vm.data.model.name;
         vm.type = vm.data.model.type;
         vm.next = vm.data.model.type + "step1";
@@ -91,6 +93,8 @@ define([
         loaded = true;
       }
       setDialogTitle(vm.title);
+
+      vm.buttons = getButtons();
     }
 
     function resetErrorMsg() {
@@ -117,35 +121,53 @@ define([
       }
     }
 
+    function checkConnectionName() {
+      vm.resetErrorMsg();
+      vm.name = vm.name.replace(/[^\w\s]/g,'');
+    }
+
     function validateName() {
       return $q(function(resolve, reject) {
         if (vm.data.state === "edit" || vm.data.isSaved) {
           if (vm.name !== vm.data.model.name) {
-            vm.data.name = vm.data.model.name;
-            vm.data.model.name = vm.name;
-          }
-          resolve(true);
-        } else {
-          dataService.exists(vm.name).then(function (res) {
-            var isValid = !res.data;
-            if (!isValid) {
-              vm.errorMessage = {
-                type: "error",
-                text: i18n.get('connections.intro.name.error', {
-                  name: vm.name
-                })
-              }
-            } else {
+            checkName(vm.name).then(function() {
+              vm.data.name = vm.data.model.name;
               vm.data.model.name = vm.name;
-            }
-            resolve(isValid);
+              resolve();
+            }, function() {
+              reject();
+            });
+          } else {
+            resolve();
+          }
+        } else {
+          checkName(vm.name).then(function() {
+            vm.data.model.name = vm.name;
+            resolve();
+          }, function() {
+            reject();
           });
         }
       });
     }
 
-    function canNext() {
-      return vm.data.model && vm.data.model.type && vm.name;
+    function checkName(name) {
+      return $q(function(resolve, reject) {
+        dataService.exists(name).then(function (res) {
+          var isValid = !res.data;
+          if (isValid) {
+            resolve();
+          } else {
+            vm.errorMessage = {
+              type: "error",
+              text: i18n.get('connections.intro.name.error', {
+                name: name
+              })
+            };
+            reject();
+          }
+        });
+      });
     }
 
     function setDialogTitle(title) {
@@ -156,6 +178,22 @@ define([
           console.log(title);
         }
       }
+    }
+
+    function getButtons() {
+      return [{
+            label: vm.data.state === "modify" ? i18n.get('connections.controls.applyLabel') : i18n.get('connections.controls.nextLabel'),
+            class: "primary",
+            isDisabled: function() {
+              return !vm.data.model || !vm.data.model.type || !vm.name;
+            },
+            position: "right",
+            onClick: function() {
+              validateName().then(function() {
+                $state.go(vm.data.state === "modify" ? 'summary' : vm.next, {data: vm.data, transition: "slideLeft"});
+              });
+            }
+          }];
     }
   }
 

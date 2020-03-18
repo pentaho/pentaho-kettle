@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.database.DatabaseConnectionDialog;
 import org.pentaho.ui.xul.XulComponent;
@@ -82,6 +83,12 @@ public class XulDatabaseDialog {
   private static final String PMD_WIDGET_CLASSNAME = "org.pentaho.ui.xul.swt.tags.SwtTextbox";
 
   private static final String EXTENDED_WIDGET_ID = "VARIABLETEXTBOX";
+
+  private static final String EXTENDED_MENULIST_WIDGET_ID = "VARIABLEMENULIST";
+
+  private static final String PMD_MENULIST_WIDGET_CLASSNAME = "org.pentaho.ui.xul.jface.tags.JfaceMenuList";
+
+  private static final String EXTENDED_MENULIST_WIDGET_CLASSNAME = "org.pentaho.di.ui.core.database.dialog.tags.ExtMenuList";
 
   private DatabaseConnectionDialog databaseDialogInstance;
 
@@ -142,8 +149,10 @@ public class XulDatabaseDialog {
       databaseDialogInstance = new DatabaseConnectionDialog();
       if ( ( (Shell) this.parentShell ).getText().contains( "Metadata Editor" ) ) {
         databaseDialogInstance.registerClass( EXTENDED_WIDGET_ID, PMD_WIDGET_CLASSNAME );
+        databaseDialogInstance.registerClass( EXTENDED_MENULIST_WIDGET_ID, PMD_MENULIST_WIDGET_CLASSNAME );
       } else {
         databaseDialogInstance.registerClass( EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME );
+        databaseDialogInstance.registerClass( EXTENDED_MENULIST_WIDGET_ID, EXTENDED_MENULIST_WIDGET_CLASSNAME );
       }
       /*
        * Attention: onload: loadConnectionData() is called here the first time, see below for second time
@@ -151,6 +160,8 @@ public class XulDatabaseDialog {
       container = databaseDialogInstance.getSwtInstance( new KettleXulLoader(), parentShell );
 
       container.addEventHandler( EVENT_ID, DataOverrideHandler.class.getName() );
+
+      SpoonPluginManager.getInstance().applyPluginsForContainer( "connection_dialog", container );
 
       dataHandler = (DataOverrideHandler) container.getEventHandler( EVENT_ID );
       if ( databaseMeta != null ) {

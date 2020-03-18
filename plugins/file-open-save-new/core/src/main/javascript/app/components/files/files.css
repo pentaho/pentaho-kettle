@@ -1,0 +1,261 @@
+/*!
+ * Copyright 2019 Hitachi Vantara. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* FILES */
+files .filesWrapper {
+  width: 100%;
+  height: 100%;
+  min-width: 630px;
+  overflow: hidden;
+}
+
+files table.headerTable {
+  width: 100%;
+  border: none;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0;
+}
+
+files table#filesTableBody {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0;
+}
+
+files table.headerTable {
+  min-width: 630px;
+}
+
+files .headerWrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 31px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+files .bodyWrapper {
+  width: 100%;
+  overflow: auto;
+  padding: 0;
+  margin: 31px 0 0 0;
+  border: 0;
+  height: calc(100% - 31px);
+}
+
+files .headerWrapper table {
+  background-color: #FAFAFA;
+  text-align: left;
+  line-height: 29px;
+}
+
+files thead,
+files tbody {
+  width: 100%;
+}
+
+files .typeCell {
+  width: 105px;
+}
+
+files .dateCell {
+  width: 125px;
+}
+
+.save files .scrollTableSave th.dateCell,
+.open files .scrollTableOpen th.dateCell {
+  width: 142px;
+}
+
+files th,
+files tbody tr td {
+  text-align: left;
+  line-height: 18px;
+  padding: 6px 10px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+files td.editing {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+files th {
+  border-bottom: 1px solid #CCC;
+  border-left: 1px solid #CCC;
+  background: #FAFAFA;
+  font-weight: normal;
+}
+
+files th:first-child {
+  border-left: 0 none;
+}
+
+files tbody tr.selected td,
+files tbody tr.selected:hover td,
+files tbody tr.selected .fileModified,
+files tbody tr.selected .fileType {
+  background-color: #005DA6;
+  color: #FFFFFF;
+}
+
+files tbody tr.non-selectable td,
+files tbody tr.non-selectable:hover td,
+files tbody tr.non-selectable .fileModified,
+files tbody tr.non-selectable .fileType {
+  color: #B2B2B2;
+}
+
+files tbody tr.selected.highlighted td,
+files tbody tr.selected.highlighted:hover td,
+files tbody tr.selected.highlighted .fileModified,
+files tbody tr.selected.highlighted .fileType {
+  background: none;
+  color: #000000;
+}
+
+files tbody tr.highlighted {
+  -webkit-box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+  -moz-box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+  box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+}
+
+files tbody tr.highlighted td {
+  background: none;
+  color: #000000;
+}
+
+files tbody td div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+files tr .fileName {
+  padding-left: 10px;
+}
+
+files tr .fileName input {
+  display: none;
+}
+
+files tr .fileName .editing span {
+  display: none;
+}
+
+files tr .fileName .editing input {
+  display: block;
+  border: 0 none;
+  outline: none;
+  font-family: OpenSansRegular;
+  font-size: 14px;
+  width: 98%;
+  padding: 0;
+  height: 18px;
+}
+
+files tr .fileTypeIcon {
+  height: 16px;
+  width: 16px;
+  float: left;
+}
+
+files td.editing .fileTypeIcon {
+  margin-top: 3px;
+}
+
+files tr .fileTypeIcon {
+  background: no-repeat center center;
+  background-size: 32px;
+}
+
+files .headerLabel {
+  float: left;
+}
+
+files .fileLocation {
+  display: none;
+}
+
+files .additional .fileLocation {
+  display: block;
+}
+
+files .additional tr {
+  line-height: 60px;
+  height: 60px;
+}
+
+files .additional .fileName {
+  margin-bottom: 10px;
+}
+
+files .fileType::first-letter {
+  text-transform: capitalize;
+}
+
+files .additional .fileType,
+files .additional .fileModified {
+  height: 44px;
+}
+
+files .fileModified,
+files .fileType {
+  color: #999;
+}
+
+files tr .fileLocation {
+  color: #999;
+  padding-left: 26px;
+}
+
+files tr.selected .fileLocation {
+  color: #FFF;
+}
+
+files th:hover .sort {
+  visibility: visible;
+}
+
+files .sortWrapper {
+  float: right;
+}
+
+files .sortWrapper .sort {
+  background: url("../../img/Sort.XS_D.svg") center no-repeat;
+  height: 18px;
+  width: 10px;
+  visibility: hidden;
+}
+
+files .sortWrapper .sort.sortUp {
+  background-image: url("../../img/SortAscending.XS_D.svg");
+  visibility: visible;
+}
+
+files .sortWrapper .sort.sortDown {
+  background-image: url("../../img/SortDescending.XS_D.svg");
+  visibility: visible;
+}

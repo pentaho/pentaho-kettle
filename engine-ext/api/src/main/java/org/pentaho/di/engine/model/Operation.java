@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableList;
 import org.pentaho.di.engine.api.model.Hop;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -37,15 +38,22 @@ public class Operation extends Configurable implements org.pentaho.di.engine.api
 
   private static final long serialVersionUID = -1975677580227607466L;
   private final String id;
+  private final String key;
   private final Transformation transformation;
 
   public Operation( String id, Transformation transformation ) {
     this.id = id;
+    this.key = id + UUID.randomUUID();
     this.transformation = transformation;
   }
 
   @Override public String getId() {
     return id;
+  }
+
+  @Override
+  public String getKey() {
+    return key;
   }
 
   private Stream<Hop> getHopsWhere( Function<Hop, org.pentaho.di.engine.api.model.Operation> hopFn ) {

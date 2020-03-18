@@ -1,0 +1,41 @@
+<resize-folders/>
+<key />
+<script type="text/ng-template" id="tree_item.html">
+  <div ng-if="!folder.hidden"
+      class="folder"
+      drop
+      file="folder"
+      ng-model="folder"
+      on-drop="vm.onDrop(from, to)"
+      ng-click="vm.selectFolder(folder)"
+      ng-class="!folder.root ? [folder.provider, {selected: folder === vm.selectedFolder, opened: folder.open === true}] : {
+                 home: folder.path === '/home' && folder.provider === 'repository',
+                 public: folder.path === '/public' && folder.provider === 'repository',
+                 selected: folder === vm.selectedFolder,
+                 highlighted: folder === vm.targetFolder,
+                 empty: folder.hasChildren === false,
+                 opened: folder.open === true}"
+      ng-style="{paddingLeft: indent + 'px', width: vm.width === 0 ? 'auto' : vm.width - indent + 'px'}">
+    <div class="folderArrowWrapper" ng-click="vm.openFolder(folder); $event.stopPropagation();">
+      <div class="folderArrow" ng-if="folder.hasChildren"></div>
+    </div>
+    <div class="folderImage"
+        ng-class="{loading: folder.loading}"></div>
+    <div class="folderName" context="foldersFolderContext" ng-model="folder" ng-right-click="vm.onRightClick(folder)">
+      {{folder.name}}
+    </div>
+  </div>
+  <div ng-show="folder.open">
+    <div ng-repeat="folder in folder.children | orderBy: folder : false : vm.compareFolders"
+    ng-include="'tree_item.html'"
+    ng-init="indent=indent+25"
+    ng-if="folder.type=='folder'"></div>
+  </div>
+</script>
+<div id="folders" ng-body-click="vm.onBodyClick(e, id)" ng-repeat="folder in vm.getTree() | orderBy: 'order'" ng-include="'tree_item.html'" ng-init="indent=0" ng-if="folder.name != '' && !folder.hidden"></div>
+<div id="foldersFolderContext" class="context-menu" ng-show="vm.canShowContext()">
+  <ul>
+    <li ng-click="vm.onDeleteFolder()" ng-show="vm.targetFolder.canEdit">Delete</li>
+    <li ng-click="vm.onPaste()" ng-show="vm.canPaste()">Paste</li>
+  </ul>
+</div>

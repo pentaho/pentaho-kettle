@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.pentaho.di.version.BuildVersion;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -47,6 +48,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -492,8 +494,11 @@ public class Const {
    * */
   public static final String[] DEPRECATED_VARIABLES = new String[] {
     Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
-    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
-    Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
+    Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
+    Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME,
+    Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
   };
 
   /** The transformation filename directory */
@@ -736,6 +741,24 @@ public class Const {
   public static final String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
 
   /**
+   * This flag will prevent Kettle from converting {@code null} strings to empty strings in {@link org.pentaho.di.core.row.value.ValueMetaBase}
+   * The default value is {@code false}.
+   */
+  public static final String KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY = "KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY";
+
+  /**
+   * This flag will prevent Kettle from yielding {@code null} as the value of an empty XML tag in {@link org.pentaho.di.core.xml.XMLHandler}
+   * The default value is {@code false} and an empty XML tag will produce a {@code null} value.
+   */
+  public static final String KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE = "KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE";
+
+  /**
+   * This flag will cause the "Get XML data" step to yield null values on missing elements and empty values on empty elements when set to "Y".
+   * By default, both empty elements and missing elements will yield empty values.
+   */
+  public static final String KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE = "KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE";
+
+  /**
    * System wide flag to allow non-strict string to number conversion for backward compatibility. If this setting is set
    * to "Y", an string starting with digits will be converted successfully into a number. (example: 192.168.1.1 will be
    * converted into 192 or 192.168 depending on the decimal symbol). The default (N) will be to throw an error if
@@ -920,6 +943,7 @@ public class Const {
   /**
    * The XML file that contains the list of native Kettle two-way password encoder plugins
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
 
   /**
@@ -931,17 +955,20 @@ public class Const {
   /**
    * Specifies the password encoding plugin to use by ID (Kettle is the default).
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-password-encoder-plugins.xml
    * file
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
 
   /**
    * The name of the Kettle encryption seed environment variable for the KettleTwoWayPasswordEncoder class
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = "KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED";
 
   /**
@@ -1005,6 +1032,7 @@ public class Const {
   /**
    * Set this variable to with the intended password to pass as repository credentials
    */
+  @SuppressWarnings( "squid:S2068" )
   public static final String KETTLE_PASSWORD = "KETTLE_PASSWORD";
 
   /**
@@ -1125,6 +1153,9 @@ public class Const {
 
   // See PDI-17203 for details
   public static final String KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES = "KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES";
+
+  // See PDI-17980 for details
+  public static final String KETTLE_COMPATIBILITY_USE_JDBC_METADATA = "KETTLE_COMPATIBILITY_USE_JDBC_METADATA";
 
   /**
    * The XML file that contains the list of native import rules
@@ -1290,6 +1321,72 @@ public class Const {
    * <p>This environment variable is used by streaming consumer steps to limit the total of concurrent batches across transformations.</p>
    */
   public static final String SHARED_STREAMING_BATCH_POOL_SIZE = "SHARED_STREAMING_BATCH_POOL_SIZE";
+
+  /**
+   * <p>This environment variable is used to specify a location used to deploy a shim driver into PDI.</p>
+   */
+  public static final String SHIM_DRIVER_DEPLOYMENT_LOCATION = "SHIM_DRIVER_DEPLOYMENT_LOCATION";
+  private static final String DEFAULT_DRIVERS_DIR = "DEFAULT";
+  public static String getShimDriverDeploymentLocation() {
+
+    String driversLocation = System.getProperty( Const.SHIM_DRIVER_DEPLOYMENT_LOCATION, DEFAULT_DRIVERS_DIR );
+    if ( driversLocation.equals( DEFAULT_DRIVERS_DIR ) ) {
+      String karafDir = System.getProperty( "karaf.home" );
+      return Paths.get( karafDir ).getParent().getParent().toString() + File.separator + "drivers";
+    }
+    return driversLocation;
+  }
+
+  /**
+   * <p>This environment variable is used by XSD validation steps to enable or disable external entities.</p>
+   * <p>By default external entities are allowed.</p>
+   */
+  public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION = "ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION";
+  public static final String ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT = "true";
+
+  /**
+   * <p>This environment variable is used to define the default division result precision between BigDecimals.</p>
+   * <p>By default, and when precision is -1, precision is unlimited.</p>
+   */
+  public static final String KETTLE_BIGDECIMAL_DIVISION_PRECISION = "KETTLE_BIGDECIMAL_DIVISION_PRECISION";
+  public static final String KETTLE_BIGDECIMAL_DIVISION_PRECISION_DEFAULT = "-1";
+
+  /**
+   * <p>This environment variable is used to define the default division result rounding mode between BigDecimals.</p>
+   * <p>By default, rouding mode is half even.</p>
+   */
+  public static final String KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE = "KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE";
+  public static final String KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE_DEFAULT = "HALF_EVEN";
+
+  /**
+   * <p>This environment variable is used to define if a Timestamp should be converted to nanoseconds or
+   * milliseconds.</p>
+   * <p>By default, a Timestamp is in {@value #KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT}.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT
+   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS
+   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT = "KETTLE_TIMESTAMP_OUTPUT_FORMAT";
+
+  /**
+   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_OUTPUT_FORMAT} as nanoseconds.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS = "NANOSECONDS";
+
+  /**
+   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_OUTPUT_FORMAT} as milliseconds.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS = "MILLISECONDS";
+
+  /**
+   * <p>The default value for the {@link #KETTLE_TIMESTAMP_OUTPUT_FORMAT}.</p>
+   */
+  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT = KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS;
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer

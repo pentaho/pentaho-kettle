@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -190,14 +190,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
         }
 
         data.outStreamNrs[i] = environmentSubstitute( meta.getFieldOutStream()[i] );
-
-        data.patterns[i] =
-          buildPattern(
-            meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
-            meta.getCaseSensitive()[i] == ReplaceStringMeta.CASE_SENSITIVE_YES,
-            meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES, environmentSubstitute( meta
-              .getReplaceString()[i] ),
-            meta.isUnicode()[i] == ReplaceStringMeta.IS_UNICODE_YES );
+        data.patterns[ i ] = buildPattern( !meta.getUseRegEx()[ i ], meta.getCaseSensitive()[ i ],
+          meta.getWholeWord()[ i ], environmentSubstitute( meta.getReplaceString()[ i ] ), meta.isUnicode()[ i ] );
 
         String field = meta.getFieldReplaceByString()[i];
         if ( !Utils.isEmpty( field ) ) {

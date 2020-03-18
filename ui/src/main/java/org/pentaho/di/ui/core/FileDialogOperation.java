@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2019 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,23 +23,35 @@ import org.pentaho.di.repository.RepositoryObjectInterface;
  */
 public class FileDialogOperation {
 
-  public static String SELECT_FOLDER = "selectFolder";
-  public static String OPEN = "open";
-  public static String SAVE = "save";
-  public static String ORIGIN_SPOON = "spoon";
-  public static String ORIGIN_OTHER = "other";
-  public static String TRANSFORMATION = "transformation";
-  public static String JOB = "job";
+  public static final String SELECT_FOLDER = "selectFolder";
+  public static final String SELECT_FILE = "selectFile";
+  public static final String SELECT_FILE_FOLDER = "selectFileFolder";
+  public static final String OPEN = "open";
+  public static final String SAVE = "save";
+  public static final String SAVE_TO = "saveTo";
+  public static final String SAVE_TO_FILE_FOLDER = "saveToFileFolder";
+  public static final String ORIGIN_SPOON = "spoon";
+  public static final String ORIGIN_OTHER = "other";
+  public static final String TRANSFORMATION = "transformation";
+  public static final String JOB = "job";
+  public static final String PROVIDER_REPO = "repository";
 
   private Repository repository;
   private String command;
   private String filter;
+  private String defaultFilter;
   private String origin;
   private RepositoryObjectInterface repositoryObject;
   private String startDir;
   private String title;
   private String filename;
   private String fileType;
+  private String path;
+  private String connection;
+  private String provider;
+  private String providerFilter;
+  private String connectionTypeFilter;
+  private boolean useSchemaPath;
 
   public FileDialogOperation( String command ) {
     this.command = command;
@@ -64,6 +76,14 @@ public class FileDialogOperation {
 
   public void setFilter( String filter ) {
     this.filter = filter;
+  }
+
+  public String getDefaultFilter() {
+    return defaultFilter;
+  }
+
+  public void setDefaultFilter( String defaultFilter ) {
+    this.defaultFilter = defaultFilter;
   }
 
   public String getOrigin() {
@@ -121,4 +141,62 @@ public class FileDialogOperation {
   public void setFileType( String fileType ) {
     this.fileType = fileType;
   }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath( String path ) {
+    this.path = path;
+  }
+
+  public String getConnection() {
+    return connection;
+  }
+
+  public void setConnection( String connection ) {
+    this.connection = connection;
+  }
+
+  public boolean getUseSchemaPath() {
+    return useSchemaPath;
+  }
+
+  public void setUseSchemaPath( boolean useSchemaPath ) {
+    this.useSchemaPath = useSchemaPath;
+  }
+
+  public String getProvider() {
+    return provider;
+  }
+
+  public void setProvider( String provider ) {
+    this.provider = provider;
+  }
+
+  public String getProviderFilter() {
+    return providerFilter;
+  }
+
+  public void setProviderFilter( String providerFilter ) {
+    this.providerFilter = providerFilter;
+  }
+
+  public String getConnectionTypeFilter() {
+    return connectionTypeFilter;
+  }
+
+  public void setConnectionTypeFilter( String connectionTypeFilter ) {
+    this.connectionTypeFilter = connectionTypeFilter;
+  }
+
+  public boolean isProviderRepository() {
+    return provider.equalsIgnoreCase( PROVIDER_REPO );
+  }
+
+  public boolean isSaveCommand() {
+    return ( command.equalsIgnoreCase( SAVE ) || command.equalsIgnoreCase( SAVE_TO )
+      || command.equalsIgnoreCase( SAVE_TO_FILE_FOLDER ) );
+  }
+
 }

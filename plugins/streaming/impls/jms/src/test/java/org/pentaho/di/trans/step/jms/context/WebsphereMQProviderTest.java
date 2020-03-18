@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,6 +66,7 @@ public class WebsphereMQProviderTest {
   private static final String FIPS_REQUIRED_VAL = "FIPS_REQUIRED_VAL";
   private static final String IBM_USERNAME_VAL = "IBM_USERNAME_VAL";
   private static final String IBM_PASSWORD_VAL = "IBM_PASSWORD_VAL";
+  private static final String PASSWORD_MASK = "********";
   private static final boolean USE_DEFAULT_SSL_CONTEXT_VAL = true;
 
   private JmsProvider jmsProvider = new WebsphereMQProvider();
@@ -130,11 +131,11 @@ public class WebsphereMQProviderTest {
     String debugString = jmsProvider.getConnectionDetails( jmsDelegate );
 
     assertTrue( "Missing trust store path", debugString.contains( "Trust Store: " + TRUST_STORE_PATH_VAL ) );
-    assertTrue( "Missing trust store password", debugString.contains( "Trust Store Pass: " + TRUST_STORE_PASS_VAL ) );
+    assertTrue( "Missing trust store password", debugString.contains( "Trust Store Pass: " + PASSWORD_MASK ) );
     assertTrue( "Missing trust store type", debugString.contains( "Trust Store Type: " + TRUST_STORE_TYPE_VAL ) );
 
     assertTrue( "Missing key store path", debugString.contains( "Key Store: " + KEY_STORE_PATH_VAL ) );
-    assertTrue( "Missing key store password", debugString.contains( "Key Store Pass: " + KEY_STORE_PASS_VAL ) );
+    assertTrue( "Missing key store password", debugString.contains( "Key Store Pass: " + PASSWORD_MASK ) );
     assertTrue( "Missing key store type", debugString.contains( "Key Store Type: " + KEY_STORE_TYPE_VAL ) );
 
     assertTrue( "Missing cipher suite", debugString.contains( "Cipher Suite: " + ENABLED_CIPHER_SUITES_VAL ) );
@@ -145,7 +146,7 @@ public class WebsphereMQProviderTest {
     assertTrue( "Missing channel", debugString.contains( "Channel: " + CHANNEL_VAL ) );
     assertTrue( "Missing queue manager", debugString.contains( "QueueManager: " + QUEUE_MANAGER_VAL ) );
     assertTrue( "Missing username", debugString.contains( "User Name: " + IBM_USERNAME_VAL ) );
-    assertTrue( "Missing password", debugString.contains( "Password: " + IBM_PASSWORD_VAL ) );
+    assertTrue( "Missing password", debugString.contains( "Password: " + PASSWORD_MASK ) );
     assertTrue( "Missing use default SSL context",
       debugString.contains( "Use Default SSL Context:" + USE_DEFAULT_SSL_CONTEXT_VAL ) );
 

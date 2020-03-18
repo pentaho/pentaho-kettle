@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,10 @@ import org.junit.Test;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class CsvInputContentParsingTest extends BaseCsvParsingTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -83,6 +87,140 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
         "\u043d\u0435-\u043b\u0430\u0446\u0456\u043d\u043a\u0430(non-latin)", "4", "4" } } );
   }
 
+  @Test
+  public void testMixFileFormat() throws Exception {
+    String data = "データ1,データ2,データ3,データ4\n"
+      + "111,\"a\n"
+      + "bc\",あいう,さしす\n"
+      + "222,def,かきく,たちつ\r\n"
+      + "333,,かきく,たちつ\n"
+      + "444,,\n"
+      + "555,かきく,\r\n"
+      + "666,かきく\r\n"
+      + "\n"
+      + "777,\n"
+      + "888,かきく\r\n"
+      + "\n"
+      + "999,123,123,123,132,132,132,132,132\r";
+
+    String file = createTestFile( "UTF-8", data ).getAbsolutePath();
+    meta.setFileFormat( "mixed" );
+    init( file, true );
+
+    setFields( new TextFileInputField( "Col 1", -1, -1 ), new TextFileInputField( "Col 2", -1, -1 ),
+      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ),
+      new TextFileInputField( "Col 5", -1, -1 ) );
+
+    process();
+
+    check( new Object[][] {
+      { "111", "a\nbc", "あいう", "さしす", null },
+      { "222", "def", "かきく", "たちつ", null},
+      { "333", "", "かきく", "たちつ", null },
+      { "444", "", "", null, null },
+      { "555", "かきく", "", null, null },
+      { "666", "かきく", null, null, null},
+      { },
+      { "777", "", null, null, null },
+      { "888", "かきく", null, null, null },
+      { },
+      { "999", "123", "123", "123", "132" } }
+    );
+  }
+
+  @Test
+  public void testDosFileFormat() throws Exception {
+    String data = "データ1,データ2,データ3,データ4\r\n"
+      + "111,\"a\r\n"
+      + "bc\",あいう,さしす\r\n"
+      + "222,def,かきく,たちつ\r\n"
+      + "333,,かきく,たちつ\r\n"
+      + "444,,\r\n"
+      + "555,かきく,\r\n"
+      + "666,かきく\r\n"
+      + "\r\n"
+      + "777,\r\n"
+      + "888,かきく\r\n"
+      + "\r\n"
+      + "999,123,123,123,132,132,132,132,132\r\n";
+
+    String file = createTestFile( "UTF-8", data ).getAbsolutePath();
+    meta.setFileFormat( "DOS" );
+    init( file, true );
+
+    setFields( new TextFileInputField( "Col 1", -1, -1 ), new TextFileInputField( "Col 2", -1, -1 ),
+      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ),
+      new TextFileInputField( "Col 5", -1, -1 ) );
+
+    process();
+
+    check( new Object[][] {
+      { "111", "a\r\nbc", "あいう", "さしす", null },
+      { "222", "def", "かきく", "たちつ", null},
+      { "333", "", "かきく", "たちつ", null },
+      { "444", "", "", null, null },
+      { "555", "かきく", "", null, null },
+      { "666", "かきく", null, null, null},
+      { },
+      { "777", "", null, null, null },
+      { "888", "かきく", null, null, null },
+      { },
+      { "999", "123", "123", "123", "132" } }
+    );
+  }
+
+  @Test
+  public void testUnixFileFormat() throws Exception {
+    String data = "データ1,データ2,データ3,データ4\n"
+      + "111,\"a\n"
+      + "bc\",\n"
+      + "\n"
+      + "444,,\n"
+      + "555,かきく,\n"
+      + "\n"
+      + "\n"
+      + "777,\n"
+      + "888,かきく\n"
+      + "999,123,123,123,132,132,132,132,132\n";
+
+    String file = createTestFile( "UTF-8", data ).getAbsolutePath();
+    meta.setFileFormat( "Unix" );
+    init( file, true );
+
+    setFields( new TextFileInputField( "Col 1", -1, -1 ), new TextFileInputField( "Col 2", -1, -1 ),
+      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ),
+      new TextFileInputField( "Col 5", -1, -1 ) );
+
+    process();
+
+    check( new Object[][] {
+      { "111", "a\nbc", "", null, null },
+      { },
+      { "444", "", "", null, null },
+      { "555", "かきく", "", null, null },
+      { },
+      { },
+      { "777", "", null, null, null },
+      { "888", "かきく", null, null, null },
+      { "999", "123", "123", "123", "132" } }
+    );
+  }
+
+  @Test
+  public void testEnclosures() throws Exception {
+    meta.setDelimiter( ";" );
+    meta.setEnclosure( "'" );
+    init( "enclosures.csv" );
+
+    setFields( new TextFileInputField( "Field 1", -1, -1 ), new TextFileInputField( "Field 2", -1, -1 ),
+      new TextFileInputField( "Field 3", -1, -1 ) );
+
+    process();
+
+    check( new Object[][] { { "1", "This line is un-even enclosure-wise because I'm using an escaped enclosure", "a" },
+      { "2", "Test isn't even\nhere", "b" } } );
+  }
+
   @Test( expected = KettleStepException.class )
   public void testNoHeaderOptions() throws Exception {
     meta.setHeaderPresent( false );
@@ -91,5 +229,16 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
     process();
+  }
+
+  File createTestFile( final String encoding, final String content ) throws IOException {
+    File tempFile = File.createTempFile( "PDI_tmp", ".csv" );
+    tempFile.deleteOnExit();
+
+    try ( PrintWriter osw = new PrintWriter( tempFile, encoding ) ) {
+      osw.write( content );
+    }
+
+    return tempFile;
   }
 }

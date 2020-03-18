@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ package org.pentaho.di.trans.steps.orabulkloader;
 //
 //
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -44,6 +45,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -196,7 +198,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
    */
   public String getControlFileContents( OraBulkLoaderMeta meta, RowMetaInterface rm, Object[] r ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
-    String inputName = "'" + environmentSubstitute( meta.getDataFile() ) + "'";
+    String inputName = "'" + getFilename( getFileObject( meta.getDataFile(), getTransMeta() ) ) + "'";
 
     String loadAction = meta.getLoadAction();
 
@@ -311,10 +313,12 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
    * @throws KettleException
    */
   public void createControlFile( String filename, Object[] row, OraBulkLoaderMeta meta ) throws KettleException {
-    File controlFile = new File( filename );
     FileWriter fw = null;
 
     try {
+      File controlFile = new File( getFileObject( filename, getTransMeta() ).getURL().getFile() );
+      // Need to ensure that the parent directory they set exists for the control file.
+      controlFile.getParentFile().mkdirs();
       controlFile.createNewFile();
       fw = new FileWriter( controlFile );
       fw.write( getControlFileContents( meta, getInputRowMeta(), row ) );
@@ -350,8 +354,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getSqlldr() != null ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getSqlldr() ), getTransMeta() );
-        String sqlldr = KettleVFS.getFilename( fileObject );
+          getFileObject( meta.getSqlldr(), getTransMeta() );
+        String sqlldr = getFilename( fileObject );
         sb.append( sqlldr );
       } catch ( KettleFileException ex ) {
         throw new KettleException( "Error retrieving sqlldr string", ex );
@@ -363,10 +367,10 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getControlFile() != null ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
+          getFileObject( meta.getControlFile(), getTransMeta() );
 
         sb.append( " control=\'" );
-        sb.append( KettleVFS.getFilename( fileObject ) );
+        sb.append( getFilename( fileObject ) );
         sb.append( "\'" );
       } catch ( KettleFileException ex ) {
         throw new KettleException( "Error retrieving controlfile string", ex );
@@ -382,10 +386,10 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getLogFile() != null ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getLogFile() ), getTransMeta() );
+          getFileObject( meta.getLogFile(), getTransMeta() );
 
         sb.append( " log=\'" );
-        sb.append( KettleVFS.getFilename( fileObject ) );
+        sb.append( getFilename( fileObject ) );
         sb.append( "\'" );
       } catch ( KettleFileException ex ) {
         throw new KettleException( "Error retrieving logfile string", ex );
@@ -395,10 +399,10 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getBadFile() != null ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getBadFile() ), getTransMeta() );
+          getFileObject( meta.getBadFile(), getTransMeta() );
 
         sb.append( " bad=\'" );
-        sb.append( KettleVFS.getFilename( fileObject ) );
+        sb.append( getFilename( fileObject ) );
         sb.append( "\'" );
       } catch ( KettleFileException ex ) {
         throw new KettleException( "Error retrieving badfile string", ex );
@@ -408,10 +412,10 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getDiscardFile() != null ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getDiscardFile() ), getTransMeta() );
+          getFileObject( meta.getDiscardFile(), getTransMeta() );
 
         sb.append( " discard=\'" );
-        sb.append( KettleVFS.getFilename( fileObject ) );
+        sb.append( getFilename( fileObject ) );
         sb.append( "\'" );
       } catch ( KettleFileException ex ) {
         throw new KettleException( "Error retrieving discardfile string", ex );
@@ -576,6 +580,12 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     return true;
   }
 
+  protected void verifyDatabaseConnection() throws KettleException {
+    if ( meta.getDatabaseMeta() == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "OraBulkLoaderMeta.GetSQL.NoConnectionDefined" ) );
+    }
+  }
+
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (OraBulkLoaderMeta) smi;
     data = (OraBulkLoaderData) sdi;
@@ -583,7 +593,16 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     Trans trans = getTrans();
     preview = trans.isPreview();
 
-    return super.init( smi, sdi );
+    if ( super.init( smi, sdi ) ) {
+      try {
+        verifyDatabaseConnection();
+      } catch ( KettleException ex ) {
+        logError( ex.getMessage() );
+        return false;
+      }
+      return true;
+    }
+    return false;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -629,12 +648,12 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
       if ( OraBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
         if ( meta.getControlFile() != null ) {
           try {
-            fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
+            fileObject = getFileObject( meta.getControlFile(), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
             logError( "Error deleting control file \'"
-              + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
+              + getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
           }
         }
       }
@@ -643,12 +662,12 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
         // In concurrent mode the data is written to the control file.
         if ( meta.getDataFile() != null ) {
           try {
-            fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getDataFile() ), getTransMeta() );
+            fileObject = getFileObject( meta.getDataFile(), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
             logError( "Error deleting data file \'"
-              + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
+              + getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
           }
         }
       }
@@ -657,5 +676,14 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
         logBasic( "Deletion of files is not compatible with \'manual load method\'" );
       }
     }
+  }
+  @VisibleForTesting
+  String getFilename( FileObject fileObject ) {
+    return KettleVFS.getFilename( fileObject );
+  }
+
+  @VisibleForTesting
+  FileObject getFileObject( String vfsFilename, VariableSpace space ) throws KettleFileException {
+    return KettleVFS.getFileObject( environmentSubstitute( vfsFilename ), space );
   }
 }

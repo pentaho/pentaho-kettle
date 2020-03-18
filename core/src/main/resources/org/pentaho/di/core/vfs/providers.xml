@@ -55,13 +55,13 @@
         <scheme name="ftps"/>
         <if-available class-name="org.apache.commons.net.ftp.FTPFile"/>
     </provider>
-    <provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.http4.Http4FileProvider">
         <scheme name="http"/>
-        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
+        <if-available class-name="org.apache.http.client.HttpClient"/>
     </provider>
-    <provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.http4s.Http4sFileProvider">
         <scheme name="https"/>
-        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
+        <if-available class-name="org.apache.http.client.HttpClient"/>
     </provider>
 
     <!-- Custom Sftp provider -->
@@ -71,12 +71,16 @@
         <if-available class-name="com.jcraft.jsch.JSch"/>
     </provider>
 
+    <provider class-name="org.pentaho.di.connections.vfs.provider.ConnectionFileProvider">
+        <scheme name="pvfs"/>
+    </provider>
+
     <provider class-name="org.apache.commons.vfs2.provider.res.ResourceFileProvider">
         <scheme name="res"/>
     </provider>
         <provider class-name="org.apache.commons.vfs2.provider.webdav.WebdavFileProvider">
         <scheme name="webdav"/>
-        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
+        <if-available class-name="org.apache.http.client.HttpClient"/>
         <if-available class-name="org.apache.jackrabbit.webdav.client.methods.DavMethod"/>
     </provider>
     <provider class-name="org.apache.commons.vfs2.provider.tar.TarFileProvider">

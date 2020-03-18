@@ -246,6 +246,7 @@ import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.SimpleMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.dialog.SubjectDataBrowserDialog;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.OsHelper;
@@ -372,6 +373,7 @@ import java.util.stream.Collectors;
 public class Spoon extends ApplicationWindow implements AddUndoPositionInterface, TabListener, SpoonInterface,
   OverwritePrompter, PDIObserver, LifeEventHandler, XulEventSource, XulEventHandler, PartitionSchemasProvider {
 
+  public static final String CONNECTION = "connection";
   private static Class<?> PKG = Spoon.class;
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Spoon", LoggingObjectType.SPOON,
@@ -728,7 +730,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     StringBuilder optionLogLevel = getCommandLineOption( options, "level" ).getArgument();
 
     // Set default Locale:
-    Locale.setDefault( Const.DEFAULT_LOCALE );
+    Locale.setDefault( LanguageChoice.getInstance().getDefaultLocale() );
 
     if ( !Utils.isEmpty( optionLogFile ) ) {
       fileLoggingEventListener = new FileLoggingEventListener( optionLogFile.toString(), true );
@@ -1155,6 +1157,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } else {
       // Cancel - don't close tabs and don't disconnect from repo
       return false;
+    }
+  }
+
+  /*
+   Fix for PDI-18593 Hadoop cluster items not refreshed when switching from local<->repo.
+   Updates the tree on repository connection or disconnection without closing active Jobs or Transformations.
+   */
+  public void updateTreeForActiveAbstractMetas() {
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      Object managedObject = entry.getObject().getManagedObject();
+      if ( managedObject instanceof AbstractMeta ) {
+        if ( managedObject instanceof TransMeta ) {
+          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_TRANSFORMATIONS, props.isOnlyActiveFileShownInTree() );
+        }
+        if ( managedObject instanceof JobMeta ) {
+          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_JOBS, props.isOnlyActiveFileShownInTree() );
+        }
+        selectionTreeManager.show( (AbstractMeta) managedObject );
+        refreshTree( (AbstractMeta) managedObject );
+      }
     }
   }
 
@@ -1896,6 +1918,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // read from a repository...
       //
       try {
+        String connection = getLastUsedConnection( lastUsedFile );
+        Variables variables = new Variables();
+        if ( connection != null ) {
+          variables.setVariable( CONNECTION, connection );
+        }
         loadLastUsedFile( lastUsedFile, rep == null ? null : rep.getName() );
         addMenuLast();
       } catch ( KettleException ke ) {
@@ -4122,7 +4149,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 .getRepositoryDirectory().getName() ) );
           }
           props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, transMeta.getName(), transMeta
-            .getRepositoryDirectory().getPath(), true, rep.getName(), getUsername(), null );
+            .getRepositoryDirectory().getPath(), true, rep.getName(), getUsername(), null, null );
           addMenuLast();
           addTransGraph( transMeta );
         }
@@ -4143,7 +4170,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         jobMeta.clearChanged();
         if ( jobMeta != null ) {
           props.addLastFile( LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta
-            .getRepositoryDirectory().getPath(), true, rep.getName(), getUsername(), null );
+            .getRepositoryDirectory().getPath(), true, rep.getName(), getUsername(), null, null );
           saveSettings();
           addMenuLast();
           addJobGraph( jobMeta );
@@ -4176,7 +4203,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               .getName() ) );
           }
           props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, objName, repDir.getPath(), true, rep.getName(),
-            getUsername(), null );
+            getUsername(), null, null );
           addMenuLast();
           addTransGraph( transMeta );
         }
@@ -4202,7 +4229,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         jobMeta.clearChanged();
         if ( jobMeta != null ) {
           props.addLastFile( LastUsedFile.FILE_TYPE_JOB, objName, repDir.getPath(), true, rep.getName(), getUsername(),
-            null );
+            null, null );
           saveSettings();
           addMenuLast();
           addJobGraph( jobMeta );
@@ -4248,6 +4275,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         setShellText();
         SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
         enableMenus();
+        updateTreeForActiveAbstractMetas();
       }
     }
   }
@@ -4526,9 +4554,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   }
 
-  // private String lastVfsUsername="";
-  // private String lastVfsPassword="";
-
   public void openFileVFSFile() {
     FileObject initialFile;
     FileObject rootFile;
@@ -4552,6 +4577,120 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  private String lastFileOpenedConnection;
+  private String lastFileOpenedProvider;
+
+  public void openFileVFSFileNew() {
+    try {
+      openFileNew();
+    } catch ( Exception ignored ) {
+      // Show an error message
+    }
+  }
+
+  public void openFileNew() throws Exception {
+    FileDialogOperation fileDialogOperation =
+      getFileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
+    fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
+    if ( !Utils.isEmpty( lastFileOpened ) ) {
+      // Test for Windows vs Linux/Remote parent path
+      int parentIndex = lastFileOpened.lastIndexOf( '\\' );
+      if ( parentIndex == -1 ) {
+        parentIndex = lastFileOpened.lastIndexOf( '/' );
+      }
+      String folder = lastFileOpened.substring( 0, parentIndex );
+      fileDialogOperation.setPath( folder );
+      fileDialogOperation.setConnection( lastFileOpenedConnection );
+      fileDialogOperation.setProvider( lastFileOpenedProvider );
+    }
+    try {
+      ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
+        fileDialogOperation );
+      String path = fileDialogOperation.getPath();
+      if ( fileDialogOperation.getRepositoryObject() != null ) {
+        RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
+        loadObjectFromRepository( repositoryObject.getObjectId(), repositoryObject.getObjectType(), null );
+        lastFileOpened = repositoryObject.getRepositoryDirectory().getPath() + "/" + repositoryObject.getName();
+        lastFileOpenedProvider = fileDialogOperation.getProvider();
+      } else if ( path != null ) {
+        Variables variables = new Variables();
+        variables.setVariable( CONNECTION, fileDialogOperation.getConnection() );
+        openFile( path, variables, false );
+        lastFileOpened = path;
+        lastFileOpenedConnection = fileDialogOperation.getConnection();
+        lastFileOpenedProvider = fileDialogOperation.getProvider();
+      }
+    } catch ( KettleException e ) {
+      // Ignore for now
+    }
+  }
+
+  public boolean saveAsNew() {
+    EngineMetaInterface meta = getActiveMeta();
+    String fileType = meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION )
+      ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
+
+    FileDialogOperation fileDialogOperation =
+      getFileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
+    fileDialogOperation.setFileType( fileType );
+    fileDialogOperation.setFilename( meta.getName() );
+    fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
+    if ( rep != null && meta.getRepositoryDirectory() != null ) {
+      fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
+    } else {
+      if ( meta.getFilename() != null ) {
+        fileDialogOperation
+          .setPath( meta.getFilename().substring( 0, meta.getFilename().lastIndexOf( File.separator ) ) );
+      }
+    }
+    if ( meta instanceof VariableSpace ) {
+      fileDialogOperation.setConnection( ( (VariableSpace) meta ).getVariable( CONNECTION ) );
+    }
+    boolean saved = false;
+    try {
+      ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
+        fileDialogOperation );
+      if ( meta instanceof VariableSpace && fileDialogOperation.getConnection() != null ) {
+        ( (VariableSpace) meta ).setVariable( CONNECTION, fileDialogOperation.getConnection() );
+      }
+      if ( fileDialogOperation.getRepositoryObject() != null ) {
+        RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
+        final RepositoryDirectoryInterface originalDir = meta.getRepositoryDirectory();
+        final String originalName = meta.getName();
+        final ObjectId originalObjectId = meta.getObjectId();
+        final String originalFilename = meta.getFilename();
+        meta.setObjectId( null );
+        meta.setFilename( null );
+        meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
+        meta.setName( repositoryObject.getName() );
+        saved = saveToRepositoryConfirmed( meta );
+        if ( !saved ) {
+          // if the object wasn't successfully saved, set the name and directory back to their original values
+          meta.setRepositoryDirectory( originalDir );
+          meta.setName( originalName );
+          meta.setObjectId( originalObjectId );
+          meta.setFilename( originalFilename );
+        }
+      } else if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
+        String filename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
+        lastFileOpened = filename;
+        lastFileOpenedConnection = fileDialogOperation.getConnection();
+        lastFileOpenedProvider = fileDialogOperation.getProvider();
+        if ( lastFileOpenedConnection != null && meta instanceof VariableSpace ) {
+          ( (VariableSpace) meta ).setVariable( CONNECTION, lastFileOpenedConnection );
+        }
+        saved = saveXMLFile( meta, filename, false );
+      }
+    } catch ( KettleException e ) {
+      return false;
+    }
+    if ( saved ) {
+      delegates.tabs.renameTabs();
+    }
+
+    return saved;
+  }
+
   public void addFileListener( FileListener listener ) {
     this.fileListeners.add( listener );
     for ( String s : listener.getSupportedExtensions() ) {
@@ -4573,13 +4712,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void openFile( String filename, boolean importfile ) {
+    openFile( filename, null, importfile );
+  }
+
+  public void openFile( String filename, VariableSpace variableSpace, boolean importfile ) {
     // Open the XML and see what's in there.
     // We expect a single <transformation> or <job> root at this time...
 
     // does the file exist? If not, show an error dialog
     boolean fileExists = false;
+    FileObject file = null;
     try {
-      final FileObject file = KettleVFS.getFileObject( filename );
+      file = KettleVFS.getFileObject( filename, variableSpace );
       fileExists = file.exists();
     } catch ( final KettleFileException | FileSystemException e ) {
       // nothing to do, null fileObject will be handled below
@@ -4611,7 +4755,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // Attempt to find a root XML node name. Fails gracefully for non-XML file
     // types.
     try {
-      Document document = XMLHandler.loadXMLFile( filename );
+      Document document = XMLHandler.loadXMLFile( file );
       root = document.getDocumentElement();
     } catch ( KettleXMLException e ) {
       if ( log.isDetailed() ) {
@@ -4635,7 +4779,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( !Utils.isEmpty( filename ) ) {
       if ( listener != null ) {
         try {
-          loaded = listener.open( root, filename, importfile );
+          String connection = variableSpace != null ? variableSpace.getVariable( CONNECTION ) : null;
+          if ( listener instanceof ConnectionListener ) {
+            loaded = ( (ConnectionListener) listener ).open( root, filename, connection, importfile );
+          } else {
+            loaded = listener.open( root, filename, importfile );
+          }
         } catch ( KettleMissingPluginsException e ) {
           log.logError( e.getMessage(), e );
         }
@@ -5149,7 +5298,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   @VisibleForTesting
-  FileDialogOperation getFileDialogOperation(  String command, String origin ) {
+  FileDialogOperation getFileDialogOperation( String command, String origin ) {
     return new FileDialogOperation( command, origin );
   }
 
@@ -5173,7 +5322,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           FileDialogOperation fileDialogOperation = getFileDialogOperation( FileDialogOperation.SAVE,
             FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setFileType( fileType );
-          fileDialogOperation.setStartDir( meta.getRepositoryDirectory().getPath() );
+          fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
           //Set the filename so it can be used as the default filename in the save dialog
           fileDialogOperation.setFilename( meta.getFilename() );
           ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveRepository.id,
@@ -5329,7 +5478,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             // Handle last opened files...
             props.addLastFile(
               meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true,
-              getRepositoryName(), getUsername(), null );
+              getRepositoryName(), getUsername(), null, null );
             saveSettings();
             addMenuLast();
 
@@ -5802,22 +5951,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean saveXMLFile( EngineMetaInterface meta, boolean export ) {
+    FileDialog dialog = new FileDialog( shell, SWT.SAVE );
+    dialog.setFilterExtensions( meta.getFilterExtensions() );
+    dialog.setFilterNames( meta.getFilterNames() );
+    setFilterPath( dialog );
+    String filename = dialog.open();
+    if ( filename != null ) {
+      lastDirOpened = dialog.getFilterPath();
+      return saveXMLFile( meta, filename, export );
+    }
+    return false;
+  }
+
+  public boolean saveXMLFile( EngineMetaInterface meta, String filename, boolean export ) {
     if ( log.isBasic() ) {
       log.logBasic( "Save file as..." );
     }
     boolean saved = false;
     String beforeFilename = meta.getFilename();
     String beforeName = meta.getName();
-
-    FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-    String[] extensions = meta.getFilterExtensions();
-    dialog.setFilterExtensions( extensions );
-    dialog.setFilterNames( meta.getFilterNames() );
-    setFilterPath( dialog );
-    String filename = dialog.open();
     if ( filename != null ) {
-      lastDirOpened = dialog.getFilterPath();
-
+      String[] extensions = meta.getFilterExtensions();
       // Is the filename ending on .ktr, .xml?
       boolean ending = false;
       for ( int i = 0; i < extensions.length - 1; i++ ) {
@@ -5840,7 +5994,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // See if the file already exists...
       int id = SWT.YES;
       try {
-        FileObject f = KettleVFS.getFileObject( filename );
+        Variables variables = new Variables();
+        if ( meta instanceof VariableSpace ) {
+          variables.setVariable( CONNECTION, ( (VariableSpace) meta ).getVariable( CONNECTION ) );
+        }
+        FileObject f = KettleVFS.getFileObject( filename, variables );
         if ( f.exists() ) {
           MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
           // "This file already exists.  Do you want to overwrite it?"
@@ -5983,12 +6141,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     FileListener listener = null;
-    // match by extension first
+    // match by extension first - this results into PDI-15323
+    // So to fix PDI-15323, we let the fileListener for the default extension for this meta
+    // handle the request, commenting out the code that finds the listener by extension type
+    /*
     int idx = filename.lastIndexOf( '.' );
     if ( idx != -1 ) {
       String extension = filename.substring( idx + 1 );
       listener = fileExtensionMap.get( extension );
     }
+    */
     if ( listener == null ) {
       String xt = meta.getDefaultExtension();
       listener = fileExtensionMap.get( xt );
@@ -6021,7 +6183,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       String xml = XMLHandler.getXMLHeader() + meta.getXML();
 
-      DataOutputStream dos = new DataOutputStream( KettleVFS.getOutputStream( filename, false ) );
+      VariableSpace variableSpace = meta instanceof VariableSpace ? (VariableSpace) meta : null;
+      DataOutputStream dos = new DataOutputStream( KettleVFS.getOutputStream( filename, variableSpace, false ) );
       dos.write( xml.getBytes( Const.XML_ENCODING ) );
       dos.close();
 
@@ -7106,6 +7269,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       String fileType = null;
       String filename = null;
       String directory = null;
+      String connection = null;
       int openType = 0;
       if ( entry.getObjectType() == ObjectType.TRANSFORMATION_GRAPH ) {
         fileType = LastUsedFile.FILE_TYPE_TRANSFORMATION;
@@ -7114,6 +7278,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         directory = transMeta.getRepositoryDirectory().toString();
         openType = LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH;
         entry.setObjectName( transMeta.getName() );
+        connection = transMeta.getVariable( CONNECTION );
       } else if ( entry.getObjectType() == ObjectType.JOB_GRAPH ) {
         fileType = LastUsedFile.FILE_TYPE_JOB;
         JobMeta jobMeta = (JobMeta) entry.getObject().getManagedObject();
@@ -7121,11 +7286,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         directory = jobMeta.getRepositoryDirectory().toString();
         openType = LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH;
         entry.setObjectName( jobMeta.getName() );
+        connection = jobMeta.getVariable( CONNECTION );
       }
 
       if ( fileType != null ) {
-        props.addOpenTabFile(
-          fileType, filename, directory, rep != null, rep != null ? rep.getName() : null, openType );
+        props.addOpenTabFile( fileType, filename, directory, rep != null, rep != null ? rep.getName() : null, openType,
+          connection );
       }
     }
 
@@ -8057,7 +8223,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 if ( transMeta != null ) {
                   if ( trackIt ) {
                     props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), rdi
-                      .getPath(), true, rep.getName(), getUsername(), null );
+                      .getPath(), true, rep.getName(), getUsername(), null, null );
                   }
                   // transMeta.setFilename(lastUsedFile.getFilename());
                   transMeta.clearChanged();
@@ -8072,7 +8238,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                   if ( trackIt ) {
                     props.addLastFile(
                       LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), rdi.getPath(), true, rep
-                        .getName(), getUsername(), null );
+                        .getName(), getUsername(), null, null );
                   }
                   jobMeta.clearChanged();
                   addJobGraph( jobMeta );
@@ -8087,14 +8253,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // open files stored locally, not in the repository
     if ( !lastUsedFile.isSourceRepository() && !Utils.isEmpty( lastUsedFile.getFilename() ) ) {
+      String connection = getLastUsedConnection( lastUsedFile );
+      Variables variables = null;
+      if ( connection != null ) {
+        variables = new Variables();
+        variables.setVariable( CONNECTION, connection );
+      }
       if ( lastUsedFile.isTransformation() ) {
-        openFile( lastUsedFile.getFilename(), rep != null );
+        openFile( lastUsedFile.getFilename(), variables, rep != null );
       }
       if ( lastUsedFile.isJob() ) {
-        openFile( lastUsedFile.getFilename(), false );
+        openFile( lastUsedFile.getFilename(), variables, false );
       }
       refreshTree();
     }
+  }
+
+  private String getLastUsedConnection( LastUsedFile lastUsedFile ) {
+    if ( !Utils.isEmpty( lastUsedFile.getConnection() ) && !lastUsedFile.getConnection().equals( "null" ) ) {
+      return lastUsedFile.getConnection();
+    }
+    return null;
   }
 
   /**

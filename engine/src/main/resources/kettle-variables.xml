@@ -61,12 +61,12 @@
   </kettle-variable>
 
   <kettle-variable>
-    <description>The transformation performance log schema default for all transformations</description>
+    <description>The transformation performance log database connection default for all transformations</description>
     <variable>KETTLE_TRANS_PERFORMANCE_LOG_DB</variable>
   </kettle-variable>
 
   <kettle-variable>
-    <description>The transformation performance log database connection default for all transformations</description>
+    <description>The transformation performance log schema default for all transformations</description>
     <variable>KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA</variable>
   </kettle-variable>
 
@@ -145,6 +145,24 @@
       they are not.
     </description>
     <variable>KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Prevents Kettle from converting null strings to empty strings when KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL is set to "Y".</description>
+    <variable>KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Prevent Kettle from yielding null as the value of an empty value.</description>
+    <variable>KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Cause the "Get XML data" step to yield null values on missing elements and empty values on empty elements when set to "Y".</description>
+    <variable>KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE</variable>
     <default-value>N</default-value>
   </kettle-variable>
 
@@ -510,6 +528,18 @@
     <description>This environment variable is used by streaming consumer steps to limit the total of concurrent batches across transformations. Leave 0 for unlimited.</description>
     <variable>SHARED_STREAMING_BATCH_POOL_SIZE</variable>
     <default-value>0</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to specify a location used to deploy a shim driver into PDI.</description>
+    <variable>SHIM_DRIVER_DEPLOYMENT_LOCATION</variable>
+    <default-value>DEFAULT</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to define if a Timestamp should be converted to nanoseconds or milliseconds.</description>
+    <variable>KETTLE_TIMESTAMP_OUTPUT_FORMAT</variable>
+    <default-value>NANOSECONDS</default-value>
   </kettle-variable>
 </kettle-variables>
 

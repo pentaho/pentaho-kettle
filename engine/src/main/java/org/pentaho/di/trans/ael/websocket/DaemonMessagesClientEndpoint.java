@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -52,7 +52,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 public class DaemonMessagesClientEndpoint extends Endpoint {
-  /** The package name, used for internationalization of messages. */
+  /**
+   * The package name, used for internationalization of messages.
+   */
   private static Class<?> PKG = DaemonMessagesClientEndpoint.class; // for i18n purposes
   //i18n messages
   private static final String EXCEPTION_SESSION_CLOSED = "DaemonMessagesClientEndpoint.Exception.SessionIsClosed";
@@ -73,9 +75,9 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
   private String keytab = null;
   private boolean reuseSparkContext = false;
   //only one stop message
-  private AtomicBoolean alReadySendedStopMessage =  new AtomicBoolean( false );
+  private AtomicBoolean alReadySendedStopMessage = new AtomicBoolean( false );
 
-  public DaemonMessagesClientEndpoint( String host, String port, boolean ssl,
+  public DaemonMessagesClientEndpoint( String host, int port, boolean ssl,
                                        MessageEventService messageEventService ) throws KettleException {
     try {
       setAuthProperties();

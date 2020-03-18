@@ -25,6 +25,7 @@ package org.pentaho.di.base;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -239,15 +240,40 @@ public abstract class AbstractBaseCommandExecutor {
   }
 
   /**
-   * Decodes the provided base64String into the specified filePath. Parent directories must already exist.
+   * Decodes the provided base64String into a default path. Resulting zip file is UUID-named for concurrency sake.
    *
-   * @param base64String String BASE64 representation of a file
-   * @param filePath     String The path to which the base64String is to be decoded
+   * @param base64Zip BASE64 representation of a file
+   * @param deleteOnJvmExit true if we want this newly generated file to be marked for deletion on JVM termination, false otherwise
    * @return File the newly created File
    */
-  protected File decodeBase64StringToFile( String base64String, String filePath ) throws IOException {
+  public File decodeBase64ToZipFile( Serializable base64Zip, boolean deleteOnJvmExit ) throws IOException {
+
+    String basePath = !StringUtils.isEmpty( Const.getUserHomeDirectory() ) ? Const.getUserHomeDirectory() : new File( "." ).getAbsolutePath();
+    String zipFilePath = basePath + File.separator + java.util.UUID.randomUUID().toString() + ".zip";
+    File f = decodeBase64ToZipFile( base64Zip, zipFilePath );
+
+    if ( f != null && deleteOnJvmExit ) {
+      f.deleteOnExit();
+    }
+
+    return f;
+  }
+
+  /**
+   * Decodes the provided base64String into the specified filePath. Parent directories must already exist.
+   *
+   * @param base64Zip BASE64 representation of a file
+   * @param filePath String The path to which the base64String is to be decoded
+   * @return File the newly created File
+   */
+  public File decodeBase64ToZipFile( Serializable base64Zip, String filePath ) throws IOException {
+
+    if ( base64Zip == null || Utils.isEmpty( base64Zip.toString() ) ) {
+      return null;
+    }
+
     //Decode base64String to byte[]
-    byte[] decodedBytes = Base64.getDecoder().decode( base64String );
+    byte[] decodedBytes = Base64.getDecoder().decode( base64Zip.toString() );
     File file = new File( filePath );
 
     //Try-with-resources, write to file, ensure fos is always closed

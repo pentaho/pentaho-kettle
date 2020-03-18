@@ -40,8 +40,6 @@ define([
     function onInit() {
       vm.data = $stateParams.data;
 
-      console.log(vm.data);
-
       vm.couldNotConnect = i18n.get('connections.failure.couldNotConnect');
       vm.messageOne = i18n.get('connections.failure.messageOne');
       vm.messageTwo = i18n.get('connections.failure.messageTwo');
@@ -49,6 +47,8 @@ define([
       vm.createNewConnection = i18n.get('connections.final.createNewConnection');
       vm.editConnection = i18n.get('connections.final.editConnection');
       vm.closeLabel = i18n.get('connections.final.closeLabel');
+      vm.data.isSaved = false;
+      vm.buttons = getButtons();
     }
 
     function onCreateNew() {
@@ -56,7 +56,18 @@ define([
     }
 
     function onEditConnection() {
-      $state.go("intro", {data: vm.data});
+      $state.go(vm.data.model.type + "step1", {data: vm.data, transition: "slideRight"});
+    }
+
+    function getButtons() {
+      return [{
+        label: i18n.get('connections.controls.finishLabel'),
+        class: "primary",
+        position: "right",
+        onClick: function() {
+          close();
+        }
+      }];
     }
   }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,11 +23,25 @@
 package org.pentaho.di.core.database;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleException;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_CREDENTIALS;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_PROFILE_NAME;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.IAM_SESSION_TOKEN;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.JDBC_AUTH_METHOD;
+import static org.pentaho.di.core.database.RedshiftDatabaseMeta.PROFILE_CREDENTIALS;
 
 /**
  * Unit tests for RedshiftDatabaseMeta
@@ -35,6 +49,11 @@ import static org.junit.Assert.*;
 public class RedshiftDatabaseMetaTest {
 
   private RedshiftDatabaseMeta dbMeta;
+
+  @BeforeClass
+  public static void beforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -58,7 +77,7 @@ public class RedshiftDatabaseMetaTest {
 
   @Test
   public void testGetDriverClass() throws Exception {
-    assertEquals( "com.amazon.redshift.jdbc4.Driver", dbMeta.getDriverClass() );
+    assertEquals( "com.amazon.redshift.jdbc.Driver", dbMeta.getDriverClass() );
     dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", dbMeta.getDriverClass() );
   }
@@ -70,6 +89,24 @@ public class RedshiftDatabaseMetaTest {
       dbMeta.getURL( "rs.pentaho.com", "4444", "myDB" ) );
     dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     assertEquals( "jdbc:odbc:myDB", dbMeta.getURL( null, "Not Null", "myDB" ) );
+    dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
+    dbMeta.addAttribute( JDBC_AUTH_METHOD, IAM_CREDENTIALS );
+    dbMeta.addAttribute( IAM_ACCESS_KEY_ID, "myid" );
+    dbMeta.addAttribute( IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( "mysecretkey" ) );
+    dbMeta.addAttribute( IAM_SESSION_TOKEN, "mytoken" );
+    assertEquals(
+      "jdbc:redshift:iam://amazonhost:12345/foodmart",
+      dbMeta.getURL( "amazonhost", "12345", "foodmart" ) );
+    HashMap<String, String> optionalOptions = new HashMap<>();
+    dbMeta.putOptionalOptions( optionalOptions );
+    assertEquals( "myid", optionalOptions.get( "REDSHIFT.AccessKeyID" ) );
+    assertEquals( "mysecretkey", optionalOptions.get( "REDSHIFT.SecretAccessKey" ) );
+    assertEquals( "mytoken", optionalOptions.get( "REDSHIFT.SessionToken" ) );
+    dbMeta.addAttribute( JDBC_AUTH_METHOD, PROFILE_CREDENTIALS );
+    dbMeta.addAttribute( IAM_PROFILE_NAME, "super" );
+    optionalOptions.clear();
+    dbMeta.putOptionalOptions( optionalOptions );
+    assertEquals( "super", optionalOptions.get( "REDSHIFT.Profile" ) );
   }
 
   @Test

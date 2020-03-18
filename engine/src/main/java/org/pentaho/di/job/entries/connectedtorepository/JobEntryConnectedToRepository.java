@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -197,8 +197,8 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
       }
       String realUsername = environmentSubstitute( username );
 
-      if ( rep.getSecurityProvider().getUserInfo() != null
-        && !realUsername.equals( rep.getSecurityProvider().getUserInfo().getLogin() ) ) {
+      if ( rep.getUserInfo() != null
+        && !realUsername.equals( rep.getUserInfo().getLogin() ) ) {
         logError( BaseMessages.getString( PKG, "JobEntryConnectedToRepository.Error.DiffUser", rep
           .getUserInfo().getLogin(), realUsername ) );
         return result;

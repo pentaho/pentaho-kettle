@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,8 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -51,28 +53,36 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@InjectionSupported( localizationPrefix = "SplitFieldToRows.Injection.", groups = "ADDITIONAL_FIELDS" )
 public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SplitFieldToRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Field to split */
+  @Injection( name = "FIELD_TO_SPLIT" )
   private String splitField;
 
   /** Split field based upon this delimiter. */
+  @Injection( name = "DELIMITER" )
   private String delimiter;
 
   /** New name of the split field */
+  @Injection( name = "NEW_FIELD_NAME" )
   private String newFieldname;
 
   /** Flag indicating that a row number field should be included in the output */
+  @Injection( name = "INCLUDE_ROWNUM", group = "ADDITIONAL_FIELDS" )
   private boolean includeRowNumber;
 
   /** The name of the field in the output containing the row number */
+  @Injection( name = "ROWNUM_FIELD_NAME", group = "ADDITIONAL_FIELDS" )
   private String rowNumberField;
 
   /** Flag indicating that we should reset RowNum for each file */
+  @Injection( name = "RESET_ROWNUM", group = "ADDITIONAL_FIELDS" )
   private boolean resetRowNumber;
 
   /** Flag indicating that the delimiter is a regular expression */
+  @Injection( name = "DELIMITER_IS_REGEX" )
   private boolean isDelimiterRegex;
 
   public boolean isDelimiterRegex() {

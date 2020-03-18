@@ -56,6 +56,10 @@ public class LogChannel implements LogChannelInterface {
 
   private LogChannelFileWriterBuffer fileWriter;
 
+  public LogChannel() {
+    //Not implemented
+  }
+
   public LogChannel( Object subject ) {
     logLevel = DefaultLogLevel.getLogLevel();
     logChannelId = LoggingRegistry.getInstance().registerLoggingSource( subject );

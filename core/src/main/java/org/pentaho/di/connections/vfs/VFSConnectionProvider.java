@@ -34,4 +34,5 @@ public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends C
   FileSystemOptions getOpts( T vfsConnectionDetails );
   List<VFSRoot> getLocations( T vfsConnectionDetails );
   String getProtocol( T vfsConnectionDetails );
+  String sanitizeName( String string );
 }

@@ -63,7 +63,7 @@ import static org.pentaho.metaverse.api.analyzer.kettle.step.ExternalResourceSte
   name = "JmsConsumer.TypeLongDesc",
   description = "JmsConsumer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
-  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/JMS_Consumer" )
+  documentationUrl = "Products/JMS_Consumer" )
 @Metaverse.CategoryMap ( entity = JMS_DESTINATION_METAVERSE, category = CATEGORY_MESSAGE_QUEUE )
 @Metaverse.CategoryMap ( entity = JMS_SERVER_METAVERSE, category = CATEGORY_DATASOURCE )
 @Metaverse.EntityLink ( entity = JMS_SERVER_METAVERSE, link = LINK_PARENT_CONCEPT, parentEntity =
@@ -74,6 +74,9 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
 
   private static final String JMS_MESSAGE_METAVERSE = "Message";
   private static final String JMS_DESTINATION_NAME_METAVERSE = "Destination Name";
+  private static final String JMS_MESSAGE_ID_METAVERSE = "Message Id";
+  private static final String JMS_TIMESTAMP_METAVERSE = "JMS Timestamp";
+  private static final String JMS_REDELIVERED_METAVERSE = "JMS Redelivered";
   @InjectionDeep
   public JmsDelegate jmsDelegate;
 
@@ -90,6 +93,24 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
   @Metaverse.Property ( name = JMS_DESTINATION_NAME_METAVERSE, parentNodeName = JMS_DESTINATION_NAME_METAVERSE )
   @Metaverse.NodeLink ( nodeName = JMS_DESTINATION_NAME_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
   public String destinationField = "destination";
+
+  @Injection ( name = "MESSAGE_ID" )
+  @Metaverse.Node ( name = JMS_MESSAGE_ID_METAVERSE, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
+  @Metaverse.Property ( name = JMS_MESSAGE_ID_METAVERSE, parentNodeName = JMS_MESSAGE_ID_METAVERSE )
+  @Metaverse.NodeLink ( nodeName = JMS_MESSAGE_ID_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
+  public String messageId = "messageId";
+
+  @Injection ( name = "JMS_TIMESTAMP" )
+  @Metaverse.Node ( name = JMS_TIMESTAMP_METAVERSE, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
+  @Metaverse.Property ( name = JMS_TIMESTAMP_METAVERSE, parentNodeName = JMS_TIMESTAMP_METAVERSE )
+  @Metaverse.NodeLink ( nodeName = JMS_TIMESTAMP_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
+  public String jmsTimestamp = "jmsTimestamp";
+
+  @Injection ( name = "JMS_REDELIVERED" )
+  @Metaverse.Node ( name = JMS_REDELIVERED_METAVERSE, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
+  @Metaverse.Property ( name = JMS_REDELIVERED_METAVERSE, parentNodeName = JMS_REDELIVERED_METAVERSE )
+  @Metaverse.NodeLink ( nodeName = JMS_REDELIVERED_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
+  public String jmsRedelivered = "jmsRedelivered";
 
   @VisibleForTesting
   public JmsConsumerMeta() {
@@ -110,6 +131,9 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( messageField ) );
     rowMeta.addValueMeta( new ValueMetaString( destinationField ) );
+    rowMeta.addValueMeta( new ValueMetaString( messageId ) );
+    rowMeta.addValueMeta( new ValueMetaString( jmsTimestamp ) );
+    rowMeta.addValueMeta( new ValueMetaString( jmsRedelivered ) );
     return rowMeta;
   }
 
@@ -138,6 +162,9 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( messageField ) );
     rowMeta.addValueMeta( new ValueMetaString( destinationField ) );
+    rowMeta.addValueMeta( new ValueMetaString( messageId ) );
+    rowMeta.addValueMeta( new ValueMetaString( jmsTimestamp ) );
+    rowMeta.addValueMeta( new ValueMetaString( jmsRedelivered ) );
     return rowMeta;
   }
 }

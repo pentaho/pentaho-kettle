@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
 
   private MQTTProducerMeta meta;
 
+  @SuppressWarnings( { "squid:S4738", "Guava" } )  //using guava memoize, so no gain switching to java Supplier
   Supplier<MqttClient> client = Suppliers.memoize( this::connectToClient );
   private AtomicBoolean connectionError = new AtomicBoolean( false );
 
@@ -86,6 +87,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
       remarks, getTransMeta(), meta.getParentStepMeta(),
       null, null, null, null, //these parameters are not used inside the method
       variables, getRepository(), getMetaStore() );
+    @SuppressWarnings( "squid:S3864" ) //peek used appropriately here
     boolean errorsPresent =
       remarks.stream().filter( result -> result.getType() == CheckResultInterface.TYPE_RESULT_ERROR )
         .peek( result -> logError( result.getText() ) )
@@ -119,7 +121,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
       return false;
     } catch ( RuntimeException re ) {
       stopAll();
-      logError( re.getMessage(), re );
+      logError( re.getMessage() );
       return false;
     }
     return true;
@@ -150,6 +152,9 @@ public class MQTTProducer extends BaseStep implements StepInterface {
     } catch ( MqttException e ) {
       connectionError.set( true );
       throw new IllegalStateException( e );
+    } catch ( IllegalArgumentException iae ) {
+      connectionError.set( true );
+      throw iae;
     }
   }
 

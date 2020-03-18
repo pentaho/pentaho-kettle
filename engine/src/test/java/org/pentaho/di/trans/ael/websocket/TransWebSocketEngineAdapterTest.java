@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -38,9 +38,16 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.engine.api.events.LogEvent;
+import org.pentaho.di.engine.api.model.ModelType;
+import org.pentaho.di.engine.api.remote.Message;
+import org.pentaho.di.engine.api.remote.RemoteSource;
 import org.pentaho.di.engine.api.remote.StopMessage;
+import org.pentaho.di.engine.api.reporting.LogEntry;
+import org.pentaho.di.engine.api.reporting.LogLevel;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
 import java.util.Comparator;
@@ -49,6 +56,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -81,8 +90,8 @@ public class TransWebSocketEngineAdapterTest {
   public void testOpsIncludeSubTrans() throws Exception {
     TransMeta transMeta = new TransMeta( getClass().getResource( "grid-to-subtrans.ktr" ).getPath() );
     TransWebSocketEngineAdapter adapter =
-      new TransWebSocketEngineAdapter( transMeta, "", "", false );
-    adapter.prepareExecution( new String[]{} );
+      new TransWebSocketEngineAdapter( transMeta, "", -1, false );
+    adapter.prepareExecution( new String[] {} );
     List<StepMetaDataCombi> steps = adapter.getSteps();
     steps.sort( Comparator.comparing( s -> s.stepname ) );
     assertEquals( 2, steps.size() );
@@ -91,13 +100,45 @@ public class TransWebSocketEngineAdapterTest {
   }
 
   @Test
+  public void testLoggingOnStep() throws KettleException {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "grid-to-subtrans.ktr" ).getPath() );
+    TransWebSocketEngineAdapter adapter =
+      new TransWebSocketEngineAdapter( transMeta, "", 0, false );
+    adapter.setLog( logChannel );
+    adapter.prepareExecution( new String[]{} );
+    StepInterface stepInterface = adapter.getStepInterface( "Data Grid", 0 );
+    LogEntry errorLog = LogEntry.LogEntryBuilder.aLogEntry().withLogLevel( LogLevel.BASIC ).build();
+    Message errorMessage = new LogEvent( new RemoteSource( ModelType.OPERATION, stepInterface.getStepname() ) , errorLog );
+    adapter.messageEventService.fireEvent( errorMessage );
+
+    assertEquals( 0, stepInterface.getErrors() );
+    assertFalse( stepInterface.isStopped() );
+  }
+
+  @Test
+  public void testErrorLoggingOnStep() throws KettleException {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "grid-to-subtrans.ktr" ).getPath() );
+    TransWebSocketEngineAdapter adapter =
+      new TransWebSocketEngineAdapter( transMeta, "", 0, false );
+    adapter.setLog( logChannel );
+    adapter.prepareExecution( new String[]{} );
+    StepInterface stepInterface = adapter.getStepInterface( "Data Grid", 0 );
+    LogEntry errorLog = LogEntry.LogEntryBuilder.aLogEntry().withLogLevel( LogLevel.ERROR ).build();
+    Message errorMessage = new LogEvent( new RemoteSource( ModelType.OPERATION, stepInterface.getStepname() ) , errorLog );
+    adapter.messageEventService.fireEvent( errorMessage );
+
+    assertEquals( 1, stepInterface.getErrors() );
+    assertTrue( stepInterface.isStopped() );
+  }
+
+  @Test
   public void testSafeStopStaysRunningUntilStopped() throws Exception {
     TransMeta transMeta = new TransMeta( getClass().getResource( "grid-to-subtrans.ktr" ).getPath() );
     DaemonMessagesClientEndpoint daemonEndpoint = mock( DaemonMessagesClientEndpoint.class );
     CountDownLatch latch = new CountDownLatch( 1 );
     TransWebSocketEngineAdapter adapter =
-      new TransWebSocketEngineAdapter( transMeta, "", "", false ) {
-        @Override DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
+      new TransWebSocketEngineAdapter( transMeta, "", -1, false ) {
+        @Override public DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
           return daemonEndpoint;
         }
 
@@ -109,7 +150,7 @@ public class TransWebSocketEngineAdapterTest {
           }
         }
       };
-    adapter.prepareExecution( new String[]{} );
+    adapter.prepareExecution( new String[] {} );
     adapter.getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step )
       .forEach( step -> step.setRunning( true ) );
     adapter.safeStop();
@@ -126,7 +167,7 @@ public class TransWebSocketEngineAdapterTest {
   private Matcher<StopMessage> matchesSafeStop() {
     return new BaseMatcher<StopMessage>() {
       @Override public boolean matches( Object o ) {
-        return ((StopMessage) o).isSafeStop();
+        return ( (StopMessage) o ).isSafeStop();
       }
 
       @Override public void describeTo( Description description ) {

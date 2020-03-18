@@ -15,12 +15,11 @@
     <root>plugins/kettle-palo-plugin/src</root>
     <root>plugins/kettle-openerp-plugin/src</root>
     <root>plugins/kettle-hl7-plugin/src</root>
-    <root>plugins/kettle5-log4j-plugin/src</root>
 
   </source-directories>
   
   <scan-phrases>
-    <scan-phrase>BaseMessages.getString( PKG,</scan-phrase>
+    <scan-phrase>BaseMessages.getString(PKG,</scan-phrase>
   </scan-phrases>
   
   <locale-list>

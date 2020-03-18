@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,7 +19,6 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package org.pentaho.di.trans;
 
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -28,13 +27,19 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.ael.websocket.TransWebSocketEngineAdapter;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class TransSupplier implements Supplier<Trans> {
+
+  private static final Class<?> PKG = TransSupplier.class;
+  private static final String MSG_KETTLE_ENGINE = "TransSupplier.SelectedEngine.Kettle";
+  private static final String MSG_SPARK_ENGINE = "TransSupplier.SelectedEngine.Spark";
 
   private final TransMeta transMeta;
   private final LogChannelInterface log;
@@ -47,25 +52,26 @@ public class TransSupplier implements Supplier<Trans> {
   }
 
   /**
-   * Creates the appropriate trans.  Either
-   * 1)  A {@link TransWebSocketEngineAdapter} wrapping an Engine
-   * if an alternate execution engine has been selected
-   * 2)  A legacy {@link Trans} otherwise.
+   * Creates the appropriate trans.  Either 1)  A {@link TransWebSocketEngineAdapter} wrapping an Engine if an alternate
+   * execution engine has been selected 2)  A legacy {@link Trans} otherwise.
    */
   public Trans get() {
     if ( Utils.isEmpty( transMeta.getVariable( "engine" ) ) ) {
-      log.logBasic( "Using legacy execution engine" );
+      log.logBasic( BaseMessages.getString( PKG, MSG_KETTLE_ENGINE ) );
       return fallbackSupplier.get();
     }
 
     Variables variables = new Variables();
     variables.initializeVariablesFrom( null );
-    String protocol = transMeta.getVariable( "engine.protocol" );
-    String host = transMeta.getVariable( "engine.host" );
-    String port = transMeta.getVariable( "engine.port" );
+    String protocol = transMeta.environmentSubstitute( transMeta.getVariable( "engine.scheme" ) );
+    String url = transMeta.environmentSubstitute( transMeta.getVariable( "engine.url" ) );
+
+    URI uri = URI.create( protocol + url );
+
     //default value for ssl for now false
     boolean ssl = "https".equalsIgnoreCase( protocol ) || "wss".equalsIgnoreCase( protocol );
-    return new TransWebSocketEngineAdapter( transMeta, host, port, ssl );
+    log.logBasic( BaseMessages.getString( PKG, MSG_SPARK_ENGINE, protocol, url ) );
+    return new TransWebSocketEngineAdapter( transMeta, uri.getHost(), uri.getPort(), ssl );
   }
 
   /**

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -130,6 +130,10 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
   private TextVar wWildcard;
   private FormData fdlWildcard, fdWildcard;
 
+  private Label wlPassphrase;
+  private TextVar wPassphrase;
+  private FormData fdlPassphrase, fdPassphrase;
+
   private Button wbdSourceFileFolder; // Delete
   private Button wbeSourceFileFolder; // Edit
   private Button wbaSourceFileFolder; // Add or change
@@ -235,6 +239,13 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
   private Label wlSpecifyMoveFormat;
   private Button wSpecifyMoveFormat;
   private FormData fdlSpecifyMoveFormat, fdSpecifyMoveFormat;
+
+  /**
+   * Fields represented in the UI under "File/Folder" corresponds to variable {@link wFields}
+   */
+  enum FIELDS {
+    ROWNUM, SOURCE, WILDCARD, PASSPHRASE, DESTINATION
+  }
 
   public JobEntryPGPDecryptFilesDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
     JobMeta jobMeta ) {
@@ -626,13 +637,34 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     fdWildcard.right = new FormAttachment( wbSourceFileFolder, -55 );
     wWildcard.setLayoutData( fdWildcard );
 
+    // Passphrase
+    wlPassphrase = new Label( wGeneralComp, SWT.RIGHT );
+    wlPassphrase.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.PassPhrase.Label" ) );
+    props.setLook( wlPassphrase );
+    fdlPassphrase = new FormData();
+    fdlPassphrase.left = new FormAttachment( 0, 0 );
+    fdlPassphrase.top = new FormAttachment( wWildcard, margin );
+    fdlPassphrase.right = new FormAttachment( middle, -margin );
+    wlPassphrase.setLayoutData( fdlPassphrase );
+
+    wPassphrase = new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassphrase.setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.PassPhrase.Tooltip" ) );
+    props.setLook( wPassphrase );
+    wPassphrase.addModifyListener( lsMod );
+    fdPassphrase = new FormData();
+    fdPassphrase.left = new FormAttachment( middle, 0 );
+    fdPassphrase.top = new FormAttachment( wWildcard, margin );
+    fdPassphrase.right = new FormAttachment( wbSourceFileFolder, -55 );
+    wPassphrase.setLayoutData( fdPassphrase );
+
+
     wlFields = new Label( wGeneralComp, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.Label" ) );
     props.setLook( wlFields );
     fdlFields = new FormData();
     fdlFields.left = new FormAttachment( 0, 0 );
     fdlFields.right = new FormAttachment( middle, -margin );
-    fdlFields.top = new FormAttachment( wWildcard, margin );
+    fdlFields.top = new FormAttachment( wPassphrase, margin );
     wlFields.setLayoutData( fdlFields );
 
     int rows =
@@ -684,10 +716,12 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         wFields.add( new String[] {
-          wSourceFileFolder.getText(), wWildcard.getText(), null, wDestinationFileFolder.getText() } );
+          wSourceFileFolder.getText(), wWildcard.getText(), wPassphrase.getText(), wDestinationFileFolder.getText() } );
         wSourceFileFolder.setText( "" );
-        wDestinationFileFolder.setText( "" );
         wWildcard.setText( "" );
+        wPassphrase.setText( "" );
+        wDestinationFileFolder.setText( "" );
+
         wFields.removeEmptyRows();
         wFields.setRowNums();
         wFields.optWidth( true );
@@ -712,9 +746,11 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
           String[] string = wFields.getItem( idx );
-          wSourceFileFolder.setText( string[0] );
-          wDestinationFileFolder.setText( string[1] );
-          wWildcard.setText( string[2] );
+          wSourceFileFolder.setText( string[FIELDS.SOURCE.ordinal() - 1] );
+          wWildcard.setText( string[FIELDS.WILDCARD.ordinal() - 1] );
+          wPassphrase.setText( string[FIELDS.PASSPHRASE.ordinal() - 1] );
+          wDestinationFileFolder.setText( string[FIELDS.DESTINATION.ordinal() - 1] );
+
           wFields.remove( idx );
         }
         wFields.removeEmptyRows();
@@ -1606,17 +1642,17 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
       for ( int i = 0; i < jobEntry.source_filefolder.length; i++ ) {
         TableItem ti = wFields.table.getItem( i );
         if ( jobEntry.source_filefolder[i] != null ) {
-          ti.setText( 1, jobEntry.source_filefolder[i] );
+          ti.setText( FIELDS.SOURCE.ordinal(), jobEntry.source_filefolder[i] );
         }
         if ( jobEntry.wildcard[i] != null ) {
-          ti.setText( 2, jobEntry.wildcard[i] );
+          ti.setText( FIELDS.WILDCARD.ordinal(), jobEntry.wildcard[i] );
         }
         if ( jobEntry.passphrase[i] != null ) {
-          ti.setText( 3, jobEntry.passphrase[i] );
+          ti.setText( FIELDS.PASSPHRASE.ordinal(), jobEntry.passphrase[i] );
         }
 
         if ( jobEntry.destination_filefolder[i] != null ) {
-          ti.setText( 4, jobEntry.destination_filefolder[i] );
+          ti.setText( FIELDS.DESTINATION.ordinal(), jobEntry.destination_filefolder[i] );
         }
       }
       wFields.setRowNums();
@@ -1801,10 +1837,10 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     jobEntry.wildcard = new String[nr];
     nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
-      String source = wFields.getNonEmpty( i ).getText( 1 );
-      String wild = wFields.getNonEmpty( i ).getText( 2 );
-      String passphrase = wFields.getNonEmpty( i ).getText( 3 );
-      String dest = wFields.getNonEmpty( i ).getText( 4 );
+      String source = wFields.getNonEmpty( i ).getText( FIELDS.SOURCE.ordinal() );
+      String wild = wFields.getNonEmpty( i ).getText( FIELDS.WILDCARD.ordinal() );
+      String passphrase = wFields.getNonEmpty( i ).getText( FIELDS.PASSPHRASE.ordinal() );
+      String dest = wFields.getNonEmpty( i ).getText( FIELDS.DESTINATION.ordinal() );
 
       if ( source != null && source.length() != 0 ) {
         jobEntry.source_filefolder[nr] = source;

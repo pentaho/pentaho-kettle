@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,39 +24,63 @@ package org.pentaho.di.kitchen;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.junit.runner.RunWith;
+import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.base.Params;
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Base64;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+@RunWith( PowerMockRunner.class )
+@PrepareForTest( BaseMessages.class )
 public class KitchenCommandExecutorTest {
 
-  private MockedKitchenCommandExecutor mockedKitchenCommandExecutor;
+  private KitchenCommandExecutor mockedKitchenCommandExecutor;
+  private Result result;
+  private LogChannelInterface logChannelInterface;
 
   @Before
   public void setUp() throws Exception {
-
-    mockedKitchenCommandExecutor = mock( MockedKitchenCommandExecutor.class );
+    KettleLogStore.init();
+    mockedKitchenCommandExecutor = mock( KitchenCommandExecutor.class );
+    result = mock( Result.class );
+    logChannelInterface = mock( LogChannelInterface.class );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
-    when( mockedKitchenCommandExecutor.loadJobFromFilesystem( anyString(), anyString(), anyString() ) ).thenCallRealMethod();
+    when( mockedKitchenCommandExecutor.loadJobFromFilesystem( anyString(), anyString(), anyObject() ) ).thenCallRealMethod();
     when( mockedKitchenCommandExecutor.loadJobFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
-    when( mockedKitchenCommandExecutor.decodeBase64StringToFile( anyString(), anyString() ) ).thenCallRealMethod();
+    when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyBoolean() ) ).thenCallRealMethod();
+    when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyString() ) ).thenCallRealMethod();
+    when( mockedKitchenCommandExecutor.getReturnCode() ).thenCallRealMethod();
   }
 
   @After
   public void tearDown() {
     mockedKitchenCommandExecutor = null;
+    result = null;
+    logChannelInterface = null;
   }
 
   @Test
@@ -64,22 +88,49 @@ public class KitchenCommandExecutorTest {
     String fileName = "hello-world.kjb";
     File zipFile = new File( getClass().getResource( "testKjbArchive.zip" ).toURI() );
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
-    Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( Const.getDIHomeDirectory(), fileName, base64Zip );
+    Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( null, fileName, base64Zip );
     assertNotNull( job );
   }
 
-  /**
-   * Inner class, used solely for the purpose of raising methods visibility ( so that we are able to test those )
-   */
-  private class MockedKitchenCommandExecutor extends KitchenCommandExecutor {
+  @Test
+  public void testReturnCodeSuccess() {
+    when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
+    when( result.getResult() ).thenReturn( true );
+    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
+  }
 
-    public MockedKitchenCommandExecutor( Class<?> pkgClazz ) {
-      super( pkgClazz );
-    }
+  @Test
+  public void testReturnCodeWithErrors() {
+    mockStatic( BaseMessages.class );
+    when( result.getNrErrors() ).thenReturn( new Long( 1 ) );
+    when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
+    when( mockedKitchenCommandExecutor.getLog() ).thenReturn( logChannelInterface );
+    when( BaseMessages.getString( any(), anyString() ) ).thenReturn( "NoMessage" );
+    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+  }
 
-    @Override
-    public File decodeBase64StringToFile( String base64String, String filePath ) throws IOException {
-      return super.decodeBase64StringToFile( base64String, filePath );
+  @Test
+  public void testReturnCodeFailWithNoErrors() {
+    when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
+    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+  }
+
+  @Test
+  public void testExecuteWithInvalidRepository() {
+    // Create Mock Objects
+    Params params = mock( Params.class );
+    KitchenCommandExecutor kitchenCommandExecutor = new KitchenCommandExecutor( Kitchen.class );
+    PowerMockito.mockStatic( BaseMessages.class );
+
+    // Mock returns
+    when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
+    when( BaseMessages.getString( any( Class.class ), anyString(), anyVararg() ) ).thenReturn( "" );
+
+    try {
+      Result result = kitchenCommandExecutor.execute( params );
+      Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
+    } catch ( Throwable throwable ) {
+      Assert.fail();
     }
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,18 +21,26 @@
  ******************************************************************************/
 package org.pentaho.di.www;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.MessageFormat;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.www.service.zip.ZipService;
+import org.pentaho.di.www.service.zip.ZipServiceKettle;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -48,6 +56,8 @@ import org.w3c.dom.Node;
 
 public class RegisterPackageServlet extends BaseJobServlet {
 
+  private static Class<?> PKG = RegisterPackageServlet.class; // for i18n purposes, needed by Translator2!!
+
   public static final String CONTEXT_PATH = "/kettle/registerPackage";
 
   private static final long serialVersionUID = -7582587179862317791L;
@@ -57,7 +67,21 @@ public class RegisterPackageServlet extends BaseJobServlet {
   public static final String TYPE_JOB = "job";
   public static final String TYPE_TRANS = "trans";
 
-  private static final String ZIP_CONT = "zip:{0}!{1}";
+  public RegisterPackageServlet() {
+    // empty on purpose.
+  }
+
+  private static ZipService zipService;
+
+  /*
+    Initialize the servlet and services.
+   */
+  @Override
+  public void setup( TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository,
+                     List<SlaveServerDetection> detections ) {
+    super.setup( transformationMap, jobMap, socketRepository, detections );
+    setZipService( new ZipServiceKettle() );
+  }
 
   @Override
   public String getContextPath() {
@@ -65,24 +89,20 @@ public class RegisterPackageServlet extends BaseJobServlet {
   }
 
   @Override
-  WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML ) throws KettleException, IOException  {
-    FileObject tempFile = KettleVFS.createTempFile( "export", ".zip", System.getProperty( "java.io.tmpdir" ) );
-    OutputStream out = KettleVFS.getOutputStream( tempFile, false );
-    IOUtils.copy( request.getInputStream(), out );
-    out.flush();
-    IOUtils.closeQuietly( out );
+  WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML ) throws KettleException {
+    String archiveUrl = copyRequestToDirectory( request, createTempDirString() );
 
-    String archiveUrl = tempFile.getName().toString();
     String load = request.getParameter( PARAMETER_LOAD ); // the resource to load
 
+    String zipBaseUrl = extract( archiveUrl );
+
     if ( !Utils.isEmpty( load ) ) {
-      String fileUrl = MessageFormat.format( ZIP_CONT, archiveUrl, load );
-      boolean isJob = TYPE_JOB.equalsIgnoreCase( request.getParameter( PARAMETER_TYPE ) );
+      String fileUrl = getStartFileUrl( zipBaseUrl, load );
       String resultId;
 
-      if ( isJob ) {
+      if ( isJob( request ) ) {
         Node node =
-            getConfigNodeFromZIP( archiveUrl, Job.CONFIGURATION_IN_EXPORT_FILENAME, JobExecutionConfiguration.XML_TAG );
+            getConfigNode( zipBaseUrl, Job.CONFIGURATION_IN_EXPORT_FILENAME, JobExecutionConfiguration.XML_TAG );
         JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration( node );
 
         JobMeta jobMeta = new JobMeta( fileUrl, jobExecutionConfiguration.getRepository() );
@@ -92,7 +112,7 @@ public class RegisterPackageServlet extends BaseJobServlet {
         resultId = job.getContainerObjectId();
       } else {
         Node node =
-            getConfigNodeFromZIP( archiveUrl, Trans.CONFIGURATION_IN_EXPORT_FILENAME,
+            getConfigNode( zipBaseUrl, Trans.CONFIGURATION_IN_EXPORT_FILENAME,
                 TransExecutionConfiguration.XML_TAG );
         TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration( node );
 
@@ -103,10 +123,29 @@ public class RegisterPackageServlet extends BaseJobServlet {
         resultId = trans.getContainerObjectId();
       }
 
+      deleteArchive( archiveUrl ); // zip file no longer needed, contents were extracted
       return new WebResult( WebResult.STRING_OK, fileUrl, resultId );
     }
 
     return null;
+  }
+
+  /**
+   * Determines if <code>request</code> is kettle job.
+   * @param request http request with parameters.
+   * @return true if a job, false otherwise.
+   */
+  protected boolean isJob( HttpServletRequest request ) {
+    return isJob( request.getParameter( PARAMETER_TYPE ) );
+  }
+
+  /**
+   * Determines if <code>parameterTypeValue</code> is kettle job.
+   * @param parameterTypeValue http parameter type value
+   * @return
+   */
+  protected boolean isJob( String parameterTypeValue ) {
+    return TYPE_JOB.equalsIgnoreCase( parameterTypeValue );
   }
 
   @Override
@@ -115,9 +154,159 @@ public class RegisterPackageServlet extends BaseJobServlet {
     return true;
   }
 
-  protected Node getConfigNodeFromZIP( Object archiveUrl, Object fileName, String xml_tag ) throws KettleXMLException {
-    String configUrl = MessageFormat.format( ZIP_CONT, archiveUrl, fileName );
-    Document configDoc = XMLHandler.loadXMLFile( configUrl );
-    return XMLHandler.getSubNode( configDoc, xml_tag );
+  /**
+   * Determine the start file url for the ktr/kjb.
+   * @param archiveUrl
+   * @param requestLoad
+   * @return file path.
+   */
+  protected String getStartFileUrl( String archiveUrl, String requestLoad ) {
+    return concat( archiveUrl,  requestLoad );
   }
+
+  /**
+   * Combine the two paths with with a separator such as: <code>basePath</code> + / + <code>relativePath</code>.
+   * @param basePath full path to root of directory.
+   * @param relativePath a non-absolute path.
+   * @return combined file path.
+   */
+  protected String concat( String basePath,  String relativePath ) {
+    return FilenameUtils.concat( basePath, relativePath );
+  }
+
+  /**
+   * Retrieve config xml, <code>xmlTag</code> from combined path of  <code>archiveUrl</code> and <code>fileName</code>.
+   * @param archiveUrl root file path.
+   * @param fileName xml configuration file at root of <code>archiveUrl</code>.
+   * @param xmlTag xml root tag.
+   * @return configuration node.
+   * @throws KettleXMLException
+   */
+  protected Node getConfigNode( String archiveUrl, String fileName, String xmlTag ) throws KettleXMLException {
+    String configUrl = concat( archiveUrl, fileName );
+    Document configDoc = XMLHandler.loadXMLFile( configUrl );
+    return XMLHandler.getSubNode( configDoc, xmlTag );
+  }
+
+  /**
+   * Create temporary directory with unique random folder at base.
+   * @return unique temporary directory path.
+   */
+  protected String createTempDirString() {
+    return createTempDirString( System.getProperty( "java.io.tmpdir" ) );
+  }
+
+  /**
+   * Create temporary directory with unique random folder at base.
+   * @param baseDirectory base file path directory.
+   * @return unique temporary directory path.
+   */
+  protected String createTempDirString( String baseDirectory ) {
+    return concat( baseDirectory, UUIDUtil.getUUIDAsString() );
+  }
+
+  /**
+   * Create temporary directory with unique random folder at base.
+   * <p>
+   * Format : <code>baseDirectory</code> + / + <code>folderName</code>
+   * @param baseDirectory base file path directory.
+   * @param folderName
+   * @return unique temporary directory path.
+   */
+  protected String createTempDirString( String baseDirectory, String folderName ) {
+    return concat( baseDirectory, folderName );
+  }
+
+  /**
+   * Copy file specified in <code>request</code> to <code>directory</code>.
+   * @param request http request with payload.
+   * @param directory local destination directory.
+   * @return copied file path.
+   * @throws KettleException
+   */
+  protected String copyRequestToDirectory( HttpServletRequest request, String directory ) throws KettleException {
+    try {
+      return copyRequestToDirectory( request.getInputStream(), directory );
+    } catch ( IOException ioe ) {
+      throw new KettleException( BaseMessages.getString( PKG, "RegisterPackageServlet.Exception.CopyRequest",  directory ), ioe );
+    }
+  }
+
+  /**
+   * Copy contents of <code>inputStream</code> to <code>directory</code>. Expecting zip file.
+   * @param inputStream zip file input stream.
+   * @param directory local destination directory.
+   * @return copied file path.
+   * @throws KettleException
+   */
+  protected String copyRequestToDirectory( InputStream inputStream, String directory ) throws KettleException {
+    String copiedFilePath;
+    try {
+      FileObject foDirectory = KettleVFS.getFileObject( directory );
+      if ( !foDirectory.exists() ) {
+        foDirectory.createFolder();
+      }
+      FileObject tempZipFile = KettleVFS.createTempFile( "export", ".zip", directory );
+      OutputStream outputStream = KettleVFS.getOutputStream( tempZipFile, false );
+      copyAndClose( inputStream, outputStream );
+      copiedFilePath = tempZipFile.getName().getPath();
+    } catch ( IOException ioe ) {
+      throw new KettleException( BaseMessages.getString( PKG, "RegisterPackageServlet.Exception.CopyRequest",  directory ), ioe );
+    }
+
+    return copiedFilePath;
+  }
+
+  /**
+   * Copy contents from <code>inputStream</code> over to <code>outputStream</code> and close <code>outputStream</code>.
+   * @param inputStream
+   * @param outputStream
+   * @throws IOException
+   */
+  protected void copyAndClose( InputStream inputStream, OutputStream outputStream ) throws IOException {
+    IOUtils.copy( inputStream, outputStream );
+    outputStream.flush();
+    IOUtils.closeQuietly( outputStream );
+  }
+
+  /**
+   * Decompress zip file.
+   * @param zipFilePath zip file path.
+   * @return returns path to new directory containing files.
+   * @throws KettleException
+   */
+  protected String extract( String zipFilePath ) throws KettleException {
+    File fileZip = new File( zipFilePath );
+    File parentDir = fileZip.getParentFile();
+
+    extract( fileZip.getPath(), parentDir.getPath() );
+    return parentDir.toString();
+  }
+
+  /**
+   * Decompress zip file.
+   * @param zipFilePath zip file.
+   * @param destinationDirectory destination directory.
+   * @throws KettleException
+   */
+  protected void extract( String zipFilePath, String destinationDirectory ) throws KettleException {
+    getZipService().extract( zipFilePath, destinationDirectory );
+  }
+
+  /**
+   * Remove file.
+   * @param file path to file.
+   */
+  protected void deleteArchive( String file ) {
+    FileUtils.deleteQuietly( new File( file ) );
+  }
+
+  protected static void setZipService( ZipService aZipService ) {
+    zipService = aZipService;
+  }
+
+  protected static ZipService getZipService() {
+    return zipService;
+  }
+
 }

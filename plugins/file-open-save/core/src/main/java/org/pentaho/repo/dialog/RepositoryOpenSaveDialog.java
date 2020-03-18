@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
-  private static final String LOCALHOST = "localhost";
+  private static final String LOCALHOST = "127.0.0.1";
 
   private String objectId;
   private String objectName;
@@ -73,7 +73,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
     RepositoryBrowserController.repository = repository;
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
-    clientPath.append( !Utils.isEmpty( state ) ? "#/" + state : "" );
+    clientPath.append( !Utils.isEmpty( state ) ? "#!/" + state : "" );
     clientPath.append( !Utils.isEmpty( directory ) ? "?path=" + directory : "?" );
     clientPath.append( !Utils.isEmpty( directory ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( filter ) ? "filter=" + filter : "" );

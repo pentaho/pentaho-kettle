@@ -1,0 +1,43 @@
+<groupbox id="database-options-box" orient="vertical" flex="1"
+          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:pen="http://www.pentaho.org/2008/xul">
+  <caption label="${DatabaseDialog.USER_SETTINGS}"/>
+  <vbox style="overflow:auto;">
+  <label id="server-host-name-label" value="${DatabaseDialog.label.ServerHostname}" />
+  <textbox pen:customclass="variabletextbox" id="server-host-name-text"  />
+  <label id="database-name-label" value="${DatabaseDialog.label.DatabaseName}" />
+  <textbox pen:customclass="variabletextbox" id="database-name-text"/>
+  <label id="port-number-label" value="${DatabaseDialog.label.PortNumber}" />
+  <textbox pen:customclass="variabletextbox" id="port-number-text" />
+  <label id="username-label" value="${DatabaseDialog.label.Username}" />
+  <textbox pen:customclass="variabletextbox" id="username-text" />
+  <spacer height="7"/>
+  <separator/>
+  <label id="auth-method-label" value="${DatabaseDialog.label.AuthenticationMethod}" />
+  <menulist id="redshift-auth-method-list" editable="true" value = "Standard" oncommand="fragmentHandler.setAuthMethodVisibility()">
+    <menupopup>
+      <menuitem label="Standard"/>
+      <menuitem label="IAM Credentials"/>
+      <menuitem label="Profile"/>
+    </menupopup>
+  </menulist>
+  <vbox id="auth-standard-controls">
+    <label id="password-label" value="${DatabaseDialog.label.Password}" />
+    <textbox pen:customclass="variabletextbox" id="password-text" type="password"/>
+  </vbox>
+  <vbox id="auth-iam-controls">
+    <label id="acceskeyid-label" value="${DatabaseDialog.label.AccessKeyId}" />
+    <textbox pen:customclass="variabletextbox" id="iam-access-key-id" />
+    <label id="secret-access-key-label" value="${DatabaseDialog.label.SecretAccessKey}" />
+    <textbox pen:customclass="variabletextbox" id="iam-secret-access-key" type="password"/>
+    <label id="session-token-label" value="${DatabaseDialog.label.SessionToken}" />
+    <textbox pen:customclass="variabletextbox" id="iam-session-token" />
+  </vbox>
+  <vbox id="auth-profile-controls">
+    <label id="profile-label" value="${DatabaseDialog.label.Profile}" />
+    <textbox pen:customclass="variabletextbox" id="iam-profile-name"/>
+  </vbox>
+  <vbox id="redshift-bulk-loader-controls" orient="vertical">
+  </vbox>
+  </vbox>
+</groupbox>

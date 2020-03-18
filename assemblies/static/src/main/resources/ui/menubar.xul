@@ -2,7 +2,7 @@
 <window id="label-test" title="Flow Test" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:pen="http://www.pentaho.org/2008/xul" onload="spoon.onLoad()">
   <menubar id="spoon-menubar">
-  
+
     <menu id="file" label="${Spoon.Menu.File}" accesskey="alt-f">
       <menupopup id="file-popup">
         <menu id="file-new" label="${Spoon.Menu.File.New}">
@@ -16,7 +16,7 @@
           </menupopup>
         </menu>
         <menuitem id="file-open" acceltext="CTRL-O" accesskey="ctrl-o" label="${Spoon.Menu.File.Open}" command="spoon.openFile()" />
-        <menuitem id="file-open-from-vfs" label="${Spoon.Menu.File.OpenVFS}" command="spoon.openFileVFSFile()" />
+        <menuitem id="file-open-from-vfs" label="${Spoon.Menu.File.OpenVFS}" command="spoon.openFileNew()" />
         <menu id="file-open-recent" label="${Spoon.Menu.File.Open.Recent.Popup}">
           <menupopup id="file-open-recent-popup" />
         </menu>
@@ -27,7 +27,7 @@
         <menuseparator id="file-separator-1"/>
         <menuitem id="file-save" acceltext="CTRL-S" accesskey="ctrl-s" label="${Spoon.Menu.File.Save}" command="spoon.saveFile()" />
         <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" command="spoon.saveFileAs()" />
-        <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" />
+        <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveAsNew()" />        
         <!-- <menuitem id="file-publish" label="${Spoon.Menu.File.Publish}"/> -->
         <menuseparator id="file-separator-2"/>
         <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
@@ -40,15 +40,15 @@
             <menuitem id="file-export-to-xml" label="${Spoon.Menu.File.Export}" command="spoon.exportXMLFile()" />
             <menuitem id="file-export-all-to-xml" label="${Spoon.Menu.File.ExportAll}" command="spoon.exportAllXMLFile()" />
             <!--
-            <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" disabled="false" />                 
+            <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" disabled="false" />
             -->
           </menupopup>
         </menu>
         <menuseparator id="file-separator-4"/>
-        <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile(true)" />        
+        <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile(true)" />
       </menupopup>
     </menu>
-    
+
     <menu id="edit" label="${Spoon.Menu.Edit}">
       <menupopup id="edit-popup">
         <menuitem id="edit-undo" acceltext="CTRL-Z" accesskey="ctrl-z" label="${Spoon.Menu.Undo.NotAvailable}"
@@ -64,7 +64,7 @@
           command="spoon.paste()" />
         <menuseparator />
         <menuitem id="trans-copy-image" acceltext="CTRL-ALT-I" accesskey="ctrl-alt-i"
-          label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyTransformationImage()" />   
+          label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyTransformationImage()" />
         <menuseparator />
         <menuitem id="edit-clear-selection" acceltext="ESC" accesskey="esc" label="${Spoon.Menu.Edit.ClearSelection}"
           command="spoon.editUnselectAll()" />
@@ -86,7 +86,7 @@
           command="spoon.editProperties()" />
       </menupopup>
     </menu>
-    
+
     <menu id="view" label="${Spoon.Menu.View}">
       <menupopup id="view-popup">
         <menu id="view-perspectives" label="${Spoon.Menu.View.Perspectives}">
@@ -103,10 +103,10 @@
         <menuitem id="view-zoom-100pct" acceltext="HOME" accesskey="home" label="${Spoon.Menu.View.Zoom100}"
           command="spoon.zoom100Percent()" />
         <menuseparator id="view-perspective-seperator" />
-        <menuitem id="view-results" type="checkbox" label="${Spoon.Menu.View.Results}" command="spoon.showExecutionResults()"/>  
+        <menuitem id="view-results" type="checkbox" label="${Spoon.Menu.View.Results}" command="spoon.showExecutionResults()"/>
       </menupopup>
     </menu>
-  
+
     <menu id="action" label="${Spoon.Menu.Action}">
       <menupopup id="trans-popup">
         <menuitem id="process-run" acceltext="F9" accesskey="f9" label="${Spoon.Menu.Transformation.Run}"
@@ -131,12 +131,12 @@
             <menuitem id="trans-last-verify" acceltext="F7" accesskey="f7"
               label="${Spoon.Menu.Transformation.ShowLastVerifyResults}" command="spoon.showLastTransCheck()" />
             <menuitem id="trans-last-preview" acceltext="F8" accesskey="f8"
-              label="${Spoon.Menu.Transformation.ShowLastPreviewResults}" comand="spoon.showLastTransPreview()" />       
+              label="${Spoon.Menu.Transformation.ShowLastPreviewResults}" comand="spoon.showLastTransPreview()" />
           </menupopup>
         </menu>
       </menupopup>
     </menu>
-    
+
     <menu id="tools" label="${Spoon.Menu.Tools}">
       <menupopup id="tools-popup">
         <menu id="tools-data" label="${Spoon.Menu.Tools.Data.Popup}">
@@ -154,7 +154,7 @@
               label="${Spoon.Menu.Repository.ClearSharedObjectCache}" command="spoon.clearSharedObjectCache()" />
             <menuseparator />
             <menuitem id="repository-export-all" label="${Spoon.Menu.Repository.ExportAll}" command="spoon.exportRepositoryAll()" />
-            <menuitem id="repository-import-directory" label="${Spoon.Menu.Repository.ImportFiles}" command="spoon.importDirectoryToRepository()" />            
+            <menuitem id="repository-import-directory" label="${Spoon.Menu.Repository.ImportFiles}" command="spoon.importDirectoryToRepository()" />
           </menupopup>
         </menu>
         <menu id="wizard" label="${Spoon.Menu.Wizard}">
@@ -167,20 +167,20 @@
               command="spoon.ripDBWizard()" />
           </menupopup>
         </menu>
-        <!-- 
-        Menu item is blocked until Authentication feature will not be implemented. 
-        <menuitem id="authentication" label="${Spoon.Menu.Authentication}" command="spoon.showAuthenticationOptions()" 
+        <!--
+        Menu item is blocked until Authentication feature will not be implemented.
+        <menuitem id="authentication" label="${Spoon.Menu.Authentication}" command="spoon.showAuthenticationOptions()"
         /> -->
         <menuseparator />
         <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
         <menuseparator />
-        <menuitem id="capability-manager" label="Capability Manager" command="spoon.editCapabilities()" />
+        <menuitem id="capability-manager" label="${Spoon.Menu.CapabilityManager}" command="spoon.editCapabilities()" />
         <menuseparator />
         <menuitem id="help-plugins" label="${Spoon.Menu.ShowPluginInfo}" command="spoon.showPluginInfo()" />
-        
+
       </menupopup>
     </menu>
-    
+
     <menu id="help" label="${Spoon.Menu.Help}">
       <menupopup id="help-popup">
         <menuitem id="help-welcome" label="${Spoon.Menu.Help.Welcome}" command="spoon.showWelcomePage()" />
@@ -262,7 +262,7 @@
     <menuitem id="step-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('step-inst-share')" />
     <menuseparator id="step-inst-separator-1"/>
     <menuitem id="step-inst-help" label="${Spoon.Menu.Popup.STEPS.Help}" command="spoon.helpStep()" />
-    
+
   </menupopup>
 
   <menupopup id="job-entry-copy-inst">
@@ -271,7 +271,7 @@
     <menuitem id="job-entry-copy-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.deleteJobEntryCopies()" />
     <menuseparator id="job-entry-copy-inst-separator-1"/>
     <menuitem id="job-entry-copy-help" label="${Spoon.Menu.Popup.STEPS.Help}" command="spoon.helpJobEntry()" />
-    
+
   </menupopup>
 
   <menupopup id="trans-hop-inst">
@@ -300,4 +300,3 @@
   </menupopup>
 
 </window>
-

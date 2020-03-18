@@ -102,6 +102,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 
   private boolean runningInParallel;
 
+  private String fileFormat;
+
   private String encoding;
 
   private boolean newlinePossibleInFields;
@@ -134,6 +136,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     lazyConversionActive = true;
     isaddresult = false;
     bufferSize = "50000";
+    fileFormat = "mixed";
   }
 
   private void readData( Node stepnode ) throws KettleXMLException {
@@ -161,6 +164,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
       } else {
         newlinePossibleInFields = "Y".equalsIgnoreCase( nlp );
       }
+      fileFormat = XMLHandler.getTagValue( stepnode, getXmlCode( "FORMAT" ) );
       encoding = XMLHandler.getTagValue( stepnode, getXmlCode( "ENCODING" ) );
 
       Node fields = XMLHandler.getSubNode( stepnode, getXmlCode( "FIELDS" ) );
@@ -214,6 +218,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     retval.append( "    " ).append( XMLHandler.addTagValue( getXmlCode( "PARALLEL" ), runningInParallel ) );
     retval.append( "    " ).append(
       XMLHandler.addTagValue( getXmlCode( "NEWLINE_POSSIBLE" ), newlinePossibleInFields ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( getXmlCode( "FORMAT" ), fileFormat ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( getXmlCode( "ENCODING" ), encoding ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( getXmlCode( "FIELDS" ) ) ).append( Const.CR );
@@ -262,6 +267,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
       runningInParallel = rep.getStepAttributeBoolean( id_step, getRepCode( "PARALLEL" ) );
       newlinePossibleInFields =
         rep.getStepAttributeBoolean( id_step, 0, getRepCode( "NEWLINE_POSSIBLE" ), !runningInParallel );
+      fileFormat = rep.getStepAttributeString( id_step, getRepCode( "FORMAT" ) );
       encoding = rep.getStepAttributeString( id_step, getRepCode( "ENCODING" ) );
 
       int nrfields = rep.countNrStepAttributes( id_step, getRepCode( "FIELD_NAME" ) );
@@ -307,6 +313,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
       rep
         .saveStepAttribute(
           id_transformation, id_step, getRepCode( "NEWLINE_POSSIBLE" ), newlinePossibleInFields );
+      rep.saveStepAttribute( id_transformation, id_step, getRepCode( "FORMAT" ), fileFormat );
       rep.saveStepAttribute( id_transformation, id_step, getRepCode( "ENCODING" ), encoding );
 
       for ( int i = 0; i < inputFields.length; i++ ) {
@@ -562,7 +569,14 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 
   @Override
   public int getFileFormatTypeNr() {
-    return TextFileInputMeta.FILE_FORMAT_MIXED; // TODO: check this
+
+    if ( getFileFormat().equalsIgnoreCase( "DOS" ) ) {
+      return TextFileInputMeta.FILE_FORMAT_DOS;
+    } else if ( getFileFormat().equalsIgnoreCase( "UNIX" ) ) {
+      return TextFileInputMeta.FILE_FORMAT_UNIX;
+    } else {
+      return TextFileInputMeta.FILE_FORMAT_MIXED;
+    }
   }
 
   @Override
@@ -706,6 +720,21 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
   }
 
   /**
+   * @return Returns the fileFormat
+   */
+  public String getFileFormat() {
+    return fileFormat;
+  }
+
+  /**
+   * @param fileFormat
+   *          the fileFormat to set
+   */
+  public void setFileFormat( String fileFormat ) {
+    this.fileFormat = fileFormat;
+  }
+
+  /**
    * @return the encoding
    */
   public String getEncoding() {
@@ -803,6 +832,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
           newlinePossibleInFields = (Boolean) entry.getValue();
         } else if ( attr.getKey().equals( "ADD_FILENAME_RESULT" ) ) {
           isaddresult = (Boolean) entry.getValue();
+        } else if ( attr.getKey().equals( "FORMAT" ) ) {
+          fileFormat = (String) entry.getValue();
         } else if ( attr.getKey().equals( "ENCODING" ) ) {
           encoding = (String) entry.getValue();
         } else {

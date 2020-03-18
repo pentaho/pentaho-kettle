@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,17 +93,7 @@ public class StreamToTransNodeConverter implements Converter {
           try {
             TransMeta transMeta = repository.loadTransformation( new StringObjectId( fileId.toString() ), null );
             if ( transMeta != null ) {
-              Set<String> privateDatabases = transMeta.getPrivateDatabases();
-              if ( privateDatabases != null ) {
-                // keep only private transformation databases
-                for ( Iterator<DatabaseMeta> it = transMeta.getDatabases().iterator(); it.hasNext(); ) {
-                  String databaseName = it.next().getName();
-                  if ( !privateDatabases.contains( databaseName ) ) {
-                    it.remove();
-                  }
-                }
-              }
-              return new ByteArrayInputStream( transMeta.getXML().getBytes() );
+              return new ByteArrayInputStream( filterPrivateDatabases( transMeta ).getXML().getBytes() );
             }
           } catch ( KettleException e ) {
             logger.error( e );
@@ -119,6 +111,22 @@ public class StreamToTransNodeConverter implements Converter {
       logger.error( e );
     }
     return null;
+  }
+
+  @VisibleForTesting
+  TransMeta filterPrivateDatabases( TransMeta transMeta ) {
+    Set<String> privateDatabases = transMeta.getPrivateDatabases();
+    if ( privateDatabases != null ) {
+      // keep only private transformation databases
+      for ( Iterator<DatabaseMeta> it = transMeta.getDatabases().iterator(); it.hasNext(); ) {
+        DatabaseMeta databaseMeta = it.next();
+        String databaseName = databaseMeta.getName();
+        if ( !privateDatabases.contains( databaseName ) && !transMeta.isDatabaseConnectionUsed( databaseMeta ) ) {
+          it.remove();
+        }
+      }
+    }
+    return transMeta;
   }
 
   // package-local visibility for testing purposes

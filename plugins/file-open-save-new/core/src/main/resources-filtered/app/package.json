@@ -1,0 +1,33 @@
+{
+  "name": "@pentaho/di-plugin-file-open-save-new",
+  "version": "${project.version}",
+  "description": "${project.description}",
+  "paths": {
+    "pentaho/di/plugin/fileOpenSaveNew": "/"
+  },
+  "packages": [
+    {
+      "name": "pentaho/di/plugin/fileOpenSaveNew",
+      "main": "app.module.js"
+    }
+  ],
+  "dependencies": {
+    "angular": "${angular.version}",
+    "@uirouter/core": "${uirouter-core.version}",
+    "@uirouter/angularjs": "${uirouter-angularjs.version}",
+    "angular-i18n": "${angular.version}",
+    "require-css": "${require-css.version}",
+    "requirejs-text": "${requirejs-text.version}",
+    "dojo": "${dojo.version}",
+    "jquery": "${jquery.version}"
+  },
+  "config": {
+    "pentaho/modules": {
+      "IPenFileService": {"base": null, "isAbstract": true},
+      "pentaho/di/plugin/fileOpenSaveNew/services/providers/vfs.service": {"type": "IPenFileService"},
+      "pentaho/di/plugin/fileOpenSaveNew/services/providers/recents.service": {"type": "IPenFileService"},
+      "pentaho/di/plugin/fileOpenSaveNew/services/providers/repository.service": {"type": "IPenFileService"},
+      "pentaho/di/plugin/fileOpenSaveNew/services/providers/local.service": {"type": "IPenFileService"}
+    }
+  }
+}

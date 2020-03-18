@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,7 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value.timestamp;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -32,12 +37,13 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * User: Dzmitry Stsiapanau Date: 3/17/14 Time: 4:46 PM
@@ -47,7 +53,7 @@ public class SimpleTimestampFormatTest {
 
   private static Locale formatLocale;
   private Set<Locale> locales =
-    new HashSet<Locale>( Arrays.asList( Locale.US, Locale.GERMANY, Locale.JAPANESE, Locale.CHINESE ) );
+    new HashSet<>( Arrays.asList( Locale.US, Locale.GERMANY, Locale.JAPANESE, Locale.CHINESE ) );
   private ResourceBundle tdb;
 
   private static String stringNinePrecision = "2014-03-15 15:30:45.123456789";
@@ -63,6 +69,8 @@ public class SimpleTimestampFormatTest {
   private Date dateThreePrecision = new Date( timestampThreePrecision.getTime() );
   private Date dateWithoutPrecision = new Date( timestampWithoutPrecision.getTime() );
 
+  private AtomicBoolean testFailed = new AtomicBoolean( false );
+
   @Before
   public void setUp() throws Exception {
     formatLocale = Locale.getDefault( Locale.Category.FORMAT );
@@ -74,7 +82,7 @@ public class SimpleTimestampFormatTest {
   }
 
   @Test
-  public void testFormat() throws Exception {
+  public void testFormat() {
     for ( Locale locale : locales ) {
       Locale.setDefault( Locale.Category.FORMAT, locale );
       tdb = ResourceBundle.getBundle( "org/pentaho/di/core/row/value/timestamp/messages/testdates", locale );
@@ -178,30 +186,14 @@ public class SimpleTimestampFormatTest {
     parseUnit( "DATE.ZERO." + patternName, stf, localeForErrorMSG, dateWithoutPrecision );
   }
 
-  protected void checkParseLocalTimestamp() throws ParseException {
-    String patternName = "LOCALE.TIMESTAMP";
-    SimpleTimestampFormat stf = new SimpleTimestampFormat( tdb.getString( "PATTERN." + patternName ) );
-    String localeForErrorMSG = Locale.getDefault( Locale.Category.FORMAT ).toLanguageTag();
-    parseUnit( "TIMESTAMP.NINE." + patternName, stf, localeForErrorMSG, timestampThreePrecision );
-    parseUnit( "TIMESTAMP.THREE." + patternName, stf, localeForErrorMSG, timestampThreePrecision );
-    parseUnit( "TIMESTAMP.ZERO." + patternName, stf, localeForErrorMSG, timestampWithoutPrecision );
-    parseUnit( "TIMESTAMP.DOT." + patternName, stf, localeForErrorMSG, timestampWithoutPrecisionWithDot );
-    parseUnit( "DATE.THREE." + patternName, stf, localeForErrorMSG, dateThreePrecision );
-    parseUnit( "DATE.ZERO." + patternName, stf, localeForErrorMSG, dateWithoutPrecision );
-  }
-
-  private void parseUnit( String patternName, SimpleTimestampFormat stf, String localeForErrorMSG, Date date ) throws ParseException {
-    if ( date instanceof Timestamp ) {
-      assertEquals( localeForErrorMSG + "=locale localized pattern= " + stf.toLocalizedPattern(),
-        date, ( stf.parse( tdb.getString( patternName ) ) ) );
-    } else {
-      assertEquals( localeForErrorMSG + "=locale localized pattern= " + stf.toLocalizedPattern(),
-        date, ( stf.parse( tdb.getString( patternName ) ) ) );
-    }
+  private void parseUnit( String patternName, SimpleTimestampFormat stf, String localeForErrorMSG, Date date )
+    throws ParseException {
+    assertEquals( localeForErrorMSG + "=locale localized pattern= " + stf.toLocalizedPattern(),
+      date, ( stf.parse( tdb.getString( patternName ) ) ) );
   }
 
   @Test
-  public void testToPattern() throws Exception {
+  public void testToPattern() {
     for ( Locale locale : locales ) {
       Locale.setDefault( Locale.Category.FORMAT, locale );
       tdb = ResourceBundle.getBundle( "org/pentaho/di/core/row/value/timestamp/messages/testdates", locale );
@@ -216,7 +208,7 @@ public class SimpleTimestampFormatTest {
   }
 
   @Test
-  public void testToLocalizedPattern() throws Exception {
+  public void testToLocalizedPattern() {
     for ( Locale locale : locales ) {
       Locale.setDefault( Locale.Category.FORMAT, locale );
       tdb = ResourceBundle.getBundle( "org/pentaho/di/core/row/value/timestamp/messages/testdates", locale );
@@ -229,7 +221,7 @@ public class SimpleTimestampFormatTest {
   }
 
   @Test
-  public void testApplyPattern() throws Exception {
+  public void testApplyPattern() {
     for ( Locale locale : locales ) {
       Locale.setDefault( Locale.Category.FORMAT, locale );
       tdb = ResourceBundle.getBundle( "org/pentaho/di/core/row/value/timestamp/messages/testdates", locale );
@@ -242,7 +234,7 @@ public class SimpleTimestampFormatTest {
   }
 
   @Test
-  public void testApplyLocalizedPattern() throws Exception {
+  public void testApplyLocalizedPattern() {
     Locale.setDefault( Locale.Category.FORMAT, Locale.US );
     SimpleTimestampFormat stf = new SimpleTimestampFormat( new SimpleDateFormat().toPattern() );
     for ( Locale locale : locales ) {
@@ -254,4 +246,55 @@ public class SimpleTimestampFormatTest {
     }
   }
 
+  @Test
+  public void testParseMultiThread() throws InterruptedException {
+    int threadPoolSize = 10;
+    Locale.setDefault( Locale.Category.FORMAT, Locale.US );
+
+    ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool( threadPoolSize );
+
+    for ( int i = 0; i < 500; i++ ) {
+      TaskSimpleTimestampFormatTest task =
+        new TaskSimpleTimestampFormatTest( "TaskSimpleTimestampFormatTest " + i );
+      executor.execute( task );
+    }
+    executor.shutdown();
+
+    if ( !executor.awaitTermination( 5000, TimeUnit.MILLISECONDS ) ) {
+      Assert.fail( "Failed by timeout" );
+    }
+    assertFalse( "Test failed in task thread.", testFailed.get() );
+  }
+
+  class TaskSimpleTimestampFormatTest implements Runnable {
+    private String name;
+    private final SimpleTimestampFormat simpleTimestampFormat;
+
+    public TaskSimpleTimestampFormatTest( String name ) {
+      this.name = name;
+      //this.simpleTimestampFormat = simpleTimestampFormat;
+      this.simpleTimestampFormat = new SimpleTimestampFormat( "yyyy-MM-dd HH:mm:ss.SSS" );
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void run() {
+      try {
+        String input = "2019-07-08 10:16:01.001";
+        synchronized ( simpleTimestampFormat ) {
+          Date result = simpleTimestampFormat.parse( input );
+          System.out.println( "Task: " + this.name + ", Result: " + result.toString() );
+          if ( !input.equals( result.toString() ) ) {
+            testFailed.set( true );
+          }
+        }
+      } catch ( ParseException e ) {
+        testFailed.set( true );
+      }
+    }
+  }
 }
+
+

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -157,7 +157,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
     ciKey[2] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.useRegEx" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.useRegExDesc );
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.flagDescriptor );
     ciKey[3] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.Replace" ), ColumnInfo.COLUMN_TYPE_TEXT,
@@ -168,10 +168,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
     ciKey[5] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.SetEmptyString" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO,
-        new String[] {
-          BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
-
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.flagDescriptor );
     ciKey[6] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.FieldReplaceBy" ),
@@ -180,15 +177,15 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
     ciKey[7] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.WholeWord" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.wholeWordDesc );
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.flagDescriptor );
     ciKey[8] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.CaseSensitive" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.caseSensitiveDesc );
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.flagDescriptor );
     ciKey[9] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.IsUnicode" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.isUnicodeDesc );
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.flagDescriptor );
 
     ciKey[1].setToolTip( BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.OutStreamField.Tooltip" ) );
     ciKey[1].setUsingVariables( true );
@@ -329,25 +326,23 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
         if ( input.getFieldOutStream()[i] != null ) {
           item.setText( 2, input.getFieldOutStream()[i] );
         }
-        item.setText( 3, ReplaceStringMeta.getUseRegExDesc( input.getUseRegEx()[i] ) );
+
+        item.setText( 3, getFlagDescriptor( input.getUseRegEx()[i] ) );
         if ( input.getReplaceString()[i] != null ) {
           item.setText( 4, input.getReplaceString()[i] );
         }
         if ( input.getReplaceByString()[i] != null ) {
           item.setText( 5, input.getReplaceByString()[i] );
         }
-        item
-          .setText( 6, input.isSetEmptyString()[i]
-            ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
-              PKG, "System.Combo.No" ) );
+        item.setText( 6, getFlagDescriptor( input.isSetEmptyString()[i] ) );
 
         if ( input.getFieldReplaceByString()[i] != null ) {
           item.setText( 7, input.getFieldReplaceByString()[i] );
         }
 
-        item.setText( 8, ReplaceStringMeta.getWholeWordDesc( input.getWholeWord()[i] ) );
-        item.setText( 9, ReplaceStringMeta.getCaseSensitiveDesc( input.getCaseSensitive()[i] ) );
-        item.setText( 10, ReplaceStringMeta.getIsUnicodeDesc( input.isUnicode()[i] ) );
+        item.setText( 8, getFlagDescriptor( input.getWholeWord()[i] ) );
+        item.setText( 9, getFlagDescriptor( input.getCaseSensitive()[i] ) );
+        item.setText( 10, getFlagDescriptor( input.isUnicode()[i] ) );
       }
     }
 
@@ -377,12 +372,11 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
       TableItem item = wFields.getNonEmpty( i );
       inf.getFieldInStream()[i] = item.getText( 1 );
       inf.getFieldOutStream()[i] = item.getText( 2 );
-      inf.getUseRegEx()[i] = ReplaceStringMeta.getUseRegExByDesc( item.getText( 3 ) );
+      inf.getUseRegEx()[i] = checkFlagDescriptor( item.getText( 3 ) );
       inf.getReplaceString()[i] = item.getText( 4 );
       inf.getReplaceByString()[i] = item.getText( 5 );
 
-      inf.isSetEmptyString()[i] =
-        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 6 ) );
+      inf.isSetEmptyString()[i] = checkFlagDescriptor( item.getText( 6 ) );
       if ( inf.isSetEmptyString()[i] ) {
         inf.getReplaceByString()[i] = "";
       }
@@ -391,12 +385,21 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
         inf.getReplaceByString()[i] = "";
       }
 
-      inf.getWholeWord()[i] = ReplaceStringMeta.getWholeWordByDesc( item.getText( 8 ) );
-      inf.getCaseSensitive()[i] = ReplaceStringMeta.getCaseSensitiveByDesc( item.getText( 9 ) );
-      inf.isUnicode()[i] = ReplaceStringMeta.getIsUnicodeByDesc( item.getText( 10 ) );
+      inf.getWholeWord()[i] = checkFlagDescriptor( item.getText( 8 ) );
+      inf.getCaseSensitive()[i] = checkFlagDescriptor( item.getText( 9 ) );
+      inf.isUnicode()[i] = checkFlagDescriptor( item.getText( 10 ) );
     }
 
     stepname = wStepname.getText(); // return value
+  }
+
+  private static String getFlagDescriptor( boolean flag ) {
+    return ( flag ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+      PKG, "System.Combo.No" ) );
+  }
+
+  private static boolean checkFlagDescriptor( String text ) {
+    return BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( text );
   }
 
   private void ok() {

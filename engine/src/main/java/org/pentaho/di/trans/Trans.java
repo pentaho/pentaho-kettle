@@ -60,6 +60,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ExecutorInterface;
@@ -280,6 +281,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * A list of all the steps.
    */
   private List<StepMetaDataCombi> steps;
+
+  /**
+   * Indicates if the result rows have been set
+   */
+  private boolean resultRowsSet;
 
   /**
    * The class number.
@@ -549,6 +555,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   private ExecutorService heartbeat = null; // this transformations's heartbeat scheduled executor
 
+  private boolean executingClustered;
+
   /**
    * Instantiates a new transformation.
    */
@@ -777,6 +785,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     activateParameters();
     transMeta.activateParameters();
+    ConnectionUtil.init( transMeta );
 
     if ( transMeta.getName() == null ) {
       if ( transMeta.getFilename() != null ) {
@@ -1046,7 +1055,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // things as well...
           if ( stepMeta.isPartitioned() ) {
             List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-            if ( partitionIDs != null && partitionIDs.size() > 0 ) {
+            if ( partitionIDs != null && !partitionIDs.isEmpty() ) {
               step.setPartitionID( partitionIDs.get( c ) ); // Pass the partition ID
               // to the step
             }
@@ -1541,14 +1550,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 for ( int i = 0; i < steps.size() && !isStopped(); i++ ) {
                   StepMetaDataCombi combi = steps.get( i );
                   if ( !stepDone[ i ] ) {
-                    // if (combi.step.canProcessOneRow() ||
-                    // !combi.step.isRunning()) {
                     boolean cont = combi.step.processRow( combi.meta, combi.data );
                     if ( !cont ) {
                       stepDone[ i ] = true;
                       nrDone++;
                     }
-                    // }
                   }
                 }
               }
@@ -1556,8 +1562,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               errors.addAndGet( 1 );
               log.logError( "Error executing single threaded", e );
             } finally {
-              for ( int i = 0; i < steps.size(); i++ ) {
-                StepMetaDataCombi combi = steps.get( i );
+              for ( StepMetaDataCombi combi : steps ) {
                 combi.step.dispose( combi.meta, combi.data );
                 combi.step.markStop();
               }
@@ -1698,6 +1703,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     for ( StepMetaDataCombi combi : steps ) {
+      // PDI-18214/CDA-243: Check if the steps have been disposed
+      if ( !combi.data.isDisposed() ) {
+        combi.step.setOutputDone();
+        combi.step.dispose( combi.meta, combi.data );
+        combi.step.markStop();
+      }
       combi.step.cleanup();
     }
   }
@@ -5669,6 +5680,22 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       backwardChange = false;
 
     } // finished sorting
+  }
+
+  public void setResultRowSet( boolean resultRowsSet ) {
+    this.resultRowsSet = resultRowsSet;
+  }
+
+  public boolean isResultRowsSet() {
+    return resultRowsSet;
+  }
+
+  public boolean isExecutingClustered() {
+    return executingClustered;
+  }
+
+  public void setExecutingClustered( boolean executingClustered ) {
+    this.executingClustered = executingClustered;
   }
 
   @Override

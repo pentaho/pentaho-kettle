@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2019 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -552,28 +552,14 @@ public class RepositoryBrowserController {
   }
 
   public List<org.pentaho.repo.model.RepositoryObject> search( String path, String filter ) {
-    RepositoryDirectoryInterface repositoryDirectoryInterface = findDirectory( path );
+    RepositoryDirectory repositoryDirectory = loadFilesAndFolders( path );
     List<org.pentaho.repo.model.RepositoryObject> repositoryObjects = new ArrayList<>();
-    List<RepositoryObjectInterface> repositoryObjects1 = ( (RepositoryExtended) getRepository() ).getChildren(
-      repositoryDirectoryInterface.getObjectId().getId(), filter );
-    for ( RepositoryObjectInterface repositoryObject : repositoryObjects1 ) {
-      if ( repositoryObject instanceof RepositoryDirectoryInterface ) {
-        RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
-        repositoryDirectory.setPath( path + "/" + repositoryObject.getName() );
-        repositoryDirectory.setName( repositoryObject.getName() );
-        repositoryDirectory.setObjectId( repositoryObject.getObjectId() );
-        repositoryObjects.add( repositoryDirectory );
-      } else {
-        RepositoryFile repositoryFile = new RepositoryFile();
-        repositoryFile.setPath( path + "/" + repositoryObject.getName() );
-        repositoryFile.setName( repositoryObject.getName() );
-        repositoryFile.setType( ( (RepositoryObject) repositoryObject ).getObjectType() == RepositoryObjectType
-          .TRANSFORMATION ? TRANSFORMATION : JOB );
-        repositoryFile.setObjectId( repositoryObject.getObjectId() );
-        repositoryObjects.add( repositoryFile );
+    for ( org.pentaho.repo.model.RepositoryObject repositoryObject : repositoryDirectory.getChildren() ) {
+      if ( repositoryObject.getName().toLowerCase().contains( filter.toLowerCase() ) || !Util
+        .isFiltered( repositoryObject.getName(), filter ) ) {
+        repositoryObjects.add( repositoryObject );
       }
     }
-
     return repositoryObjects;
   }
 

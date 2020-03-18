@@ -22,9 +22,14 @@
 
 package org.pentaho.di.connections.ui.endpoints;
 
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.connections.ui.dialog.ConnectionDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
@@ -39,15 +44,19 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.function.Supplier;
 
+import org.pentaho.di.ui.util.HelpUtils;
+
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class ConnectionEndpoints {
 
-  private static Class<?> PKG = ConnectionEndpoints.class;
-  public static final String ERROR_401 = "401";
+  private static Class<?> PKG = ConnectionDialog.class;
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
   private ConnectionManager connectionManager;
+
+  public static final String HELP_URL =
+    Const.getDocUrl( BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Help" ) );
 
   public ConnectionEndpoints( MetastoreLocator metastoreLocator ) {
     this.connectionManager = ConnectionManager.getInstance();
@@ -89,8 +98,12 @@ public class ConnectionEndpoints {
     boolean saved = connectionManager.save( connectionDetails );
     if ( saved ) {
       connectionManager.delete( name );
-      spoonSupplier.get().getShell().getDisplay().asyncExec( () -> spoonSupplier.get().refreshTree(
+      getSpoon().getShell().getDisplay().asyncExec( () -> getSpoon().refreshTree(
         ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
+      EngineMetaInterface engineMetaInterface = getSpoon().getActiveMeta();
+      if ( engineMetaInterface instanceof AbstractMeta ) {
+        ( (AbstractMeta) engineMetaInterface ).setChanged();
+      }
       return Response.ok().build();
     } else {
       return Response.serverError().build();
@@ -107,5 +120,19 @@ public class ConnectionEndpoints {
     } else {
       return Response.status( Response.Status.BAD_REQUEST ).build();
     }
+  }
+
+  @GET
+  @Path( "/help" )
+  public Response help() {
+    spoonSupplier.get().getShell().getDisplay().asyncExec( () ->
+      HelpUtils.openHelpDialog( spoonSupplier.get().getDisplay().getActiveShell(),
+        BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Title" ),
+        HELP_URL, BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Header" ) ) );
+    return Response.ok().build();
+  }
+
+  private Spoon getSpoon() {
+    return spoonSupplier.get();
   }
 }

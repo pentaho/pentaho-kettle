@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.pentaho.di.trans.ael.websocket.exception.MessageEventFireEventExcepti
 import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
 
 import java.util.Date;
+import java.util.UUID;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
@@ -61,6 +62,8 @@ public class MessageEventServiceTest {
   private StatusEvent otherTransMessageEvent;
   @Mock private MessageEventHandler messageEventHandler;
   @Mock private MessageEventHandler messageEventHandler2;
+  @Mock private MessageEventHandler eventHandler;
+  @Mock private MessageEventHandler duplicateEventHandler;
   @Mock private LogEntry logEntry;
   private MessageEventService messageEventService;
 
@@ -131,6 +134,16 @@ public class MessageEventServiceTest {
   public void testOperationDuplicateAddHandler() throws KettleException {
     messageEventService.addHandler( operationMessageEvent, messageEventHandler );
     messageEventService.addHandler( operationMessageEvent, messageEventHandler );
+  }
+
+  @Test
+  public void testRegistedOperationsWithSameNameShouldHaveUniqueKeys() throws KettleException {
+    LogEvent dupicateOperationMessageEvent = Util.getOperationLogEvent( "Operation_ID" );
+    doReturn( "Operation_ID" + UUID.randomUUID() ).when( eventHandler ).getIdentifier();
+    doReturn( "Operation_ID" + UUID.randomUUID() ).when( duplicateEventHandler ).getIdentifier();
+
+    messageEventService.addHandler( operationMessageEvent, eventHandler );
+    messageEventService.addHandler( dupicateOperationMessageEvent, duplicateEventHandler );
   }
 
   @Test

@@ -1,0 +1,22 @@
+<div class="card"
+     ng-repeat="file in vm.recentFiles"
+     ng-hide="file.inResult === false"
+     ng-click="vm.selectFile(file)"
+     ng-dblclick="vm.onClick({file: file})"
+     title="{{file.name}}&#013;{{file.parent}}"
+     ng-class="{cardTrans: file.type === 'transformation',
+                cardJob: file.type === 'job',
+                selected: vm.selectedFile === file,
+                last: $last}">
+  <div class="cardMiddle">
+    <div class="cardTitleAndDate">
+      <div class="cardTitle">
+        {{file.name}}
+      </div>
+      <div class="cardDate">
+        {{file.date | date: 'MM/dd/yy hh:mm a'}}
+      </div>
+    </div>
+    <div class="cardTypeIcon"></div>
+  </div>
+</div>

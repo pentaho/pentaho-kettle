@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,8 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.spoon;
-
-import java.util.Locale;
 
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.pentaho.di.core.Const;
@@ -46,11 +44,18 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.trans.steps.missing.MissingTransDialog;
 import org.w3c.dom.Node;
 
-public class TransFileListener implements FileListener {
+import java.util.Locale;
+
+public class TransFileListener implements FileListener, ConnectionListener {
 
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   public boolean open( Node transNode, String fname, boolean importfile ) throws KettleMissingPluginsException {
+    return open( transNode, fname, null, importfile );
+  }
+
+  public boolean open( Node transNode, String fname, String connection, boolean importfile )
+    throws KettleMissingPluginsException {
     final Spoon spoon = Spoon.getInstance();
     final PropsUI props = PropsUI.getInstance();
     try {
@@ -67,12 +72,12 @@ public class TransFileListener implements FileListener {
             Object[] res =
               spoon.messageDialogWithToggle(
                 BaseMessages.getString( PKG, "System.Button.Yes" ), null, message, Const.WARNING,
-                new String[]{
+                new String[] {
                   BaseMessages.getString( PKG, "System.Button.Yes" ),
                   BaseMessages.getString( PKG, "System.Button.No" ) }, 1, rememberText, !props
                   .askAboutReplacingDatabaseConnections() );
-            int idx = ( (Integer) res[0] ).intValue();
-            boolean toggleState = ( (Boolean) res[1] ).booleanValue();
+            int idx = ( (Integer) res[ 0 ] ).intValue();
+            boolean toggleState = ( (Boolean) res[ 1 ] ).booleanValue();
             props.setAskAboutReplacingDatabaseConnections( !toggleState );
 
             return ( ( idx & 0xFF ) == 0 ); // Yes means: overwrite
@@ -92,6 +97,9 @@ public class TransFileListener implements FileListener {
       transMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( transMeta ) );
       transMeta.setRepository( spoon.getRepository() );
       transMeta.setMetaStore( spoon.getMetaStore() );
+      if ( connection != null ) {
+        transMeta.setVariable( Spoon.CONNECTION, connection );
+      }
       spoon.setTransMetaVariables( transMeta );
       spoon.getProperties().addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null );
       spoon.addMenuLast();
@@ -222,7 +230,7 @@ public class TransFileListener implements FileListener {
   }
 
   public String[] getFileTypeDisplayNames( Locale locale ) {
-    return new String[]{ "Transformations", "XML" };
+    return new String[] { "Transformations", "XML" };
   }
 
   public String getRootNodeName() {
@@ -230,7 +238,7 @@ public class TransFileListener implements FileListener {
   }
 
   public String[] getSupportedExtensions() {
-    return new String[]{ "ktr", "xml" };
+    return new String[] { "ktr", "xml" };
   }
 
 }

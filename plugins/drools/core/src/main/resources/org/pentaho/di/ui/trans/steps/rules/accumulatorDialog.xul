@@ -3,7 +3,7 @@
 <dialog id="step-configuration-dialog" 
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     xmlns:pen="http://www.pentaho.org/2008/xul" 
-	title="${RulesAccumulator.StepConfigruationDialog.Title}"
+	title="${RulesAccumulator.StepConfigurationDialog.Title}"
 	resizable="true"
 	buttons="extra1,accept,cancel"
 	buttonlabelextra1="${Dialog.Help}"

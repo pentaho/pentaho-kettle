@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,6 +65,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 /**
  * Send mail step. based on Mail job entry
  *
@@ -74,12 +76,15 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class Mail extends BaseStep implements StepInterface {
   private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!!
+  private static final String MAIL_CHARSET_KEY = "mail.mime.charset";
+  private static final String MAIL_CHARSET = "UTF-8";
 
   private MailMeta meta;
   private MailData data;
 
   public Mail( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+    setMailMimeCharsetProperty();
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
@@ -476,7 +481,7 @@ public class Mail extends BaseStep implements StepInterface {
       }
       String authpass = null;
       if ( data.indexOfAuthenticationPass > -1 ) {
-        authpass = data.previousRowMeta.getString( r, data.indexOfAuthenticationPass );
+        authpass = Utils.resolvePassword( getParentVariableSpace(), data.previousRowMeta.getString( r, data.indexOfAuthenticationPass ) );
       }
 
       String subject = null;
@@ -726,6 +731,12 @@ public class Mail extends BaseStep implements StepInterface {
       }
     }
 
+  }
+
+  private void setMailMimeCharsetProperty() {
+    if ( isBlank( System.getProperty( MAIL_CHARSET_KEY ) ) ) {
+      System.setProperty( MAIL_CHARSET_KEY, MAIL_CHARSET );
+    }
   }
 
   private void setAttachedFilesList( Object[] r, LogChannelInterface log ) throws Exception {

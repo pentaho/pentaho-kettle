@@ -1,0 +1,60 @@
+<a id="btnHelp" ng-click="vm.onHelpClick()">{{::vm.helpLabel}}</a>
+<div id="fileName" class="flex" ng-show="vm.isSaveState()">
+  <label id="fileNameLabel">
+    {{::vm.saveFileNameLabel}}
+  </label>
+  <div class="fileNameEntry flex">
+    <input id="fileNameEntryTextBox" ng-change="vm.onChange()" type="text" class="fileNameEntryTextBox" ng-model="vm.filename" focus/>
+  </div>
+</div>
+<div class="flex" ng-hide="vm.isSaveState()"></div>
+<div id="fileFilter" ng-hide="vm.state.is('selectFolder')">
+  <label id="fileTypeLabel">
+    {{::vm.fileFilterLabel}}
+  </label>
+  <div id="fileFilterSelect">
+    <selectbox options="vm.fileFilters" value="vm.selectedFilter" on-select="vm.onSelect(value)"></selectbox>
+  </div>
+</div>
+<div class="buttons">
+  <button class="secondary" ng-click="vm.onCancelClick()">
+      <span>
+        {{::vm.cancelButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('selectFolder')" ng-click="vm.onOpenClick()" ng-disabled="vm.disabled">
+      <span>
+        {{::vm.okButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('selectFileFolder')" ng-click="vm.onOpenClick()" ng-disabled="vm.disabled">
+      <span>
+        {{::vm.okButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('selectFile')" ng-click="vm.onOpenClick()" ng-disabled="vm.disabled">
+      <span>
+        {{::vm.okButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('open')" ng-click="vm.onOpenClick()" ng-disabled="vm.disabled">
+      <span>
+        {{::vm.openButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('save')" ng-click="vm.onSaveClick()" ng-disabled="vm.isSaveEnabled">
+      <span>
+        {{::vm.saveButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('saveTo')" ng-click="vm.onSaveClick()" ng-disabled="vm.isSaveEnabled">
+      <span>
+        {{::vm.okButton}}
+      </span>
+  </button>
+  <button class="primary" ng-if="vm.state.is('saveToFileFolder')" ng-click="vm.onSaveClick()" ng-disabled="vm.isSaveEnabled">
+      <span>
+        {{::vm.okButton}}
+      </span>
+  </button>
+</div>

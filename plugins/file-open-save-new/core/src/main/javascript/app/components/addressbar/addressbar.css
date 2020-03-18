@@ -1,0 +1,217 @@
+addressbar {
+  height: 34px;
+  line-height: 34px;
+  display: flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -webkit-flex;
+  white-space: nowrap;
+}
+
+addressbar .combobox {
+  float: left;
+  width: 100%;
+  position:relative;
+}
+
+addressbar .navigation-buttons {
+  line-height: 40px;
+  margin-right: 20px;
+  white-space: nowrap;
+}
+
+addressbar .navigation-buttons input[type="button"] {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+addressbar input.forward {
+  background-repeat: no-repeat;
+  background-image: url("../../img/Forwards.S_D.svg");
+  background-color: transparent;
+  background-size: 32px 32px;
+  background-position: center center;
+  cursor: pointer;
+  height: 17px;
+  width: 10px;
+}
+
+addressbar input.forward:hover {
+
+}
+
+addressbar input.forward:disabled {
+  background-image: url("../../img/Forwards.S_D_disabled.svg");
+}
+
+addressbar input.back {
+  background-repeat: no-repeat;
+  background-image: url("../../img/Backwards.S_D.svg");
+  background-color: transparent;
+  background-size: 32px 32px;
+  background-position: center center;
+  cursor: pointer;
+  height: 17px;
+  width: 10px;
+  margin-right: 10px;
+}
+
+addressbar input.back:hover {
+
+}
+
+addressbar input.back:disabled {
+  background-image: url("../../img/Backwards.S_D_disabled.svg");
+}
+
+addressbar .breadcrumb {
+  padding-left: 10px;
+  position: relative;
+}
+
+addressbar .breadcrumb,
+addressbar .address {
+  cursor: pointer;
+  border:1px solid #ffffff;
+  border-radius: 5px;
+}
+
+addressbar .breadcrumb:hover,
+addressbar .breadcrumb.selected,
+addressbar .address {
+  border-color: #cbcbcb;
+}
+
+addressbar .address input {
+  width: 100%;
+  outline: none;
+  border: 0;
+  font-size: 14px;
+  margin: 8px 10px 7px 10px;
+}
+
+addressbar .history {
+  top: 35px;
+  position: absolute;
+  width: 100%;
+  border: 1px solid #cbcbcb;
+  background-color: #ffffff;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  z-index: 100;
+}
+
+addressbar .history > li {
+  padding: 0 10px 0 10px;
+  cursor: pointer;
+}
+
+addressbar .history > li:hover {
+  background-color: #355EA3;
+  color: #ffffff;
+}
+
+addressbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+addressbar .breadcrumb ul.parts>li:last-child {
+  padding-right: 0;
+  background: none;
+  color: #212121;
+  cursor: default;
+}
+
+addressbar .breadcrumb ul.parts {
+  padding: 0 10px 0 0;
+}
+
+addressbar .breadcrumb ul.parts>li {
+  cursor: pointer;
+  color: #005DA6;
+  display: inline-block;
+  background: url("../../img/DropRight.XS_D.svg") no-repeat right -5px center;
+  padding-right: 20px;
+}
+
+addressbar .breadcrumb ul.parts>li.part {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+addressbar .breadcrumb .type {
+  width: 20px;
+}
+
+addressbar .breadcrumb .arrow {
+  background: url("../../img/DropRight.XS_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 20px;
+}
+
+addressbar .breadcrumb .repository {
+  background: url("../../img/Cloud.S_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+addressbar .breadcrumb .local {
+  background: url("../../img/Disk.S_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+addressbar .breadcrumb .vfs {
+  background: url("../../img/VFS_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 32px;
+}
+
+addressbar .breadcrumb .recents {
+  background: url("../../img/Time.S_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 32px;
+}
+
+addressbar .breadcrumb:hover .dropdown,
+addressbar .breadcrumb.selected .dropdown {
+  background-image: url('../../img/DropDown.XS_D.svg');
+  background-repeat: no-repeat;
+  background-position: right center;
+  width: 32px;
+}
+
+addressbar .breadcrumb ul.extras {
+  top: 26px;
+  left: -10px;
+  position: absolute;
+  background-color: #ffffff;
+  -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  padding: 5px 0;
+  max-width: 300px;
+  z-index: 100;
+  border: 1px solid #F2F2F2;
+}
+
+addressbar .breadcrumb ul.extras>li {
+  line-height: normal;
+  padding: 5px 10px;
+  white-space: nowrap;
+  color: #212121;
+}
+
+addressbar .breadcrumb ul.extras>li:hover {
+  background-color: #E6EFF6;
+}

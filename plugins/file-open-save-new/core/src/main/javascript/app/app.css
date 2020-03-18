@@ -1,0 +1,377 @@
+/*!
+ * Copyright 2019 Hitachi Vantara. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* FONTS/TEXT */
+file-open-save-app .headerText {
+  line-height: 24px;
+}
+
+/* INPUTS/BUTTONS */
+file-open-save-app input[type="text"] {
+  color: #212121;
+  padding: 0 10px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  line-height: 17px;
+  height: 34px;
+}
+
+file-open-save-app input[type="text"]:focus,
+file-open-save-app .headerSearch.focused {
+  border: 1px solid #005DA6;
+}
+
+file-open-save-app .dialogWrapper {
+  overflow: hidden;
+}
+
+file-open-save-app .header {
+  padding: 30px 30px 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+file-open-save-app .headerTop {
+  height: 34px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+file-open-save-app .headerTitle {
+  height: 34px;
+  line-height: 34px;
+  border: none;
+  float: left;
+  color: #333;
+}
+/*CHANGES THE COLOR OF THE PLACEHOLDER ON DIFFERENT BROWSERS*/
+
+file-open-save-app .headerBottom {
+  line-height: 34px;
+}
+
+file-open-save-app .breadcrumbSection {
+  line-height: 18px;
+  float: left;
+}
+
+file-open-save-app .middle {
+  position: absolute;
+  top: 130px;
+  bottom: 95px;
+  width: 100%;
+  border-top: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+}
+
+file-open-save-app .open .middle,
+file-open-save-app .selectFolder .middle {
+  bottom: 96px;
+}
+
+file-open-save-app .directoryTreeArea {
+  height: 100%;
+  max-width: 300px;
+  min-width: 230px;
+  width: 32.25%;
+  border-right: 1px solid #CCC;
+  overflow: auto;
+  float: left;
+}
+
+file-open-save-app .fileArea {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+file-open-save-app .fileArea.scroll {
+  overflow: auto;
+}
+
+file-open-save-app .fileArea.recentsView {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 20px;
+}
+
+file-open-save-app .fileArea.recentsView.scrolling {
+  padding-right: 0;
+}
+
+file-open-save-app .fileArea.hasMessage {
+  overflow: hidden;
+}
+
+file-open-save-app .fileAreaMessageView {
+  width: 100%;
+  text-align: center;
+  height: 100%;
+  line-height: 100%;
+  transform: translate(0%, 50%) translateY(-7px);
+  -ms-transform: translate(0%, 50%) translateY(-7px);
+  -webkit-transform: translate(0%, 50%) translateY(-7px);
+  -moz-transform: translate(0%, 50%) translateY(-7px);
+}
+
+file-open-save-app .searchBoxExtra {
+  position: absolute;
+  background-color: #ffffff;
+  -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  padding: 5px 0;
+  max-width: 267px;
+  min-width: 267px;
+  z-index: 100;
+  border: 1px solid #f2f2f2;
+  top: 67px;
+  right: 31px;
+
+}
+
+file-open-save-app .searchBoxExtraItem {
+  padding: 5px 10px 5px 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+file-open-save-app .searchBoxExtraItem:hover {
+  background-color: #E6EFF6;
+}
+
+file-open-save-app .noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+file-open-save-app input[placeholder] {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app ::-moz-placeholder {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app input:-moz-placeholder {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app .hasError {
+  pointer-events: none;
+}
+
+.drag-file {
+  background-size: 15px;
+  padding: 5px 10px 5px 10px;
+  background-color: #435EA2;
+  color: #ffffff;
+}
+
+.drag-over {
+  background-color: #E6EFF6;
+}
+
+
+.context-menu {
+  z-index:100;
+  position:fixed;
+  display: none;
+  background-color:#ffffff;
+  padding: 0px;
+  min-width: 100px;
+  -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  padding: 5px 0;
+  border: 1px solid #F2F2F2;
+}
+
+.context-menu li.divider {
+  border-top: 1px solid #F2F2F2;
+  height: 0;
+  padding: 0;
+}
+
+.context-menu ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.context-menu ul li {
+  cursor: pointer;
+  padding: 6px 10px;
+}
+
+.context-menu ul li:hover {
+  background-color: #E6EFF6;
+}
+
+/* ERROR */
+modal {
+  display: none;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  padding: 30px;
+  height: auto;
+  border: 1px solid #CCC;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow: hidden;
+  line-height: 20px;
+  background-color: #FFF;
+  z-index: 10000;
+  opacity: 1;
+}
+
+modal .title {
+  margin-bottom: 30px;
+}
+
+modal .body {
+  line-height: 18px;
+  max-height: 72px;
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+modal .errorMiddleTopBefore.breakAll {
+  word-break: break-all;
+}
+
+modal .buttons {
+  margin-top: 30px;
+}
+
+modal .buttons button {
+  float: right;
+  margin-left: 10px;
+}
+
+.backdrop {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0.5;
+  background-color: #000;
+  z-index: 1000;
+}
+
+
+/* Customize the label (the container) */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 17px;
+  width: 17px;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ffffff;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #72CA6C;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.over {
+  background-color: #E6EFF6;
+  cursor: pointer;
+}
+
+.flex {
+  flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  -webkit-flex: 1;
+  display: flex !important;
+  display: -moz-flex !important;
+  display: -ms-flex !important;
+  display: -webkit-flex !important;
+}

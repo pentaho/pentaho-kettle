@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,6 +76,10 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
   private Text wName;
   private FormData fdlName, fdName;
 
+  private Label wlAllowExternalEntities;
+  private Button wAllowExternalEntities;
+  private FormData fdlAllowExternalEntities, fdAllowExternalEntities;
+
   private Label wlxmlFilename;
   private Button wbxmlFilename;
   private TextVar wxmlFilename;
@@ -147,13 +151,36 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
     fdName.right = new FormAttachment( 100, 0 );
     wName.setLayoutData( fdName );
 
+    // Enable/Disable external entity for XSD validation.
+    wlAllowExternalEntities = new Label( shell, SWT.RIGHT );
+    wlAllowExternalEntities.setText( BaseMessages.getString( PKG, "JobEntryXSDValidator.AllowExternalEntities.Label" ) );
+    props.setLook( wlAllowExternalEntities );
+    fdlAllowExternalEntities = new FormData();
+    fdlAllowExternalEntities.left = new FormAttachment( 0, 0 );
+    fdlAllowExternalEntities.right = new FormAttachment( middle, -margin );
+    fdlAllowExternalEntities.top = new FormAttachment( wName, margin );
+    wlAllowExternalEntities.setLayoutData( fdlAllowExternalEntities );
+    wAllowExternalEntities = new Button( shell, SWT.CHECK );
+    props.setLook( wAllowExternalEntities );
+    fdAllowExternalEntities = new FormData();
+    fdAllowExternalEntities.left = new FormAttachment( middle, 0 );
+    fdAllowExternalEntities.top = new FormAttachment( wName, margin );
+    fdAllowExternalEntities.right = new FormAttachment( 100, 0 );
+    wAllowExternalEntities.setLayoutData( fdAllowExternalEntities );
+
+    wAllowExternalEntities.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        jobEntry.setChanged();
+      }
+    } );
+
     // Filename 1 line
     wlxmlFilename = new Label( shell, SWT.RIGHT );
     wlxmlFilename.setText( BaseMessages.getString( PKG, "JobEntryXSDValidator.xmlFilename.Label" ) );
     props.setLook( wlxmlFilename );
     fdlxmlFilename = new FormData();
     fdlxmlFilename.left = new FormAttachment( 0, 0 );
-    fdlxmlFilename.top = new FormAttachment( wName, margin );
+    fdlxmlFilename.top = new FormAttachment( wAllowExternalEntities, margin );
     fdlxmlFilename.right = new FormAttachment( middle, -margin );
     wlxmlFilename.setLayoutData( fdlxmlFilename );
     wbxmlFilename = new Button( shell, SWT.PUSH | SWT.CENTER );
@@ -161,14 +188,14 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
     wbxmlFilename.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
     fdbxmlFilename = new FormData();
     fdbxmlFilename.right = new FormAttachment( 100, 0 );
-    fdbxmlFilename.top = new FormAttachment( wName, 0 );
+    fdbxmlFilename.top = new FormAttachment( wAllowExternalEntities, 0 );
     wbxmlFilename.setLayoutData( fdbxmlFilename );
     wxmlFilename = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wxmlFilename );
     wxmlFilename.addModifyListener( lsMod );
     fdxmlFilename = new FormData();
     fdxmlFilename.left = new FormAttachment( middle, 0 );
-    fdxmlFilename.top = new FormAttachment( wName, margin );
+    fdxmlFilename.top = new FormAttachment( wAllowExternalEntities, margin );
     fdxmlFilename.right = new FormAttachment( wbxmlFilename, -margin );
     wxmlFilename.setLayoutData( fdxmlFilename );
 
@@ -268,6 +295,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
     };
 
     wName.addSelectionListener( lsDef );
+    wAllowExternalEntities.addSelectionListener( lsDef );
     wxmlFilename.addSelectionListener( lsDef );
     wxsdFilename.addSelectionListener( lsDef );
 
@@ -302,6 +330,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
    */
   public void getData() {
     wName.setText( Const.nullToEmpty( jobEntry.getName() ) );
+    wAllowExternalEntities.setSelection( jobEntry.isAllowExternalEntities() );
     wxmlFilename.setText( Const.nullToEmpty( jobEntry.getxmlFilename() ) );
     wxsdFilename.setText( Const.nullToEmpty( jobEntry.getxsdFilename() ) );
 
@@ -324,6 +353,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
       return;
     }
     jobEntry.setName( wName.getText() );
+    jobEntry.setAllowExternalEntities( wAllowExternalEntities.getSelection() );
     jobEntry.setxmlFilename( wxmlFilename.getText() );
     jobEntry.setxsdFilename( wxsdFilename.getText() );
 

@@ -1,0 +1,245 @@
+body {
+  font-size: 14px;
+  margin: 0;
+  font-family: Helvetica, Arial, Sans serif;
+}
+
+.pentaho-page-background {
+  background: #FFF;
+}
+
+#pucHeader {
+  display: block;
+  height: 50px;
+  background: #f8f8f6;
+  filter: none;
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  padding: 30px 0 0;
+  position: relative;
+  border-top: 4px solid #cc0000;
+}
+
+.workspaceHeading {
+  color: #5C5C5C;
+  font-size: 24px;
+  padding: 0 0 20px 0;
+  cursor: default;
+}
+
+.toolbar, table.toolbar {
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+  background-color: #fff;
+  border-top: none;
+  border-left: none;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #CCC;
+}
+
+.toolbar-button {
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0);
+  margin: 0;
+  width: 22px;
+  height: 22px;
+  -webkit-user-select: none;
+  outline: none;
+  margin-left: 5px !important;
+}
+
+.toolbar-button.toolbar-button-hovering {
+  border: 1px solid #CC0000;
+  background: none;
+  margin: 0;
+  width: 22px;
+  height: 22px;
+  outline: none;
+}
+
+.toolbar-button-disabled img {
+  cursor: default !important;
+}
+
+.toolbar-button img {
+  display: block;
+}
+
+.custom-dropdown-popup {
+  z-index: 100;
+  -webkit-box-shadow: 2px 3px 4px 0 rgba(0,0,0,.2);
+  box-shadow: 2px 3px 4px 0 rgba(0,0,0,.2);
+}
+
+.custom-dropdown-popup .gwt-MenuBar-vertical {
+  padding: 10px 0 0 0;
+  border-left: 1px solid #CCC;
+  border-right: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+  border-top: 0 solid transparent;
+  background-color: #FFF;
+  margin-top: 0;
+  margin-left: 0;
+}
+
+.custom-dropdown-popup .gwt-MenuBar-vertical .gwt-MenuItem {
+  padding: 8px 5px 8px 10px;
+  text-align: left;
+  width: 242px;
+  font-size: 14px;
+  color: #414141;
+}
+
+td.gwt-MenuItem {
+  cursor: pointer;
+}
+
+.gwt-MenuBar-vertical tr:hover .gwt-MenuItem-selected,
+.gwt-MenuBar-vertical .gwt-MenuItem-selected {
+  background-color: #CC0000;
+  color: #FFF;
+}
+
+.pentaho-dialog {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.pentaho-dialog .Caption {
+  background: none;
+  font-size: 24px;
+  line-height: 30px;
+  color: #333;
+  padding-bottom: 20px;
+}
+
+.pentaho-dialog .dialog-content {
+  color: #333;
+}
+
+button.pentaho-button {
+  background: white;
+  filter: none;
+  font-size: 14px;
+  line-height: 20px;
+  color: #cc0000;
+  padding: 9px 14px;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  white-space: nowrap;
+  cursor: pointer;
+  margin: 0;
+  outline: 0 none;
+  border: 1px solid #cc0000;
+}
+
+button.pentaho-button:hover {
+  background: #CC0000;
+  border-color: #CC0000;
+  color: #FFF;
+}
+
+.pentaho-table {
+  border-spacing: 0;
+  background-color: #FAFAFA;
+}
+
+.pentaho-table .cellTableHeader {
+  padding: 3px 15px;
+  text-align: left;
+  color: white;
+  overflow: hidden;
+}
+
+.pentaho-table th {
+  font-size: 12px;
+  border-spacing: 0;
+  padding: 11px 8px 12px 8px;
+  font-weight: normal;
+  background-color: #999999;
+  color: #FFF;
+  border: 1px solid #cccccc;
+  border-right: 0 none;
+}
+
+.pentaho-table th:last-child {
+  border-right: 1px solid #99BEDB;
+}
+
+.pentaho-table .cellTableEvenRow {
+  background: #ffffff;
+}
+
+.pentaho-table .cellTableOddRow {
+  background: #fafafa;
+}
+
+.pentaho-table .cellTableEvenRowCell, .pentaho-table .cellTableOddRowCell {
+  border: 1px solid #dedede;
+  border-right: 0 none;
+  border-top: 0 none;
+}
+
+.pentaho-table .cellTableCell {
+  padding: 8px 10px 10px 10px;
+  overflow: hidden;
+  text-align: left;
+  font-size: 12px;
+}
+
+.pentaho-table .cellTableEvenRow.cellTableHoveredRow, .pentaho-table .cellTableOddRow.cellTableHoveredRow {
+  background-color: #E0E0E0;
+}
+
+.pentaho-table .cellTableEvenRowCell.cellTableLastColumn, .pentaho-table .cellTableOddRowCell.cellTableLastColumn {
+  border-right: 1px solid #dedede;
+}
+
+.pentaho-table .cellTableSelectedRow {
+  background-color: rgba(204, 0, 0, 0.2);
+  color: #000;
+}
+
+.pentaho-table td, tr.cellTableRow, td.gwt-MenuItem, .toolbar-button:not(.toolbar-button-disabled) {
+  cursor: pointer;
+}
+
+.toolbar-button-disabled {
+  opacity: 0.4;
+}
+
+div#messageDialogBody:first-letter {
+  text-transform: capitalize;
+}
+
+a, a:visited {
+  color: #1973bc;
+}
+
+a, a:link {
+  color: #7C0B2B;
+  text-decoration: none;
+}
+
+textarea {
+  border: 1px solid #CCC;
+  padding: 0 10px;
+  font-size: 14px;
+  line-height: 17px;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 33px;
+  color: #333333;
+}

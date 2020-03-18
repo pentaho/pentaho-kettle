@@ -5,7 +5,7 @@
 
   <groupId>org.pentaho.di.plugins</groupId>
   <artifactId>pdi-plugins</artifactId>
-  <version>8.3.0.0-SNAPSHOT</version>
+  <version>9.1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Plugins</name>
@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>8.3.0.0-SNAPSHOT</version>
+    <version>9.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -46,6 +46,7 @@
         <module>core</module>
         <module>core-ui</module>
         <module>file-open-save</module>
+        <module>file-open-save-new</module>
         <module>connections</module>
         <module>get-fields</module>
         <module>repositories</module>
