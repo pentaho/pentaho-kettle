@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,7 +56,7 @@ public class JmsConsumer extends BaseStreamStep {
       + jmsConsumerMeta.jmsDelegate.getJmsProvider().getConnectionDetails( jmsConsumerMeta.jmsDelegate ) );
 
     window = new FixedTimeStreamWindow<>(
-      subtransExecutor, jmsConsumerMeta.getRowMeta(), getDuration(), getBatchSize(), getParallelism() );
+      getSubtransExecutor(), jmsConsumerMeta.getRowMeta(), getDuration(), getBatchSize(), getParallelism() );
     source = new JmsStreamSource( this, requireNonNull( jmsConsumerMeta.jmsDelegate ), getReceiverTimeout( jmsConsumerMeta ) );
     return superStatus;
   }

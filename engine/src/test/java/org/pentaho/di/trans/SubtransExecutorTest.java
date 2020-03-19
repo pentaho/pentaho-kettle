@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,7 +54,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -89,7 +97,7 @@ public class SubtransExecutorTest {
 
   @Test
   public void testRunningZeroRowsIsEmptyOptional() throws Exception {
-    SubtransExecutor subtransExecutor = new SubtransExecutor( "subtransname", null, null, false, null, "" );
+    SubtransExecutor subtransExecutor = new SubtransExecutor( "subtransname", null, null, false, null, "", 0 );
     Optional<Result> execute = subtransExecutor.execute( Collections.emptyList() );
     assertFalse( execute.isPresent() );
   }
@@ -103,7 +111,8 @@ public class SubtransExecutorTest {
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = spy( new Trans( parentMeta, loggingObject ) );
     SubtransExecutor subtransExecutor =
-      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorParameters(), "Group By" );
+      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorParameters(), "Group By",
+        1001 );
     RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
     List<RowMetaAndData> rows = Arrays.asList(
       new RowMetaAndData( rowMeta, "Pentaho", 1L ),
@@ -153,7 +162,7 @@ public class SubtransExecutorTest {
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = new Trans( parentMeta, loggingObject );
     SubtransExecutor subtransExecutor =
-      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorParameters(), "" );
+      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorParameters(), "", 1001 );
     subtransExecutor.running = Mockito.spy( subtransExecutor.running );
     RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
     List<RowMetaAndData> rows = Arrays.asList(
@@ -177,7 +186,7 @@ public class SubtransExecutorTest {
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = new Trans( parentMeta, loggingObject );
     SubtransExecutor subtransExecutor =
-      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorParameters(), "" );
+      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorParameters(), "", 1001 );
     RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
     List<RowMetaAndData> rows = Arrays.asList(
       new RowMetaAndData( rowMeta, "Pentaho", 1L ),
@@ -196,5 +205,88 @@ public class SubtransExecutorTest {
           + "\n"
           + "===================="
       );
+  }
+
+  /**
+   * When we acquire the last permit, the thread should block until we timeout the test
+   */
+  @Test
+  public void blockOnAcquiringLastPermit() throws InterruptedException, ExecutionException, TimeoutException {
+    final ExecutorService executorService = Executors.newFixedThreadPool( 1 );
+
+    SubtransExecutor subtransExecutor = new SubtransExecutor( "subtransname", null, null, false, null, "", 0 );
+
+    CompletableFuture<Boolean> acquireThreadRunning = new CompletableFuture();
+
+    //Prefetch count is set to 0, so blocking occurs when that single permit is acquired
+    Future future = executorService.submit( () -> safeAcquirePermits( subtransExecutor, 1, acquireThreadRunning ) );
+
+    assertTrue( acquireThreadRunning.get( 5, TimeUnit.SECONDS ) );
+
+    final boolean timedOut = !safeWaitForCompletion( future, 2 );
+    assertTrue( timedOut );
+  }
+
+  @Test
+  public void blockAndUnblockTwice() throws KettleException, InterruptedException, ExecutionException,
+    TimeoutException {
+    final ExecutorService executorService = Executors.newFixedThreadPool( 1 );
+
+    TransMeta parentMeta =
+      new TransMeta( this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(), new Variables() );
+    TransMeta subMeta =
+      new TransMeta( this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(), new Variables() );
+    LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
+    Trans parentTrans = new Trans( parentMeta, loggingObject );
+    SubtransExecutor subtransExecutor =
+      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorParameters(), "", 1 );
+
+    RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
+    List<RowMetaAndData> rows = Arrays.asList(
+      new RowMetaAndData( rowMeta, "Pentaho", 1L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 2L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 3L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 4L ) );
+
+    CompletableFuture<Boolean> acquireThreadRunning = new CompletableFuture();
+
+    Future future = executorService.submit( () -> safeAcquirePermits( subtransExecutor, 8, acquireThreadRunning ) );
+
+    //Acquire the permits before releasing them by waiting for the acquire thread to spin up.
+    assertTrue( acquireThreadRunning.get( 5, TimeUnit.SECONDS ) );
+
+    //Release 2*4=8 permits by calling execute twice with 4 rows
+    subtransExecutor.execute( rows );
+    subtransExecutor.execute( rows );
+
+    final boolean timedOut = !safeWaitForCompletion( future, 5 );
+    assertFalse( timedOut );
+  }
+
+  private void safeAcquirePermits( SubtransExecutor subtransExecutor, int permitCount,
+                                   CompletableFuture<Boolean> threadRunning ) {
+    try {
+      for ( int i = 0; i < permitCount; i++ ) {
+        threadRunning.complete( true );
+        subtransExecutor.acquireBufferPermit();
+      }
+    } catch ( InterruptedException e ) {
+      fail();
+    }
+  }
+
+  /**
+   * @param future
+   * @return false if timed out, otherwise true
+   */
+  private boolean safeWaitForCompletion( Future future, long timeoutSeconds ) {
+    try {
+      future.get( timeoutSeconds, TimeUnit.SECONDS );
+    } catch ( TimeoutException te ) {
+      return false;
+    } catch ( InterruptedException | ExecutionException e ) {
+      fail();
+    }
+    return true;
   }
 }

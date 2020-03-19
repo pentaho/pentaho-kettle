@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,7 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
   private final Consumer<Map.Entry<List<I>, Result>> postProcessor;
   private int sharedStreamingBatchPoolSize = 0;
   private static ThreadPoolExecutor sharedStreamingBatchPool;
+  private final int rxBatchCount;
 
   public FixedTimeStreamWindow( SubtransExecutor subtransExecutor, RowMetaInterface rowMeta, long millis,
                                 int batchSize, int parallelism ) {
@@ -75,6 +76,12 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
     this.batchSize = batchSize;
     this.parallelism = parallelism;
     this.postProcessor = postProcessor;
+
+    //When only batchSize is provided and it is greater than 0 and less than the prefetchCount we can exactly
+    //calculate how many batches rx will have to handle. When a time value is provided handle the full prefetchCount
+    // because the batchSize split by RxJava may be smaller and require more batches.
+    this.rxBatchCount = ( millis == 0 && batchSize > 0 && batchSize < subtransExecutor.getPrefetchCount() )
+      ? subtransExecutor.getPrefetchCount() / batchSize : this.subtransExecutor.getPrefetchCount();
 
     try {
       sharedStreamingBatchPoolSize = Integer.parseInt( System.getProperties().getProperty( Const.SHARED_STREAMING_BATCH_POOL_SIZE, "0" ) );
@@ -99,8 +106,9 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       : flowable.buffer( millis, MILLISECONDS )
       : flowable.buffer( batchSize );
     return buffer
-      .parallel( parallelism )
-      .runOn( sharedStreamingBatchPoolSize > 0 ? Schedulers.from( sharedStreamingBatchPool ) : Schedulers.io() )
+      .parallel( parallelism, rxBatchCount )
+      .runOn( sharedStreamingBatchPoolSize > 0 ? Schedulers.from( sharedStreamingBatchPool ) : Schedulers.io(),
+        rxBatchCount )
       .filter( list -> !list.isEmpty() )
       .map( this::sendBufferToSubtrans )
       .filter( Optional::isPresent )
