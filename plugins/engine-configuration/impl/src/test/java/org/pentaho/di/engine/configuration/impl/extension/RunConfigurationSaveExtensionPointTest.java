@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -117,6 +117,26 @@ public class RunConfigurationSaveExtensionPointTest {
     jobEntryCopies.add( createCopy( JobEntryTrans.class, RUN_CONFIGURATION + "1" ) );
     jobEntryCopies.add( createCopy( JobEntryJob.class, RUN_CONFIGURATION + "2" ) );
     jobEntryCopies.add( createCopy( JobEntryTrans.class, RUN_CONFIG_VARIBLE ) );
+    when( jobMeta.getJobCopies() ).thenReturn( jobEntryCopies );
+
+    RunConfigurationSaveExtensionPoint runConfigurationSaveExtensionPoint =
+      new RunConfigurationSaveExtensionPoint( runConfigurationManager );
+    runConfigurationSaveExtensionPoint.callExtensionPoint( log, new Object[] { jobMeta } );
+
+    verify( runConfigurationManager ).load();
+  }
+
+  @Test
+  public void testCallExtensionPointWithNullConfig() throws  Exception {
+    List<JobEntryCopy> jobEntryCopies = new ArrayList<>();
+    jobEntryCopies.add( createCopy( JobEntryJob.class, RUN_CONFIGURATION + "0" ) );
+    jobEntryCopies.add( createCopy( JobEntryTrans.class, RUN_CONFIGURATION + "1" ) );
+    jobEntryCopies.add( createCopy( JobEntryJob.class, RUN_CONFIGURATION + "2" ) );
+    jobEntryCopies.add( createCopy( JobEntryTrans.class, RUN_CONFIG_VARIBLE ) );
+    jobEntryCopies.add( createCopy( JobEntryTrans.class, null ) );
+    jobEntryCopies.add( createCopy( JobEntryTrans.class, "" ) );
+    jobEntryCopies.add( createCopy( JobEntryJob.class, null ) );
+    jobEntryCopies.add( createCopy( JobEntryJob.class, "" ) );
     when( jobMeta.getJobCopies() ).thenReturn( jobEntryCopies );
 
     RunConfigurationSaveExtensionPoint runConfigurationSaveExtensionPoint =
