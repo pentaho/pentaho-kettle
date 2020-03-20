@@ -419,17 +419,19 @@ public abstract class BaseLogTable {
     StringBuilder retval = new StringBuilder();
 
     for ( LogTableField field : fields ) {
-      retval.append( "        " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+      if ( field.isEnabled() ) {
+        retval.append( "        " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
 
-      retval.append( "          " ).append( XMLHandler.addTagValue( "id", field.getId() ) );
-      retval.append( "          " ).append( XMLHandler.addTagValue( "enabled", field.isEnabled() ) );
-      retval.append( "          " ).append( XMLHandler.addTagValue( "name", field.getFieldName() ) );
-      if ( field.isSubjectAllowed() ) {
-        retval.append( "          " ).append( XMLHandler.addTagValue( "subject",
-          field.getSubject() == null ? null : field.getSubject().toString() ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "id", field.getId() ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "enabled", field.isEnabled() ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "name", field.getFieldName() ) );
+        if ( field.isSubjectAllowed() ) {
+          retval.append( "          " ).append( XMLHandler.addTagValue( "subject",
+                  field.getSubject() == null ? null : field.getSubject().toString() ) );
+        }
+
+        retval.append( "        " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
       }
-
-      retval.append( "        " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     }
 
     return retval.toString();
