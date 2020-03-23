@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -160,6 +160,13 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
           // This is a parent transformation and parent variable should work here. A child file name can be resolved via parent space.
           realTransname = space.environmentSubstitute( realTransname );
           realDirectory = space.environmentSubstitute( realDirectory );
+        }
+
+        if ( realDirectory.isEmpty() && !Utils.isEmpty( realTransname ) && realTransname.startsWith( "/" ) ) {
+          int index = realTransname.lastIndexOf( '/' );
+          String transPath =  realTransname;
+          realTransname = realTransname.substring( index + 1 );
+          realDirectory = transPath.substring( 0, index );
         }
 
         if ( rep != null ) {
