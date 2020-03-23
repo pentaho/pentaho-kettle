@@ -74,3 +74,5 @@ ce:
 
 # Testable items, but not customer hand-off items
 not-for-release:
+    shims:
+        - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
