@@ -556,8 +556,14 @@ public class XMLHandler {
       //[PDI-18528] IOUtils.toBufferedInputStream is used to create a detached copy of KettleVFS' inputstream to avoid
       //premature closure of the stream on multithread executions.
       //return loadXMLFile( IOUtils.toBufferedInputStream(KettleVFS.getInputStream( fileObject )), systemID, ignoreEntities, namespaceAware );
-      return loadXMLFile( new CloseShieldInputStream(KettleVFS.getInputStream( fileObject )), systemID, ignoreEntities, namespaceAware );
-      //return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
+      //return loadXMLFile( new CloseShieldInputStream(KettleVFS.getInputStream( fileObject )), systemID, ignoreEntities, namespaceAware );
+      //return loadXMLFile( cloneInputStream( KettleVFS.getInputStream( fileObject ) ), systemID, ignoreEntities, namespaceAware );
+      //return loadXMLFile(KettleVFS.getInputStream(fileObject), systemID, ignoreEntities, namespaceAware);
+
+      InputStream kettleVFSInputStream = KettleVFS.getInputStream( fileObject );
+      InputStream xmlHandlerInputStream = IOUtils.toBufferedInputStream( kettleVFSInputStream );
+      kettleVFSInputStream.close();
+      return loadXMLFile( xmlHandlerInputStream, systemID, ignoreEntities, namespaceAware );
     } catch ( IOException e ) {
       throw new KettleXMLException( "Unable to read file [" + fileObject.toString() + "]", e );
     }
