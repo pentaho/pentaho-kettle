@@ -24,6 +24,7 @@ package org.pentaho.di.core.xml;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileObject;
@@ -554,7 +555,8 @@ public class XMLHandler {
     try {
       //[PDI-18528] IOUtils.toBufferedInputStream is used to create a detached copy of KettleVFS' inputstream to avoid
       //premature closure of the stream on multithread executions.
-      return loadXMLFile( IOUtils.toBufferedInputStream(KettleVFS.getInputStream( fileObject )), systemID, ignoreEntities, namespaceAware );
+      //return loadXMLFile( IOUtils.toBufferedInputStream(KettleVFS.getInputStream( fileObject )), systemID, ignoreEntities, namespaceAware );
+      return loadXMLFile( new CloseShieldInputStream(KettleVFS.getInputStream( fileObject )), systemID, ignoreEntities, namespaceAware )
       //return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
     } catch ( IOException e ) {
       throw new KettleXMLException( "Unable to read file [" + fileObject.toString() + "]", e );
