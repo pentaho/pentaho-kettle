@@ -3607,7 +3607,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     String timeoutFieldName = logTable.getTimeoutField().getFieldName();
     String timeoutPredicate = "";
     if ( checkColumnExists( actualSchemaName, actualTableName, timeoutFieldName ) ) {
-      timeoutPredicate = " AND (" + timeoutFieldName + "=\"\" OR " + timeoutFieldName + " IS NULL)";
+      timeoutPredicate = " AND " + timeoutFieldName + "=\"\"";
       cleanupTimedoutRecords( logTable );
     }
 
