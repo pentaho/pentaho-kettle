@@ -21,15 +21,13 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
-import org.junit.ClassRule;
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
@@ -51,34 +49,45 @@ import static org.mockito.Mockito.mock;
  * User: Dzmitry Stsiapanau Date: 3/20/2014 Time: 11:51 AM
  */
 public class ValueMetaTimestampTest {
-  private static final Timestamp TIMESTAMP_WITH_NANOSECONDS = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
-  private static final Timestamp TIMESTAMP_WITH_MILLISECONDS = Timestamp.valueOf( "2019-09-01 04:34:56.12300000" );
-  private static final long TIMESTAMP_AS_NANOSECONDS = 1567308896123456789L;
-  private static final long TIMESTAMP_AS_MILLISECONDS = 1567308896123L;
 
   /**
-   * <p>For the Number to Timestamp conversion (nanoseconds) we use the above values but slightly truncated to avoid
-   * different results depending on the used JVM.</p>
-   * <p>This is because Number uses {@code double} which only guarantees 15 significant digits</p>
-   *
-   * @see #testConvertNumberToTimestamp_DefaultMode()
-   * @see #testConvertNumberToTimestamp_Nanoseconds()
+   * <p>The TimeZone to be used in all unit tests.</p>
    */
-  private static final Timestamp TIMESTAMP_WITH_NANOSECONDS_DOUBLE = Timestamp.valueOf( "2019-09-01 04:34:56.123456" );
+  private static final TimeZone TEST_TIMEZONE = TimeZone.getTimeZone( "Europe/London" );
+
+  // Test reference values
+  //
+  // For the Number to Timestamp conversion (using nanoseconds) we use slightly truncated values
+  // to avoid different results depending on the used JVM.
+  // This is because Number uses {@code double} which only guarantees 15 significant digits
+  //
+  private static final Timestamp TIMESTAMP_WITH_MILLISECONDS;
+  private static final long TIMESTAMP_AS_MILLISECONDS = 1567308896123L;
+  private static final Timestamp TIMESTAMP_WITH_NANOSECONDS;
+  private static final long TIMESTAMP_AS_NANOSECONDS = 1567308896123456789L;
+  private static final Timestamp TIMESTAMP_WITH_NANOSECONDS_DOUBLE;
   private static final double TIMESTAMP_AS_NANOSECONDS_DOUBLE = 1567308896123456000.0;
 
-  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+  static {
+    /* Initialize Timestamps in a static block to assure the proper TimeZone is used. */
+    TimeZone.setDefault( TEST_TIMEZONE );
+    TIMESTAMP_WITH_NANOSECONDS = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
+    TIMESTAMP_WITH_MILLISECONDS = Timestamp.valueOf( "2019-09-01 04:34:56.12300000" );
+    TIMESTAMP_WITH_NANOSECONDS_DOUBLE = Timestamp.valueOf( "2019-09-01 04:34:56.123456" );
+  }
+
+  @Before
+  public void init() {
+    TimeZone.setDefault( TEST_TIMEZONE );
+  }
 
   @Test
   public void testSetPreparedStatementValue() throws Exception {
     ValueMetaTimestamp vm = new ValueMetaTimestamp();
     PreparedStatement ps = mock( PreparedStatement.class );
-    doAnswer( new Answer<Object>() {
-      @Override
-      public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
-        Object ts = invocationOnMock.getArguments()[ 1 ];
-        return ts.toString();
-      }
+    doAnswer( (Answer<Object>) invocationOnMock -> {
+      Object ts = invocationOnMock.getArguments()[ 1 ];
+      return ts.toString();
     } ).when( ps ).setTimestamp( anyInt(), any( Timestamp.class ) );
 
     try {
@@ -95,23 +104,23 @@ public class ValueMetaTimestampTest {
     Timestamp later = Timestamp.valueOf( "2013-12-12 12:12:12.121212" );
     assertTrue( vm.isSortedAscending() );
     assertFalse( vm.isSortedDescending() );
-    assertEquals( vm.compare( null, null ), 0 );
-    assertEquals( vm.compare( null, earlier ), -1 );
-    assertEquals( vm.compare( earlier, null ), 1 );
-    assertEquals( vm.compare( earlier, earlier ), 0 );
-    assertEquals( vm.compare( earlier, later ), -1 );
-    assertEquals( vm.compare( later, earlier ), 1 );
+    assertEquals( 0, vm.compare( null, null ) );
+    assertEquals( -1, vm.compare( null, earlier ) );
+    assertEquals( 1, vm.compare( earlier, null ) );
+    assertEquals( 0, vm.compare( earlier, earlier ) );
+    assertEquals( -1, vm.compare( earlier, later ) );
+    assertEquals( 1, vm.compare( later, earlier ) );
 
     // Check Descending comparison
     vm.setSortedDescending( true );
     assertFalse( vm.isSortedAscending() );
     assertTrue( vm.isSortedDescending() );
-    assertEquals( vm.compare( null, null ), 0 );
-    assertEquals( vm.compare( null, earlier ), 1 );
-    assertEquals( vm.compare( earlier, null ), -1 );
-    assertEquals( vm.compare( earlier, earlier ), 0 );
-    assertEquals( vm.compare( earlier, later ), 1 );
-    assertEquals( vm.compare( later, earlier ), -1 );
+    assertEquals( 0, vm.compare( null, null ) );
+    assertEquals( 1, vm.compare( null, earlier ) );
+    assertEquals( -1, vm.compare( earlier, null ) );
+    assertEquals( 0, vm.compare( earlier, earlier ) );
+    assertEquals( 1, vm.compare( earlier, later ) );
+    assertEquals( -1, vm.compare( later, earlier ) );
   }
 
   @Test
@@ -176,7 +185,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertIntegerToTimestamp_DefaultMode() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -190,7 +198,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertIntegerToTimestamp_Milliseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -200,7 +207,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertIntegerToTimestamp_Nanoseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -216,7 +222,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToInteger_DefaultMode() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -230,7 +235,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToInteger_Milliseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -240,7 +244,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToInteger_Nanoseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -256,7 +259,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertNumberToTimestamp_DefaultMode() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -270,7 +272,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertNumberToTimestamp_Milliseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -280,12 +281,9 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertNumberToTimestamp_Nanoseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
-    // Limiting the significant digits because we're using double
-    // Using the values used on other tests could originate different results depending on the JVM
     Timestamp result = valueMetaTimestamp.convertNumberToTimestamp( TIMESTAMP_AS_NANOSECONDS_DOUBLE );
     assertEquals( TIMESTAMP_WITH_NANOSECONDS_DOUBLE, result );
   }
@@ -298,7 +296,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToNumber_DefaultMode() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -312,7 +309,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToNumber_Milliseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -322,12 +318,11 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToNumber_Nanoseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
-    double result = valueMetaTimestamp.getNumber( TIMESTAMP_WITH_NANOSECONDS );
-    assertEquals( (double) TIMESTAMP_AS_NANOSECONDS, result, 0 );
+    double result = valueMetaTimestamp.getNumber( TIMESTAMP_WITH_NANOSECONDS_DOUBLE );
+    assertEquals( TIMESTAMP_AS_NANOSECONDS_DOUBLE, result, 0 );
   }
 
   @Test
@@ -338,7 +333,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertBigNumberToTimestamp_DefaultMode() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -353,7 +347,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertBigNumberToTimestamp_Milliseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -364,7 +357,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertBigNumberToTimestamp_Nanoseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -380,7 +372,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToBigNumber_DefaultMode() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -394,7 +385,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToBigNumber_Milliseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
@@ -404,7 +394,6 @@ public class ValueMetaTimestampTest {
 
   @Test
   public void testConvertTimestampToBigNumber_Nanoseconds() throws KettleValueException {
-    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
     System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
       Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS );
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
