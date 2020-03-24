@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 /**
  * Will run the given sub-transformation with the rows passed to execute
@@ -57,9 +58,11 @@ public class SubtransExecutor {
   private String subStep;
   private boolean stopped;
   Set<Trans> running;
+  private Semaphore semaphore;
+  private final int prefetchCount;
 
   public SubtransExecutor( String subTransName, Trans parentTrans, TransMeta subtransMeta, boolean shareVariables,
-                           TransExecutorParameters parameters, String subStep ) {
+                           TransExecutorParameters parameters, String subStep, int prefetchCount ) {
     this.subTransName = subTransName;
     this.parentTrans = parentTrans;
     this.subtransMeta = subtransMeta;
@@ -68,6 +71,8 @@ public class SubtransExecutor {
     this.subStep = subStep;
     this.statuses = new LinkedHashMap<>();
     this.running = new ConcurrentHashSet<>();
+    this.prefetchCount = prefetchCount;
+    this.semaphore = new Semaphore( prefetchCount );
   }
 
   public Optional<Result> execute( List<RowMetaAndData> rows ) throws KettleException {
@@ -104,6 +109,7 @@ public class SubtransExecutor {
 
     Result subtransResult = subtrans.getResult();
     subtransResult.setRows( rowMetaAndData  );
+    releaseBufferPermits( rows.size() );
     return Optional.of( subtransResult );
   }
 
@@ -188,5 +194,17 @@ public class SubtransExecutor {
 
   public Trans getParentTrans() {
     return parentTrans;
+  }
+
+  private void releaseBufferPermits( int count ) {
+    semaphore.release( count );
+  }
+
+  public void acquireBufferPermit() throws InterruptedException {
+    semaphore.acquire();
+  }
+
+  public int getPrefetchCount() {
+    return prefetchCount;
   }
 }

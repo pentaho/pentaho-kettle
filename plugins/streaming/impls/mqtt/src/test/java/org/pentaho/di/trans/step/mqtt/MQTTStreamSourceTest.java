@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.streaming.api.StreamSource;
 import org.powermock.api.mockito.PowerMockito;
@@ -85,6 +86,7 @@ public class MQTTStreamSourceTest {
   @Mock MQTTConsumerMeta consumerMeta;
   @Mock LogChannelInterface logger;
   @Mock StepMeta stepMeta;
+  @Mock SubtransExecutor subtransExecutor;
 
   @Before
   public void startBroker() throws Exception {
@@ -107,6 +109,8 @@ public class MQTTStreamSourceTest {
     when( mqttConsumer.getStepMeta() ).thenReturn( stepMeta );
     when( stepMeta.getName() ).thenReturn( "Mqtt Step" );
     when( mqttConsumer.getVariablizedStepMeta() ).thenReturn( consumerMeta );
+    when( subtransExecutor.getPrefetchCount() ).thenReturn( 1000 );
+    when( mqttConsumer.getSubtransExecutor() ).thenReturn( subtransExecutor );
   }
 
   @After
@@ -271,7 +275,7 @@ public class MQTTStreamSourceTest {
 
   private <T> T getQuickly( Future<T> future ) {
     try {
-      return future.get( 50, MILLISECONDS );
+      return future.get( 150, MILLISECONDS );
     } catch ( InterruptedException | ExecutionException | TimeoutException e ) {
       fail( e.getMessage() );
     }

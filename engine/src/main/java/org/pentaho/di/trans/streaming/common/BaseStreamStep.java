@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,7 +55,7 @@ public class BaseStreamStep extends BaseStep {
   private static final Class<?> PKG = BaseStreamStep.class;
   protected BaseStreamStepMeta variablizedStepMeta;
 
-  protected SubtransExecutor subtransExecutor;
+  private SubtransExecutor subtransExecutor;
   protected StreamWindow<List<Object>, Result> window;
   protected StreamSource<List<Object>> source;
 
@@ -84,7 +84,7 @@ public class BaseStreamStep extends BaseStep {
       variablizedStepMeta = (BaseStreamStepMeta) variablizedStepMeta.withVariables( this );
       subtransExecutor = new SubtransExecutor( getStepname(),
         getTrans(), transMeta, true,
-        new TransExecutorParameters(), variablizedStepMeta.getSubStep() );
+        new TransExecutorParameters(), variablizedStepMeta.getSubStep(), getPrefetchCount() );
 
     } catch ( KettleException e ) {
       log.logError( e.getLocalizedMessage(), e );
@@ -189,6 +189,19 @@ public class BaseStreamStep extends BaseStep {
     }
   }
 
+  /**
+   * Get Prefetch Count
+   *
+   * @return the number of messages to prefetch from the broker
+   */
+  protected int getPrefetchCount() {
+    try {
+      return Integer.parseInt( variablizedStepMeta.getPrefetchCount() );
+    } catch ( NumberFormatException nfe ) {
+      return BaseStreamStepMeta.PREFETCH;
+    }
+  }
+
   protected long getDuration() {
     try {
       return Long.parseLong( variablizedStepMeta.getBatchDuration() );
@@ -217,5 +230,9 @@ public class BaseStreamStep extends BaseStep {
   @VisibleForTesting
   public void setSource( StreamSource<List<Object>> source ) {
     this.source = source;
+  }
+
+  public SubtransExecutor getSubtransExecutor() {
+    return subtransExecutor;
   }
 }
