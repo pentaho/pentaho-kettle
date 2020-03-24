@@ -22,6 +22,18 @@
 
 package org.pentaho.di.core.row.value;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -39,22 +51,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleEOFException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
-
 public class ValueMetaTimestamp extends ValueMetaDate {
-  private final String format =
-    Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT ),
-      Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT );
+  private final String conversionMode = Const
+    .NVL( EnvUtil.getSystemProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE ),
+      Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT );
 
   public ValueMetaTimestamp() {
     this( null );
@@ -86,44 +86,31 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     long milliseconds = timestamp.getTime();
-    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS.equalsIgnoreCase( format ) ) {
+    if ( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS.equalsIgnoreCase( conversionMode ) ) {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
       return seconds * 1000000000L + timestamp.getNanos();
     } else {
-      return  milliseconds;
+      return milliseconds;
     }
   }
 
   @Override
   public Double getNumber( Object object ) throws KettleValueException {
-    Timestamp timestamp = getTimestamp( object );
-    if ( timestamp == null ) {
-      return null;
-    }
-
-    long milliseconds = timestamp.getTime();
-    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS.equalsIgnoreCase( format ) ) {
-      long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
-      return (double) seconds * 1000000000L + timestamp.getNanos();
+    Long timestampAsInteger = getInteger( object );
+    if ( null != timestampAsInteger ) {
+      return timestampAsInteger.doubleValue();
     } else {
-      return (double) milliseconds;
+      return null;
     }
   }
 
   @Override
   public BigDecimal getBigNumber( Object object ) throws KettleValueException {
-    Timestamp timestamp = getTimestamp( object );
-    if ( timestamp == null ) {
-      return null;
-    }
-
-    long milliseconds = timestamp.getTime();
-    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS.equalsIgnoreCase( format ) ) {
-      long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
-      return BigDecimal.valueOf( seconds ).multiply( BigDecimal.valueOf( 1000000000L ) ).add(
-          BigDecimal.valueOf( timestamp.getNanos() ) );
+    Long timestampAsInteger = getInteger( object );
+    if ( null != timestampAsInteger ) {
+      return BigDecimal.valueOf( timestampAsInteger );
     } else {
-      return BigDecimal.valueOf( milliseconds );
+      return null;
     }
   }
 
@@ -243,14 +230,20 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     if ( d == null ) {
       return null;
     }
-    long nanos = d.longValue();
 
-    return convertIntegerToTimestamp( nanos );
+    return convertIntegerToTimestamp( d.longValue() );
   }
 
-  protected Timestamp convertIntegerToTimestamp( Long nanos ) {
-    if ( nanos == null ) {
+  protected Timestamp convertIntegerToTimestamp( Long longValue ) {
+    if ( longValue == null ) {
       return null;
+    }
+
+    Long nanos = longValue;
+
+    if ( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS.equalsIgnoreCase( conversionMode ) ) {
+      // Convert milliseconds to nanoseconds!
+      nanos *= 1000000L;
     }
 
     long ss = TimeUnit.SECONDS.convert( nanos, TimeUnit.NANOSECONDS );
@@ -279,7 +272,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
         returnValue = (Timestamp) getDateFormat().parse( string );
       } catch ( ParseException ex ) {
         throw new KettleValueException( toString() + " : couldn't convert string [" + string
-            + "] to a timestamp, expecting format [yyyy-mm-dd hh:mm:ss.ffffff]", e );
+          + "] to a timestamp, expecting format [yyyy-mm-dd hh:mm:ss.ffffff]", e );
       }
     }
     return returnValue;
