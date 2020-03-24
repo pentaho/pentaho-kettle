@@ -136,7 +136,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
           case STORAGE_TYPE_BINARY_STRING:
             return (Timestamp) convertBinaryStringToNativeType( (byte[]) object );
           case STORAGE_TYPE_INDEXED:
-            return (Timestamp) index[( (Integer) object ).intValue()];
+            return (Timestamp) index[ ( (Integer) object ).intValue() ];
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -147,7 +147,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
           case STORAGE_TYPE_BINARY_STRING:
             return convertStringToTimestamp( (String) convertBinaryStringToNativeType( (byte[]) object ) );
           case STORAGE_TYPE_INDEXED:
-            return convertStringToTimestamp( (String) index[( (Integer) object ).intValue()] );
+            return convertStringToTimestamp( (String) index[ ( (Integer) object ).intValue() ] );
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -158,7 +158,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
           case STORAGE_TYPE_BINARY_STRING:
             return convertNumberToTimestamp( (Double) convertBinaryStringToNativeType( (byte[]) object ) );
           case STORAGE_TYPE_INDEXED:
-            return convertNumberToTimestamp( (Double) index[( (Integer) object ).intValue()] );
+            return convertNumberToTimestamp( (Double) index[ ( (Integer) object ).intValue() ] );
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -169,7 +169,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
           case STORAGE_TYPE_BINARY_STRING:
             return convertIntegerToTimestamp( (Long) convertBinaryStringToNativeType( (byte[]) object ) );
           case STORAGE_TYPE_INDEXED:
-            return convertIntegerToTimestamp( (Long) index[( (Integer) object ).intValue()] );
+            return convertIntegerToTimestamp( (Long) index[ ( (Integer) object ).intValue() ] );
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -180,7 +180,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
           case STORAGE_TYPE_BINARY_STRING:
             return convertBigNumberToTimestamp( (BigDecimal) convertBinaryStringToNativeType( (byte[]) object ) );
           case STORAGE_TYPE_INDEXED:
-            return convertBigNumberToTimestamp( (BigDecimal) index[( (Integer) object ).intValue()] );
+            return convertBigNumberToTimestamp( (BigDecimal) index[ ( (Integer) object ).intValue() ] );
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -190,7 +190,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
         throw new KettleValueException( toString() + " : I don't know how to convert a binary value to timestamp." );
       case TYPE_SERIALIZABLE:
         throw new KettleValueException( toString()
-            + " : I don't know how to convert a serializable value to timestamp." );
+          + " : I don't know how to convert a serializable value to timestamp." );
 
       default:
         throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
@@ -289,35 +289,35 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   @Override
   public Object convertDataFromString( String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull,
-      int trim_type ) throws KettleValueException {
+                                       int trimType ) throws KettleValueException {
     // null handling and conversion of value to null
     //
-    String null_value = nullIf;
-    if ( null_value == null ) {
+    String nullValue = nullIf;
+    if ( nullValue == null ) {
       switch ( convertMeta.getType() ) {
         case ValueMetaInterface.TYPE_BOOLEAN:
-          null_value = Const.NULL_BOOLEAN;
+          nullValue = Const.NULL_BOOLEAN;
           break;
         case ValueMetaInterface.TYPE_STRING:
-          null_value = Const.NULL_STRING;
+          nullValue = Const.NULL_STRING;
           break;
         case ValueMetaInterface.TYPE_BIGNUMBER:
-          null_value = Const.NULL_BIGNUMBER;
+          nullValue = Const.NULL_BIGNUMBER;
           break;
         case ValueMetaInterface.TYPE_NUMBER:
-          null_value = Const.NULL_NUMBER;
+          nullValue = Const.NULL_NUMBER;
           break;
         case ValueMetaInterface.TYPE_INTEGER:
-          null_value = Const.NULL_INTEGER;
+          nullValue = Const.NULL_INTEGER;
           break;
         case ValueMetaInterface.TYPE_DATE:
-          null_value = Const.NULL_DATE;
+          nullValue = Const.NULL_DATE;
           break;
         case ValueMetaInterface.TYPE_BINARY:
-          null_value = Const.NULL_BINARY;
+          nullValue = Const.NULL_BINARY;
           break;
         default:
-          null_value = Const.NULL_NONE;
+          nullValue = Const.NULL_NONE;
           break;
       }
     }
@@ -330,7 +330,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
       if ( Utils.isEmpty( pol )
-          || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
+        || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( nullValue ), pol.length() ) ) ) {
         pol = ifNull;
       }
     }
@@ -341,14 +341,14 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     if ( Utils.isEmpty( pol ) ) {
       return null;
     } else {
-      // if the null_value is specified, we try to match with that.
+      // if the nullValue is specified, we try to match with that.
       //
-      if ( !Utils.isEmpty( null_value ) ) {
-        if ( null_value.length() <= pol.length() ) {
-          // If the polled value is equal to the spaces right-padded null_value,
+      if ( !Utils.isEmpty( nullValue ) ) {
+        if ( nullValue.length() <= pol.length() ) {
+          // If the polled value is equal to the spaces right-padded nullValue,
           // we have a match
           //
-          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
+          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( nullValue ), pol.length() ) ) ) {
             return null;
           }
         }
@@ -364,7 +364,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
     // Trimming
     StringBuilder strpol;
-    switch ( trim_type ) {
+    switch ( trimType ) {
       case ValueMetaInterface.TRIM_TYPE_LEFT:
         strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
@@ -417,13 +417,10 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   /**
    * Convert the specified data to the data type specified in this object.
    *
-   * @param meta2
-   *          the metadata of the object to be converted
-   * @param data2
-   *          the data of the object to be converted
+   * @param meta2 the metadata of the object to be converted
+   * @param data2 the data of the object to be converted
    * @return the object in the data type of this value metadata object
-   * @throws KettleValueException
-   *           in case there is a data conversion error
+   * @throws KettleValueException in case there is a data conversion error
    */
   @Override
   public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
@@ -487,7 +484,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   @Override
   public ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name, ResultSetMetaData rm,
-      int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
+                                                 int index, boolean ignoreLength, boolean lazyConversion )
+    throws KettleDatabaseException {
 
     try {
       int type = rm.getColumnType( index );
@@ -524,14 +522,13 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
     } catch ( Exception e ) {
       throw new KettleDatabaseException(
-          toStringMeta() + " : Unable to get timestamp from resultset at index " + index, e );
+        toStringMeta() + " : Unable to get timestamp from resultset at index " + index, e );
     }
-
   }
 
   @Override
   public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement, int index,
-      Object data ) throws KettleDatabaseException {
+                                         Object data ) throws KettleDatabaseException {
 
     try {
       if ( data != null ) {
@@ -541,16 +538,15 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       }
     } catch ( Exception e ) {
       throw new KettleDatabaseException( toStringMeta() + " : Unable to set value on prepared statement on index "
-          + index, e );
+        + index, e );
     }
-
   }
 
   @Override
   public Object convertDataUsingConversionMetaData( Object data2 ) throws KettleValueException {
     if ( conversionMetadata == null ) {
       throw new KettleValueException(
-          "API coding error: please specify the conversion metadata before attempting to convert value " + name );
+        "API coding error: please specify the conversion metadata before attempting to convert value " + name );
     }
 
     return super.convertDataUsingConversionMetaData( data2 );
@@ -573,11 +569,10 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       case STORAGE_TYPE_BINARY_STRING:
         return convertStringToBinaryString( (String) convertBinaryStringToNativeType( (byte[]) object ) );
       case STORAGE_TYPE_INDEXED:
-        return convertStringToBinaryString( getString( index[( (Integer) object ).intValue()] ) );
+        return convertStringToBinaryString( getString( index[ ( (Integer) object ).intValue() ] ) );
       default:
         throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
     }
-
   }
 
   @Override
@@ -616,14 +611,14 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       }
     } catch ( ClassCastException e ) {
       throw new RuntimeException( toString() + " : There was a data type error: the data type of "
-          + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-          + toStringMeta() + "]" );
+        + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
+        + toStringMeta() + "]" );
     } catch ( IOException e ) {
       throw new KettleFileException( toString() + " : Unable to write value timestamp data to output stream", e );
     } catch ( KettleValueException e ) {
       throw new RuntimeException( toString() + " : There was a data type error: the data type of "
-          + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-          + toStringMeta() + "]" );
+        + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
+        + toStringMeta() + "]" );
     }
   }
 
