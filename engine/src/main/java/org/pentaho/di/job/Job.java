@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -630,12 +630,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     JobExecutionExtension extension = new JobExecutionExtension( this, prevResult, jobEntryCopy, true );
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobBeforeJobEntryExecution.id, extension );
-
-    jobMeta.disposeEmbeddedMetastoreProvider();
-    if ( jobMeta.getMetastoreLocatorOsgi() != null ) {
-      jobMeta.setEmbeddedMetastoreProviderKey( jobMeta.getMetastoreLocatorOsgi().setEmbeddedMetastore( jobMeta
-          .getEmbeddedMetaStore() ) );
-    }
 
     if ( extension.result != null ) {
       prevResult = extension.result;

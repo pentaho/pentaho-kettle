@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,8 @@
 package org.pentaho.di.base;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;
@@ -180,7 +182,16 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   @VisibleForTesting
   protected NamedClusterEmbedManager namedClusterEmbedManager;
 
-  protected String embeddedMetastoreProviderKey;
+  @SuppressWarnings( "java:S4738" )  // using guava for memoize
+  // memoized, load-once-on-demand supplier for the embedded provider key.
+  private Supplier<String> embeddedMetastoreProvKeySupplier = Suppliers.memoize( this::getEmbeddedMetastoreKey );
+
+  private String getEmbeddedMetastoreKey() {
+    if ( getMetastoreLocatorOsgi() != null ) {
+      return getMetastoreLocatorOsgi().setEmbeddedMetastore( getEmbeddedMetaStore() );
+    }
+    return null;
+  }
 
   /**
    * If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml
@@ -2051,19 +2062,33 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   }
 
   public void disposeEmbeddedMetastoreProvider() {
-    KettleVFS.closeEmbeddedFileSystem( embeddedMetastoreProviderKey );
-    if ( embeddedMetastoreProviderKey != null ) {
+    if ( embeddedMetastoreNoLongerUsed() && getEmbeddedMetastoreKey() != null ) {
+      KettleVFS.closeEmbeddedFileSystem( getEmbeddedMetastoreKey() );
       //Dispose of embedded metastore for this run
-      getMetastoreLocatorOsgi().disposeMetastoreProvider( embeddedMetastoreProviderKey );
+      getMetastoreLocatorOsgi().disposeMetastoreProvider( getEmbeddedMetastoreKey() );
     }
   }
 
-  public String getEmbeddedMetastoreProviderKey() {
-    return embeddedMetastoreProviderKey;
+  /**
+   * Check whether the embeddedMetastore is used anywhere else up the Trans / Job hierarchy.
+   * It's possible for a Parent JobMeta to be shared by multiple child job copies, for example,
+   * and we want to make sure it's only closed when the parent is done.
+   */
+  private boolean embeddedMetastoreNoLongerUsed() {
+    boolean topLevel = !( this.getParent() instanceof AbstractMeta );
+    return topLevel || !embeddedMetastoreUsedByAParent( embeddedMetaStore, this.getParent() );
   }
 
-  public void setEmbeddedMetastoreProviderKey( String embeddedMetastoreProviderKey ) {
-    this.embeddedMetastoreProviderKey = embeddedMetastoreProviderKey;
+  private boolean embeddedMetastoreUsedByAParent( EmbeddedMetaStore embeddedMetaStore, LoggingObjectInterface parent ) {
+    if ( parent instanceof AbstractMeta ) {
+      return ( (AbstractMeta) parent ).embeddedMetaStore == embeddedMetaStore
+        || embeddedMetastoreUsedByAParent( embeddedMetaStore, parent.getParent() );
+    }
+    return false;
+  }
+
+  public String getEmbeddedMetastoreProviderKey() {
+    return embeddedMetastoreProvKeySupplier.get();
   }
 
   @Override
