@@ -88,6 +88,12 @@ public class StorageUnitConverterTest {
 
     // TEST 8: 0
     assertEquals( 0, storageUnitConverter.displaySizeToByteCount( "0KB" ) );
+
+    // TEST 9: empty string
+    assertEquals( -1L, storageUnitConverter.displaySizeToByteCount( "" ) );
+
+    // TEST 10: null
+    assertEquals( -1L, storageUnitConverter.displaySizeToByteCount( null ) );
   }
 
   @Test
