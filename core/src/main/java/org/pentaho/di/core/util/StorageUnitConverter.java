@@ -65,7 +65,8 @@ public class StorageUnitConverter {
    */
   public long displaySizeToByteCount( String displaySize ) {
     long returnValue = -1;
-    String displaySizeDecimal = displaySize.replace( ",", "." ); // for int'l decimal convention
+    // replace "," for int'l decimal convention
+    String displaySizeDecimal = ( displaySize == null ) ? "" : displaySize.replace( ",", "." );
     Pattern pattern = Pattern.compile( "([\\d.]+)([GMK]?B)", Pattern.CASE_INSENSITIVE );
     Matcher matcher = pattern.matcher( displaySizeDecimal );
     Map<String, Integer> powerMap = new HashMap<>();
