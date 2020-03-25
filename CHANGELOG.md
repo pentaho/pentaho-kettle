@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+### Fixed
+- Update RAP/RWT to 3.12.0 to fix #194
+
 ## 0.9.0.21 - 2020-02-07
 ### Changed
 - Remove Notify.js (and jQuery) and notify only at console
