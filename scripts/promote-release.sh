@@ -39,7 +39,7 @@ function write_manifest_to_promotion_log {
 #    $1 = source folder, $2 = destination folder
 function promote_to_ftp_golden {
   if [ "${PROMOTE_TO_FTP_GOLDEN}" == "true" ]; then
-    rsync -av --progress --exclude not-for-release "$1/." "$2"
+    rsync -av -L -K --progress --exclude not-for-release "$1/." "$2"
   fi
 }
 
