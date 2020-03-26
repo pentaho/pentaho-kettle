@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -97,7 +97,9 @@ public class ConnectionEndpoints {
   public Response createConnection( ConnectionDetails connectionDetails, @QueryParam( "name" ) String name ) {
     boolean saved = connectionManager.save( connectionDetails );
     if ( saved ) {
-      connectionManager.delete( name );
+      if ( !connectionDetails.getName().equals( name ) ) {
+        connectionManager.delete( name );
+      }
       getSpoon().getShell().getDisplay().asyncExec( () -> getSpoon().refreshTree(
         ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
       EngineMetaInterface engineMetaInterface = getSpoon().getActiveMeta();
