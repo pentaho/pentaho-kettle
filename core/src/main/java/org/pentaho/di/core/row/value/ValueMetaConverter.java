@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,7 @@ import java.util.Date;
 /**
  * This class is intended to facilitate any needed conversions of a ValueMetaInterface field from one type to another.
  * It was initially implemented for Orc storage in the pentaho-hadoop-shims project.  This class is added here because
- * the converstions are not dependendant on orc in any way.
+ * the conversions are not dependant on orc in any way.
  *
  * Created by tkafalas on 12/8/2017.
  */
@@ -85,7 +85,6 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
       case ValueMetaInterface.TYPE_TIMESTAMP:
         return convertFromTimestampMetaInterface( targetValueMetaType, value );
       case ValueMetaInterface.TYPE_DATE:
-
         return convertFromDateMetaInterface( targetValueMetaType, value );
       case ValueMetaInterface.TYPE_BOOLEAN:
         return convertFromBooleanMetaInterface( targetValueMetaType, value );
@@ -283,7 +282,8 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
         case ValueMetaInterface.TYPE_DATE:
           return new Date( (long) value );
         case ValueMetaInterface.TYPE_TIMESTAMP:
-          return new Timestamp( (long) value );
+          ValueMetaTimestamp pentahoTimeStamp = new ValueMetaTimestamp();
+          return pentahoTimeStamp.convertIntegerToTimestamp( (Long) value );
         default:
           throwBadConversionCombination( ValueMetaInterface.TYPE_INTEGER, targetValueMetaType, value );
       }
@@ -358,7 +358,7 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
         case ValueMetaInterface.TYPE_DATE:
           return new Date( ( (Timestamp) value ).getTime() );
         default:
-          throwBadConversionCombination( ValueMetaInterface.TYPE_NUMBER, targetValueMetaType, value );
+          throwBadConversionCombination( ValueMetaInterface.TYPE_TIMESTAMP, targetValueMetaType, value );
       }
     } catch ( Exception e ) {
       throwErroredConversion( ValueMetaInterface.TYPE_TIMESTAMP, targetValueMetaType, value, e );
@@ -484,7 +484,7 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
   }
 
   private String stripDecimal( String s ) {
-    int decimalPosition = s.indexOf( "." );
+    int decimalPosition = s.indexOf( '.' );
     return decimalPosition != -1 ? s.substring( 0, decimalPosition ) : s;
   }
 }

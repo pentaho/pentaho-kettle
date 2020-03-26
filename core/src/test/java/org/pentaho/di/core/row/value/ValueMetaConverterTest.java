@@ -21,21 +21,21 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
-import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -44,7 +44,6 @@ import static org.junit.Assert.fail;
  * Created by tkafalas on 12/6/2017.
  */
 public class ValueMetaConverterTest {
-  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   private static final int startSource = 1;
   private static final int endSource = 10;
@@ -56,6 +55,11 @@ public class ValueMetaConverterTest {
   public void convertFromSourceToTargetDataTypeTest() throws Exception {
     //"-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp",
     //  "Internet Address", }
+
+    // Make sure the default conversion mode is used
+    System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
+      Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT );
+
     DateFormat dateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
     Date date1 = ( dateFormat.parse( "1999/12/31 00:00:00.000" ) );
     Date timeStamp1 = new Timestamp( dateFormat.parse( "2001/11/01 20:30:15.123" ).getTime() );
@@ -99,7 +103,7 @@ public class ValueMetaConverterTest {
       { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER, 1234L, 1234L },
       { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, 1234L, 1234.0 },
       { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_BIGNUMBER, 1234L, new BigDecimal( "1234" ) },
-      { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_TIMESTAMP, timeStamp1.getTime(), timeStamp1 },
+      { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_TIMESTAMP, 1000000*timeStamp1.getTime(), timeStamp1 },
 
       { ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.TYPE_NONE, new BigDecimal( "123456.123456" ), null },
       { ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.TYPE_STRING, new BigDecimal( "123456.123456" ),
@@ -144,7 +148,7 @@ public class ValueMetaConverterTest {
               "type " + sourceType + "/" + targetType + ":" + testSpec[ 3 ].toString() + "=" + targetValue.toString() );
           }
           if ( targetType == ValueMetaInterface.TYPE_BINARY ) {
-            Arrays.equals( (byte[]) testSpec[ 3 ], (byte[]) targetValue );
+            assertArrayEquals( (byte[]) testSpec[ 3 ], (byte[]) targetValue );
           } else {
             assertEquals( testSpec[ 3 ], targetValue );
           }
@@ -180,7 +184,6 @@ public class ValueMetaConverterTest {
           }
         }
       }
-
     }
   }
 
@@ -188,4 +191,47 @@ public class ValueMetaConverterTest {
     return "" + sourceType + "," + targetType;
   }
 
+  @Test
+  public void testTimestampIntegerConversions() throws Exception {
+
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+
+    Timestamp timestampWithMilliseconds = Timestamp.valueOf( "2019-09-01 04:34:56.12300000" );
+    long timestampAsMilliseconds = 1567308896123L;
+    Timestamp timestampWithNanoseconds = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
+    long timestampAsNanoseconds = 1567308896123456789L;
+
+    Object[][] timestampTests = new Object[][] {
+      { Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY, ValueMetaInterface.TYPE_INTEGER,
+        ValueMetaInterface.TYPE_TIMESTAMP, timestampAsNanoseconds, timestampWithNanoseconds },
+      { Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY, ValueMetaInterface.TYPE_TIMESTAMP,
+        ValueMetaInterface.TYPE_INTEGER, timestampWithMilliseconds, timestampAsMilliseconds },
+      { Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS, ValueMetaInterface.TYPE_INTEGER,
+        ValueMetaInterface.TYPE_TIMESTAMP, timestampAsMilliseconds, timestampWithMilliseconds },
+      { Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS, ValueMetaInterface.TYPE_TIMESTAMP,
+        ValueMetaInterface.TYPE_INTEGER, timestampWithMilliseconds, timestampAsMilliseconds },
+      { Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS, ValueMetaInterface.TYPE_INTEGER,
+        ValueMetaInterface.TYPE_TIMESTAMP, timestampAsNanoseconds, timestampWithNanoseconds },
+      { Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS, ValueMetaInterface.TYPE_TIMESTAMP,
+        ValueMetaInterface.TYPE_INTEGER, timestampWithNanoseconds, timestampAsNanoseconds }
+    };
+
+    ValueMetaConverter converter = new ValueMetaConverter();
+
+    for ( Object[] test : timestampTests ) {
+      // Set the conversion mode
+      System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE, (String) test[ 0 ] );
+
+      Object targetValue = converter
+        .convertFromSourceToTargetDataType( (Integer) test[ 1 ], (Integer) test[ 2 ], test[ 3 ] );
+
+      if ( IS_VERBOSE ) {
+        System.out.println(
+          "(" + test[ 0 ] + ") type " + test[ 1 ] + "/" + test[ 2 ] + ":" + test[ 3 ].toString() + "=" + targetValue
+            .toString() );
+      }
+
+      assertEquals( test[ 4 ], targetValue );
+    }
+  }
 }
