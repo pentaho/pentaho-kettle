@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,39 +22,47 @@
 
 package org.pentaho.di.www;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleAuthenticationException;
+import org.pentaho.di.repository.KettleRepositoryNotFoundException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransAdapter;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
 public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginInterface {
+
+  public static final String KETTLE_DEFAULT_SERVLET_ENCODING = "KETTLE_DEFAULT_SERVLET_ENCODING";
 
   private static Class<?> PKG = ExecuteTransServlet.class; // i18n
 
@@ -207,6 +215,12 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransRequested" ) );
     }
 
+    String encoding = System.getProperty( KETTLE_DEFAULT_SERVLET_ENCODING, null );
+    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
+      response.setCharacterEncoding( encoding );
+      response.setContentType( "text/html; charset=" + encoding );
+    }
+
     // Options taken from PAN
     //
     String[] knownOptions = new String[] { "rep", "user", "pass", "trans", "level", };
@@ -217,48 +231,67 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     String transOption = request.getParameter( "trans" );
     String levelOption = request.getParameter( "level" );
 
-    response.setStatus( HttpServletResponse.SC_OK );
-
-    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
-      response.setCharacterEncoding( encoding );
-      response.setContentType( "text/html; charset=" + encoding );
-    }
-
     PrintWriter out = response.getWriter();
 
+    Repository repository;
     try {
-
-      final Repository repository = openRepository( repOption, userOption, passOption );
-      final TransMeta transMeta = loadTransformation( repository, transOption );
-
-      // Set the servlet parameters as variables in the transformation
-      //
-      String[] parameters = transMeta.listParameters();
-      Enumeration<?> parameterNames = request.getParameterNames();
-      while ( parameterNames.hasMoreElements() ) {
-        String parameter = (String) parameterNames.nextElement();
-        String[] values = request.getParameterValues( parameter );
-
-        // Ignore the known options. set the rest as variables
-        //
-        if ( Const.indexOfString( parameter, knownOptions ) < 0 ) {
-          // If it's a trans parameter, set it, otherwise simply set the variable
-          //
-          if ( Const.indexOfString( parameter, parameters ) < 0 ) {
-            transMeta.setVariable( parameter, values[0] );
-          } else {
-            transMeta.setParameterValue( parameter, values[0] );
-          }
+      repository = openRepository( repOption, userOption, passOption );
+    } catch ( KettleRepositoryNotFoundException krnfe ) {
+      // Repository not found.
+      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+      String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.UnableToFindRepository", repOption );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      return;
+    } catch ( KettleException ke ) {
+      // Authentication Error.
+      if ( ke.getCause() instanceof ExecutionException ) {
+        ExecutionException ee = (ExecutionException) ke.getCause();
+        if ( ee.getCause() instanceof KettleAuthenticationException ) {
+          response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+          String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.Authentication", repOption );
+          out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+          return;
         }
       }
+
+      // Something unexpected occurred.
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+      String message = BaseMessages.getString(
+        PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ke ) );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      return;
+    }
+
+    // Let's see if the user has the required Execute Permission
+    if ( !checkExecutePermission( repository ) ) {
+      response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+      String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.ExecutePermissionRequired" );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      return;
+    }
+
+    TransMeta transMeta;
+    try {
+      transMeta = loadTransformation( repository, transOption );
+    } catch ( KettleException ke ) {
+      // Job not found in repository.
+      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+      out.println( new WebResult( WebResult.STRING_ERROR, ke.getMessage() ) );
+      return;
+    }
+
+    Trans trans;
+    String carteObjectId;
+    try {
+      // Set the servlet parameters as variables in the transformation
+      setServletParametersAsVariables( request, knownOptions, transMeta );
 
       TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
       LogLevel logLevel = LogLevel.getLogLevelForCode( levelOption );
       transExecutionConfiguration.setLogLevel( logLevel );
       TransConfiguration transConfiguration = new TransConfiguration( transMeta, transExecutionConfiguration );
 
-      String carteObjectId = UUID.randomUUID().toString();
+      carteObjectId = UUID.randomUUID().toString();
       SimpleLoggingObject servletLoggingObject =
         new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
       servletLoggingObject.setContainerObjectId( carteObjectId );
@@ -266,13 +299,19 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
       // Create the transformation and store in the list...
       //
-      final Trans trans = new Trans( transMeta, servletLoggingObject );
+      trans = new Trans( transMeta, servletLoggingObject );
 
       trans.setRepository( repository );
       trans.setSocketRepository( getSocketRepository() );
 
       getTransformationMap().addTransformation( transMeta.getName(), carteObjectId, trans, transConfiguration );
       trans.setContainerObjectId( carteObjectId );
+
+      // Pass the servlet print writer to the transformation...
+      //
+      trans.setServletPrintWriter( out );
+      trans.setServletReponse( response );
+      trans.setServletRequest( request );
 
       if ( repository != null ) {
         // The repository connection is open: make sure we disconnect from the repository once we
@@ -284,27 +323,63 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
           }
         } );
       }
-
-      // Pass the servlet print writer to the transformation...
-      //
-      trans.setServletPrintWriter( out );
-      trans.setServletReponse( response );
-      trans.setServletRequest( request );
-
-      try {
-        // Execute the transformation...
-        //
-        executeTrans( trans );
-        out.flush();
-
-      } catch ( Exception executionException ) {
-        String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
-        throw new KettleException( "Error executing transformation: " + logging, executionException );
-      }
     } catch ( Exception ex ) {
+      // Something unexpected occurred.
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+      String message = BaseMessages.getString(
+        PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      return;
+    }
 
-      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-        PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+    try {
+      // Execute the transformation...
+      //
+      executeTrans( trans );
+      out.flush();
+
+      // Everything went well till the end.
+      response.setStatus( HttpServletResponse.SC_OK );
+
+    } catch ( Exception executionException ) {
+      // Something went wrong while running the job.
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+
+      String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
+      String message =
+        BaseMessages.getString( PKG, "ExecuteTransServlet.Error.WhileExecutingTrans", transOption, logging );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+    }
+  }
+
+  /**
+   * <p>Takes all Servlet's parameters and, if they haven't been handled, add them either as variables or as parameters
+   * to the given transformation.</p>
+   *
+   * @param request      the Servlet request
+   * @param knownOptions the options already handled
+   * @param transMeta    the Transformation Meta
+   * @throws UnknownParamException
+   */
+  protected void setServletParametersAsVariables( HttpServletRequest request, String[] knownOptions,
+                                                  TransMeta transMeta ) throws UnknownParamException {
+    String[] parameters = transMeta.listParameters();
+    Enumeration<?> parameterNames = request.getParameterNames();
+    while ( parameterNames.hasMoreElements() ) {
+      String parameter = (String) parameterNames.nextElement();
+      String[] values = request.getParameterValues( parameter );
+
+      // Ignore the known options. set the rest as variables
+      //
+      if ( Const.indexOfString( parameter, knownOptions ) < 0 ) {
+        // If it's a trans parameter, set it, otherwise simply set the variable
+        //
+        if ( Const.indexOfString( parameter, parameters ) < 0 ) {
+          transMeta.setVariable( parameter, values[ 0 ] );
+        } else {
+          transMeta.setParameterValue( parameter, values[ 0 ] );
+        }
+      }
     }
   }
 
@@ -314,40 +389,34 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
       // Without a repository it's a filename --> file:///foo/bar/trans.ktr
       //
-      TransMeta transMeta = new TransMeta( trans );
-      return transMeta;
+      return new TransMeta( trans );
 
     } else {
-
       // With a repository we need to load it from /foo/bar/Transformation
       // We need to extract the folder name from the path in front of the name...
       //
-      String directoryPath;
-      String name;
       int lastSlash = trans.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
-      if ( lastSlash < 0 ) {
-        directoryPath = "/";
-        name = trans;
-      } else {
-        directoryPath = trans.substring( 0, lastSlash );
-        name = trans.substring( lastSlash + 1 );
-      }
-      RepositoryDirectoryInterface directory =
-        repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
+      String dirPath = ( lastSlash > 0 ) ? trans.substring( 0, lastSlash ) : RepositoryDirectory.DIRECTORY_SEPARATOR;
+      String transName = ( lastSlash < 0 ) ? trans : trans.substring( lastSlash + 1 );
+
+      RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree().findDirectory( dirPath );
       if ( directory == null ) {
-        throw new KettleException( "Unable to find directory path '" + directoryPath + "' in the repository" );
+        String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.DirectoryPathNotFoundInRepository", dirPath );
+        throw new KettleException( message );
       }
 
-      ObjectId transformationID = repository.getTransformationID( name, directory );
+      ObjectId transformationID = repository.getTransformationID( transName, directory );
       if ( transformationID == null ) {
-        throw new KettleException( "Unable to find transformation '" + name + "' in directory :" + directory );
+        String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.TransformationNotFoundInDirectory", transName, dirPath );
+        throw new KettleException( message );
       }
-      TransMeta transMeta = repository.loadTransformation( transformationID, null );
-      return transMeta;
+
+      return repository.loadTransformation( transformationID, null );
     }
   }
 
-  private Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
+  @VisibleForTesting
+  Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
 
     if ( Utils.isEmpty( repositoryName ) ) {
       return null;
@@ -357,19 +426,22 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     repositoriesMeta.readData();
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
     if ( repositoryMeta == null ) {
-      throw new KettleException( "Unable to find repository: " + repositoryName );
+      String message = BaseMessages.getString( PKG, "ExecuteTransServlet.Error.UnableToFindRepository", repositoryName );
+      throw new KettleRepositoryNotFoundException( message );
     }
     PluginRegistry registry = PluginRegistry.getInstance();
     Repository repository = registry.loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
     repository.init( repositoryMeta );
-    repository.connect( user, pass );
+    repository.connect( user, pass, false );
     return repository;
   }
 
+  @Override
   public String toString() {
     return "Start transformation";
   }
 
+  @Override
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
@@ -380,8 +452,27 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     trans.waitUntilFinished();
   }
 
+  protected boolean checkExecutePermission( Repository repository ) {
+    boolean ret = false;
+    if ( null != repository ) {
+      try {
+        RepositorySecurityProvider repositorySecurityProvider =
+          (RepositorySecurityProvider) repository.getService( RepositorySecurityProvider.class );
+        if ( repositorySecurityProvider != null ) {
+          repositorySecurityProvider.validateAction( RepositoryOperation.EXECUTE_TRANSFORMATION );
+          ret = true;
+        }
+      } catch ( Exception ex ) {
+        ret = false;
+      }
+    } else {
+      ret = true;
+    }
+
+    return ret;
+  }
+
   public String getContextPath() {
     return CONTEXT_PATH;
   }
-
 }

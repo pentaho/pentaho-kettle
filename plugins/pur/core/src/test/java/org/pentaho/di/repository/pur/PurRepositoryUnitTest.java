@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010-2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,6 +88,8 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings( "squid:S1192" )
 public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
+  private static final String TEST_USER = "TEST_USER";
+  private static final String TEST_PASSWORD = "TEST_PASSWORD";
   private VariableSpace mockedVariableSpace;
   private HasDatabasesInterface mockedHasDbInterface;
 
@@ -115,7 +117,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
 
     when( result.repositoryServiceRegistry() ).thenReturn( registry );
     IRepositoryConnector connector = mock( IRepositoryConnector.class );
-    when( connector.connect( anyString(), anyString() ) ).thenReturn( result );
+    when( connector.connect( TEST_USER, TEST_PASSWORD, true ) ).thenReturn( result );
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     purRepository.init( mockMeta );
     purRepository.setPurRepositoryConnector( connector );
@@ -136,11 +138,10 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     when( mockRootFolder.getId() ).thenReturn( "/" );
     when( mockRootFolder.getPath() ).thenReturn( "/" );
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
-    purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
+    purRepository.connect( TEST_USER, TEST_PASSWORD, true );
     purRepository.getObjectInformation( objectId, repositoryObjectType );
     verify( mockRepo ).getAcl( testFileId );
   }
-
 
   @Test
   public void testRootIsNotVisible() throws KettleException {
@@ -149,7 +150,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     RepositoryConnectResult result = mock( RepositoryConnectResult.class );
     when( result.getUnifiedRepository() ).thenReturn( mockRepo );
     IRepositoryConnector connector = mock( IRepositoryConnector.class );
-    when( connector.connect( anyString(), anyString() ) ).thenReturn( result );
+    when( connector.connect( TEST_USER, TEST_PASSWORD, true ) ).thenReturn( result );
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     purRepository.init( mockMeta );
     purRepository.setPurRepositoryConnector( connector );
@@ -165,7 +166,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     when( mockRepo.getTree( "/", -1, null, true ) ).thenReturn( repositoryFileTree );
     when( repositoryFileTree.getFile() ).thenReturn( mockRootFolder );
 
-    purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
+    purRepository.connect( TEST_USER, TEST_PASSWORD, true );
 
     RepositoryDirectoryInterface rootDir = purRepository.getRootDir();
     assertFalse( rootDir.isVisible() );
@@ -179,7 +180,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     RepositoryConnectResult result = mock( RepositoryConnectResult.class );
     when( result.getUnifiedRepository() ).thenReturn( mockRepo );
     IRepositoryConnector connector = mock( IRepositoryConnector.class );
-    when( connector.connect( anyString(), anyString() ) ).thenReturn( result );
+    when( connector.connect( TEST_USER, TEST_PASSWORD, true ) ).thenReturn( result );
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     purRepository.init( mockMeta );
     purRepository.setPurRepositoryConnector( connector );
@@ -207,7 +208,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     RepositoryFileTree repositoryFileTree = mock( RepositoryFileTree.class );
     when( mockRepo.getTree( "/", -1, null, true ) ).thenReturn( repositoryFileTree );
     when( repositoryFileTree.getFile() ).thenReturn( mockRootFolder );
-    purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
+    purRepository.connect( TEST_USER, TEST_PASSWORD, true );
     List<RepositoryDirectoryInterface> children = purRepository.getRootDir().getChildren();
     assertThat( children, empty() );
   }
@@ -220,7 +221,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     RepositoryConnectResult result = mock( RepositoryConnectResult.class );
     when( result.getUnifiedRepository() ).thenReturn( mockRepo );
     IRepositoryConnector connector = mock( IRepositoryConnector.class );
-    when( connector.connect( anyString(), anyString() ) ).thenReturn( result );
+    when( connector.connect( TEST_USER, TEST_PASSWORD, true ) ).thenReturn( result );
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     purRepository.init( mockMeta );
     purRepository.setPurRepositoryConnector( connector );
@@ -267,7 +268,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     when( mockFolderVisibleTree.getFile() ).thenReturn( mockFolderVisible );
     when( repositoryFileTree.getChildren() ).thenReturn( new ArrayList<>( Arrays.asList(
       mockEtcFolderTree, mockFolderVisibleTree ) ) );
-    purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
+    purRepository.connect( TEST_USER, TEST_PASSWORD, true );
     int children = purRepository.getRootDir().getNrSubdirectories();
     assertThat( children, equalTo( 1 ) );
   }
@@ -349,7 +350,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     RepositoryConnectResult result = mock( RepositoryConnectResult.class );
     when( result.getUnifiedRepository() ).thenReturn( mockRepo );
     IRepositoryConnector connector = mock( IRepositoryConnector.class );
-    when( connector.connect( anyString(), anyString() ) ).thenReturn( result );
+    when( connector.connect( TEST_USER, TEST_PASSWORD, true ) ).thenReturn( result );
 
     RepositoryServiceRegistry registry = mock( RepositoryServiceRegistry.class );
     UnifiedRepositoryLockService lockService = new UnifiedRepositoryLockService( mockRepo );
@@ -418,7 +419,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     when( mockRootFolder.getPath() ).thenReturn( "/" );
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
     when( mockRepo.getFile( "/public" ) ).thenReturn( publicFolder );
-    purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
+    purRepository.connect( TEST_USER, TEST_PASSWORD, true );
     List<RepositoryElementMetaInterface> repositoryObjects =
       purRepository.findDirectory( "/public" ).getRepositoryObjects();
     assertThat( repositoryObjects.size(), is( 2 ) );

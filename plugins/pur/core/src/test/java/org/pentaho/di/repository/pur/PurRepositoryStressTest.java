@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 20102020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,8 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( { ClientRepositoryPaths.class, Encr.class, AttributesMapUtil.class, DBCache.class } )
 public class PurRepositoryStressTest {
+  private static final String TEST_USER = "TEST_USER";
+  private static final String TEST_PASSWORD = "TEST_PASSWORD";
   private final int THREADS = 15;
   private final int SAMPLES = 250;
   private final int TIMEOUT = 30;
@@ -109,7 +111,7 @@ public class PurRepositoryStressTest {
     this.result = mock( RepositoryConnectResult.class );
     when( result.getUnifiedRepository() ).thenReturn( mockRepo );
     this.connector = mock( IRepositoryConnector.class );
-    when( connector.connect( anyString(), anyString() ) ).thenReturn( result );
+    when( connector.connect( TEST_USER, TEST_PASSWORD, true ) ).thenReturn( result );
     this.user = mock( IUser.class );
     when( result.getUser() ).thenReturn( user );
 
@@ -140,7 +142,7 @@ public class PurRepositoryStressTest {
     doReturn( "user1" ).when( user ).getLogin();
     mockStatic( ClientRepositoryPaths.class );
     when( ClientRepositoryPaths.getUserHomeFolderPath( any() ) ).thenReturn( "/" );
-    purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
+    purRepository.connect( TEST_USER, TEST_PASSWORD );
 
     //-- testLocksGetDirectoryNames
     List<RepositoryFile> children = new ArrayList<RepositoryFile>();

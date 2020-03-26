@@ -272,7 +272,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return rootRef;
   }
 
-  @Override public void connect( final String username, final String password ) throws KettleException {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void connect( final String username, final String password ) throws KettleException {
+    connect( username, password, true );
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void connect( final String username, final String password, boolean allowSkipAuthentication ) throws KettleException {
     connected = false;
     if ( isTest() ) {
       connected = true;
@@ -299,7 +311,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       if ( log != null && purRepositoryConnector != null && purRepositoryConnector.getLog() != null ) {
         purRepositoryConnector.getLog().setLogLevel( log.getLogLevel() );
       }
-      RepositoryConnectResult result = purRepositoryConnector.connect( username, password );
+      RepositoryConnectResult result = purRepositoryConnector.connect( username, password, allowSkipAuthentication );
       this.user = result.getUser();
       this.connected = result.isSuccess();
       this.securityProvider = result.getSecurityProvider();

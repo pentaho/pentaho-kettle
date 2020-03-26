@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010-2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,14 @@ import org.pentaho.di.repository.KettleAuthenticationException;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 
 public class UnifiedRepositoryInvocationHandlerTest {
-  private static interface IFace {
+  private interface IFace {
     Object doNotThrowException();
 
-    Object throwSomeException();
+    void throwSomeException();
 
-    Object throwChainedConnectException();
+    void throwChainedConnectException();
 
-    Object throwClientTransportException();
+    void throwClientTransportException();
   };
 
   private static final Object returnValue = "return-value";
@@ -53,23 +53,22 @@ public class UnifiedRepositoryInvocationHandlerTest {
     }
 
     @Override
-    public Object throwSomeException() {
+    public void throwSomeException() {
       throw rte;
     }
 
     @Override
-    public Object throwChainedConnectException() {
+    public void throwChainedConnectException() {
       throw new RuntimeException( "wrapper-exception", connectException );
     }
 
     @Override
-    public Object throwClientTransportException() {
+    public void throwClientTransportException() {
       throw new RuntimeException( "wrapper-exception", clientTransportExceptionException );
     }
-
   };
 
-  IFace testee;
+  private IFace testee;
 
   @Before
   public void setUp() {
@@ -102,7 +101,7 @@ public class UnifiedRepositoryInvocationHandlerTest {
         }
         found = found.getCause();
       }
-      assertNotNull( "Should have found the original ConnectException" );
+      assertNotNull( "Should have found the original ConnectException", found );
     } catch ( Throwable other ) {
       fail( "Should not catch something other than KettleRepositoryLostException" );
     }
@@ -120,7 +119,7 @@ public class UnifiedRepositoryInvocationHandlerTest {
         }
         found = found.getCause();
       }
-      assertNotNull( "Should have found the original ClientTransportException" );
+      assertNotNull( "Should have found the original ClientTransportException", found );
     } catch ( Throwable other ) {
       fail( "Should not catch something other than KettleAuthenticationException" );
     }

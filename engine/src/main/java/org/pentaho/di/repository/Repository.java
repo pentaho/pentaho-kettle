@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.core.exception.KettleUnsupportedOperationException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
@@ -82,8 +83,10 @@ public interface Repository {
   public LogChannelInterface getLog();
 
   /**
-   * Connect to the repository. Make sure you don't connect more than once to the same repository with this repository
-   * object.
+   * <p>Connect to the repository. Make sure you don't connect more than once to the same repository with this
+   * repository object.</p>
+   * <p><b>Note:</b> in certain scenarios, when a valid Pentaho session exists, the given credentials may be ignored
+   * and the whole authentication process may be skipped.</p>
    *
    * @param username
    *          the username of the user connecting to the repository.
@@ -93,8 +96,37 @@ public interface Repository {
    *           in case the supplied user or password is incorrect.
    * @throws KettleException
    *           in case there is a general unexpected error OR if we're already connected to the repository.
+   * @see #connect(String, String, boolean)
    */
   public void connect( String username, String password ) throws KettleException, KettleSecurityException;
+
+  /**
+   * <p>Connect to the repository. Make sure you don't connect more than once to the same repository with this
+   * repository object.</p>
+   * <p><b>Note:</b> in certain scenarios, when a valid Pentaho session exists, the given credentials may be ignored
+   * and the whole authentication process may be skipped.</p>
+   * <p>This behaviour may be disallowed by passing {@code false} in the proper parameter.</p>
+   *
+   * @param username
+   *          the username of the user connecting to the repository.
+   * @param password
+   *          the password of the user connecting to the repository.
+   * @param allowSkipAuthentication
+   *          if it's allowed to skip the authentication.
+   * @throws KettleSecurityException
+   *           in case the supplied user or password is incorrect.
+   * @throws KettleException
+   *           in case there is a general unexpected error OR if we're already connected to the repository.
+   * @see #connect(String, String)
+   */
+  default void connect( String username, String password, boolean allowSkipAuthentication )
+    throws KettleException {
+    if ( allowSkipAuthentication ) {
+      connect( username, password );
+    } else {
+      throw new KettleUnsupportedOperationException();
+    }
+  }
 
   /**
    * Disconnect from the repository.
@@ -188,8 +220,8 @@ public interface Repository {
    *
    * @param transname
    *          the name of the transformation to load
-   * @param The
-   *          folder to load it from
+   * @param repdir
+   *          the folder to load it from
    * @param monitor
    *          the progress monitor to use (UI feedback)
    * @param setInternalVariables
