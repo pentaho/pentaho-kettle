@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ public class DefaultLogLevel {
    */
   public static void setLogLevel( LogLevel logLevel ) {
     DefaultLogLevel instance = getInstance();
+    LogChannel.updateGlobalLogChannels( logLevel );
     instance.logLevel = logLevel;
   }
 
