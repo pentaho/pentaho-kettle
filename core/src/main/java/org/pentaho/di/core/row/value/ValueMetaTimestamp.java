@@ -344,13 +344,12 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       // if the nullValue is specified, we try to match with that.
       //
       if ( !Utils.isEmpty( nullValue ) ) {
-        if ( nullValue.length() <= pol.length() ) {
-          // If the polled value is equal to the spaces right-padded nullValue,
-          // we have a match
-          //
-          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( nullValue ), pol.length() ) ) ) {
-            return null;
-          }
+        // If the polled value is equal to the spaces right-padded nullValue,
+        // we have a match
+        //
+        if ( ( nullValue.length() <= pol.length() ) && pol
+          .equalsIgnoreCase( Const.rightPad( new StringBuilder( nullValue ), pol.length() ) ) ) {
+          return null;
         }
       } else {
         // Verify if there are only spaces in the polled value...
