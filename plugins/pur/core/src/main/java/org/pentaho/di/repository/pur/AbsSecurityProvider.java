@@ -104,6 +104,10 @@ public class AbsSecurityProvider extends PurRepositorySecurityProvider implement
         case SCHEDULE_JOB:
           checkOperationAllowed( SCHEDULE_CONTENT_ACTION );
           break;
+
+        case MODIFY_DATABASE:
+          checkOperationAllowed( MODIFY_DATABASE_ACTION );
+          break;
       }
     }
   }

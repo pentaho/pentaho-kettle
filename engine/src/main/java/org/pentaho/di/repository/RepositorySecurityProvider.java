@@ -54,6 +54,8 @@ public interface RepositorySecurityProvider extends IRepositoryService {
 
   String ADMINISTER_SECURITY_ACTION = "org.pentaho.security.administerSecurity"; //$NON-NLS-1$
 
+  String MODIFY_DATABASE_ACTION = "org.pentaho.platform.dataaccess.datasource.security.manage"; //$NON-NLS-1$
+
   String NAMESPACE = "org.pentaho"; //$NON-NLS-1$
 
   /**
