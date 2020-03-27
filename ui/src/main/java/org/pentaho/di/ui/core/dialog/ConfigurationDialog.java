@@ -32,7 +32,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -41,6 +40,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
@@ -77,15 +78,7 @@ public abstract class ConfigurationDialog extends Dialog {
   protected CCombo wLogLevel;
   protected Button wSafeMode;
   protected Button wClearLog;
-  protected Label wlRemoteHost;
-  protected CCombo wRemoteHost;
-  protected Button wPassExport;
-  protected Composite localOptionsComposite;
-  protected Composite serverOptionsComposite;
-  protected Label environmentSeparator;
-  protected StackLayout stackedLayout;
   protected int margin = Const.MARGIN;
-  protected Group gLocal;
   protected Composite composite;
   protected Composite cContainer;
   protected Composite cRunConfiguration;
@@ -270,17 +263,26 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_tabFolder.right = new FormAttachment( 100, -Const.FORM_MARGIN );
     fd_tabFolder.left = new FormAttachment( 0, Const.FORM_MARGIN );
     fd_tabFolder.top = new FormAttachment( gDetails, Const.FORM_MARGIN );
-    fd_tabFolder.bottom = new FormAttachment( gDetails, getFontSizeFactor( 370 ) );
+    fd_tabFolder.bottom = new FormAttachment( gDetails, 370 );
     tabFolder.setLayoutData( fd_tabFolder );
 
     // Parameters
     CTabItem tbtmParameters = new CTabItem( tabFolder, SWT.NONE );
     tbtmParameters.setText( BaseMessages.getString( PKG, prefix + ".Params.Label" ) );
-    Composite parametersComposite = new Composite( tabFolder, SWT.NONE );
+
+    ScrolledComposite paramScrollContainer = new ScrolledComposite( tabFolder, SWT.NONE | SWT.H_SCROLL | SWT.V_SCROLL );
+    paramScrollContainer.setLayout( new FormLayout() );
+    paramScrollContainer.setExpandHorizontal( true );
+    paramScrollContainer.setExpandVertical( true );
+    paramScrollContainer.setMinSize( 200, 200 );
+
+    Composite parametersComposite = new Composite( paramScrollContainer, SWT.NONE );
     props.setLook( parametersComposite );
 
     parametersComposite.setLayout( new FormLayout() );
-    tbtmParameters.setControl( parametersComposite );
+    parametersComposite.setParent( paramScrollContainer );
+    paramScrollContainer.setContent( parametersComposite );
+    tbtmParameters.setControl( paramScrollContainer );
 
     ColumnInfo[] cParams = {
       new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ),
@@ -301,20 +303,29 @@ public abstract class ConfigurationDialog extends Dialog {
     FormData fdParams = new FormData();
     fdParams.top = new FormAttachment( 0, Const.FORM_MARGIN );
     fdParams.right = new FormAttachment( 100, -Const.FORM_MARGIN );
-    fdParams.bottom = new FormAttachment( 100, -getFontSizeFactor( 45 ) );
+    fdParams.bottom = new FormAttachment( 100, -55 );
     fdParams.left = new FormAttachment( 0, Const.FORM_MARGIN );
     wParams.setLayoutData( fdParams );
 
     tabFolder.setSelection( 0 );
 
-    Button argsButton = new Button( parametersComposite, SWT.NONE );
+    Composite argsButtonComposite = new Composite( parametersComposite, SWT.NONE );
+    GridLayout argsButtonLayout = new GridLayout(  );
+    argsButtonLayout.numColumns = 1;
+    argsButtonComposite.setLayout( argsButtonLayout );
+
+
+    Button argsButton = new Button( argsButtonComposite, SWT.NONE );
     FormData fd_argsButton = new FormData();
     fd_argsButton.right = new FormAttachment( 100, -Const.FORM_MARGIN );
     fd_argsButton.top = new FormAttachment( wParams, Const.FORM_MARGIN );
     fd_argsButton.bottom = new FormAttachment( 100, -Const.FORM_MARGIN );
-    argsButton.setLayoutData( fd_argsButton );
+    argsButtonComposite.setLayoutData( fd_argsButton );
+    argsButtonComposite.setBackground( shell.getBackground() );
+    argsButton.setLayoutData( argsButtonComposite );
+    GridData gridData = new GridData( GridData.HORIZONTAL_ALIGN_END );
     argsButton.setText( BaseMessages.getString( PKG, prefix + ".Arguments.Label" ) );
-
+    argsButton.setLayoutData( gridData );
     argsButton.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         new ArgumentsDialog( shell, configuration, abstractMeta );
@@ -464,19 +475,10 @@ public abstract class ConfigurationDialog extends Dialog {
     wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER );
     props.setLook( wRunConfiguration );
     FormData fdRunConfiguration = new FormData();
+    fdRunConfiguration.width = 200;
     fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, Const.FORM_MARGIN );
     fdRunConfiguration.left = new FormAttachment( 0 );
-    fdRunConfiguration.right = new FormAttachment( 100, -Const.FORM_MARGIN );
     wRunConfiguration.setLayoutData( fdRunConfiguration );
-  }
-
-  private int getFontSizeFactor( int offset ) {
-    try {
-      int fontSize = display.getSystemFont().getFontData()[0].getHeight() / 10;
-      return fontSize <= 0 ? offset : offset +  offset / fontSize;
-    } catch ( Exception e ) {
-      return offset;
-    }
   }
 
   protected abstract void optionsSectionControls();
