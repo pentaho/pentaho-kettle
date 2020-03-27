@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2332,6 +2332,14 @@ public class JobMeta extends AbstractMeta
       }
     }
     return null;
+  }
+
+  @Override
+  public void initializeVariablesFrom( VariableSpace parent ) {
+    super.initializeVariablesFrom( parent );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, null );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, null );
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, null );
   }
 
   /**
