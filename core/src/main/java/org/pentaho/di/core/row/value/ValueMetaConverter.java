@@ -39,11 +39,13 @@ import java.util.Date;
  * It was initially implemented for Orc storage in the pentaho-hadoop-shims project.  This class is added here because
  * the conversions are not dependant on orc in any way.
  *
+ * <p><b>Important note:</b><br/>This class is not intended to mimic the conversions that exist on PDI! It handles
+ * conversions from and to Avro/Parquet/Orc format, as so it must only take in consideration those Specs!</p>
+ * <p>
  * Created by tkafalas on 12/8/2017.
  */
 public class ValueMetaConverter implements Serializable, IValueMetaConverter {
-  private final String DEFAULT_DATE_FORMAT = ValueMetaBase.DEFAULT_DATE_FORMAT_MASK;
-  private SimpleDateFormat datePattern = new SimpleDateFormat( DEFAULT_DATE_FORMAT );
+  private SimpleDateFormat datePattern = new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK );
   private int precision = 0;
 
   public SimpleDateFormat getDatePattern() {
@@ -282,8 +284,7 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
         case ValueMetaInterface.TYPE_DATE:
           return new Date( (long) value );
         case ValueMetaInterface.TYPE_TIMESTAMP:
-          ValueMetaTimestamp pentahoTimeStamp = new ValueMetaTimestamp();
-          return pentahoTimeStamp.convertIntegerToTimestamp( (Long) value );
+          return new Timestamp( (long) value );
         default:
           throwBadConversionCombination( ValueMetaInterface.TYPE_INTEGER, targetValueMetaType, value );
       }
@@ -344,7 +345,6 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
           + value + "'." );
     }
 
-    ValueMetaTimestamp pentahoTimeStamp = new ValueMetaTimestamp();
     Date dateValue;
     try {
       switch ( targetValueMetaType ) {
@@ -352,7 +352,7 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
           dateValue = new Date( ( (Timestamp) value ).getTime() );
           return datePattern.format( dateValue );
         case ValueMetaInterface.TYPE_INTEGER:
-          return pentahoTimeStamp.getInteger( value );
+          return ( (Timestamp) value ).getTime();
         case ValueMetaInterface.TYPE_TIMESTAMP:
           return new Timestamp( ( (Timestamp) value ).getTime() );
         case ValueMetaInterface.TYPE_DATE:
