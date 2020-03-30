@@ -153,8 +153,8 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
         break;
 
       case REPOSITORY_BY_NAME:
-        String realTransname = tmpSpace.environmentSubstitute( executorMeta.getTransName() );
-        String realDirectory = tmpSpace.environmentSubstitute( executorMeta.getDirectoryPath() );
+        String realTransname = tmpSpace.environmentSubstitute( Const.NVL( executorMeta.getTransName(), "" ) );
+        String realDirectory = tmpSpace.environmentSubstitute( Const.NVL( executorMeta.getDirectoryPath(), "" ) );
 
         if ( space != null ) {
           // This is a parent transformation and parent variable should work here. A child file name can be resolved via parent space.
@@ -162,7 +162,7 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
           realDirectory = space.environmentSubstitute( realDirectory );
         }
 
-        if ( realDirectory.isEmpty() && !Utils.isEmpty( realTransname ) && realTransname.startsWith( "/" ) ) {
+        if ( Utils.isEmpty( realDirectory ) && !Utils.isEmpty( realTransname ) ) {
           int index = realTransname.lastIndexOf( '/' );
           String transPath =  realTransname;
           realTransname = realTransname.substring( index + 1 );
