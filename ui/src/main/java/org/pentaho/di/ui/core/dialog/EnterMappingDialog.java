@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -619,6 +619,9 @@ public class EnterMappingDialog extends Dialog {
   }
 
   private void refreshMappings() {
+    //remove wrong mappings
+    mappings.removeIf( mapping -> mapping.getSourcePosition() < 0 || mapping.getTargetPosition() < 0 );
+
     // Refresh the results...
     wResult.removeAll();
     for ( int i = 0; i < mappings.size(); i++ ) {
