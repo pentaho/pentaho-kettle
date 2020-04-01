@@ -1320,6 +1320,12 @@ public class Const {
   }
 
   /**
+   * <p>This environment is used to specify how many attempts before failing to read an XML from within a Zip file
+   * while multy-thread execution and using XMLHandler.</p>
+   */
+  public static final String KETTLE_RETRY_OPEN_XML_STREAM = "KETTLE_RETRY_OPEN_XML_STREAM";
+
+  /**
    * <p>This environment variable is used by XSD validation steps to enable or disable external entities.</p>
    * <p>By default external entities are allowed.</p>
    */
