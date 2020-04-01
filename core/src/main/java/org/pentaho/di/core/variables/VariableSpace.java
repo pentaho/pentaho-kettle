@@ -140,6 +140,20 @@ public interface VariableSpace {
   String environmentSubstitute( String aString );
 
   /**
+   * Substitute the string using the current variable space.
+   *
+   * @param aString
+   *          The string to substitute.
+   *
+   * @param escapeHexDelimiter escapes the hex delimiter substitution
+   *
+   * @return The substituted string.
+   */
+  default String environmentSubstitute( String aString, boolean escapeHexDelimiter ) {
+    return environmentSubstitute( aString );
+  }
+
+  /**
    * Replaces environment variables in an array of strings.
    *
    * See also: environmentSubstitute(String string)
