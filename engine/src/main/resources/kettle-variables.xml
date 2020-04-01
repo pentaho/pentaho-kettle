@@ -511,5 +511,12 @@
     <variable>SHARED_STREAMING_BATCH_POOL_SIZE</variable>
     <default-value>0</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to specify how many attempts before failing to read an XML from within a Zip file while multy-thread execution and using XMLHandler.</description>
+    <variable>KETTLE_RETRY_OPEN_XML_STREAM</variable>
+    <default-value>2</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 
