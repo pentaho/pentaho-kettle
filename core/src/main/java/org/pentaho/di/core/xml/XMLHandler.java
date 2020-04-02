@@ -59,6 +59,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -89,6 +90,7 @@ public class XMLHandler {
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
   private static final SimpleTimestampFormat simpleTimeStampFormat =
     new SimpleTimestampFormat( ValueMeta.DEFAULT_TIMESTAMP_FORMAT_MASK );
+  public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
   /**
    * The header string to specify encoding in UTF-8 for XML files
@@ -547,11 +549,31 @@ public class XMLHandler {
    */
   public static Document loadXMLFile( FileObject fileObject, String systemID, boolean ignoreEntities,
                                       boolean namespaceAware ) throws KettleXMLException {
-    try {
-      return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
-    } catch ( IOException e ) {
-      throw new KettleXMLException( "Unable to read file [" + fileObject.toString() + "]", e );
+
+    //[PDI-18528] Retry opening the inputstream on first error. Because of the way DefaultFileContent handles open streams,
+    //in multithread executions, the stream could be closed by another stream without notice. The retry is a way to recover the stream.
+    int reties = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_RETRY_OPEN_XML_STREAM ), DEFAULT_RETRY_ATTEMPTS );
+    if ( reties < 0 ) {
+      reties = 0;
     }
+    int attempts = 0;
+    Exception lastException = null;
+    while ( attempts <= reties ) {
+      try {
+        return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
+      } catch ( Exception ex ) {
+        lastException = ex;
+        try {
+          java.lang.Thread.sleep( 1000 );
+        } catch ( InterruptedException e ) {
+          //Sonar squid S2142 requires the handling of the InterruptedException instead of ignoring it
+          Thread.currentThread().interrupt();
+        }
+      }
+      attempts++;
+    }
+
+    throw new KettleXMLException( "Unable to read file [" + fileObject.toString() + "]", lastException );
   }
 
   /**
