@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -236,13 +236,29 @@ public class StringUtil {
    */
   public static final synchronized String environmentSubstitute( String aString,
     Map<String, String> systemProperties ) {
+    return environmentSubstitute( aString, systemProperties, false );
+  }
+
+  /**
+   * Substitutes variables in <code>aString</code> with the environment values in the system properties
+   *
+   * @param aString
+   *          the string on which to apply the substitution.
+   * @param systemProperties
+   *          the system properties to use
+   * @return the string with the substitution applied.
+   */
+  public static final synchronized String environmentSubstitute( String aString,
+                                                                 Map<String, String> systemProperties, boolean escapeHexDelimiter ) {
     Map<String, String> sysMap = new HashMap<String, String>();
     synchronized ( sysMap ) {
       sysMap.putAll( Collections.synchronizedMap( systemProperties ) );
 
       aString = substituteWindows( aString, sysMap );
       aString = substituteUnix( aString, sysMap );
-      aString = substituteHex( aString );
+      if ( !escapeHexDelimiter ) {
+        aString = substituteHex( aString );
+      }
       return aString;
     }
   }

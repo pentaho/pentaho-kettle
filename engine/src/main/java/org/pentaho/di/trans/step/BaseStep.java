@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3794,6 +3794,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   @Override
   public String environmentSubstitute( String aString ) {
     return variables.environmentSubstitute( aString );
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
+   */
+  @Override
+  public String environmentSubstitute( String aString, boolean escapeHexDelimiter ) {
+    return variables.environmentSubstitute( aString, escapeHexDelimiter );
   }
 
   /*
