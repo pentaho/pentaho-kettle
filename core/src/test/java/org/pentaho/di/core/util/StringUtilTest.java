@@ -237,5 +237,11 @@ public class StringUtilTest extends TestCase {
     String result = StringUtil.environmentSubstitute( "$[31,32,33,34,35,36]", createVariables1( "${", "}" ), true );
     assertEquals( "$[31,32,33,34,35,36]", result );
   }
+  
+  @Test
+  public void testSubstituteHex_ignoreEmptyArrayDefinition() throws Exception {
+    String text = "holdings.$[].as_of_dt";
+    assertEquals( text, StringUtil.substituteHex( text ) );
+  }
 
 }
