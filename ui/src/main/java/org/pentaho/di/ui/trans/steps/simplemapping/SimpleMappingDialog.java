@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -77,11 +77,13 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.DialogHelper;
 import org.pentaho.di.ui.util.DialogUtils;
+import org.pentaho.di.ui.util.MappingUtil;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInterface {
@@ -757,7 +759,17 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
             String[] sourceFields = sourceRowMeta.getFieldNames();
             String[] targetFields = targetRowMeta.getFieldNames();
 
-            EnterMappingDialog dialog = new EnterMappingDialog( shell, sourceFields, targetFields );
+            //refresh mappings
+            int nrLines = wFieldMappings.nrNonEmpty();
+            definition.getValueRenames().clear();
+            for ( int i = 0; i < nrLines; i++ ) {
+              TableItem item = wFieldMappings.getNonEmpty( i );
+              definition.getValueRenames().add( new MappingValueRename( item.getText( 1 ), item.getText( 2 ) ) );
+            }
+
+            List<MappingValueRename> mappingValue = definition.getValueRenames();
+            List<SourceToTargetMapping> currentMappings = MappingUtil.getCurrentMappings( Arrays.asList( sourceFields ), Arrays.asList( targetFields ), mappingValue );
+            EnterMappingDialog dialog = new EnterMappingDialog( shell, sourceFields, targetFields, currentMappings );
             List<SourceToTargetMapping> mappings = dialog.open();
             if ( mappings != null ) {
               // first clear the dialog...
