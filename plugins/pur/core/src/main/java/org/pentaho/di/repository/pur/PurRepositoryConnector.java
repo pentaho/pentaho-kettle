@@ -114,13 +114,8 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
       // We need to have the application context and the session available in order for us to skip authentication
       if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null
-        && PentahoSessionHolder.getSession().isAuthenticated() ) {
-        String sessionUserName = PentahoSessionHolder.getSession().getName();
-        // The anonymous user is authenticated, however it's not authenticated as we need it to be at this point!
-        if (
-          !PentahoSystem.getSystemSetting( "anonymous-authentication/anonymous-user", "anonymous" )
-            .equals( sessionUserName )
-            && inProcess() ) {
+          && PentahoSessionHolder.getSession().isAuthenticated() ) {
+        if ( inProcess() ) {
           // connect to the IUnifiedRepository through PentahoSystem
           // this assumes we're running in a BI Platform
           result.setUnifiedRepository( PentahoSystem.get( IUnifiedRepository.class ) );
@@ -128,9 +123,10 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             if ( log.isDebug() ) {
               log.logDebug( BaseMessages.getString( PKG, "PurRepositoryConnector.ConnectInProgress.Begin" ) );
             }
+            String name = PentahoSessionHolder.getSession().getName();
             user1 = new EEUserInfo();
-            user1.setLogin( sessionUserName );
-            user1.setName( sessionUserName );
+            user1.setLogin( name );
+            user1.setName( name );
             user1.setPassword( decryptedPassword );
             result.setUser( user1 );
             result.setSuccess( true );
@@ -141,7 +137,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
             if ( log.isDebug() ) {
               log.logDebug( BaseMessages.getString(
-                      PKG, "PurRepositoryConnector.ConnectInProgress", sessionUserName, result.getUnifiedRepository() ) );
+                      PKG, "PurRepositoryConnector.ConnectInProgress", name, result.getUnifiedRepository() ) );
             }
 
             // for now, there is no need to support the security manager
