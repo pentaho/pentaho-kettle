@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.databaselookup;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
@@ -51,11 +50,11 @@ public class DefaultCacheTest {
     defaultCache.storeRowInCache( databaseLookupMeta, rowMeta1, new Object[]{1}, new Object[]{ 100 } );
     defaultCache.storeRowInCache( databaseLookupMeta, rowMeta2, new Object[]{1}, new Object[]{ 200 } );
     defaultCache.storeRowInCache( databaseLookupMeta, rowMeta3, new Object[]{1}, new Object[]{ 300 } );
-    LinkedHashMap<RowMetaAndData, TimedRow> map = (LinkedHashMap<RowMetaAndData, TimedRow>) Whitebox.getInternalState( defaultCache, "map" );
+    LinkedHashMap<RowMetaAndData, Object[]> map = (LinkedHashMap<RowMetaAndData, Object[]>) Whitebox.getInternalState( defaultCache, "map" );
     //Only one entry expected
     assertEquals( 1, map.size() );
     //The value expected is the first one inserted
-    assertEquals( 100, map.get( new RowMetaAndData( rowMeta1, new Object[]{1} ) ).getRow()[0] );
+    assertEquals( 100, map.get( new RowMetaAndData( rowMeta1, new Object[]{1} ) )[0] );
   }
 
   @Test
@@ -70,7 +69,7 @@ public class DefaultCacheTest {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
       Thread.sleep( 10 );
     }
-    LinkedHashMap<RowMetaAndData, TimedRow> map = (LinkedHashMap<RowMetaAndData, TimedRow>) Whitebox.getInternalState( defaultCache, "map" );
+    LinkedHashMap<RowMetaAndData, Object[]> map = (LinkedHashMap<RowMetaAndData, Object[]>) Whitebox.getInternalState( defaultCache, "map" );
     //All inserted entries expected
     assertEquals( 10, map.size() );
   }
@@ -88,13 +87,13 @@ public class DefaultCacheTest {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
       Thread.sleep( 100 );
     }
-    LinkedHashMap<RowMetaAndData, TimedRow> map = (LinkedHashMap<RowMetaAndData, TimedRow>) Whitebox.getInternalState( defaultCache, "map" );
+    LinkedHashMap<RowMetaAndData, Object[]> map = (LinkedHashMap<RowMetaAndData, Object[]>) Whitebox.getInternalState( defaultCache, "map" );
     //Max capacity of cache is 3, so in the end we can only have 3 entries
     assertEquals( 3, map.size() );
     //The cache eliminates the older entries when new ones are inserted, so in the end only expect the last 3 entries inserted
-    assertEquals( 800, map.get( new RowMetaAndData( rowMeta, new Object[]{8} ) ).getRow()[0] );
-    assertEquals( 900, map.get( new RowMetaAndData( rowMeta, new Object[]{9} ) ).getRow()[0] );
-    assertEquals( 1000, map.get( new RowMetaAndData( rowMeta, new Object[]{10} ) ).getRow()[0] );
+    assertEquals( 800, map.get( new RowMetaAndData( rowMeta, new Object[]{8} ) )[0] );
+    assertEquals( 900, map.get( new RowMetaAndData( rowMeta, new Object[]{9} ) )[0] );
+    assertEquals( 1000, map.get( new RowMetaAndData( rowMeta, new Object[]{10} ) )[0] );
   }
 
   @Test
@@ -238,7 +237,7 @@ public class DefaultCacheTest {
     }
     for ( long i = 1; i < 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
-      assertEquals( new Object[]{ (i+1) * 100 }[0], result[0] );
+      assertEquals( new Object[]{ ( i + 1 ) * 100 }[0], result[0] );
       Thread.sleep( 10 );
     }
   }
