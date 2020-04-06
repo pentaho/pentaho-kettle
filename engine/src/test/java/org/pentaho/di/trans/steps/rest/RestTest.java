@@ -25,8 +25,6 @@ package org.pentaho.di.trans.steps.rest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache4.ApacheHttpClient4;
-import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
-import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +39,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.ws.rs.core.MultivaluedMap;
-
-import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -106,14 +102,11 @@ public class RestTest {
     doReturn( 1 ).when( rmi ).size();
 
     RestData data = mock( RestData.class );
-    DefaultApacheHttpClient4Config config = mock( DefaultApacheHttpClient4Config.class );
-    doReturn( new HashSet<>() ).when( config ).getSingletons();
     data.method = RestMeta.HTTP_METHOD_DELETE;
     data.inputRowMeta = rmi;
     data.resultFieldName = "result";
     data.resultCodeFieldName = "status";
     data.resultHeaderFieldName = "headers";
-    data.config = config;
 
     Rest rest = mock( Rest.class );
     doCallRealMethod().when( rest ).callRest( any() );
