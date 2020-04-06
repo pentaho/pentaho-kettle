@@ -67,7 +67,6 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( int i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     LinkedHashMap<RowMetaAndData, Object[]> map = (LinkedHashMap<RowMetaAndData, Object[]>) Whitebox.getInternalState( defaultCache, "map" );
     //All inserted entries expected
@@ -85,7 +84,6 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( int i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 100 );
     }
     LinkedHashMap<RowMetaAndData, Object[]> map = (LinkedHashMap<RowMetaAndData, Object[]>) Whitebox.getInternalState( defaultCache, "map" );
     //Max capacity of cache is 3, so in the end we can only have 3 entries
@@ -108,12 +106,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( int i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     for ( int i = 1; i <= 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
       assertEquals( new Object[]{ i * 100 }[0], result[0] );
-      Thread.sleep( 10 );
     }
   }
 
@@ -133,12 +129,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( long i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     for ( long i = 1; i <= 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
       assertEquals( new Object[]{ i * 100 }[0], result[0] );
-      Thread.sleep( 10 );
     }
   }
 
@@ -158,12 +152,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( long i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     for ( long i = 2; i <= 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
       assertEquals( 100L, result[0] );
-      Thread.sleep( 10 );
     }
   }
 
@@ -183,12 +175,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( long i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     for ( long i = 2; i <= 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
       assertEquals( 100L, result[0] );
-      Thread.sleep( 10 );
     }
   }
 
@@ -208,12 +198,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( long i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     for ( long i = 1; i <= 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
       assertEquals( 100L, result[0] );
-      Thread.sleep( 10 );
     }
   }
 
@@ -233,12 +221,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( long i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     for ( long i = 1; i < 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
       assertEquals( new Object[]{ ( i + 1 ) * 100 }[0], result[0] );
-      Thread.sleep( 10 );
     }
   }
 
@@ -258,12 +244,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( long i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     for ( long i = 1; i <= 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
       assertEquals( new Object[]{ i * 100 }[0], result[0] );
-      Thread.sleep( 10 );
     }
   }
 
@@ -282,10 +266,8 @@ public class DefaultCacheTest {
     Whitebox.setInternalState( databaseLookupData, "conditions", new int[]{ DatabaseLookupMeta.CONDITION_IS_NULL } );
     //insert with null lookupdata
     defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{null}, new Object[]{ 100 } );
-    Thread.sleep( 10 );
     Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{null} );
     assertEquals( new Object[] { 100 }[ 0 ], result[ 0 ] );
-    Thread.sleep( 10 );
   }
 
   @Test
@@ -304,12 +286,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( long i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i}, new Object[]{ i * 100 } );
-      Thread.sleep( 10 );
     }
     for ( long i = 1; i <= 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i} );
       assertEquals( 100L, result[0] );
-      Thread.sleep( 10 );
     }
   }
 
@@ -330,12 +310,10 @@ public class DefaultCacheTest {
     //Several inserts with different key and different values
     for ( long i = 1; i <= 10; ++i ) {
       defaultCache.storeRowInCache( databaseLookupMeta, rowMeta, new Object[]{i, i * 10}, new Object[]{ i * 100, i * 1000 } );
-      Thread.sleep( 10 );
     }
     for ( long i = 1; i <= 10; ++i ) {
       Object[] result = defaultCache.getRowFromCache( rowMeta, new Object[]{i, i * 10 } );
       assertEquals( new Object[]{ i * 100 }[0], result[0] );
-      Thread.sleep( 10 );
     }
   }
 }
