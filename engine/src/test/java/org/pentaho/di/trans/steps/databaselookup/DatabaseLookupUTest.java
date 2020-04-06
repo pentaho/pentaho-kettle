@@ -26,6 +26,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -549,6 +550,34 @@ public class DatabaseLookupUTest {
     //Output Row Meta Must have its value be a BigNumber instead of what is configured in the database, since BigNumber
     //is the type configured in the Dialog
     assertEquals( ValueMetaInterface.TYPE_BIGNUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
+  }
+
+  @Test
+  public void isTimelessMaskNullTest() {
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    doCallRealMethod().when( dbLookup ).isTimelessMask( anyString() );
+    assertFalse( dbLookup.isTimelessMask( null ) );
+  }
+
+  @Test
+  public void isTimelessMaskRandomStringTest() {
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    doCallRealMethod().when( dbLookup ).isTimelessMask( anyString() );
+    assertFalse( dbLookup.isTimelessMask( "randomstring" ) );
+  }
+
+  @Test
+  public void isTimelessMaskWithMaskTest() {
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    doCallRealMethod().when( dbLookup ).isTimelessMask( anyString() );
+    assertFalse( dbLookup.isTimelessMask( "yyyy-MM-dd hh:mm:ss" ) );
+  }
+
+  @Test
+  public void isTimelessMaskWithoutMaskTest() {
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    doCallRealMethod().when( dbLookup ).isTimelessMask( anyString() );
+    assertTrue( dbLookup.isTimelessMask( "yyyy-MM-dd" ) );
   }
 
   private RowMeta determineFieldsTypeQueryingDbSetupAndCall( String kettlePropertyValue ) throws KettleException {

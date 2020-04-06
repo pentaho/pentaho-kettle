@@ -65,6 +65,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -376,6 +377,11 @@ public class Const {
    * An array of date conversion formats
    */
   private static String[] dateFormats;
+
+  /**
+   * An array of date (timeless) conversion formats
+   */
+  private static String[] dateTimelessFormats;
 
   /**
    * An array of number conversion formats
@@ -3176,6 +3182,22 @@ public class Const {
   }
 
   /**
+   * Returning the localized date conversion formats without time. They get created once on first request.
+   *
+   * @return
+   */
+  public static String[] getTimelessDateFormats() {
+    if ( dateTimelessFormats == null ) {
+      List<String> dateFormats = Arrays.asList( Const.getDateFormats() );
+      dateFormats = dateFormats.stream()
+        .filter( date -> !date.toLowerCase().contains( "hh" ) )
+        .collect( Collectors.toList() );
+      dateTimelessFormats = dateFormats.toArray( new String[dateFormats.size()] );
+    }
+    return dateTimelessFormats;
+  }
+
+  /**
    * Returning the localized number conversion formats. They get created once on first request.
    *
    * @return
@@ -3276,6 +3298,21 @@ public class Const {
       default:
         return string;
     }
+  }
+
+  /**
+   * Trims a Date by resetting the time part to zero
+   * @param date a Date object to trim (reset time to zero)
+   * @return a Date object with time part reset to zero
+   */
+  public static Date trimDate( Date date ) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( date );
+    calendar.set( Calendar.MILLISECOND, 0 );
+    calendar.set( Calendar.SECOND, 0 );
+    calendar.set( Calendar.MINUTE, 0 );
+    calendar.set( Calendar.HOUR_OF_DAY, 0 );
+    return calendar.getTime();
   }
 
   /**
