@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -95,10 +98,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@RunWith( MockitoJUnitRunner.class )
 public class AbstractMetaTest {
-  AbstractMeta meta;
-  ObjectId objectId;
-  Repository repo;
+  private AbstractMeta meta;
+  private ObjectId objectId;
+  private Repository repo;
+
+  @Mock private MetastoreLocatorOsgi mockMetastoreLocatorOsgi;
 
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -763,17 +769,21 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetEmbeddedMetastoreProviderKey() throws Exception {
-    assertNull( meta.getEmbeddedMetastoreProviderKey() );
+  public void testEmbeddedMetastoreProviderKeyIsMemoized() {
     String keyValue = "keyValue";
-    meta.setEmbeddedMetastoreProviderKey( keyValue );
+    meta.setMetastoreLocatorOsgi( mockMetastoreLocatorOsgi );
+    when( mockMetastoreLocatorOsgi.setEmbeddedMetastore( meta.getEmbeddedMetaStore() ) ).thenReturn( keyValue );
+
     assertEquals( keyValue, meta.getEmbeddedMetastoreProviderKey() );
+    assertEquals( keyValue, meta.getEmbeddedMetastoreProviderKey() );
+    verify( mockMetastoreLocatorOsgi, times( 1 ) )
+      .setEmbeddedMetastore( meta.getEmbeddedMetaStore() );
   }
+
 
   @Test
   public void testGetSetMetastoreLocatorOsgi() throws Exception {
     assertNull( meta.getMetastoreLocatorOsgi() );
-    MetastoreLocatorOsgi mockMetastoreLocatorOsgi = mock( MetastoreLocatorOsgi.class );
     meta.setMetastoreLocatorOsgi( mockMetastoreLocatorOsgi );
     assertEquals( mockMetastoreLocatorOsgi, meta.getMetastoreLocatorOsgi() );
   }
