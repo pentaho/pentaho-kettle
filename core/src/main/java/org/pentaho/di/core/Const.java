@@ -1354,6 +1354,13 @@ public class Const {
   public static final String KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE_DEFAULT = "HALF_EVEN";
 
   /**
+   * <p>This environment variable is used to define if a Timestamp should be converted to nanoseconds or milliseconds.</p>
+   * <p>By default, a Timestamp is in nanoseconds.</p>
+   */
+  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT = "KETTLE_TIMESTAMP_NUMERIC_FORMAT";
+  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT = "NANOSECONDS";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *

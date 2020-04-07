@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,8 +37,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -50,6 +52,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 
 public class ValueMetaTimestamp extends ValueMetaDate {
+  private final String format =
+    Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT ), "NANOSECONDS" );
+  private static final String MILLISECONDS = "MILLISECONDS";
 
   public ValueMetaTimestamp() {
     this( null );
@@ -80,8 +85,13 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       return null;
     }
 
-    long ms = timestamp.getTime();
-    return ms;
+    long milliseconds = timestamp.getTime();
+    if ( format.equalsIgnoreCase( MILLISECONDS )  ) {
+      return Long.valueOf( milliseconds );
+    } else {
+      long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
+      return seconds * 1000000000 + timestamp.getNanos();
+    }
   }
 
   @Override
@@ -90,8 +100,14 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     if ( timestamp == null ) {
       return null;
     }
-    long ms = timestamp.getTime();
-    return Long.valueOf( ms ).doubleValue();
+
+    long milliseconds = timestamp.getTime();
+    if ( format.equalsIgnoreCase( MILLISECONDS )  ) {
+      return Double.valueOf( milliseconds );
+    } else {
+      long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
+      return (double) seconds * 1000000000 + timestamp.getNanos();
+    }
   }
 
   @Override
@@ -100,10 +116,15 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     if ( timestamp == null ) {
       return null;
     }
-    BigDecimal nanos =
-        BigDecimal.valueOf( timestamp.getTime() ).multiply( BigDecimal.valueOf( 1000000000L ) ).add(
-            BigDecimal.valueOf( timestamp.getNanos() ) );
-    return nanos;
+
+    long milliseconds = timestamp.getTime();
+    if ( format.equalsIgnoreCase( MILLISECONDS )  ) {
+      return BigDecimal.valueOf( milliseconds );
+    } else {
+      long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
+      return BigDecimal.valueOf( seconds ).multiply( BigDecimal.valueOf( 1000000000L ) ).add(
+          BigDecimal.valueOf( timestamp.getNanos() ) );
+    }
   }
 
   @Override
@@ -232,11 +253,13 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       return null;
     }
 
-    long msSinceEpoch = nanos / 1000000;
-    int leftNanos = (int) ( nanos - ( msSinceEpoch * 1000000 ) );
-    Timestamp timestamp = new Timestamp( msSinceEpoch );
-    timestamp.setNanos( leftNanos );
+    long ss = TimeUnit.SECONDS.convert( nanos, TimeUnit.NANOSECONDS );
+    long ms = TimeUnit.MILLISECONDS.convert( nanos, TimeUnit.NANOSECONDS );
+    long ns = TimeUnit.NANOSECONDS.convert( ss, TimeUnit.SECONDS );
+    int leftNs = (int) ( nanos - ns );
 
+    Timestamp timestamp = new Timestamp( ms );
+    timestamp.setNanos( leftNs );
     return timestamp;
   }
 
