@@ -30,6 +30,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
 import org.pentaho.di.core.logging.LogTablePluginType;
+import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
@@ -147,6 +148,10 @@ public class KettleEnvironment {
         // Also read the list of variables.
         //
         KettleVariablesList.init();
+
+        // Update Variables for LoggingRegistry
+        LoggingRegistry.getInstance().updateFromProperties();
+        LoggingRegistry.getInstance().reset();
 
         // Initialize the Lifecycle Listeners
         //

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -141,13 +141,12 @@ public class CarteSingleton {
 
       log.logBasic( "Installing timer to purge stale objects after " + objectTimeout + " minutes." );
 
-      Timer timer = new Timer( true );
+      Timer timer = new Timer( "CartePurgeTimer", true );
 
       final AtomicBoolean busy = new AtomicBoolean( false );
       TimerTask timerTask = new TimerTask() {
         public void run() {
-          if ( !busy.get() ) {
-            busy.set( true );
+          if ( busy.compareAndSet( false, true ) ) {
 
             try {
               // Check all transformations...
@@ -163,16 +162,12 @@ public class CarteSingleton {
                   int diffInMinutes =
                     (int) Math.floor( ( System.currentTimeMillis() - trans.getLogDate().getTime() ) / 60000 );
                   if ( diffInMinutes >= objectTimeout ) {
+
                     // Let's remove this from the transformation map...
-                    //
                     transformationMap.removeTransformation( entry );
 
                     // Remove the logging information from the log registry & central log store
-                    //
-                    LoggingRegistry.getInstance().removeIncludingChildren( trans.getLogChannelId() );
                     KettleLogStore.discardLines( trans.getLogChannelId(), false );
-
-                    // transformationMap.deallocateServerSocketPorts(entry);
 
                     log.logMinimal( "Cleaned up transformation "
                       + entry.getName() + " with id " + entry.getId() + " from " + trans.getLogDate()
