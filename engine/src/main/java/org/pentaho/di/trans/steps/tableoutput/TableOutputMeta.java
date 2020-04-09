@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -158,13 +158,13 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   @Injection( name = "DATABASE_FIELD_NAME", group = "DATABASE_FIELDS" )
-  private String[] fieldStream;
+  private String[] fieldDatabase;
 
   /**
    * Fields in the table to insert
    */
   @Injection( name = "DATABASE_STREAM_NAME", group = "DATABASE_FIELDS" )
-  private String[] fieldDatabase;
+  private String[] fieldStream;
 
 
   /**
