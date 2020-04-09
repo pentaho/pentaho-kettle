@@ -201,6 +201,12 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>The timeout interval for the logging registry purge timer which cleanups of registry entries (in msecs).</description>
+    <variable>KETTLE_LOGGING_REGISTRY_PURGE_TIMEOUT</variable>
+    <default-value>60000</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>The kettle log tab refresh delay.</description>
     <variable>KETTLE_LOG_TAB_REFRESH_DELAY</variable>
     <default-value>1000</default-value>
