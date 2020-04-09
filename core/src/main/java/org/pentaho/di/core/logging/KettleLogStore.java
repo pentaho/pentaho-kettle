@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -242,23 +242,20 @@ public class KettleLogStore {
     List<String> ids = registry.getLogChannelChildren( parentLogChannelId );
 
     // Remove all the rows for these ids
-    //
     LoggingBuffer bufferAppender = getInstance().appender;
-    // int beforeSize = bufferAppender.size();
+
     for ( String id : ids ) {
       // Remove it from the central log buffer
-      //
       bufferAppender.removeChannelFromBuffer( id );
 
       // Also remove the item from the registry.
-      //
-      registry.getMap().remove( id );
       metricsRegistry.getSnapshotLists().remove( id );
       metricsRegistry.getSnapshotMaps().remove( id );
     }
 
+    registry.removeIncludingChildren( parentLogChannelId );
+
     // Now discard the general lines if this is required
-    //
     if ( includeGeneralMessages ) {
       bufferAppender.removeGeneralMessages();
     }
