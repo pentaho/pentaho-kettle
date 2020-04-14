@@ -184,7 +184,7 @@ public class PanCommandExecutorTest {
     when( BaseMessages.getString( any( Class.class ), anyString(), anyVararg() ) ).thenReturn( "" );
 
     try {
-      Result result = panCommandExecutor.execute( params );
+      Result result = panCommandExecutor.execute( params, null );
       Assert.assertEquals( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode(), result.getExitStatus() );
     } catch ( Throwable throwable ) {
       Assert.fail();

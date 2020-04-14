@@ -72,7 +72,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     setKettleInit( kettleInit );
   }
 
-  public Result execute( Params params ) throws Throwable {
+  public Result execute( Params params, String[] arguments ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Starting" ) );
 
@@ -179,7 +179,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     try {
 
       // Set the command line arguments on the job ...
-      job.setArguments( convert( KettleConstants.toJobMap( params ) ) );
+      job.setArguments( ( arguments!= null && arguments.length > 0 )  ? arguments : convert( KettleConstants.toJobMap( params ) ) );
       job.initializeVariablesFrom( null );
       job.setLogLevel( getLog().getLogLevel() );
       job.getJobMeta().setInternalKettleVariables( job );

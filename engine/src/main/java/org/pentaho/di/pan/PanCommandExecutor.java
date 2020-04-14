@@ -73,7 +73,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     setLog( log );
   }
 
-  public Result execute( final Params params ) throws Throwable {
+  public Result execute( final Params params, String[] arguments  ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
 
@@ -189,7 +189,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       // allocate & run the required sub-threads
       try {
-        trans.prepareExecution( convert(  KettleConstants.toTransMap( params ) ) );
+        trans.prepareExecution( ( arguments!= null && arguments.length > 0 )  ? arguments : convert(  KettleConstants.toTransMap( params ) ) );
 
         if ( !StringUtils.isEmpty( params.getResultSetStepName() ) ) {
 
