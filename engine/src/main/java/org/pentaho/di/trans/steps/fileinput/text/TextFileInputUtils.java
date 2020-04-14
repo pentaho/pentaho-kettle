@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,8 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -308,24 +310,31 @@ public class TextFileInputUtils {
 
     String sline = getLine( log, reader, encodingType, fileFormatType, line );
 
-    while ( sline != null ) {
-    /*
-    Check that the number of enclosures in a line is even.
-    If not even it means that there was an enclosed line break.
-    We need to read the next line(s) to get the remaining data in this row.
-    */
-      if ( checkPattern( sline, regex ) % 2 == 0 ) {
-        return new TextFileLine( sline, lineNumberInFile, null );
+    boolean lenientEnclosureHandling = ValueMetaBase.convertStringToBoolean(
+      Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING ), "N" ) );
+
+    if ( !lenientEnclosureHandling ) {
+
+      while ( sline != null ) {
+      /*
+      Check that the number of enclosures in a line is even.
+      If not even it means that there was an enclosed line break.
+      We need to read the next line(s) to get the remaining data in this row.
+      */
+        if ( checkPattern( sline, regex ) % 2 == 0 ) {
+          return new TextFileLine( sline, lineNumberInFile, null );
+        }
+
+        String nextLine = getLine( log, reader, encodingType, fileFormatType, line );
+
+        if ( nextLine == null ) {
+          break;
+        }
+
+        sline = sline + nextLine;
+        lineNumberInFile++;
       }
 
-      String nextLine = getLine( log, reader, encodingType, fileFormatType, line );
-
-      if ( nextLine == null ) {
-        break;
-      }
-
-      sline = sline + nextLine;
-      lineNumberInFile++;
     }
     return new TextFileLine( sline, lineNumberInFile, null );
   }
