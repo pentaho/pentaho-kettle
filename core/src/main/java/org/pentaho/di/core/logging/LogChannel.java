@@ -34,9 +34,9 @@ import org.pentaho.di.core.metrics.MetricsSnapshotType;
 
 public class LogChannel implements LogChannelInterface {
 
-  public static final LogChannelInterface GENERAL = new LogChannel( "General" );
-  public static final LogChannelInterface METADATA = new LogChannel( "Metadata" );
-  public static final LogChannelInterface UI = new LogChannel( "GUI" );
+  public static final LogChannelInterface GENERAL = new LogChannel( "General", false, false );
+  public static final LogChannelInterface METADATA = new LogChannel( "Metadata", false, false );
+  public static final LogChannelInterface UI = new LogChannel( "GUI", false, false );
 
   private static final String DEFAULT_LOG_SUBJECT = "Kettle";
 
@@ -69,6 +69,12 @@ public class LogChannel implements LogChannelInterface {
   public LogChannel( Object subject, boolean gatheringMetrics ) {
     this( subject );
     this.gatheringMetrics = gatheringMetrics;
+  }
+
+  public LogChannel( Object subject, boolean gatheringMetrics, boolean isPurgeable ) {
+    logLevel = DefaultLogLevel.getLogLevel();
+    this.gatheringMetrics = gatheringMetrics;
+    logChannelId = LoggingRegistry.getInstance().registerLoggingSource( subject, isPurgeable );
   }
 
   public LogChannel( Object subject, LoggingObjectInterface parentObject ) {

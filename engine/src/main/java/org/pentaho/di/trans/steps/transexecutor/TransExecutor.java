@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,7 +38,6 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.i18n.BaseMessages;
@@ -268,7 +267,6 @@ public class TransExecutor extends BaseStep implements StepInterface {
     Trans executorTrans = transExecutorData.getExecutorTrans();
     if ( executorTrans != null ) {
       KettleLogStore.discardLines( executorTrans.getLogChannelId(), false );
-      LoggingRegistry.getInstance().removeIncludingChildren( executorTrans.getLogChannelId() );
     }
   }
 
