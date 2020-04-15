@@ -1150,6 +1150,9 @@ public class Const {
   // See PDI-17980 for details
   public static final String KETTLE_COMPATIBILITY_USE_JDBC_METADATA = "KETTLE_COMPATIBILITY_USE_JDBC_METADATA";
 
+  // See PDI-PDI-18739 for details
+  public static final String KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING = "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING";
+
   /**
    * The XML file that contains the list of native import rules
    */
