@@ -69,6 +69,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
+import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 
 /**
  * @author Samatar
@@ -120,6 +121,7 @@ public class Rest extends BaseStep implements StepInterface {
       data.config.getSingletons().add( stringMessageBodyWriter );
       // create an instance of the com.sun.jersey.api.client.Client class
       client = ApacheHttpClient4.create( data.config );
+      client.addFilter(new GZIPContentEncodingFilter(false));
       if ( data.basicAuthentication != null ) {
         client.addFilter( data.basicAuthentication );
       }
