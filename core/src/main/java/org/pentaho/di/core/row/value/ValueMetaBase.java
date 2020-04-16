@@ -59,13 +59,7 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
-import java.sql.Blob;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.text.Collator;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -5275,7 +5269,10 @@ public class ValueMetaBase implements ValueMetaInterface {
           if ( isStorageBinaryString() ) {
             data = resultSet.getBytes( index + 1 );
           } else {
-            data = resultSet.getString( index + 1 );
+            data = resultSet.getObject( index + 1 );
+            if (data instanceof Array) {
+              data = ((Array) data).getArray();
+            }
           }
           break;
         case ValueMetaInterface.TYPE_BINARY:
@@ -5370,9 +5367,12 @@ public class ValueMetaBase implements ValueMetaInterface {
             if ( getLength() == DatabaseMeta.CLOB_LENGTH ) {
               setLength( databaseMeta.getMaxTextFieldLength() );
             }
-
             if ( getLength() <= databaseMeta.getMaxTextFieldLength() ) {
-              preparedStatement.setString( index, getString( data ) );
+              if (data.getClass().isArray()) {
+                preparedStatement.setObject(index, data, Types.ARRAY);
+              } else {
+                preparedStatement.setString(index, getString(data));
+              }
             } else {
               String string = getString( data );
 
@@ -5394,7 +5394,7 @@ public class ValueMetaBase implements ValueMetaInterface {
               }
             }
           } else {
-            preparedStatement.setNull( index, java.sql.Types.VARCHAR );
+            preparedStatement.setNull( index, Types.OTHER );
           }
           break;
         case ValueMetaInterface.TYPE_DATE:
