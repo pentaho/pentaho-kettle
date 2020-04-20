@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,8 @@ import static org.mockito.Mockito.times;
  * @author Andrey Khayrutdinov
  */
 public class BaseStepDialog_ConnectionLine_Test {
-  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+  @ClassRule
+  public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static String INITIAL_NAME = "qwerty";
   private static String INPUT_NAME = "asdfg";
@@ -63,7 +64,6 @@ public class BaseStepDialog_ConnectionLine_Test {
   public static void initKettle() throws Exception {
     KettleEnvironment.init();
   }
-
 
   @Test
   public void adds_WhenConnectionNameIsUnique() throws Exception {
@@ -208,6 +208,7 @@ public class BaseStepDialog_ConnectionLine_Test {
                                                                   String expectedResult ) throws Exception {
     DatabaseDialog databaseDialog = mock( DatabaseDialog.class );
     when( databaseDialog.open() ).thenReturn( inputName );
+    when( databaseDialog.getDatabaseMeta() ).thenReturn( createDefaultDatabase() );
 
     TransMeta transMeta = new TransMeta();
     DatabaseMeta db = createDefaultDatabase();
@@ -250,6 +251,7 @@ public class BaseStepDialog_ConnectionLine_Test {
       // unique value
       .thenReturn( expectedResult );
 
+    when( databaseDialog.getDatabaseMeta() ).thenReturn( createDefaultDatabase() );
 
     BaseStepDialog dialog = mock( BaseStepDialog.class );
     dialog.databaseDialog = databaseDialog;
