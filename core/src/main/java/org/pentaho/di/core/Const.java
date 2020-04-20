@@ -26,6 +26,7 @@ package org.pentaho.di.core;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -1955,12 +1956,11 @@ public class Const {
 
         while ( ip.hasMoreElements() ) {
           InetAddress in = ip.nextElement();
-          lastHostname = in.getHostName();
-          // System.out.println("  ip address bound : "+in.getHostAddress());
-          // System.out.println("  hostname         : "+in.getHostName());
-          // System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
-          // System.out.println("  ip string        : "+in.toString());
-          if ( !lastHostname.equalsIgnoreCase( "localhost" ) && !( lastHostname.indexOf( ':' ) >= 0 ) ) {
+          boolean hasNewHostName = !lastHostname.equalsIgnoreCase( "localhost" );
+          if ( InetAddressUtils.isIPv4Address( in.getHostAddress() ) || !hasNewHostName  ) {
+            lastHostname = in.getHostName();
+          }
+          if ( hasNewHostName && lastHostname.indexOf( ':' ) < 0 )  {
             break;
           }
         }
