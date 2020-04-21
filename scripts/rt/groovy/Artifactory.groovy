@@ -112,7 +112,7 @@ class Artifactory {
       .started(simpleDateFormat.format(new Date()))
 
     ModuleBuilder moduleBuilder = new ModuleBuilder()
-      .id("build-info-$buildName-$buildNumber")
+      .id("$buildName-$buildNumber")
 
     ArtifactBuilder artifactBuilder = new ArtifactBuilder('artifactBuilder')
     artifacts.each { Map<String, String> metadata ->
