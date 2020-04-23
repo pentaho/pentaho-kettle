@@ -572,5 +572,11 @@
     <variable>PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER</variable>
     <default-value>false</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to enable the checking of zip bomb. This is set to false by default.</description>
+    <variable>KETTLE_XLSX_ZIP_BOMB_CHECK</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
 </kettle-variables>
 
