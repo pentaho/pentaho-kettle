@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -5535,6 +5535,18 @@ public class TransMeta extends AbstractMeta
       previous.replaceMeta( partitionSchema );
     }
     setChanged();
+  }
+
+  /**
+   * Add a new partition schemas to the transformation if that didn't exist yet. Otherwise, replace it.
+   *
+   * @param partitionSchemas
+   *          List of partition schema to be added.
+   */
+  public void addOrReplacePartitionSchema( List<PartitionSchema> partitionSchemas ) {
+    for ( PartitionSchema partitionSchema : partitionSchemas ) {
+      addOrReplacePartitionSchema( partitionSchema );
+    }
   }
 
   /**
