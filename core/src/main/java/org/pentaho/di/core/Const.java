@@ -1340,7 +1340,7 @@ public class Const {
    */
   public static final String KETTLE_XLSX_ZIP_BOMB_CHECK = "KETTLE_XLSX_ZIP_BOMB_CHECK";
   public static boolean checkXlsxZipBomb() {
-    String checkZipBomb = System.getProperty( KETTLE_XLSX_ZIP_BOMB_CHECK, "false" );
+    String checkZipBomb = System.getProperty( KETTLE_XLSX_ZIP_BOMB_CHECK );
     return Boolean.valueOf( checkZipBomb );
   }
 
