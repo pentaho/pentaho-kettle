@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.databaselookup;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -94,6 +95,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           lookupRow[ lookupIndex ] = value.convertData( input, lookupRow[ lookupIndex ] );
           value.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         }
+
+        //If input is of type date and its mask does not contain time then we should trim the time part from the date
+        //otherwise we will clog the database lookup cache with to many entries
+        if ( input.getType() == ValueMetaInterface.TYPE_DATE && isTimelessMask( input.getConversionMask() ) ) {
+          lookupRow[lookupIndex] = Const.trimDate( (Date) lookupRow[lookupIndex] );
+        }
+
         lookupIndex++;
       }
       if ( data.keynrs2[ i ] >= 0 ) {
@@ -206,6 +214,14 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     }
 
     return outputRow;
+  }
+
+  @VisibleForTesting
+  boolean isTimelessMask( String dateMask ) {
+    if ( dateMask == null ) {
+      return false;
+    }
+    return Arrays.asList( Const.getTimelessDateFormats() ).contains( dateMask );
   }
 
   @VisibleForTesting
