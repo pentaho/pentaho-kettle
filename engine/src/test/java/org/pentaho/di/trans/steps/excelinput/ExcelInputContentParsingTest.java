@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
@@ -130,12 +129,31 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
 
     // Initializing the ExcelInput step should make the new values to be set
     meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    System.setProperty( Const.KETTLE_XLSX_ZIP_BOMB_CHECK, Boolean.TRUE.toString() );
     init( "Balance_Type_Codes.xlsx" );
 
     // Verify that the default values were used
     assertEquals( Const.KETTLE_ZIP_MAX_ENTRY_SIZE_DEFAULT, (Long) ZipSecureFile.getMaxEntrySize() );
     assertEquals( Const.KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT, (Long) ZipSecureFile.getMaxTextSize() );
     assertEquals( Const.KETTLE_ZIP_MIN_INFLATE_RATIO_DEFAULT, (Double) ZipSecureFile.getMinInflateRatio() );
+  }
+
+  @Test
+  public void testZipBombConfiguration_CheckDisabled() throws Exception {
+
+    Double bogusMinInflateRatio = 0.5d;
+    ZipSecureFile.setMinInflateRatio( bogusMinInflateRatio );
+
+    // Verify the Min Inflate Ratio was set
+    assertEquals( bogusMinInflateRatio, (Double) ZipSecureFile.getMinInflateRatio() );
+
+    // Initializing the ExcelInput step should make the new values to be set
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    // Disabling the zip bomb checking property
+    System.setProperty( Const.KETTLE_XLSX_ZIP_BOMB_CHECK, Boolean.FALSE.toString() );
+    init( "Balance_Type_Codes.xlsx" );
+
+    assertEquals( Const.KETTLE_ZIP_NEGATIVE_MIN_INFLATE, (Double) ZipSecureFile.getMinInflateRatio() );
   }
 
   @Test
@@ -148,6 +166,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     System.setProperty( Const.KETTLE_ZIP_MAX_ENTRY_SIZE, maxEntrySizeVal.toString() );
     System.setProperty( Const.KETTLE_ZIP_MAX_TEXT_SIZE, maxTextSizeVal.toString() );
     System.setProperty( Const.KETTLE_ZIP_MIN_INFLATE_RATIO, minInflateRatioVal.toString() );
+    System.setProperty( Const.KETTLE_XLSX_ZIP_BOMB_CHECK, Boolean.TRUE.toString() );
     //ExcelInput excelInput = new ExcelInput( null, null, 0, null, null );
 
     // Initializing the ExcelInput step should make the new values to be set
@@ -167,6 +186,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     // For this zip to be correctly handed, we need to allow a lower inflate ratio
     Double minInflateRatio = 0.007d;
     System.setProperty( Const.KETTLE_ZIP_MIN_INFLATE_RATIO, minInflateRatio.toString() );
+    System.setProperty( Const.KETTLE_XLSX_ZIP_BOMB_CHECK, Boolean.TRUE.toString() );
 
     meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
     init( "Balance_Type_Codes.xlsx" );
