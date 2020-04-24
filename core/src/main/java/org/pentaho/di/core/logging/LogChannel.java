@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,11 +34,9 @@ import org.pentaho.di.core.metrics.MetricsSnapshotType;
 
 public class LogChannel implements LogChannelInterface {
 
-  public static LogChannelInterface GENERAL = new LogChannel( "General" );
-
-  public static LogChannelInterface METADATA = new LogChannel( "Metadata" );
-
-  public static LogChannelInterface UI = new LogChannel( "GUI" );
+  public static final LogChannelInterface GENERAL = new LogChannel( "General", false, false );
+  public static final LogChannelInterface METADATA = new LogChannel( "Metadata", false, false );
+  public static final LogChannelInterface UI = new LogChannel( "GUI", false, false );
 
   private String logChannelId;
 
@@ -70,6 +68,12 @@ public class LogChannel implements LogChannelInterface {
     this.gatheringMetrics = gatheringMetrics;
   }
 
+  public LogChannel( Object subject, boolean gatheringMetrics, boolean isPurgeable ) {
+    logLevel = DefaultLogLevel.getLogLevel();
+    this.gatheringMetrics = gatheringMetrics;
+    logChannelId = LoggingRegistry.getInstance().registerLoggingSource( subject, isPurgeable );
+  }
+
   public LogChannel( Object subject, LoggingObjectInterface parentObject ) {
     if ( parentObject != null ) {
       this.logLevel = parentObject.getLogLevel();
@@ -96,11 +100,6 @@ public class LogChannel implements LogChannelInterface {
     return logChannelId;
   }
 
-  /**
-   *
-   * @param logMessage
-   * @param channelLogLevel
-   */
   public void println( LogMessageInterface logMessage, LogLevel channelLogLevel ) {
     String subject = null;
 
@@ -227,7 +226,6 @@ public class LogChannel implements LogChannelInterface {
     try {
       return logLevel.isDetailed();
     } catch ( NullPointerException ex ) {
-      // System.out.println( "Oops!" );
       return false;
     }
   }
@@ -261,8 +259,7 @@ public class LogChannel implements LogChannelInterface {
   }
 
   /**
-   * @param containerObjectId
-   *          the containerObjectId to set
+   * @param containerObjectId the containerObjectId to set
    */
   @Override
   public void setContainerObjectId( String containerObjectId ) {
@@ -278,8 +275,7 @@ public class LogChannel implements LogChannelInterface {
   }
 
   /**
-   * @param gatheringMetrics
-   *          the gatheringMetrics to set
+   * @param gatheringMetrics the gatheringMetrics to set
    */
   @Override
   public void setGatheringMetrics( boolean gatheringMetrics ) {
