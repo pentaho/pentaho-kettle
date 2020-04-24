@@ -1330,6 +1330,22 @@ public class Const {
     String.valueOf( KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT );
 
   /**
+   * <p>The default value for the {@link #KETTLE_ZIP_NEGATIVE_MIN_INFLATE} as a Double.</p>
+   * <p>Check PDI-18489 for more details.</p>
+   */
+  public static final Double KETTLE_ZIP_NEGATIVE_MIN_INFLATE = -1.0d;
+
+  /**
+   * <p>This environment variable is used to define whether the check of xlsx zip bomb is performed. This is set to false by default.</p>
+   */
+  public static final String KETTLE_XLSX_ZIP_BOMB_CHECK = "KETTLE_XLSX_ZIP_BOMB_CHECK";
+  private static final String KETTLE_XLSX_ZIP_BOMB_CHECK_DEFAULT = "false";
+  public static boolean checkXlsxZipBomb() {
+    String checkZipBomb = System.getProperty( KETTLE_XLSX_ZIP_BOMB_CHECK, KETTLE_XLSX_ZIP_BOMB_CHECK_DEFAULT );
+    return Boolean.valueOf( checkZipBomb );
+  }
+
+  /**
    * <p>A variable to configure if the S3 input / output steps should use the Amazon Default Credentials Provider Chain
    * even if access credentials are specified within the transformation.</p>
    */
