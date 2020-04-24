@@ -1,0 +1,44 @@
+node("non-master") {
+  properties([
+    parameters([
+      string(name: 'ARTIFACTORY_URL', defaultValue: "https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-release-orl"),
+      string(name: 'ARTIFACTORY_CREDENTIALS', defaultValue: "buildguynexus"),
+      string(name: 'MANIFEST_FILE', defaultValue: "${WORKSPACE}/resources/config/artifacts/manifest.yaml"),
+      string(name: 'VERSIONS_FILE', defaultValue: "${WORKSPACE}/resources/config/suite-release.versions"),
+      string(name: 'BUILD_NAME', defaultValue: "suite-release"),
+      string(name: 'BUILD_NUMBER', defaultValue: "RC1"),
+      string(name: 'DOCKER_REGISTRY_URL', defaultValue: "https://index.docker.io/v1/"),
+      string(name: 'DOCKER_IMAGE', defaultValue: "groovy:2.5-jre8"),
+      string(name: 'BUILDTAG', description: "Change only if different from BUILD_NUMBER"),
+      booleanParam(name: 'DRY_RUN'),
+    ])
+  ])
+
+  stage("Build Info") {
+    checkout scm
+
+    withCredentials([usernamePassword(
+      credentialsId: "${params.ARTIFACTORY_CREDENTIALS}",
+      usernameVariable: 'ARTIFACTORY_USER',
+      passwordVariable: 'ARTIFACTORY_PASSWORD'
+     )]) {
+      docker.withRegistry("${params.DOCKER_REGISTRY_URL}") {
+        def image = docker.image("${params.DOCKER_IMAGE}")
+        image.pull()
+        image.inside("") {
+          def cmd = """${WORKSPACE}/scripts/rt/rtBuildInfo.groovy \
+              --rtURL "${params.ARTIFACTORY_URL}" \
+              --rtUsername "${ARTIFACTORY_USER}" \
+              --rtPassword "${ARTIFACTORY_PASSWORD}" \
+              --manifest-file "${params.MANIFEST_FILE}" \
+              --versions-file "${params.VERSIONS_FILE}" \
+              --buildName "${params.BUILD_NAME}" \
+              --buildNumber "${params.BUILD_NUMBER}" """
+          if (params.DRY_RUN) cmd += ' --dryRun'
+          sh cmd
+        }
+      }
+    }
+    currentBuild.description = "${params.ARTIFACTORY_URL}"
+  }
+}
