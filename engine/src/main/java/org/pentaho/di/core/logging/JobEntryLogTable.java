@@ -64,7 +64,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
       JOBENTRYNAME( "JOBENTRYNAME" ), LINES_READ( "LINES_READ" ), LINES_WRITTEN( "LINES_WRITTEN" ), LINES_UPDATED(
         "LINES_UPDATED" ), LINES_INPUT( "LINES_INPUT" ), LINES_OUTPUT( "LINES_OUTPUT" ), LINES_REJECTED(
         "LINES_REJECTED" ), ERRORS( "ERRORS" ), RESULT( "RESULT" ), NR_RESULT_ROWS( "NR_RESULT_ROWS" ),
-      NR_RESULT_FILES( "NR_RESULT_FILES" ), LOG_FIELD( "LOG_FIELD" ), COPY_NR( "COPY_NR" ), TIMEOUT( "TIMEOUT" );
+      NR_RESULT_FILES( "NR_RESULT_FILES" ), LOG_FIELD( "LOG_FIELD" ), COPY_NR( "COPY_NR" );
 
     private String id;
 
@@ -154,7 +154,6 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     table.fields.add( new LogTableField( ID.NR_RESULT_FILES.id, true, false, "NR_RESULT_FILES", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.NrResultFiles" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.NrResultFiles" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LOG_FIELD.id, false, false, "LOG_FIELD", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.LogField" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.LogField" ), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH ) );
     table.fields.add( new LogTableField( ID.COPY_NR.id, false, false, "COPY_NR", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.CopyNr" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.CopyNr" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
-    table.fields.add( new LogTableField( ID.TIMEOUT.id, false, false, "TIMEOUT", BaseMessages.getString( PKG, "JobEntryLogTable.FieldName.RowTimeout" ), BaseMessages.getString( PKG, "JobEntryLogTable.FieldDescription.RowTimeout" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
 
     table.findField( ID.JOBNAME.id ).setNameField( true );
     table.findField( ID.LOG_DATE.id ).setLogDateField( true );
@@ -162,7 +161,6 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     table.findField( ID.CHANNEL_ID.id ).setVisible( false );
     table.findField( ID.LOG_FIELD.id ).setLogField( true );
     table.findField( ID.ERRORS.id ).setErrorsField( true );
-    table.findField( ID.TIMEOUT.id ).setVisible( false );
 
     return table;
   }
@@ -261,9 +259,6 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
               case COPY_NR:
                 value = new Long( jobEntryCopy.getNr() );
                 break;
-              case TIMEOUT:
-                value = Long.parseLong( getTimeoutInDays() );
-                break;
               default:
                 break;
             }
@@ -306,21 +301,14 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 
     if ( keyField.isEnabled() ) {
       RowMetaInterface batchIndex = new RowMeta();
-      batchIndex.addValueMeta( getValueMeta( keyField ) );
+
+      ValueMetaInterface keyMeta = new ValueMetaBase( keyField.getFieldName(), keyField.getDataType() );
+      keyMeta.setLength( keyField.getLength() );
+      batchIndex.addValueMeta( keyMeta );
 
       indexes.add( batchIndex );
     }
 
     return indexes;
-  }
-
-  private ValueMetaInterface getValueMeta( LogTableField field ) {
-    ValueMetaInterface valueMeta = new ValueMetaBase( field.getFieldName(), field.getDataType() );
-    valueMeta.setLength( field.getLength() );
-    return valueMeta;
-  }
-
-  public LogTableField getTimeoutField() {
-    return findField( ID.TIMEOUT.id );
   }
 }

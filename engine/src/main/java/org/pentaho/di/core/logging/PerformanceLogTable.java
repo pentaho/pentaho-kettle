@@ -58,7 +58,7 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
       "STEPNAME" ), STEP_COPY( "STEP_COPY" ), LINES_READ( "LINES_READ" ), LINES_WRITTEN( "LINES_WRITTEN" ),
       LINES_UPDATED( "LINES_UPDATED" ), LINES_INPUT( "LINES_INPUT" ), LINES_OUTPUT( "LINES_OUTPUT" ),
       LINES_REJECTED( "LINES_REJECTED" ), ERRORS( "ERRORS" ), INPUT_BUFFER_ROWS( "INPUT_BUFFER_ROWS" ),
-      OUTPUT_BUFFER_ROWS( "OUTPUT_BUFFER_ROWS" ), TIMEOUT( "TIMEOUT" );
+      OUTPUT_BUFFER_ROWS( "OUTPUT_BUFFER_ROWS" );
 
     private String id;
 
@@ -159,12 +159,10 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
     table.fields.add( new LogTableField( ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString( PKG, "PerformanceLogTable.FieldName.Errors" ), BaseMessages.getString( PKG, "PerformanceLogTable.FieldDescription.Errors" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.INPUT_BUFFER_ROWS.id, true, false, "INPUT_BUFFER_ROWS", BaseMessages.getString( PKG, "PerformanceLogTable.FieldName.InputBufferRows" ), BaseMessages.getString( PKG, "PerformanceLogTable.FieldDescription.InputBufferRows" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.OUTPUT_BUFFER_ROWS.id, true, false, "OUTPUT_BUFFER_ROWS", BaseMessages.getString( PKG, "PerformanceLogTable.FieldName.OutputBufferRows" ), BaseMessages.getString( PKG, "PerformanceLogTable.FieldDescription.OutputBufferRows" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
-    table.fields.add( new LogTableField( ID.TIMEOUT.id, false, false, "TIMEOUT", BaseMessages.getString( PKG, "PerformanceLogTable.FieldName.RowTimeout" ), BaseMessages.getString( PKG, "PerformanceLogTable.FieldDescription.RowTimeout" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
 
     table.findField( ID.ID_BATCH.id ).setKey( true );
     table.findField( ID.LOGDATE.id ).setLogDateField( true );
     table.findField( ID.TRANSNAME.id ).setNameField( true );
-    table.findField( ID.TIMEOUT.id ).setVisible( false );
 
     return table;
   }
@@ -256,9 +254,6 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
               case OUTPUT_BUFFER_ROWS:
                 value = new Long( snapShot.getOutputBufferSize() );
                 break;
-              case TIMEOUT:
-                value = Long.parseLong( getTimeoutInDays() );
-                break;
               default:
                 break;
             }
@@ -298,10 +293,6 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
   public List<RowMetaInterface> getRecommendedIndexes() {
     List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
     return indexes;
-  }
-
-  public LogTableField getTimeoutField() {
-    return findField( ID.TIMEOUT.id );
   }
 
   @Override

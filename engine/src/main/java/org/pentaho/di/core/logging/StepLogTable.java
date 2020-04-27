@@ -57,7 +57,7 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
       STEPNAME( "STEPNAME" ), STEP_COPY( "STEP_COPY" ), LINES_READ( "LINES_READ" ),
       LINES_WRITTEN( "LINES_WRITTEN" ), LINES_UPDATED( "LINES_UPDATED" ), LINES_INPUT( "LINES_INPUT" ),
       LINES_OUTPUT( "LINES_OUTPUT" ), LINES_REJECTED( "LINES_REJECTED" ), ERRORS( "ERRORS" ),
-      LOG_FIELD( "LOG_FIELD" ), TIMEOUT( "TIMEOUT" );
+      LOG_FIELD( "LOG_FIELD" );
 
     private String id;
 
@@ -139,7 +139,6 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
     table.fields.add( new LogTableField( ID.LINES_REJECTED.id, true, false, "LINES_REJECTED", BaseMessages.getString( PKG, "StepLogTable.FieldName.LinesRejected" ), BaseMessages.getString( PKG, "StepLogTable.FieldDescription.LinesRejected" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString( PKG, "StepLogTable.FieldName.Errors" ), BaseMessages.getString( PKG, "StepLogTable.FieldDescription.Errors" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LOG_FIELD.id, false, false, "LOG_FIELD", BaseMessages.getString( PKG, "StepLogTable.FieldName.LogField" ), BaseMessages.getString( PKG, "StepLogTable.FieldDescription.LogField" ), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH ) );
-    table.fields.add( new LogTableField( ID.TIMEOUT.id, false, false, "TIMEOUT", BaseMessages.getString( PKG, "StepLogTable.FieldName.RowTimeout" ), BaseMessages.getString( PKG, "StepLogTable.FieldDescription.RowTimeout" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
 
     table.findField( ID.TRANSNAME.id ).setNameField( true );
     table.findField( ID.LOG_DATE.id ).setLogDateField( true );
@@ -147,7 +146,6 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
     table.findField( ID.CHANNEL_ID.id ).setVisible( false );
     table.findField( ID.LOG_FIELD.id ).setLogField( true );
     table.findField( ID.ERRORS.id ).setErrorsField( true );
-    table.findField( ID.TIMEOUT.id ).setVisible( false );
 
     return table;
   }
@@ -215,9 +213,6 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
               case LOG_FIELD:
                 value = getLogBuffer( combi.step, combi.step.getLogChannel().getLogChannelId(), status, null );
                 break;
-              case TIMEOUT:
-                value = Long.parseLong( getTimeoutInDays() );
-                break;
               default:
                 break;
             }
@@ -232,10 +227,6 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
     } else {
       return null;
     }
-  }
-
-  public LogTableField getTimeoutField() {
-    return findField( ID.TIMEOUT.id );
   }
 
   public String getLogTableCode() {
