@@ -558,3 +558,8 @@ jobGroups:
        archivable      :  true
        testable        :  false
        parallelize     :  true
+
+     - jobID           :  installer-tool
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/installanywhere-installbuilder
+       root            :  installer-tool
