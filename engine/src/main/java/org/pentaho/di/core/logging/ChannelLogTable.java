@@ -55,8 +55,7 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
     ID_BATCH( "ID_BATCH" ), CHANNEL_ID( "CHANNEL_ID" ), LOG_DATE( "LOG_DATE" ), LOGGING_OBJECT_TYPE(
       "LOGGING_OBJECT_TYPE" ), OBJECT_NAME( "OBJECT_NAME" ), OBJECT_COPY( "OBJECT_COPY" ), REPOSITORY_DIRECTORY(
       "REPOSITORY_DIRECTORY" ), FILENAME( "FILENAME" ), OBJECT_ID( "OBJECT_ID" ), OBJECT_REVISION(
-      "OBJECT_REVISION" ), PARENT_CHANNEL_ID( "PARENT_CHANNEL_ID" ), ROOT_CHANNEL_ID( "ROOT_CHANNEL_ID" ),
-      TIMEOUT( "TIMEOUT" );
+      "OBJECT_REVISION" ), PARENT_CHANNEL_ID( "PARENT_CHANNEL_ID" ), ROOT_CHANNEL_ID( "ROOT_CHANNEL_ID" );
 
     private String id;
 
@@ -160,13 +159,9 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
     table.fields.add( new LogTableField( ID.ROOT_CHANNEL_ID.id, true, false, "ROOT_CHANNEL_ID",
       BaseMessages.getString( PKG, "ChannelLogTable.FieldName.RootChannelId" ),
       BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.RootChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.TIMEOUT.id, false, false, "TIMEOUT",
-      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.RowTimeout" ),
-      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.RowTimeout" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
 
     table.findField( ID.LOG_DATE.id ).setLogDateField( true );
     table.findField( ID.ID_BATCH.id ).setKey( true );
-    table.findField( ID.TIMEOUT.id ).setVisible( false );
 
     return table;
   }
@@ -236,9 +231,6 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
               case ROOT_CHANNEL_ID:
                 value = loggingHierarchy.getRootChannelId();
                 break;
-              case TIMEOUT:
-                value = Long.parseLong( getTimeoutInDays() );
-                break;
               default:
                 break;
             }
@@ -254,10 +246,6 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
     } else {
       return null;
     }
-  }
-
-  public LogTableField getTimeoutField() {
-    return findField( ID.TIMEOUT.id );
   }
 
   public String getLogTableCode() {

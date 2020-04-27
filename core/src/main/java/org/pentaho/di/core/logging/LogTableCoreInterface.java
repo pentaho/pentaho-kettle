@@ -108,8 +108,6 @@ public interface LogTableCoreInterface {
    */
   public String getTimeoutInDays();
 
-  public LogTableField getTimeoutField();
-
   /**
    * @return the field that represents the log date field or null if none was defined.
    */
