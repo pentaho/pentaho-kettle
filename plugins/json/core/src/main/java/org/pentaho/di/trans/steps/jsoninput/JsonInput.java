@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -445,7 +445,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     JsonInputField[] inputFields = new JsonInputField[data.nrInputFields];
     for ( int i = 0; i < data.nrInputFields; i++ ) {
       JsonInputField field = meta.getInputFields()[ i ].clone();
-      field.setPath( environmentSubstitute( field.getPath() ) );
+      field.setPath( environmentSubstitute( field.getPath(), true ) );
       inputFields[i] = field;
     }
     // Instead of putting in the meta.inputFields, we put in our json path resolved input fields

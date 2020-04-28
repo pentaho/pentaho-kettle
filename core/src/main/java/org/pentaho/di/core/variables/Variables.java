@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -163,6 +163,15 @@ public class Variables implements VariableSpace {
     }
 
     return StringUtil.environmentSubstitute( aString, properties );
+  }
+
+  @Override
+  public String environmentSubstitute( String aString, boolean escapeHexDelimiter ) {
+    if ( aString == null || aString.length() == 0 ) {
+      return aString;
+    }
+
+    return StringUtil.environmentSubstitute( aString, properties, escapeHexDelimiter );
   }
 
   /**
