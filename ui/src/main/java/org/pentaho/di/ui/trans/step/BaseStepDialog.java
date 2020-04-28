@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.trans.step;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.Arrays;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
