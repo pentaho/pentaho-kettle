@@ -530,7 +530,7 @@ public class DatabaseLookupUTest {
     doCallRealMethod().when( dbLookup ).getVariable( anyString(), anyString() );
     doCallRealMethod().when( dbLookup ).determineFieldsTypesQueryingDb();
     if ( kettlePropertyValue != null ) {
-      dbLookup.setVariable( "KETTLE_COMPATIBILITY_USE_DB_LOOKUP_CHOSEN_RETURN_FIELDS_TYPE", kettlePropertyValue );
+      dbLookup.setVariable( "KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI", kettlePropertyValue );
     }
     dbLookup.determineFieldsTypesQueryingDb();
     return rowMetaOutput;
