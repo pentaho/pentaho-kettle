@@ -160,10 +160,7 @@ public class DefaultCache implements DatabaseLookupData.Cache {
     if ( !meta.isLoadingAllDataInCache() && meta.getCacheSize() > 0 && map.size() > meta.getCacheSize() ) {
       List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>( map.keySet() );
       List<Date> samples = new ArrayList<Date>();
-      int incr = keys.size() / 10;
-      if ( incr == 0 ) {
-        incr = 1;
-      }
+      int incr = getIncrement( keys );
       for ( int k = 0; k < keys.size(); k += incr ) {
         RowMetaAndData key = keys.get( k );
         TimedRow timedRow = map.get( key );
@@ -185,5 +182,13 @@ public class DefaultCache implements DatabaseLookupData.Cache {
         }
       }
     }
+  }
+
+  private int getIncrement( List<RowMetaAndData> keys ) {
+    int incr = keys.size() / 10;
+    if ( incr == 0 ) {
+      incr = 1;
+    }
+    return incr;
   }
 }
