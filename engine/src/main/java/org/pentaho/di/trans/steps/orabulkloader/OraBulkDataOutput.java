@@ -145,8 +145,8 @@ public class OraBulkDataOutput {
       if ( i != 0 ) {
         outbuf.append( ',' );
       }
-      v = mi.getValueMeta( i );
       number = fieldNumbers[i];
+      v = mi.getValueMeta( number );
       if ( row[number] == null ) {
         // TODO (SB): special check for null in case of Strings.
         outbuf.append( enclosure );
