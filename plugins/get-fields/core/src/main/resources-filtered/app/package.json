@@ -18,6 +18,7 @@
     "angular-i18n": "${angular-i18n.version}",
     "require-css": "${require-css.version}",
     "requirejs-text": "${requirejs-text.version}",
-    "dojo": "${dojo.version}"
+    "dojo": "${dojo.version}",
+    "jquery": "${jquery.version}"
   }
 }
