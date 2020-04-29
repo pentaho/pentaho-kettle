@@ -36,6 +36,7 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -448,8 +449,6 @@ public class DatabaseLookupUTest {
     assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
   }
 
-  }
-
   @Test
   public void determineFieldsTypesQueryingDbDefaultTest() throws KettleException {
     RowMeta rowMetaOutput = determineFieldsTypeQueryingDbSetupAndCall( null );
@@ -484,8 +483,8 @@ public class DatabaseLookupUTest {
 
   private RowMeta determineFieldsTypeQueryingDbSetupAndCall( String kettlePropertyValue ) throws KettleException {
     //Row Meta - What is expected as configured in the database
-    RowMeta rowMeta = new RowMeta(  );
-    List<ValueMetaInterface> valueMetaList = new ArrayList<>(  );
+    RowMeta rowMeta = new RowMeta();
+    List<ValueMetaInterface> valueMetaList = new ArrayList<>();
     valueMetaList.add( new ValueMetaInteger( "int" ) );
     valueMetaList.add( new ValueMetaNumber( "num" ) );
     valueMetaList.add( new ValueMetaBigNumber( "bignum" ) );
@@ -493,14 +492,14 @@ public class DatabaseLookupUTest {
     rowMeta.setValueMetaList( valueMetaList );
 
     //Input Row Meta
-    RowMeta inputRowMeta = new RowMeta(  );
-    List<ValueMetaInterface> inputValueMetaList = new ArrayList<>(  );
+    RowMeta inputRowMeta = new RowMeta();
+    List<ValueMetaInterface> inputValueMetaList = new ArrayList<>();
     inputValueMetaList.add( new ValueMetaInteger( "int" ) );
     inputRowMeta.setValueMetaList( inputValueMetaList );
 
     //Row Meta Output - What is expected as configured in dialog
-    RowMeta rowMetaOutput = new RowMeta(  );
-    List<ValueMetaInterface> outputValueMetaList = new ArrayList<>(  );
+    RowMeta rowMetaOutput = new RowMeta();
+    List<ValueMetaInterface> outputValueMetaList = new ArrayList<>();
     outputValueMetaList.add( new ValueMetaInteger( "int" ) );
     outputValueMetaList.add( new ValueMetaBigNumber( "num_as_bignum" ) );
     outputValueMetaList.add( new ValueMetaBigNumber( "bignum" ) );
@@ -534,6 +533,7 @@ public class DatabaseLookupUTest {
     }
     dbLookup.determineFieldsTypesQueryingDb();
     return rowMetaOutput;
+  }
   public class MockDatabaseLookup extends DatabaseLookup {
     public MockDatabaseLookup( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
