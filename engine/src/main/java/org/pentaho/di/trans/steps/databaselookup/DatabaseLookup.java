@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -208,7 +209,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     return outputRow;
   }
 
-  // visible for testing purposes
+  @VisibleForTesting
   void determineFieldsTypesQueryingDb() throws KettleException {
     final String[] keyFields = meta.getTableKeyField();
     data.keytypes = new int[ keyFields.length ];
@@ -232,23 +233,35 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         }
       }
 
-      final String[] returnFields = meta.getReturnValueField();
-      final int returnFieldsOffset = getInputRowMeta().size();
-      for ( int i = 0; i < returnFields.length; i++ ) {
-        ValueMetaInterface returnValueMeta = fields.searchValueMeta( returnFields[ i ] );
-        if ( returnValueMeta != null ) {
-          ValueMetaInterface v = data.outputRowMeta.getValueMeta( returnFieldsOffset + i );
-          if ( v.getType() != returnValueMeta.getType() ) {
-            ValueMetaInterface clone = returnValueMeta.clone();
-            clone.setName( v.getName() );
-            data.outputRowMeta.setValueMeta( returnFieldsOffset + i, clone );
-          }
-        }
+      if ( shouldReturnTypeBeUpdated() ) {
+        updateReturnValueMeta( fields );
       }
+
     } else {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
         + schemaTable + "]" );
+    }
+  }
+
+  private boolean shouldReturnTypeBeUpdated() {
+    String skipLookupReturnFields = getVariable( Const.KETTLE_COMPATIBILITY_USE_DB_LOOKUP_CHOSEN_RETURN_FIELDS_TYPE, "N" );
+    return !ValueMetaBase.convertStringToBoolean( Const.NVL( skipLookupReturnFields, "N" ) );
+  }
+
+  private void updateReturnValueMeta( RowMetaInterface fields ) {
+    final String[] returnFields = meta.getReturnValueField();
+    final int returnFieldsOffset = getInputRowMeta().size();
+    for ( int i = 0; i < returnFields.length; i++ ) {
+      ValueMetaInterface returnValueMeta = fields.searchValueMeta( returnFields[ i ] );
+      if ( returnValueMeta != null ) {
+        ValueMetaInterface v = data.outputRowMeta.getValueMeta( returnFieldsOffset + i );
+        if ( v.getType() != returnValueMeta.getType() ) {
+          ValueMetaInterface clone = returnValueMeta.clone();
+          clone.setName( v.getName() );
+          data.outputRowMeta.setValueMeta( returnFieldsOffset + i, clone );
+        }
+      }
     }
   }
 
