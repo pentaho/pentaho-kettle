@@ -563,3 +563,4 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
        dockerImage     :  jenkins-build/installanywhere-installbuilder
        root            :  installer-tool
+       archivable      :  true
