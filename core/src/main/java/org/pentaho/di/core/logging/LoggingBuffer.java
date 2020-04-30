@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.core.logging;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -93,7 +94,7 @@ public class LoggingBuffer {
     lock.readLock().lock();
     try {
       Stream<BufferLine> bufferStream = buffer.stream().filter( line -> line.getNr() > from && line.getNr() <= to );
-      if ( channelId != null ) {
+      if ( !Utils.isEmpty( channelId ) ) {
         bufferStream = bufferStream.filter( line -> {
           String logChannelId = getLogChId( line );
           return includeGeneral ? isGeneral( logChannelId ) || channelId.contains( logChannelId ) : channelId.contains( logChannelId );
