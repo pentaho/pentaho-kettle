@@ -1,8 +1,12 @@
 # Change Log
 
 ## Unreleased
+### Changed
+- [docker] Changed Tomcat from 8.5.X to 9.X as the official Tomcat Docker tag `tomcat:jdk8` refers to `tomcat:9-jdk8`.
+
 ### Fixed
 - Update RAP/RWT to 3.12.0 to fix #194
+- Fixed duplicate folders in Repository Explorer (#199)
 
 ## 0.9.0.21 - 2020-02-07
 ### Changed
