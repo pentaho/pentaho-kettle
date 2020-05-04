@@ -24,6 +24,8 @@ package org.pentaho.di.ui.core.widget;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ExtendedModifyEvent;
+import org.eclipse.swt.custom.ExtendedModifyListener;
 import org.eclipse.swt.custom.LineStyleListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.Clipboard;
@@ -150,38 +152,38 @@ public class StyledTextComp extends Composite {
     }
 
     // Create the drop target on the StyledText
-//    DropTarget dt = new DropTarget( styledText, DND.DROP_MOVE );
-//    dt.setTransfer( new Transfer[] { TextTransfer.getInstance() } );
-//    dt.addDropListener( new DropTargetAdapter() {
-//      public void dragOver( DropTargetEvent e ) {
-//        styledText.setFocus();
-//        Point location = xParent.getDisplay().map( null, styledText, e.x, e.y );
-//        location.x = Math.max( 0, location.x );
-//        location.y = Math.max( 0, location.y );
-//        try {
-//          int offset = styledText.getOffsetAtLocation( new Point( location.x, location.y ) );
-//          styledText.setCaretOffset( offset );
-//        } catch ( IllegalArgumentException ex ) {
-//          int maxOffset = styledText.getCharCount();
-//          Point maxLocation = styledText.getLocationAtOffset( maxOffset );
-//          if ( location.y >= maxLocation.y ) {
-//            if ( location.x >= maxLocation.x ) {
-//              styledText.setCaretOffset( maxOffset );
-//            } else {
-//              int offset = styledText.getOffsetAtLocation( new Point( location.x, maxLocation.y ) );
-//              styledText.setCaretOffset( offset );
-//            }
-//          } else {
-//            styledText.setCaretOffset( maxOffset );
-//          }
-//        }
-//      }
-//
-//      public void drop( DropTargetEvent event ) {
-//        // Set the buttons text to be the text being dropped
-//        styledText.insert( (String) event.data );
-//      }
-//    } );
+    DropTarget dt = new DropTarget( styledText, DND.DROP_MOVE );
+    dt.setTransfer( new Transfer[] { TextTransfer.getInstance() } );
+    dt.addDropListener( new DropTargetAdapter() {
+      public void dragOver( DropTargetEvent e ) {
+        styledText.setFocus();
+        Point location = xParent.getDisplay().map( null, styledText, e.x, e.y );
+        location.x = Math.max( 0, location.x );
+        location.y = Math.max( 0, location.y );
+        try {
+          int offset = styledText.getOffsetAtLocation( new Point( location.x, location.y ) );
+          styledText.setCaretOffset( offset );
+        } catch ( IllegalArgumentException ex ) {
+          int maxOffset = styledText.getCharCount();
+          Point maxLocation = styledText.getLocationAtOffset( maxOffset );
+          if ( location.y >= maxLocation.y ) {
+            if ( location.x >= maxLocation.x ) {
+              styledText.setCaretOffset( maxOffset );
+            } else {
+              int offset = styledText.getOffsetAtLocation( new Point( location.x, maxLocation.y ) );
+              styledText.setCaretOffset( offset );
+            }
+          } else {
+            styledText.setCaretOffset( maxOffset );
+          }
+        }
+      }
+
+      public void drop( DropTargetEvent event ) {
+        // Set the buttons text to be the text being dropped
+        styledText.insert( (String) event.data );
+      }
+    } );
 
   }
 
@@ -264,31 +266,31 @@ public class StyledTextComp extends Composite {
       }
     } );
 
-//    new MenuItem( styledTextPopupmenu, SWT.SEPARATOR );
-//    MenuItem cutItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
-//    cutItem.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Cut" ) ) );
-//    cutItem.addListener( SWT.Selection, new Listener() {
-//      public void handleEvent( Event e ) {
-//        styledText.cut();
-//      }
-//    } );
-//
-//    MenuItem copyItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
-//    copyItem.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Copy" ) ) );
-//    copyItem.addListener( SWT.Selection, new Listener() {
-//      public void handleEvent( Event e ) {
-//        styledText.copy();
-//      }
-//    } );
-//
-//    MenuItem pasteItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
-//    pasteItem
-//      .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Paste" ) ) );
-//    pasteItem.addListener( SWT.Selection, new Listener() {
-//      public void handleEvent( Event e ) {
-//        styledText.paste();
-//      }
-//    } );
+    new MenuItem( styledTextPopupmenu, SWT.SEPARATOR );
+    MenuItem cutItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
+    cutItem.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Cut" ) ) );
+    cutItem.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event e ) {
+        styledText.cut();
+      }
+    } );
+
+    MenuItem copyItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
+    copyItem.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Copy" ) ) );
+    copyItem.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event e ) {
+        styledText.copy();
+      }
+    } );
+
+    MenuItem pasteItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
+    pasteItem
+      .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Paste" ) ) );
+    pasteItem.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event e ) {
+        styledText.paste();
+      }
+    } );
 
     MenuItem selectAllItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
     selectAllItem.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
@@ -384,6 +386,42 @@ public class StyledTextComp extends Composite {
       }
 
       public void widgetDefaultSelected( SelectionEvent event ) {
+      }
+    } );
+
+    styledText.addExtendedModifyListener( new ExtendedModifyListener() {
+      public void modifyText( ExtendedModifyEvent event ) {
+        int iEventLength = event.length;
+        int iEventStartPostition = event.start;
+
+        // Unterscheidung um welche Art es sich handelt Delete or Insert
+        String newText = styledText.getText();
+        String repText = event.replacedText;
+        String oldText = "";
+        int iEventType = -1;
+
+        // if((event.length!=newText.length()) || newText.length()==1){
+        if ( ( event.length != newText.length() ) || ( bFullSelection ) ) {
+          if ( repText != null && repText.length() > 0 ) {
+            oldText =
+              newText.substring( 0, event.start ) + repText + newText.substring( event.start + event.length );
+            iEventType = UndoRedoStack.DELETE;
+            iEventLength = repText.length();
+          } else {
+            oldText = newText.substring( 0, event.start ) + newText.substring( event.start + event.length );
+            iEventType = UndoRedoStack.INSERT;
+          }
+
+          if ( ( oldText != null && oldText.length() > 0 ) || ( iEventStartPostition == event.length ) ) {
+            UndoRedoStack urs =
+              new UndoRedoStack( iEventStartPostition, newText, oldText, iEventLength, iEventType );
+            if ( undoStack.size() == MAX_STACK_SIZE ) {
+              undoStack.remove( undoStack.size() - 1 );
+            }
+            undoStack.add( 0, urs );
+          }
+        }
+        bFullSelection = false;
       }
     } );
 
