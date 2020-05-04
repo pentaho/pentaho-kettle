@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -147,17 +147,9 @@ public class DefaultCache implements DatabaseLookupData.Cache {
   public void storeRowInCache( DatabaseLookupMeta meta, RowMetaInterface lookupMeta, Object[] lookupRow,
                                Object[] add ) {
     RowMetaAndData rowMetaAndData = new RowMetaAndData( lookupMeta, lookupRow );
-    // DEinspanjer 2009-02-01 XXX: I want to write a test case to prove this point before checking in.
-    // /* Don't insert a row with a duplicate key into the cache. It doesn't seem
-    // * to serve a useful purpose and can potentially cause the step to return
-    // * different values over the life of the transformation (if the source DB rows change)
-    // * Additionally, if using the load all data feature, re-inserting would reverse the order
-    // * specified in the step.
-    // */
-    // if (!data.look.containsKey(rowMetaAndData)) {
-    // data.look.put(rowMetaAndData, new TimedRow(add));
-    // }
-    map.put( rowMetaAndData, new TimedRow( add ) );
+    if ( !map.containsKey( rowMetaAndData ) ) {
+      map.put( rowMetaAndData, new TimedRow( add ) );
+    }
 
     // See if we have to limit the cache_size.
     // Sample 10% of the rows in the cache.
@@ -170,10 +162,7 @@ public class DefaultCache implements DatabaseLookupData.Cache {
     if ( !meta.isLoadingAllDataInCache() && meta.getCacheSize() > 0 && map.size() > meta.getCacheSize() ) {
       List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>( map.keySet() );
       List<Date> samples = new ArrayList<Date>();
-      int incr = keys.size() / 10;
-      if ( incr == 0 ) {
-        incr = 1;
-      }
+      int incr = getIncrement( keys );
       for ( int k = 0; k < keys.size(); k += incr ) {
         RowMetaAndData key = keys.get( k );
         TimedRow timedRow = map.get( key );
@@ -195,5 +184,13 @@ public class DefaultCache implements DatabaseLookupData.Cache {
         }
       }
     }
+  }
+
+  private int getIncrement( List<RowMetaAndData> keys ) {
+    int incr = keys.size() / 10;
+    if ( incr == 0 ) {
+      incr = 1;
+    }
+    return incr;
   }
 }
