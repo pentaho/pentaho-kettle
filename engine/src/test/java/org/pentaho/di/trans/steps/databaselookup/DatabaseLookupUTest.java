@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.databaselookup;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +36,7 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -47,8 +49,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -59,6 +63,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
@@ -71,10 +76,13 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -441,6 +449,91 @@ public class DatabaseLookupUTest {
     assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
   }
 
+  @Test
+  public void determineFieldsTypesQueryingDbDefaultTest() throws KettleException {
+    RowMeta rowMetaOutput = determineFieldsTypeQueryingDbSetupAndCall( null );
+    //Output Row Meta Must have its value be a Number instead of what is configured in the dialog, since Number
+    //is the type configured in the Database
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
+  }
+
+  @Test
+  public void determineFieldsTypesQueryingDbKettlePropertyFalseTest() throws KettleException {
+    RowMeta rowMetaOutput = determineFieldsTypeQueryingDbSetupAndCall( "N" );
+    //Output Row Meta Must have its value be a Number instead of what is configured in the dialog, since Number
+    //is the type configured in the Database
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
+  }
+
+  @Test
+  public void determineFieldsTypesQueryingDbKettlePropertyWrongValueTest() throws KettleException {
+    RowMeta rowMetaOutput = determineFieldsTypeQueryingDbSetupAndCall( "somethingwrong" );
+    //Output Row Meta Must have its value be a Number instead of what is configured in the dialog, since Number
+    //is the type configured in the Database
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
+  }
+
+  @Test
+  public void determineFieldsTypesQueryingDbKettlePropertyTrueTest() throws KettleException {
+    RowMeta rowMetaOutput = determineFieldsTypeQueryingDbSetupAndCall( "Y" );
+    //Output Row Meta Must have its value be a BigNumber instead of what is configured in the database, since BigNumber
+    //is the type configured in the Dialog
+    assertEquals( ValueMetaInterface.TYPE_BIGNUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
+  }
+
+  private RowMeta determineFieldsTypeQueryingDbSetupAndCall( String kettlePropertyValue ) throws KettleException {
+    //Row Meta - What is expected as configured in the database
+    RowMeta rowMeta = new RowMeta();
+    List<ValueMetaInterface> valueMetaList = new ArrayList<>();
+    valueMetaList.add( new ValueMetaInteger( "int" ) );
+    valueMetaList.add( new ValueMetaNumber( "num" ) );
+    valueMetaList.add( new ValueMetaBigNumber( "bignum" ) );
+    valueMetaList.add( new ValueMetaString( "string" ) );
+    rowMeta.setValueMetaList( valueMetaList );
+
+    //Input Row Meta
+    RowMeta inputRowMeta = new RowMeta();
+    List<ValueMetaInterface> inputValueMetaList = new ArrayList<>();
+    inputValueMetaList.add( new ValueMetaInteger( "int" ) );
+    inputRowMeta.setValueMetaList( inputValueMetaList );
+
+    //Row Meta Output - What is expected as configured in dialog
+    RowMeta rowMetaOutput = new RowMeta();
+    List<ValueMetaInterface> outputValueMetaList = new ArrayList<>();
+    outputValueMetaList.add( new ValueMetaInteger( "int" ) );
+    outputValueMetaList.add( new ValueMetaBigNumber( "num_as_bignum" ) );
+    outputValueMetaList.add( new ValueMetaBigNumber( "bignum" ) );
+    rowMetaOutput.setValueMetaList( outputValueMetaList );
+
+    //Mock Init
+    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    DatabaseLookupMeta dbLookupMeta = mock( DatabaseLookupMeta.class );
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    DatabaseLookupData dbLookupData = mock( DatabaseLookupData.class );
+    Database db = mock( Database.class );
+    //Expected Mock Returns
+    doReturn( new String[] { "int" } ).when( dbLookupMeta ).getTableKeyField();
+    doReturn( new String[] { "num", "bignum" } ).when( dbLookupMeta ).getReturnValueField();
+    doReturn( dbMeta ).when( dbLookupMeta ).getDatabaseMeta();
+    doReturn( "lookuptable" ).when( dbMeta ).getQuotedSchemaTableCombination( anyString(), anyString() );
+    doReturn( inputRowMeta ).when( dbLookup ).getInputRowMeta();
+    doReturn( rowMeta ).when( db ).getTableFields( "lookuptable" );
+    //Internal State Init
+    Whitebox.setInternalState( dbLookup, "data", dbLookupData );
+    Whitebox.setInternalState( dbLookupData, "db", db );
+    Whitebox.setInternalState( dbLookupData, "outputRowMeta", rowMetaOutput );
+    Whitebox.setInternalState( dbLookup, "meta", dbLookupMeta );
+    Whitebox.setInternalState( dbLookup, "variables", new Variables() );
+
+    doCallRealMethod().when( dbLookup ).setVariable( anyString(), anyString() );
+    doCallRealMethod().when( dbLookup ).getVariable( anyString(), anyString() );
+    doCallRealMethod().when( dbLookup ).determineFieldsTypesQueryingDb();
+    if ( kettlePropertyValue != null ) {
+      dbLookup.setVariable( "KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI", kettlePropertyValue );
+    }
+    dbLookup.determineFieldsTypesQueryingDb();
+    return rowMetaOutput;
+  }
   public class MockDatabaseLookup extends DatabaseLookup {
     public MockDatabaseLookup( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
