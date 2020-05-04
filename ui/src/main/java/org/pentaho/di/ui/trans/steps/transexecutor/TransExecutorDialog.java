@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -489,8 +489,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         wPath.setText( Const.NVL( transExecutorMeta.getFileName(), "" ) );
         break;
       case REPOSITORY_BY_NAME:
-        String fullPath = Const.NVL( transExecutorMeta.getDirectoryPath(), "" ) + "/" + Const
-          .NVL( transExecutorMeta.getTransName(), "" );
+        String transname = transMeta.environmentSubstitute( Const.NVL( transExecutorMeta.getTransName(), "" ) );
+        String directoryPath = transMeta.environmentSubstitute( Const.NVL( transExecutorMeta.getDirectoryPath(), "" ) );
+        String fullPath = directoryPath.isEmpty() && !transname.isEmpty()
+          ? Const.NVL( transExecutorMeta.getTransName(), "" )
+          : Const.NVL( transExecutorMeta.getDirectoryPath(), "" ) + "/" + Const.NVL( transExecutorMeta.getTransName(), "" );
         wPath.setText( fullPath );
         break;
       case REPOSITORY_BY_REFERENCE:
