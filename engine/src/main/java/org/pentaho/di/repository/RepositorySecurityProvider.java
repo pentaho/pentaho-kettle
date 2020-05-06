@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,6 +53,8 @@ public interface RepositorySecurityProvider extends IRepositoryService {
   String SCHEDULE_CONTENT_ACTION = "org.pentaho.scheduler.manage";
 
   String ADMINISTER_SECURITY_ACTION = "org.pentaho.security.administerSecurity"; //$NON-NLS-1$
+
+  String MODIFY_DATABASE_ACTION = "org.pentaho.platform.dataaccess.datasource.security.manage"; //$NON-NLS-1$
 
   String NAMESPACE = "org.pentaho"; //$NON-NLS-1$
 

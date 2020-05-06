@@ -59,6 +59,12 @@ public class AbsSecurityProviderTest {
     provider.validateAction( RepositoryOperation.MODIFY_JOB );
   }
 
+  @Test( expected = KettleException.class )
+  public void exceptionThrown_WhenOperationNotAllowed_DatasourcesOperation() throws Exception {
+    setOperationPermissions( IAbsSecurityProvider.MODIFY_DATABASE_ACTION, false);
+    provider.validateAction( RepositoryOperation.MODIFY_DATABASE );
+  }
+
   @Test
   public void noExceptionThrown_WhenOperationIsAllowed_ScheduleOperation() throws Exception {
 
@@ -78,6 +84,12 @@ public class AbsSecurityProviderTest {
 
     setOperationPermissions( IAbsSecurityProvider.CREATE_CONTENT_ACTION, true );
     provider.validateAction( RepositoryOperation.MODIFY_TRANSFORMATION );
+  }
+
+  @Test
+  public void noExceptionThrown_WhenOperationNotAllowed_DatasourcesOperation() throws Exception {
+    setOperationPermissions( IAbsSecurityProvider.MODIFY_DATABASE_ACTION, true);
+    provider.validateAction( RepositoryOperation.MODIFY_DATABASE );
   }
 
   private void setOperationPermissions( String operation, boolean isAllowed ) throws Exception {
