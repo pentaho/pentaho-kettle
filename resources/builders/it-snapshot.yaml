@@ -70,9 +70,6 @@ jobGroups:
      - jobID           :  hdfs-vfs
        scmUrl          :  https://github.com/pentaho/pentaho-hdfs-vfs.git
 
-     - jobID           :  s3-vfs
-       scmUrl          :  https://github.com/pentaho/pentaho-s3-vfs.git
-
      - jobID           :  apache-vfs-browser
        scmUrl          :  https://github.com/pentaho/apache-vfs-browser.git
 

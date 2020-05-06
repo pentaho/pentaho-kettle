@@ -149,10 +149,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-hdfs-vfs.git
        versionProperty :  pentaho-hdfs-vfs.version
 
-     - jobID           :  s3-vfs
-       scmUrl          :  https://github.com/pentaho/pentaho-s3-vfs.git
-       versionProperty :  pentaho-s3-vfs.version
-
      - jobID           :  apache-vfs-browser
        scmUrl          :  https://github.com/pentaho/apache-vfs-browser.git
        versionProperty :  pentaho-vfs-browser.version

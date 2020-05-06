@@ -108,11 +108,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-hdfs-vfs.version
 
-     - jobID           :  s3-vfs
-       scmUrl          :  https://github.com/pentaho/pentaho-s3-vfs.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-s3-vfs.version
-
      - jobID           :  apache-vfs-browser
        scmUrl          :  https://github.com/pentaho/apache-vfs-browser.git
        scmBranch       :  ${DEFAULT_BRANCH}
