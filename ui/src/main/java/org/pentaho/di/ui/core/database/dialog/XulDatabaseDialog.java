@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,10 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.repository.RepositorySecurityUI;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.database.DatabaseConnectionDialog;
@@ -221,6 +224,10 @@ public class XulDatabaseDialog {
   }
 
   public void setDatabaseMeta( DatabaseMeta dbMeta ) {
+    if ( RepositorySecurityUI.verifyOperations( parentShell, Spoon.getInstance().getRepository(), RepositoryOperation.MODIFY_DATABASE ) ) {
+      return;
+    }
+
     databaseMeta = dbMeta;
     if ( dbMeta != null ) {
       databaseMetaObjectId = databaseMeta.getObjectId();

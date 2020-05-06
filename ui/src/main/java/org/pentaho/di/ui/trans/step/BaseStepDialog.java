@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -806,6 +806,10 @@ public class BaseStepDialog extends Dialog {
     DatabaseDialog cid = getDatabaseDialog( shell );
     cid.setDatabaseMeta( changing );
     cid.setModalDialog( true );
+
+    if ( cid.getDatabaseMeta() == null ) {
+      return changing.getName();
+    }
 
     String name = null;
     boolean repeat = true;
