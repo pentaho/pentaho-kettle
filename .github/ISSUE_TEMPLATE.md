@@ -1,6 +1,7 @@
 ## Checklist before submitting an issue
 
-- [ ] This issue does not happen on Spoon (if your issue happens on Spoon too, it originates from Spoon (not from webSpoon). Please look at [Pentaho Community Forums](https://forums.pentaho.com/), or seek help at [Hitachi Vantara Community](https://community.hitachivantara.com/s/pentaho), or submit an issue at [Pentaho JIRA](https://jira.pentaho.com/projects/PDI)).
+- [ ] This issue does not happen on Spoon.  
+If your issue happens on Spoon too, it originates from Spoon (not from webSpoon). Please look at [Pentaho Community Forums](https://forums.pentaho.com/), or seek help at [Hitachi Vantara Community](https://community.hitachivantara.com/s/pentaho), or submit an issue at [Pentaho JIRA](https://jira.pentaho.com/projects/PDI)).
 - [ ] I searched for existing issues at [here](https://github.com/HiromuHota/pentaho-kettle/issues) and [there](https://github.com/HiromuHota/webspoon-docker/issues).
 
 ## Expected Behavior
