@@ -21,6 +21,7 @@ commons-gwt.version=9.1.0.0-BUILDTAG
 commons-xul.version=9.1.0.0-BUILDTAG
 dashboard.version=9.1.0.0-BUILDTAG
 dashboard-plugin.version=9.1.0.0-BUILDTAG
+encryption-support.version=9.1.0.0-BUILDTAG
 jdbc-distribution-utility.version=9.1.0.0-BUILDTAG
 kafka-plugin.version=9.1.0.0-BUILDTAG
 launcher.version=9.1.0.0-BUILDTAG

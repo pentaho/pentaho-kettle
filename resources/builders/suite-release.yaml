@@ -118,6 +118,10 @@ jobGroups:
        directives      :  += -Plowdeps -Djavadoc
        root            :  libraries
 
+     - jobID           :  encryption-support
+       scmUrl          :  https://github.com/pentaho/pentaho-encryption-support.git
+       versionProperty :  encryption-support.version
+
   700:
      - jobID           :  reporting-engine-core
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
