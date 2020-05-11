@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.support.encryption.PasswordEncoderException;
 
 /**
  * This class handles basic encryption of passwords in Kettle. Note that it's not really encryption, it's more
@@ -63,7 +64,11 @@ public class Encr {
 
     // Load encoder specific options...
     //
-    encoder.init();
+    try {
+      encoder.init();
+    } catch ( PasswordEncoderException e ) {
+      throw new KettleException( e );
+    }
   }
 
   /**
