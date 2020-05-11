@@ -1,0 +1,23 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "webSpoon",
+      "image": "hiromuhota/webspoon",
+      "essential": true,
+      "memory": 1920,
+      "environment": [
+        {
+          "name": "JAVA_OPTS",
+          "value": "-Xms1024m -Xmx1920m"
+        }
+      ],
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 8080
+        }
+      ]
+    }
+  ]
+}
