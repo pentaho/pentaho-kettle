@@ -6,9 +6,11 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh '''
-          docker build --build-arg version=$version --build-arg CACHEBUST=$BUILD_NUMBER -t hiromuhota/webspoon:$version --pull=true .
-        '''
+        dir("docker") {
+          sh '''
+            docker build --build-arg version=$version --build-arg CACHEBUST=$BUILD_NUMBER -t hiromuhota/webspoon:$version --pull=true .
+          '''
+        }
       }
     }
     stage('Publish') {
