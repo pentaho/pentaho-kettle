@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,10 +30,10 @@ import org.pentaho.di.core.util.Utils;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.support.encryption.PasswordEncoderException;
+import org.pentaho.support.utils.StringUtil;
 
 /**
  * This class handles basic encryption of passwords in Kettle. Note that it's not really encryption, it's more
@@ -63,7 +63,7 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
   }
 
   @Override
-  public void init() throws KettleException {
+  public void init() throws PasswordEncoderException {
     // Nothing to do here.
   }
 

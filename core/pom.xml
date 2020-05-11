@@ -41,6 +41,7 @@
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
     <xmlunit.version>1.5</xmlunit.version>
     <joda.version>2.10.2</joda.version>
+    <pentaho-encryption-support-version>9.1.0.0-SNAPSHOT</pentaho-encryption-support-version>
   </properties>
 
   <dependencies>
@@ -491,6 +492,17 @@
       <version>${xmlunit.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-jdbc</artifactId>
+      <version>8.5.27</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pentaho-encryption-support</artifactId>
+      <version>${pentaho-encryption-support-version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
