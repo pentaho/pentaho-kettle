@@ -33,7 +33,7 @@ wget -q https://raw.githubusercontent.com/HiromuHota/pentaho-karaf-assembly/webs
 
 echo 'Configuring Carte'
 mkdir ${CATALINA_HOME}/system/kettle
-wget -q https://raw.githubusercontent.com/HiromuHota/pentaho-kettle/$version/docker/slave-server-config.xml -O ${CATALINA_HOME}/system/kettle/slave-server-config.xml || exit $?
+wget -q https://raw.githubusercontent.com/HiromuHota/pentaho-kettle/webspoon%2F$version/docker/slave-server-config.xml -O ${CATALINA_HOME}/system/kettle/slave-server-config.xml || exit $?
 
 echo 'Removing Karaf cache'
 rm -rf ${CATALINA_HOME}/system/karaf/caches/webspoonservletcontextlistener || true
