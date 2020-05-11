@@ -635,6 +635,16 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     }
   }
 
+  /*
+   * Remove all listeners; to be used during imports and other times when the directory property is changed but
+   * we do not want to trigger the steps to update.
+   */
+  public void clearCurrentDirectoryChangedListeners() {
+    if ( currentDirectoryChangedListeners != null ) {
+      currentDirectoryChangedListeners.clear();
+    }
+  }
+
   /**
    * Notify listeners of a change in current directory.
    */
