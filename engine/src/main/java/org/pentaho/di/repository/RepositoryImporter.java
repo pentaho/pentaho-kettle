@@ -800,6 +800,8 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
       updateDisplay();
     }
 
+    jobMeta.clearCurrentDirectoryChangedListeners();
+
     if ( existintId == null || overwrite ) {
       replaceSharedObjects( jobMeta );
       jobMeta.setRepositoryDirectory( targetDirectory );
