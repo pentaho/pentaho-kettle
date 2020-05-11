@@ -54,14 +54,20 @@ $ unzip ~/Downloads/pdi-ce-$dist.zip
 $ cd $CATALINA_HOME
 $ cp -r ~/data-integration/system ./
 $ cp -r ~/data-integration/plugins ./
-$ wget https://raw.githubusercontent.com/HiromuHota/webspoon-docker/$version/install.sh
+
+# see [1] below
+$ wget https://raw.githubusercontent.com/HiromuHota/pentaho-kettle/$version/docker/install.sh
 $ chmod +x install.sh
 $ ./install.sh
+
+# see [2] below
 $ export CATALINA_OPTS="-Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
 $ ./bin/startup.sh
 ```
 
-Instead of exporting `CATALINA_OPTS` like above, `org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true` can be added to `conf/catalina.properties`.
+[1]: 0.9.0.21 and before, use `https://raw.githubusercontent.com/HiromuHota/webspoon-docker/$version/install.sh` instead.
+
+[2]: Instead of exporting `CATALINA_OPTS` like above, `org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true` can be added to `conf/catalina.properties`.
 
 # How to config (optional)
 

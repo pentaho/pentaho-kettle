@@ -1,0 +1,22 @@
+grant
+{
+  permission java.io.FilePermission "${java.io.tmpdir}", "read";
+  permission java.io.FilePermission "${java.io.tmpdir}/-", "read,write,delete";
+  permission java.io.FilePermission "${catalina.home}/webapps/spoon/rwt-resources", "write,delete";
+  permission java.io.FilePermission "${catalina.home}/webapps/spoon/rwt-resources/-", "read,write,delete";
+
+  permission java.io.FilePermission "${java.home}/lib/-", "read";
+  permission java.io.FilePermission "${catalina.home}/webapps/spoon/-", "read";
+  permission java.io.FilePermission "${user.home}/.pentaho", "read";
+  permission java.io.FilePermission "${user.home}/.pentaho/metastore", "read";
+  permission java.io.FilePermission "${catalina.home}/lib/-", "read";
+  permission java.io.FilePermission "${catalina.home}/plugins/-", "read";
+  permission java.io.FilePermission "${catalina.home}/ui/-", "read";
+  permission java.io.FilePermission "${catalina.home}/-", "read";
+  permission java.io.FilePermission "${catalina.home}/.", "read";
+  permission java.io.FilePermission "repositories.xml", "read";
+
+  // For SpoonGit
+  permission java.io.FilePermission "${user.home}/.gitconfig", "read";
+  permission java.io.FilePermission "${user.home}/.gitignore_global", "read";
+};
