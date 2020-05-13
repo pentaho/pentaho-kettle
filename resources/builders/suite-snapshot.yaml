@@ -6,7 +6,7 @@ buildProperties:
   RELEASE_BUILD_NUMBER: latest
 
   ARCHIVING_CONFIG: ${BUILD_CONFIG_ROOT_PATH}/artifacts/snapshot-manifest.yaml
-  ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
+  ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
 
   MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
   # we are running in containers, let the maven process have most of the memory available
@@ -559,10 +559,8 @@ jobGroups:
        testable        :  false
        parallelize     :  true
 
-  4700:
      - jobID           :  installer-tool
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
        dockerImage     :  jenkins-build/installanywhere-installbuilder
        root            :  installer-tool
        archivable      :  true
-       atomicScmCheckout: true

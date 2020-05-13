@@ -16,7 +16,7 @@ buildProperties:
   DOCKER_PUBLIC_PUSH_REPO     : pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com/
   DOCKER_PRIVATE_PUSH_REPO    : pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com/
 
-  ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
+  ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
 
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
@@ -726,6 +726,13 @@ jobGroups:
        archivable      :  true
        testable        :  false
        parallelize     :  true
+       versionProperty :  pentaho.version
+
+     - jobID           :  installer-tool
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/installanywhere-installbuilder
+       root            :  installer-tool
+       archivable      :  true
        versionProperty :  pentaho.version
 
   4700:
