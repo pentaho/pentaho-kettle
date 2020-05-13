@@ -82,6 +82,7 @@ pentaho-hadoop-shims-api.version=9.1.2020.06.00-BUILDTAG
 pentaho-hadoop-shims-cdh513.version=9.1.2020.06.00-BUILDTAG
 pentaho-hadoop-shims-cdh514.version=9.1.2020.06.00-BUILDTAG
 pentaho-hadoop-shims-cdh61.version=9.1.2020.06.00-BUILDTAG
+pentaho-hadoop-shims-dataproc1421.version=9.1.2020.06.00-BUILDTAG
 pentaho-hadoop-shims-emr511.version=9.1.2020.06.00-BUILDTAG
 pentaho-hadoop-shims-emr521.version=9.1.2020.06.00-BUILDTAG
 pentaho-hadoop-shims-hdp26.version=9.1.2020.06.00-BUILDTAG
