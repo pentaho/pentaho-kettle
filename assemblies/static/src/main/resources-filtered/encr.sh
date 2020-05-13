@@ -26,5 +26,5 @@ BASEDIR="`dirname $0`"
 cd "$BASEDIR"
 DIR="`pwd`"
 cd - > /dev/null
-java -cp "$DIR"/lib/pentaho-support-encryption-9.1.0.0-SNAPSHOT.jar:"$DIR"/classes org.pentaho.support.encryption.Encr "$@"
+java -cp "$DIR"/lib/pentaho-support-encryption-${encryption-support.version}.jar:"$DIR"/classes org.pentaho.support.encryption.Encr "$@"
 
