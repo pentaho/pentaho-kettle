@@ -728,12 +728,12 @@ jobGroups:
        parallelize     :  true
        versionProperty :  pentaho.version
 
-#     - jobID           :  installer-tool
-#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-#       dockerImage     :  jenkins-build/installanywhere-installbuilder
-#       root            :  installer-tool
-#       archivable      :  true
-#       versionProperty :  pentaho.version
+     - jobID           :  installer-tool
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/installanywhere-installbuilder
+       root            :  installer-tool
+       archivable      :  true
+       versionProperty :  pentaho.version
 
   4700:
      - jobID           :  patch-installers
