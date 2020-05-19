@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,12 @@
 
 package org.pentaho.di.trans.steps.databasejoin;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -34,11 +36,18 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -122,5 +131,83 @@ public class DatabaseJoinTest {
     verify( mockStepDataInterface.db, times( 1 ) ).getConnection();
     verify( mockStepDataInterface.db, times( 0 ) ).cancelStatement( any( PreparedStatement.class ) );
     assertFalse( mockStepDataInterface.isCanceled );
+  }
+
+  @Test
+  public void testLookupStopRunningPossibleDeadlock() throws Exception {
+
+    //Prepare mock results
+    RowMeta mockRowMeta = mock( RowMeta.class );
+    DatabaseJoinMeta mockStepMetaInterfaceCausesException = mock( DatabaseJoinMeta.class );
+    doReturn( new Object[] { null, null, null } ).when( mockDatabaseJoin ).getRow();
+    doReturn( mockRowMeta ).when( mockDatabaseJoin ).getInputRowMeta();
+    doReturn( new String[]{} ).when( mockStepMetaInterface ).getParameterField();
+    doReturn( new String[]{"", ""} ).when( mockStepMetaInterfaceCausesException ).getParameterField();
+    doReturn( -1 ).when( mockRowMeta ).indexOfValue( anyString() );
+    doNothing().when( mockDatabaseJoin ).logError( anyString(), (Throwable) any() );
+    doNothing().when( mockDatabaseJoin ).setOutputDone();
+
+    //When stopAll is invoked call stopRunning. Only called when lookup has an exception.
+    doAnswer( invocationOnMock -> {
+      //Force context switch
+      Thread.sleep( 1 );
+      mockDatabaseJoin.stopRunning( mockStepMetaInterfaceCausesException, mockStepDataInterface );
+      return 1;
+    } ).when( mockDatabaseJoin ).stopAll();
+
+    //When incrementLinesInput is invoked call stopRunning. Only called when lookup terminates ok.
+    doAnswer( invocationOnMock -> {
+      //Force context switch
+      Thread.sleep( 1 );
+      mockDatabaseJoin.stopRunning( mockStepMetaInterface, mockStepDataInterface );
+      return 1;
+    } ).when( mockDatabaseJoin ).incrementLinesInput();
+
+    /* This simulates calling several processRows, the first ones will end up ok, calling stopRunning in the end.
+    The second ones will fail in the process which will call stopRunning.
+    This tests if we end up with a deadlock like the one caused in (PDI-18406), because lookup and stopRunning had the same lock
+    and called each other in two different situations (failing and processing until the end)*/
+
+    int threadPoolSize = 3;
+    int tasks = 5000;
+    int timeout = 80000;
+    final AtomicBoolean hasFailed = new AtomicBoolean( false );
+    ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(
+        threadPoolSize, new ThreadFactory() {
+          public Thread newThread( Runnable r ) {
+            final Thread t = new Thread( r );
+            t.setUncaughtExceptionHandler( new Thread.UncaughtExceptionHandler() {
+              public void uncaughtException( Thread t, Throwable e ) {
+                e.printStackTrace();
+                hasFailed.set( true );
+              }
+            } );
+            return t;
+          }
+        } );
+
+    for ( int i = 0; i < tasks; i++ ) {
+      executor.execute( () -> {
+        try {
+          mockDatabaseJoin.processRow( mockStepMetaInterface, mockStepDataInterface );
+        } catch ( KettleException e ) {
+          e.printStackTrace();
+        }
+      } );
+    }
+    for ( int i = 0; i < tasks; i++ ) {
+      executor.execute( () -> {
+        try {
+          mockDatabaseJoin.processRow( mockStepMetaInterfaceCausesException, mockStepDataInterface );
+        } catch ( KettleException e ) {
+          e.printStackTrace();
+        }
+      } );
+    }
+    executor.shutdown();
+    if ( !executor.awaitTermination( timeout, TimeUnit.MILLISECONDS ) ) {
+      Assert.fail( "Deadlock detected" );
+    }
+    assertFalse( "Errors encountered.", hasFailed.get() );
   }
 }

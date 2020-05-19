@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.tableinput;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -53,6 +54,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class TableInput extends BaseStep implements StepInterface {
   private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!
+
+  private final ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
 
   private TableInputMeta meta;
   private TableInputData data;
@@ -95,121 +98,126 @@ public class TableInput extends BaseStep implements StepInterface {
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    if ( first ) { // we just got started
+    dbLock.writeLock().lock();
+    try {
+      if ( first ) { // we just got started
 
-      Object[] parameters;
-      RowMetaInterface parametersMeta;
-      first = false;
+        Object[] parameters;
+        RowMetaInterface parametersMeta;
+        first = false;
 
-      // Make sure we read data from source steps...
-      if ( data.infoStream.getStepMeta() != null ) {
-        if ( meta.isExecuteEachInputRow() ) {
-          if ( log.isDetailed() ) {
-            logDetailed( "Reading single row from stream [" + data.infoStream.getStepname() + "]" );
+        // Make sure we read data from source steps...
+        if ( data.infoStream.getStepMeta() != null ) {
+          if ( meta.isExecuteEachInputRow() ) {
+            if ( log.isDetailed() ) {
+              logDetailed( "Reading single row from stream [" + data.infoStream.getStepname() + "]" );
+            }
+            data.rowSet = findInputRowSet( data.infoStream.getStepname() );
+            if ( data.rowSet == null ) {
+              throw new KettleException( "Unable to find rowset to read from, perhaps step ["
+                  + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
+            }
+            parameters = getRowFrom( data.rowSet );
+            parametersMeta = data.rowSet.getRowMeta();
+          } else {
+            if ( log.isDetailed() ) {
+              logDetailed( "Reading query parameters from stream [" + data.infoStream.getStepname() + "]" );
+            }
+            RowMetaAndData rmad = readStartDate(); // Read values in lookup table (look)
+            parameters = rmad.getData();
+            parametersMeta = rmad.getRowMeta();
           }
-          data.rowSet = findInputRowSet( data.infoStream.getStepname() );
-          if ( data.rowSet == null ) {
-            throw new KettleException( "Unable to find rowset to read from, perhaps step ["
-              + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
+          if ( parameters != null ) {
+            if ( log.isDetailed() ) {
+              logDetailed( "Query parameters found = " + parametersMeta.getString( parameters ) );
+            }
           }
-          parameters = getRowFrom( data.rowSet );
-          parametersMeta = data.rowSet.getRowMeta();
         } else {
-          if ( log.isDetailed() ) {
-            logDetailed( "Reading query parameters from stream [" + data.infoStream.getStepname() + "]" );
-          }
-          RowMetaAndData rmad = readStartDate(); // Read values in lookup table (look)
-          parameters = rmad.getData();
-          parametersMeta = rmad.getRowMeta();
+          parameters = new Object[] {};
+          parametersMeta = new RowMeta();
         }
-        if ( parameters != null ) {
-          if ( log.isDetailed() ) {
-            logDetailed( "Query parameters found = " + parametersMeta.getString( parameters ) );
-          }
+
+        if ( meta.isExecuteEachInputRow() && ( parameters == null || parametersMeta.size() == 0 ) ) {
+          setOutputDone(); // signal end to receiver(s)
+          return false; // stop immediately, nothing to do here.
+        }
+
+        boolean success = doQuery( parametersMeta, parameters );
+        if ( !success ) {
+          return false;
         }
       } else {
-        parameters = new Object[] {};
-        parametersMeta = new RowMeta();
+        if ( data.thisrow != null ) { // We can expect more rows
+
+          try {
+            data.nextrow = data.db.getRow( data.rs, meta.isLazyConversionActive() );
+          } catch ( KettleDatabaseException e ) {
+            if ( e.getCause() instanceof SQLException && isStopped() ) {
+              //This exception indicates we tried reading a row after the statment for this step was cancelled
+              //this is expected and ok so do not pass the exception up
+              logDebug( e.getMessage() );
+              return false;
+            } else {
+              throw e;
+            }
+          }
+          if ( data.nextrow != null ) {
+            incrementLinesInput();
+          }
+        }
       }
 
-      if ( meta.isExecuteEachInputRow() && ( parameters == null || parametersMeta.size() == 0 ) ) {
-        setOutputDone(); // signal end to receiver(s)
-        return false; // stop immediately, nothing to do here.
-      }
+      if ( data.thisrow == null ) { // Finished reading?
 
-      boolean success = doQuery( parametersMeta, parameters );
-      if ( !success ) {
-        return false;
-      }
-    } else {
-      if ( data.thisrow != null ) { // We can expect more rows
+        boolean done = false;
+        if ( meta.isExecuteEachInputRow() ) { // Try to get another row from the input stream
+          Object[] nextRow = getRowFrom( data.rowSet );
+          if ( nextRow == null ) { // Nothing more to get!
 
-        try {
-          data.nextrow = data.db.getRow( data.rs, meta.isLazyConversionActive() );
-        } catch ( KettleDatabaseException e ) {
-          if ( e.getCause() instanceof SQLException && isStopped() ) {
-            //This exception indicates we tried reading a row after the statment for this step was cancelled
-            //this is expected and ok so do not pass the exception up
-            logDebug( e.getMessage() );
-            return false;
+            done = true;
           } else {
-            throw e;
-          }
-        }
-        if ( data.nextrow != null ) {
-          incrementLinesInput();
-        }
-      }
-    }
+            // First close the previous query, otherwise we run out of cursors!
+            closePreviousQuery();
 
-    if ( data.thisrow == null ) { // Finished reading?
+            boolean success = doQuery( data.rowSet.getRowMeta(), nextRow ); // OK, perform a new query
+            if ( !success ) {
+              return false;
+            }
 
-      boolean done = false;
-      if ( meta.isExecuteEachInputRow() ) { // Try to get another row from the input stream
-        Object[] nextRow = getRowFrom( data.rowSet );
-        if ( nextRow == null ) { // Nothing more to get!
+            if ( data.thisrow != null ) {
+              putRow( data.rowMeta, data.thisrow ); // fill the rowset(s). (wait for empty)
+              data.thisrow = data.nextrow;
 
-          done = true;
-        } else {
-          // First close the previous query, otherwise we run out of cursors!
-          closePreviousQuery();
-
-          boolean success = doQuery( data.rowSet.getRowMeta(), nextRow ); // OK, perform a new query
-          if ( !success ) {
-            return false;
-          }
-
-          if ( data.thisrow != null ) {
-            putRow( data.rowMeta, data.thisrow ); // fill the rowset(s). (wait for empty)
-            data.thisrow = data.nextrow;
-
-            if ( checkFeedback( getLinesInput() ) ) {
-              if ( log.isBasic() ) {
-                logBasic( "linenr " + getLinesInput() );
+              if ( checkFeedback( getLinesInput() ) ) {
+                if ( log.isBasic() ) {
+                  logBasic( "linenr " + getLinesInput() );
+                }
               }
             }
           }
+        } else {
+          done = true;
+        }
+
+        if ( done ) {
+          setOutputDone(); // signal end to receiver(s)
+          return false; // end of data or error.
         }
       } else {
-        done = true;
-      }
+        putRow( data.rowMeta, data.thisrow ); // fill the rowset(s). (wait for empty)
+        data.thisrow = data.nextrow;
 
-      if ( done ) {
-        setOutputDone(); // signal end to receiver(s)
-        return false; // end of data or error.
-      }
-    } else {
-      putRow( data.rowMeta, data.thisrow ); // fill the rowset(s). (wait for empty)
-      data.thisrow = data.nextrow;
-
-      if ( checkFeedback( getLinesInput() ) ) {
-        if ( log.isBasic() ) {
-          logBasic( "linenr " + getLinesInput() );
+        if ( checkFeedback( getLinesInput() ) ) {
+          if ( log.isBasic() ) {
+            logBasic( "linenr " + getLinesInput() );
+          }
         }
       }
-    }
 
-    return true;
+      return true;
+    } finally {
+      dbLock.writeLock().unlock();
+    }
   }
 
   private void closePreviousQuery() throws KettleDatabaseException {
@@ -269,96 +277,111 @@ public class TableInput extends BaseStep implements StepInterface {
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    if ( log.isBasic() ) {
-      logBasic( "Finished reading query, closing connection." );
-    }
+    dbLock.writeLock().lock();
     try {
-      closePreviousQuery();
-    } catch ( KettleException e ) {
-      logError( "Unexpected error closing query : " + e.toString() );
-      setErrors( 1 );
-      stopAll();
-    } finally {
-      if ( data.db != null ) {
-        data.db.disconnect();
+      if ( log.isBasic() ) {
+        logBasic( "Finished reading query, closing connection." );
       }
+      try {
+        closePreviousQuery();
+      } catch ( KettleException e ) {
+        logError( "Unexpected error closing query : " + e.toString() );
+        setErrors( 1 );
+        stopAll();
+      } finally {
+        if ( data.db != null ) {
+          data.db.disconnect();
+        }
+      }
+      super.dispose( smi, sdi );
+    } finally {
+      dbLock.writeLock().unlock();
     }
-
-    super.dispose( smi, sdi );
   }
 
   /** Stop the running query */
-  public synchronized void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+  public void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     if ( this.isStopped() || sdi.isDisposed() ) {
       return;
     }
-    meta = (TableInputMeta) smi;
-    data = (TableInputData) sdi;
 
-    setStopped( true );
+    dbLock.writeLock().lock();
+    try {
+      meta = (TableInputMeta) smi;
+      data = (TableInputData) sdi;
 
-    if ( data.db != null && data.db.getConnection() != null && !data.isCanceled ) {
-      data.db.cancelQuery();
-      data.isCanceled = true;
+      setStopped( true );
+
+      if ( data.db != null  && data.db.getConnection() != null && !data.isCanceled ) {
+        data.db.cancelQuery();
+        data.isCanceled = true;
+      }
+    } finally {
+      dbLock.writeLock().unlock();
     }
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
-    meta = (TableInputMeta) smi;
-    data = (TableInputData) sdi;
+    dbLock.writeLock().lock();
+    try {
+      meta = (TableInputMeta) smi;
+      data = (TableInputData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
-      // Verify some basic things first...
-      //
-      boolean passed = true;
-      if ( Utils.isEmpty( meta.getSQL() ) ) {
-        logError( BaseMessages.getString( PKG, "TableInput.Exception.SQLIsNeeded" ) );
-        passed = false;
-      }
+      if ( super.init( smi, sdi ) ) {
+        // Verify some basic things first...
+        //
+        boolean passed = true;
+        if ( Utils.isEmpty( meta.getSQL() ) ) {
+          logError( BaseMessages.getString( PKG, "TableInput.Exception.SQLIsNeeded" ) );
+          passed = false;
+        }
 
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "TableInput.Exception.DatabaseConnectionsIsNeeded" ) );
-        passed = false;
-      }
-      if ( !passed ) {
-        return false;
-      }
+        if ( meta.getDatabaseMeta() == null ) {
+          logError( BaseMessages.getString( PKG, "TableInput.Exception.DatabaseConnectionsIsNeeded" ) );
+          passed = false;
+        }
+        if ( !passed ) {
+          return false;
+        }
 
-      data.infoStream = meta.getStepIOMeta().getInfoStreams().get( 0 );
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "TableInput.Init.ConnectionMissing", getStepname() ) );
-        return false;
-      }
-      data.db = new Database( this, meta.getDatabaseMeta() );
-      data.db.shareVariablesWith( this );
+        data.infoStream = meta.getStepIOMeta().getInfoStreams().get( 0 );
+        if ( meta.getDatabaseMeta() == null ) {
+          logError( BaseMessages.getString( PKG, "TableInput.Init.ConnectionMissing", getStepname() ) );
+          return false;
+        }
+        data.db = new Database( this, meta.getDatabaseMeta() );
+        data.db.shareVariablesWith( this );
 
-      data.db.setQueryLimit( Const.toInt( environmentSubstitute( meta.getRowLimit() ), 0 ) );
+        data.db.setQueryLimit( Const.toInt( environmentSubstitute( meta.getRowLimit() ), 0 ) );
 
-      try {
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
+        try {
+          if ( getTransMeta().isUsingUniqueConnections() ) {
+            synchronized ( getTrans() ) {
+              data.db.connect( getTrans().getTransactionId(), getPartitionID() );
+            }
+          } else {
+            data.db.connect( getPartitionID() );
           }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
 
-        if ( meta.getDatabaseMeta().isRequiringTransactionsOnQueries() ) {
-          data.db.setCommit( 100 ); // needed for PGSQL it seems...
-        }
-        if ( log.isDetailed() ) {
-          logDetailed( "Connected to database..." );
-        }
+          if ( meta.getDatabaseMeta().isRequiringTransactionsOnQueries() ) {
+            data.db.setCommit( 100 ); // needed for PGSQL it seems...
+          }
+          if ( log.isDetailed() ) {
+            logDetailed( "Connected to database..." );
+          }
 
-        return true;
-      } catch ( KettleException e ) {
-        logError( "An error occurred, processing will be stopped: " + e.getMessage() );
-        setErrors( 1 );
-        stopAll();
+          return true;
+        } catch ( KettleException e ) {
+          logError( "An error occurred, processing will be stopped: " + e.getMessage() );
+          setErrors( 1 );
+          stopAll();
+        }
       }
-    }
 
-    return false;
+      return false;
+    } finally {
+      dbLock.writeLock().unlock();
+    }
   }
 
   public boolean isWaitingForData() {
