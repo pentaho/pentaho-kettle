@@ -58,7 +58,9 @@ public class Encr {
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginInterface plugin = registry.findPluginWithId( TwoWayPasswordEncoderPluginType.class, encoderPluginId );
     if ( plugin == null ) {
-      throw new KettleException( "Unable to find plugin with ID '" + encoderPluginId + "'" );
+      throw new KettleException( "Unable to find plugin with ID '" + encoderPluginId + "'.  If this is a test, make sure"
+        + " kettle-core tests jar is a dependency.  If this is live make sure a kettle-password-encoder-plugins.xml"
+        + " exits in the classpath" );
     }
     encoder = (TwoWayPasswordEncoderInterface) registry.loadClass( plugin );
 
