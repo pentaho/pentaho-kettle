@@ -329,7 +329,6 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
         }
 
         String string = getStringFromRow( rowMeta, r, i, failOnParseError );
-        
         evaluator.evaluateString( string );
       }
 
