@@ -182,7 +182,7 @@ public class BaseStreamStepMetaTest {
     assertEquals( "The \"Number of records\" field is using a non-numeric value. Please set a numeric value.",
       remarks.get( 1 ).getText() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 2 ).getType() );
-    assertEquals( "The \"Message prefetch count\" field is using a non-numeric value. Please set a numeric value.",
+    assertEquals( "The \"Message prefetch limit\" field is using a non-numeric value. Please set a numeric value.",
       remarks.get( 2 ).getText() );
   }
 
@@ -194,7 +194,7 @@ public class BaseStreamStepMetaTest {
     meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 1, remarks.size() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
-    assertEquals( "The \"Message prefetch count\" must be equal to or greater than the \"Number of records\". 1 is not equal to or greater than 2",
+    assertEquals( "The \"Message prefetch limit\" must be equal to or greater than the \"Number of records\". 1 is not equal to or greater than 2",
       remarks.get( 0 ).getText() );
   }
 
@@ -214,10 +214,10 @@ public class BaseStreamStepMetaTest {
     meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 2, remarks.size() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
-    assertEquals( "The \"Message prefetch count\" must be greater than 0. 0 is not greater than 0",
+    assertEquals( "The \"Message prefetch limit\" must be greater than 0. 0 is not greater than 0",
       remarks.get( 0 ).getText() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 1 ).getType() );
-    assertEquals( "The \"Message prefetch count\" must be equal to or greater than the \"Number of records\". 0 is not equal to or greater "
+    assertEquals( "The \"Message prefetch limit\" must be equal to or greater than the \"Number of records\". 0 is not equal to or greater "
         + "than 1000",
       remarks.get( 1 ).getText() );
   }
@@ -229,7 +229,7 @@ public class BaseStreamStepMetaTest {
     meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 1, remarks.size() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
-    assertEquals( "The \"Message prefetch count\" field is using a non-numeric value. Please set a numeric value.",
+    assertEquals( "The \"Message prefetch limit\" field is using a non-numeric value. Please set a numeric value.",
       remarks.get( 0 ).getText() );
   }
 
