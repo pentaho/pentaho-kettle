@@ -1392,34 +1392,59 @@ public class Const {
   public static final String KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE_DEFAULT = "HALF_EVEN";
 
   /**
-   * <p>This environment variable is used to define if a Timestamp should be converted to nanoseconds or
-   * milliseconds.</p>
-   * <p>By default, a Timestamp is in {@value #KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT}.</p>
+   * <p>This environment variable is used to define how Timestamp should be converted to a number and vice-versa.</p>
+   * <p>Three options exist:</p>
+   * <ul>
+   *   <li>{@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY}: converting a Timestamp to a number uses
+   *   milliseconds but converting a number to Timestamp assumes the value is in nanoseconds</li>
+   *   <li>{@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS}: both Timestamp to number and number to
+   *   Timestamp use milliseconds</li>
+   *   <li>{@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS}: both Timestamp to number and number to
+   *   Timestamp use nanoseconds</li>
+   * </ul>
+   * <p>The default is {@value #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT}.</p>
    *
-   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT
-   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS
-   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS
    */
-  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT = "KETTLE_TIMESTAMP_OUTPUT_FORMAT";
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE = "KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE";
 
   /**
-   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_OUTPUT_FORMAT} as nanoseconds.</p>
+   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE} as it behaved on former
+   * versions.</p>
    *
-   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS
    */
-  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS = "NANOSECONDS";
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY = "LEGACY";
 
   /**
-   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_OUTPUT_FORMAT} as milliseconds.</p>
+   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE} to use milliseconds.</p>
    *
-   * @see #KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS
    */
-  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS = "MILLISECONDS";
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS = "MILLISECONDS";
 
   /**
-   * <p>The default value for the {@link #KETTLE_TIMESTAMP_OUTPUT_FORMAT}.</p>
+   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE} to use nanoseconds.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS
    */
-  public static final String KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT = KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS;
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS = "NANOSECONDS";
+
+  /**
+   * <p>The default value for the {@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE}.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT =
+    KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY;
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
