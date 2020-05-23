@@ -554,5 +554,11 @@
     <variable>KETTLE_XLSX_ZIP_BOMB_CHECK</variable>
     <default-value>false</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to define if a Timestamp should be converted to nanoseconds or milliseconds.</description>
+    <variable>KETTLE_TIMESTAMP_OUTPUT_FORMAT</variable>
+    <default-value>NANOSECONDS</default-value>
+  </kettle-variable>
 </kettle-variables>
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,16 +30,20 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 /**
@@ -127,6 +131,77 @@ public class ValueMetaTimestampTest {
     Timestamp convertedTimestamp = valueMetaTimestamp.convertDateToTimestamp( timestamp );
     assertEquals( convertedTimestamp.getTime(), timestamp.getTime() );
     assertEquals( convertedTimestamp.getNanos(), timestamp.getNanos() );
+  }
 
+  @Test
+  public void testConvertIntegerToTimestamp() {
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+    long nanoseconds = 1567308896123456789L;
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    Timestamp result = valueMetaTimestamp.convertIntegerToTimestamp( nanoseconds );
+    Timestamp expected = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testConvertTimestampToInteger() throws KettleValueException {
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+    Timestamp date = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    long result = valueMetaTimestamp.getInteger( date );
+    long expected = 1567308896123456789L;
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testConvertNumberToTimestamp() {
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+    double nanoseconds = 1567308896123456000L;
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    Timestamp result = valueMetaTimestamp.convertNumberToTimestamp( nanoseconds );
+    Timestamp expected = Timestamp.valueOf( "2019-09-01 04:34:56.123456000" );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testConvertTimestampToNumber() throws KettleValueException {
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+    Timestamp date = Timestamp.valueOf( "2019-09-01 04:34:56.123456000" );
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    double result = valueMetaTimestamp.getNumber( date );
+    double expected = 1567308896123456000L;
+    assertEquals( expected, result, 0 );
+  }
+
+  @Test
+  public void testConvertBigNumberToTimestamp() {
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+    BigDecimal nanoseconds = BigDecimal.valueOf( 1567308896123456789L );
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    Timestamp result = valueMetaTimestamp.convertBigNumberToTimestamp( nanoseconds );
+    Timestamp expected = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testConvertTimestampToBigNumber() throws KettleValueException {
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+    Timestamp date = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    BigDecimal result = valueMetaTimestamp.getBigNumber( date );
+    BigDecimal expected = BigDecimal.valueOf( 1567308896123456789L );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testConvertTimestampToIntegerInMilliseconds() throws KettleValueException {
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+    System.setProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, "MILLISECONDS" );
+    Timestamp date = Timestamp.valueOf( "2019-09-01 04:34:56.123456789" );
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    long result = valueMetaTimestamp.getInteger( date );
+    long expected = 1567308896123L;
+    assertEquals( expected, result );
+    System.setProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT, "NANOSECONDS" );
   }
 }
