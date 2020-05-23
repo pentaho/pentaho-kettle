@@ -54,7 +54,7 @@ import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 public class ValueMetaTimestamp extends ValueMetaDate {
   private final String format =
     Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT ),
-      Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS );
+      Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_DEFAULT );
 
   public ValueMetaTimestamp() {
     this( null );
@@ -86,11 +86,11 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     long milliseconds = timestamp.getTime();
-    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS.equalsIgnoreCase( format )  ) {
-      return  milliseconds;
-    } else {
+    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS.equalsIgnoreCase( format ) ) {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
       return seconds * 1000000000L + timestamp.getNanos();
+    } else {
+      return  milliseconds;
     }
   }
 
@@ -102,11 +102,11 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     long milliseconds = timestamp.getTime();
-    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS.equalsIgnoreCase( format )  ) {
-      return (double) milliseconds;
-    } else {
+    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS.equalsIgnoreCase( format ) ) {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
       return (double) seconds * 1000000000L + timestamp.getNanos();
+    } else {
+      return (double) milliseconds;
     }
   }
 
@@ -118,12 +118,12 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     long milliseconds = timestamp.getTime();
-    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_MILLISECONDS.equalsIgnoreCase( format )  ) {
-      return BigDecimal.valueOf( milliseconds );
-    } else {
+    if ( Const.KETTLE_TIMESTAMP_OUTPUT_FORMAT_NANOSECONDS.equalsIgnoreCase( format ) ) {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
       return BigDecimal.valueOf( seconds ).multiply( BigDecimal.valueOf( 1000000000L ) ).add(
           BigDecimal.valueOf( timestamp.getNanos() ) );
+    } else {
+      return BigDecimal.valueOf( milliseconds );
     }
   }
 
