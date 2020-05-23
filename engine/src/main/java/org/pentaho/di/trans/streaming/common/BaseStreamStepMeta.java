@@ -200,7 +200,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     } catch ( NumberFormatException e ) {
       remarks.add( new CheckResult(
         CheckResultInterface.TYPE_RESULT_ERROR,
-        BaseMessages.getString( PKG, NOT_A_NUMBER, "Message prefetch count" ),
+        BaseMessages.getString( PKG, NOT_A_NUMBER, "Message prefetch limit" ),
         stepMeta ) );
     }
 

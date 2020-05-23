@@ -26,5 +26,7 @@ setlocal
 pushd %~dp0
 SET STARTTITLE="Encr"
 SET SPOON_CONSOLE=1
-call Spoon.bat -main org.pentaho.di.core.encryption.Encr %*
+set JAVA_TOOL_OPTIONS=
+rem 9.1.0.0-SNAPSHOT
+java -cp classes;lib/pentaho-encryption-support-${encryption-support.version}.jar org.pentaho.support.encryption.Encr %*
 popd

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,10 @@
 
 package org.pentaho.di.ui.trans.steps.datagrid;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -44,17 +39,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -70,12 +63,15 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class DataGridDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = DataGridMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
-  private CTabItem wMetaTab, wDataTab;
-  private Composite wMetaComp, wDataComp;
+  private Composite wDataComp;
 
   private TableView wFields;
   private TableView wData;
@@ -100,12 +96,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     props.setLook( shell );
     setShellImage( shell, input );
 
-    lsMod = new ModifyListener() {
-      @Override
-      public void modifyText( ModifyEvent e ) {
-        input.setChanged();
-      }
-    };
+    lsMod = e -> input.setChanged();
     changed = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -144,10 +135,10 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     // START OF META TAB ///
     // //////////////////////
 
-    wMetaTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wMetaTab = new CTabItem( wTabFolder, SWT.NONE );
     wMetaTab.setText( BaseMessages.getString( PKG, "DataGridDialog.Meta.Label" ) );
 
-    wMetaComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wMetaComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wMetaComp );
 
     FormLayout fileLayout = new FormLayout();
@@ -180,6 +171,8 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
         new ColumnInfo(
           BaseMessages.getString( PKG, "DataGridDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
+          BaseMessages.getString( PKG, "DataGridDialog.NullIf.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
           BaseMessages.getString( PKG, "DataGridDialog.Value.SetEmptyString" ),
           ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
             BaseMessages.getString( PKG, "System.Combo.Yes" ),
@@ -205,7 +198,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     // START OF DATA TAB ///
     // //////////////////////
 
-    wDataTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wDataTab = new CTabItem( wTabFolder, SWT.NONE );
     wDataTab.setText( BaseMessages.getString( PKG, "DataGridDialog.Data.Label" ) );
 
     wDataComp = new Composite( wTabFolder, SWT.NONE );
@@ -245,24 +238,9 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     setButtonPositions( new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder );
 
     // Add listeners
-    lsOK = new Listener() {
-      @Override
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
-    lsPreview = new Listener() {
-      @Override
-      public void handleEvent( Event e ) {
-        preview();
-      }
-    };
-    lsCancel = new Listener() {
-      @Override
-      public void handleEvent( Event e ) {
-        cancel();
-      }
-    };
+    lsOK = e -> ok();
+    lsPreview = e -> preview();
+    lsCancel = e -> cancel();
 
     wOK.addListener( SWT.Selection, lsOK );
     wPreview.addListener( SWT.Selection, lsPreview );
@@ -285,14 +263,11 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
       }
     } );
 
-    lsResize = new Listener() {
-      @Override
-      public void handleEvent( Event event ) {
-        Point size = shell.getSize();
-        wFields.setSize( size.x - 10, size.y - 50 );
-        wFields.table.setSize( size.x - 10, size.y - 50 );
-        wFields.redraw();
-      }
+    lsResize = event -> {
+      Point size = shell.getSize();
+      wFields.setSize( size.x - 10, size.y - 50 );
+      wFields.table.setSize( size.x - 10, size.y - 50 );
+      wFields.redraw();
     };
     shell.addListener( SWT.Resize, lsResize );
 
@@ -370,100 +345,102 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     wTabFolder.layout( true, true );
 
     wFields.nrNonEmpty();
-    wFields.setTableViewModifyListener( new TableView.TableViewModifyListener() {
-
-      private Integer getIdxByValue( List<Integer> list, Integer value ) {
-        for ( int i = 0; i < list.size(); i++ ) {
-          if ( list.get( i ).equals( value ) ) {
-            return i;
-          }
-        }
-        return null;
-      }
-
-      @Override
-      public void moveRow( int position1, int position2 ) {
-        //if one of rows is empty -- don't move data
-        if ( !wFields.getNonEmptyIndexes().contains( position1 )
-                || !wFields.getNonEmptyIndexes().contains( position2 ) ) {
-          wFields.nrNonEmpty();
-          return;
-        }
-
-        Integer fieldRealPosition1 =  getIdxByValue( wFields.getNonEmptyIndexes(), position1 );
-        Integer fieldRealPosition2 =  getIdxByValue( wFields.getNonEmptyIndexes(), position2 );
-        if ( fieldRealPosition1 == null || fieldRealPosition2 == null ) {
-          return; //can not happen (prevent warnings)
-        }
-        //data table have one technical column
-        int dataPosition1 = fieldRealPosition1 + 1;
-        int dataPosition2 = fieldRealPosition2 + 1;
-
-        for ( TableItem item : wData.table.getItems() ) {
-          String value1 = item.getText( dataPosition1 );
-          String value2 = item.getText( dataPosition2 );
-          item.setText( dataPosition2, value1 );
-          item.setText( dataPosition1, value2 );
-        }
-        wFields.nrNonEmpty();
-      }
-
-      @Override
-      public void insertRow( int rowIndex ) {
-        wFields.nrNonEmpty();
-      }
-
-      @Override
-      public void cellFocusLost( int rowIndex ) {
-        List<Integer> nonEmptyIndexesBeforeChanges = wFields.getNonEmptyIndexes();
-        wFields.nrNonEmpty();
-        List<Integer> nonEmptyIndexesAfterChanges = wFields.getNonEmptyIndexes();
-        if ( CollectionUtils.isEqualCollection( nonEmptyIndexesBeforeChanges, nonEmptyIndexesAfterChanges ) ) {
-          //count of fields rows didn't change
-          return;
-        }
-        Collection<Integer> disjunction = CollectionUtils.disjunction( nonEmptyIndexesBeforeChanges, nonEmptyIndexesAfterChanges );
-        Integer disjunctionIdx = (Integer) disjunction.toArray()[0];
-        if ( nonEmptyIndexesAfterChanges.contains( disjunctionIdx ) ) {
-          // new Field was added
-          Integer idxByValue = getIdxByValue( nonEmptyIndexesAfterChanges, disjunctionIdx );
-          if ( idxByValue == null ) {
-            return; //can not happen (preventing warnings)
-          }
-
-          idxByValue++; //data table have one technical column
-          TableColumn column = new TableColumn( wData.table, SWT.NONE, idxByValue );
-          column.pack();
-        } else {
-          // Field was deleted
-          Integer removeColumn = getIdxByValue( nonEmptyIndexesBeforeChanges, disjunctionIdx );
-          if ( removeColumn == null ) {
-            return; //can not happen (preventing warnings)
-          }
-          removeColumn++;  //data table have one technical column
-          wData.table.getColumn( removeColumn ).dispose();
-          wFields.nrNonEmpty();
-        }
-      }
-
-      @Override
-      public void delete( int[] items ) {
-        for ( int index : items ) {
-          if ( !wFields.getNonEmptyIndexes().contains( index ) ) {
-            continue;
-          }
-          Integer removeColumn = getIdxByValue( wFields.getNonEmptyIndexes(), index );
-          if ( removeColumn == null ) {
-            return; //can not happen (preventing warnings)
-          }
-          removeColumn++;  //data table have one technical column
-          wData.table.getColumn( removeColumn ).dispose();
-        }
-        wFields.nrNonEmpty();
-      }
-    } );
+    wFields.setTableViewModifyListener( new TableModifyListener() );
 
     wFields.setContentListener( modifyEvent -> wFields.nrNonEmpty() );
+  }
+
+  private class TableModifyListener implements TableView.TableViewModifyListener {
+    private Integer getIdxByValue( List<Integer> list, Integer value ) {
+      for ( int i = 0; i < list.size(); i++ ) {
+        if ( list.get( i ).equals( value ) ) {
+          return i;
+        }
+      }
+      return null;
+    }
+
+    @Override
+    public void moveRow( int position1, int position2 ) {
+      //if one of rows is empty -- don't move data
+      if ( !wFields.getNonEmptyIndexes().contains( position1 )
+              || !wFields.getNonEmptyIndexes().contains( position2 ) ) {
+        wFields.nrNonEmpty();
+        return;
+      }
+
+      Integer fieldRealPosition1 =  getIdxByValue( wFields.getNonEmptyIndexes(), position1 );
+      Integer fieldRealPosition2 =  getIdxByValue( wFields.getNonEmptyIndexes(), position2 );
+      if ( fieldRealPosition1 == null || fieldRealPosition2 == null ) {
+        return; //can not happen (prevent warnings)
+      }
+      //data table have one technical column
+      int dataPosition1 = fieldRealPosition1 + 1;
+      int dataPosition2 = fieldRealPosition2 + 1;
+
+      for ( TableItem item : wData.table.getItems() ) {
+        String value1 = item.getText( dataPosition1 );
+        String value2 = item.getText( dataPosition2 );
+        item.setText( dataPosition2, value1 );
+        item.setText( dataPosition1, value2 );
+      }
+      wFields.nrNonEmpty();
+    }
+
+    @Override
+    public void insertRow( int rowIndex ) {
+      wFields.nrNonEmpty();
+    }
+
+    @Override
+    public void cellFocusLost( int rowIndex ) {
+      List<Integer> nonEmptyIndexesBeforeChanges = wFields.getNonEmptyIndexes();
+      wFields.nrNonEmpty();
+      List<Integer> nonEmptyIndexesAfterChanges = wFields.getNonEmptyIndexes();
+      if ( CollectionUtils.isEqualCollection( nonEmptyIndexesBeforeChanges, nonEmptyIndexesAfterChanges ) ) {
+        //count of fields rows didn't change
+        return;
+      }
+      Collection<Integer>
+        disjunction = CollectionUtils.disjunction( nonEmptyIndexesBeforeChanges, nonEmptyIndexesAfterChanges );
+      Integer disjunctionIdx = (Integer) disjunction.toArray()[0];
+      if ( nonEmptyIndexesAfterChanges.contains( disjunctionIdx ) ) {
+        // new Field was added
+        Integer idxByValue = getIdxByValue( nonEmptyIndexesAfterChanges, disjunctionIdx );
+        if ( idxByValue == null ) {
+          return; //can not happen (preventing warnings)
+        }
+
+        idxByValue++; //data table have one technical column
+        TableColumn column = new TableColumn( wData.table, SWT.NONE, idxByValue );
+        column.pack();
+      } else {
+        // Field was deleted
+        Integer removeColumn = getIdxByValue( nonEmptyIndexesBeforeChanges, disjunctionIdx );
+        if ( removeColumn == null ) {
+          return; //can not happen (preventing warnings)
+        }
+        removeColumn++;  //data table have one technical column
+        wData.table.getColumn( removeColumn ).dispose();
+        wFields.nrNonEmpty();
+      }
+    }
+
+    @Override
+    public void delete( int[] items ) {
+      for ( int index : items ) {
+        if ( !wFields.getNonEmptyIndexes().contains( index ) ) {
+          continue;
+        }
+        Integer removeColumn = getIdxByValue( wFields.getNonEmptyIndexes(), index );
+        if ( removeColumn == null ) {
+          return; //can not happen (preventing warnings)
+        }
+        removeColumn++;  //data table have one technical column
+        wData.table.getColumn( removeColumn ).dispose();
+      }
+      wFields.nrNonEmpty();
+    }
   }
 
   /**
@@ -493,6 +470,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
         String curr = input.getCurrency()[i];
         String group = input.getGroup()[i];
         String decim = input.getDecimal()[i];
+        String nullif = input.getFieldNullIf()[i];
 
         item.setText( col++, Const.NVL( type, "" ) );
         item.setText( col++, Const.NVL( format, "" ) );
@@ -501,6 +479,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
         item.setText( col++, Const.NVL( curr, "" ) );
         item.setText( col++, Const.NVL( decim, "" ) );
         item.setText( col++, Const.NVL( group, "" ) );
+        item.setText( col++, Const.NVL( nullif, "" ) );
         item
           .setText( col++, input.isSetEmptyString()[i]
             ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
@@ -556,6 +535,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
       meta.getCurrency()[i] = item.getText( col++ );
       meta.getDecimal()[i] = item.getText( col++ );
       meta.getGroup()[i] = item.getText( col++ );
+      meta.getFieldNullIf()[i] = item.getText( col++ );
 
       try {
         meta.getFieldLength()[i] = Integer.parseInt( slength );
@@ -577,13 +557,13 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
   }
 
   private void getDataInfo( DataGridMeta meta ) {
-    List<List<String>> data = new ArrayList<List<String>>();
+    List<List<String>> data = new ArrayList<>();
 
     int nrLines = wData.table.getItemCount();
     int nrFields = meta.getFieldName().length;
 
     for ( int i = 0; i < nrLines; i++ ) {
-      List<String> line = new ArrayList<String>();
+      List<String> line = new ArrayList<>();
       TableItem item = wData.table.getItem( i );
       for ( int f = 0; f < nrFields; f++ ) {
         line.add( item.getText( f + 1 ) );
@@ -620,15 +600,13 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
       Trans trans = progressDialog.getTrans();
       String loggingText = progressDialog.getLoggingText();
 
-      if ( !progressDialog.isCancelled() ) {
-        if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
-          EnterTextDialog etd =
-            new EnterTextDialog(
-              shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
-                .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
-          etd.setReadOnly();
-          etd.open();
-        }
+      if ( !progressDialog.isCancelled() && trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
+        EnterTextDialog etd =
+          new EnterTextDialog(
+            shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+              .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+        etd.setReadOnly();
+        etd.open();
       }
 
       PreviewRowsDialog prd =

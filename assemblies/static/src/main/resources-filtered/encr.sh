@@ -26,4 +26,5 @@ BASEDIR="`dirname $0`"
 cd "$BASEDIR"
 DIR="`pwd`"
 cd - > /dev/null
-"$DIR/spoon.sh" -main org.pentaho.di.core.encryption.Encr "$@"
+java -cp "$DIR"/lib/pentaho-encryption-support-${encryption-support.version}.jar:"$DIR"/classes org.pentaho.support.encryption.Encr "$@"
+
