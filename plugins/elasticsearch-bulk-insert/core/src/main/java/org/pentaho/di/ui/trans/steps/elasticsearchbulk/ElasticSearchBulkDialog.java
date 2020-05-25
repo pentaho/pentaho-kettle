@@ -386,12 +386,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     wTestCl.setText( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TestCluster.Label" ) );
     wTestCl.setToolTipText( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TestCluster.Tooltip" ) );
 
-    wTestCl.addListener( SWT.Selection, new Listener() {
-
-      public void handleEvent( Event arg0 ) {
-        test( TestType.CLUSTER );
-      }
-    } );
+    wTestCl.addListener( SWT.Selection, event -> test( TestType.CLUSTER ));
 
     setButtonPositions( new Button[]{wTestCl}, Const.MARGIN, null );
 
