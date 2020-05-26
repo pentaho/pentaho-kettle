@@ -393,7 +393,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     boolean found = false;
     String nullIfVal = null;
     if ( null != fieldName ) {
-      for ( index = 0; index < fieldName.length() && !found; index++ ) {
+      for ( index = 0; index < this.getFieldName().length && !found; index++ ) {
         found = fieldName.compareTo( this.getFieldName()[index] ) == 0;
       }
       if ( found ) {
