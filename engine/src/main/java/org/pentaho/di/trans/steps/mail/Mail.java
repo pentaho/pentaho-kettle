@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -370,7 +370,7 @@ public class Mail extends BaseStep implements StepInterface {
           }
 
           // cache the position of the attached wildcard field
-          if ( !Utils.isEmpty( meta.getSourceWildcard() ) ) {
+          if ( !Utils.isEmpty( meta.getDynamicWildcard() ) ) {
             if ( data.indexOfSourceWildcard < 0 ) {
               String realSourceattachedWildcard = meta.getDynamicWildcard();
               data.indexOfSourceWildcard = data.previousRowMeta.indexOfValue( realSourceattachedWildcard );
