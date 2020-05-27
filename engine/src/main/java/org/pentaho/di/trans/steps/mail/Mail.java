@@ -46,6 +46,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
@@ -356,35 +357,8 @@ public class Mail extends BaseStep implements StepInterface {
         if ( !meta.isZipFilenameDynamic() ) {
           data.ZipFilename = environmentSubstitute( meta.getZipFilename() );
         }
-
         // Attached files
-        if ( meta.isDynamicFilename() ) {
-          // cache the position of the attached source filename field
-          if ( data.indexOfSourceFilename < 0 ) {
-            String realSourceattachedFilename = meta.getDynamicFieldname();
-            data.indexOfSourceFilename = data.previousRowMeta.indexOfValue( realSourceattachedFilename );
-            if ( data.indexOfSourceFilename < 0 ) {
-              throw new KettleException( BaseMessages.getString(
-                PKG, "Mail.Exception.CouldnotSourceAttachedFilenameField", realSourceattachedFilename ) );
-            }
-          }
-
-          // cache the position of the attached wildcard field
-          if ( !Utils.isEmpty( meta.getDynamicWildcard() ) ) {
-            if ( data.indexOfSourceWildcard < 0 ) {
-              String realSourceattachedWildcard = meta.getDynamicWildcard();
-              data.indexOfSourceWildcard = data.previousRowMeta.indexOfValue( realSourceattachedWildcard );
-              if ( data.indexOfSourceWildcard < 0 ) {
-                throw new KettleException( BaseMessages.getString(
-                  PKG, "Mail.Exception.CouldnotSourceAttachedWildcard", realSourceattachedWildcard ) );
-              }
-            }
-          }
-        } else {
-          // static attached filenames
-          data.realSourceFileFoldername = environmentSubstitute( meta.getSourceFileFoldername() );
-          data.realSourceWildcard = environmentSubstitute( meta.getSourceWildcard() );
-        }
+        processAttachedFiles();
       }
 
       // check embedded images
@@ -521,6 +495,44 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     return true;
+  }
+
+  @VisibleForTesting
+  void processAttachedFiles() throws KettleException {
+    if ( meta.isDynamicFilename() ) {
+      // cache the position of the attached source filename field
+      cacheSourceFileNameField();
+      // cache the position of the attached wildcard field
+      cacheWildCardField();
+    } else {
+      // static attached filenames
+      data.realSourceFileFoldername = environmentSubstitute( meta.getSourceFileFoldername() );
+      data.realSourceWildcard = environmentSubstitute( meta.getSourceWildcard() );
+    }
+  }
+
+  private void cacheWildCardField() throws KettleException {
+    if ( !Utils.isEmpty( meta.getDynamicWildcard() ) ) {
+      if ( data.indexOfSourceWildcard < 0 ) {
+        String realSourceattachedWildcard = meta.getDynamicWildcard();
+        data.indexOfSourceWildcard = data.previousRowMeta.indexOfValue( realSourceattachedWildcard );
+        if ( data.indexOfSourceWildcard < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotSourceAttachedWildcard", realSourceattachedWildcard ) );
+        }
+      }
+    }
+  }
+
+  private void cacheSourceFileNameField() throws KettleException {
+    if ( data.indexOfSourceFilename < 0 ) {
+      String realSourceattachedFilename = meta.getDynamicFieldname();
+      data.indexOfSourceFilename = data.previousRowMeta.indexOfValue( realSourceattachedFilename );
+      if ( data.indexOfSourceFilename < 0 ) {
+        throw new KettleException( BaseMessages.getString(
+          PKG, "Mail.Exception.CouldnotSourceAttachedFilenameField", realSourceattachedFilename ) );
+      }
+    }
   }
 
   public void sendMail( Object[] r, String server, int port, String senderAddress, String senderName,
