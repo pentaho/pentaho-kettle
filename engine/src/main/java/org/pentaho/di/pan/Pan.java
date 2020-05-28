@@ -274,7 +274,7 @@ public class Pan {
               .namedParams( optionParams )
               .build();
 
-      Result result = getCommandExecutor().execute( transParams );
+      Result result = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] )  );
 
       exitJVM( result.getExitStatus() );
 
