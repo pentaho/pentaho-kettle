@@ -51,6 +51,8 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.w3c.dom.Document;
 
 import java.io.File;
@@ -216,6 +218,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       } catch ( KettleException ke ) {
         logDebug( ke.getLocalizedMessage() );
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.UnablePrepareInitTrans" ) );
+        ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.TransformationFinish.id, trans );
         return exitWithStatus( CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() );
       }
 
@@ -264,12 +267,9 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       }
 
     } catch ( KettleException ke ) {
-
       System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.ErrorOccurred", "" + ke.getMessage() ) );
       getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.UnexpectedErrorOccurred", "" + ke.getMessage() ) );
-
       return exitWithStatus( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode() );
-
     } finally {
       if ( repository != null ) {
         repository.disconnect();
