@@ -61,7 +61,6 @@
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <js.version>1.7R3</js.version>
-    <commons-codec.version>1.10</commons-codec.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
     <guava.version>17.0</guava.version>
     <encoder.version>1.2</encoder.version>
@@ -132,17 +131,6 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>${commons-beanutils.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
         <exclusions>
           <exclusion>
             <groupId>*</groupId>
