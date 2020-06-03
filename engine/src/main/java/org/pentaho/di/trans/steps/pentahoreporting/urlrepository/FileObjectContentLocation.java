@@ -12,13 +12,14 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2006 - 2018 Hitachi Vantara and Contributors.  All rights reserved.
+* Copyright (c) 2006 - 2020 Hitachi Vantara and Contributors.  All rights reserved.
 */
 
 package org.pentaho.di.trans.steps.pentahoreporting.urlrepository;
 
 import java.io.IOException;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.reporting.libraries.repository.ContentCreationException;
@@ -148,12 +149,14 @@ public class FileObjectContentLocation extends FileObjectContentEntity implement
    * @throws ContentCreationException if the item could not be created.
    */
   public ContentItem createItem( final String name ) throws ContentCreationException {
-    if ( RepositoryUtilities.isInvalidPathName( name ) ) {
+    Path path = Paths.get( name );
+    String fileName = path.getFileName().toString();
+    if ( RepositoryUtilities.isInvalidPathName( fileName ) ) {
       throw new IllegalArgumentException( "The name given is not valid." );
     }
     try {
       final FileObject file = getBackend();
-      final FileObject child = file.resolveFile( name );
+      final FileObject child = file.resolveFile( fileName );
       if ( child.exists() ) {
         if ( child.getContent().getSize() == 0 ) {
           // probably one of the temp files created by the pentaho-system
