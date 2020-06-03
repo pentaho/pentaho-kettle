@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -579,6 +579,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
           TransMeta transMeta = new TransMeta();
           if ( repdir != null ) {
             transMeta.setRepositoryDirectory( repdir );
+            transMeta.setName( transname );
           } else {
             transMeta.setFilename( Const.createFilename( directory, transname, "."
               + Const.STRING_TRANS_DEFAULT_EXT ) );
