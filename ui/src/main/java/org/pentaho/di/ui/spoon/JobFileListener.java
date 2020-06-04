@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,7 +62,9 @@ public class JobFileListener implements FileListener, ConnectionListener {
           return true;
         }
       }
-      jobMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( jobMeta ) );
+      if ( jobMeta.getRepositoryDirectory() == null || !importfile ) {
+        jobMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( jobMeta ) );
+      }
       jobMeta.setRepository( spoon.getRepository() );
       jobMeta.setMetaStore( spoon.getMetaStore() );
       if ( connection != null ) {
