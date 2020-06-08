@@ -224,7 +224,8 @@ public class XulDatabaseDialog {
   }
 
   public void setDatabaseMeta( DatabaseMeta dbMeta ) {
-    if ( RepositorySecurityUI.verifyOperations( parentShell, Spoon.getInstance().getRepository(), RepositoryOperation.MODIFY_DATABASE ) ) {
+    if ( ( Spoon.getInstance() != null )
+      && RepositorySecurityUI.verifyOperations( parentShell, Spoon.getInstance().getRepository(), RepositoryOperation.MODIFY_DATABASE ) ) {
       return;
     }
 
