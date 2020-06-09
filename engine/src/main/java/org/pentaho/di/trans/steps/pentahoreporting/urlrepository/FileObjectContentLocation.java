@@ -17,9 +17,8 @@
 
 package org.pentaho.di.trans.steps.pentahoreporting.urlrepository;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.reporting.libraries.repository.ContentCreationException;
@@ -149,8 +148,7 @@ public class FileObjectContentLocation extends FileObjectContentEntity implement
    * @throws ContentCreationException if the item could not be created.
    */
   public ContentItem createItem( final String name ) throws ContentCreationException {
-    Path path = Paths.get( name );
-    String fileName = path.getFileName().toString();
+    String fileName = new File( name ).getName();
     if ( RepositoryUtilities.isInvalidPathName( fileName ) ) {
       throw new IllegalArgumentException( "The name given is not valid." );
     }
