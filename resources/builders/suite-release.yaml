@@ -53,7 +53,7 @@ buildProperties:
 
   # SP specific parameters
   PREVIOUS_RELEASE_VERSION       : ''
-  SP_RELEASE_VERSION             : '202001'
+  SP_RELEASE_VERSION             : '202006'
   DO_AUTO_PATCH                  : false
 
 jobGroups:

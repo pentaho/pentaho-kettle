@@ -1,4 +1,4 @@
-library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20200212'}", changelog: false)
+library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20200609'}", changelog: false)
 
 String buildJobName = 'shims-release'
 Map suiteParameters
