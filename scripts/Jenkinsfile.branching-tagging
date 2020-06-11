@@ -1,4 +1,4 @@
-@Library("jenkins-shared-libraries@master") _
+@Library("pentaho-library@20200609") _
 import org.hitachivantara.ci.GroovyUtils
 
 properties(
