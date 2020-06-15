@@ -730,7 +730,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
       while ( ( first && !execPerRow )
-        || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
+        || ( execPerRow && rows != null && iteration <= rows.size() && result.getNrErrors() == 0 ) ) {
         first = false;
 
         // Clear the result rows of the result
@@ -740,7 +740,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           result.getRows().clear();
         }
 
-        if ( rows != null && execPerRow ) {
+        if ( rows != null && execPerRow && !rows.isEmpty() ) {
           resultRow = rows.get( iteration );
         } else {
           resultRow = null;
@@ -818,7 +818,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           } else {
             // Just pass a single row
             List<RowMetaAndData> newList = new ArrayList<RowMetaAndData>();
-            newList.add( resultRow );
+            if ( resultRow != null ) {
+              newList.add( resultRow );
+            }
             sourceRows = newList;
           }
 
