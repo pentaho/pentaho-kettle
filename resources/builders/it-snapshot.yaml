@@ -14,7 +14,7 @@ buildProperties:
   SLACK_CHANNEL: 'buildteam-alerts'
 
   JOB_ITEM_DEFAULTS:
-    dockerImage : jenkins-build/maven/oracle-jdk/8
+    dockerImage : jenkins-build/pentaho-build-tools/8
     scmBranch   : master
     archivable  : false
 
