@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,9 +25,12 @@ package org.pentaho.di.trans.steps.csvinput;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
@@ -35,10 +38,13 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 import java.io.File;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CsvInputTest extends CsvInputUnitTestBase {
 
@@ -96,4 +102,65 @@ public class CsvInputTest extends CsvInputUnitTestBase {
     assertTrue( tmpFile.delete() );
     assertFalse( tmpFile.exists() );
   }
+
+  @Test
+  public void testFilenameValidatorForInputFilesConnectedToRep() {
+    CsvInput csvInput = mock( CsvInput.class );
+
+    String internalEntryVariable = "internalEntryVariable";
+    String internalTransformationVariable = "internalTransformationVariable";
+
+    String filename = Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ;
+    csvInput.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, internalEntryVariable );
+    csvInput.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, internalTransformationVariable );
+
+    TransMeta transmeta = mock( TransMeta.class );
+
+    Repository rep = mock( Repository.class );
+
+    when( csvInput.getTransMeta() ).thenReturn( transmeta );
+    when( transmeta.getRepository() ).thenReturn( rep );
+    when( rep.isConnected() ).thenReturn( true );
+
+    when( csvInput.filenameValidatorForInputFiles( any() ) ).thenCallRealMethod();
+    when( csvInput.environmentSubstitute( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY  ) ).thenReturn( internalEntryVariable );
+    when( csvInput.environmentSubstitute( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY  ) ).thenReturn( internalTransformationVariable );
+
+
+    String finalFilename = csvInput.filenameValidatorForInputFiles(filename);
+
+    assertEquals( internalTransformationVariable, finalFilename );
+
+  }
+
+  @Test
+  public void testFilenameValidatorForInputFilesNotConnectedToRep() {
+    CsvInput csvInput = mock( CsvInput.class );
+
+    String internalEntryVariable = "internalEntryVariable";
+    String internalTransformationVariable = "internalTransformationVariable";
+
+    String filename = Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ;
+    csvInput.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, internalEntryVariable );
+    csvInput.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, internalTransformationVariable );
+
+    TransMeta transmeta = mock( TransMeta.class );
+
+    Repository rep = mock( Repository.class );
+
+    when( csvInput.getTransMeta() ).thenReturn( transmeta );
+    when( transmeta.getRepository() ).thenReturn( rep );
+    when( rep.isConnected() ).thenReturn( false );
+
+    when( csvInput.filenameValidatorForInputFiles( any() ) ).thenCallRealMethod();
+    when( csvInput.environmentSubstitute( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY  ) ).thenReturn( internalEntryVariable );
+    when( csvInput.environmentSubstitute( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY  ) ).thenReturn( internalTransformationVariable );
+
+
+    String finalFilename = csvInput.filenameValidatorForInputFiles(filename);
+
+    assertEquals( internalEntryVariable, finalFilename );
+
+  }
+
 }

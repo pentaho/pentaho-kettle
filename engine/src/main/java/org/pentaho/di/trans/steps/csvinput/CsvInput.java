@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -877,7 +878,8 @@ public class CsvInput extends BaseStep implements StepInterface {
       // Otherwise, we'll grab the list of file names later...
       //
       if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 ) {
-        String filename = environmentSubstitute( meta.getFilename() );
+
+        String filename = filenameValidatorForInputFiles( meta.getFilename() );
 
         if ( Utils.isEmpty( filename ) ) {
           logError( BaseMessages.getString( PKG, "CsvInput.MissingFilename.Message" ) );
@@ -1161,4 +1163,16 @@ public class CsvInput extends BaseStep implements StepInterface {
 
     return strings.toArray( new String[ strings.size() ] );
   }
+
+  String filenameValidatorForInputFiles( String filename ) {
+    Repository rep = getTransMeta().getRepository();
+    if ( rep != null && rep.isConnected() && filename
+      .contains( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) {
+      return environmentSubstitute( filename.replace( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
+    } else {
+      return environmentSubstitute( filename );
+    }
+  }
+
 }
