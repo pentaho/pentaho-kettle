@@ -28,6 +28,8 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Currently hard coded because we cannot simply include the bundles as they are designed today.  They have a dependency
@@ -37,55 +39,65 @@ import java.util.Map;
  */
 public class SparkTunableProperties {
   private static final Map<String, List<String>> stepMap = ImmutableMap.<String, List<String>>builder()
-    .put( "ParquetInput", dataFrameWriterTunable() )
-    .put( "ParquetOutput", dataFrameWriterTunable() )
-    .put( "AvroOutput", dataFrameWriterTunable() )
-    .put( "AvroInputNew", dataFrameWriterTunable() )
-    .put( "OrcOutput", dataFrameWriterTunable() )
-    .put( "OrcInput", dataFrameWriterTunable() )
+    .put( "ParquetInput", nonTunable() )
+    .put( "ParquetOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
+    .put( "AvroOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
+    .put( "AvroInputNew", nonTunable() )
+    .put( "OrcOutput", multiTunable( dataFrameWriterTunable(), datasetTunable() ) )
+    .put( "OrcInput", nonTunable() )
 
     .put( "Dummy", datasetTunable() )
 
     .put( "TableInput", jdbcTunable() )
     // Reminder to add the other steps tunable options
-    //    .put( "TextFileInput", datasetTunable()
-    //    .put( "HadoopFileInputPlugin", datasetTunable()
-    //    .put( "TextFileOutput", datasetTunable()
-    //    .put( "HadoopFileOutputPlugin", datasetTunable()
-    //    .put( "FilterRows", datasetTunable()
-    //    .put( "StreamLookup", datasetTunable()
-    //    .put( "SortRows", datasetTunable()
-    //    .put( "GroupBy", datasetTunable()
-    //    .put( "MemoryGroupBy", datasetTunable()
+    .put( "TextFileInput", nonTunable() )
+    .put( "HadoopFileInputPlugin", nonTunable() )
+    .put( "TextFileOutput", datasetTunable() )
+    .put( "HadoopFileOutputPlugin", datasetTunable() )
+    .put( "FilterRows", datasetTunable() )
+    .put( "StreamLookup", datasetTunable() )
+    .put( "SortRows", datasetTunable() )
+    .put( "GroupBy", datasetTunable() )
+    .put( "MemoryGroupBy", datasetTunable() )
     //    .put( "Unique", datasetTunable()
     //    .put( "UniqueRowsByHashSet", datasetTunable()
-    //    .put( "MergeJoin", datasetTunable()
-    //    .put( "RecordsFromStream", datasetTunable()
-    //    .put( "KafkaConsumerInput", datasetTunable()
-    //    .put( "KinesisConsumer", datasetTunable()
-    //    .put( "MQTTConsumer", datasetTunable()
-    //    .put( "Abort", datasetTunable()
-    //    .put( "TransExecutor", datasetTunable()
-    //    .put( "RowsFromResult", datasetTunable()
-    //    .put( "RowsToResult", datasetTunable() );
-    //    .put( "WriteToLog", datasetTunable() );
-    //    .put( "MetaInject", datasetTunable() );
-    //    .put( "SimpleMapping", datasetTunable() );
-    //    .put( "MappingInput", datasetTunable() );
-    //    .put( "MappingOutput", datasetTunable() );
-    //    .put( "Mapping", datasetTunable() );
-    //    .put( "TableOutput", datasetTunable() );
-    //    .put( "SwitchCase", datasetTunable() );
-    //    .put( "MergeRows", datasetTunable() );
-    //    .put( "JoinRows", datasetTunable() );
-    //    .put( "JavaFilter", datasetTunable() );
-
-    // Step List Pulled from pdi-spark-engine-operations-ee beans.xml
-    //    .put( "AmqpConsumer", datasetTunable()
+    .put( "MergeJoin", multiTunable( datasetTunable(), joinTunable() ) )
+    .put( "RecordsFromStream", datasetTunable() )
+    .put( "Abort", datasetTunable() )
+    .put( "TransExecutor", datasetTunable() )
+    .put( "RowsFromResult", datasetTunable() )
+    .put( "RowsToResult", datasetTunable() )
+    .put( "WriteToLog", datasetTunable() )
+    .put( "MetaInject", datasetTunable() )
+    .put( "SimpleMapping", datasetTunable() )
+    .put( "MappingInput", datasetTunable() )
+    .put( "MappingOutput", datasetTunable() )
+    .put( "Mapping", datasetTunable() )
+    .put( "TableOutput", datasetTunable() )
+    .put( "SwitchCase", datasetTunable() )
+    .put( "MergeRows", multiTunable( datasetTunable(), joinTunable() ) )
+    .put( "JoinRows", multiTunable( datasetTunable(), joinTunable() ) )
+    .put( "JavaFilter", datasetTunable() )
 
     // Step List Pulled from pdi-spark-hbase-ee beans.xml
-    //    .put( "HBaseInput", datasetTunable()
-    //    .put( "HBaseOutput", datasetTunable()
+    .put( "HBaseInput", nonTunable() )
+    .put( "HBaseOutput", datasetTunable() )
+    //    .put( "RecordsFromStream", datasetTunable()
+    .put( "KafkaConsumerInput", nonTunable() )
+    .put( "KinesisConsumer", nonTunable() )
+    .put( "MQTTConsumer", nonTunable() )
+
+    // Step List Pulled from pdi-spark-engine-operations-ee beans.xml
+    .put( "AmqpConsumer", nonTunable() )
+
+    // Steps that are not supported with Spark
+    .put( "JobExecutor", nonTunable() )
+    .put( "SingleThreader", nonTunable() )
+    .put( "PrioritizeStreams", nonTunable() )
+    .put( "Append", nonTunable() )
+    .put( "BlockUntilStepsFinish", nonTunable() )
+    .put( "S3CSVINPUT", nonTunable() )
+    .put( "S3FileOutputPlugin", nonTunable() )
     .build();
 
   /**
@@ -97,32 +109,46 @@ public class SparkTunableProperties {
     return stepMap.containsKey( stepId ) ? stepMap.get( stepId ) : datasetTunable();
   }
 
-  private static List<String> dataFrameWriterTunable() {
+  protected static List<String> dataFrameWriterTunable() {
     return Arrays.asList(
-      "writer.repartition.columns",
-      "writer.bucketing.columns",
-      "writer.bucketing.number",
-      "writer.sort.columns"
+      "write.partitionBy.columns",
+      "write.bucketBy.columns",
+      "write.bucketBy.numBuckets",
+      "write.sortBy.columns"
     );
   }
 
-  private static List<String> datasetTunable() {
+  protected static List<String> datasetTunable() {
     return Arrays.asList(
-      "cache.before",
-      "coalesce.before",
-      "num.repartition.before",
-      "columns.repartition.before",
-      "persist.type.before"
+      "cache",
+      "coalesce",
+      "repartition.numPartitions",
+      "repartition.columns",
+      "persist.storageLevel"
     );
   }
 
-  private static List<String> jdbcTunable() {
+  protected static List<String> joinTunable() {
     return Arrays.asList(
-      "jdbc.columnName",
-      "jdbc.lowerBound",
-      "jdbc.upperBound",
-      "jdbc.numPartitions"
+      "join.broadcast.stepName"
     );
+  }
+
+  protected static List<String> jdbcTunable() {
+    return Arrays.asList(
+      "read.jdbc.columnName",
+      "read.jdbc.lowerBound",
+      "read.jdbc.upperBound",
+      "read.jdbc.numPartitions"
+    );
+  }
+
+  private static List<String> nonTunable() {
+    return Arrays.asList();
+  }
+
+  private static List<String> multiTunable( List<String> ... tunables ) {
+    return Stream.of( tunables ).flatMap( List::stream ).collect( Collectors.toList() );
   }
 
   private SparkTunableProperties() {

@@ -33,7 +33,7 @@ import java.util.List;
 public class VFSTree implements Tree<VFSLocation> {
 
   public static final String PROVIDER = "vfs";
-  private static final int ORDER = 1;
+  private static final int ORDER = 3;
 
   public VFSTree( String name ) {
     this.name = name;
@@ -65,5 +65,9 @@ public class VFSTree implements Tree<VFSLocation> {
 
   @Override public int getOrder() {
     return ORDER;
+  }
+
+  @Override public boolean isHasChildren() {
+    return true;
   }
 }

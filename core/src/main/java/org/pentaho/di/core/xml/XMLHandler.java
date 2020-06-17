@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,34 @@
 
 package org.pentaho.di.core.xml;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs2.FileObject;
+import org.owasp.encoder.Encode;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleAttributeInterface;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -45,32 +73,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.vfs2.FileObject;
-import org.owasp.encoder.Encode;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.KettleAttributeInterface;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
+import static org.pentaho.di.core.row.value.ValueMetaBase.convertStringToBoolean;
 
 
 /**
@@ -87,6 +90,10 @@ public class XMLHandler {
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
   private static final SimpleTimestampFormat simpleTimeStampFormat =
     new SimpleTimestampFormat( ValueMeta.DEFAULT_TIMESTAMP_FORMAT_MASK );
+  public static final int DEFAULT_RETRY_ATTEMPTS = 2;
+
+  private XMLHandler() {
+  }
 
   /**
    * The header string to specify encoding in UTF-8 for XML files
@@ -111,7 +118,7 @@ public class XMLHandler {
    * Get the value of a tag in a node
    *
    * @param n   The node to look in
-   * @param tag The tag to look for
+   * @param code The code to look for
    * @return The value of the tag or null if nothing was found.
    */
   public static String getTagValue( Node n, KettleAttributeInterface code ) {
@@ -133,12 +140,19 @@ public class XMLHandler {
       return null;
     }
 
+    Boolean xmlEmptyTagYieldsEmptyValue = convertStringToBoolean(
+      Const.NVL( System.getProperty( Const.KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE, "N" ), "N" ) );
+
     children = n.getChildNodes();
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
       if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) {
-        if ( childnode.getFirstChild() != null ) {
-          return childnode.getFirstChild().getNodeValue();
+        if ( xmlEmptyTagYieldsEmptyValue ) {
+          return childnode.getTextContent();
+        } else {
+          if ( childnode.getFirstChild() != null ) {
+            return childnode.getFirstChild().getNodeValue();
+          }
         }
       }
     }
@@ -164,10 +178,9 @@ public class XMLHandler {
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
       if ( childnode.getNodeName().equalsIgnoreCase( tag )
-        && childnode.getAttributes().getNamedItem( attribute ) != null ) {
-        if ( childnode.getFirstChild() != null ) {
-          return childnode.getFirstChild().getNodeValue();
-        }
+        && childnode.getAttributes().getNamedItem( attribute ) != null
+        && childnode.getFirstChild() != null ) {
+        return childnode.getFirstChild().getNodeValue();
       }
     }
     return null;
@@ -182,8 +195,10 @@ public class XMLHandler {
    * @return The string of the subtag or null if nothing was found.
    */
   public static String getTagValue( Node n, String tag, String subtag ) {
-    NodeList children, tags;
-    Node childnode, tagnode;
+    NodeList children;
+    NodeList tags;
+    Node childnode;
+    Node tagnode;
 
     if ( n == null ) {
       return null;
@@ -197,10 +212,8 @@ public class XMLHandler {
         tags = childnode.getChildNodes();
         for ( int j = 0; j < tags.getLength(); j++ ) {
           tagnode = tags.item( j );
-          if ( tagnode.getNodeName().equalsIgnoreCase( subtag ) ) {
-            if ( tagnode.getFirstChild() != null ) {
-              return tagnode.getFirstChild().getNodeValue();
-            }
+          if ( tagnode.getNodeName().equalsIgnoreCase( subtag ) && tagnode.getFirstChild() != null ) {
+            return tagnode.getFirstChild().getNodeValue();
           }
         }
       }
@@ -276,7 +289,8 @@ public class XMLHandler {
    */
   public static Node getNodeWithTagValue( Node n, String tag, String subtag, String subtagvalue, int nr ) {
     NodeList children;
-    Node childnode, tagnode;
+    Node childnode;
+    Node tagnode;
     String value;
 
     int count = 0;
@@ -288,7 +302,7 @@ public class XMLHandler {
         // <hop>
         tagnode = getSubNode( childnode, subtag );
         value = getNodeValue( tagnode );
-        if ( value.equalsIgnoreCase( subtagvalue ) ) {
+        if ( value != null && value.equalsIgnoreCase( subtagvalue ) ) {
           if ( count == nr ) {
             return childnode;
           }
@@ -538,11 +552,31 @@ public class XMLHandler {
    */
   public static Document loadXMLFile( FileObject fileObject, String systemID, boolean ignoreEntities,
                                       boolean namespaceAware ) throws KettleXMLException {
-    try {
-      return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
-    } catch ( IOException e ) {
-      throw new KettleXMLException( "Unable to read file [" + fileObject.toString() + "]", e );
+
+    //[PDI-18528] Retry opening the inputstream on first error. Because of the way DefaultFileContent handles open streams,
+    //in multithread executions, the stream could be closed by another stream without notice. The retry is a way to recover the stream.
+    int reties = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_RETRY_OPEN_XML_STREAM ), DEFAULT_RETRY_ATTEMPTS );
+    if ( reties < 0 ) {
+      reties = 0;
     }
+    int attempts = 0;
+    Exception lastException = null;
+    while ( attempts <= reties ) {
+      try {
+        return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
+      } catch ( Exception ex ) {
+        lastException = ex;
+        try {
+          java.lang.Thread.sleep( 1000 );
+        } catch ( InterruptedException e ) {
+          //Sonar squid S2142 requires the handling of the InterruptedException instead of ignoring it
+          Thread.currentThread().interrupt();
+        }
+      }
+      attempts++;
+    }
+
+    throw new KettleXMLException( "Unable to read file [" + fileObject.toString() + "]", lastException );
   }
 
   /**
@@ -947,7 +981,7 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static String addTagValue( String tag, BigDecimal val, boolean cr ) {
-    return addTagValue( tag, val != null ? val.toString() : (String) null, cr );
+    return addTagValue( tag, val != null ? val.toString() : null, cr );
   }
 
   /**
@@ -1172,7 +1206,8 @@ public class XMLHandler {
   public static String formatNode( Node node ) throws KettleXMLException {
     StringWriter sw = new StringWriter();
     try {
-      Transformer t = TransformerFactory.newInstance().newTransformer();
+
+      Transformer t = XMLParserFactoryProducer.createSecureTransformerFactory().newTransformer();
       t.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
       t.transform( new DOMSource( node ), new StreamResult( sw ) );
     } catch ( Exception e ) {
@@ -1190,10 +1225,11 @@ public class XMLHandler {
  * @since 2007-12-21
  */
 class DTDIgnoringEntityResolver implements EntityResolver {
+  private static final Log log = LogFactory.getLog( DTDIgnoringEntityResolver.class );
   @Override
-  public InputSource resolveEntity( java.lang.String publicID, java.lang.String systemID ) throws IOException {
-    System.out.println( "Public-ID: " + publicID.toString() );
-    System.out.println( "System-ID: " + systemID.toString() );
+  public InputSource resolveEntity( String publicID, String systemID ) throws IOException {
+    log.info( "Public-ID: " + publicID );
+    log.info( "System-ID: " + systemID );
     return new InputSource( new ByteArrayInputStream( "<?xml version='1.0' encoding='UTF-8'?>".getBytes() ) );
   }
 

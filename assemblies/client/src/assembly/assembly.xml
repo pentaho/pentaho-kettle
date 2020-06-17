@@ -6,6 +6,12 @@
   </formats>
   <includeBaseDirectory>true</includeBaseDirectory>
   <baseDirectory>data-integration</baseDirectory>
+  <files>
+    <file>
+      <source>${project.basedir}/src/main/resources/drivers/README</source>
+      <outputDirectory>./drivers</outputDirectory>
+    </file>
+  </files>
   <fileSets>
     <!-- the staging dir -->
     <fileSet>
@@ -14,6 +20,17 @@
     </fileSet>
   </fileSets>
   <dependencySets>
+    <!-- default driver kar set -->
+    <dependencySet>
+      <includes>
+        <include>*:pentaho-hadoop-shims-cdh61-kar:*</include>
+        <include>*:pentaho-hadoop-shims-hdp30-kar:*</include>
+        <include>*:pentaho-hadoop-shims-emr521-kar:*</include>
+      </includes>
+      <outputDirectory>./ADDITIONAL-FILES/drivers</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
     <!-- pdi components -->
     <dependencySet>
       <includes>

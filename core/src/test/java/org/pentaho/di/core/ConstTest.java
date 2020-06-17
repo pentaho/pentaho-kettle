@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,9 @@ import java.math.BigDecimal;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.junit.ClassRule;
@@ -2071,6 +2073,16 @@ public class ConstTest {
   }
 
   @Test
+  public void testGetTimelessDateFormats() {
+    final String[] formats = Const.getTimelessDateFormats();
+    assertTrue( formats.length > 0 );
+    for ( String format : formats ) {
+      assertTrue( format != null && !format.isEmpty() );
+      assertTrue( format != null && !format.toLowerCase().contains( "hh" ) );
+    }
+  }
+
+  @Test
   public void testGetNumberFormats() {
     final String[] formats = Const.getNumberFormats();
     assertTrue( formats.length > 0 );
@@ -2128,6 +2140,18 @@ public class ConstTest {
     assertEquals( "trim me hard ", Const.trimToType( source, ValueMetaInterface.TRIM_TYPE_LEFT ) );
     assertEquals( " trim me hard", Const.trimToType( source, ValueMetaInterface.TRIM_TYPE_RIGHT ) );
     assertEquals( source, Const.trimToType( source, ValueMetaInterface.TRIM_TYPE_NONE ) );
+  }
+
+  @Test
+  public void testTrimDate() {
+    Date now = new Date();
+    Date nowTrimed = Const.trimDate( now );
+    Calendar calendar = GregorianCalendar.getInstance();
+    calendar.setTime( nowTrimed  );
+    assertEquals( 0, calendar.get( Calendar.HOUR_OF_DAY ) );
+    assertEquals( 0, calendar.get( Calendar.MINUTE ) );
+    assertEquals( 0, calendar.get( Calendar.SECOND ) );
+    assertEquals( 0, calendar.get( Calendar.MILLISECOND ) );
   }
 
   @Test

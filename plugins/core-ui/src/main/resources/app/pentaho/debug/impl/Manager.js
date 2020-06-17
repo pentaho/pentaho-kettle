@@ -26,7 +26,7 @@ define([
    * @alias Manager
    * @memberOf pentaho.debug.impl
    * @class
-   * @implements pentaho.debug.IManager
+   * @implements {pentaho.debug.IManager}
    *
    * @description Creates a debugging manager.
    * @constructor

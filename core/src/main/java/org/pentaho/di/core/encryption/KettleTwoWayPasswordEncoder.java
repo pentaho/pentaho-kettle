@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,10 +30,10 @@ import org.pentaho.di.core.util.Utils;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.support.encryption.PasswordEncoderException;
+import org.pentaho.support.utils.StringUtil;
 
 /**
  * This class handles basic encryption of passwords in Kettle. Note that it's not really encryption, it's more
@@ -51,7 +51,7 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
    * The word that is put before a password to indicate an encrypted form. If this word is not present, the password is
    * considered to be NOT encrypted
    */
-  public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
+  @SuppressWarnings( "squid:S2068" ) public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
 
   public KettleTwoWayPasswordEncoder() {
     String envSeed = Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED ), "0933910847463829827159347601486730416058" ); // Solve for PDI-16512
@@ -63,7 +63,7 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
   }
 
   @Override
-  public void init() throws KettleException {
+  public void init() throws PasswordEncoderException {
     // Nothing to do here.
   }
 

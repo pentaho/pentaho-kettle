@@ -103,6 +103,8 @@ import javax.xml.ws.Service;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,6 +118,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -223,6 +226,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   private RepositoryServiceRegistry purRepositoryServiceRegistry = new RepositoryServiceRegistry();
 
   private static final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+  private static final ReadWriteLock sharedObjectsLock = new ReentrantReadWriteLock();
 
 
   // ~ Constructors ====================================================================================================
@@ -362,6 +366,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     metaStore = null;
     purRepositoryConnector.disconnect();
   }
+
+  @Override public Optional<URI> getUri() {
+    String url = Optional.ofNullable( repositoryMeta.getRepositoryLocation() )
+      .orElseThrow( () -> new IllegalStateException( getName() + " does not have a defined location." ) )
+      .getUrl();
+    try {
+      return Optional.of( new URI( url ) );
+    } catch ( URISyntaxException e ) {
+      log.logError( e.getMessage(), e );
+    }
+    return Optional.empty();
+  }
+
 
   @Override public int countNrJobEntryAttributes( ObjectId idJobentry, String code ) throws KettleException {
     // implemented by RepositoryProxy
@@ -1328,7 +1345,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public void clearSharedObjectCache() {
-    sharedObjectsByType = null;
+    sharedObjectsLock.writeLock().lock();
+    try {
+      sharedObjectsByType = null;
+    } finally {
+      sharedObjectsLock.writeLock().unlock();
+    }
   }
 
   /**
@@ -1908,9 +1930,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
   }
 
-  protected synchronized Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects(
+  protected Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects(
     final boolean deepCopy ) throws KettleException {
     if ( sharedObjectsByType == null ) {
+      sharedObjectsLock.writeLock().lock();
       try {
         sharedObjectsByType =
           new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
@@ -1921,6 +1944,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         sharedObjectsByType = null;
         // TODO i18n
         throw new KettleException( "Unable to read shared objects from repository", e ); //$NON-NLS-1$
+      } finally {
+        sharedObjectsLock.writeLock().unlock();
       }
     }
     return deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
@@ -1936,40 +1961,45 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     Map<RepositoryObjectType, List<? extends SharedObjectInterface>>
       copy =
       new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
-    for ( Entry<RepositoryObjectType, List<? extends SharedObjectInterface>> entry : orig.entrySet() ) {
-      RepositoryObjectType type = entry.getKey();
-      List<? extends SharedObjectInterface> value = entry.getValue();
+    sharedObjectsLock.writeLock().lock();
+    try {
+      for ( Entry<RepositoryObjectType, List<? extends SharedObjectInterface>> entry : orig.entrySet() ) {
+        RepositoryObjectType type = entry.getKey();
+        List<? extends SharedObjectInterface> value = entry.getValue();
 
-      List<SharedObjectInterface> newValue = new ArrayList<SharedObjectInterface>( value.size() );
-      for ( SharedObjectInterface obj : value ) {
-        SharedObjectInterface newValueItem;
-        if ( obj instanceof DatabaseMeta ) {
-          DatabaseMeta databaseMeta = (DatabaseMeta) ( (DatabaseMeta) obj ).clone();
-          databaseMeta.setObjectId( ( (DatabaseMeta) obj ).getObjectId() );
-          databaseMeta.setChangedDate( obj.getChangedDate() );
-          databaseMeta.clearChanged();
-          newValueItem = databaseMeta;
-        } else if ( obj instanceof SlaveServer ) {
-          SlaveServer slaveServer = (SlaveServer) ( (SlaveServer) obj ).clone();
-          slaveServer.setObjectId( ( (SlaveServer) obj ).getObjectId() );
-          slaveServer.clearChanged();
-          newValueItem = slaveServer;
-        } else if ( obj instanceof PartitionSchema ) {
-          PartitionSchema partitionSchema = (PartitionSchema) ( (PartitionSchema) obj ).clone();
-          partitionSchema.setObjectId( ( (PartitionSchema) obj ).getObjectId() );
-          partitionSchema.clearChanged();
-          newValueItem = partitionSchema;
-        } else if ( obj instanceof ClusterSchema ) {
-          ClusterSchema clusterSchema = ( (ClusterSchema) obj ).clone();
-          clusterSchema.setObjectId( ( (ClusterSchema) obj ).getObjectId() );
-          clusterSchema.clearChanged();
-          newValueItem = clusterSchema;
-        } else {
-          throw new KettleException( "unknown shared object class" );
+        List<SharedObjectInterface> newValue = new ArrayList<SharedObjectInterface>( value.size() );
+        for ( SharedObjectInterface obj : value ) {
+          SharedObjectInterface newValueItem;
+          if ( obj instanceof DatabaseMeta ) {
+            DatabaseMeta databaseMeta = (DatabaseMeta) ( (DatabaseMeta) obj ).clone();
+            databaseMeta.setObjectId( ( (DatabaseMeta) obj ).getObjectId() );
+            databaseMeta.setChangedDate( obj.getChangedDate() );
+            databaseMeta.clearChanged();
+            newValueItem = databaseMeta;
+          } else if ( obj instanceof SlaveServer ) {
+            SlaveServer slaveServer = (SlaveServer) ( (SlaveServer) obj ).clone();
+            slaveServer.setObjectId( ( (SlaveServer) obj ).getObjectId() );
+            slaveServer.clearChanged();
+            newValueItem = slaveServer;
+          } else if ( obj instanceof PartitionSchema ) {
+            PartitionSchema partitionSchema = (PartitionSchema) ( (PartitionSchema) obj ).clone();
+            partitionSchema.setObjectId( ( (PartitionSchema) obj ).getObjectId() );
+            partitionSchema.clearChanged();
+            newValueItem = partitionSchema;
+          } else if ( obj instanceof ClusterSchema ) {
+            ClusterSchema clusterSchema = ( (ClusterSchema) obj ).clone();
+            clusterSchema.setObjectId( ( (ClusterSchema) obj ).getObjectId() );
+            clusterSchema.clearChanged();
+            newValueItem = clusterSchema;
+          } else {
+            throw new KettleException( "unknown shared object class" );
+          }
+          newValue.add( newValueItem );
         }
-        newValue.add( newValueItem );
+        copy.put( type, newValue );
       }
-      copy.put( type, newValue );
+    } finally {
+      sharedObjectsLock.writeLock().unlock();
     }
     return copy;
   }
@@ -2403,7 +2433,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       NodeRepositoryFileData data = null;
       ObjectRevision revision = null;
 
-      readWriteLock.writeLock().lock();
+      readWriteLock.readLock().lock();
       try {
         file = pur.getFile( absPath );
         if ( versionId != null ) {
@@ -2420,7 +2450,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
         data = pur.getDataAtVersionForRead( file.getId(), versionId, NodeRepositoryFileData.class );
       } finally {
-        readWriteLock.writeLock().unlock();
+        readWriteLock.readLock().unlock();
       }
 
       revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
@@ -2785,60 +2815,65 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     RepositoryObjectType typeToUpdate = element != null ? element.getRepositoryElementType() : type;
     RepositoryElementInterface elementToUpdate = null;
     List<? extends SharedObjectInterface> origSharedObjects = null;
-    switch ( typeToUpdate ) {
-      case DATABASE:
-        origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.DATABASE );
-        if ( !remove ) {
-          elementToUpdate = (RepositoryElementInterface) ( (DatabaseMeta) element ).clone();
-        }
-        break;
-      case SLAVE_SERVER:
-        origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER );
-        if ( !remove ) {
-          elementToUpdate = (RepositoryElementInterface) ( (SlaveServer) element ).clone();
-        }
-        break;
-      case CLUSTER_SCHEMA:
-        origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.CLUSTER_SCHEMA );
-        if ( !remove ) {
-          elementToUpdate = ( (ClusterSchema) element ).clone();
-        }
-        break;
-      case PARTITION_SCHEMA:
-        origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.PARTITION_SCHEMA );
-        if ( !remove ) {
-          elementToUpdate = (RepositoryElementInterface) ( (PartitionSchema) element ).clone();
-        }
-        break;
-      default:
-        throw new KettleException( "unknown type [" + typeToUpdate + "]" );
-    }
+    sharedObjectsLock.writeLock().lock();
+    try {
+      switch ( typeToUpdate ) {
+        case DATABASE:
+          origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.DATABASE );
+          if ( !remove ) {
+            elementToUpdate = (RepositoryElementInterface) ( (DatabaseMeta) element ).clone();
+          }
+          break;
+        case SLAVE_SERVER:
+          origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER );
+          if ( !remove ) {
+            elementToUpdate = (RepositoryElementInterface) ( (SlaveServer) element ).clone();
+          }
+          break;
+        case CLUSTER_SCHEMA:
+          origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.CLUSTER_SCHEMA );
+          if ( !remove ) {
+            elementToUpdate = ( (ClusterSchema) element ).clone();
+          }
+          break;
+        case PARTITION_SCHEMA:
+          origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.PARTITION_SCHEMA );
+          if ( !remove ) {
+            elementToUpdate = (RepositoryElementInterface) ( (PartitionSchema) element ).clone();
+          }
+          break;
+        default:
+          throw new KettleException( "unknown type [" + typeToUpdate + "]" );
+      }
 
-    List<SharedObjectInterface> newSharedObjects = new ArrayList<SharedObjectInterface>( origSharedObjects );
-    // if there's a match on id, replace the element
-    boolean found = false;
-    for ( int i = 0; i < origSharedObjects.size(); i++ ) {
-      RepositoryElementInterface repositoryElementInterface = (RepositoryElementInterface) origSharedObjects.get( i );
-      if ( repositoryElementInterface == null ) {
-        continue;
-      }
-      ObjectId objectId = repositoryElementInterface.getObjectId();
-      if ( objectId != null && objectId.equals( idToFind ) ) {
-        if ( remove ) {
-          newSharedObjects.remove( i );
-        } else {
-          elementToUpdate.setObjectId( idToFind ); // because some clones don't clone the ID!!!
-          newSharedObjects.set( i, (SharedObjectInterface) elementToUpdate );
+      List<SharedObjectInterface> newSharedObjects = new ArrayList<SharedObjectInterface>( origSharedObjects );
+      // if there's a match on id, replace the element
+      boolean found = false;
+      for ( int i = 0; i < origSharedObjects.size(); i++ ) {
+        RepositoryElementInterface repositoryElementInterface = (RepositoryElementInterface) origSharedObjects.get( i );
+        if ( repositoryElementInterface == null ) {
+          continue;
         }
-        found = true;
+        ObjectId objectId = repositoryElementInterface.getObjectId();
+        if ( objectId != null && objectId.equals( idToFind ) ) {
+          if ( remove ) {
+            newSharedObjects.remove( i );
+          } else {
+            elementToUpdate.setObjectId( idToFind ); // because some clones don't clone the ID!!!
+            newSharedObjects.set( i, (SharedObjectInterface) elementToUpdate );
+          }
+          found = true;
+        }
       }
+      // otherwise, add it
+      if ( !remove && !found ) {
+        elementToUpdate.setObjectId( idToFind ); // because some clones don't clone the ID!!!
+        newSharedObjects.add( (SharedObjectInterface) elementToUpdate );
+      }
+      sharedObjectsByType.put( typeToUpdate, newSharedObjects );
+    } finally {
+      sharedObjectsLock.writeLock().unlock();
     }
-    // otherwise, add it
-    if ( !remove && !found ) {
-      elementToUpdate.setObjectId( idToFind ); // because some clones don't clone the ID!!!
-      newSharedObjects.add( (SharedObjectInterface) elementToUpdate );
-    }
-    sharedObjectsByType.put( typeToUpdate, newSharedObjects );
   }
 
   private ObjectRevision getObjectRevision( final ObjectId elementId, final String versionId ) {
@@ -3364,6 +3399,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     if ( saveSharedObjects ) {
       objectTransformer.saveSharedObjects( element, versionComment );
     }
+
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.BeforeSaveToRepository.id, element );
 
     final boolean isUpdate = ( element.getObjectId() != null );
     RepositoryFile file = null;

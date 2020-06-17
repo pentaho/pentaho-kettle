@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -105,8 +105,8 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
 
       // Initialize the data object
       m_data.setOutputRowMeta( getInputRowMeta().clone() );
-      String sampleSize = getTransMeta().environmentSubstitute( m_meta.getSampleSize() );
-      String seed = getTransMeta().environmentSubstitute( m_meta.getSeed() );
+      String sampleSize = this.environmentSubstitute( m_meta.getSampleSize() );
+      String seed = this.environmentSubstitute( m_meta.getSeed() );
       m_data.initialize( Integer.valueOf( sampleSize ), Integer.valueOf( seed ) );
 
       // no real reason to determine the output fields here
@@ -128,7 +128,7 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
         int numRows = ( samples != null ) ? samples.size() : 0;
         logBasic( this.getStepname()
           + " Actual/Sample: " + numRows + "/" + m_data.m_k + " Seed:"
-          + getTransMeta().environmentSubstitute( m_meta.m_randomSeed ) );
+          + this.environmentSubstitute( m_meta.m_randomSeed ) );
         if ( samples != null ) {
           for ( int i = 0; i < samples.size(); i++ ) {
             Object[] sample = samples.get( i );

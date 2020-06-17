@@ -39,6 +39,7 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
   private boolean success;
+  private Exception capturedException;
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
     "Database factory", LoggingObjectType.GENERAL, null );
@@ -47,10 +48,9 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
   }
 
   @Override
-  public String getConnectionTestReport( DatabaseMeta databaseMeta ) throws KettleDatabaseException {
+  public String getConnectionTestReport( DatabaseMeta databaseMeta ) {
     success = true; // default
     if ( databaseMeta.getAccessType() != DatabaseMeta.TYPE_ACCESS_PLUGIN ) {
-
       StringBuilder report = new StringBuilder();
 
       Database db = new Database( loggingObject, databaseMeta );
@@ -63,6 +63,8 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
               .getName(), partitioningInformation[i].getPartitionId() )
               + Const.CR );
           } catch ( KettleException e ) {
+            this.capturedException = e;
+
             report.append( BaseMessages.getString(
               PKG, "DatabaseMeta.report.ConnectionWithPartError", databaseMeta.getName(),
               partitioningInformation[i].getPartitionId(), e.toString() )
@@ -84,6 +86,8 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
           report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionOk", databaseMeta.getName() )
             + Const.CR );
         } catch ( KettleException e ) {
+          this.capturedException = e;
+
           report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", databaseMeta
             .getName() )
             + e.toString() + Const.CR );
@@ -104,12 +108,12 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
       success = false;
       return BaseMessages.getString( PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message" );
     }
-
   }
 
   public DatabaseTestResults getConnectionTestResults( DatabaseMeta databaseMeta ) throws KettleDatabaseException {
     DatabaseTestResults databaseTestResults = new DatabaseTestResults();
     String message = getConnectionTestReport( databaseMeta );
+    databaseTestResults.setException( this.capturedException );
     databaseTestResults.setMessage( message );
     databaseTestResults.setSuccess( success );
     return databaseTestResults;

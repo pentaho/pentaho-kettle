@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -51,11 +52,14 @@ public class RepositoryDialog extends ThinDialog {
   private static final int HEIGHT = 630;
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM;
   private static final String CREATION_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NewRepo.Title" );
-  private static final String CREATION_WEB_CLIENT_PATH = "#/add";
+  private static final String CREATION_WEB_CLIENT_PATH = "#!/add";
   private static final String MANAGER_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Manager.Title" );
   private static final String LOGIN_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Login.Title" );
-  private static final String LOGIN_WEB_CLIENT_PATH = "#/connect";
+  private static final String LOGIN_WEB_CLIENT_PATH = "#!/connect";
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
+  private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
+  private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
+  private static final String LOCALHOST = "127.0.0.1";
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
 
 
@@ -146,6 +150,21 @@ public class RepositoryDialog extends ThinDialog {
   }
 
   private static String getRepoURL( String path ) {
-    return "http://localhost:" + getOsgiServicePort() + getClientPath() + path;
+    String host;
+    Integer port;
+    try {
+      host = getKettleProperty( THIN_CLIENT_HOST );
+      port = Integer.valueOf( getKettleProperty( THIN_CLIENT_PORT ) );
+    } catch ( Exception e ) {
+      host = LOCALHOST;
+      port = getOsgiServicePort();
+    }
+    return "http://" + host + ":" + port + getClientPath() + path;
   }
+
+  private static String getKettleProperty( String propertyName ) throws KettleException {
+    // loaded in system properties at startup
+    return System.getProperty( propertyName );
+  }
+
 }

@@ -1265,8 +1265,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     final Map<String, String> extraOptions = getExtraOptions();
 
     final Map<String, String> defaultOptions = databaseInterface.getDefaultOptions();
-    for ( String option : defaultOptions.keySet() ) {
-      String value = defaultOptions.get( option );
+    for ( Map.Entry<String, String> entry : defaultOptions.entrySet() ) {
+      String option = entry.getKey();
+      String value = entry.getValue();
       String[] split = option.split( "[.]", 2 );
       if ( !extraOptions.containsKey( option ) && split.length == 2 ) {
         addExtraOption( split[0], split[1], value );
@@ -3096,5 +3097,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public ResultSet getSchemas( DatabaseMetaData databaseMetaData ) throws SQLException {
     return databaseInterface.getSchemas( databaseMetaData, this );
+  }
+
+  public String getNamedCluster() {
+    return databaseInterface.getNamedCluster();
+  }
+
+  public void setNamedCluster( String namedCluster ) {
+    databaseInterface.setNamedCluster( namedCluster );
   }
 }

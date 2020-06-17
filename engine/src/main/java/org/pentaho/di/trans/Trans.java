@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,6 +60,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ExecutorInterface;
@@ -554,6 +555,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   private ExecutorService heartbeat = null; // this transformations's heartbeat scheduled executor
 
+  private boolean executingClustered;
+
   /**
    * Instantiates a new transformation.
    */
@@ -766,12 +769,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationPrepareExecution.id, this );
 
-    transMeta.disposeEmbeddedMetastoreProvider();
-    if ( transMeta.getMetastoreLocatorOsgi() != null ) {
-      transMeta.setEmbeddedMetastoreProviderKey(
-        transMeta.getMetastoreLocatorOsgi().setEmbeddedMetastore( transMeta.getEmbeddedMetaStore() ) );
-    }
-
     checkCompatibility();
 
     // Set the arguments on the transformation...
@@ -782,6 +779,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     activateParameters();
     transMeta.activateParameters();
+    ConnectionUtil.init( transMeta );
 
     if ( transMeta.getName() == null ) {
       if ( transMeta.getFilename() != null ) {
@@ -1051,7 +1049,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // things as well...
           if ( stepMeta.isPartitioned() ) {
             List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-            if ( partitionIDs != null && partitionIDs.size() > 0 ) {
+            if ( partitionIDs != null && !partitionIDs.isEmpty() ) {
               step.setPartitionID( partitionIDs.get( c ) ); // Pass the partition ID
               // to the step
             }
@@ -1546,14 +1544,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 for ( int i = 0; i < steps.size() && !isStopped(); i++ ) {
                   StepMetaDataCombi combi = steps.get( i );
                   if ( !stepDone[ i ] ) {
-                    // if (combi.step.canProcessOneRow() ||
-                    // !combi.step.isRunning()) {
                     boolean cont = combi.step.processRow( combi.meta, combi.data );
                     if ( !cont ) {
                       stepDone[ i ] = true;
                       nrDone++;
                     }
-                    // }
                   }
                 }
               }
@@ -1561,8 +1556,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               errors.addAndGet( 1 );
               log.logError( "Error executing single threaded", e );
             } finally {
-              for ( int i = 0; i < steps.size(); i++ ) {
-                StepMetaDataCombi combi = steps.get( i );
+              for ( StepMetaDataCombi combi : steps ) {
                 combi.step.dispose( combi.meta, combi.data );
                 combi.step.markStop();
               }
@@ -1703,6 +1697,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     for ( StepMetaDataCombi combi : steps ) {
+      // PDI-18214/CDA-243: Check if the steps have been disposed
+      if ( !combi.data.isDisposed() ) {
+        combi.step.setOutputDone();
+        combi.step.dispose( combi.meta, combi.data );
+        combi.step.markStop();
+      }
       combi.step.cleanup();
     }
   }
@@ -5682,6 +5682,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   public boolean isResultRowsSet() {
     return resultRowsSet;
+  }
+
+  public boolean isExecutingClustered() {
+    return executingClustered;
+  }
+
+  public void setExecutingClustered( boolean executingClustered ) {
+    this.executingClustered = executingClustered;
   }
 
   @Override

@@ -130,26 +130,43 @@ define([
       return $q(function(resolve, reject) {
         if (vm.data.state === "edit" || vm.data.isSaved) {
           if (vm.name !== vm.data.model.name) {
-            vm.data.name = vm.data.model.name;
-            vm.data.model.name = vm.name;
-          }
-          resolve(true);
-        } else {
-          dataService.exists(vm.name).then(function (res) {
-            var isValid = !res.data;
-            if (!isValid) {
-              vm.errorMessage = {
-                type: "error",
-                text: i18n.get('connections.intro.name.error', {
-                  name: vm.name
-                })
-              }
-            } else {
+            checkName(vm.name).then(function() {
+              vm.data.name = vm.data.model.name;
               vm.data.model.name = vm.name;
-            }
-            resolve(isValid);
+              resolve();
+            }, function() {
+              reject();
+            });
+          } else {
+            resolve();
+          }
+        } else {
+          checkName(vm.name).then(function() {
+            vm.data.model.name = vm.name;
+            resolve();
+          }, function() {
+            reject();
           });
         }
+      });
+    }
+
+    function checkName(name) {
+      return $q(function(resolve, reject) {
+        dataService.exists(name).then(function (res) {
+          var isValid = !res.data;
+          if (isValid) {
+            resolve();
+          } else {
+            vm.errorMessage = {
+              type: "error",
+              text: i18n.get('connections.intro.name.error', {
+                name: name
+              })
+            };
+            reject();
+          }
+        });
       });
     }
 
@@ -172,10 +189,8 @@ define([
             },
             position: "right",
             onClick: function() {
-              validateName().then(function(isValid) {
-                if (isValid) {
-                  $state.go(vm.data.state === "modify" ? 'summary' : vm.next, {data: vm.data, transition: "slideLeft"});
-                }
+              validateName().then(function() {
+                $state.go(vm.data.state === "modify" ? 'summary' : vm.next, {data: vm.data, transition: "slideLeft"});
               });
             }
           }];

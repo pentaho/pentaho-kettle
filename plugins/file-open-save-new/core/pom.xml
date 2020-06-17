@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>file-open-save-new</artifactId>
-    <version>9.0.0.0-SNAPSHOT</version>
+    <version>9.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>file-open-save-new-core</artifactId>
-  <version>9.0.0.0-SNAPSHOT</version>
+  <version>9.1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>PDI File Open and Save New Plugin Core</name>
@@ -33,10 +33,19 @@
       <artifactId>kettle-engine</artifactId>
     </dependency>
     <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-metastore-locator-api</artifactId>
+      <version>${pdi.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>file-open-save-new-api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>core-ui</artifactId>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -77,7 +86,7 @@
       <artifactId>angular</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>angular-i18n</artifactId>
     </dependency>
     <dependency>
@@ -100,6 +109,14 @@
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
     </dependency>
   </dependencies>
   <build>
@@ -157,7 +174,7 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Import-Package>org.pentaho.di.osgi, *</Import-Package>
+            <Import-Package>org.apache.xerces.parsers, org.pentaho.di.osgi, *</Import-Package>
             <Provide-Capability>
               org.pentaho.webpackage;root=/app
             </Provide-Capability>

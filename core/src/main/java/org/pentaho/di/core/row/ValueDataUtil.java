@@ -39,6 +39,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.CharsetToolkit;
 import org.pentaho.di.core.util.PentahoJaroWinklerDistance;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLCheck;
 
@@ -46,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
@@ -827,6 +829,7 @@ public class ValueDataUtil {
     return s.toString();
   }
 
+  @Deprecated
   public static Object divide( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
@@ -838,7 +841,25 @@ public class ValueDataUtil {
       case ValueMetaInterface.TYPE_INTEGER:
         return divideLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return divideBigDecimals( metaA.getBigNumber( dataA ), metaB.getBigNumber( dataB ), null );
+        return divideBigDecimals( metaA.getBigNumber( dataA ), metaB.getBigNumber( dataB ), (MathContext) null );
+
+      default:
+        throw new KettleValueException( "The 'divide' function only works on numeric data." );
+    }
+  }
+
+  public static Object divide( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB, VariableSpace space ) throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
+      return null;
+    }
+
+    switch ( metaA.getType() ) {
+      case ValueMetaInterface.TYPE_NUMBER:
+        return divideDoubles( metaA.getNumber( dataA ), metaB.getNumber( dataB ) );
+      case ValueMetaInterface.TYPE_INTEGER:
+        return divideLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) );
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        return divideBigDecimals( metaA.getBigNumber( dataA ), metaB.getBigNumber( dataB ), space );
 
       default:
         throw new KettleValueException( "The 'divide' function only works on numeric data." );
@@ -853,27 +874,50 @@ public class ValueDataUtil {
     return new Long( a.longValue() / b.longValue() );
   }
 
+  @Deprecated
   public static BigDecimal divideBigDecimals( BigDecimal a, BigDecimal b, MathContext mc ) {
-    BigDecimal result = null;
+    mc = mc != null ? mc : MathContext.UNLIMITED;
+    BigDecimal result;
     try {
-      // Try unbounded division. But will throw an exception if the
-      // result would be a repeating decimal. We catch that and then
-      // bound it below.
-      //
-      // It's possible that on hundreds of calls to divideBigDecimals, that this
-      // will end up creating a performance issue. The proper answer to that though
-      // is to not use this method without a MathContext.
-      result = a.divide( b, mc != null ? mc : MathContext.UNLIMITED );
+      result = a.divide( b, mc );
     } catch ( ArithmeticException ae ) {
       // Repeating decimal, we have to bound it if we supplied the MathContext
-      if ( mc == null ) {
-        result = a.divide( b, MathContext.DECIMAL128 );
-      } else {
-        // We have to throw the exception out if the MathContext was passed in
-        throw ae;
-      }
+      result = a.divide( b, MathContext.DECIMAL128 );
     }
     return removeTrailingZeroFractionOrScale( result );
+  }
+
+  public static BigDecimal divideBigDecimals( BigDecimal a, BigDecimal b, VariableSpace space ) {
+    MathContext mc = buildMathContext( space );
+    BigDecimal result;
+    try {
+      result = a.divide( b, mc );
+    } catch ( ArithmeticException ae ) {
+      // Repeating decimal, we have to bound it if we supplied the MathContext
+      result = a.divide( b, MathContext.DECIMAL128 );
+    }
+    return removeTrailingZeroFractionOrScale( result );
+  }
+
+  private static MathContext buildMathContext( VariableSpace space ) {
+    String precisionString = space.getVariable( Const.KETTLE_BIGDECIMAL_DIVISION_PRECISION );
+    String roundingModeString = space.getVariable( Const.KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE );
+
+    if ( precisionString != null ) {
+      RoundingMode roundingMode;
+      try {
+        roundingMode = RoundingMode.valueOf( roundingModeString );
+      } catch ( IllegalArgumentException | NullPointerException e ) {
+        roundingMode = RoundingMode.HALF_EVEN;
+      }
+      int precision = Integer.parseInt( precisionString );
+      if ( precision < 0 ) {
+        return MathContext.UNLIMITED;
+      } else {
+        return new MathContext( precision, roundingMode );
+      }
+    }
+    return MathContext.UNLIMITED;
   }
 
   public static Object sqrt( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
@@ -904,6 +948,7 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
+  @Deprecated
   public static Object percent1( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
@@ -917,7 +962,27 @@ public class ValueDataUtil {
       case ValueMetaInterface.TYPE_BIGNUMBER:
         return divideBigDecimals(
           multiplyBigDecimals( metaA.getBigNumber( dataA ), new BigDecimal( 100 ), null ), metaB
-            .getBigNumber( dataB ), null );
+            .getBigNumber( dataB ), (MathContext) null );
+
+      default:
+        throw new KettleValueException( "The 'A/B in %' function only works on numeric data" );
+    }
+  }
+
+  public static Object percent1( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB, VariableSpace space ) throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
+      return null;
+    }
+
+    switch ( metaA.getType() ) {
+      case ValueMetaInterface.TYPE_NUMBER:
+        return divideDoubles( multiplyDoubles( 100.0D, metaA.getNumber( dataA ) ), metaB.getNumber( dataB ) );
+      case ValueMetaInterface.TYPE_INTEGER:
+        return divideLongs( multiplyLongs( 100L, metaA.getInteger( dataA ) ), metaB.getInteger( dataB ) );
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        return divideBigDecimals(
+          multiplyBigDecimals( metaA.getBigNumber( dataA ), new BigDecimal( 100 ), null ), metaB
+            .getBigNumber( dataB ), space );
 
       default:
         throw new KettleValueException( "The 'A/B in %' function only works on numeric data" );
@@ -934,6 +999,7 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
+  @Deprecated
   public static Object percent2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
@@ -949,7 +1015,29 @@ public class ValueDataUtil {
       case ValueMetaInterface.TYPE_BIGNUMBER:
         return metaA.getBigNumber( dataA ).subtract(
           divideBigDecimals( multiplyBigDecimals(
-            metaB.getBigNumber( dataB ), metaA.getBigNumber( dataA ), null ), new BigDecimal( 100 ), null ) );
+            metaB.getBigNumber( dataB ), metaA.getBigNumber( dataA ), null ), new BigDecimal( 100 ),
+            (MathContext) null ) );
+      default:
+        throw new KettleValueException( "The 'A-B%' function only works on numeric data" );
+    }
+  }
+
+  public static Object percent2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB, VariableSpace space ) throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
+      return null;
+    }
+
+    switch ( metaA.getType() ) {
+      case ValueMetaInterface.TYPE_NUMBER:
+        return new Double( metaA.getNumber( dataA ).doubleValue()
+          - divideDoubles( multiplyDoubles( metaA.getNumber( dataA ), metaB.getNumber( dataB ) ), 100.0D ) );
+      case ValueMetaInterface.TYPE_INTEGER:
+        return new Long( metaA.getInteger( dataA ).longValue()
+          - divideLongs( multiplyLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) ), 100L ) );
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        return metaA.getBigNumber( dataA ).subtract(
+          divideBigDecimals( multiplyBigDecimals(
+            metaB.getBigNumber( dataB ), metaA.getBigNumber( dataA ), null ), new BigDecimal( 100 ), space ) );
       default:
         throw new KettleValueException( "The 'A-B%' function only works on numeric data" );
     }
@@ -965,6 +1053,7 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
+  @Deprecated
   public static Object percent3( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
@@ -980,7 +1069,29 @@ public class ValueDataUtil {
       case ValueMetaInterface.TYPE_BIGNUMBER:
         return metaA.getBigNumber( dataA ).add(
           divideBigDecimals( multiplyBigDecimals(
-            metaB.getBigNumber( dataB ), metaA.getBigNumber( dataA ), null ), new BigDecimal( 100 ), null ) );
+            metaB.getBigNumber( dataB ), metaA.getBigNumber( dataA ), null ), new BigDecimal( 100 ),
+            (MathContext) null ) );
+      default:
+        throw new KettleValueException( "The 'A+B%' function only works on numeric data" );
+    }
+  }
+
+  public static Object percent3( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB, VariableSpace space ) throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
+      return null;
+    }
+
+    switch ( metaA.getType() ) {
+      case ValueMetaInterface.TYPE_NUMBER:
+        return new Double( metaA.getNumber( dataA ).doubleValue()
+          + divideDoubles( multiplyDoubles( metaA.getNumber( dataA ), metaB.getNumber( dataB ) ), 100.0D ) );
+      case ValueMetaInterface.TYPE_INTEGER:
+        return new Long( metaA.getInteger( dataA ).longValue()
+          + divideLongs( multiplyLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) ), 100L ) );
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        return metaA.getBigNumber( dataA ).add(
+          divideBigDecimals( multiplyBigDecimals(
+            metaB.getBigNumber( dataB ), metaA.getBigNumber( dataA ), null ), new BigDecimal( 100 ), space ) );
       default:
         throw new KettleValueException( "The 'A+B%' function only works on numeric data" );
     }

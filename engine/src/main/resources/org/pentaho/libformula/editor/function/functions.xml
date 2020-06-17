@@ -1,6 +1,6 @@
 <libformula-functions>
 
-    <!-- Basic computation : TODO: complete copy from OASIS spec -->  
+    <!-- Basic computation : TODO: complete copy from OASIS spec -->
 
   <function><category>%Category.BasicComputation</category> <name>+</name> <description>Sum of 2 numeric values</description>  </function>
   <function><category>%Category.BasicComputation</category> <name>-</name> <description>Subtract 2 numeric values</description>  </function>
@@ -10,9 +10,9 @@
   <function><category>%Category.BasicComputation</category> <name>%</name> <description>Percentage calculation, for example 12% resolves to 0.12</description>  </function>
   <function><category>%Category.BasicComputation</category><name>(</name> <description>Opening bracket to influence calculation order in an expression</description>  </function>
   <function><category>%Category.BasicComputation</category><name>)</name> <description>Closing bracket to influence calculation order in an expression</description>  </function>
-  
-    <!-- Comparisons  : TODO: complete copy from OASIS spec -->  
-  
+
+    <!-- Comparisons  : TODO: complete copy from OASIS spec -->
+
   <function><category>%Category.Comparisons</category> <name>=</name> <description>Verify that 2 values are equal</description>  </function>
   <function><category>%Category.Comparisons</category> <name>&lt;&gt;</name> <description>See if 2 values are different</description>  </function>
   <function><category>%Category.Comparisons</category> <name>&lt;</name> <description>See if one value is less than the other</description>  </function>
@@ -21,85 +21,156 @@
   <function><category>%Category.Comparisons</category> <name>&gt;=</name> <description>See if one value is larger than or equal to the other</description>  </function>
 
 
-  <!-- Information : This list is complete -->  
+  <!-- Information : This list is complete -->
 
-  <function>                       
+  <function>
     <category>%Category.Information</category>
-    <name>CHOOSE</name>             
-    <description>Uses an index to return a value from a list of values.</description>     
-    <syntax>CHOOSE( Integer Index ; { Any Value }+ )</syntax>               
-    <returns>Any</returns>             
-    <constraints>Returns an error if Index &lt; 1 or if there is no corresponding value in the list of Values.</constraints>     
-    <semantics>Uses Index to determine which value, from a list of values, to return. If Index is 1, CHOOSE returns the first Value; if Index is 2, CHOOSE returns the second value, and so on. Note that the Values may be formula expressions. Expression paths of parameters other than the one chosen are not calculated or evaluated for side effects.</semantics>         
-    <examples>                      
+    <name>CHOOSE</name>
+    <description>Uses an index to return a value from a list of values.</description>
+    <syntax>CHOOSE( Integer Index ; { Any Value }+ )</syntax>
+    <returns>Any</returns>
+    <constraints>Returns an error if Index &lt; 1 or if there is no corresponding value in the list of Values.</constraints>
+    <semantics>Uses Index to determine which value, from a list of values, to return. If Index is 1, CHOOSE returns the first Value; if Index is 2, CHOOSE returns the second value, and so on. Note that the Values may be formula expressions. Expression paths of parameters other than the one chosen are not calculated or evaluated for side effects.</semantics>
+    <examples>
       <example>   <expression>CHOOSE(3;"Apple";"Orange";"Grape";"Perry")</expression>   <result>"Grape"</result>    <level>1</level>    <comment>Simple selection.</comment>    </example>
       <example>   <expression>CHOOSE(0;"Apple";"Orange";"Grape";"Perry")</expression>   <result>Error</result>    <level>1</level>    <comment>Index has to be at least 1.</comment>    </example>
       <example>   <expression>CHOOSE(5;"Apple";"Orange";"Grape";"Perry")</expression>   <result>Error</result>    <level>1</level>    <comment>Index can't refer to non-existent entry.</comment>    </example>
       <example>   <expression>CHOOSE(2;SUM([.B4:.B5]);SUM([.B5]))</expression>   <result>3</result>    <level>1</level>    <comment>Simple selection, using a set of formulas.</comment>    </example>
       <example>   <expression>SUM(CHOOSE(2;[.B4:.B5];[.B5]))</expression>   <result>3</result>    <level>1</level>    <comment>CHOOSE can pass references</comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISBLANK</name>            
-    <description>Return TRUE if the referenced cell is blank, else return FALSE</description>     
-    <syntax>ISBLANK( Scalar X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>None</constraints>     
-    <semantics>If X is of type Number, Text, or Logical, return FALSE. If X is a reference to a cell, examine the cell; if it is blank (has no value), return TRUE, but if it has a value, return FALSE. A cell with the empty string is not considered blank.</semantics>         
-    <examples>                      
+    <name>COUNT</name>
+    <description>Counts how many of the parameters are numbers.</description>
+    <syntax>COUNT( { Any Value }+ )</syntax>
+    <returns>Integer</returns>
+    <constraints>None</constraints>
+    <semantics>Counts the parameters where the parameter's value is parseable as a number.</semantics>
+    <examples>
+      <example>   <expression>COUNT(1;2;3)</expression>   <result>3</result>    <level>1</level>    <comment>Simple count.</comment>    </example>
+      <example>   <expression>COUNT("1";"ABC";"9EF")</expression>   <result>1</result>    <level>1</level>    <comment>Only counts parameters that are numbers.</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Information</category>
+    <name>COUNTA</name>
+    <description>Counts how many of the parameters are not null.</description>
+    <syntax>COUNTA( { Any Value }+ )</syntax>
+    <returns>Integer</returns>
+    <constraints>None</constraints>
+    <semantics>Counts the parameters where the parameter's value is not null.</semantics>
+    <examples>
+      <example>   <expression>COUNTA(1;2;3)</expression>   <result>3</result>    <level>1</level>    <comment>Simple count.</comment>    </example>
+      <example>   <expression>COUNTA("1";"ABC";"9EF")</expression>   <result>3</result>    <level>1</level>    <comment>Simple count.</comment>    </example>
+      <example>   <expression>COUNTA("1";"ABC";;"9EF")</expression>   <result>3</result>    <level>1</level>    <comment>Does not count the null 3rd parameter.</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Information</category>
+    <name>COUNTBLANK</name>
+    <description>Counts how many of the parameters are null.</description>
+    <syntax>COUNTBLANK( { Any Value }+ )</syntax>
+    <returns>Integer</returns>
+    <constraints>None</constraints>
+    <semantics>Counts the parameters where the parameter's value is null.</semantics>
+    <examples>
+      <example>   <expression>COUNTBLANK(1;;;2;3)</expression>   <result>2</result>    <level>1</level>    <comment>Simple count.</comment>    </example>
+      <example>   <expression>COUNTBLANK(1;2;3)</expression>   <result>0</result>    <level>1</level>    <comment>Simple count.</comment>    </example>
+      <example>   <expression>COUNTBLANK("1";"ABC";"9EF")</expression>   <result>0</result>    <level>1</level>    <comment>Simple count.</comment>    </example>
+      <example>   <expression>COUNTBLANK("1";"ABC";;"9EF")</expression>   <result>1</result>    <level>1</level>    <comment>Simple count.</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Information</category>
+    <name>ERROR</name>
+    <description>Raises an evaluation error with the given message.</description>
+    <syntax>ERROR( Text errorMessage; Text errorCode )</syntax>
+    <returns>Error</returns>
+    <constraints>None</constraints>
+    <semantics>errorCode defaults to -1 if not set.</semantics>
+    <examples>
+      <example>   <expression>ERROR("Threw an error";1)</expression>   <result>Error</result>    <level>1</level>    <comment>Simple error.</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Information</category>
+    <name>VALUE</name>
+    <description>Returns the number value of a String.</description>
+    <syntax>VALUE( Text number )</syntax>
+    <returns>Decimal</returns>
+    <constraints>The number parameter must be parseable as a number</constraints>
+    <semantics>Converts a String to a number</semantics>
+    <examples>
+      <example>   <expression>VALUE("123")</expression>   <result>123</result>    <level>1</level>    <comment>Simple value.</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Information</category>
+    <name>ISBLANK</name>
+    <description>Return TRUE if the referenced cell is blank, else return FALSE</description>
+    <syntax>ISBLANK( Scalar X )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>If X is of type Number, Text, or Logical, return FALSE. If X is a reference to a cell, examine the cell; if it is blank (has no value), return TRUE, but if it has a value, return FALSE. A cell with the empty string is not considered blank.</semantics>
+    <examples>
       <example>   <expression>ISBLANK(1)</expression>   <result>False</result>    <level>1</level>    <comment>Numbers return false.</comment>    </example>
       <example>   <expression>ISBLANK("")</expression>   <result>False</result>    <level>1</level>    <comment>Text, even empty string, returns false.</comment>    </example>
       <example>   <expression>ISBLANK([.B8])</expression>   <result>True</result>    <level>1</level>    <comment>Blank cell is true.</comment>    </example>
       <example>   <expression>ISBLANK([.B7])</expression>   <result>False</result>    <level>1</level>    <comment>Non-blank cell is false.</comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISERR</name>              
-    <description>Return True if the parameter has type Error and is not NA, else return False.</description>     
-    <syntax>ISERR( Scalar X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>None</constraints>     
+    <name>ISERR</name>
+    <description>Return True if the parameter has type Error and is not NA, else return False.</description>
+    <syntax>ISERR( Scalar X )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
     <semantics> If X is of type Error, and ISNA(X) is not true, returns TRUE. Otherwise it returns FALSE. Note that this function returns False if given NA(); if this is not desired, use ISERROR. Note that this function does not propagate error values.
 ISERR(X) is the same as:
-IF(ISNA(X),FALSE(),ISERROR(X))</semantics>         
-    <examples>                      
+IF(ISNA(X),FALSE(),ISERROR(X))</semantics>
+    <examples>
       <example>   <expression>ISERR(1/0)</expression>   <result>True</result>    <level>1</level>    <comment>Error values other than NA() return true.</comment>    </example>
       <example>   <expression>ISERR(NA())</expression>   <result>False</result>    <level>1</level>    <comment>NA() does NOT return True.</comment>    </example>
       <example>   <expression>ISERR("#N/A")</expression>   <result>False</result>    <level>1</level>    <comment>Text is not an error.</comment>    </example>
       <example>   <expression>ISERR(1)</expression>   <result>False</result>    <level>1</level>    <comment>Numbers are not an error.</comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISERROR</name>             
-    <description>Return TRUE if the parameter has type Error, else return FALSE</description>     
-    <syntax>ISERROR( Scalar X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>None</constraints>     
-    <semantics>If X is of type Error, returns TRUE, else returns FALSE. Note that this function returns True if given NA(); if this is not desired, use ISERR. Note that this function does not propagate error values.</semantics>         
-    <examples>                      
+    <name>ISERROR</name>
+    <description>Return TRUE if the parameter has type Error, else return FALSE</description>
+    <syntax>ISERROR( Scalar X )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>If X is of type Error, returns TRUE, else returns FALSE. Note that this function returns True if given NA(); if this is not desired, use ISERR. Note that this function does not propagate error values.</semantics>
+    <examples>
       <example>   <expression>ISERROR(1/0)</expression>   <result>True</result>    <level>1</level>    <comment>Error values return true.</comment>    </example>
       <example>   <expression>ISERROR(NA())</expression>   <result>True</result>    <level>1</level>    <comment>Even NA().</comment>    </example>
       <example>   <expression>ISERROR("#N/A")</expression>   <result>False</result>    <level>1</level>    <comment>Text is not an error.</comment>    </example>
       <example>   <expression>ISERROR(1)</expression>   <result>False</result>    <level>1</level>    <comment>Numbers are not an error.</comment>    </example>
       <example>   <expression>ISERROR(CHOOSE(0; "Apple"; "Orange"; "Grape"; "Perry"))</expression>   <result>True</result>    <level>1</level>    <comment>If CHOOSE given out-of-range value, ISERROR needs to capture it.</comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISEVEN</name>              
-    <description>Return TRUE if the value is even, else return FALSE</description>     
-    <syntax>ISEVEN( Number X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>X must not be Logical</constraints>     
-    <semantics>First, compute X1=TRUNC(X). Then, if X is even (a division by 2 has a remainder of 0), return True, else return False. The result is implementation-defined if given a logical value; an application may return either an Error or the result of converting the logical value to a number (per Conversion to Number).</semantics>         
-    <examples>                      
+    <name>ISEVEN</name>
+    <description>Return TRUE if the value is even, else return FALSE</description>
+    <syntax>ISEVEN( Number X )</syntax>
+    <returns>Logical</returns>
+    <constraints>X must not be Logical</constraints>
+    <semantics>First, compute X1=TRUNC(X). Then, if X is even (a division by 2 has a remainder of 0), return True, else return False. The result is implementation-defined if given a logical value; an application may return either an Error or the result of converting the logical value to a number (per Conversion to Number).</semantics>
+    <examples>
       <example>   <expression>ISEVEN(2)</expression>   <result>True</result>    <level>3</level>    <comment>2 is even, because (2 modulo 2) = 0</comment>    </example>
       <example>   <expression>ISEVEN(6)</expression>   <result>True</result>    <level>3</level>    <comment>6 is even, because (6 modulo 2) = 0</comment>    </example>
       <example>   <expression>ISEVEN(2.1)</expression>   <result>True</result>    <level>3</level>    <comment></comment>    </example>
@@ -114,84 +185,84 @@ IF(ISNA(X),FALSE(),ISERROR(X))</semantics>
       <example>   <expression>ISEVEN(-3)</expression>   <result>False</result>    <level>3</level>    <comment></comment>    </example>
       <example>   <expression>ISEVEN(NA())</expression>   <result>NA</result>    <level>3</level>    <comment></comment>    </example>
       <example>   <expression>ISEVEN(0)</expression>   <result>True</result>    <level>3</level>    <comment></comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISLOGICAL</name>          
-    <description>Return TRUE if the parameter has type Logical, else return FALSE</description>     
-    <syntax>ISLOGICAL( Scalar X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>None</constraints>     
-    <semantics>If X is of type Logical, returns TRUE, else FALSE. For applications that do not have a distinct logical type, also ISNUMBER(X) will return TRUE.</semantics>         
-    <examples>                      
+    <name>ISLOGICAL</name>
+    <description>Return TRUE if the parameter has type Logical, else return FALSE</description>
+    <syntax>ISLOGICAL( Scalar X )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>If X is of type Logical, returns TRUE, else FALSE. For applications that do not have a distinct logical type, also ISNUMBER(X) will return TRUE.</semantics>
+    <examples>
       <example>   <expression>ISLOGICAL(TRUE())</expression>   <result>True</result>    <level>1</level>    <comment>Logical values return true.</comment>    </example>
       <example>   <expression>ISLOGICAL(FALSE())</expression>   <result>True</result>    <level>1</level>    <comment>Logical values return true.</comment>    </example>
       <example>   <expression>ISLOGICAL("TRUE")</expression>   <result>False</result>    <level>1</level>    <comment>Text values are not logicals, even if they can be converted.</comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISNA</name>               
-    <description>Return True if the parameter is of type NA, else return False.</description>     
-    <syntax>ISERR( Scalar X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>None</constraints>     
-    <semantics>If X is NA, return True, else return False. Note that if X is a reference, the value being referenced is considered. This function does not propagate error values.</semantics>         
-    <examples>                      
+    <name>ISNA</name>
+    <description>Return True if the parameter is of type NA, else return False.</description>
+    <syntax>ISERR( Scalar X )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>If X is NA, return True, else return False. Note that if X is a reference, the value being referenced is considered. This function does not propagate error values.</semantics>
+    <examples>
       <example>   <expression>ISNA(1/0)</expression>   <result>False</result>    <level>1</level>    <comment>Error values other than NA() return False – the error does not propagate.</comment>    </example>
       <example>   <expression>ISNA(NA())</expression>   <result>True</result>    <level>1</level>    <comment>By definition</comment>    </example>
       <example>   <expression>ISNA(#N/A)</expression>   <result>True</result>    <level>1</level>    <comment>By definition</comment>    </example>
       <example>   <expression>ISNA("#N/A")</expression>   <result>False</result>    <level>1</level>    <comment>Text is not NA</comment>    </example>
       <example>   <expression>ISNA(1)</expression>   <result>False</result>    <level>1</level>    <comment>Numbers are not NA</comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISNONTEXT</name>          
-    <description>Return TRUE if the parameter does not have type Text, else return FALSE</description>     
-    <syntax>ISNONTEXT( Scalar X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>None</constraints>     
+    <name>ISNONTEXT</name>
+    <description>Return TRUE if the parameter does not have type Text, else return FALSE</description>
+    <syntax>ISNONTEXT( Scalar X )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
     <semantics> If X is of type Text, returns TRUE, else FALSE. If X is a reference, examines what X references. References to blank cells are NOT considered text, so a reference to a blank cell will return TRUE.
 ISNONTEXT(X) is the same as:
-NOT(ISTEXT(X))</semantics>         
-    <examples>                      
+NOT(ISTEXT(X))</semantics>
+    <examples>
       <example>   <expression>ISNONTEXT(1)</expression>   <result>True</result>    <level>1</level>    <comment>Numbers are not text</comment>    </example>
       <example>   <expression>ISNONTEXT(TRUE())</expression>   <result>True</result>    <level>1</level>    <comment>Logical values are not text.</comment>    </example>
       <example>   <expression>ISNONTEXT("1")</expression>   <result>False</result>    <level>1</level>    <comment>Text values are text, even if they can be converted into a number.</comment>    </example>
       <example>   <expression>ISNONTEXT([.B7])</expression>   <result>False</result>    <level>1</level>    <comment>B7 is a cell with text</comment>    </example>
       <example>   <expression>ISNONTEXT([.B9])</expression>   <result>True</result>    <level>1</level>    <comment>B9 is an error, thus not text</comment>    </example>
       <example>   <expression>ISNONTEXT([.B8])</expression>   <result>True</result>    <level>1</level>    <comment>B8 is a blank cell, so this will return TRUE</comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISNUMBER</name>           
-    <description>Return TRUE if the parameter has type Number, else return FALSE</description>     
-    <syntax>ISNUMBER( Scalar X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>None</constraints>     
-    <semantics> If X is of type Number, returns TRUE, else FALSE. Level 1 implementations may not have a distinguished logical type; in such implementations, ISNUMBER(TRUE()) is TRUE.</semantics>         
-    <examples>                      
+    <name>ISNUMBER</name>
+    <description>Return TRUE if the parameter has type Number, else return FALSE</description>
+    <syntax>ISNUMBER( Scalar X )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics> If X is of type Number, returns TRUE, else FALSE. Level 1 implementations may not have a distinguished logical type; in such implementations, ISNUMBER(TRUE()) is TRUE.</semantics>
+    <examples>
       <example>   <expression>ISNUMBER(1)</expression>   <result>True</result>    <level>1</level>    <comment>Numbers are numbers</comment>    </example>
       <example>   <expression>ISNUMBER("1")</expression>   <result>False</result>    <level>1</level>    <comment>Text values are not numbers, even if they can be converted into a number.</comment>    </example>
-    </examples>                                                                                                         
-  </function>                                                                                                           
+    </examples>
+  </function>
 
   <function>
     <category>%Category.Information</category>
-    <name>ISODD</name>              
-    <description>Return TRUE if the value is even, else return FALSE</description>     
-    <syntax>ISODD( Number X )</syntax>               
-    <returns>Logical</returns>             
-    <constraints>X must not be Logical</constraints>     
-    <semantics>First, compute X1=TRUNC(X). Then, if X is odd (a division by 2 has a remainder of 1), return True, else return False. The result is implementation-defined if given a logical value; an application may return either an Error or the result of converting the logical value to a number (per Conversion to Number).</semantics>         
-    <examples>                      
+    <name>ISODD</name>
+    <description>Return TRUE if the value is even, else return FALSE</description>
+    <syntax>ISODD( Number X )</syntax>
+    <returns>Logical</returns>
+    <constraints>X must not be Logical</constraints>
+    <semantics>First, compute X1=TRUNC(X). Then, if X is odd (a division by 2 has a remainder of 1), return True, else return False. The result is implementation-defined if given a logical value; an application may return either an Error or the result of converting the logical value to a number (per Conversion to Number).</semantics>
+    <examples>
       <example>   <expression>ISODD(3)</expression>   <result>True</result>    <level>3</level>    <comment>3 is odd, because (3 modulo 2) = 1</comment>    </example>
       <example>   <expression>ISODD(5)</expression>   <result>True</result>    <level>3</level>    <comment>5 is odd, because (5 modulo 2) = 1</comment>    </example>
       <example>   <expression>ISODD(3.1)</expression>   <result>True</result>    <level>3</level>    <comment>TRUNC(3.1)=3, and 3 is odd</comment>    </example>
@@ -259,12 +330,12 @@ NOT(ISTEXT(X))</semantics>
   </function>
 
 
-  <!-- Text : this list is complete -->  
-  
+  <!-- Text : this list is complete -->
+
   <function>
-  	<category>%Category.Text</category> 
-  	<name>&amp;</name> 
-  	<description>Concatenate two strings.</description>  
+  	<category>%Category.Text</category>
+  	<name>&amp;</name>
+  	<description>Concatenate two strings.</description>
   	<syntax>Text Left &amp; Text Right</syntax>
   	<returns>Text</returns>
   	<constraints>None</constraints>
@@ -276,10 +347,186 @@ NOT(ISTEXT(X))</semantics>
   		<example><expression>3&amp;2-1</expression> <result>“31”</result> <level>1</level> <comment>Binary “-” has higher precedence than “&amp;”</comment></example>
   	</examples>
   </function>
-  
+
+  <function>
+    <category>%Category.Text</category>
+    <name>CONCATENATE</name>
+    <description>Concatenate the text strings.</description>
+    <syntax>CONCATENATE( Text t1 ; Text t2; Text tN )</syntax>
+    <returns>Text</returns>
+    <constraints>Requires one or more parameters</constraints>
+    <semantics>Returns the text strings concatenated together</semantics>
+    <examples>
+      <example><expression>CONCATENATE("A";"B")</expression> <result>AB</result> <level>1</level> <comment>2 parameter concatenation.</comment></example>
+      <example><expression>CONCATENATE("AB";"CD";"EF")</expression> <result>ABCDEF</result> <level>1</level> <comment>3 parameter concatenation</comment></example>
+    </examples>
+
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>ASC</name>
+    <description>Converts full-width to half-width ASCII and katakana characters.</description>
+    <syntax>ASC( Text t1 )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics></semantics>
+    <examples>
+    </examples>
+
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>CHAR</name>
+    <description>Converts a code number into a ASCII character or letter.</description>
+    <syntax>CHAR( Integer )</syntax>
+    <returns>Text</returns>
+    <constraints>Integer between 0 and 255 inclusive</constraints>
+    <semantics>Returns the text representation of an ASCII decimal code</semantics>
+    <examples>
+      <example><expression>CHAR(100)</expression> <result>d</result> <level>1</level> <comment>Ascii character decimal 100 is a lower case d.</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>CLEAN</name>
+    <description>Removes all non-printable characters from the given text.</description>
+    <syntax>CLEAN( Text )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>Removes non-printable characters such as ASCII 0 through 31 from a string</semantics>
+    <examples>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>CODE</name>
+    <description>Returns the numeric code for the first character character in a text string.</description>
+    <syntax>CODE( Text )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the Unicode decimal code</semantics>
+    <examples>
+      <example><expression>CODE("d")</expression> <result>100</result> <level>1</level> <comment>Unicode character d is decimal 100.</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>DOLLAR</name>
+    <description>Convert the parameters to Text formatted as currency.</description>
+    <syntax>DOLLAR( Text text, Integer decimalPlaces )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>Text is the incoming string or number to format, decimalPlaces is the number of decimal places to use.  If i2 is not provided defaults to 2.</semantics>
+    <examples>
+      <example><expression>DOLLAR("190")</expression> <result>$190.00</result> <level>1</level> <comment>Decimal places not specified</comment></example>
+      <example><expression>DOLLAR("190.89";1)</expression> <result>$190.9</result> <level>1</level> <comment>Rounds to 1 decimal place</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>FIXED</name>
+    <description>Round the number to a specified number of decimals and format the result as a text.</description>
+    <syntax>FIXED( Text text, Integer decimalPlaces, Boolean omitGroupChar )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>Text is the incoming string or number to format, decimalPlaces is the number of decimal places to use.  If decimalPlaces is not provided defaults to 3. omitGroupChar indicates if the grouping character (for example ",") should be omitted from the result.  Defaults to false.</semantics>
+    <examples>
+      <example><expression>FIXED("190")</expression> <result>190.000</result> <level>1</level> <comment>Decimal places not specified</comment></example>
+      <example><expression>FIXED("190.89";1)</expression> <result>190.9</result> <level>1</level> <comment>Rounds to 1 decimal place</comment></example>
+      <example><expression>FIXED("1190.89";1;TRUE())</expression> <result>1190.9</result> <level>1</level> <comment>No grouping character</comment></example>
+      <example><expression>FIXED("1190.89";1;FALSE())</expression> <result>1,190.9</result> <level>1</level> <comment>With grouping character</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>PROPER</name>
+    <description>Return the input string with the first letter of each word converted to an uppercase letter.</description>
+    <syntax>PROPER(Text T)</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>Return input string with the first letter of each word as an uppercase letter. As with most functions, it is side-effect free (it does not modify the source values).</semantics>
+    <examples>
+      <example><expression>PROPER("hello there")</expression> <result>Hello There</result> <level>1</level> <comment>The first letter is uppercase and the following letter are lowercase.</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>SEARCH</name>
+    <description>Looks for a string of text within another (NOT case sensitive)</description>
+    <syntax>SEARCH( Text findText, Text text, Integer startPosition )</syntax>
+    <returns>Text</returns>
+    <constraints>startPosition > 0</constraints>
+    <semantics>findText is the text to search for, text is the String to search in, startPosition is the integer position within the string to start searching</semantics>
+    <examples>
+      <example><expression>SEARCH("p";"Apple")</expression> <result>2</result> <level>1</level> <comment></comment></example>
+      <example><expression>SEARCH("p";"Apple";3)</expression> <result>3</result> <level>1</level> <comment>Starts searching at index 3</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>STRINGCOUNT</name>
+    <description>Counts the occurrences of text in a string.</description>
+    <syntax>SEARCH( Text text, Text findText )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>text is the String to search in, findText is the text to search for.</semantics>
+    <examples>
+      <example><expression>STRINGCOUNT("Apple";"p")</expression> <result>2</result> <level>1</level> <comment></comment></example>
+      <example><expression>STRINGCOUNT("APPLE";"p")</expression> <result>0</result> <level>1</level> <comment>Function is case sensitive</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>URLENCODE</name>
+    <description>Applies URL-Encoding to a text given in the first parameter using the encoding specified in the second parameter. If no encoding is given, UTF-8 is assumed.</description>
+    <syntax>URLENCODE( Text text, Text encoding )</syntax>
+    <returns>Text</returns>
+    <constraints>Encoding must be a valid character set.</constraints>
+    <semantics>text is the string to encode, encoding is the character set to use when encoding.</semantics>
+    <examples>
+      <example><expression>URLENCODE("&amp;PARAM1=value?param2=value2")</expression> <result>%26PARAM1%3Dvalue%3Fparam2%3Dvalue2</result> <level>1</level> <comment></comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>UNICHAR</name>
+    <description>Converts a code number into a Unicode character or letter.</description>
+    <syntax>UNICHAR( Integer )</syntax>
+    <returns>Text</returns>
+    <constraints>Integer must be a valid Unicode character code</constraints>
+    <semantics>Returns the text representation of an Unicode decimal code</semantics>
+    <examples>
+      <example><expression>UNICHAR(100)</expression> <result>d</result> <level>1</level> <comment>Unicode character decimal 100 is a lower case d.</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Text</category>
+    <name>UNICODE</name>
+    <description>Returns the numeric Unicode code for the first character character in a text string.</description>
+    <syntax>UNICODE( Text )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the Unicode decimal code</semantics>
+    <examples>
+      <example><expression>UNICODE("d")</expression> <result>100</result> <level>1</level> <comment>Unicode character d is decimal 100.</comment></example>
+    </examples>
+  </function>
+
   <function>
   	<category>%Category.Text</category>
-  	<name>EXACT</name> 
+  	<name>EXACT</name>
   	<description>Report if two text values are exactly equal using a case-sensitive comparison</description>
   	<syntax>EXACT( Text t1 ; Text t2 )</syntax>
   	<returns>Logical</returns>
@@ -296,11 +543,11 @@ NOT(ISTEXT(X))</semantics>
   		<example><expression>EXACT("1";1)</expression> <result>True</result> <level>1</level> <comment>If text and number, see if number converted to text is equal.</comment></example>
   		<example><expression>EXACT(“ 1”;1)</expression> <result>False</result> <level>1</level> <comment>This converts 1 into the Text value “1”, the compares and finds that it's not the same as “ 1” (note the leading space).</comment></example>
   	</examples>
-  	
+
   </function>
   <function>
   	<category>%Category.Text</category>
-  	<name>FIND</name> 
+  	<name>FIND</name>
   	<description>Return the starting position of a given text.</description>
   	<syntax>FIND( Text Search ; Text T [ ; Integer Start = 1 ] )</syntax>
   	<returns>Number</returns>
@@ -316,11 +563,11 @@ NOT(ISTEXT(X))</semantics>
 		<example><expression>FIND("b";"bbbb";0.9)</expression> <result>Error</result> <level>1</level> <comment></comment></example>
   	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>LEFT</name> 
-  	<description>Return a selected number of text characters from the left.</description>  
+  	<name>LEFT</name>
+  	<description>Return a selected number of text characters from the left.</description>
   	<syntax>LEFT( Text T [ ; Integer Length ] )</syntax>
   	<returns>Text</returns>
   	<constraints>Length &gt;= 0</constraints>
@@ -336,13 +583,13 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>LEFT("xxx";-0.1)</expression> <result>Error</result> <level>1</level> <comment>It makes no sense to request a negative number of characters. Also, this tests to ensure that INT() is used to convert non-integers to integers; if -0.1 were incorrectly rounded to 0 (as it would be by round-to-nearest or round-toward-zero), this would incorrectly return a null string.</comment></example>
 	   	<example><expression>LEFT("Hello";2^15-1)</expression> <result>"Hello"</result> <level>1</level> <comment>If Length > LEN(T) entire string is returned.</comment></example>
   	</examples>
-  	
+
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>LEN</name> 
-  	<description>Return the length, in characters, of given text</description>  
+  	<name>LEN</name>
+  	<description>Return the length, in characters, of given text</description>
   	<syntax>LEN( Text T )</syntax>
   	<returns>Integer</returns>
   	<constraints>None.</constraints>
@@ -353,10 +600,10 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>LEN(55)</expression> <result>2</result> <level>1</level> <comment>Numbers are automatically converted.</comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>LOWER</name> 
+  	<name>LOWER</name>
   	<description>Return input string, but with all uppercase letters converted to lowercase letters.</description>
   	<syntax>LOWER( Text T )</syntax>
   	<returns>Text</returns>
@@ -366,11 +613,11 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>LOWER("HELLObc7")</expression> <result>"hellobc7"</result> <level>1</level> <comment>Uppercase converted to lowercase; other characters just copied to result.</comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>MID</name> 
-  	<description>Returns extracted text, given an original text, starting position, and length.</description>  
+  	<name>MID</name>
+  	<description>Returns extracted text, given an original text, starting position, and length.</description>
     <syntax>MID( Text T ; Integer Start ; Integer Length )</syntax>
   	<returns>Text</returns>
   	<constraints>Start &gt;= 1, Length >= 0.</constraints>
@@ -388,12 +635,12 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>MID("123456789";2;2.9)
 	   	</expression> <result>"23"</result> <level>1</level> <comment>INT(Length) is used</comment></example>
 	</examples>
-  </function>  
+  </function>
 
   <function>
   	<category>%Category.Text</category>
-  	<name>REPLACE</name> 
-   	<description>Returns text where an old text is substituted with a new text.</description>  
+  	<name>REPLACE</name>
+   	<description>Returns text where an old text is substituted with a new text.</description>
     <syntax>REPLACE( Text T ; Number Start ; Number Len ; Text New )</syntax>
   	<returns>Text</returns>
   	<constraints>Start &gt;= 1.</constraints>
@@ -402,12 +649,12 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>REPLACE("123456789";5;3;"Q")</expression> <result>"1234Q89"</result> <level>1</level> <comment>Replacement text may have different length.</comment></example>
 	   	<example><expression>REPLACE("123456789";5;0;"Q")</expression> <result>"1234Q56789"</result> <level>1</level> <comment>If Len=0, 0 characters removed.</comment></example>
 	</examples>
-  </function>  
+  </function>
 
   <function>
   	<category>%Category.Text</category>
-  	<name>REPT</name> 
-  	<description>Return text repeated Count times.</description>  
+  	<name>REPT</name>
+  	<description>Return text repeated Count times.</description>
     <syntax>REPT( Text T ; Integer Count )</syntax>
   	<returns>Text</returns>
   	<constraints>Count &gt;= 0</constraints>
@@ -420,11 +667,11 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>REPT("X";-1)</expression> <result>Error</result> <level>1</level> <comment>If Count is negative, Error.</comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>RIGHT</name> 
-  	<description>Return a selected number of text characters from the right.</description>  
+  	<name>RIGHT</name>
+  	<description>Return a selected number of text characters from the right.</description>
     <syntax>RIGHT( Text T [ ; Integer Length ] )</syntax>
   	<returns>Text</returns>
   	<constraints>Length &gt;= 0</constraints>
@@ -440,11 +687,11 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>RIGHT("Hello";-0.1)</expression> <result>Error</result> <level>1</level> <comment>Must use INT, not round-to-nearest or round-towards zero, to convert Length to Integer</comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>SUBSTITUTE</name> 
-  	<description>Returns text where an old text is substituted with a new text.</description>  
+  	<name>SUBSTITUTE</name>
+  	<description>Returns text where an old text is substituted with a new text.</description>
     <syntax>SUBSTITUTE( Text T ; Text Old ; Text New [ ; Number Which ] )</syntax>
   	<returns>Text</returns>
   	<constraints>Which &gt;= 1 (when provided)</constraints>
@@ -458,11 +705,11 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>SUBSTITUTE("Hello"; "H"; "J"; 0)</expression> <result>Error</result> <level>1</level> <comment>Which cannot be less than 1.</comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>T</name> 
-  	<description>Return the text (if text), else return 0-length Text value</description>  
+  	<name>T</name>
+  	<description>Return the text (if text), else return 0-length Text value</description>
     <syntax>T( Any X )</syntax>
   	<returns>Text</returns>
   	<constraints>None</constraints>
@@ -473,11 +720,11 @@ NOT(ISTEXT(X))</semantics>
 	   	<example><expression>T(5)</expression> <result>""</result> <level>1</level> <comment>Non-text converted into null string.</comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>TEXT</name> 
-  	<description>Return the value converted to a text.</description>  
+  	<name>TEXT</name>
+  	<description>Return the value converted to a text.</description>
     <syntax>TEXT( Scalar X ; Text FormatCode )</syntax>
   	<returns>Text</returns>
   	<constraints>The FormatCode is a sequence of characters with an application-defined meaning.
@@ -488,10 +735,10 @@ Portable Contraints: The result of this function may change across locales. If s
 	   	<example><expression>TEXT(3;"0"" good things""")</expression> <result>"3 good things"</result> <level>3</level> <comment></comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>TRIM</name> 
+  	<name>TRIM</name>
   	<description>Remove leading and trailing spaces, and replace all internal multiple spaces with a single space.</description>
     <syntax>TRIM( Text T )</syntax>
   	<returns>Text</returns>
@@ -501,11 +748,11 @@ Portable Contraints: The result of this function may change across locales. If s
 	   	<example><expression>TRIM(" ABC  ")</expression> <result>"ABC"</result> <level>1</level> <comment></comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Text</category>
-  	<name>UPPER</name> 
-  	<description>Return input string, but with all lowercase letters converted to uppercase letters.</description>  
+  	<name>UPPER</name>
+  	<description>Return input string, but with all lowercase letters converted to uppercase letters.</description>
     <syntax>UPPER( Text T )</syntax>
   	<returns>Text</returns>
   	<constraints>None</constraints>
@@ -514,8 +761,8 @@ Portable Contraints: The result of this function may change across locales. If s
 	   	<example><expression>UPPER("Habc7")</expression> <result>"HABC7"</result> <level>1</level> <comment>Lowercase converted to upper case; other characters just copied to result.</comment></example>
 	</examples>
   </function>
-  
-  <!-- Mathematical : this list is complete  -->  
+
+  <!-- Mathematical : this list is complete  -->
 
   <function>
     <category>%Category.Mathematical</category>
@@ -536,6 +783,216 @@ Portable Contraints: The result of this function may change across locales. If s
   </function>
 
   <function>
+    <category>%Category.Mathematical</category>
+    <name>ACOS</name>
+    <description>Returns the arccosine of a number.</description>
+    <syntax>ACOS( Number N )</syntax>
+    <returns>Number</returns>
+    <constraints>Value N must be between -1 and 1</constraints>
+    <semantics>Returns the inverse cosine of N.</semantics>
+    <examples>
+      <example>   <expression>ACOS(0)</expression>   <result>1.5707963268</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>ACOSH</name>
+    <description>Returns the arccosine hyperbolic of a number.</description>
+    <syntax>ACOSH( Number N )</syntax>
+    <returns>Number</returns>
+    <constraints>Value N must be > 1</constraints>
+    <semantics>Returns the inverse cosine hyperbolic of N.</semantics>
+    <examples>
+      <example>   <expression>ACOSH(10)</expression>   <result>2.9932228461264</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>ASIN</name>
+    <description>Returns the arcsine of a number.</description>
+    <syntax>ASIN( Number N )</syntax>
+    <returns>Number</returns>
+    <constraints>Value N must be between -1 and 1</constraints>
+    <semantics>Returns the inverse sine of N.</semantics>
+    <examples>
+      <example>   <expression>ASIN(0.5)</expression>   <result>0.5235987755</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>ATAN</name>
+    <description>Returns the arctangent of a number.</description>
+    <syntax>ATAN( Number N )</syntax>
+    <returns>Number</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the arc tangent of N.</semantics>
+    <examples>
+      <example>   <expression>ATAN(10)</expression>   <result>1.4711276743</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>ATAN2</name>
+    <description>Returns the arctangent for the specified coordinates.</description>
+    <syntax>ATAN2( Number X; Number Y )</syntax>
+    <returns>Number</returns>
+    <constraints>None</constraints>
+    <semantics>X is the x coordinate, Y is the y coordinate</semantics>
+    <examples>
+      <example>   <expression>ATAN2(10;5)</expression>   <result>0.785398163</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>COS</name>
+    <description>Returns the cosine for the specified number.</description>
+    <syntax>COS( Number )</syntax>
+    <returns>Number</returns>
+    <constraints>None</constraints>
+    <semantics>Number is the angle in the radians for which the cosine is to be returned.</semantics>
+    <examples>
+      <example>   <expression>COS(10)</expression>   <result>-0.839071529</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>EXP</name>
+    <description>Calculates the exponent for basis e.</description>
+    <syntax>EXP( Number )</syntax>
+    <returns>Number</returns>
+    <constraints>None</constraints>
+    <semantics>Number is the exponent applied to base e.</semantics>
+    <examples>
+      <example>   <expression>EXP(10)</expression>   <result>22026.46579</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>LN</name>
+    <description>Calculates the natural logarithm of a number.</description>
+    <syntax>LN( Number )</syntax>
+    <returns>Number</returns>
+    <constraints>Number must be greater than 0</constraints>
+    <semantics>Returns the natural logarithm of number.</semantics>
+    <examples>
+      <example>   <expression>LN(10)</expression>   <result>2.30258509</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>LOG10</name>
+    <description>Calculates the base-10 logarithm of a number.</description>
+    <syntax>LOG10( Number )</syntax>
+    <returns>Number</returns>
+    <constraints>Number must be greater than 0</constraints>
+    <semantics>Returns the base-10 logarithm of number.</semantics>
+    <examples>
+      <example>   <expression>LOG10(10)</expression>   <result>1</result>    <level>1</level>    <comment></comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>MOD</name>
+    <description>Calculates the remainder of a division.</description>
+    <syntax>MOD( Number divisor, Number dividend )</syntax>
+    <returns>Integer</returns>
+    <constraints>Dividend must not be 0</constraints>
+    <semantics>Returns the remainder of divisor/dividend</semantics>
+    <examples>
+      <example>   <expression>MOD(10,3)</expression>   <result>1</result>    <level>1</level>    <comment>3 goes into 10 three times with a remainder of 1</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>N</name>
+    <description>Returns the number of a value.</description>
+    <syntax>N( String )</syntax>
+    <returns>Integer</returns>
+    <constraints>None</constraints>
+    <semantics>Parses the value as a number.  If the value cannot be parsed as a number, returns 0.</semantics>
+    <examples>
+      <example>   <expression>N("10")</expression>   <result>10</result>    <level>1</level>    <comment>Simple N</comment>    </example>
+      <example>   <expression>N(TRUE())</expression>   <result>1</result>    <level>1</level>    <comment>True evaluates to 1</comment>    </example>
+      <example>   <expression>N("ABC")</expression>   <result>0</result>    <level>1</level>    <comment>Non-numeric strings return 0</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>PI</name>
+    <description>Returns the value of PI.</description>
+    <syntax>PI()</syntax>
+    <returns>Number</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the constant value of PI 3.14159...</semantics>
+    <examples>
+      <example>   <expression>FIXED(PI();5)</expression>   <result>3.14159</result>    <level>1</level>    <comment>Constant</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>POWER</name>
+    <description>Computes a number raised to the power by another number.</description>
+    <syntax>POWER( Number number, Number power )</syntax>
+    <returns>Number</returns>
+    <constraints>None</constraints>
+    <semantics>Returns number ^ power</semantics>
+    <examples>
+      <example>   <expression>POWER(2;3)</expression>   <result>8</result>    <level>1</level>    <comment>Simple POWER</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>SIN</name>
+    <description>Returns the sine of a number.</description>
+    <syntax>SIN( Number )</syntax>
+    <returns>Number</returns>
+    <constraints>None</constraints>
+    <semantics>Number is the angle in radians for which the sine is to be calculated.</semantics>
+    <examples>
+      <example>   <expression>SIN(10)</expression>   <result>-0.54402111</result>    <level>1</level>    <comment>Simple SIN</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>SQRT</name>
+    <description>Returns the square root of a number.</description>
+    <syntax>SQRT( Number )</syntax>
+    <returns>Number</returns>
+    <constraints>Number must be positive.</constraints>
+    <semantics>Returns the square root of number.</semantics>
+    <examples>
+      <example>   <expression>SQRT(4)</expression>   <result>2</result>    <level>1</level>    <comment>Simple SQRT</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Mathematical</category>
+    <name>VAR</name>
+    <description>Calculates the variance based on a sample.</description>
+    <syntax>VAR( { NumberSequence N }+ )</syntax>
+    <returns>Number</returns>
+    <constraints>None.</constraints>
+    <semantics>Returns the variance.</semantics>
+    <examples>
+      <example>   <expression>VAR(10;5;1)</expression>   <result>20.333333</result>    <level>1</level>    <comment>Simple VAR</comment>    </example>
+    </examples>
+  </function>
+
+  <function>
   	<category>%Category.Mathematical</category>
   	<name>ABS</name>
   	<description>Return the absolute (nonnegative) value.</description>
@@ -548,7 +1005,7 @@ Portable Contraints: The result of this function may change across locales. If s
 	   	<example><expression>ABS(4)</expression> <result>4</result> <level>1</level> <comment>Positive values return unchanged.</comment></example>
 	</examples>
   </function>
-  
+
   <function>
   	<category>%Category.Mathematical</category>
   	<name>AVERAGE</name>
@@ -612,7 +1069,7 @@ Portable Contraints: The result of this function may change across locales. If s
 	</examples>
   </function>
 
-  
+
   <function>
   	<category>%Category.Mathematical</category>
   	<name>ODD</name>
@@ -647,7 +1104,7 @@ Portable Contraints: The result of this function may change across locales. If s
 	</examples>
   </function>
 
-  <!-- Date/Time : this list is complete -->  
+  <!-- Date/Time : this list is complete -->
 
   <function>
   	<category>%Category.DateTime</category>
@@ -714,7 +1171,117 @@ In an OpenDocument file, the calculation settings table:null-year and table:null
 	<examples>
 	   	<example><expression>DATEVALUE("2004-12-25")=DATE(2004;12;25)</expression> <result>True</result> <level>2</level> <comment>DATEVALUE</comment></example>
 	   	<example><expression>DATEVALUE("2004-12-25 12:34:56")=DATE(2004;12;25)</expression> <result>True</result> <level>2</level> <comment>Only the integer part is returned</comment></example>
+      <example><expression>DATEVALUE("2004-12-25 12:34:56")</expression> <result>2004-12-25</result> <level>2</level> <comment>Only the date part of the date time is returned</comment></example>
 	</examples>
+  </function>
+
+  <function>
+    <category>%Category.DateTime</category>
+    <name>PARSEDATE</name>
+    <description>Parses a date using a SimpleDateFormat format string</description>
+    <syntax>PARSEDATE( Text date; Text format; Text locale; Text timezone )</syntax>
+    <returns>Date</returns>
+    <constraints>format must be a valid SimpleDateFormat</constraints>
+    <semantics>This computes the date based on the provided format, locale, and timezone.  If timezone is provided, assumes the date is in UTC and converts the date from UTC to the specified timezone.</semantics>
+    <examples>
+      <example><expression>PARSEDATE("2004/12/25 12:56:45.878";"yyyy/MM/dd HH:mm:ss.SSS")</expression> <result>2004-12-25 12:56:45.878</result> <level>2</level> <comment>Simple parse.</comment></example>
+      <example><expression>PARSEDATE("2004-12-25"; "yyyy-MM-dd"; "en"; "MDT" )</expression> <result>2004-12-24 17:00:00.000</result> <level>2</level> <comment>2004/12/25 00:00:00 UTC is 2004-12-24 17:00:00 MDT</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.DateTime</category>
+    <name>DATETIMEVALUE</name>
+    <description>Returns an internal number for a text having a datetime format.</description>
+    <syntax>DATETIMEVALUE( Text D )</syntax>
+    <returns>DateTime</returns>
+    <constraints>None</constraints>
+    <semantics>This computes the serial number of the text string D, using the current locale. This function acceptS ISO date format (YYYY-MM-DD HH:mm:ss), which is locale-independent.</semantics>
+    <examples>
+      <example><expression>DATETIMEVALUE("2004-12-25 12:56:45")</expression> <result>2004-12-25 12:56:45</result> <level>2</level> <comment>DATETIMEVALUE</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.DateTime</category>
+    <name>TIMEVALUE</name>
+    <description>Returns an internal number for a text having a time format.</description>
+    <syntax>TIMEVALUE( Text D )</syntax>
+    <returns>Integer</returns>
+    <constraints>None</constraints>
+    <semantics>This computes the serial number of the text string D, using the current locale. This function acceptS ISO time format (HH:mm:ss), which is locale-independent.</semantics>
+    <examples>
+      <example><expression>TIMEVALUE("12:56:45")</expression> <result>12:56:45</result> <level>2</level> <comment>TIMEVALUE</comment></example>
+      <example><expression>TIMEVALUE("2004-12-25 12:56:45")</expression> <result>12:56:45</result> <level>2</level> <comment>TIMEVALUE</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.DateTime</category>
+    <name>DAYS</name>
+    <description>Calculates the number of days between two dates.</description>
+    <syntax>DAYS( Date endDate; Date startDate )</syntax>
+    <returns>Integer</returns>
+    <constraints>None</constraints>
+    <semantics>Computers the number of days between 2 dates</semantics>
+    <examples>
+      <example><expression>DAYS(DATEVALUE("2004-12-23");DATEVALUE("2004-12-25"))</expression> <result>2</result> <level>2</level> <comment>DAYS</comment></example>
+      <example><expression>DAYS(DATEVALUE("2004-12-25");DATEVALUE("2004-12-23"))</expression> <result>-2</result> <level>2</level> <comment>DAYS</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.DateTime</category>
+    <name>MINUTE</name>
+    <description>Determines the sequential number for the minute of the hour (0-59) for the time value.</description>
+    <syntax>MINUTE( DateTime )</syntax>
+    <returns>Integer</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the sequential number for the minute of the hour</semantics>
+    <examples>
+      <example><expression>MINUTE(DATETIMEVALUE("2004-12-23 12:25:45"))</expression> <result>25</result> <level>2</level> <comment>MINUTE</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.DateTime</category>
+    <name>SECOND</name>
+    <description>Determines the sequential number for the second of the minute (0-59) for the time value.</description>
+    <syntax>SECOND( DateTime )</syntax>
+    <returns>Integer</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the sequential number for the second of the minute</semantics>
+    <examples>
+      <example><expression>SECOND(DATETIMEVALUE("2004-12-23 12:25:45"))</expression> <result>45</result> <level>2</level> <comment>MINUTE</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.DateTime</category>
+    <name>MONTHEND</name>
+    <description>Return the last day of the month.</description>
+    <syntax>MONTHEND( Date )</syntax>
+    <returns>Date</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the date for the last day of the month</semantics>
+    <examples>
+      <example><expression>MONTHEND(DATEVALUE("2004-12-23"))</expression> <result>2004-12-31</result> <level>2</level> <comment>MINUTE</comment></example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.DateTime</category>
+    <name>PREVWEEKDAY</name>
+    <description>Return the date of the previous weekday from the current date.</description>
+    <syntax>PREVWEEKDAY( Integer weekdayDefinition )</syntax>
+    <returns>Date</returns>
+    <constraints>weekdayDefinition in values 1 or 2</constraints>
+    <semantics>weekdayDefinition fixes the start of the weekend and the type of calculation to be used.
+      (1 = weekend = saturday + sunday,
+      2 = weekend = friday + saturday)</semantics>
+    <examples>
+      <example><expression>PREVWEEKDAY(1)</expression> <result>2019-05-07</result> <level>2</level> <comment>If this were run on 2019-05-08.</comment></example>
+    </examples>
   </function>
 
   <function>
@@ -813,6 +1380,20 @@ Note that in typical implementations, a value displayed as time has its integer 
   </function>
 
   <function>
+    <category>%Category.DateTime</category>
+    <name>YESTERDAY</name>
+    <description>Return the serial number of the previous day</description>
+    <syntax>YESTERDAY()</syntax>
+    <returns>Date</returns>
+    <constraints>None</constraints>
+    <semantics>This returns the previous day's serial number, using current locale. This only returns the date, not the datetime value.</semantics>
+    <examples>
+      <example><expression>TODAY()>YESTERDAY()</expression> <result>False</result> <level>1</level> <comment>Every date YESTERDAY() changes, but we know it's less than today.</comment></example>
+      <example><expression>INT(YESTERDAY)=YESTERDAY()</expression> <result>True</result> <level>1</level> <comment>YESTERDAY() returns an integer. WARNING: this test is allowed to fail if the locale transitions through midnight while computing this test; because YESTERDAY() is referenced twice, in some implementations this would result in a race condition) This is incredibly unlikely to occur in practice.</comment></example>
+    </examples>
+  </function>
+
+  <function>
   	<category>%Category.DateTime</category>
   	<name>WEEKDAY</name>
   	<description>Extract the day of the week from a date; if text, uses current locale to convert to a date.</description>
@@ -848,20 +1429,7 @@ Applications shall support extracting the year from a date beginning in 1900. Th
 	</examples>
   </function>
 
-  <!-- Logical : this list is complete -->  
-
-  <function>
-  	<category>%Category.Logical</category>
-  	<name>AND</name>
-  	<description></description>
-    <syntax></syntax>
-  	<returns>Logical</returns>
-  	<constraints></constraints>
-  	<semantics></semantics>
-	<examples>
-	   	<example><expression></expression> <result></result> <level>1</level> <comment></comment></example>
-	</examples>
-  </function>
+  <!-- Logical : this list is complete -->
 
   <function>
   	<category>%Category.Logical</category>
@@ -951,6 +1519,20 @@ Also in array context a logical OR of all arguments is computed, range or array 
   </function>
 
   <function>
+    <category>%Category.Logical</category>
+    <name>IFNA</name>
+    <description>Returns the value unless it is null, then return an alternate value</description>
+    <syntax>IFNA( Text string; Text alternateValue )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>If string is not null return string, else return alternateValue.</semantics>
+    <examples>
+      <example><expression>IFNA(;"Null String")</expression> <result>Null String</result> <level>1</level> <comment></comment></example>
+      <example><expression>IFNA("ABC";"Null String")</expression> <result>ABC</result> <level>1</level> <comment></comment></example>
+    </examples>
+  </function>
+
+  <function>
   	<category>%Category.Logical</category>
   	<name>TRUE</name>
   	<description>Returns constant TRUE</description>
@@ -963,6 +1545,21 @@ Also in array context a logical OR of all arguments is computed, range or array 
 	   	<example><expression>IF(ISNUMBER(TRUE());TRUE()=1;TRUE())</expression> <result>True</result> <level>1</level> <comment>Applications that implement logical values as 0/1 must map TRUE() to 1</comment></example>
 	   	<example><expression>2+TRUE()</expression> <result>3</result> <level>1</level> <comment>TRUE converts to 1 in Number context</comment></example>
 	</examples>
+  </function>
+
+  <function>
+    <category>%Category.Logical</category>
+    <name>FALSE</name>
+    <description>Returns constant FALSE</description>
+    <syntax>FALSE()</syntax>
+    <returns>Logical</returns>
+    <constraints>Must have 0 parameters</constraints>
+    <semantics>Returns logical constant FALSE. Although this is syntactically a function call, semantically it is a constant, and typical applications optimize this because it is a constant. Note that this may or may not be equal to 0 when compared using “=”. It always has the value of 0 if used in a context requiring Number (because of the automatic conversions), so if ISNUMBER(FALSE()), then it must have the value 0.</semantics>
+    <examples>
+      <example><expression>FALSE()</expression> <result>False</result> <level>1</level> <comment>Constant.</comment></example>
+      <example><expression>IF(ISNUMBER(FALSE());FALSE()=0;FALSE())</expression> <result>True</result> <level>1</level> <comment>Applications that implement logical values as 0/1 must map FALSE() to 0</comment></example>
+      <example><expression>2+FALSE()</expression> <result>2</result> <level>1</level> <comment>FALSE converts to 0 in Number context</comment></example>
+    </examples>
   </function>
 
   <function>
@@ -987,5 +1584,198 @@ Note: The multi-argument form is different from an "exclusive disjunction" opera
 	</examples>
   </function>
 
+  <!-- Database functions -->
+  <function>
+    <category>%Category.Database</category>
+    <name>BEGINSWITH</name>
+    <description>This function checks to see if a string is begins with another string.</description>
+    <syntax>BEGINSWITH( Text string; Text searchString )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>String is the string to search, searchString is the sub string to search for</semantics>
+    <examples>
+      <example>  <expression>BEGINSWITH("ABC";"A")</expression>     <result>True</result>    <level>1</level>   <comment></comment>     </example>
+    </examples>
+  </function>
+  <function>
+    <category>%Category.Database</category>
+    <name>CONTAINS</name>
+    <description>This function checks to see if a string is within another string.</description>
+    <syntax>CONTAINS( Text string; Text searchString )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>String is the string to search, searchString is the sub string to search for</semantics>
+    <examples>
+      <example>  <expression>CONTAINS("ABC";"B")</expression>     <result>True</result>    <level>1</level>   <comment></comment>     </example>
+    </examples>
+  </function>
+  <function>
+    <category>%Category.Database</category>
+    <name>ENDSWITH</name>
+    <description>This function checks to see if a string is ends with another string.</description>
+    <syntax>ENDSWITH( Text string; Text searchString )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>String is the string to search, searchString is the sub string to search for</semantics>
+    <examples>
+      <example>  <expression>ENDSWITH("ABC";"C")</expression>     <result>True</result>    <level>1</level>   <comment></comment>     </example>
+    </examples>
+  </function>
+  <function>
+    <category>%Category.Logical</category>
+    <name>EQUALS</name>
+    <description>Returns TRUE if both parameters equal one another</description>
+    <syntax>EQUALS( Any param1; Any Param2 )</syntax>
+    <returns>Logical</returns>
+    <constraints>Parameters do not have to be of the same type.</constraints>
+    <semantics>True if param1 and param2 are equal to one another</semantics>
+    <examples>
+      <example>  <expression>EQUALS("ABC";"ABC")</expression>     <result>True</result>    <level>1</level>   <comment></comment>     </example>
+      <example>  <expression>EQUALS(1;"1")</expression>     <result>True</result>    <level>1</level>   <comment></comment>     </example>
+      <example>  <expression>EQUALS("ABC";"DEF")</expression>     <result>False</result>    <level>1</level>   <comment></comment>     </example>
+    </examples>
+  </function>
+  <function>
+    <category>%Category.Database</category>
+    <name>IN</name>
+    <description>Returns TRUE if any of the subsequent arguments match the first argument.</description>
+    <syntax>IN( Text stringToMatch; Text listValue1; Text listValue2; Text listValueN )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>True if stringToMatch matches any of the subsequent parameters</semantics>
+    <examples>
+      <example>  <expression>IN("ABC";"DEF";"ABC")</expression>     <result>True</result>    <level>1</level>   <comment></comment>     </example>
+      <example>  <expression>IN(1;2;1)</expression>     <result>True</result>    <level>1</level>   <comment></comment>     </example>
+      <example>  <expression>IN("ABC";"DEF";"GHI")</expression>     <result>False</result>    <level>1</level>   <comment></comment>     </example>
+    </examples>
+  </function>
+  <function>
+    <category>%Category.Database</category>
+    <name>LIKE</name>
+    <description>Acts like the SQL LIKE function, comparing the first value to a regular expression. Does not have to match the entire string.  If the regular expression matches any part of the string, returns true.</description>
+    <syntax>LIKE( Text stringToMatch; Text regularExpression )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>True if stringToMatch matches the regular expression.</semantics>
+    <examples>
+      <example>  <expression>LIKE("ABCDEF";"ABC%")</expression>     <result>True</result>    <level>1</level>   <comment>% matches all characters</comment>     </example>
+      <example>  <expression>LIKE("ABCDEF";"ABC*")</expression>     <result>True</result>    <level>1</level>   <comment>* matches all characters</comment>     </example>
+      <example>  <expression>LIKE("ABCDEF";"ABC.*")</expression>     <result>True</result>    <level>1</level>   <comment>Can also use regular expression syntax</comment>     </example>
+      <example>  <expression>LIKE("ABCDEF";"C")</expression>     <result>True</result>    <level>1</level>   <comment>Regular expression does not have to match the entire string</comment>     </example>
+      <example>  <expression>LIKE("ABCDEF";"DC")</expression>     <result>False</result>    <level>1</level>   <comment></comment>     </example>
+    </examples>
+  </function>
+
+  <!-- Advanced category -->
+  <function>
+    <category>%Category.Advanced</category>
+    <name>ARRAYCONCATENATE</name>
+    <description>Concatenates 2 arrays together.</description>
+    <syntax>ARRAYCONCATENATE( { Array Value }+ )</syntax>
+    <returns>Array</returns>
+    <constraints>None</constraints>
+    <semantics>Concatenates 2 or more array objects together.  (Note: Pentaho Data Integration does not have an array data type.  Arrays will have to be created using the CSVARRAY function and output as a String using the CSVTEXT function.)</semantics>
+    <examples>
+      <example>  <expression>CSVTEXT(ARRAYCONCATENATE(CSVARRAY("1,2");CSVARRAY("3,4")))</expression>     <result>1,2,3,4</result>    <level>1</level>   <comment>Simple ARRAYCONCATENATE</comment>     </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Advanced</category>
+    <name>ARRAYCONTAINS</name>
+    <description>Returns true if an array contains a set of values.</description>
+    <syntax>ARRAYCONTAINS( Array array; { Text Value }+ )</syntax>
+    <returns>Logical</returns>
+    <constraints>None</constraints>
+    <semantics>Returns true if the specified array contains all of the provided values. (Note: Pentaho Data Integration does not have an array data type.  Arrays will have to be created using the CSVARRAY function.)</semantics>
+    <examples>
+      <example>  <expression>ARRAYCONTAINS(CSVARRAY("1,2");1)</expression>     <result>True</result>    <level>1</level>   <comment>Simple ARRAYCONTAINS</comment>     </example>
+      <example>  <expression>ARRAYCONTAINS(CSVARRAY("1,2");1;2)</expression>     <result>True</result>    <level>1</level>   <comment>Multiple value ARRAYCONTAINS</comment>     </example>
+      <example>  <expression>ARRAYCONTAINS(CSVARRAY("1,2");1;2;3)</expression>     <result>False</result>    <level>1</level>   <comment>False because the array contains 1 and 2, but not 3.</comment>     </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Advanced</category>
+    <name>ARRAYLEFT</name>
+    <description>Returns the first N values from an array.</description>
+    <syntax>ARRAYLEFT( Array array; Integer numberValues )</syntax>
+    <returns>Array</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the first N values from an array.  If numberValues is greater than the size of the array, returns all values from the array. (Note: Pentaho Data Integration does not have an array data type.  Arrays will have to be created using the CSVARRAY function and will have to be converted to a string using CSVTEXT prior to outputting.)</semantics>
+    <examples>
+      <example>  <expression>CSVTEXT(ARRAYLEFT(CSVARRAY("1,2,3,4");2))</expression>     <result>1,2</result>    <level>1</level>   <comment>Simple ARRAYLEFT</comment>     </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Advanced</category>
+    <name>ARRAYMID</name>
+    <description>Returns the a list of values from the middle of an array.</description>
+    <syntax>ARRAYMID( Array array; Integer Start; Integer numberValues )</syntax>
+    <returns>Array</returns>
+    <constraints>None</constraints>
+    <semantics>Returns the values from the array starting at Start and returing numberValues values from an array.  The first value in the array has an index of 1.  If start + numberValues > the size of the array, returns all values from the array after the start index. (Note: Pentaho Data Integration does not have an array data type.  Arrays will have to be created using the CSVARRAY function and will have to be converted to a string using CSVTEXT prior to outputting..)</semantics>
+    <examples>
+      <example>  <expression>CSVTEXT(ARRAYMID(CSVARRAY("1,2,3,4");2;2))</expression>     <result>2,3</result>    <level>1</level>   <comment>Simple ARRAYMID</comment>     </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Advanced</category>
+    <name>CSVARRAY</name>
+    <description>Converts a delimited text string to an array.</description>
+    <syntax>CSVARRAY( Text text; Logical includesQuoting; Text delimiter; Text quoteChar )</syntax>
+    <returns>Array</returns>
+    <constraints>None</constraints>
+    <semantics>Converts a delimited string to an array. Text is the delimited string to convert.  IncludesQuoting indicates if the delimited text includes quoted values that may contain the delimiter (Default false).  Delimiter is the delimiter to split the string on (Default ,).  QuoteChar is the character used for quoting fields (Default "). (Note: Pentaho Data Integration does not have an array data type.  Arrays will have to be converted to a string using CSVTEXT prior to outputting.)</semantics>
+    <examples>
+      <example>  <expression>CSVTEXT(CSVARRAY("1,2,3,4"))</expression>     <result>1,2,3,4</result>    <level>1</level>   <comment>Simple CSVARRAY</comment>     </example>
+      <example>  <expression>CSVTEXT(CSVARRAY("'1;2';3;4";TRUE();";";"'"))</expression>     <result>1;2,3,4</result>    <level>1</level>   <comment>Delimiter ; fields may be quoted by '. 1;2 was treated as one value in the array.</comment>     </example>
+      <example>  <expression>CSVTEXT(CSVARRAY("'1;2';3;4";FALSE();";";"'"))</expression>     <result>'1,2',3,4</result>    <level>1</level>   <comment>Delimiter ; fields not quoted.  Meaning '1 and 2' were treated as separate values in the array.</comment>     </example>
+    </examples>
+  </function>
+
+  <function>
+    <category>%Category.Advanced</category>
+    <name>CSVTEXT</name>
+    <description>Converts an array into a delimited string.</description>
+    <syntax>CSVTEXT( Array array; Logical includesQuoting; Text delimiter; Text quoteChar )</syntax>
+    <returns>Text</returns>
+    <constraints>None</constraints>
+    <semantics>Converts an array to a delimited string. Array is the array to convert.  IncludesQuoting indicates if the output should quote the values (Default false).  Delimiter is the delimiter to use for the output string (Default ,).  QuoteChar is the character used for quoting fields (Default "). (Note: Pentaho Data Integration does not have an array data type.  Arrays will have to be created using CSVARRAY.)</semantics>
+    <examples>
+      <example>  <expression>CSVTEXT(CSVARRAY("1,2,3,4"))</expression>     <result>1,2,3,4</result>    <level>1</level>   <comment>Simple CSVARRAY</comment>     </example>
+      <example>  <expression>CSVTEXT(CSVARRAY("1,2,3,4");TRUE();";";"'")</expression>     <result>'1';'2';'3';'4'</result>    <level>1</level>   <comment>Delimiter ; fields may be quoted by '.</comment>     </example>
+    </examples>
+  </function>
+
+
+  <!-- Omitted the following functions from the list because they require PRD specific concepts or are deprecated.
+  DASHBOARDMODE
+  DOCUMENTMETADATA
+  ENV
+  EXPORTTYPE
+  HASCHANGED
+  ISEMPTYDATA
+  ISEXPORTTYPE
+  LOOKUP
+  METADATA
+  ROWCOUNT
+  DRILLDOWN
+  MPARAMETERTEXT
+  MULTIVALUEQUERY
+  NORMALIZEARRAY
+  NULL (deprecated)
+  OPENINMANTLETAB
+  PARAMETERTEXT
+  SEQUENCEQUOTER
+  SINGLEVALUEQUERY
+  URLPARAMETERSEPARATOR
+  MESSAGE
+  QUOTETEXT
+  RESOURCELOOKUP
+  URLBUILDER
+  -->
 </libformula-functions>
 

@@ -3,7 +3,7 @@
  *  *
  *  * Pentaho Data Integration
  *  *
- *  * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *  *
  *  *******************************************************************************
  *  *
@@ -56,6 +56,7 @@ import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -140,8 +141,15 @@ public class ValidatorTest {
   @Test
   public void assertNumeric_String() throws Exception {
     ValueMetaString metaString = new ValueMetaString( "string" );
-    assertNotNull( "General strings are not allowed",
-      validator.assertNumeric( metaString, "qwerty", new Validation() ) );
+    Validation validation = new Validation();
+    validation.setFieldName( "string" );
+    Assert.assertEquals( ValueMetaInterface.TYPE_STRING, metaString.getType() );
+    KettleValidatorException validatorException = validator.assertNumeric( metaString, "qwerty", validation );
+    assertNotNull( "General strings are not allowed", validatorException );
+    // Since the plugin registry is not loaded with the value meta plugins for this unit test,
+    // the meta type is going to be "-" in the message instead of String
+    Assert.assertTrue( validatorException.getMessage().contains( BaseMessages.getString( Validator.class, "Validator.Exception.NonNumericDataNotAllowed",
+      "string", "-", "qwerty" ) ) );
   }
 
   @Test

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,11 @@ package org.pentaho.di.trans.steps.jsoninput;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertNotNull;
+import static org.pentaho.di.core.util.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,8 +48,10 @@ import java.util.zip.ZipOutputStream;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.jayway.jsonpath.InvalidPathException;
 import junit.framework.ComparisonFailure;
 
+import net.minidev.json.JSONArray;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -55,6 +60,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -76,6 +82,7 @@ import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.steps.jsoninput.reader.FastJsonReader;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class JsonInputTest {
@@ -149,6 +156,48 @@ public class JsonInputTest {
         + " \"errors\": null,"
         + " \"board\": \"offer-sources\""
         + "}";
+  }
+
+  protected static final String getSampleJson() {
+
+    return "["
+      + "{"
+      + "\"name\":\"United States of America\","
+      + "\"topLevelDomain\":["
+      + "   \".us\""
+      + "],"
+      + "\"alpha2Code\":\"US\","
+      + "\"alpha3Code\":\"USA\","
+      + "\"callingCodes\":["
+      + "   \"1\""
+      + "],"
+      + "\"currencies\":["
+      + "{"
+      + "   \"code\":\"USD\","
+      + "   \"name\":\"United States dollar\","
+      + "   \"symbol\":\"$\","
+      + "   \"topLevelDomain\":\"test123\""
+      + "}"
+      + "],"
+      + "\"languages\":["
+      + "{"
+      + "   \"iso639_1\":\"en\","
+      + "   \"iso639_2\":\"eng\","
+      + "   \"name\":\"English\","
+      + "   \"nativeName\":\"English\""
+      + "}"
+      + "],"
+      + "\"regionalBlocs\":["
+      + "{"
+      + "   \"acronym\":\"NAFTA\","
+      + "   \"name\":\"North American Free Trade Agreement\","
+      + "   \"otherAcronyms\":["
+      + "     ]"
+      + "}"
+      + "],"
+      + "\"cioc\":\"USA\""
+      + "}"
+      + "]";
   }
 
   @BeforeClass
@@ -1084,6 +1133,60 @@ public class JsonInputTest {
     Assert.assertEquals( 1, jsonInput.getErrors() );
   }
 
+  @Test
+  public void testJsonInputPathResolutionSuccess() {
+    JsonInputField inputField = new JsonInputField( "value" );
+    final String PATH = "${PARAM_PATH}.price";
+    inputField.setPath( PATH );
+    inputField.setType( ValueMetaInterface.TYPE_STRING );
+    final JsonInputMeta inputMeta = createSimpleMeta( "json", inputField );
+    VariableSpace variables = new Variables();
+    JsonInput jsonInput = null;
+    try {
+      jsonInput =
+        createJsonInput( "json", inputMeta, variables, new Object[] { getBasicTestJson() } );
+      fail( "Without the parameter, this call should fail with an InvalidPathException. If it does not, test fails." );
+    } catch ( InvalidPathException pathException ) {
+      assertNull( jsonInput );
+    }
+
+    variables.setVariable( "PARAM_PATH", "$..book.[*]" );
+
+    try {
+      jsonInput = createJsonInput( "json", inputMeta, variables, new Object[] { getBasicTestJson() } );
+      assertNotNull( jsonInput );
+    } catch ( Exception ex ) {
+      fail( "Json Input should be able to resolve the paths with the parameter introduced in the variable space." );
+    }
+  }
+
+  @Test
+  public void testJsonInputPathResolution() throws KettleException {
+    JsonInputField inputField = new JsonInputField( "value" );
+    final String PATH = "$[*].name";
+    inputField.setPath( PATH );
+    inputField.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputMeta inputMeta = createSimpleMeta( "json", inputField );
+    VariableSpace variables = new Variables();
+    JsonInput jsonInput = null;
+    try {
+      jsonInput =
+        createJsonInput( "json", inputMeta, variables, new Object[] { getSampleJson() } );
+
+      JsonInputData data = (JsonInputData) Whitebox.getInternalState( jsonInput, "data" );
+      FastJsonReader reader = (FastJsonReader) Whitebox.getInternalState( data, "reader" );
+      RowSet rowset = reader.parse( new ByteArrayInputStream( getSampleJson().getBytes() ) );
+      List results = (List) Whitebox.getInternalState( rowset, "results" );
+      JSONArray jsonResult = (JSONArray) results.get( 0 );
+
+      assertEquals( 1, jsonResult.size() );
+      assertEquals( "United States of America", jsonResult.get( 0 ) );
+
+    } catch ( InvalidPathException pathException ) {
+      assertNull( jsonInput );
+    }
+  }
+
   protected JsonInputMeta createSimpleMeta( String inputColumn, JsonInputField... jsonPathFields ) {
     JsonInputMeta jsonInputMeta = new JsonInputMeta();
     jsonInputMeta.setDefault();
@@ -1212,7 +1315,7 @@ public class JsonInputTest {
     @Override
     public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
       if ( rowNbr >= data.length ) {
-        throw new ComparisonFailure( "too many output rows", "" + data.length, "" + (rowNbr + 1) );
+        throw new ComparisonFailure( "too many output rows", "" + data.length, "" + ( rowNbr + 1 ) );
       } else {
         for ( int i = 0; i < data[ rowNbr ].length; i++ ) {
           try {

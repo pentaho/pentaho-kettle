@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,11 +23,13 @@
 package org.pentaho.di.trans.steps.concatfields;
 
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -42,6 +44,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -107,8 +111,11 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     super.setDefault();
     // overwrite header
     super.setHeaderEnabled( false );
+    // PDI-18028: ConcatFields doesn't need or use the 'fileName' field!
+    super.setFileName( StringUtil.EMPTY_STRING );
+    super.setFileNameInField( false );
     // set default for new properties specific to the concat fields
-    targetFieldName = "";
+    targetFieldName = StringUtil.EMPTY_STRING;
     targetFieldLength = 0;
     removeSelectedFields = false;
   }
@@ -173,10 +180,18 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
       "Y"
         .equalsIgnoreCase( XMLHandler
           .getTagValue( stepnode, ConcatFieldsNodeNameSpace, "removeSelectedFields" ) );
+
+    // PDI-18028: Avoid fileName handling!
+    super.setFileName( StringUtil.EMPTY_STRING );
+    super.setFileNameInField( false );
   }
 
   @Override
   public String getXML() {
+    // PDI-18028: Avoid fileName handling!
+    super.setFileName( StringUtil.EMPTY_STRING );
+    super.setFileNameInField( false );
+
     String retval = super.getXML();
     retval = retval + "    <" + ConcatFieldsNodeNameSpace + ">" + Const.CR;
     retval = retval + XMLHandler.addTagValue( "targetFieldName", targetFieldName );
@@ -195,11 +210,19 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
       (int) rep.getStepAttributeInteger( id_step, ConcatFieldsNodeNameSpace + "targetFieldLength" );
     removeSelectedFields =
       rep.getStepAttributeBoolean( id_step, ConcatFieldsNodeNameSpace + "removeSelectedFields" );
+
+    // PDI-18028: Avoid fileName handling!
+    super.setFileName( StringUtil.EMPTY_STRING );
+    super.setFileNameInField( false );
   }
 
   @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
+    // PDI-18028: Avoid fileName handling!
+    super.setFileName( StringUtil.EMPTY_STRING );
+    super.setFileNameInField( false );
+
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute(
       id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldName", targetFieldName );
@@ -213,7 +236,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
                      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
                      Repository repository, IMetaStore metaStore ) {
-    CheckResult cr;
+    CheckResult cr = null;
 
     // Check Target Field Name
     if ( Utils.isEmpty( targetFieldName ) ) {
@@ -238,20 +261,20 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
           PKG, "ConcatFieldsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
-      String error_message = "";
-      boolean error_found = false;
+      String errorMessage = StringUtil.EMPTY_STRING;
+      boolean errorFound = false;
 
       // Starting from selected fields in ...
       for ( int i = 0; i < getOutputFields().length; i++ ) {
         int idx = prev.indexOfValue( getOutputFields()[ i ].getName() );
         if ( idx < 0 ) {
-          error_message += "\t\t" + getOutputFields()[ i ].getName() + Const.CR;
-          error_found = true;
+          errorMessage += "\t\t" + getOutputFields()[ i ].getName() + Const.CR;
+          errorFound = true;
         }
       }
-      if ( error_found ) {
-        error_message = BaseMessages.getString( PKG, "ConcatFieldsMeta.CheckResult.FieldsNotFound", error_message );
-        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
+      if ( errorFound ) {
+        errorMessage = BaseMessages.getString( PKG, "ConcatFieldsMeta.CheckResult.FieldsNotFound", errorMessage );
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
         remarks.add( cr );
       } else {
         cr =
@@ -260,7 +283,6 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
         remarks.add( cr );
       }
     }
-
   }
 
   @Override
@@ -274,9 +296,44 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     return new ConcatFieldsData();
   }
 
+  /**
+   * PDI-18028: ConcatFields doesn't need or use the 'fileName' field (from TextFileOutput)!
+   * @return Always <code>false</code>
+   */
+  @Override
+  public boolean isFileNameInField() {
+    return false;
+  }
+
+  /**
+   *
+   * @param retVal
+   * @param value
+   */
+  @Override
+  protected void saveSource( StringBuilder retVal, String value ) {
+    // PDI-18028: Avoid fileName handling!
+    super.setFileName( StringUtil.EMPTY_STRING );
+    super.setFileNameInField( false );
+
+    super.saveSource( retVal, value );
+  }
+
+  /**
+   * PDI-18028: ConcatFields doesn't need or use the 'fileName' field (from TextFileOutput)!
+   *
+   * @return Always <code>null</code>
+   */
+  @Override
+  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
+                                 IMetaStore metaStore )
+    throws KettleException {
+    return null;
+  }
+
   @Override
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
     return new ConcatFieldsMetaInjection( this );
   }
-
 }

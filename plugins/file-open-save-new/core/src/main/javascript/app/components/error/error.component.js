@@ -102,13 +102,13 @@ define([
      * @return {boolean} - true if the errorType is not 1, 5, or 6. Returns false otherwise.
      */
     function hideConfirmButton() {
-      return vm.errorType !== 1 && vm.errorType !== 5 && vm.errorType !== 6 && vm.errorType !== 21;
+      return vm.errorType !== 1 && vm.errorType !== 5 && vm.errorType !== 6 && vm.errorType !== 21 && vm.errorType !== 22;
     }
 
     /**
      * Calls the setMessage function according to the errorType.
      * errorType:
-     * 1. Overwrite
+     * 1. Overwrite Trans/Job
      * 2. Folder Exists
      * 3. Unable to Save
      * 4. Unable to create folder
@@ -124,6 +124,12 @@ define([
      * 14. Unable to delete file b/c in use
      * 15. Unable to rename folder b/c it has an open file in it or a subfolder of it
      * 16. Unable to open recent file
+     * 17. Save With Invalid File Name
+     * 18. Create With Invalid File Name
+     * 19. Rename With Invalid File Name
+     * 20. Cannot move file to directory
+     * 21. Warn about deleting multiple files
+     * 22. Warn Overwrite File/Folder
      *
      * @private
      */
@@ -131,22 +137,10 @@ define([
       vm.breakAll = false;
       switch (vm.errorType) {
         case 1:// Overwrite
-          var overwriteBefore = vm.errorFiles[0].type === "job" ?
+          var msg = vm.errorFiles[0].type === "job" ?
             i18n.get("file-open-save-plugin.error.overwrite.job.top-before.message") + " " :
             i18n.get("file-open-save-plugin.error.overwrite.trans.top-before.message") + " ";
-          var overwriteAfter = " " + i18n.get("file-open-save-plugin.error.overwrite.top-after.message");
-          var overwriteFilenameMaxWidth = _max - utils.getTextWidth(overwriteBefore + overwriteAfter + _ellipsis);
-          var overwriteFilename = vm.errorFiles[0].name;
-          if (utils.getTextWidth(overwriteFilename) > overwriteFilenameMaxWidth) {
-            overwriteFilename = utils.truncateString(overwriteFilename, overwriteFilenameMaxWidth) + _ellipsis;
-          }
-          _setMessage(i18n.get("file-open-save-plugin.error.overwrite.title"),
-            overwriteBefore,
-            overwriteFilename,
-            overwriteAfter,
-            i18n.get("file-open-save-plugin.error.overwrite.bottom.message"),
-            i18n.get("file-open-save-plugin.error.overwrite.accept.button"),
-            i18n.get("file-open-save-plugin.error.overwrite.cancel.button"));
+          _handleOverwriteMessage(msg);
           vm.breakAll = true;
           break;
         case 2:// Folder Exists
@@ -327,6 +321,13 @@ define([
               i18n.get("file-open-save-plugin.error.delete-many.no.button"));
           vm.breakAll = true;
           break;
+        case 22: // Warn Overwrite File/Folder
+          var msg = vm.errorFiles[0].type === "folder" ?
+              i18n.get("file-open-save-plugin.error.overwrite.folder.top-before.message") + " " :
+              i18n.get("file-open-save-plugin.error.overwrite.file.top-before.message") + " ";
+          _handleOverwriteMessage(msg);
+          vm.breakAll = true;
+          break;
         default:
           _setMessage("", "", "", "", "", "", "");
           break;
@@ -350,6 +351,29 @@ define([
       vm.errorMessageBottom = bottom;
       vm.errorConfirmButton = confirm;
       vm.errorCancelButton = cancel;
+    }
+
+    /**
+     * Helper method for overwrite error types.
+     * @param {String} msg - Message to include in overwrite dialog.
+     * @private
+     */
+    function _handleOverwriteMessage(msg) {
+
+      var overwriteAfter = " " + i18n.get("file-open-save-plugin.error.overwrite.top-after.message");
+      var overwriteFilenameMaxWidth = _max - utils.getTextWidth(msg + overwriteAfter + _ellipsis);
+      var overwriteFilename = vm.errorFiles[0].name;
+      if (utils.getTextWidth(overwriteFilename) > overwriteFilenameMaxWidth) {
+        overwriteFilename = utils.truncateString(overwriteFilename, overwriteFilenameMaxWidth) + _ellipsis;
+      }
+      _setMessage(i18n.get("file-open-save-plugin.error.overwrite.title"),
+          msg,
+          overwriteFilename,
+          overwriteAfter,
+          i18n.get("file-open-save-plugin.error.overwrite.bottom.message"),
+          i18n.get("file-open-save-plugin.error.overwrite.accept.button"),
+          i18n.get("file-open-save-plugin.error.overwrite.cancel.button"));
+
     }
 
     /**

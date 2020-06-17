@@ -23,7 +23,7 @@ define([
    */
   function key($document) {
     return {
-      restrict: 'A',
+      restrict: 'AE',
       link: function(scope, element) {
         var errorWithConfirm = [1, 5, 6];
         var confirmButton = angular.element(element[0].querySelector("#errorConfirmButton"));

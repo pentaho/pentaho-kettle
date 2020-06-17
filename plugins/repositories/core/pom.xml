@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>repositories-plugin-core</artifactId>
-  <version>9.0.0.0-SNAPSHOT</version>
+  <version>9.1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>PDI Repositories Plugin Core</name>
@@ -12,16 +12,15 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>repositories</artifactId>
-    <version>9.0.0.0-SNAPSHOT</version>
+    <version>9.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.1.0.0-SNAPSHOT</pdi.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <mockito-all.version>1.9.5</mockito-all.version>
     <json-simple.version>1.1</json-simple.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-    <commons-vfs2.version>2.2</commons-vfs2.version>
     <eclipse.version>3.6.0</eclipse.version>
     <junit.version>4.11</junit.version>
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
@@ -42,31 +41,21 @@
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular</artifactId>
-      <version>${angular.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>angular-route</artifactId>
-      <version>${angular-route.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-sanitize</artifactId>
-      <version>${angular-sanitize.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-translate</artifactId>
-      <version>${angular-translate.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-animate</artifactId>
-      <version>${angular-animate.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -86,6 +75,10 @@
       <artifactId>kettle-ui-swt</artifactId>
       <version>${pdi.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>core-ui</artifactId>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -160,9 +153,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>angular-i18n</artifactId>
-      <version>${angular-i18n.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -178,12 +170,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-vfs2</artifactId>
-      <version>${commons-vfs2.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-vfs-browser</artifactId>
       <version>${pdi.version}</version>
@@ -193,6 +179,13 @@
       <groupId>org.eclipse.core</groupId>
       <artifactId>org.eclipse.core.commands</artifactId>
       <version>${eclipse.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${pdi.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
   </dependencies>

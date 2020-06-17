@@ -1,0 +1,12 @@
+<svg id="LightOn.L_D.svg" xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 112 112">
+  <rect id="Rectangle_2078" data-name="Rectangle 2078" width="112" height="112" fill="none"/>
+  <g id="Group_19128" data-name="Group 19128" transform="translate(0 0)">
+    <rect id="Rectangle_4888" data-name="Rectangle 4888" width="36" height="6" transform="translate(38 98)" fill="#414141"/>
+    <rect id="Rectangle_4889" data-name="Rectangle 4889" width="12" height="6" transform="translate(8 53)" fill="#414141"/>
+    <rect id="Rectangle_4890" data-name="Rectangle 4890" width="12" height="6" transform="translate(92 53)" fill="#414141"/>
+    <rect id="Rectangle_4891" data-name="Rectangle 4891" width="6" height="12" transform="translate(53 8)" fill="#414141"/>
+    <rect id="Rectangle_4892" data-name="Rectangle 4892" width="12" height="5.999" transform="translate(79.334 28.423) rotate(-45)" fill="#414141"/>
+    <rect id="Rectangle_4893" data-name="Rectangle 4893" width="5.999" height="12" transform="translate(19.938 24.18) rotate(-45)" fill="#414141"/>
+    <path id="Path_39490" data-name="Path 39490" d="M56,25.909A29.775,29.775,0,0,0,26,55.454,29.356,29.356,0,0,0,38,79.093V92H74l0-12.907a29.354,29.354,0,0,0,12-23.64A29.776,29.776,0,0,0,56,25.909ZM70.433,74.27,68,76.069V86H44V76.068l-2.432-1.8A23.229,23.229,0,0,1,32,55.454a24.005,24.005,0,0,1,48,0A23.231,23.231,0,0,1,70.433,74.27Z" fill="#414141"/>
+  </g>
+</svg>

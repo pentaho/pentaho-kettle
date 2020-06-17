@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,12 +30,21 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.exception.KettleException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
+import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
+import org.eclipse.swt.browser.Browser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +56,8 @@ import java.util.Properties;
 /**
  * Created by bmorrise on 5/23/17.
  */
-public class FileOpenSaveDialog extends ThinDialog {
+public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
+  private static final Class<?> PKG = FileOpenSaveDialog.class;
 
   public static final String STATE_SAVE = "save";
   public static final String STATE_OPEN = "open";
@@ -57,14 +67,25 @@ public class FileOpenSaveDialog extends ThinDialog {
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
-  private static final String LOCALHOST = "localhost";
-  public static final String PATH = "path";
-  public static final String CONNECTION = "connection";
-  public static final String PROVIDER = "provider";
-  public static final String FILTER = "filter";
-  public static final String ORIGIN = "origin";
-  public static final String FILENAME = "filename";
-  public static final String FILE_TYPE = "fileType";
+  private static final String LOCALHOST = "127.0.0.1";
+  private static final String HELP_URL =
+    Const.getDocUrl( "Products/Work_with_transformations#Open_a_transformation" );
+
+  public static final String PATH_PARAM = "path";
+  public static final String USE_SCHEMA_PARAM = "useSchema";
+  public static final String CONNECTION_PARAM = "connection";
+  public static final String PROVIDER_PARAM = "provider";
+  public static final String PROVIDER_FILTER_PARAM = "providerFilter";
+  public static final String FILTER_PARAM = "filter";
+  public static final String DEFAULT_FILTER_PARAM = "defaultFilter";
+  public static final String CONNECTION_FILTER_PARAM = "connectionTypes";
+  public static final String ORIGIN_PARAM = "origin";
+  public static final String FILENAME_PARAM = "filename";
+  public static final String FILE_TYPE_PARM = "fileType";
+  public static final String OBJECT_ID_PARAM = "objectId";
+  public static final String NAME_PARAM = "name";
+  public static final String PARENT_PARAM = "parent";
+  public static final String TYPE_PARAM = "type";
 
   private String objectId;
   private String name;
@@ -74,64 +95,85 @@ public class FileOpenSaveDialog extends ThinDialog {
   private String connection;
   private String provider;
 
-  public FileOpenSaveDialog( Shell shell, int width, int height ) {
+  private LogChannelInterface log;
+
+  public FileOpenSaveDialog( Shell shell, int width, int height, LogChannelInterface logger ) {
     super( shell, width, height );
+    this.log = logger;
   }
 
-  public void open( String path, String connection, String provider, String state, String title, String filter,
-                    String origin ) {
-    open( path, state, title, filter, origin, null, "" );
-  }
-
-  private void addParameter( String path, List<NameValuePair> parameters, String name, String value ) {
-    if ( !Utils.isEmpty( path ) && !Utils.isEmpty( value ) ) {
+  private void addParameter( List<NameValuePair> parameters, String name, String value ) {
+    if ( !Utils.isEmpty( value ) ) {
       parameters.add( new BasicNameValuePair( name, value ) );
     }
   }
 
-  public void open( String path, String connection, String provider, String state, String title, String filter,
-                    String origin, String filename, String fileType ) {
+  public void open( FileDialogOperation fileDialogOperation ) {
+
+    String dialogPath = fileDialogOperation.getPath() != null
+      ? fileDialogOperation.getPath()
+      : fileDialogOperation.getStartDir();
+
     try {
-      path = URLEncoder.encode( path, "UTF-8" );
+      dialogPath = URLEncoder.encode( dialogPath, "UTF-8" );
     } catch ( Exception e ) {
       // ignore if fails
     }
 
     StringBuilder clientPath = new StringBuilder();
+    String cmd = fileDialogOperation.getCommand();
+
     clientPath.append( getClientPath() );
-    clientPath.append( !Utils.isEmpty( state ) ? "#/" + state : "" );
+    clientPath.append( !Utils.isEmpty( cmd ) ? "#!/" + cmd : "" );
 
     List<NameValuePair> parameters = new ArrayList<>();
-    addParameter( path, parameters, PATH, path );
-    addParameter( path, parameters, CONNECTION, connection );
-    addParameter( path, parameters, PROVIDER, provider );
-    addParameter( path, parameters, FILTER, filter );
-    addParameter( path, parameters, ORIGIN, origin );
-    addParameter( path, parameters, FILENAME, filename );
-    addParameter( path, parameters, FILE_TYPE, fileType );
+    addParameter( parameters, PATH_PARAM, dialogPath );
+    addParameter( parameters, CONNECTION_PARAM, fileDialogOperation.getConnection() );
+    addParameter( parameters, PROVIDER_PARAM, fileDialogOperation.getProvider() );
+    addParameter( parameters, PROVIDER_FILTER_PARAM, fileDialogOperation.getProviderFilter() );
+    addParameter( parameters, FILTER_PARAM, fileDialogOperation.getFilter() );
+    addParameter( parameters, DEFAULT_FILTER_PARAM, fileDialogOperation.getDefaultFilter() );
+    addParameter( parameters, ORIGIN_PARAM, fileDialogOperation.getOrigin() );
+    addParameter( parameters, FILENAME_PARAM, fileDialogOperation.getFilename() );
+    addParameter( parameters, FILE_TYPE_PARM, fileDialogOperation.getFileType() );
+    addParameter( parameters, CONNECTION_FILTER_PARAM, fileDialogOperation.getConnectionTypeFilter()  );
+
+    if ( fileDialogOperation.getUseSchemaPath() ) {
+      addParameter( parameters, USE_SCHEMA_PARAM, "true" );
+    }
+
     String queryParams = URLEncodedUtils.format( parameters, "UTF-8" );
     clientPath.append( "?" ).append( queryParams );
 
-    super.createDialog( title != null ? title : StringUtils.capitalize( state ), getRepoURL( clientPath.toString() ),
-      OPTIONS, LOGO );
+    String title = Utils.isEmpty( cmd ) ? "" : BaseMessages.getString( PKG,
+      ( "FileOpenSaveDialog.dialog." + cmd + ".title" ) );
+
+    super.createDialog( fileDialogOperation.getTitle() != null ? fileDialogOperation.getTitle()
+        : StringUtils.capitalize( title ), getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
     super.dialog.setMinimumSize( 545, 458 );
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
-        browser.dispose();
-        dialog.close();
-        dialog.dispose();
+        closeBrowser( browser );
         return true;
       }
     };
 
     new BrowserFunction( browser, "select" ) {
       @Override public Object function( Object[] arguments ) {
-        setProperties( arguments );
+        try {
+          setProperties( arguments );
+          closeBrowser( browser );
+        } catch ( Exception e ) {
+          log.logError( "Error in processing select() from file-open-save app: ", e );
+        }
+        return true;
+      }
+    };
 
-        browser.dispose();
-        dialog.close();
-        dialog.dispose();
+    new BrowserFunction( browser, "help" ) {
+      @Override public Object function( Object[]  arguments ) {
+        openHelpDialog();
         return true;
       }
     };
@@ -143,14 +185,29 @@ public class FileOpenSaveDialog extends ThinDialog {
     }
   }
 
-  private void setProperties( Object[] arguments ) {
-    objectId = (String) arguments[ 0 ];
-    name = (String) arguments[ 1 ];
-    path = (String) arguments[ 2 ];
-    parentPath = (String) arguments[ 3 ];
-    connection = (String) arguments[ 4 ];
-    provider = (String) arguments[ 5 ];
-    type = (String) arguments[ 6 ];
+  private void closeBrowser( Browser browser ) {
+    browser.dispose();
+    dialog.close();
+    dialog.dispose();
+  }
+
+  private void openHelpDialog() {
+    HelpUtils.openHelpDialog( this.dialog, "", HELP_URL );
+  }
+
+  private void setProperties( Object[] arguments ) throws ParseException {
+    if ( arguments.length == 1 ) {
+      String jsonString = (String) arguments[ 0 ];
+      JSONParser jsonParser = new JSONParser();
+      JSONObject jsonObject = (JSONObject) jsonParser.parse( jsonString );
+      objectId = (String) jsonObject.get( OBJECT_ID_PARAM );
+      name = (String) jsonObject.get( NAME_PARAM );
+      path = (String) jsonObject.get( PATH_PARAM );
+      parentPath = (String) jsonObject.get( PARENT_PARAM );
+      connection = (String) jsonObject.get( CONNECTION_PARAM );
+      provider = (String) jsonObject.get( PROVIDER_PARAM );
+      type = (String) jsonObject.get( TYPE_PARAM );
+    }
   }
 
   private static String getClientPath() {
@@ -186,7 +243,7 @@ public class FileOpenSaveDialog extends ThinDialog {
     return "http://" + host + ":" + port + path;
   }
 
-  private static String getKettleProperty( String propertyName ) throws KettleException {
+  private static String getKettleProperty( String propertyName ) {
     // loaded in system properties at startup
     return System.getProperty( propertyName );
   }

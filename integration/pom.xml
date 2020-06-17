@@ -6,23 +6,21 @@
 
   <groupId>org.pentaho</groupId>
   <artifactId>pdi-integration-tests</artifactId>
-  <version>9.0.0.0-SNAPSHOT</version>
+  <version>9.1.0.0-SNAPSHOT</version>
 
   <name>Pentaho Data Integration Integration Tests</name>
 
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>9.0.0.0-SNAPSHOT</version>
+    <version>9.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <test-jetty-servlet.version>8.1.15.v20140411</test-jetty-servlet.version>
     <nekohtml.version>1.9.7</nekohtml.version>
     <sshd-sftp.version>0.11.0</sshd-sftp.version>
     <ftpserver-core.version>1.0.6</ftpserver-core.version>
-    <bcprov-jdk14.version>1.51</bcprov-jdk14.version>
-    <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.1.0.0-SNAPSHOT</pdi.version>
   </properties>
 
   <dependencies>
@@ -78,18 +76,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>test-jetty-servlet</artifactId>
-      <version>${test-jetty-servlet.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>net.sourceforge.nekohtml</groupId>
       <artifactId>nekohtml</artifactId>
       <version>${nekohtml.version}</version>
@@ -111,12 +97,6 @@
       <groupId>org.apache.ftpserver</groupId>
       <artifactId>ftpserver-core</artifactId>
       <version>${ftpserver-core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk14</artifactId>
-      <version>${bcprov-jdk14.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

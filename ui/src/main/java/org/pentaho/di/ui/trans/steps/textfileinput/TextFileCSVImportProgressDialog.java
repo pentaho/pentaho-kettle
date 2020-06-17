@@ -50,12 +50,12 @@ import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
-import org.pentaho.di.trans.steps.textfileinput.EncodingType;
+import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileLine;
 import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileLine;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.common.CsvInputAwareImportProgressDialog;
 
@@ -271,26 +271,11 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     int fileFormatType = meta.getFileFormatTypeNr();
 
     if ( meta.hasHeader() ) {
-      line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
-      fileLineNumber++;
-      int skipped = 0;
-      while ( line != null && skipped < meta.getNrHeaderLines() ) {
-        /*
-        Check that the number of enclosures in a line is even.
-        If not even it means that there was an enclosed line break.
-        We need to read the next line(s) to get the remaining data in this row.
-        */
-        if ( TextFileInputUtils.checkPattern( line, meta.getEnclosure() ) % 2 != 0 ) {
-          line = line + TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
-        } else {
-          //Increment when a full line header was read
-          skipped++;
-        }
-        fileLineNumber++;
-      }
+      fileLineNumber = TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType, lineBuffer,
+        meta.getNrHeaderLines(), meta.getEnclosure(), fileLineNumber );
     }
     //Reading the first line of data
-    line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
+    line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, meta.getEnclosure() );
     int linenr = 1;
 
     List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
@@ -304,19 +289,6 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     while ( !errorFound && line != null && ( linenr <= samples || samples == 0 ) && !monitor.isCanceled() ) {
       monitor.subTask( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Task.ScanningLine", ""
         + linenr ) );
-      while ( line != null ) {
-        /*
-        Check that the number of enclosures in a line is even.
-        If not even it means that there was an enclosed line break.
-        We need to read the next line(s) to get the remaining data in this row.
-        */
-        if ( TextFileInputUtils.checkPattern( line, meta.getEnclosure() ) % 2 != 0 ) {
-          line = line + TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
-          fileLineNumber++;
-        } else {
-          break;
-        }
-      }
       if ( samples > 0 ) {
         monitor.worked( 1 );
       }
@@ -357,21 +329,18 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
         }
 
         String string = getStringFromRow( rowMeta, r, i, failOnParseError );
-
-        if ( i == 0 ) {
-          System.out.println();
-        }
         evaluator.evaluateString( string );
       }
 
-      fileLineNumber++;
       if ( r != null ) {
         linenr++;
       }
 
       // Grab another line...
-      //
-      line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
+      TextFileLine
+        textFileLine = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, fileLineNumber );
+      line = textFileLine.getLine();
+      fileLineNumber = textFileLine.getLineNumber();
     }
 
     monitor.worked( 1 );

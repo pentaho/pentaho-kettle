@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,11 +52,12 @@ import org.w3c.dom.Node;
     "JobCategory.Category.BigData", "JobCategory.Category.Modeling", "JobCategory.Category.DataQuality",
     "JobCategory.Category.XML", "JobCategory.Category.Utility", "JobCategory.Category.Repository",
     "JobCategory.Category.FileTransfer", "JobCategory.Category.FileEncryption", "JobCategory.Category.Palo",
-    "JobCategory.Category.Experimental", "JobCategory.Category.Deprecated" }, i18nPackageClass = JobMeta.class )
+    "JobCategory.Category.ServiceManagement", "JobCategory.Category.Experimental", "JobCategory.Category.Deprecated" },
+  i18nPackageClass = JobMeta.class )
 @PluginMainClassType( JobEntryInterface.class )
 @PluginAnnotationType( JobEntry.class )
 public class JobEntryPluginType extends BasePluginType implements PluginTypeInterface {
-  private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String GENERAL_CATEGORY = BaseMessages.getString( PKG, "JobCategory.Category.General" );
 
@@ -159,6 +160,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 
   @Override
   protected void addExtraClasses( Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation ) {
+    //there are no extra classes to add to the map
   }
 
   @Override

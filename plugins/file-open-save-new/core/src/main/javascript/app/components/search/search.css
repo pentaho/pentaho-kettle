@@ -17,13 +17,14 @@
 file-open-save-app #searchBox {
   float:right;
   position: relative;
+  overflow: hidden;
 }
 
 file-open-save-app #searchBox input {
   width: 270px;
   height: 34px;
-  background: url("../../img/search_field_inactive.svg") no-repeat 10px center;
-  background-size: 15px 15px;
+  background: url("../../img/Search.S_D_disabled.svg") no-repeat 0 center;
+  background-size: 32px 32px;
   padding-left: 35px;
   padding-right: 40px;
 }
@@ -31,19 +32,23 @@ file-open-save-app #searchBox input {
 file-open-save-app #searchBox input:focus {
   width: 270px;
   height: 34px;
-  background: url("../../img/search_field_active.svg") no-repeat 10px center;
-  background-size: 15px 15px;
+  background: url("../../img/Search.S_D.svg") no-repeat 0 center;
+  background-size: 32px 32px;
 }
 
 file-open-save-app #searchBox .clearSearch {
   position: absolute;
-  width: 12px;
-  height: 13px;
-  background: url("../../img/clear_field.svg") no-repeat left center;
-  right: 10px;
-  top: 10px;
-  background-size: 25px;
+  width: 32px;
+  height: 32px;
+  background: url("../../img/Close.S_D.svg") no-repeat center center;
+  right: 1px;
+  top: 1px;
+  background-size: 32px;
   cursor: pointer;
+}
+
+file-open-save-app #searchBox .clearSearch:hover {
+  background-color: #f0f0f0;
 }
 
 file-open-save-app #searchBox.searching input {
@@ -74,10 +79,6 @@ file-open-save-app #searchBox .recentSearches div {
 
 file-open-save-app  #searchBox .recentSearches div:hover {
   background-color: #E6EFF6;
-}
-
-file-open-save-app #searchBox .clearSearch:hover {
-  background-position: right center;
 }
 
 /*HIDES THE X ON THE SEARCHBOX ON IE11*/

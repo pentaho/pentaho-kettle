@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.core.row;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
@@ -33,6 +35,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.StringUtil;
 
 public class SpeedTest {
+  private static final Log log = LogFactory.getLog( SpeedTest.class );
   private Object[] rowString10;
   private Object[] rowString100;
   private Object[] rowString1000;
@@ -83,29 +86,30 @@ public class SpeedTest {
   }
 
   private static void populateMetaAndData( int i, Object[] rowString10, RowMetaInterface metaString10,
-    Object[] rowMixed10, RowMetaInterface metaMixed10 ) {
+                                           Object[] rowMixed10, RowMetaInterface metaMixed10 ) {
+    String strNamePrefix = "String";
     rowString10[i] = StringUtil.generateRandomString( 20, "", "", false );
-    ValueMetaInterface meta = new ValueMetaString( "String" + ( i + 1 ), 20, 0 );
+    ValueMetaInterface meta = new ValueMetaString( strNamePrefix + ( i + 1 ), 20, 0 );
     metaString10.addValueMeta( meta );
 
     rowMixed10[i * 5 + 0] = StringUtil.generateRandomString( 20, "", "", false );
-    ValueMetaInterface meta0 = new ValueMetaString( "String" + ( i * 5 + 1 ), 20, 0 );
+    ValueMetaInterface meta0 = new ValueMetaString( strNamePrefix + ( i * 5 + 1 ), 20, 0 );
     metaMixed10.addValueMeta( meta0 );
 
     rowMixed10[i * 5 + 1] = new Date();
-    ValueMetaInterface meta1 = new ValueMetaDate( "String" + ( i * 5 + 1 ) );
+    ValueMetaInterface meta1 = new ValueMetaDate( strNamePrefix + ( i * 5 + 1 ) );
     metaMixed10.addValueMeta( meta1 );
 
-    rowMixed10[i * 5 + 2] = new Double( Math.random() * 1000000 );
-    ValueMetaInterface meta2 = new ValueMetaNumber( "String" + ( i * 5 + 1 ), 12, 4 );
+    rowMixed10[i * 5 + 2] = Double.valueOf( Math.random() * 1000000 );
+    ValueMetaInterface meta2 = new ValueMetaNumber( strNamePrefix + ( i * 5 + 1 ), 12, 4 );
     metaMixed10.addValueMeta( meta2 );
 
-    rowMixed10[i * 5 + 3] = new Long( (long) ( Math.random() * 1000000 ) );
-    ValueMetaInterface meta3 = new ValueMetaInteger( "String" + ( i * 5 + 1 ), 8, 0 );
+    rowMixed10[i * 5 + 3] = Long.valueOf( (long) ( Math.random() * 1000000 ) );
+    ValueMetaInterface meta3 = new ValueMetaInteger( strNamePrefix + ( i * 5 + 1 ), 8, 0 );
     metaMixed10.addValueMeta( meta3 );
 
-    rowMixed10[i * 5 + 4] = Boolean.valueOf( Math.random() > 0.5 ? true : false );
-    ValueMetaInterface meta4 = new ValueMetaBoolean( "String" + ( i * 5 + 1 ) );
+    rowMixed10[i * 5 + 4] = Boolean.valueOf( Math.random() > 0.5 );
+    ValueMetaInterface meta4 = new ValueMetaBoolean( strNamePrefix + ( i * 5 + 1 ) );
     metaMixed10.addValueMeta( meta4 );
   }
 
@@ -186,29 +190,34 @@ public class SpeedTest {
   public static void main( String[] args ) throws KettleValueException {
     SpeedTest speedTest = new SpeedTest();
 
+    String strTimesPrefix = " times : ";
+    String strMsPrefix = " ms (";
+    String strRowPerSec = " r/s)\n";
+    // Found a speed boost in adding to a string builder, then logging rather than logging each time.
+    StringBuilder runtimeTestMessage = new StringBuilder();
+
     long timeString10 = speedTest.runTestStrings10( ITERATIONS );
-    System.out.println( "Time to run 'String10' test "
-      + ITERATIONS + " times : " + timeString10 + " ms (" + ( 1000 * ITERATIONS / timeString10 ) + " r/s)" );
+    runtimeTestMessage.append( "\nTime to run 'String10' test "
+      + ITERATIONS + strTimesPrefix + timeString10 + strMsPrefix + ( 1000 * ITERATIONS / timeString10 ) + strRowPerSec );
     long timeMixed10 = speedTest.runTestMixed10( ITERATIONS );
-    System.out.println( "Time to run 'Mixed10' test "
-      + ITERATIONS + " times : " + timeMixed10 + " ms (" + ( 1000 * ITERATIONS / timeMixed10 ) + " r/s)" );
-    System.out.println();
+    runtimeTestMessage.append( "Time to run 'Mixed10' test "
+      + ITERATIONS + strTimesPrefix + timeMixed10 + strMsPrefix + ( 1000 * ITERATIONS / timeMixed10 ) + strRowPerSec );
 
     long timeString100 = speedTest.runTestStrings100( ITERATIONS );
-    System.out.println( "Time to run 'String100' test "
-      + ITERATIONS + " times : " + timeString100 + " ms (" + ( 1000 * ITERATIONS / timeString100 ) + " r/s)" );
+    runtimeTestMessage.append( "Time to run 'String100' test "
+      + ITERATIONS + strTimesPrefix + timeString100 + strMsPrefix + ( 1000 * ITERATIONS / timeString100 ) + strRowPerSec );
     long timeMixed100 = speedTest.runTestMixed100( ITERATIONS );
-    System.out.println( "Time to run 'Mixed100' test "
-      + ITERATIONS + " times : " + timeMixed100 + " ms (" + ( 1000 * ITERATIONS / timeMixed100 ) + " r/s)" );
-    System.out.println();
+    runtimeTestMessage.append( "Time to run 'Mixed100' test "
+      + ITERATIONS + strTimesPrefix + timeMixed100 + strMsPrefix + ( 1000 * ITERATIONS / timeMixed100 ) + strRowPerSec );
 
     long timeString1000 = speedTest.runTestStrings1000( ITERATIONS );
-    System.out.println( "Time to run 'String1000' test "
-      + ITERATIONS + " times : " + timeString1000 + " ms (" + ( 1000 * ITERATIONS / timeString1000 ) + " r/s)" );
+    runtimeTestMessage.append( "Time to run 'String1000' test "
+      + ITERATIONS + strTimesPrefix + timeString1000 + strMsPrefix + ( 1000 * ITERATIONS / timeString1000 ) + strRowPerSec );
     long timeMixed1000 = speedTest.runTestMixed1000( ITERATIONS );
-    System.out.println( "Time to run 'Mixed1000' test "
-      + ITERATIONS + " times : " + timeMixed1000 + " ms (" + ( 1000 * ITERATIONS / timeMixed1000 ) + " r/s)" );
-    System.out.println();
+    runtimeTestMessage.append( "Time to run 'Mixed1000' test "
+      + ITERATIONS + strTimesPrefix + timeMixed1000 + strMsPrefix + ( 1000 * ITERATIONS / timeMixed1000 ) + strRowPerSec );
+
+    log.info( runtimeTestMessage );
   }
 
 }

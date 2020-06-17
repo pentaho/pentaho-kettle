@@ -13,3 +13,12 @@
   format('truetype'), url('opensans-light.svg#OpenSansLight')
   format('svg');
 }
+
+@font-face {
+  font-family: 'OpenSansSemiBold';
+  src: url('opensans-semibold.eot');
+  src: url('opensans-semibold.eot') format('embedded-opentype'),
+  url('opensans-semibold.woff') format('woff'), url('opensans-semibold.ttf')
+  format('truetype'), url('opensans-semibold.svg#OpenSansSemiBold')
+  format('svg');
+}

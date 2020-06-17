@@ -28,11 +28,13 @@ import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileOperationException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileTypeException;
+import org.pentaho.di.plugins.fileopensave.controllers.RepositoryBrowserController;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryTree;
@@ -43,10 +45,12 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryExtended;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
@@ -98,7 +102,9 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
 
   @Override
   public List<RepositoryFile> getFiles( RepositoryFile file, String filters ) {
-    RepositoryDirectoryInterface repositoryDirectoryInterface = findDirectory( file.getPath() );
+    RepositoryDirectoryInterface repositoryDirectoryInterface =
+      findDirectory( file.getType().equalsIgnoreCase( RepositoryDirectory.DIRECTORY ) ? file.getPath() : file.getParent() );
+
     RepositoryDirectory repositoryDirectory = RepositoryDirectory.build( null, repositoryDirectoryInterface );
     populateFolders( repositoryDirectory, repositoryDirectoryInterface );
     try {
@@ -585,10 +591,6 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return rootDirectory.findDirectory( path );
   }
 
-  private Repository getRepository() {
-    return repository != null ? repository : spoonSupplier.get().rep;
-  }
-
   private Boolean isAdmin() {
     return getRepository().getUserInfo().isAdmin();
   }
@@ -605,5 +607,30 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
 
   @Override public RepositoryFile getFile( RepositoryFile file ) {
     return null;
+  }
+
+  @Override public void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation ) {
+    RepositoryObject repositoryObject = new RepositoryObject();
+    repositoryObject.setObjectId( fileDetails::getObjectId );
+    repositoryObject.setName( fileDetails.getName() );
+    try {
+      repositoryObject
+        .setRepositoryDirectory( getRepository().findDirectory( fileDetails.getParentPath() ) );
+    } catch ( KettleException ignored ) {
+      // Don't set directory if not found
+    }
+    if ( fileDetails.getType() != null ) {
+      repositoryObject.setObjectType(
+        fileDetails.getType().equals( TRANSFORMATION ) ? RepositoryObjectType.TRANSFORMATION
+          : RepositoryObjectType.JOB );
+    }
+    fileDialogOperation.setRepositoryObject( repositoryObject );
+    fileDialogOperation.setProvider( fileDetails.getProvider() );
+    fileDialogOperation.setFilename( fileDetails.getName() );
+  }
+
+  private Repository getRepository() {
+    return RepositoryBrowserController.repository != null ? RepositoryBrowserController.repository
+      : spoonSupplier.get().getRepository();
   }
 }

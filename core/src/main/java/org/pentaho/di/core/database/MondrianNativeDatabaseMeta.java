@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,20 +49,20 @@ public class MondrianNativeDatabaseMeta extends BaseDatabaseMeta implements Data
   }
 
   @Override
-  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
     return null;
   }
 
   @Override
-  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
     return null;
   }
 
   @Override
-  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-    boolean add_fieldname, boolean add_cr ) {
+  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean useAutoinc,
+                                    boolean addFieldName, boolean addCr ) {
     return null;
   }
 

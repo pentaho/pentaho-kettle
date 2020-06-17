@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import static org.mockito.BDDMockito.doReturn;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.Mockito.doThrow;
 
+import com.mysql.cj.jdbc.Driver;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -51,12 +52,12 @@ public class MySQLDatabaseMetaTest {
   MySQLDatabaseMeta nativeMeta, odbcMeta;
 
   @Before
-  public void setupBefore() {
+  public void setupBefore() throws Exception {
     nativeMeta = new MySQLDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
     odbcMeta = new MySQLDatabaseMeta();
     odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
-
+    Class.forName( Driver.class.getName() );
   }
 
   @Test
@@ -68,7 +69,7 @@ public class MySQLDatabaseMetaTest {
     assertTrue( nativeMeta.supportsAutoInc() );
     assertEquals( 1, nativeMeta.getNotFoundTK( true ) );
     assertEquals( 0, nativeMeta.getNotFoundTK( false ) );
-    assertEquals( "org.gjt.mm.mysql.Driver", nativeMeta.getDriverClass() );
+    assertEquals( "com.mysql.cj.jdbc.Driver", nativeMeta.getDriverClass() );
     assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
     assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:mysql://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class LocalTree implements Tree<LocalFile> {
 
-  private static final int ORDER = 3;
+  private static final int ORDER = 2;
 
   @Override public String getProvider() {
     return LocalFileProvider.TYPE;
@@ -63,10 +63,14 @@ public class LocalTree implements Tree<LocalFile> {
   }
 
   @Override public boolean isCanAddChildren() {
-    return true;
+    return false;
   }
 
   @Override public int getOrder() {
     return ORDER;
+  }
+
+  @Override public boolean isHasChildren() {
+    return true;
   }
 }

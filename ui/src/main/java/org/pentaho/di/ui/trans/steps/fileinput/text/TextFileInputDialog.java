@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -100,18 +99,20 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.ui.trans.step.common.CsvInputAwareImportProgressDialog;
 import org.pentaho.di.ui.trans.step.common.CsvInputAwareStepDialog;
 import org.pentaho.di.ui.trans.step.common.GetFieldsCapableStepDialog;
-import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface,
   GetFieldsCapableStepDialog<TextFileInputMeta>, CsvInputAwareStepDialog {
@@ -209,10 +210,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private Label wlEnclosure;
   private Text wEnclosure;
   private FormData fdlEnclosure, fdEnclosure;
-
-  private Label wlEnclBreaks;
-  private Button wEnclBreaks;
-  private FormData fdlEnclBreaks, fdEnclBreaks;
 
   private Label wlEscape;
   private Text wEscape;
@@ -669,39 +666,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wAccFilenames.addSelectionListener( lsFlags );
 
     // Listen to the Browse... button
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog( null, null );
-        if ( wFilename.getText() != null ) {
-          try {
-            fileChooserDialog.initialFile =
-                KettleVFS.getFileObject( transMeta.environmentSubstitute( wFilename.getText() ) );
-          } catch ( KettleException ex ) {
-            fileChooserDialog.initialFile = null;
-          }
-        }
-        FileObject
-            selectedFile =
-            fileChooserDialog
-                .open( shell, null, "file", new String[] { "*.txt", "*.csv", "*" },
-                    new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-                        BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-                        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) },
-                    VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY );
-        if ( selectedFile != null ) {
-          String file = selectedFile.getName().getURI();
-          if ( !StringUtils.isBlank( file ) ) {
-            file = file.replace( "file://", "" ).replace( "/C:", "C:" );
-          }
-          if ( !file.contains( System.getProperty( "file.separator" ) ) ) {
-            if ( !System.getProperty( "file.separator" ).equals( "/" ) && !Const.isWindows() ) {
-              file = file.replace( "/", System.getProperty( "file.separator" ) );
-            }
-          }
-          wFilename.setText( file );
-        }
-      }
-    } );
+    wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+        new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL }, FilterType.TXT ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -1125,33 +1092,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdEnclosure.right = new FormAttachment( 100, 0 );
     wEnclosure.setLayoutData( fdEnclosure );
 
-    // Allow Enclosure breaks checkbox
-    wlEnclBreaks = new Label( wContentComp, SWT.RIGHT );
-    wlEnclBreaks.setText( BaseMessages.getString( PKG, "TextFileInputDialog.EnclBreaks.Label" ) );
-    props.setLook( wlEnclBreaks );
-    fdlEnclBreaks = new FormData();
-    fdlEnclBreaks.left = new FormAttachment( 0, 0 );
-    fdlEnclBreaks.top = new FormAttachment( wEnclosure, margin );
-    fdlEnclBreaks.right = new FormAttachment( middle, -margin );
-    wlEnclBreaks.setLayoutData( fdlEnclBreaks );
-    wEnclBreaks = new Button( wContentComp, SWT.CHECK );
-    props.setLook( wEnclBreaks );
-    fdEnclBreaks = new FormData();
-    fdEnclBreaks.left = new FormAttachment( middle, 0 );
-    fdEnclBreaks.top = new FormAttachment( wEnclosure, margin );
-    wEnclBreaks.setLayoutData( fdEnclBreaks );
-
-    // Disable until the logic works...
-    wlEnclBreaks.setEnabled( false );
-    wEnclBreaks.setEnabled( false );
-
     // Escape
     wlEscape = new Label( wContentComp, SWT.RIGHT );
     wlEscape.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Escape.Label" ) );
     props.setLook( wlEscape );
     fdlEscape = new FormData();
     fdlEscape.left = new FormAttachment( 0, 0 );
-    fdlEscape.top = new FormAttachment( wEnclBreaks, margin );
+    fdlEscape.top = new FormAttachment( wEnclosure, margin );
     fdlEscape.right = new FormAttachment( middle, -margin );
     wlEscape.setLayoutData( fdlEscape );
     wEscape = new Text( wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -1159,7 +1106,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wEscape.addModifyListener( lsMod );
     fdEscape = new FormData();
     fdEscape.left = new FormAttachment( middle, 0 );
-    fdEscape.top = new FormAttachment( wEnclBreaks, margin );
+    fdEscape.top = new FormAttachment( wEnclosure, margin );
     fdEscape.right = new FormAttachment( 100, 0 );
     wEscape.setLayoutData( fdEscape );
 
@@ -2408,7 +2355,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       if ( insertAtTop ) {
         item = new TableItem( wFields.table, SWT.NONE, i );
       } else {
-        item = getTableItem( field.getName() );
+        item = getTableItem( field.getName(), reloadAllFields );
       }
       if ( !reloadAllFields && !lowerCaseNewFieldNames.contains( field.getName().toLowerCase() ) ) {
         continue;
@@ -2825,30 +2772,22 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         if ( skipHeaders ) {
           // Skip the header lines first if more then one, it helps us position
           if ( meta.content.layoutPaged && meta.content.nrLinesDocHeader > 0 ) {
-            int skipped = 0;
-            String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            while ( line != null && skipped < meta.content.nrLinesDocHeader - 1 ) {
-              skipped++;
-              line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            }
+            TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType,
+              lineStringBuilder,  meta.content.nrLinesDocHeader - 1, meta.getEnclosure(), 0 );
           }
 
           // Skip the header lines first if more then one, it helps us position
           if ( meta.content.header && meta.content.nrHeaderLines > 0 ) {
-            int skipped = 0;
-            String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            while ( line != null && skipped < meta.content.nrHeaderLines - 1 ) {
-              skipped++;
-              line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            }
+            TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType,
+              lineStringBuilder,  meta.content.nrHeaderLines - 1, meta.getEnclosure(), 0 );
           }
         }
 
-        String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+        String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure() );
         while ( line != null && ( linenr < maxnr || nrlines == 0 ) ) {
           retval.add( line );
           linenr++;
-          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure() );
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString( PKG, "TextFileInputDialog.Exception.ErrorGettingFirstLines",

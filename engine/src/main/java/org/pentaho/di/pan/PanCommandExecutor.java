@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
-import org.pentaho.di.base.KettleConstants;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -52,6 +51,8 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.w3c.dom.Document;
 
 import java.io.File;
@@ -74,10 +75,12 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
   }
 
   public Result execute( final Params params ) throws Throwable {
+    return execute( params, null );
+  }
+
+  public Result execute( final Params params, String[] arguments  ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
-
-    Date start = Calendar.getInstance().getTime(); // capture execution start time
 
     logDebug( "Pan.Log.AllocatteNewTrans" );
 
@@ -168,6 +171,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       }
     }
 
+    Date start = Calendar.getInstance().getTime(); // capture execution start time
+
     try {
 
       trans.setLogLevel( getLog().getLogLevel() );
@@ -189,7 +194,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       // allocate & run the required sub-threads
       try {
-        trans.prepareExecution( convert(  KettleConstants.toTransMap( params ) ) );
+        trans.prepareExecution( arguments );
 
         if ( !StringUtils.isEmpty( params.getResultSetStepName() ) ) {
 
@@ -213,6 +218,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       } catch ( KettleException ke ) {
         logDebug( ke.getLocalizedMessage() );
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.UnablePrepareInitTrans" ) );
+        ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.TransformationFinish.id, trans );
         return exitWithStatus( CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() );
       }
 
@@ -261,12 +267,9 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       }
 
     } catch ( KettleException ke ) {
-
       System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.ErrorOccurred", "" + ke.getMessage() ) );
       getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.UnexpectedErrorOccurred", "" + ke.getMessage() ) );
-
       return exitWithStatus( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode() );
-
     } finally {
       if ( repository != null ) {
         repository.disconnect();

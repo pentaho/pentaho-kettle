@@ -165,7 +165,7 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String surrogateKey, String primaryKey, boolean useAutoinc,
-                                    boolean addFieldname, boolean addCr ) {
+                                    boolean addFieldName, boolean addCr ) {
     String fieldDefinitionDdl = "";
 
     String newline = addCr ? Const.CR : "";
@@ -177,7 +177,7 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
 
     boolean isKeyField = fieldname.equalsIgnoreCase( surrogateKey ) || fieldname.equalsIgnoreCase( primaryKey );
 
-    if ( addFieldname ) {
+    if ( addFieldName ) {
       fieldDefinitionDdl += fieldname + " ";
     }
     if ( isKeyField ) {

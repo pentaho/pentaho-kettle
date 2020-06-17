@@ -66,7 +66,7 @@ import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
-
+import org.pentaho.di.trans.steps.fileinput.text.TextFileLine;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
@@ -651,7 +651,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       boolean addPath, boolean addSize, boolean addIsHidden, boolean addLastModificationDate, boolean addUri,
       boolean addRootUri, String shortFilename, String path, boolean hidden, Date modificationDateTime, String uri,
       String rooturi, String extension, long size, final boolean failOnParseError ) throws KettleException {
-    if ( textFileLine == null || textFileLine.line == null ) {
+    if ( textFileLine == null || textFileLine.getLine() == null ) {
       return null;
     }
 
@@ -676,7 +676,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
     try {
       // System.out.println("Convertings line to string ["+line+"]");
-      String[] strings = convertLineToStrings( log, textFileLine.line, info, delimiter, enclosure, escapeCharacter );
+      String[] strings = convertLineToStrings( log, textFileLine.getLine(), info, delimiter, enclosure, escapeCharacter );
       int shiftFields = ( passThruFields == null ? 0 : nrPassThruFields );
       for ( fieldnr = 0; fieldnr < nrfields; fieldnr++ ) {
         TextFileInputField f = info.getInputFields()[fieldnr];
@@ -732,7 +732,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
                   errorText = sb.toString();
                 }
                 if ( errorHandler != null ) {
-                  errorHandler.handleLineError( textFileLine.lineNumber, AbstractFileErrorHandler.NO_PARTS );
+                  errorHandler.handleLineError( textFileLine.getLineNumber(), AbstractFileErrorHandler.NO_PARTS );
                 }
 
                 if ( info.isErrorLineSkipped() ) {
@@ -990,7 +990,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       if ( !data.doneWithHeader && data.pageLinesRead == 0 ) {
         // We are reading header lines
         if ( log.isRowLevel() ) {
-          logRowlevel( "P-HEADER (" + data.headerLinesRead + ") : " + textLine.line );
+          logRowlevel( "P-HEADER (" + data.headerLinesRead + ") : " + textLine.getLine() );
         }
         data.headerLinesRead++;
         if ( data.headerLinesRead >= meta.getNrHeaderLines() ) {
@@ -1005,15 +1005,15 @@ public class TextFileInput extends BaseStep implements StepInterface {
             for ( int i = 0; i < meta.getNrWraps(); i++ ) {
               String extra = "";
               if ( data.lineBuffer.size() > 0 ) {
-                extra = data.lineBuffer.get( 0 ).line;
+                extra = data.lineBuffer.get( 0 ).getLine();
                 data.lineBuffer.remove( 0 );
               }
-              textLine.line += extra;
+              textLine.setLine( textLine.getLine() + extra );
             }
           }
 
           if ( log.isRowLevel() ) {
-            logRowlevel( "P-DATA: " + textLine.line );
+            logRowlevel( "P-DATA: " + textLine.getLine() );
           }
           // Read a normal line on a page of data.
           data.pageLinesRead++;
@@ -1051,7 +1051,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
           if ( meta.hasFooter() && data.footerLinesRead < meta.getNrFooterLines() ) {
             if ( log.isRowLevel() ) {
-              logRowlevel( "P-FOOTER: " + textLine.line );
+              logRowlevel( "P-FOOTER: " + textLine.getLine() );
             }
             data.footerLinesRead++;
           }
@@ -1094,18 +1094,18 @@ public class TextFileInput extends BaseStep implements StepInterface {
             for ( int i = 0; i < meta.getNrWraps(); i++ ) {
               String extra = "";
               if ( data.lineBuffer.size() > 0 ) {
-                extra = data.lineBuffer.get( 0 ).line;
+                extra = data.lineBuffer.get( 0 ).getLine();
                 data.lineBuffer.remove( 0 );
               } else {
                 tryToReadLine( true );
                 if ( !data.lineBuffer.isEmpty() ) {
-                  extra = data.lineBuffer.remove( 0 ).line;
+                  extra = data.lineBuffer.remove( 0 ).getLine();
                 }
               }
-              textLine.line += extra;
+              textLine.setLine( textLine.getLine() + extra );
             }
           }
-          if ( data.filePlayList.isProcessingNeeded( textLine.file, textLine.lineNumber,
+          if ( data.filePlayList.isProcessingNeeded( textLine.getFile(), textLine.getLineNumber(),
               AbstractFileErrorHandler.NO_PARTS ) ) {
             data.lineInFile++;
             long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;

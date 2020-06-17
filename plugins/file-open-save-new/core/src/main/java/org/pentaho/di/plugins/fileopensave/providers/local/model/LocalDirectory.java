@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,7 @@ public class LocalDirectory extends LocalFile implements Directory {
     return DIRECTORY;
   }
 
-  public boolean hasChildren() {
+  public boolean isHasChildren() {
     return hasChildren;
   }
 
@@ -87,6 +87,7 @@ public class LocalDirectory extends LocalFile implements Directory {
     localDirectory.setRoot( LocalFileProvider.NAME );
     localDirectory.setCanAddChildren( true );
     localDirectory.setCanEdit( true );
+    localDirectory.setHasChildren( true );
     return localDirectory;
   }
 }

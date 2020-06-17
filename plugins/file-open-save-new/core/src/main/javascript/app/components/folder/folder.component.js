@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ define([
       onMove: "&",
       onCopy: "&",
       onDelete: "&",
-      showRecents: "<",
       selectedFolder: "<",
       autoExpand: "<"
     },
@@ -68,11 +67,16 @@ define([
     vm.onPaste = onPaste;
     vm.canPaste = canPaste;
     vm.onRightClick = onRightClick;
+    vm.canShowContext = canShowContext;
     vm.onDeleteFolder = onDeleteFolder;
+    vm.onBodyClick = onBodyClick;
+    vm.onKeyDown = onKeyDown;
+    vm.onKeyUp = onKeyUp;
     vm.width = 0;
     vm.state = $state;
     vm.getId = getId;
     vm.targetFolder = null;
+    vm.errorType = 0;
 
     /**
      * Called whenever one-way bindings are updated.
@@ -84,6 +88,33 @@ define([
       if (changes.selectedFolder) {
         _setWidth();
       }
+    }
+
+    function onBodyClick(e, id) {
+      var parentNode = e.target.parentNode;
+      var found = false;
+      while (parentNode) {
+        if (parentNode.id === id) {
+          found = true;
+          break;
+        }
+        parentNode = parentNode.parentNode;
+      }
+      if (!found) {
+        vm.targetFolder = null;
+      }
+    }
+
+    function onKeyDown(event) {
+      if (event.target.tagName !== "INPUT") {
+        if (event.keyCode === 27) {
+          vm.targetFolder = null;
+        }
+      }
+    }
+
+    function onKeyUp(event) {
+      // Ignored
     }
 
     function getTree() {
@@ -103,18 +134,12 @@ define([
      *
      * @param {Object} folder - folder object
      */
-    function openFolder(folder, callback) {
+    function openFolder(folder) {
       folder.open = !folder.open;
-      vm.onOpen({openFolder: folder}).then(function () {
-        _setWidth();
-      });
-    }
-
-    function _setFolder(folder) {
-      vm.width = 0;
-      folder.open = folder.open !== true;
-      if (folder.open === false) {
-        folder.loading = false;
+      if (folder.open) {
+        vm.onOpen({openFolder: folder}).then(function () {
+          _setWidth();
+        });
       }
     }
 
@@ -124,6 +149,7 @@ define([
      * @param {Object} folder - folder object
      */
     function selectFolder(folder) {
+      vm.targetFolder = null;
       vm.onSelect({selectedFolder: folder});
     }
 
@@ -176,21 +202,18 @@ define([
     function compareFolders(first, second) {
       var folder1 = first.value;
       var folder2 = second.value;
-      if (!folder1.path || !folder2.path) {
+      if (!folder1.name || !folder2.name) {
         return 0;
       }
-      var path1 = folder1.path.split("/");
-      var path2 = folder2.path.split("/");
-      var comp = 0;
-      var len = Math.min(path1.length, path2.length);
-      for (var i = 0; i < len; i++) {
-        comp = utils.naturalCompare(path1[i], path2[i]);
-        if (comp !== 0) {
-          return comp;
-        }
+      var name1 = folder1.name;
+      var name2 = folder2.name;
+
+      var comp = utils.naturalCompare(name1, name2);
+      if (comp !== 0) {
+        return comp;
       }
-      if (path1.length !== path2.length) {
-        return path1.length - path2.length;
+      if (name1.length !== name2.length) {
+        return name1.length - name2.length;
       }
       return first.index - second.index;
     }
@@ -235,6 +258,17 @@ define([
 
     function onRightClick(folder) {
       vm.targetFolder = folder;
+    }
+
+    /**
+     * Determines if the context menu should be shown.
+     * @returns {boolean}
+     */
+    function canShowContext( ) {
+      if (vm.targetFolder) {
+        return vm.targetFolder.canEdit || vm.canPaste();
+      }
+      return false;
     }
 
     function onDeleteFolder() {

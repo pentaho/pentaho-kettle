@@ -47,7 +47,7 @@ define([
          */
         function _getInnerWidthCalc() {
           var innerWidth = w[0].innerWidth;
-          var maxInnerWidth = $state.is("save") ? 568 : 503;
+          var maxInnerWidth = ($state.is("save") || $state.is("saveTo") || $state.is("saveToFileFolder")) ? 568 : 503;
           if (innerWidth < maxInnerWidth) {
             return (440 - (maxInnerWidth - innerWidth));
           }

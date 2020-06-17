@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,10 +58,12 @@ public class LifecyclePluginType extends BasePluginType implements PluginTypeInt
   /**
    * Scan & register internal step plugins
    */
+  @Override
   protected void registerNatives() throws KettlePluginException {
     // Up until now, we have no natives.
   }
 
+  @Override
   protected void registerXmlPlugins() throws KettlePluginException {
     // Not supported yet.
   }

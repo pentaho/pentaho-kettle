@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,9 +47,17 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   private static final int VARCHAR_LIMIT = 65_535;
 
+  private static String driverClass = "";
+
   private static final Set<String>
-    SHORT_MESSAGE_EXCEPTIONS =
-    Sets.newHashSet( "com.mysql.jdbc.PacketTooBigException", "com.mysql.jdbc.MysqlDataTruncation" );
+    shortMessageExceptions =
+    Sets.newHashSet( "com.mysql.jdbc.PacketTooBigException", "com.mysql.jdbc.MysqlDataTruncation",
+      "com.mysql.cj.jdbc.exceptions.PacketTooBigException",
+      "com.mysql.cj.jdbc.exceptions.MysqlDataTruncation" );
+
+  public MySQLDatabaseMeta() {
+    determineDriverClass();
+  }
 
   @Override public int[] getAccessTypeList() {
     return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -92,19 +100,38 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   /**
    * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
    */
-  @Override public int getNotFoundTK( boolean use_autoinc ) {
-    if ( supportsAutoInc() && use_autoinc ) {
+  @Override public int getNotFoundTK( boolean useAutoinc ) {
+    if ( supportsAutoInc() && useAutoinc ) {
       return 1;
     }
-    return super.getNotFoundTK( use_autoinc );
+    return super.getNotFoundTK( useAutoinc );
   }
 
+  /*
+  * Fix for BACKLOG-33475 Upgrade bulkload support to include MySQL 8.0
+  * Change necessary since the jdbc driver for MySQL 5.7 and 8.0 package name changed from
+  * org.gjt.mm.mysql.Driver to com.mysql.cj.jdbc.Driver
+  * */
   @Override public String getDriverClass() {
+    String driver = null;
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
+      driver = "sun.jdbc.odbc.JdbcOdbcDriver";
     } else {
-      return "org.gjt.mm.mysql.Driver";
+      driver = determineDriverClass();
     }
+    return driver;
+  }
+
+  private static String determineDriverClass() {
+    if ( driverClass.isEmpty() ) {
+      try {
+        driverClass = "com.mysql.cj.jdbc.Driver";
+        Class.forName( driverClass );
+      } catch ( ClassNotFoundException e ) {
+        driverClass = "org.gjt.mm.mysql.Driver";
+      }
+    }
+    return driverClass;
   }
 
   @Override public String getURL( String hostname, String port, String databaseName ) {
@@ -170,7 +197,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    *   The column defined as a value
    * @param tk
    *   the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *   whether or not this field uses auto increment
    * @param pk
    *   the name of the primary key field
@@ -178,9 +205,9 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    *   whether or not to add a semi-colon behind the statement.
    * @return the SQL statement to add a column to the specified table
    */
-  @Override public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  @Override public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+    return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, useAutoinc, true, false );
   }
 
   /**
@@ -192,7 +219,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    *   The column defined as a value
    * @param tk
    *   the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *   whether or not this field uses auto increment
    * @param pk
    *   the name of the primary key field
@@ -201,12 +228,12 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    * @return the SQL statement to modify a column in the specified table
    */
   @Override public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk,
-    boolean use_autoinc, String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+                                                    boolean useAutoinc, String pk, boolean semicolon ) {
+    return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, useAutoinc, true, false );
   }
 
-  @Override public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-    boolean add_fieldname, boolean add_cr ) {
+  @Override public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean useAutoinc,
+                                              boolean addFieldName, boolean addCr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -216,7 +243,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     int length = v.getLength();
     int precision = v.getPrecision();
 
-    if ( add_fieldname ) {
+    if ( addFieldName ) {
       retval += fieldname + " ";
     }
 
@@ -240,7 +267,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
           fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
-          if ( use_autoinc ) {
+          if ( useAutoinc ) {
             retval += "BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY";
           } else {
             retval += "BIGINT NOT NULL PRIMARY KEY";
@@ -300,7 +327,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         break;
     }
 
-    if ( add_cr ) {
+    if ( addCr ) {
       retval += Const.CR;
     }
 
@@ -469,7 +496,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override public boolean fullExceptionLog( Exception e ) {
     Throwable cause = ( e == null ? null : e.getCause() );
-    return !( cause != null && SHORT_MESSAGE_EXCEPTIONS.contains( cause.getClass().getName() ) );
+    return !( cause != null && shortMessageExceptions.contains( cause.getClass().getName() ) );
   }
 
   @Override

@@ -1,4 +1,5 @@
 <resize-folders/>
+<key />
 <script type="text/ng-template" id="tree_item.html">
   <div ng-if="!folder.hidden"
       class="folder"
@@ -7,19 +8,16 @@
       ng-model="folder"
       on-drop="vm.onDrop(from, to)"
       ng-click="vm.selectFolder(folder)"
-      ng-dblclick="vm.selectAndOpenFolder(folder)"
-      ng-class="{recents: folder.provider === 'recents',
-                 local: folder.provider === 'local' && !folder.root,
-                 repository: folder.provider ==='repository' && !folder.root,
-                 environments: folder.provider ==='vfs' && !folder.root,
+      ng-class="!folder.root ? [folder.provider, {selected: folder === vm.selectedFolder, opened: folder.open === true}] : {
                  home: folder.path === '/home' && folder.provider === 'repository',
                  public: folder.path === '/public' && folder.provider === 'repository',
                  selected: folder === vm.selectedFolder,
+                 highlighted: folder === vm.targetFolder,
                  empty: folder.hasChildren === false,
                  opened: folder.open === true}"
       ng-style="{paddingLeft: indent + 'px', width: vm.width === 0 ? 'auto' : vm.width - indent + 'px'}">
     <div class="folderArrowWrapper" ng-click="vm.openFolder(folder); $event.stopPropagation();">
-      <div class="folderArrow"></div>
+      <div class="folderArrow" ng-if="folder.hasChildren"></div>
     </div>
     <div class="folderImage"
         ng-class="{loading: folder.loading}"></div>
@@ -34,10 +32,10 @@
     ng-if="folder.type=='folder'"></div>
   </div>
 </script>
-<div ng-repeat="folder in vm.getTree() | orderBy: 'order'" ng-include="'tree_item.html'" ng-init="indent=0" ng-if="folder.name != '' && !folder.hidden"></div>
-<div id="foldersFolderContext" class="context-menu" ng-show="vm.targetFolder.canDelete || vm.canPaste()">
+<div id="folders" ng-body-click="vm.onBodyClick(e, id)" ng-repeat="folder in vm.getTree() | orderBy: 'order'" ng-include="'tree_item.html'" ng-init="indent=0" ng-if="folder.name != '' && !folder.hidden"></div>
+<div id="foldersFolderContext" class="context-menu" ng-show="vm.canShowContext()">
   <ul>
-    <li ng-click="vm.onDeleteFolder()" ng-show="vm.targetFolder.canDelete">Delete</li>
+    <li ng-click="vm.onDeleteFolder()" ng-show="vm.targetFolder.canEdit">Delete</li>
     <li ng-click="vm.onPaste()" ng-show="vm.canPaste()">Paste</li>
   </ul>
 </div>

@@ -246,6 +246,7 @@ import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.SimpleMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.dialog.SubjectDataBrowserDialog;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.OsHelper;
@@ -1156,6 +1157,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } else {
       // Cancel - don't close tabs and don't disconnect from repo
       return false;
+    }
+  }
+
+  /*
+   Fix for PDI-18593 Hadoop cluster items not refreshed when switching from local<->repo.
+   Updates the tree on repository connection or disconnection without closing active Jobs or Transformations.
+   */
+  public void updateTreeForActiveAbstractMetas() {
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      Object managedObject = entry.getObject().getManagedObject();
+      if ( managedObject instanceof AbstractMeta ) {
+        if ( managedObject instanceof TransMeta ) {
+          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_TRANSFORMATIONS, props.isOnlyActiveFileShownInTree() );
+        }
+        if ( managedObject instanceof JobMeta ) {
+          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_JOBS, props.isOnlyActiveFileShownInTree() );
+        }
+        selectionTreeManager.show( (AbstractMeta) managedObject );
+        refreshTree( (AbstractMeta) managedObject );
+      }
     }
   }
 
@@ -4254,6 +4275,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         setShellText();
         SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
         enableMenus();
+        updateTreeForActiveAbstractMetas();
       }
     }
   }
@@ -4569,8 +4591,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void openFileNew() throws Exception {
     FileDialogOperation fileDialogOperation =
       getFileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
+    fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
     if ( !Utils.isEmpty( lastFileOpened ) ) {
-      String folder = lastFileOpened.substring( 0, lastFileOpened.lastIndexOf( "/" ) );
+      // Test for Windows vs Linux/Remote parent path
+      int parentIndex = lastFileOpened.lastIndexOf( '\\' );
+      if ( parentIndex == -1 ) {
+        parentIndex = lastFileOpened.lastIndexOf( '/' );
+      }
+      String folder = lastFileOpened.substring( 0, parentIndex );
       fileDialogOperation.setPath( folder );
       fileDialogOperation.setConnection( lastFileOpenedConnection );
       fileDialogOperation.setProvider( lastFileOpenedProvider );
@@ -4606,6 +4634,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       getFileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
     fileDialogOperation.setFileType( fileType );
     fileDialogOperation.setFilename( meta.getName() );
+    fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
     if ( rep != null && meta.getRepositoryDirectory() != null ) {
       fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
     } else {
@@ -4626,15 +4655,21 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       if ( fileDialogOperation.getRepositoryObject() != null ) {
         RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
-        final RepositoryDirectoryInterface oldDir = meta.getRepositoryDirectory();
-        final String oldName = meta.getName();
+        final RepositoryDirectoryInterface originalDir = meta.getRepositoryDirectory();
+        final String originalName = meta.getName();
+        final ObjectId originalObjectId = meta.getObjectId();
+        final String originalFilename = meta.getFilename();
+        meta.setObjectId( null );
+        meta.setFilename( null );
         meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
         meta.setName( repositoryObject.getName() );
         saved = saveToRepositoryConfirmed( meta );
         if ( !saved ) {
           // if the object wasn't successfully saved, set the name and directory back to their original values
-          meta.setRepositoryDirectory( oldDir );
-          meta.setName( oldName );
+          meta.setRepositoryDirectory( originalDir );
+          meta.setName( originalName );
+          meta.setObjectId( originalObjectId );
+          meta.setFilename( originalFilename );
         }
       } else if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
         String filename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -174,6 +175,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     // Here is where we start to do the real work...
     //
     if ( r == null ) { // no more input to be expected... (or none received in the first place)
+
+      updateValueMeta();
       handleLastOfGroup();
 
       setOutputDone();
@@ -233,6 +236,21 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
         }
       }
       putRow( data.outputRowMeta, outputRowData );
+    }
+  }
+
+  @VisibleForTesting
+  void updateValueMeta() throws KettleException {
+
+    List<ValueMetaInterface> outputValueMetaList = data.outputRowMeta.getValueMetaList();
+    List<ValueMetaInterface> aggMetaValueMetaList = data.aggMeta.getValueMetaList();
+    for ( int outputIndex = 0; outputIndex < outputValueMetaList.size(); ++outputIndex ) {
+      for ( int aggIndex = 0; aggIndex < aggMetaValueMetaList.size(); ++aggIndex ) {
+        if ( aggMetaValueMetaList.get( aggIndex ).getName().equals( outputValueMetaList.get( outputIndex ).getName() ) ) {
+          data.outputRowMeta.removeValueMeta(  outputValueMetaList.get( outputIndex ).getName() );
+          data.outputRowMeta.addValueMeta( outputIndex,  aggMetaValueMetaList.get( aggIndex ) );
+        }
+      }
     }
   }
 

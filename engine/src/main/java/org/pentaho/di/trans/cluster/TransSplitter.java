@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1388,7 +1388,8 @@ public class TransSplitter {
       // if some of steps is expected to run on master partitioned, that is the case
       // when partition schema should exists as 'local' partition schema instead of slave's remote one
       // see PDI-12766
-      masterTransMeta.setPartitionSchemas( originalTransformation.getPartitionSchemas() );
+      //NOTE: PDI-18333 keep newly created partitionSchemas and add back in original per PDI-12766
+      masterTransMeta.addOrReplacePartitionSchema( originalTransformation.getPartitionSchemas() );
 
       masterTransMeta.setSlaveStepCopyPartitionDistribution( slaveStepCopyPartitionDistribution );
       if ( encrypt ) {
@@ -1474,11 +1475,6 @@ public class TransSplitter {
       //
       copy.setCopies( 1 );
     }
-
-    // Remove the clustering information on the slave transformation step
-    // We don't need it anymore, it only confuses.
-    //
-    copy.setClusterSchema( null );
 
     transMeta.addStep( copy );
     return copy;

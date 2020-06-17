@@ -149,6 +149,24 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Prevents Kettle from converting null strings to empty strings when KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL is set to "Y".</description>
+    <variable>KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Prevent Kettle from yielding null as the value of an empty value.</description>
+    <variable>KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Cause the "Get XML data" step to yield null values on missing elements and empty values on empty elements when set to "Y".</description>
+    <variable>KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>The maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all rows
       (default)
     </description>
@@ -180,6 +198,12 @@
     <description>The maximum number of logging registry entries kept in memory for logging purposes.</description>
     <variable>KETTLE_MAX_LOGGING_REGISTRY_SIZE</variable>
     <default-value>10000</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>The timeout interval for the logging registry purge timer which cleanups of registry entries (in msecs).</description>
+    <variable>KETTLE_LOGGING_REGISTRY_PURGE_TIMEOUT</variable>
+    <default-value>60000</default-value>
   </kettle-variable>
 
   <kettle-variable>
@@ -440,6 +464,12 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Set this variable to a storage file size to configure the s3 multi part upload part size.</description>
+    <variable>s3.vfs.partSize</variable>
+    <default-value>5MB</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>Set this variable to restore the directory loading behavior of the repository as it was before 6.1. Changing this to false will make repository loading more expensive</description>
     <variable>KETTLE_LAZY_REPOSITORY</variable>
     <default-value>true</default-value>
@@ -510,6 +540,43 @@
     <description>This environment variable is used by streaming consumer steps to limit the total of concurrent batches across transformations. Leave 0 for unlimited.</description>
     <variable>SHARED_STREAMING_BATCH_POOL_SIZE</variable>
     <default-value>0</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to specify a location used to deploy a shim driver into PDI.</description>
+    <variable>SHIM_DRIVER_DEPLOYMENT_LOCATION</variable>
+    <default-value>DEFAULT</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to specify how many attempts before failing to read an XML from within a Zip file while multy-thread execution and using XMLHandler.</description>
+    <variable>KETTLE_RETRY_OPEN_XML_STREAM</variable>
+    <default-value>2</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to define how Timestamp should be converted to a number and vice-versa.
+      Possible values: "LEGACY" (default), "MILLISECONDS", "NANOSECONDS".</description>
+    <variable>KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE</variable>
+    <default-value>LEGACY</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to define the minimum PUC user password length. The default password length is 0.</description>
+    <variable>PUC_USER_PASSWORD_LENGTH</variable>
+    <default-value>0</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to require the use of at least one special character in the PUC user password. This is set to false by default.</description>
+    <variable>PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to enable the checking of zip bomb. This is set to false by default.</description>
+    <variable>KETTLE_XLSX_ZIP_BOMB_CHECK</variable>
+    <default-value>false</default-value>
   </kettle-variable>
 </kettle-variables>
 

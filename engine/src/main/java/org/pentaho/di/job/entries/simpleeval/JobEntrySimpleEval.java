@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -527,7 +527,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
               // make the empty value evaluate to true when compared to a not set variable
               if ( Utils.isEmpty( realCompareValue ) ) {
                 String variableName = StringUtil.getVariableName( variablename );
-                if ( System.getProperty( variableName ) == null ) {
+                if ( getVariable( variableName ) == null ) {
                   success = true;
                 }
               }

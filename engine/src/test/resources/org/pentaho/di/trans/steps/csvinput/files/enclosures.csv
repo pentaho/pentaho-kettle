@@ -1,0 +1,4 @@
+Field 1;Field 2;Field 3
+1;'This line is un-even enclosure-wise because I''m using an escaped enclosure';a
+2;'Test isn''t even
+here';b

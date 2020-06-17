@@ -14,10 +14,12 @@
   "dependencies": {
     "angular": "${angular.version}",
     "angular-animate": "${angular.version}",
-    "angular-i18n": "${angular-i18n.version}",
-    "angular-ui-router": "${angular-ui-router.version}",
+    "angular-i18n": "${angular.version}",
+    "@uirouter/core": "${uirouter-core.version}",
+    "@uirouter/angularjs": "${uirouter-angularjs.version}",
     "require-css": "${require-css.version}",
     "requirejs-text": "${requirejs-text.version}",
+    "dojo": "${dojo.version}",
     "jquery": "${jquery.version}"
   },
   "config": {

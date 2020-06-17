@@ -47,6 +47,7 @@ import org.pentaho.di.trans.ael.adapters.TransMetaConverter;
 import org.pentaho.di.trans.ael.websocket.exception.HandlerRegistrationException;
 import org.pentaho.di.trans.ael.websocket.exception.MessageEventHandlerExecutionException;
 import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
+import org.pentaho.di.trans.ael.websocket.handler.StopMessageEventHandler;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
@@ -81,7 +82,6 @@ public class TransWebSocketEngineAdapter extends Trans {
   private static final String TRANSFORMATION_LOG = "TRANSFORMATION_LOG_TRANS_WEBSOCK";
   private static final String TRANSFORMATION_STATUS = "TRANSFORMATION_STATUS_TRANS_WEBSOCK";
   private static final String TRANSFORMATION_ERROR = "TRANSFORMATION_ERROR_TRANS_WEBSOCK";
-  private static final String TRANSFORMATION_STOP = "TRANSFORMATION_STOP_TRANS_WEBSOCK";
 
   //session monitor properties
   private static final int SLEEP_TIME_MS = 10000;
@@ -124,7 +124,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     this.ssl = ssl;
   }
 
-  DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
+  public DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
     try {
       if ( daemonMessagesClientEndpoint == null ) {
         daemonMessagesClientEndpoint = new DaemonMessagesClientEndpoint( host, port, ssl, messageEventService );
@@ -355,39 +355,13 @@ public class TransWebSocketEngineAdapter extends Trans {
       } );
 
     messageEventService
-      .addHandler( Util.getStopMessage(), new MessageEventHandler() {
-        @Override
-        public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          StopMessage stopMessage = (StopMessage) message;
-
-          if ( stopMessage.sessionWasKilled() || stopMessage.operationFailed() ) {
-            getLogChannel().logError( "Finalizing execution: " + stopMessage.getReasonPhrase() );
-            errors.incrementAndGet();
-          } else {
-            getLogChannel().logBasic( "Finalizing execution: " + stopMessage.getReasonPhrase() );
-          }
-
-          if ( !cancelling ) {
-            finishProcess( false );
-          }
-          try {
-            getDaemonEndpoint().close( stopMessage.getReasonPhrase() );
-          } catch ( KettleException e ) {
-            getLogChannel().logError( "Error finalizing", e );
-          }
-
-          //let's shutdown the session monitor thread
-          closeSessionMonitor();
-          // Signal for the the waitUntilFinished blocker...
-          transFinishedSignal.countDown();
-        }
-
-        @Override
-        public String getIdentifier() {
-          return TRANSFORMATION_STOP;
-        }
-      } );
-
+      .addHandler( Util.getStopMessage(), new StopMessageEventHandler(
+        getLogChannel(),
+        errors,
+        transFinishedSignal,
+        this,
+        cancelling
+      ) );
   }
 
   private List<StepMetaDataCombi> opsToSteps() {
@@ -476,13 +450,14 @@ public class TransWebSocketEngineAdapter extends Trans {
                 + MAX_TEST_FAILED + ")." );
         } catch ( InterruptedException e ) {
           getLogChannel().logDebug( "Session Monitor was interrupted." );
+          Thread.currentThread().interrupt();
         }
       }
       closeSessionMonitor();
     } );
   }
 
-  private void closeSessionMonitor() {
+  public void closeSessionMonitor() {
     if ( sessionMonitor != null && !sessionMonitor.isShutdown() ) {
       try {
         getLogChannel().logDebug( "Shutting down the Session Monitor." );
@@ -523,7 +498,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     return toRet;
   }
 
-  private void finishProcess( boolean emitToAllSteps ) {
+  public void finishProcess( boolean emitToAllSteps ) {
     setFinished( true );
     if ( emitToAllSteps ) {
       // emit error on all steps

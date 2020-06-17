@@ -159,6 +159,9 @@ public class TransExecutorUnitTest {
     StepMeta stepMeta = mockStepAndMapItToRowSet( "stepMetaMock", rowSet );
     meta.setOutputRowsSourceStepMeta( stepMeta );
 
+    Trans parent = new Trans();
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
+
     executor.init( meta, data );
     executor.setInputRowMeta( new RowMeta() );
     assertTrue( "Passing one line at first time", executor.processRow( meta, data ) );
@@ -218,6 +221,9 @@ public class TransExecutorUnitTest {
     StepMeta stepMeta = mockStepAndMapItToRowSet( "stepMetaMock", rowSet );
     meta.setExecutionResultTargetStepMeta( stepMeta );
 
+    Trans parent = new Trans();
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
+
     executor.init( meta, data );
     executor.setInputRowMeta( new RowMeta() );
     assertTrue( "Passing one line at first time", executor.processRow( meta, data ) );
@@ -251,6 +257,10 @@ public class TransExecutorUnitTest {
     prepareMultipleRowsForExecutor();
 
     meta.setGroupField( "groupField" );
+
+    Trans parent = new Trans();
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
+
     executor.init( meta, data );
 
     RowMetaInterface rowMeta = new RowMeta();
@@ -307,6 +317,9 @@ public class TransExecutorUnitTest {
     executor.processRow( meta, data ); // 4th row
     // first 4 rows should be added to the same group
     assertEquals( 4, data.groupBuffer.size() );
+
+    Trans parent = new Trans();
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
 
     executor.processRow( meta, data ); // 5th row
     // once the 5th row is processed, the transformation executor should be triggered
@@ -534,6 +547,9 @@ public class TransExecutorUnitTest {
 
     internalResult.setSafeStop( true );
 
+    Trans parent = Mockito.spy( new Trans() );
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
+
     executor.init( meta, data );
     executor.setInputRowMeta( new RowMeta() );
     assertTrue( executor.processRow( meta, data ) );
@@ -549,6 +565,9 @@ public class TransExecutorUnitTest {
 
     internalResult.setSafeStop( false );
     internalResult.setNrErrors( 1 );
+
+    Trans parent = Mockito.spy( new Trans() );
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
 
     executor.init( meta, data );
     executor.setInputRowMeta( new RowMeta() );
@@ -573,6 +592,9 @@ public class TransExecutorUnitTest {
   @Test
   public void testGetLastIncomingFieldValuesWithData() throws KettleException {
     prepareMultipleRowsForExecutor();
+
+    Trans parent = new Trans();
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
 
     meta.setGroupField( "groupField" );
     executor.init( meta, data );
@@ -603,4 +625,59 @@ public class TransExecutorUnitTest {
     verify( executor, times( 2 ) ).getLastIncomingFieldValues();
 
   }
+
+  @Test
+  //PDI-18191
+  public void testInitializeVariablesFromTransInheritingAllVariables() throws KettleException {
+    String childValue = "childValue";
+    String parentValue = "parentValue";
+    String variableName = "v_name";
+
+    Trans parent = new Trans();
+    parent.setVariable( variableName, parentValue );
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
+
+    meta.getParameters().setInheritingAllVariables( true );
+
+    executor.init( meta, data );
+
+    Trans internalTrans = executor.createInternalTrans();
+    internalTrans.setVariable( variableName, childValue );
+    executor.getData().setExecutorTrans( internalTrans );
+
+    executor.initializeVariablesFromParent( internalTrans );
+
+    // if InheritingAllVariables then transExecutor can initialize variables from parent trans
+    Assert.assertEquals( parentValue, internalTrans.getVariable( variableName ) );
+
+  }
+
+  @Test
+  //PDI-18191
+  public void testInitializeVariablesFromTransNotInheritingAllVariables() throws KettleException {
+    String childValue = "childValue";
+    String parentValue = "parentValue";
+    String variableName = "v_name";
+
+    Trans parent = new Trans();
+    parent.setVariable( "v_name", parentValue );
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
+
+    meta.getParameters().setInheritingAllVariables( false );
+
+    executor.init( meta, data );
+
+    Trans internalTrans = executor.createInternalTrans();
+    internalTrans.setVariable( variableName, childValue );
+    executor.getData().setExecutorTrans( internalTrans );
+
+    executor.initializeVariablesFromParent( internalTrans );
+
+    // if not InheritingAllVariables then transExecutor can NOT initialize variables from parent trans
+    Assert.assertEquals( childValue, internalTrans.getVariable( variableName ) );
+
+  }
+
+
+
 }

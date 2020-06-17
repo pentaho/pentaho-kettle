@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,10 @@
 
 package org.pentaho.di.repository;
 
+import java.net.URI;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -100,6 +102,13 @@ public interface Repository {
   public void disconnect();
 
   public boolean isConnected();
+
+  /**
+   * Returns the URI of the repository location, if defined by the implementation
+   */
+  default Optional<URI> getUri() {
+    return Optional.empty();
+  }
 
   /**
    * Initialize the repository with the repository metadata and user information.
@@ -396,8 +405,6 @@ public interface Repository {
   public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionLabel ) throws KettleException;
 
   public ObjectId[] getPartitionSchemaIDs( boolean includeDeleted ) throws KettleException;
-
-  // public ObjectId[] getPartitionIDs(ObjectId id_partition_schema) throws KettleException;
 
   public String[] getPartitionSchemaNames( boolean includeDeleted ) throws KettleException;
 

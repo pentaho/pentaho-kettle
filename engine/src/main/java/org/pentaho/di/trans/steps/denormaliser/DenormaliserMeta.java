@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -196,8 +196,12 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface 
       try {
         ValueMetaInterface target =
           ValueMetaFactory.createValueMeta( field.getTargetName(), field.getTargetType() );
-        target.setLength( field.getTargetLength(), field.getTargetPrecision() );
         target.setOrigin( name );
+        target.setConversionMask( field.getTargetFormat() );
+        target.setLength( field.getTargetLength(), field.getTargetPrecision() );
+        target.setCurrencySymbol( field.getTargetCurrencySymbol() );
+        target.setDecimalSymbol( field.getTargetDecimalSymbol() );
+        target.setGroupingSymbol( field.getTargetGroupingSymbol() );
         row.addValueMeta( target );
       } catch ( Exception e ) {
         throw new KettleStepException( e );

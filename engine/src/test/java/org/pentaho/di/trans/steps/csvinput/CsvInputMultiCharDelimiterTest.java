@@ -124,6 +124,9 @@ public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
   CsvInputMeta createMeta( File file, TextFileInputField[] fields ) {
     CsvInputMeta meta = super.createMeta( file, fields );
     meta.setDelimiter( "delimiter" );
+    //Buffer cannot be less than ( delimiter length - 1) * 2 ) due to buffer resize logic in readBufferFromFile method
+    //This buffer size causes special case where the delimiter spans past the end of the buffer.
+    meta.setBufferSize( "16" );
     return meta;
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,4 +33,13 @@ public interface Tree<T extends Entity> extends Providerable {
   void addChild( T child );
   boolean isCanAddChildren();
   int getOrder();
+  default boolean isHasChildren() {
+    return true;
+  }
+  default boolean isCanEdit() {
+    return false;
+  }
+  default boolean isCanDelete() {
+    return false;
+  }
 }

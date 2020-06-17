@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -262,14 +262,13 @@ public class HTTP extends BaseStep implements StepInterface {
       }
 
       uriBuilder = new URIBuilder( baseUrl ); // the base URL with variable substitution
-      List<NameValuePair> queryParams = uriBuilder.getQueryParams();
 
       for ( int i = 0; i < data.argnrs.length; i++ ) {
         String key = meta.getArgumentParameter()[ i ];
         String value = outputRowMeta.getString( row, data.argnrs[ i ] );
-        BasicNameValuePair basicNameValuePair = new BasicNameValuePair( key, value );
-        queryParams.add( basicNameValuePair );
+        uriBuilder.addParameter( key, value );
       }
+      List<NameValuePair> queryParams = uriBuilder.getQueryParams();
       if ( !queryParams.isEmpty() ) {
         uriBuilder.setParameters( queryParams );
       }

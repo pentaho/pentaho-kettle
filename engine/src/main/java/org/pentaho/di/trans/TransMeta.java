@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -4721,8 +4721,9 @@ public class TransMeta extends AbstractMeta
             .getString( PKG, "TransMeta.Monitor.CheckingForDatabaseUnfriendlyCharactersInFieldNamesTask.Title" ) );
       }
       if ( values.size() > 0 ) {
-        for ( ValueMetaInterface v : values.keySet() ) {
-          String message = values.get( v );
+        for ( Map.Entry<ValueMetaInterface, String> entry : values.entrySet() ) {
+          String message = entry.getValue();
+          ValueMetaInterface v = entry.getKey();
           CheckResult
               cr =
               new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages
@@ -5538,6 +5539,18 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
+   * Add a new partition schemas to the transformation if that didn't exist yet. Otherwise, replace it.
+   *
+   * @param partitionSchemas
+   *          List of partition schema to be added.
+   */
+  public void addOrReplacePartitionSchema( List<PartitionSchema> partitionSchemas ) {
+    for ( PartitionSchema partitionSchema : partitionSchemas ) {
+      addOrReplacePartitionSchema( partitionSchema );
+    }
+  }
+
+  /**
    * Add a new cluster schema to the transformation if that didn't exist yet. Otherwise, replace it.
    *
    * @param clusterSchema
@@ -5885,9 +5898,8 @@ public class TransMeta extends AbstractMeta
         //
         Map<String, String> directoryMap = resourceNamingInterface.getDirectoryMap();
         if ( directoryMap != null ) {
-          for ( String directory : directoryMap.keySet() ) {
-            String parameterName = directoryMap.get( directory );
-            transMeta.addParameterDefinition( parameterName, directory, "Data file path discovered during export" );
+          for ( Map.Entry<String, String> entry : directoryMap.entrySet() ) {
+            transMeta.addParameterDefinition( entry.getValue(), entry.getKey(), "Data file path discovered during export" );
           }
         }
 

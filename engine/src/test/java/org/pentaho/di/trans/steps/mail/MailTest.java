@@ -22,12 +22,20 @@
 package org.pentaho.di.trans.steps.mail;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import javax.activation.DataHandler;
 import javax.activation.URLDataSource;
@@ -37,9 +45,17 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
 public class MailTest {
@@ -57,11 +73,43 @@ public class MailTest {
   private static String wasFileEncoding;
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
+  private static final String SMTP_HOST = "smtp_host";
+  private static final String SMTP_AUTH_USER = "smtp_auth_user";
+  private static final String SMTP_AUTH_PASSWORD = "smtp_auth_password";
+  private static final String EMAIL_RECIPIENT = "email_recipient";
+  private static final String EMAIL_SENDER_NAME = "email_sender_name";
+  private static final String EMAIL_SENDER_ADDRESS = "email_sender_address";
+  private static final String EMAIL_SUBJECT = "email_subject";
+  private static final String EMAIL_BODY = "email_body";
+  private static final String SMTP_PORT = "smtp_port";
+
+  private static final String SMTP_HOST_VALUE = "smtp.gmail.com";
+  private static final String SMTP_PORT_VALUE = "587";
+  private static final String EMAIL_SENDER_ADDRESS_VALUE = "sender@mail.com";
+  private static final String EMAIL_RECIPIENT_VALUE = "destination@mail.com";
+  private static final String EMAIL_SENDER_NAME_VALUE = "Leonardo";
+  private static final String SMTP_AUTH_USER_VALUE = "sender@mail.com";
+  private static final String SMTP_AUTH_PASSWORD_ENCRYPTED_VALUE = "Encrypted 2be98afc86aa7f2e4cb79bf67db80bbc3";
+  private static final String SMTP_AUTH_PASSWORD_DECRYPTED_VALUE = "qwerty";
+  private static final String EMAIL_SUBJECT_VALUE = "Test Transform Auth Email";
+  private static final String EMAIL_BODY_VALUE = "This is a test email";
+
+  private StepMockHelper<MailMeta, MailData> stepMockHelper;
+
   @BeforeClass
   public static void setupBeforeClass() throws KettleException {
     wasMailMimeCharset = System.getProperty( MAIL_CHARSET_KEY );
     wasFileEncoding = System.getProperty( FILE_ENCODING_KEY );
     KettleClientEnvironment.init();
+  }
+
+  @Before
+  public void setup() {
+    stepMockHelper =
+      new StepMockHelper<MailMeta, MailData>( "Test Mail", MailMeta.class, MailData.class );
+    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( stepMockHelper.logChannelInterface );
+    when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
   @After
@@ -140,5 +188,70 @@ public class MailTest {
     message.setContent( multipart );
 
     return message;
+  }
+
+  @Test
+  public void testSendMailWithPlainPassword( ) throws Exception {
+    testSendMailWithPassword( SMTP_AUTH_PASSWORD_DECRYPTED_VALUE );
+  }
+
+  @Test
+  public void testSendMailWithEncryptedPassword( ) throws Exception {
+    testSendMailWithPassword( SMTP_AUTH_PASSWORD_ENCRYPTED_VALUE );
+  }
+
+  public void testSendMailWithPassword( String authPassword ) throws Exception {
+    Mail step =
+      spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans ) );
+    step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+    step.setParentVariableSpace( new Variables() );
+
+    RowMeta rowMeta = new RowMeta();
+    ValueMetaInterface valueMeta = new ValueMetaString( SMTP_HOST );
+    rowMeta.addValueMeta( valueMeta );
+    valueMeta = new ValueMetaString( SMTP_AUTH_USER );
+    rowMeta.addValueMeta( valueMeta );
+    valueMeta = new ValueMetaString( SMTP_AUTH_PASSWORD );
+    rowMeta.addValueMeta( valueMeta );
+    valueMeta = new ValueMetaString( EMAIL_RECIPIENT );
+    rowMeta.addValueMeta( valueMeta );
+    valueMeta = new ValueMetaString( EMAIL_SENDER_NAME );
+    rowMeta.addValueMeta( valueMeta );
+    valueMeta = new ValueMetaString( EMAIL_SENDER_ADDRESS );
+    rowMeta.addValueMeta( valueMeta );
+    valueMeta = new ValueMetaString( EMAIL_SUBJECT );
+    rowMeta.addValueMeta( valueMeta );
+    valueMeta = new ValueMetaString( EMAIL_BODY );
+    rowMeta.addValueMeta( valueMeta );
+    valueMeta = new ValueMetaString( SMTP_PORT );
+    rowMeta.addValueMeta( valueMeta );
+    step.setInputRowMeta( rowMeta );
+
+    String[] strings = new String[] {
+      SMTP_HOST_VALUE, SMTP_AUTH_USER_VALUE,
+      authPassword, EMAIL_RECIPIENT_VALUE,
+      EMAIL_SENDER_NAME_VALUE, EMAIL_SENDER_ADDRESS_VALUE,
+      EMAIL_SUBJECT_VALUE, EMAIL_BODY_VALUE,
+      SMTP_PORT_VALUE
+    };
+    RowSet inputRowSet = stepMockHelper.getMockInputRowSet( strings );
+    when( inputRowSet.getRowMeta() ).thenReturn( rowMeta );
+    step.setInputRowSets( Collections.singletonList( inputRowSet ) );
+
+    when( stepMockHelper.processRowsStepMetaInterface.getDestination() ).thenReturn( EMAIL_RECIPIENT );
+    when( stepMockHelper.processRowsStepMetaInterface.getReplyAddress() ).thenReturn( EMAIL_SENDER_NAME );
+    when( stepMockHelper.processRowsStepMetaInterface.getServer() ).thenReturn( SMTP_HOST );
+    when( stepMockHelper.processRowsStepMetaInterface.isUsingAuthentication() ).thenReturn( true );
+    when( stepMockHelper.processRowsStepMetaInterface.getAuthenticationUser() ).thenReturn( SMTP_AUTH_USER );
+    when( stepMockHelper.processRowsStepMetaInterface.getAuthenticationPassword() ).thenReturn( SMTP_AUTH_PASSWORD );
+    when( stepMockHelper.processRowsStepMetaInterface.getDestination() ).thenReturn( EMAIL_RECIPIENT );
+
+    MailData mailData = new MailData();
+    // Make sure we don't send an email, while testing Mail step.
+    doNothing().when( step ).sendMail( any( Object[].class ), anyString(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString() );
+    step.processRow( stepMockHelper.processRowsStepMetaInterface, mailData );
+    // Check if we call sendMail using the decrypted password.
+    verify( step ).sendMail( strings, SMTP_HOST_VALUE, -1, EMAIL_SENDER_NAME_VALUE, null, EMAIL_RECIPIENT_VALUE, null, null, null, null, EMAIL_SENDER_ADDRESS_VALUE, SMTP_AUTH_PASSWORD_DECRYPTED_VALUE, null, null, null );
   }
 }

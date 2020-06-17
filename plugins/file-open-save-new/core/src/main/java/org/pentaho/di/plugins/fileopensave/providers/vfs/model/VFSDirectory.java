@@ -30,16 +30,18 @@ import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by bmorrise on 2/13/19.
  */
 public class VFSDirectory extends VFSFile implements Directory {
+
+  public static final String DIRECTORY = "folder";
+
   private boolean hasChildren;
   private boolean canAddChildren;
   private List<VFSFile> children = new ArrayList<>();
-
-  public static String DIRECTORY = "folder";
 
   @Override public String getType() {
     return DIRECTORY;
@@ -77,15 +79,16 @@ public class VFSDirectory extends VFSFile implements Directory {
     this.canAddChildren = canAddChildren;
   }
 
-  public static VFSDirectory create( String parent, FileObject fileObject, String connection ) {
+  public static VFSDirectory create( String parent, FileObject fileObject, String connection, String domain ) {
     VFSDirectory vfsDirectory = new VFSDirectory();
     vfsDirectory.setName( fileObject.getName().getBaseName() );
-    vfsDirectory.setPath( fileObject.getName().getFriendlyURI() );
+    vfsDirectory.setPath( fileObject.getName().getURI() );
     vfsDirectory.setParent( parent );
     if ( connection != null ) {
       vfsDirectory.setConnection( connection );
       vfsDirectory.setRoot( VFSFileProvider.NAME );
     }
+    vfsDirectory.setDomain( domain != null ? domain : "" );
     vfsDirectory.setCanEdit( true );
     vfsDirectory.setHasChildren( true );
     vfsDirectory.setCanAddChildren( true );
@@ -95,5 +98,27 @@ public class VFSDirectory extends VFSFile implements Directory {
       vfsDirectory.setDate( new Date() );
     }
     return vfsDirectory;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( getProvider(), getConnection(), getPath() );
+  }
+
+  @Override public boolean equals( Object obj ) {
+    // If the object is compared with itself then return true
+    if ( obj == this ) {
+      return true;
+    }
+
+    if ( !( obj instanceof VFSFile ) ) {
+      return false;
+    }
+
+    VFSDirectory compare = (VFSDirectory) obj;
+    return compare.getProvider().equals( getProvider() )
+      && ( ( compare.getConnection() == null && getConnection() == null ) || compare.getConnection()
+      .equals( getConnection() ) )
+      && ( ( compare.getPath() == null && getPath() == null ) || compare.getPath().equals( getPath() ) );
   }
 }

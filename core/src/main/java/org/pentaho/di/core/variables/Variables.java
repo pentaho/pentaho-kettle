@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -165,6 +165,15 @@ public class Variables implements VariableSpace {
     return StringUtil.environmentSubstitute( aString, properties );
   }
 
+  @Override
+  public String environmentSubstitute( String aString, boolean escapeHexDelimiter ) {
+    if ( aString == null || aString.length() == 0 ) {
+      return aString;
+    }
+
+    return StringUtil.environmentSubstitute( aString, properties, escapeHexDelimiter );
+  }
+
   /**
    * Substitutes field values in <code>aString</code>. Field values are of the form "?{<field name>}". The values are
    * retrieved from the specified row. Please note that the getString() method is used to convert to a String, for all
@@ -211,8 +220,9 @@ public class Variables implements VariableSpace {
     if ( initialized ) {
       // variables are already initialized
       if ( prop != null ) {
-        for ( String key : prop.keySet() ) {
-          String value = prop.get( key );
+        for ( Map.Entry<String, String> entry : prop.entrySet() ) {
+          String value = entry.getValue();
+          String key = entry.getKey();
           if ( !Utils.isEmpty( key ) ) {
             properties.put( key, Const.NVL( value, "" ) );
           }
@@ -223,8 +233,9 @@ public class Variables implements VariableSpace {
       // We have our own personal copy, so changes afterwards
       // to the input properties don't affect us.
       injection = new Hashtable<String, String>();
-      for ( String key : prop.keySet() ) {
-        String value = prop.get( key );
+      for ( Map.Entry<String, String> entry : prop.entrySet() ) {
+        String value = entry.getValue();
+        String key = entry.getKey();
         if ( !Utils.isEmpty( key ) ) {
           injection.put( key, Const.NVL( value, "" ) );
         }

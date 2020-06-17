@@ -269,26 +269,11 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     int fileFormatType = meta.getFileFormatTypeNr();
 
     if ( meta.content.header ) {
-      line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
-      fileLineNumber++;
-      int skipped = 0;
-      while ( line != null && skipped < meta.content.nrHeaderLines ) {
-        /*
-        Check that the number of enclosures in a line is even.
-        If not even it means that there was an enclosed line break.
-        We need to read the next line(s) to get the remaining data in this row.
-        */
-        if ( TextFileInputUtils.checkPattern( line, meta.getEnclosure() ) % 2 != 0 ) {
-          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
-        } else {
-          //Increment when a full line header was read
-          skipped++;
-        }
-        fileLineNumber++;
-      }
+      fileLineNumber = TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType, lineBuffer,
+        meta.content.nrHeaderLines, meta.getEnclosure(), fileLineNumber );
     }
     //Reading the first line of data
-    line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
+    line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, meta.getEnclosure() );
     int linenr = 1;
 
     List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
@@ -302,19 +287,7 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     while ( !errorFound && line != null && ( linenr <= samples || samples == 0 ) && !monitor.isCanceled() ) {
       monitor.subTask( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Task.ScanningLine", ""
           + linenr ) );
-      while ( line != null ) {
-        /*
-        Check that the number of enclosures in a line is even.
-        If not even it means that there was an enclosed line break.
-        We need to read the next line(s) to get the remaining data in this row.
-        */
-        if ( TextFileInputUtils.checkPattern( line, meta.getEnclosure() ) % 2 != 0 ) {
-          line = line + TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
-          fileLineNumber++;
-        } else {
-          break;
-        }
-      }
+
       if ( samples > 0 ) {
         monitor.worked( 1 );
       }
@@ -355,21 +328,18 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
         }
 
         String string = getStringFromRow( rowMeta, r, i, failOnParseError );
-
-        if ( i == 0 ) {
-          System.out.println();
-        }
         evaluator.evaluateString( string );
       }
 
-      fileLineNumber++;
       if ( r != null ) {
         linenr++;
       }
 
       // Grab another line...
-      //
-      line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
+      TextFileLine textFileLine = TextFileInputUtils
+        .getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, fileLineNumber );
+      line = textFileLine.getLine();
+      fileLineNumber = textFileLine.getLineNumber();
     }
 
     monitor.worked( 1 );

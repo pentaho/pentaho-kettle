@@ -28,4 +28,10 @@ import org.pentaho.di.connections.ConnectionDetails;
  * Created by bmorrise on 2/13/19.
  */
 public interface VFSConnectionDetails extends ConnectionDetails {
+  /**
+   * Allow for returning of domain for non-bucket vfs connections
+   */
+  default String getDomain() {
+    return "";
+  }
 }

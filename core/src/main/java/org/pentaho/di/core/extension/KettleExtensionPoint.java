@@ -126,6 +126,7 @@ public enum KettleExtensionPoint {
 
     OpenMapping( "OpenMapping", "Trigger when opening a mapping from TransGraph" ),
 
+    BeforeSaveToRepository( "BeforeSaveToRepository", "Before meta is saved to the repository" ),
     AfterDeleteRepositoryObject( "AfterDeleteRepositoryObject",
       "After an object has been deleted from the repository" ),
 

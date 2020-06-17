@@ -85,23 +85,25 @@ define([
     function onChanges(changes) {
       if (changes.path && changes.path.currentValue != null) {
         var path = changes.path.currentValue;
-        vm.uri = path.uri;
-        vm.type = path.type;
-        vm.prefix = path.prefix;
-        _updatePath(path.path, path.path.indexOf("/") === -1 || path.prefix);
-        if (vm.history.length === 0 || (vm.history[vm.index] && path.path !== vm.history[vm.index].path.path)) {
-          vm.history.splice(vm.index+1, vm.history.length);
-          vm.history.push({
-            timestamp: Date.now(),
-            path: path
-          });
-          vm.index++;
-        }
-        if (path.fileType === "folder" && !_inRecents(path.path)) {
-          vm.recents.push({
-            timestamp: Date.now(),
-            path: path
-          });
+        if (path.path) {
+          vm.uri = path.uri;
+          vm.type = path.type;
+          vm.prefix = path.prefix;
+          _updatePath(path.path, path.path.indexOf("/") === -1 || path.prefix);
+          if (vm.history.length === 0 || (vm.history[vm.index] && path.path !== vm.history[vm.index].path.path)) {
+            vm.history.splice(vm.index+1, vm.history.length);
+            vm.history.push({
+              timestamp: Date.now(),
+              path: path
+            });
+            vm.index++;
+          }
+          if (path.fileType === "folder" && !_inRecents(path.path)) {
+            vm.recents.push({
+              timestamp: Date.now(),
+              path: path
+            });
+          }
         }
       }
     }

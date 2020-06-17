@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,18 +34,25 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.powermock.reflect.Whitebox;
 
-import static org.junit.Assert.*;
+import java.util.function.Supplier;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class BaseStepDialog_ConnectionLine_Test {
-  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+  @ClassRule
+  public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static String INITIAL_NAME = "qwerty";
   private static String INPUT_NAME = "asdfg";
@@ -57,7 +64,6 @@ public class BaseStepDialog_ConnectionLine_Test {
   public static void initKettle() throws Exception {
     KettleEnvironment.init();
   }
-
 
   @Test
   public void adds_WhenConnectionNameIsUnique() throws Exception {
@@ -83,8 +89,15 @@ public class BaseStepDialog_ConnectionLine_Test {
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) )
       .thenAnswer( new PropsSettingAnswer( answeredName, INPUT_HOST ) );
 
+    Supplier<Spoon> mockSupplier = mock( Supplier.class );
+    Spoon mockSpoon = mock( Spoon.class );
+    Whitebox.setInternalState( dialog, "spoonSupplier", mockSupplier );
+    when( mockSupplier.get() ).thenReturn( mockSpoon );
     dialog.transMeta = transMeta;
     dialog.new AddConnectionListener( mock( CCombo.class ) ).widgetSelected( null );
+    if ( answeredName != null ) {
+      verify( mockSpoon, times( 1 ) ).refreshTree( anyString() );
+    }
   }
 
 
@@ -195,6 +208,7 @@ public class BaseStepDialog_ConnectionLine_Test {
                                                                   String expectedResult ) throws Exception {
     DatabaseDialog databaseDialog = mock( DatabaseDialog.class );
     when( databaseDialog.open() ).thenReturn( inputName );
+    when( databaseDialog.getDatabaseMeta() ).thenReturn( createDefaultDatabase() );
 
     TransMeta transMeta = new TransMeta();
     DatabaseMeta db = createDefaultDatabase();
@@ -237,6 +251,7 @@ public class BaseStepDialog_ConnectionLine_Test {
       // unique value
       .thenReturn( expectedResult );
 
+    when( databaseDialog.getDatabaseMeta() ).thenReturn( createDefaultDatabase() );
 
     BaseStepDialog dialog = mock( BaseStepDialog.class );
     dialog.databaseDialog = databaseDialog;

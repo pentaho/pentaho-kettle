@@ -60,11 +60,23 @@ card .cardMiddle .cardTypeIcon {
 }
 
 card .card.cardTrans .cardMiddle .cardTypeIcon {
-  background: url("../../img/trans_large.svg") no-repeat left center;
+  background: url("../../img/file_icons/Transformation.S_D.svg") no-repeat center center;
+  background-size: 64px 64px;
+}
+
+card .card.selected.cardTrans .cardMiddle .cardTypeIcon {
+  background: url("../../img/file_icons/Transformation.S_D_white.svg") no-repeat center center;
+  background-size: 64px 64px;
 }
 
 card .card.cardJob .cardMiddle .cardTypeIcon {
-  background: url("../../img/job_large.svg") no-repeat left center;
+  background: url("../../img/file_icons/Job.S_D.svg") no-repeat center center;
+  background-size: 64px 64px;
+}
+
+card .card.selected.cardJob .cardMiddle .cardTypeIcon {
+  background: url("../../img/file_icons/Job.S_D_white.svg") no-repeat center center;
+  background-size: 64px 64px;
 }
 
 card .card.selected .cardMiddle .cardTypeIcon {
@@ -90,8 +102,6 @@ card .cardDate {
   line-height: 17px;
 }
 
-card .bottomSpacer {
-  height: 20px;
-  width: calc(100% + 20px);
-  float: left;
+card .last {
+  margin-bottom: 20px;
 }

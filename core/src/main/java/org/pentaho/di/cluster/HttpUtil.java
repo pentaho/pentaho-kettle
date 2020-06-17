@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,9 @@ public class HttpUtil {
   public static final int ZIP_BUFFER_SIZE = 8192;
   private static final String PROTOCOL_UNSECURE = "http";
   private static final String PROTOCOL_SECURE = "https";
+
+  private HttpUtil() {
+  }
 
   /**
    * Returns http GET request string using specified parameters.
@@ -102,43 +105,15 @@ public class HttpUtil {
     // unzip to string encoding-wise
     ByteArrayInputStream zip = new ByteArrayInputStream( bytes64 );
 
-    GZIPInputStream unzip = null;
-    InputStreamReader reader = null;
-    BufferedInputStream in = null;
-    try {
-      unzip = new GZIPInputStream( zip, HttpUtil.ZIP_BUFFER_SIZE );
-      in = new BufferedInputStream( unzip, HttpUtil.ZIP_BUFFER_SIZE );
-      // PDI-4325 originally used xml encoding in servlet
-      reader = new InputStreamReader( in, Const.XML_ENCODING );
-      writer = new StringWriter();
+    // PDI-4325 originally used xml encoding in servlet
+    try ( GZIPInputStream unzip = new GZIPInputStream( zip, HttpUtil.ZIP_BUFFER_SIZE );
+           BufferedInputStream in = new BufferedInputStream( unzip, HttpUtil.ZIP_BUFFER_SIZE );
+           InputStreamReader reader = new InputStreamReader( in, Const.XML_ENCODING ) ) {
 
       // use same buffer size
       char[] buff = new char[ HttpUtil.ZIP_BUFFER_SIZE ];
-      for ( int length = 0; ( length = reader.read( buff ) ) > 0; ) {
+      for ( int length; ( length = reader.read( buff ) ) > 0; ) {
         writer.write( buff, 0, length );
-      }
-    } finally {
-      // close resources
-      if ( reader != null ) {
-        try {
-          reader.close();
-        } catch ( IOException e ) {
-          // Suppress
-        }
-      }
-      if ( in != null ) {
-        try {
-          in.close();
-        } catch ( IOException e ) {
-          // Suppress
-        }
-      }
-      if ( unzip != null ) {
-        try {
-          unzip.close();
-        } catch ( IOException e ) {
-          // Suppress
-        }
       }
     }
     return writer.toString();

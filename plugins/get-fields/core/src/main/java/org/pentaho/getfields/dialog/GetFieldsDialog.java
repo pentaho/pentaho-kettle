@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2018-2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class GetFieldsDialog extends ThinDialog {
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
-  private static final String LOCALHOST = "localhost";
+  private static final String LOCALHOST = "127.0.0.1";
   private List<String> paths = new ArrayList<>();
 
   private String title = "";
@@ -64,7 +64,7 @@ public class GetFieldsDialog extends ThinDialog {
   public void open() {
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
-    clientPath.append( "#?path=" );
+    clientPath.append( "#!?path=" );
     clientPath.append( file );
     clientPath.append( "&type=" );
     clientPath.append( type );

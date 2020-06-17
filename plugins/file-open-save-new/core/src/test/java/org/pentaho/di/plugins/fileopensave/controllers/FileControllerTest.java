@@ -28,10 +28,13 @@ import org.junit.Test;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
+import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.TestFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.model.TestDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.model.TestFile;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,18 +47,19 @@ public class FileControllerTest {
   public void setup() {
     List<FileProvider> fileProviders = new ArrayList<>();
     fileProviders.add( new TestFileProvider() );
-    fileController = new FileController( new FileCache(), fileProviders );
+    ProviderService providerService = new ProviderService( fileProviders );
+    fileController = new FileController( new FileCache(), providerService );
   }
 
   @Test
   public void testLoad() {
-    List<Tree> trees = fileController.load();
+    List<Tree> trees = fileController.load( ProviderFilterType.ALL_PROVIDERS.toString() );
     Assert.assertEquals( 1, trees.size() );
     Assert.assertEquals( TestFileProvider.TYPE, trees.get( 0 ).getProvider() );
   }
 
   @Test
-  public void testGetFilesCache() {
+  public void testGetFilesCache() throws FileException {
     TestDirectory testDirectory = new TestDirectory();
     testDirectory.setPath( "/" );
     List<File> files = fileController.getFiles( testDirectory, "", true );
@@ -82,7 +86,7 @@ public class FileControllerTest {
   }
 
   @Test
-  public void testRename() {
+  public void testRename() throws FileException {
     TestDirectory testDirectory = new TestDirectory();
     testDirectory.setParent( "/" );
     testDirectory.setPath( "/directory1" );
@@ -103,7 +107,7 @@ public class FileControllerTest {
   }
 
   @Test
-  public void testCopy() {
+  public void testCopy() throws FileException {
     TestDirectory testDirectory = new TestDirectory();
     testDirectory.setParent( "/" );
     testDirectory.setPath( "/directory1" );
@@ -130,7 +134,7 @@ public class FileControllerTest {
   }
 
   @Test
-  public void testMove() {
+  public void testMove() throws FileException {
     TestDirectory testDirectory = new TestDirectory();
     testDirectory.setParent( "/" );
     testDirectory.setPath( "/directory1" );

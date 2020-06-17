@@ -23,17 +23,19 @@ define([
       restrict: 'AE',
       scope: {},
       link: function (scope, element, attr) {
-        element.css('background', 'url("img/show-inactive.svg") no-repeat');
+        element.css('background-image', 'url("img/show-inactive.svg")');
+        element.css('background-repeat', 'no-repeat');
         element.css('background-size', '16px 16px');
         element.css('padding-right', '30px');
         element.css('background-position', (element.outerWidth() - 25) + 'px center');
-        element.bind('click', function(e) {
+        element.bind('click', function (e) {
           if (e.offsetX > element.outerWidth() - 30) {
             var type = element.prop('type');
             element.prop({type: type === "text" ? "password" : "text"});
+            element.css('background-image', type === "text" ? 'url("img/show-inactive.svg")' : 'url("img/hide-inactive.svg")');
           }
         });
-        element.bind('mousemove', function(e) {
+        element.bind('mousemove', function (e) {
           if (e.offsetX > element.outerWidth() - 30) {
             element.css('cursor', 'pointer');
           } else {

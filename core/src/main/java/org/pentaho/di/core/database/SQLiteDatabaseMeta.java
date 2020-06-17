@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,11 +43,11 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
    */
   @Override
-  public int getNotFoundTK( boolean use_autoinc ) {
-    if ( supportsAutoInc() && use_autoinc ) {
+  public int getNotFoundTK( boolean useAutoinc ) {
+    if ( supportsAutoInc() && useAutoinc ) {
       return 1;
     }
-    return super.getNotFoundTK( use_autoinc );
+    return super.getNotFoundTK( useAutoinc );
   }
 
   @Override
@@ -84,8 +84,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   @Override
   @SuppressWarnings( "deprecation" )
-  public String getSchemaTableCombination( String schema_name, String table_part ) {
-    return getBackwardsCompatibleSchemaTableCombination( schema_name, table_part );
+  public String getSchemaTableCombination( String schemaName, String tablePart ) {
+    return getBackwardsCompatibleSchemaTableCombination( schemaName, tablePart );
   }
 
   /**
@@ -116,7 +116,7 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    *          The column defined as a value
    * @param tk
    *          the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *          whether or not this field uses auto increment
    * @param pk
    *          the name of the primary key field
@@ -125,9 +125,9 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    * @return the SQL statement to add a column to the specified table
    */
   @Override
-  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+    return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, useAutoinc, true, false );
   }
 
   /**
@@ -139,7 +139,7 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    *          The column defined as a value
    * @param tk
    *          the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *          whether or not this field uses auto increment
    * @param pk
    *          the name of the primary key field
@@ -148,21 +148,21 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    * @return the SQL statement to modify a column in the specified table
    */
   @Override
-  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+    return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, useAutoinc, true, false );
   }
 
   @Override
-  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-    boolean add_fieldname, boolean add_cr ) {
+  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean useAutoinc,
+                                    boolean addFieldName, boolean addCr ) {
     String retval = "";
 
     String fieldname = v.getName();
     int length = v.getLength();
     int precision = v.getPrecision();
 
-    if ( add_fieldname ) {
+    if ( addFieldName ) {
       retval += fieldname + " ";
     }
 
@@ -205,16 +205,25 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         break;
     }
 
-    if ( add_cr ) {
+    if ( addCr ) {
       retval += Const.CR;
     }
 
     return retval;
   }
 
+  /**
+   * @return true if the database JDBC driver supports getBlob on the resultset. If not we must use getBytes() to get
+   *         the data.
+   */
+  @Override
+  public boolean supportsGetBlob() {
+    return false;
+  }
+
   @Override
   public String[] getUsedLibraries() {
-    return new String[] { "sqlite-jdbc-3.7.2.jar" };
+    return new String[] { "sqlite-jdbc-3.27.2.1.jar" };
   }
 
   /**

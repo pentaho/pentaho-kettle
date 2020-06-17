@@ -13,14 +13,14 @@
         <span class="checkmark"></span>
       </label>
     </div>
-    <button class="primary" value="skip">
-      <span>Skip</span>
+    <button class="primary" value="replace">
+      <span>Replace</span>
     </button>
-    <button class="primary" value="overwrite">
-      <span>Overwrite</span>
+    <button class="secondary" value="stop">
+      <span>Stop</span>
     </button>
-    <button class="primary" value="rename">
-      <span>Rename</span>
+    <button class="secondary" value="keep">
+      <span>Keep Both</span>
     </button>
   </div>
 </modal>
@@ -30,11 +30,28 @@
     {{title}}
   </div>
   <div class="body">
+    <div class="loading">
+      <img src="./img/busy_thin.gif" width="20" height="20" />
+    </div>
+    <div class="message">{{body}}</div>
+  </div>
+  <div class="buttons">
+    <button class="secondary" value="cancel">
+      <span>Cancel</span>
+    </button>
+  </div>
+</modal>
+<!-- Error Modal -->
+<modal id="error-dialog" class="noselect">
+  <div class="title headerText">
+    {{title}}
+  </div>
+  <div class="body">
     {{body}}
   </div>
   <div class="buttons">
-    <button class="primary" value="cancel">
-      <span>Cancel</span>
+    <button class="primary" value="close">
+      <span>{{::vm.closeLabel}}</span>
     </button>
   </div>
 </modal>

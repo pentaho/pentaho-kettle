@@ -1,6 +1,6 @@
 filecontrols {
-  margin-top: 10px;
   white-space: nowrap;
+  margin-left: 10px;
 }
 
 filecontrols input[type="button"] {
@@ -8,63 +8,57 @@ filecontrols input[type="button"] {
   padding: 0;
   border: 0;
   border-radius: 0;
+  float: right;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
 }
 
 filecontrols input[type="button"]:disabled {
   cursor: default;
 }
 
-filecontrols input.upDirectory {
-  background: url("../../img/up-directory.svg") no-repeat center center;
-  height: 19px;
-  width: 29px;
+filecontrols input.up-directory {
+  background: url("../../img/Up_Folder.S_D.svg") no-repeat center center;
+  background-size: 40px;
+  margin-right: 8px;
+}
+
+filecontrols input.up-directory:disabled {
+  background-image: url("../../img/Up_Folder.S_D_disabled.svg");
+}
+
+filecontrols input.refresh-folder {
+  background: url("../../img/Refresh.S_D.svg") no-repeat center center;
+  background-size: 32px;
+}
+
+filecontrols input.refresh-folder:disabled {
+  background-image: url("../../img/Refresh.S_D_disabled.svg");
+}
+
+filecontrols input.add-folder {
+  background: url("../../img/New_Folder.S_D.svg") no-repeat center center;
+  background-size: 32px;
+}
+
+filecontrols input.add-folder:disabled {
+  background-image: url("../../img/New_Folder.S_D_disabled.svg");
+}
+
+filecontrols input.delete-folder {
+  background: url("../../img/Close.S_D.svg") no-repeat center center;
   cursor: pointer;
+  background-size: 32px;
 }
 
-filecontrols input.refreshFolder {
-  background: url("../../img/refresh.svg") no-repeat center center;
-  margin-left: 15px;
-  height: 19px;
-  width: 18px;
-  cursor: pointer;
+filecontrols input.delete-folder:disabled {
+  background-image: url("../../img/Close.S_D_disabled.svg");
 }
 
-filecontrols input.addFolder {
-  background: url("../../img/add_folder.svg") no-repeat center center;
-  height: 19px;
-  width: 23px;
-  cursor: pointer;
-}
-
-filecontrols input.deleteFolder {
-  background: url("../../img/delete_folder_file.svg") no-repeat center center;
-  height: 18px;
-  width: 14px;
-  cursor: pointer;
-}
-
-filecontrols input.addFolder[disabled],
-filecontrols input.deleteFolder[disabled],
-filecontrols input.addFolder[disabled]:hover,
-filecontrols input.deleteFolder[disabled]:hover,
-filecontrols input.refreshFolder[disabled],
-filecontrols input.refreshFolder[disabled]:hover,
-filecontrols input.upDirectory[disabled],
-filecontrols input.upDirectory[disabled]:hover {
-  background-position: left center;
-}
-
-filecontrols input.addFolder:hover,
-filecontrols input.deleteFolder:hover,
-filecontrols input.refreshFolder:hover,
-filecontrols input.upDirectory:hover{
-  background-position: right center;
-}
-
-filecontrols input.addFolder,
-filecontrols input.deleteFolder,
-filecontrols input.upDirectory,
-filecontrols input.refreshFolder {
-  float: right;
-  margin-left: 15px;
+filecontrols input.add-folder:hover:enabled,
+filecontrols input.delete-folder:hover:enabled,
+filecontrols input.refresh-folder:hover:enabled,
+filecontrols input.up-directory:hover:enabled {
+  background-color: #f0f0f0;
 }

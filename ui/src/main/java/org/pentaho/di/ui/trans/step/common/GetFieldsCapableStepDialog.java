@@ -254,6 +254,14 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
   }
 
   default TableItem getTableItem( final String fieldName ) {
+    return getTableItem( fieldName, false );
+  }
+
+  default TableItem getTableItem( final String fieldName, final boolean reloadAllFields ) {
+
+    if ( reloadAllFields ) {
+      return new TableItem( getFieldsTable().getTable(), SWT.NONE );
+    }
     // try to find a table item corresponding to the current field name
     TableItem item = findTableItem( fieldName );
     // if one doesn't exist, create a new one;

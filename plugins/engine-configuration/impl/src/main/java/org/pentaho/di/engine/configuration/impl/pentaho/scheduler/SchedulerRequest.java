@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,13 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Base64;
 
 /**
@@ -46,6 +51,9 @@ public class SchedulerRequest {
   public static final String APPLICATION_XML = "application/xml";
   public static final String UTF_8 = "UTF-8";
   public static final String AUTHORIZATION = "Authorization";
+
+  public static final String STRING_TYPE = "string";
+
   private HttpClient httpclient = HttpClients.createDefault();
   private HttpPost httpPost;
   private Repository repository;
@@ -129,77 +137,87 @@ public class SchedulerRequest {
 
   StringEntity buildSchedulerRequestEntity( AbstractMeta meta )
           throws UnsupportedEncodingException, UnknownParamException {
+
     String filename = getFullPath( meta );
 
-    StringBuilder sb = new StringBuilder();
-    sb.append( "<jobScheduleRequest>\n" );
-    sb.append( "<inputFile>" ).append( filename ).append( "</inputFile>\n" );
+    JobScheduleRequest jobScheduleRequest = new JobScheduleRequest();
+    jobScheduleRequest.setInputFile( filename );
 
     // Set the log level
     if ( meta.getLogLevel() != null ) {
-      sb.append( "<jobParameters>\n" );
-      sb.append( "<name>" ).append( "logLevel" ).append( "</name>\n" );
-      sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
-      sb.append( "<stringValue>" ).append( meta.getLogLevel().getCode() ).append( "</stringValue>\n" );
-      sb.append( "</jobParameters>\n" );
+      JobScheduleParam jobScheduleParam = new JobScheduleParam();
+      jobScheduleParam.setName( "logLevel" );
+      jobScheduleParam.setType( STRING_TYPE );
+      jobScheduleParam.setStringValue( Arrays.asList( meta.getLogLevel().getCode() ) );
+      jobScheduleRequest.getJobParameters().add( jobScheduleParam );
     }
 
     // Set the clearing log param
-    sb.append( "<jobParameters>\n" );
-    sb.append( "<name>" ).append( "clearLog" ).append( "</name>\n" );
-    sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
-    sb.append( "<stringValue>" ).append( meta.isClearingLog() ).append( "</stringValue>\n" );
-    sb.append( "</jobParameters>\n" );
+    JobScheduleParam jobScheduleParamClearingLog = new JobScheduleParam();
+    jobScheduleParamClearingLog.setName( "clearLog" );
+    jobScheduleParamClearingLog.setType( STRING_TYPE );
+    jobScheduleParamClearingLog
+      .setStringValue( Arrays.asList( String.valueOf( meta.isClearingLog() ) ) );
+    jobScheduleRequest.getJobParameters().add( jobScheduleParamClearingLog );
 
     // Set the safe mode enabled param
-    sb.append( "<jobParameters>\n" );
-    sb.append( "<name>" ).append( "runSafeMode" ).append( "</name>\n" );
-    sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
-    sb.append( "<stringValue>" ).append( meta.isSafeModeEnabled() ).append( "</stringValue>\n" );
-    sb.append( "</jobParameters>\n" );
+    JobScheduleParam jobScheduleParamSafeModeEnable = new JobScheduleParam();
+    jobScheduleParamSafeModeEnable.setName( "runSafeMode" );
+    jobScheduleParamSafeModeEnable.setType( STRING_TYPE );
+    jobScheduleParamSafeModeEnable
+      .setStringValue( Arrays.asList( String.valueOf( meta.isSafeModeEnabled() ) ) );
+    jobScheduleRequest.getJobParameters().add( jobScheduleParamSafeModeEnable );
+
 
     // Set the gathering metrics param
-    sb.append( "<jobParameters>\n" );
-    sb.append( "<name>" ).append( "gatheringMetrics" ).append( "</name>\n" );
-    sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
-    sb.append( "<stringValue>" ).append( meta.isGatheringMetrics() ).append( "</stringValue>\n" );
-    sb.append( "</jobParameters>\n" );
+    JobScheduleParam jobScheduleParamGatheringMetricsParam = new JobScheduleParam();
+    jobScheduleParamGatheringMetricsParam.setName( "gatheringMetrics" );
+    jobScheduleParamGatheringMetricsParam.setType( STRING_TYPE );
+    jobScheduleParamGatheringMetricsParam
+      .setStringValue( Arrays.asList( String.valueOf( meta.isGatheringMetrics() ) ) );
+    jobScheduleRequest.getJobParameters().add( jobScheduleParamGatheringMetricsParam );
 
     if ( meta instanceof JobMeta ) {
       JobMeta jobMeta = (JobMeta) meta;
 
       if ( jobMeta.getStartCopyName() != null ) {
         // Set the start step name
-        sb.append( "<jobParameters>\n" );
-        sb.append( "<name>" ).append( "startCopyName" ).append( "</name>\n" );
-        sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
-        sb.append( "<stringValue>" ).append( jobMeta.getStartCopyName() ).append( "</stringValue>\n" );
-        sb.append( "</jobParameters>\n" );
+        JobScheduleParam jobScheduleParamStartStepName = new JobScheduleParam();
+        jobScheduleParamStartStepName.setName( "startCopyName" );
+        jobScheduleParamStartStepName.setType( STRING_TYPE );
+        jobScheduleParamStartStepName.setStringValue( Arrays.asList( jobMeta.getStartCopyName() ) );
+        jobScheduleRequest.getJobParameters().add( jobScheduleParamStartStepName );
       }
 
       // Set the expanding remote job param
-      sb.append( "<jobParameters>\n" );
-      sb.append( "<name>" ).append( "expandingRemoteJob" ).append( "</name>\n" );
-      sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
-      sb.append( "<stringValue>" ).append( jobMeta.isExpandingRemoteJob() ).append( "</stringValue>\n" );
-      sb.append( "</jobParameters>\n" );
+      JobScheduleParam jobScheduleParamExpandingRemoteJob = new JobScheduleParam();
+      jobScheduleParamExpandingRemoteJob.setName( "expandingRemoteJob" );
+      jobScheduleParamExpandingRemoteJob.setType( STRING_TYPE );
+      jobScheduleParamExpandingRemoteJob
+        .setStringValue( Arrays.asList( String.valueOf( jobMeta.isExpandingRemoteJob() ) ) );
+      jobScheduleRequest.getJobParameters().add( jobScheduleParamExpandingRemoteJob );
     }
 
     // Set the PDI parameters
     if ( meta.listParameters() != null ) {
-      sb.append( "<pdiParameters>\n" );
       for ( String param : meta.listParameters() ) {
-        sb.append( "<entry>\n" );
-        sb.append( "<key>" ).append( param ).append( "</key>\n" );
-        sb.append( "<value>" ).append( meta.getParameterValue( param ) ).append( "</value>\n" );
-        sb.append( "</entry>\n" );
+        jobScheduleRequest.getPdiParameters().put( param, meta.getParameterValue( param ) );
       }
-      sb.append( "</pdiParameters>\n" );
     }
 
-    sb.append( "</jobScheduleRequest>" );
+    // Marshal object to string
+    StringWriter sw = new StringWriter();
+    String jobScheduleRequestString = null;
+    try {
+      JAXBContext jc = JAXBContext.newInstance( JobScheduleRequest.class );
+      Marshaller marshaller = jc.createMarshaller();
+      marshaller.marshal( jobScheduleRequest, sw );
+      jobScheduleRequestString = sw.toString();
+    } catch ( JAXBException e ) {
+      repository.getLog().logError( BaseMessages.getString( PKG, "SchedulerRequest.error.marshal" ), e.getMessage() );
+    }
 
-    return new StringEntity( sb.toString() );
+    return new StringEntity( jobScheduleRequestString );
   }
 
 }

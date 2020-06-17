@@ -32,7 +32,7 @@ define(function() {
       /**
        * Determine if the value passed is a `function`.
        *
-       * @param {Object|Function|*} f Value to be tested.
+       * @param {*} f Value to be tested.
        * @return {boolean} `true` if `f` is a function, `false` otherwise.
        */
       is: function(f) {
@@ -51,7 +51,7 @@ define(function() {
        * Creates a function that always returns the same value.
        *
        * @param {*} v Value to be return by the constant function.
-       * @return {Function} Constant function.
+       * @return {function} Constant function.
        */
       constant: function(v) {
         return function() {
@@ -78,7 +78,7 @@ define(function() {
        *
        * When the created list is empty, will return `null`.
        *
-       * @param {Object} [attrs] Attribute names and values to test for.
+       * @param {?object} [attrs] Attribute names and values to test for.
        * @return {?function} A predicate function, or `null`.
        */
       predicate: function(attrs) {

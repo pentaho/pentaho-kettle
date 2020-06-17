@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="48" height="48" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Chat.M_D" clip-path="url(#clip-path)">
+    <rect id="Rectangle_724" data-name="Rectangle 724" width="48" height="48" fill="none"/>
+    <g id="Group_4018" data-name="Group 4018" transform="translate(-324 -1566)">
+      <g id="Path_1049" transform="translate(332 1576)">
+        <path id="Path_2076" data-name="Path 2076" d="M0-2H32V24H16L8,30V24H0Z" fill="none"/>
+        <path id="Path_2077" data-name="Path 2077" d="M2,0V22h8v4l5.3-4H30V0H2M0-2H32V24H16L8,30V24H0Z" fill="#414141"/>
+      </g>
+      <rect id="Rectangle_1956" data-name="Rectangle 1956" width="20" height="2" transform="translate(338 1580)" fill="#414141"/>
+      <rect id="Rectangle_1957" data-name="Rectangle 1957" width="20" height="2" transform="translate(338 1586)" fill="#414141"/>
+      <rect id="Rectangle_1958" data-name="Rectangle 1958" width="14" height="2" transform="translate(338 1592)" fill="#414141"/>
+    </g>
+  </g>
+</svg>

@@ -25,18 +25,22 @@
 define([
   "pentaho/i18n-osgi!file-open-save-new.messages",
   "text!./filebar.html",
+  "text!./supported_file_filters.json",
   "css!./filebar.css"
-], function (i18n, filebarTemplate) {
+], function (i18n, filebarTemplate, supportedFileFilters) {
   "use strict";
 
   var options = {
     bindings: {
+      selectedFile: "<",
+      fileTypes: "<",
+      defaultFilter: "<",
       path: '<',
       state: "<",
       filename: "=",
+      fileType: "<",
       onSelectFilter: "&",
       onOpenClick: "&",
-      onOKClick: "&",
       onSaveClick: "&",
       onCancelClick: "&"
     },
@@ -58,29 +62,11 @@ define([
     vm.$onChanges = onChanges;
     vm.onSelect = onSelect;
     vm.onChange = onChange;
+    vm.isSaveState = isSaveState;
+    vm.onHelpClick = onHelpClick;
 
-    vm.fileFilters = [
-        {
-          value: "all",
-          label: "All Files"
-        },
-        {
-          value: "\\.kjb$|\\.ktr$",
-          label: "Kettle Files"
-        },
-        {
-          value: "\\.csv$",
-          label: "*.csv"
-        },
-        {
-          value: "\\.txt$",
-          label: "*.txt"
-        },
-        {
-          value: "\\.json$",
-          label: "*.json"
-        }
-      ];
+    vm.disabled = true;
+    vm.fileFilters = [];
 
     /**
      * The $onInit} hook of components lifecycle which is called on each controller
@@ -94,11 +80,35 @@ define([
       vm.saveButton = i18n.get("file-open-save-plugin.app.save.button");
       vm.okButton = i18n.get("file-open-save-plugin.app.ok.button");
       vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
+      vm.helpLabel = i18n.get("file-open-save-plugin.app.help.label");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.fileFilterLabel = i18n.get("file-open-save-plugin.app.save.file-filter.label");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
 
-      vm.selectedFilter = vm.fileFilters[0].value;
+      var filterSet = new Set(null);
+      filterSet.add("ALL");
+
+      for (var i = 0; i < vm.fileTypes.length; i++) {
+        filterSet.add(vm.fileTypes[i]);
+      }
+
+      var parsedSupportedFileFilters = JSON.parse(supportedFileFilters);
+      vm.fileFilters = parsedSupportedFileFilters.filter( function(fltr) {
+        return filterSet.has(fltr.id); });
+
+      if (vm.fileFilters.length) {
+        vm.selectedFilter = vm.fileFilters[0].value;
+      }
+
+      if (vm.defaultFilter) {
+        var defaultFltr = parsedSupportedFileFilters.filter( function(fltr) {
+          return fltr.id === vm.defaultFilter});
+
+        if (defaultFltr.length) {
+          vm.selectedFilter = defaultFltr[0].value;
+        }
+      }
+
     }
 
     /**
@@ -108,8 +118,8 @@ define([
      * that have changed, and the values are an object of the form
      */
     function onChanges(changes) {
-      $timeout(function() {
-        _update();
+      $timeout(function () {
+        _isDisabled();
       });
     }
 
@@ -118,11 +128,52 @@ define([
     }
 
     function onChange() {
-      _update();
+      _isDisabled();
     }
 
-    function _update() {
-      vm.isSaveEnabled = vm.filename === '' || !vm.path;
+    function isSaveState() {
+      return (vm.state.is('save') || vm.state.is('saveTo') || vm.state.is('saveToFileFolder'));
+    }
+
+    function onHelpClick() {
+      help();
+    }
+
+    function _isDisabled() {
+      var enabled = true;
+
+      switch (vm.state.current.name) {
+        case 'selectFolder':
+          enabled = _isFolder(vm.selectedFile);
+          break;
+        case 'selectFile':
+          enabled = _hasFileType(vm.selectedFile) && !_isFolder(vm.selectedFile);
+          break;
+        case 'selectFileFolder':
+          enabled = _hasFileType(vm.selectedFile) || _isFolder(vm.selectedFile);
+          break;
+        case 'open':
+          enabled = vm.filename;
+          break;
+        case 'save':
+        case 'saveTo':
+          vm.isSaveEnabled = vm.filename === '';
+          break;
+        case 'saveToFileFolder':
+          vm.isSaveEnabled = !vm.path;
+          break;
+        default:
+          break;
+      }
+      vm.disabled = !enabled;
+    }
+
+    function _hasFileType(file) {
+      return file && file.type;
+    }
+
+    function _isFolder(file) {
+      return file.type === "folder";
     }
   }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -527,5 +527,25 @@ public class JobEntryJobTest {
 
     verify( meta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + JOB_ENTRY_JOB_NAME );
     verify( jej ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+  }
+
+  @Test
+  public void testJobMetaInitializeVariablesFrom() throws Exception {
+    Repository myrepo = mock( Repository.class );
+    JobMeta jobMeta = new JobMeta();
+    doReturn( directory ).when( rdi ).findDirectory( anyString() );
+    doReturn( jobMeta ).when( myrepo ).loadJob( any(), any(), any(), any() );
+    doReturn( rdi ).when( myrepo ).loadRepositoryDirectoryTree();
+    doReturn( null ).when( myrepo ).getJobEntryAttributeString( any( ObjectId.class ), anyString() );
+    doReturn( "rep_name" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "specification_method" );
+    doReturn( "${jobname}" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "name" );
+    doReturn( "${repositorypath}" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "dir_path" );
+    doReturn( true ).when( myrepo ).isConnected();
+
+    JobEntryJob jej =  new JobEntryJob( JOB_ENTRY_JOB_NAME );
+    jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
+    jej.getJobMetaFromRepository( myrepo, resolver, "", space );
+
+    verify( jobMeta, times( 1 ) ).initializeVariablesFrom( any() );
   }
 }

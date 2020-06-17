@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -58,7 +59,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -68,6 +71,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -139,8 +143,8 @@ public class TransTest {
 
     DatabaseMeta databaseMeta = meta.findDatabase( dbMeta1.getDisplayName() );
     assertNotNull( databaseMeta );
-    assertEquals( databaseMeta.getName(), "encoded_DBConnection" );
-    assertEquals( databaseMeta.getDisplayName(), "encoded.DBConnection" );
+    assertEquals( "encoded_DBConnection", databaseMeta.getName() );
+    assertEquals( "encoded.DBConnection", databaseMeta.getDisplayName() );
   }
 
   /**
@@ -608,6 +612,61 @@ public class TransTest {
     transTest.setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
 
     assertEquals( "Original value defined at run execution", transTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY )  );
+  }
+
+  @Test
+  public void testCleanup_WithoutSteps() throws Exception {
+    Trans trans = new Trans();
+
+    // First try steps being 'null'
+    trans.setSteps( null );
+    assertNull( trans.getSteps() );
+    // this should work (no exception thrown)
+    trans.cleanup();
+
+    // Now steps being an empty list
+    trans.setSteps( new ArrayList<>() );
+    assertNotNull( trans.getSteps() );
+    // this should also work (no exception thrown)
+    trans.cleanup();
+  }
+
+  @Test
+  public void testCleanup_WithSteps() throws Exception {
+    Trans trans = new Trans();
+    // A step that is already disposed
+    StepInterface step1 = mock( StepInterface.class );
+    StepMetaInterface meta1 = mock( StepMetaInterface.class );
+    StepDataInterface data1 = mock( StepDataInterface.class );
+    when( data1.isDisposed() ).thenReturn( true );
+    StepMetaDataCombi stepMetaDataCombi1 = new StepMetaDataCombi();
+    stepMetaDataCombi1.step = step1;
+    stepMetaDataCombi1.meta = meta1;
+    stepMetaDataCombi1.data = data1;
+    // A step not yet disposed
+    StepInterface step2 = mock( StepInterface.class );
+    StepMetaInterface meta2 = mock( StepMetaInterface.class );
+    StepDataInterface data2 = mock( StepDataInterface.class );
+    when( data2.isDisposed() ).thenReturn( false );
+    StepMetaDataCombi stepMetaDataCombi2 = new StepMetaDataCombi();
+    stepMetaDataCombi2.step = step2;
+    stepMetaDataCombi2.meta = meta2;
+    stepMetaDataCombi2.data = data2;
+
+    List<StepMetaDataCombi> steps = Arrays.asList( stepMetaDataCombi1, stepMetaDataCombi2 );
+    trans.setSteps( steps );
+    // this should work (no exception thrown)
+    trans.cleanup();
+
+    // The isDisposed method is always invoked  
+    verify( data1 ).isDisposed();
+    verify( data2 ).isDisposed();
+    // Only 'data2' is to be disposed
+    verify( step1, times( 0 ) ).dispose( any( StepMetaInterface.class ), any( StepDataInterface.class ) );
+    verify( step2, times( 1 ) ).dispose( any( StepMetaInterface.class ), any( StepDataInterface.class ) );
+    // The cleanup method is always invoked
+    verify( step1 ).cleanup();
+    verify( step2 ).cleanup();
   }
 
 }

@@ -37,6 +37,12 @@ folder .folder.selected {
   color: #FFF;
 }
 
+folder .folder.highlighted {
+  -webkit-box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+  -moz-box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+  box-shadow: inset 0 0 0 1px rgba(11,137,182,1);
+}
+
 folder.dark .folder.selected {
 	background-color: #0F2B5B;
 }
@@ -58,24 +64,26 @@ folder .folder .folderArrowWrapper {
 }
 
 folder .folder .folderArrow {
-  background: url("../../img/chevron_right_tree.svg") no-repeat left center;
+  background: url("../../img/DropRight.XS_D.svg") no-repeat center center;
   height: 20px;
-  width: 6px;
+  width: 8px;
   float: right;
+  background-size: 32px;
 }
 
 folder .folder.selected .folderArrow {
-  background: url("../../img/chevron_right_tree.svg") no-repeat right center;
+  background-image: url("../../img/DropRight.XS_D_white.svg");
 }
 
 folder .folder.opened .folderArrow {
-  background: url("../../img/chevron_down_tree.svg") no-repeat left center;
+  background: url("../../img/DropDown.XS_D.svg") no-repeat center center;
   height: 20px;
   width: 10px;
+  background-size: 32px;
 }
 
 folder .folder.opened.selected .folderArrow {
-  background-position: right center;
+  background-image: url("../../img/DropDown.XS_D_white.svg");
 }
 
 folder .folder.empty .folderArrow {
@@ -84,11 +92,16 @@ folder .folder.empty .folderArrow {
 
 /* FOLDER image states */
 folder .folder .folderImage {
-  background: url("../../img/file_icons/folder.svg") no-repeat left center;
-  height: 20px;
+  background: url("../../img/file_icons/Archive.S_D.svg") no-repeat center center;
+  background-size: 32px;
+  height: 18px;
   width: 16px;
   margin-left: 10px;
   float: left;
+}
+
+folder .folder.selected .folderImage {
+  background-image: url("../../img/file_icons/Archive.S_D_white.svg");
 }
 
 folder .folder .folderImage.loading {
@@ -104,28 +117,39 @@ folder .folder.selected .folderImage.loading {
 }
 
 folder .folder.recents .folderImage {
-  background: url("../../img/recents.svg") no-repeat left center;
+  background: url("../../img/Time.S_D.svg") no-repeat center center;
+  background-size: 32px;
+}
+
+folder .folder.recents.selected .folderImage {
+  background-image: url("../../img/Time.S_D_white.svg");
 }
 
 folder .folder.local .folderImage {
-  background: url("../../img/local.svg") no-repeat left center;
-  width: 11px;
-  height: 16px;
-  margin-top: 2px;
+  background: url("../../img/Disk.S_D.svg") no-repeat center center;
+  background-size: 32px;
+}
+
+folder .folder.local.selected .folderImage {
+  background-image: url("../../img/Disk.S_D_white.svg");
 }
 
 folder .folder.repository .folderImage {
-  background: url("../../img/repository.svg") no-repeat left center;
-  margin-top: 2px;
-  width: 20px;
-  height: 16px;
+  background: url("../../img/Cloud.S_D.svg") no-repeat center center;
+  background-size: 32px;
 }
 
-folder .folder.environments .folderImage {
-  margin-top: 3px;
-  background: url("../../img/vfs.svg") no-repeat left center;
-  width: 16px;
-  height: 14px;
+folder .folder.repository.selected .folderImage {
+  background-image: url("../../img/Cloud.S_D_white.svg");
+}
+
+folder .folder.vfs .folderImage {
+  background: url("../../img/VFS_D.svg") no-repeat center center;
+  background-size: 32px;
+}
+
+folder .folder.vfs.selected .folderImage {
+  background-image: url("../../img/VFS_D_white.svg");
 }
 
 folder .folder.home .folderName,
@@ -134,17 +158,21 @@ folder .folder.public .folderName {
 }
 
 folder .folder.home .folderImage {
-  background: url("../../img/home.svg") no-repeat left center;
+  background: url("../../img/Home.S_D.svg") no-repeat center center;
   background-size: 32px;
+}
+
+folder .folder.home.selected .folderImage {
+  background-image: url("../../img/Home.S_D_white.svg");
 }
 
 folder .folder.public .folderImage {
-  background: url("../../img/public.svg") no-repeat left center;
+  background: url("../../img/People.S_D.svg") no-repeat center center;
   background-size: 32px;
 }
 
-folder .folder.selected .folderImage {
-  background-position: right center;
+folder .folder.public.selected .folderImage {
+  background-image: url("../../img/People.S_D_white.svg");
 }
 
 folder .folder .folderName {

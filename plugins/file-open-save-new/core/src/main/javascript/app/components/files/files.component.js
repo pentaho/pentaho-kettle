@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,12 @@
  **/
 define([
   "../../services/clipboard.service",
+  "../../services/providers/fileutil",
   "../utils",
   "text!./files.html",
   "pentaho/i18n-osgi!file-open-save-new.messages",
   "css!./files.css"
-], function (clipboardService, utils, filesTemplate, i18n) {
+], function (clipboardService, fileUtils, utils, filesTemplate, i18n) {
   "use strict";
 
   var options = {
@@ -53,7 +54,7 @@ define([
     controller: filesController
   };
 
-  filesController.$inject = [clipboardService.name, "$timeout", "$filter", "$document", "$scope"];
+  filesController.$inject = [clipboardService.name, "$timeout", "$filter", "$document", "$scope", "$state"];
 
   /**
    * The Files Controller.
@@ -63,7 +64,7 @@ define([
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    * @param $filter
    */
-  function filesController(clipboardService, $timeout, $filter, $document, $scope) {
+  function filesController(clipboardService, $timeout, $filter, $document, $scope, $state) {
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
@@ -83,16 +84,22 @@ define([
     vm.onRenameClick = onRenameClick;
     vm.onClick = onClick;
     vm.onRightClick = onRightClick;
+    vm.showFileContext = showFileContext;
+    vm.showFolderContext = showFolderContext;
     vm.isSelected = isSelected;
+    vm.isHighlighted = isHighlighted;
     vm.onCopyStart = onCopyStart;
     vm.onCut = onCut;
     vm.onPaste = onPaste;
     vm.canPaste = canPaste;
     vm.onPasteFolder = onPasteFolder;
     vm.onAddFolderClick = onAddFolderClick;
+    vm.onBodyClick = onBodyClick;
     vm.errorType = 0;
     vm.onKeyDown = onKeyDown;
     vm.onKeyUp = onKeyUp;
+    vm.state = $state;
+    vm.highlighted = [];
     var targetFiles = [];
 
     /**
@@ -117,13 +124,30 @@ define([
     function onChanges(changes) {
       $timeout(function () {
         vm.selectedFile = null;
-        _setSort(0, false, "name");
-      }, 200);
+      });
+    }
+
+    function onBodyClick(e, id) {
+      var parentNode = e.target.parentNode;
+      var found = false;
+      while (parentNode) {
+        if (parentNode.id === id) {
+          found = true;
+          break;
+        }
+        parentNode = parentNode.parentNode;
+      }
+      if (!found) {
+        vm.highlighted = [];
+      }
     }
 
     function onKeyDown(event) {
       if (event.target.tagName !== "INPUT") {
         var ctrlKey = event.metaKey || event.ctrlKey;
+        if (event.keyCode === 27) {
+          vm.highlighted = [];
+        }
         if (event.keyCode === 67 && ctrlKey) {
           targetFiles = vm.selectedFiles;
           clipboardService.set(targetFiles, "copy");
@@ -154,15 +178,15 @@ define([
     }
 
     var types = [];
-    types['kjb'] = "job";
-    types['ktr'] = "trans";
-    types['jpg'] = "image";
-    types['png'] = "image";
-    types['gif'] = "image";
-    types['txt'] = "text";
-    types['csv'] = "text";
-    types['json'] = "text";
-    types['xml'] = "text";
+    types['kjb'] = "Job.S_D";
+    types['ktr'] = "Transformation.S_D";
+    types['jpg'] = "Picture.S_D";
+    types['png'] = "Picture.S_D";
+    types['gif'] = "Picture.S_D";
+    types['txt'] = "Report.S_D";
+    types['csv'] = "Report.S_D";
+    types['json'] = "Report.S_D";
+    types['xml'] = "Report.S_D";
 
     /**
      * Gets the file extension
@@ -171,12 +195,14 @@ define([
      */
     function getExtension(file) {
       if (file.type === "folder") {
-        return "folder";
+        return vm.isSelected(file) && !vm.isHighlighted(file) ? "Archive.S_D_white" : "Archive.S_D";
       }
       var index = file.path.lastIndexOf(".");
       var extension = file.path.substr(index + 1, file.path.length);
       var type = types[extension.toLowerCase()];
-      return type ? type : "blank";
+      var icon = type ? type : "Doc.S_D";
+      icon += vm.isSelected(file) && !vm.isHighlighted(file) ? "_white" : "";
+      return icon;
     }
 
     /**
@@ -201,6 +227,7 @@ define([
      * @param {Boolean} ctrl - whether or not ctrl/command key is pressed
      */
     function selectFile(file, shift, ctrl) {
+      vm.highlighted = [];
       if (ctrl) {
         var index = vm.selectedFiles.indexOf(file);
         if (index === -1) {
@@ -257,7 +284,8 @@ define([
      */
     function _createFolder(folder, current) {
       folder.name = current;
-      folder.path = _getNewPath(folder.path, current);
+      folder.path = fileUtils.replaceFilename(folder.path, current);
+
       vm.onCreateFolder({
         folder: folder
       }).then(function () {
@@ -283,7 +311,7 @@ define([
      * @private
      */
     function _renameFile(file, current, previous) {
-      var newPath = _getNewPath(file.path, current);
+      var newPath = fileUtils.replaceFilename(file.path, current);
       file.name = current;
       vm.onRename({
         file: file,
@@ -293,10 +321,6 @@ define([
       }, function () {
         file.name = previous;
       });
-    }
-
-    function _getNewPath(path, newName) {
-      return path.substr(0, path.lastIndexOf("/")) + "/" + newName;
     }
 
     /**
@@ -412,6 +436,9 @@ define([
      */
     function onRenameClick() {
       targetFiles[0].editing = true;
+      $timeout(function() {
+        selectFile(targetFiles[0]);
+      });
     }
 
     /**
@@ -437,15 +464,45 @@ define([
      * @param {File} file - File object that was clicked
      */
     function onRightClick(e, file) {
+      if (!vm.isSelected(file)) {
+        vm.selectedFiles = [];
+      }
       if (file === null) {
         targetFiles = [vm.folder];
       } else {
-        if ( vm.selectedFiles.length === 0 || ( vm.selectedFiles.length > 0 && vm.selectedFiles.indexOf(file) === -1 ) ) {
+        if (vm.selectedFiles.length === 0 || (vm.selectedFiles.length > 0 && !vm.isSelected(file))) {
           targetFiles = [file];
         } else {
           targetFiles = vm.selectedFiles;
         }
       }
+      vm.highlighted = targetFiles;
+    }
+
+    /**
+     * Determines if the context menu should be shown for File/Folder.
+     * @returns {boolean}
+     */
+    function showFileContext() {
+      if (vm.highlighted && vm.highlighted.length > 0) {
+        for (var i = 0; i < vm.highlighted.length; i++) {
+          if (!vm.highlighted[i].canEdit) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    /**
+     * Determines if the context menu should be shown for "Add Folder" context.
+     * @returns {boolean}
+     */
+    function showFolderContext() {
+      if (vm.folder) {
+        return vm.folder.canEdit || vm.folder.canAddChildren;
+      }
+      return false;
     }
 
     /**
@@ -455,6 +512,10 @@ define([
      */
     function isSelected(file) {
       return vm.selectedFiles.indexOf(file) !== -1;
+    }
+
+    function isHighlighted(file) {
+      return vm.highlighted.indexOf(file) !== -1;
     }
 
     /**
@@ -506,7 +567,17 @@ define([
     }
 
     function fileFilter(file) {
-      return file.type === "folder" || vm.filter === "all" || file.path.match(vm.filter);
+
+      if (vm.state.is('selectFolder')) {
+        return file.type === "folder"
+      }
+
+      if (!vm.filter) {
+        return true;
+      }
+      return file.type === "folder"
+          || vm.filter === "*"
+          || file.path.toLowerCase().match(vm.filter.toLowerCase());
     }
 
     /**

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,16 +23,12 @@
 package org.pentaho.di.trans.steps.databaselookup;
 
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Old code, copied from {@linkplain DatabaseLookup}
@@ -52,7 +48,7 @@ public class DefaultCache implements DatabaseLookupData.Cache {
 
 
   private final DatabaseLookupData data;
-  private final LinkedHashMap<RowMetaAndData, TimedRow> map;
+  private final LinkedHashMap<RowMetaAndData, Object[]> map;
 
   DefaultCache( DatabaseLookupData data, int capacity ) {
     this.data = data;
@@ -63,9 +59,9 @@ public class DefaultCache implements DatabaseLookupData.Cache {
   public Object[] getRowFromCache( RowMetaInterface lookupMeta, Object[] lookupRow ) throws KettleException {
     if ( data.allEquals ) {
       // only do the map lookup when all equals otherwise conditions >, <, <> will give wrong results
-      TimedRow timedRow = map.get( new RowMetaAndData( data.lookupMeta, lookupRow ) );
-      if ( timedRow != null ) {
-        return timedRow.getRow();
+      Object[] row = map.get( new RowMetaAndData( data.lookupMeta, lookupRow ) );
+      if ( row != null ) {
+        return row;
       }
     } else { // special handling of conditions <,>, <> etc.
       if ( !data.hasDBCondition ) { // e.g. LIKE not handled by this routine, yet
@@ -73,7 +69,8 @@ public class DefaultCache implements DatabaseLookupData.Cache {
         // Not all conditions are "=" so we are going to have to evaluate row by row
         // A sorted list or index might be a good solution here...
         //
-        for ( RowMetaAndData key : map.keySet() ) {
+        for ( Map.Entry<RowMetaAndData, Object[]> entry : map.entrySet() ) {
+          final RowMetaAndData key = entry.getKey();
           // Now verify that the key is matching our conditions...
           //
           boolean match = true;
@@ -130,9 +127,9 @@ public class DefaultCache implements DatabaseLookupData.Cache {
             lookupIndex++;
           }
           if ( match ) {
-            TimedRow timedRow = map.get( key );
-            if ( timedRow != null ) {
-              return timedRow.getRow();
+            Object[] row = entry.getValue();
+            if ( row != null ) {
+              return row;
             }
           }
         }
@@ -145,53 +142,14 @@ public class DefaultCache implements DatabaseLookupData.Cache {
   public void storeRowInCache( DatabaseLookupMeta meta, RowMetaInterface lookupMeta, Object[] lookupRow,
                                Object[] add ) {
     RowMetaAndData rowMetaAndData = new RowMetaAndData( lookupMeta, lookupRow );
-    // DEinspanjer 2009-02-01 XXX: I want to write a test case to prove this point before checking in.
-    // /* Don't insert a row with a duplicate key into the cache. It doesn't seem
-    // * to serve a useful purpose and can potentially cause the step to return
-    // * different values over the life of the transformation (if the source DB rows change)
-    // * Additionally, if using the load all data feature, re-inserting would reverse the order
-    // * specified in the step.
-    // */
-    // if (!data.look.containsKey(rowMetaAndData)) {
-    // data.look.put(rowMetaAndData, new TimedRow(add));
-    // }
-    map.put( rowMetaAndData, new TimedRow( add ) );
-
-    // See if we have to limit the cache_size.
-    // Sample 10% of the rows in the cache.
-    // Remove everything below the second lowest date.
-    // That should on average remove more than 10% of the entries
-    // It's not exact science, but it will be faster than the old algorithm
+    if ( !map.containsKey( rowMetaAndData ) ) {
+      map.put( rowMetaAndData, add );
+    }
 
     // DEinspanjer 2009-02-01: If you had previously set a cache size and then turned on load all, this
     // method would throw out entries if the previous cache size wasn't big enough.
     if ( !meta.isLoadingAllDataInCache() && meta.getCacheSize() > 0 && map.size() > meta.getCacheSize() ) {
-      List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>( map.keySet() );
-      List<Date> samples = new ArrayList<Date>();
-      int incr = keys.size() / 10;
-      if ( incr == 0 ) {
-        incr = 1;
-      }
-      for ( int k = 0; k < keys.size(); k += incr ) {
-        RowMetaAndData key = keys.get( k );
-        TimedRow timedRow = map.get( key );
-        samples.add( timedRow.getLogDate() );
-      }
-
-      Collections.sort( samples );
-
-      if ( samples.size() > 1 ) {
-        Date smallest = samples.get( 1 );
-
-        // Everything below the smallest date goes away...
-        for ( RowMetaAndData key : keys ) {
-          TimedRow timedRow = map.get( key );
-
-          if ( timedRow.getLogDate().compareTo( smallest ) < 0 ) {
-            map.remove( key );
-          }
-        }
-      }
+      map.remove( map.entrySet().iterator().next().getKey() );
     }
   }
 }

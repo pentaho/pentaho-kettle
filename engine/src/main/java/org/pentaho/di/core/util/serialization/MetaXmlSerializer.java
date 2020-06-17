@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -21,6 +21,7 @@
 package org.pentaho.di.core.util.serialization;
 
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -30,22 +31,23 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.nio.charset.Charset.defaultCharset;
 import static org.pentaho.di.core.util.serialization.StepMetaProps.STEP_TAG;
 
 /**
  * Converts StepMetaProps to/from an XML string using JAXB.
  */
+@SuppressWarnings( "squid:S00112" )
 public class MetaXmlSerializer {
+  private MetaXmlSerializer() { }
 
   public static String serialize( StepMetaProps stepMetaProps ) {
     try ( ByteArrayOutputStream baos = new ByteArrayOutputStream() ) {
@@ -53,14 +55,14 @@ public class MetaXmlSerializer {
       marshalObj.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, true );
       marshalObj.setProperty( Marshaller.JAXB_FRAGMENT, true );
       marshalObj.marshal( stepMetaProps, baos );
-      return baos.toString( defaultCharset().name() );
+      return baos.toString( StandardCharsets.UTF_8.name() );
     } catch ( JAXBException | IOException e ) {
       throw new RuntimeException( e );
     }
   }
 
   public static StepMetaProps deserialize( String ser ) {
-    try ( ByteArrayInputStream bais = new ByteArrayInputStream( ser.getBytes( defaultCharset() ) ) ) {
+    try ( ByteArrayInputStream bais = new ByteArrayInputStream( ser.getBytes( StandardCharsets.UTF_8 ) ) ) {
       Unmarshaller unmarshaller = JAXBContext.newInstance( StepMetaProps.class ).createUnmarshaller();
       return (StepMetaProps) unmarshaller.unmarshal( bais );
     } catch ( IOException | JAXBException e ) {
@@ -90,7 +92,7 @@ public class MetaXmlSerializer {
       ( (Element) node )
         .setAttributeNS( XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
           "xmlns:xs", "http://www.w3.org/2001/XMLSchema" );
-      TransformerFactory.newInstance()
+      XMLParserFactoryProducer.createSecureTransformerFactory()
         .newTransformer()
         .transform( new DOMSource( node ), new StreamResult( sw ) );
     } catch ( TransformerException te ) {

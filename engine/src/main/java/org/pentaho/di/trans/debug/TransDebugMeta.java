@@ -93,8 +93,9 @@ public class TransDebugMeta {
 
     // for every step in the map, add a row listener...
     //
-    for ( final StepMeta stepMeta : stepDebugMetaMap.keySet() ) {
-      final StepDebugMeta stepDebugMeta = stepDebugMetaMap.get( stepMeta );
+    for ( final Map.Entry<StepMeta, StepDebugMeta> entry : stepDebugMetaMap.entrySet() ) {
+      final StepMeta stepMeta = entry.getKey();
+      final StepDebugMeta stepDebugMeta = entry.getValue();
 
       // What is the transformation thread to attach a listener to?
       //

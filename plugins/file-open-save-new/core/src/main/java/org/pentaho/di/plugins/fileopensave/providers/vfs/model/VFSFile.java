@@ -25,6 +25,7 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
@@ -36,12 +37,14 @@ import java.util.Objects;
  * Created by bmorrise on 2/13/19.
  */
 public class VFSFile extends BaseEntity implements File {
-  public static String TYPE = "file";
+
+  public static final String TYPE = "file";
+  public static final String DOMAIN_ROOT = "[\\w]+:///?";
+  public static final String PROTOCOL_SEPARATOR = "://";
+  public static final String DELIMITER = "/";
 
   private String connection;
-
-  public VFSFile() {
-  }
+  private String domain;
 
   @Override public String getType() {
     return TYPE;
@@ -60,21 +63,39 @@ public class VFSFile extends BaseEntity implements File {
   }
 
   public String getConnectionPath() {
-    if ( getPath() == null || connection == null ) {
-      return null;
-    }
-    return ConnectionFileProvider.SCHEME + "://" + connection + "/" + getPath().replaceAll( "[\\w]+://", "" );
+    return getConnectionPath( getPath() );
   }
 
-  public static VFSFile create( String parent, FileObject fileObject, String connection ) {
+  public String getConnectionParentPath() {
+    return getConnectionPath( getParent() );
+  }
+
+  private String getConnectionPath( String root ) {
+    if ( root == null || connection == null ) {
+      return null;
+    }
+    String replacement = DOMAIN_ROOT + ( Utils.isEmpty( domain ) ? "" : domain );
+    StringBuilder path = new StringBuilder();
+    path.append( ConnectionFileProvider.SCHEME );
+    path.append( PROTOCOL_SEPARATOR );
+    path.append( connection );
+    if ( Utils.isEmpty( domain ) ) {
+      path.append( DELIMITER );
+    }
+    path.append( root.replaceAll( replacement, "" ) );
+    return path.toString();
+  }
+
+  public static VFSFile create( String parent, FileObject fileObject, String connection, String domain ) {
     VFSFile vfsFile = new VFSFile();
     vfsFile.setName( fileObject.getName().getBaseName() );
-    vfsFile.setPath( fileObject.getName().getFriendlyURI() );
+    vfsFile.setPath( fileObject.getName().getURI() );
     vfsFile.setParent( parent );
     if ( connection != null ) {
       vfsFile.setConnection( connection );
       vfsFile.setRoot( VFSFileProvider.NAME );
     }
+    vfsFile.setDomain( domain != null ? domain : "" );
     vfsFile.setCanEdit( true );
     try {
       vfsFile.setDate( new Date( fileObject.getContent().getLastModifiedTime() ) );
@@ -82,6 +103,14 @@ public class VFSFile extends BaseEntity implements File {
       vfsFile.setDate( new Date() );
     }
     return vfsFile;
+  }
+
+  public String getDomain() {
+    return domain;
+  }
+
+  public void setDomain( String domain ) {
+    this.domain = domain;
   }
 
   @Override

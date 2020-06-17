@@ -21,7 +21,7 @@ selectbox .selected_value {
   border-radius: 5px;
   height: 33px;
   line-height: 33px;
-  background-image: url('./img/chevron_down.svg');
+  background-image: url('../../img/DropDown.XS_D.svg');
   background-repeat: no-repeat;
   background-position: right center;
 }

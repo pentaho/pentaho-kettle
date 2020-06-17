@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -204,15 +204,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     data.readerRowSet = new QueueRowSet();
     data.readerRowSet.setDone();
     this.rowOutputConverter = new RowOutputConverter( getLogChannel() );
-
-    // provide reader input fields with real path [PDI-15942]
-    JsonInputField[] inputFields = new JsonInputField[data.nrInputFields];
-    for ( int i = 0; i < data.nrInputFields; i++ ) {
-      JsonInputField field = meta.getInputFields()[ i ].clone();
-      field.setPath( environmentSubstitute( field.getPath() ) );
-      inputFields[i] = field;
-    }
-    data.reader.setFields( inputFields );
   }
 
   private void addFileToResultFilesname( FileObject file ) {
@@ -449,7 +440,16 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   private void createReader() throws KettleException {
-    data.reader = new FastJsonReader( meta.getInputFields(), meta.isDefaultPathLeafToNull(), log );
+    // provide reader input fields with real path [PDI-15942]
+    // [PDI-18283] Need to have this run before we create the FastJsonReader, so we can use resolve Json Paths
+    JsonInputField[] inputFields = new JsonInputField[data.nrInputFields];
+    for ( int i = 0; i < data.nrInputFields; i++ ) {
+      JsonInputField field = meta.getInputFields()[ i ].clone();
+      field.setPath( environmentSubstitute( field.getPath(), true ) );
+      inputFields[i] = field;
+    }
+    // Instead of putting in the meta.inputFields, we put in our json path resolved input fields
+    data.reader = new FastJsonReader( inputFields, meta.isDefaultPathLeafToNull(), log );
     data.reader.setIgnoreMissingPath( meta.isIgnoreMissingPath() );
   }
 

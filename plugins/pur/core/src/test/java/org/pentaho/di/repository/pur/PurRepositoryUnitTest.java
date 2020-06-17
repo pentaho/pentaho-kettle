@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
 package org.pentaho.di.repository.pur;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,6 +71,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -82,6 +86,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings( "squid:S1192" )
 public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
   private VariableSpace mockedVariableSpace;
   private HasDatabasesInterface mockedHasDbInterface;
@@ -114,7 +119,6 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     purRepository.init( mockMeta );
     purRepository.setPurRepositoryConnector( connector );
-    // purRepository.setTest( mockRepo );
     ObjectId objectId = mock( ObjectId.class );
     RepositoryFile mockFile = mock( RepositoryFile.class );
     RepositoryFile mockRootFolder = mock( RepositoryFile.class );
@@ -179,11 +183,9 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     purRepository.init( mockMeta );
     purRepository.setPurRepositoryConnector( connector );
-    // purRepository.setTest( mockRepo );
     ObjectId objectId = mock( ObjectId.class );
     RepositoryFile mockFile = mock( RepositoryFile.class );
     RepositoryFile mockRootFolder = mock( RepositoryFile.class );
-    RepositoryObjectType repositoryObjectType = RepositoryObjectType.TRANSFORMATION;
     RepositoryFileTree mockRepositoryTree = mock( RepositoryFileTree.class );
     String testId = "TEST_ID";
     String testFileId = "TEST_FILE_ID";
@@ -198,7 +200,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
 
     List<RepositoryFile> rootChildren = new ArrayList<>( Collections.singletonList( mockFile ) );
     when( mockRepo.getChildren( argThat( IsInstanceOf.<RepositoryRequest>instanceOf( RepositoryRequest.class ) ) ) )
-        .thenReturn( rootChildren );
+      .thenReturn( rootChildren );
     // for Lazy Repo
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
     // for Eager Repo
@@ -252,7 +254,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
 
     List<RepositoryFile> rootChildren = new ArrayList<>( Arrays.asList( mockEtcFolder, mockFolderVisible ) );
     when( mockRepo.getChildren( argThat( IsInstanceOf.<RepositoryRequest>instanceOf( RepositoryRequest.class ) ) ) )
-        .thenReturn( rootChildren );
+      .thenReturn( rootChildren );
     // for Lazy Repo
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
     // for Eager Repo
@@ -263,8 +265,8 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     when( mockEtcFolderTree.getFile() ).thenReturn( mockEtcFolder );
     RepositoryFileTree mockFolderVisibleTree = mock( RepositoryFileTree.class );
     when( mockFolderVisibleTree.getFile() ).thenReturn( mockFolderVisible );
-    when( repositoryFileTree.getChildren() ).thenReturn( new ArrayList<RepositoryFileTree>( Arrays.asList(
-        mockEtcFolderTree, mockFolderVisibleTree ) ) );
+    when( repositoryFileTree.getChildren() ).thenReturn( new ArrayList<>( Arrays.asList(
+      mockEtcFolderTree, mockFolderVisibleTree ) ) );
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
     int children = purRepository.getRootDir().getNrSubdirectories();
     assertThat( children, equalTo( 1 ) );
@@ -301,7 +303,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
         assertEquals( logTable.getConnectionName(), hardcodedString );
         assertEquals( logTable.getSchemaName(), hardcodedString );
         assertEquals( logTable.getTimeoutInDays(), hardcodedString );
-        assertEquals( logTable.getTableName(), null );
+        assertNull( logTable.getTableName() );
       }
     } finally {
       System.setProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" );
@@ -357,7 +359,6 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     purRepository.init( mockMeta );
     purRepository.setPurRepositoryConnector( connector );
-    // purRepository.setTest( mockRepo );
     ObjectId objectId = mock( ObjectId.class );
 
     RepositoryFile mockFileVersioningEnabled = mock( RepositoryFile.class );
@@ -368,14 +369,13 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     RepositoryFileTree publicFolderTree = mock( RepositoryFileTree.class );
 
     RepositoryFile mockRootFolder = mock( RepositoryFile.class );
-    RepositoryObjectType repositoryObjectType = RepositoryObjectType.TRANSFORMATION;
     RepositoryFileTree mockRepositoryTree = mock( RepositoryFileTree.class );
 
 
     String testId = "TEST_ID";
     String testFileId = "TEST_FILE_ID";
     List<RepositoryFileTree> children =
-        Arrays.asList( mockRepositoryTreeChildVersioningEnabled, mockRepositoryTreeChildVersioningNotEnabled );
+      Arrays.asList( mockRepositoryTreeChildVersioningEnabled, mockRepositoryTreeChildVersioningNotEnabled );
     when( objectId.getId() ).thenReturn( testId );
     when( mockRepo.getFileById( testId ) ).thenReturn( mockFileVersioningEnabled );
 
@@ -411,14 +411,16 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
       }
     } ) ) ).thenReturn( publicFolderTree );
     when( mockRepositoryTree.getFile() ).thenReturn( mockRootFolder );
-    when( mockRepositoryTree.getChildren() ).thenReturn( new ArrayList<>( Arrays.asList( publicFolderTree ) ) );
+    when( mockRepositoryTree.getChildren() ).thenReturn( new ArrayList<>(
+      Collections.singletonList( publicFolderTree ) ) );
     when( publicFolderTree.getChildren() ).thenReturn( children );
     when( mockRootFolder.getId() ).thenReturn( "/" );
     when( mockRootFolder.getPath() ).thenReturn( "/" );
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
     when( mockRepo.getFile( "/public" ) ).thenReturn( publicFolder );
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
-    List<RepositoryElementMetaInterface> repositoryObjects = purRepository.findDirectory( "/public" ).getRepositoryObjects();
+    List<RepositoryElementMetaInterface> repositoryObjects =
+      purRepository.findDirectory( "/public" ).getRepositoryObjects();
     assertThat( repositoryObjects.size(), is( 2 ) );
 
     // Test Enabled
@@ -444,7 +446,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     PluginMockInterface pluginInterface = mock( PluginMockInterface.class );
     when( pluginInterface.getName() ).thenReturn( KettleExtensionPoint.TransImportAfterSaveToRepo.id );
     when( pluginInterface.getMainType() ).thenReturn( (Class) ExtensionPointInterface.class );
-    when( pluginInterface.getIds() ).thenReturn( new String[] {"extensionpointId"} );
+    when( pluginInterface.getIds() ).thenReturn( new String[] { "extensionpointId" } );
 
     ExtensionPointInterface extensionPoint = mock( ExtensionPointInterface.class );
     when( pluginInterface.loadClass( ExtensionPointInterface.class ) ).thenReturn( extensionPoint );
@@ -453,7 +455,8 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
 
     PurRepository rep = mock( PurRepository.class );
-    doCallRealMethod().when( rep ).saveTransOrJob( any( ISharedObjectsTransformer.class ), any( RepositoryElementInterface.class ), anyString(),
+    doCallRealMethod().when( rep )
+      .saveTransOrJob( any( ISharedObjectsTransformer.class ), any( RepositoryElementInterface.class ), anyString(),
         any( Calendar.class ), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean() );
     IUnifiedRepository pur = mock( IUnifiedRepository.class );
     doCallRealMethod().when( rep ).setTest( same( pur ) );
@@ -466,7 +469,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     RepositoryFile file = mock( RepositoryFile.class );
     when( file.getId() ).thenReturn( "id" );
     when( pur.createFile( any( Serializable.class ), any( RepositoryFile.class ), any( IRepositoryFileData.class ),
-     anyString() ) ).thenReturn( file );
+      anyString() ) ).thenReturn( file );
 
     TransMeta trans = mock( TransMeta.class );
     when( trans.getRepositoryElementType() ).thenReturn( RepositoryObjectType.TRANSFORMATION );
@@ -611,6 +614,17 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     when( repository.createRepositoryDirectory( treeMocked, newDirectory ) ).thenCallRealMethod();
 
     assertEquals( "/admin1", repository.createRepositoryDirectory( treeMocked, newDirectory ).getPath() );
+  }
+
+  @Test
+  @SuppressWarnings( {"squid:S1075", "squid:S3655"} )
+  public void testGetURI() throws URISyntaxException {
+    PurRepository purRepo = new PurRepository();
+    PurRepositoryMeta repoMeta = new PurRepositoryMeta();
+    repoMeta.setRepositoryLocation( new PurRepositoryLocation( "http://localhost:8080/pentaho" ) );
+    purRepo.init( repoMeta );
+    assertTrue( purRepo.getUri().isPresent() );
+    assertThat( purRepo.getUri().get(), equalTo( new URI( "http://localhost:8080/pentaho" ) ) );
   }
 
 }

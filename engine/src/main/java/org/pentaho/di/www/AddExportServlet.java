@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -266,9 +266,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
           // Also copy the parameters over...
           //
           Map<String, String> params = jobExecutionConfiguration.getParams();
-          for ( String param : params.keySet() ) {
-            String value = params.get( param );
-            jobMeta.setParameterValue( param, value );
+          for ( Map.Entry<String, String> entry : params.entrySet() ) {
+            jobMeta.setParameterValue( entry.getKey(), entry.getValue() );
           }
 
         } else {

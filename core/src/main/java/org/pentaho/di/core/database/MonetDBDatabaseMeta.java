@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,11 +65,11 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @see DatabaseInterface#getNotFoundTK(boolean)
    */
   @Override
-  public int getNotFoundTK( boolean use_autoinc ) {
-    if ( supportsAutoInc() && use_autoinc ) {
+  public int getNotFoundTK( boolean useAutoinc ) {
+    if ( supportsAutoInc() && useAutoinc ) {
       return 1;
     }
-    return super.getNotFoundTK( use_autoinc );
+    return super.getNotFoundTK( useAutoinc );
   }
 
   @Override
@@ -148,7 +148,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    *          The column defined as a value
    * @param tk
    *          the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *          whether or not this field uses auto increment
    * @param pk
    *          the name of the primary key field
@@ -157,9 +157,9 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @return the SQL statement to add a column to the specified table
    */
   @Override
-  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+    return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, useAutoinc, true, false );
   }
 
   /**
@@ -171,7 +171,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    *          The column defined as a value
    * @param tk
    *          the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *          whether or not this field uses auto increment
    * @param pk
    *          the name of the primary key field
@@ -180,9 +180,9 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @return the SQL statement to modify a column in the specified table
    */
   @Override
-  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+    return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, useAutoinc, true, false );
   }
 
   @Override
@@ -199,8 +199,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   }
 
   @Override
-  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-    boolean add_fieldname, boolean add_cr ) {
+  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean useAutoinc,
+                                    boolean addFieldName, boolean addCr ) {
     StringBuilder retval = new StringBuilder();
 
     String fieldname = v.getName();
@@ -210,7 +210,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     Boolean mode = MonetDBDatabaseMeta.safeModeLocal.get();
     boolean safeMode = mode != null && mode.booleanValue();
 
-    if ( add_fieldname ) {
+    if ( addFieldName ) {
       // protect the fieldname
       if ( safeMode ) {
         fieldname = getSafeFieldname( fieldname );
@@ -238,7 +238,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
           fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
-          if ( use_autoinc ) {
+          if ( useAutoinc ) {
             retval.append( "SERIAL" );
           } else {
             retval.append( "BIGINT" );
@@ -295,7 +295,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         break;
     }
 
-    if ( add_cr ) {
+    if ( addCr ) {
       retval.append( Const.CR );
     }
 

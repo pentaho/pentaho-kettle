@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -120,14 +120,8 @@ public class TextFileInputReader implements IBaseFileInputReader {
 
     // See if we need to skip the document header lines...
     if ( meta.content.layoutPaged ) {
-      for ( int i = 0; i < meta.content.nrLinesDocHeader; i++ ) {
-        // Just skip these...
-        TextFileInputUtils.getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder ); // header
-                                                                                                                // and
-        // footer: not
-        // wrapped
-        lineNumberInFile++;
-      }
+      lineNumberInFile = TextFileInputUtils.skipLines( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder,
+        meta.content.nrLinesDocHeader, meta.getEnclosure(), lineNumberInFile );
     }
 
     for ( int i = 0; i < bufferSize && !data.doneReading; i++ ) {
@@ -418,8 +412,13 @@ public class TextFileInputReader implements IBaseFileInputReader {
   }
 
   protected boolean tryToReadLine( boolean applyFilter ) throws KettleFileException {
-    String line;
-    line = TextFileInputUtils.getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
+
+    TextFileLine textFileLine = TextFileInputUtils
+      .getLine( log, isr, data.encodingType, data.fileFormatType, data.lineStringBuilder,
+      meta.getEnclosure(), lineNumberInFile );
+    String line = textFileLine.line;
+    lineNumberInFile = textFileLine.lineNumber;
+
     if ( line != null ) {
       // when there is no header, check the filter for the first line
       if ( applyFilter ) {

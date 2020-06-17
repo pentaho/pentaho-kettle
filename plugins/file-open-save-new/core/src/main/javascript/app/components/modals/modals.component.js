@@ -48,7 +48,12 @@ define([
    * @param $filter
    */
   function modalsController() {
+    var vm = this;
+    vm.$onInit = onInit;
 
+    function onInit() {
+      vm.closeLabel = i18n.get("file-open-save-plugin.close.button");
+    }
   }
 
   return {

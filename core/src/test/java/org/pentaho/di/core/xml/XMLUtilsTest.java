@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 public class XMLUtilsTest {
@@ -36,14 +38,18 @@ public class XMLUtilsTest {
   public void secureFeatureEnabledAfterDocBuilderFactoryCreation() throws Exception {
     DocumentBuilderFactory documentBuilderFactory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
 
-    assertEquals( true, documentBuilderFactory.getFeature( XMLConstants.FEATURE_SECURE_PROCESSING ) );
+    assertTrue( documentBuilderFactory.getFeature( XMLConstants.FEATURE_SECURE_PROCESSING ) );
   }
 
   @Test
   public void secureFeatureEnabledAfterSAXParserFactoryCreation() throws Exception {
     SAXParserFactory saxParserFactory = XMLParserFactoryProducer.createSecureSAXParserFactory();
 
-    assertEquals( true, saxParserFactory.getFeature( XMLConstants.FEATURE_SECURE_PROCESSING ) );
+    assertTrue( saxParserFactory.getFeature( XMLConstants.FEATURE_SECURE_PROCESSING ) );
+    assertFalse( saxParserFactory.getFeature( "http://xml.org/sax/features/external-general-entities" ) );
+    assertFalse( saxParserFactory.getFeature( "http://xml.org/sax/features/external-parameter-entities" ) );
+    assertFalse( saxParserFactory.getFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd" ) );
+    assertTrue( saxParserFactory.getFeature( "http://apache.org/xml/features/disallow-doctype-decl" ) );
   }
 
 }

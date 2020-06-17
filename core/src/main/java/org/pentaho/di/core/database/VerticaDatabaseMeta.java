@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -88,7 +88,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    *          The column defined as a value
    * @param tk
    *          the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *          whether or not this field uses auto increment
    * @param pk
    *          the name of the primary key field
@@ -97,10 +97,10 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @return the SQL statement to add a column to the specified table
    */
   @Override
-  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
     return "--NOTE: Table cannot be altered unless all projections are dropped.\nALTER TABLE "
-      + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+      + tablename + " ADD " + getFieldDefinition( v, tk, pk, useAutoinc, true, false );
   }
 
   /**
@@ -112,7 +112,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    *          The column defined as a value
    * @param tk
    *          the name of the technical key field
-   * @param use_autoinc
+   * @param useAutoinc
    *          whether or not this field uses auto increment
    * @param pk
    *          the name of the primary key field
@@ -121,16 +121,16 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @return the SQL statement to modify a column in the specified table
    */
   @Override
-  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
     return "--NOTE: Table cannot be altered unless all projections are dropped.\nALTER TABLE "
       + tablename + " ALTER COLUMN "
-      + v.getName() + " SET DATA TYPE " + getFieldDefinition( v, tk, pk, use_autoinc, false, false );
+      + v.getName() + " SET DATA TYPE " + getFieldDefinition( v, tk, pk, useAutoinc, false, false );
   }
 
   @Override
-  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-    boolean add_fieldname, boolean add_cr ) {
+  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean useAutoinc,
+                                    boolean addFieldName, boolean addCr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -138,7 +138,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     // Unused in vertica
     // int precision = v.getPrecision();
 
-    if ( add_fieldname ) {
+    if ( addFieldName ) {
       retval += fieldname + " ";
     }
 
@@ -169,7 +169,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         break;
     }
 
-    if ( add_cr ) {
+    if ( addCr ) {
       retval += Const.CR;
     }
 

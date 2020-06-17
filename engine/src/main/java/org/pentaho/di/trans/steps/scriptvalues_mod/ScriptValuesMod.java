@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -434,8 +434,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
           // Grab the variables in the "row" object too.
           //
-          for ( Integer index : usedRowValues.keySet() ) {
-            Value value = usedRowValues.get( index );
+          for ( Map.Entry<Integer, Value> entry : usedRowValues.entrySet() ) {
+            Value value = entry.getValue();
+            Integer index = entry.getKey();
             ValueMetaInterface valueMeta = rowMeta.getValueMeta( index );
             outputRow[ index ] = valueMeta.getValueData( value );
           }

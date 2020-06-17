@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,21 +21,19 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -44,7 +42,6 @@ import static org.junit.Assert.fail;
  * Created by tkafalas on 12/6/2017.
  */
 public class ValueMetaConverterTest {
-  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   private static final int startSource = 1;
   private static final int endSource = 10;
@@ -144,7 +141,7 @@ public class ValueMetaConverterTest {
               "type " + sourceType + "/" + targetType + ":" + testSpec[ 3 ].toString() + "=" + targetValue.toString() );
           }
           if ( targetType == ValueMetaInterface.TYPE_BINARY ) {
-            Arrays.equals( (byte[]) testSpec[ 3 ], (byte[]) targetValue );
+            assertArrayEquals( (byte[]) testSpec[ 3 ], (byte[]) targetValue );
           } else {
             assertEquals( testSpec[ 3 ], targetValue );
           }
@@ -180,12 +177,10 @@ public class ValueMetaConverterTest {
           }
         }
       }
-
     }
   }
 
   private String getKey( int sourceType, int targetType ) {
     return "" + sourceType + "," + targetType;
   }
-
 }

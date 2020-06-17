@@ -73,8 +73,20 @@ define(
          *
          * @return {Promise} - a promise resolved once data is returned
          */
-        function getDirectoryTree(filter) {
-          return _httpGet([baseUrl, "loadDirectoryTree", filter].join("/"));
+        function getDirectoryTree(filter, connectionTypes) {
+          var method = "GET";
+          var url = [baseUrl, "loadDirectoryTree", filter].join("/");
+
+          var options = {
+            method: method,
+            url: _cacheBust(url),
+            headers: {
+              Accept: "application/json"
+            },
+            params: {connectionTypes: connectionTypes}
+          };
+          return $http(options);
+
         }
 
         /**
@@ -167,7 +179,7 @@ define(
          * @return {Promise} - a promise resolved once data is returned
          */
         function checkForSecurityOrDupeIssues(path, name, fileName, override) {
-          if (fileName === null) {
+          if (fileName === null || fileName === "") {
             return _httpGet([baseUrl, "checkForSecurityOrDupeIssues",
               encodeURIComponent(path), encodeURIComponent(name), override].join("/"));
           }

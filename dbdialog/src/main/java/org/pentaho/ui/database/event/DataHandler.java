@@ -270,6 +270,7 @@ public class DataHandler extends AbstractXulEventHandler {
   private XulTextbox iamSecretKeyId;
   private XulTextbox iamSessionToken;
   private XulTextbox iamProfileName;
+  protected XulMenuList namedClusterList;
 
   public DataHandler() {
     databaseDialects = new ArrayList<String>();
@@ -278,6 +279,7 @@ public class DataHandler extends AbstractXulEventHandler {
       databaseDialects.add( dialect.getPluginName() );
     }
     Collections.sort( databaseDialects );
+
   }
 
   public void loadConnectionData() {
@@ -1392,6 +1394,11 @@ public class DataHandler extends AbstractXulEventHandler {
     if ( webAppName != null ) {
       meta.setDBName( webAppName.getValue() );
     }
+
+    if ( namedClusterList != null ) {
+
+      meta.getDatabaseInterface().setNamedCluster( namedClusterList.getValue() );
+    }
   }
 
   protected void setConnectionSpecificInfo( DatabaseMeta meta ) {
@@ -1403,6 +1410,17 @@ public class DataHandler extends AbstractXulEventHandler {
       DatabaseInterface databaseInterface = meta.getDatabaseInterface();
       if ( databaseInterface instanceof GenericDatabaseMeta ) {
         databaseDialectList.setSelectedItem( ( (GenericDatabaseMeta) databaseInterface ).getDatabaseDialect() );
+      }
+    }
+
+    if ( namedClusterList != null ) {
+      List<String> namedClusters = meta.getDatabaseInterface().getNamedClusterList();
+      if ( namedClusters != null ) {
+        namedClusterList.setElements( namedClusters );
+        if ( meta.getNamedCluster() != null ) {
+          namedClusterList.setSelectedItem( meta.getDatabaseInterface().getNamedCluster() );
+          namedClusterList.setValue( meta.getDatabaseInterface().getNamedCluster() );
+        }
       }
     }
 
@@ -1595,6 +1613,7 @@ public class DataHandler extends AbstractXulEventHandler {
     iamSecretKeyId = (XulTextbox) document.getElementById( "iam-secret-access-key" );
     iamSessionToken = (XulTextbox) document.getElementById( "iam-session-token" );
     iamProfileName = (XulTextbox) document.getElementById( "iam-profile-name" );
+    namedClusterList = (XulMenuList) document.getElementById( "named-cluster-list" );
 
     if ( portNumberBox != null && serverInstanceBox != null ) {
       if ( Boolean.parseBoolean( serverInstanceBox.getAttributeValue( "shouldDisablePortIfPopulated" ) ) ) {

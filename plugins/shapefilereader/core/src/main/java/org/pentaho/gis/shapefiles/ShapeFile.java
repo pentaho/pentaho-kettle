@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -49,6 +50,7 @@ public class ShapeFile {
 
   private String dbfFilename;
   private String shapeFilename;
+  private String encoding;
 
   public ShapeFile( LogChannelInterface log, String name ) {
     this.log = log;
@@ -62,6 +64,15 @@ public class ShapeFile {
     this.log = log;
     this.shapeFilename = shapeFilename;
     this.dbfFilename = dbfFilename;
+
+    shapes = new ArrayList<ShapeInterface>();
+  }
+
+  public ShapeFile( LogChannelInterface log, String shapeFilename, String dbfFilename, String encoding ) {
+    this.log = log;
+    this.shapeFilename = shapeFilename;
+    this.dbfFilename = dbfFilename;
+    this.encoding = encoding;
 
     shapes = new ArrayList<ShapeInterface>();
   }
@@ -88,6 +99,11 @@ public class ShapeFile {
 
       XBase xbase = new XBase( log, dbfFilename );
       xbase.open(); // throws exception now
+
+      //Set encoding
+      if ( StringUtils.isNotBlank( encoding ) ) {
+        xbase.getReader().setCharactersetName( encoding );
+      }
 
       // First determine the meta-data for this dbf file...
       RowMetaInterface fields = xbase.getFields();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -141,6 +141,9 @@ public class StringUtil {
         Object value = variablesValues.get( varName );
         if ( value == null ) {
           value = open + varName + close;
+        } else if ( aString.equals( value ) ) {
+          //Needed to avoid an endless loop if left to continue to next else statement
+          return (String) value;
         } else {
           // check for another variable inside this value
           int another = ( (String) value ).indexOf( open ); // check
@@ -193,6 +196,7 @@ public class StringUtil {
     int i = rest.indexOf( HEX_OPEN );
     while ( i > -1 ) {
       int j = rest.indexOf( HEX_CLOSE, i + HEX_OPEN.length() );
+      if ( i + HEX_OPEN.length() == j ) break; // invalid Hex Expression empty array
       // search for closing string
       if ( j > -1 ) {
         buffer.append( rest.substring( 0, i ) );
@@ -233,13 +237,29 @@ public class StringUtil {
    */
   public static final synchronized String environmentSubstitute( String aString,
     Map<String, String> systemProperties ) {
+    return environmentSubstitute( aString, systemProperties, false );
+  }
+
+  /**
+   * Substitutes variables in <code>aString</code> with the environment values in the system properties
+   *
+   * @param aString
+   *          the string on which to apply the substitution.
+   * @param systemProperties
+   *          the system properties to use
+   * @return the string with the substitution applied.
+   */
+  public static final synchronized String environmentSubstitute( String aString,
+                                                                 Map<String, String> systemProperties, boolean escapeHexDelimiter ) {
     Map<String, String> sysMap = new HashMap<String, String>();
     synchronized ( sysMap ) {
       sysMap.putAll( Collections.synchronizedMap( systemProperties ) );
 
       aString = substituteWindows( aString, sysMap );
       aString = substituteUnix( aString, sysMap );
-      aString = substituteHex( aString );
+      if ( !escapeHexDelimiter ) {
+        aString = substituteHex( aString );
+      }
       return aString;
     }
   }

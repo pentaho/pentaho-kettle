@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -67,6 +68,7 @@ import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.core.widget.VFSFileSelection;
 import org.pentaho.di.ui.spoon.MainSpoonPerspective;
@@ -77,6 +79,7 @@ import org.pentaho.xul.swt.tab.TabSet;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static org.pentaho.di.trans.StepWithMappingMeta.loadMappingMeta;
 
@@ -84,7 +87,7 @@ import static org.pentaho.di.trans.StepWithMappingMeta.loadMappingMeta;
 public abstract class BaseStreamingDialog extends BaseStepDialog implements StepDialogInterface {
 
   public static final int INPUT_WIDTH = 350;
-  private static Class<?> PKG = BaseStreamingDialog.class;
+  private static final Class<?> PKG = BaseStreamingDialog.class;
   // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   protected BaseStreamStepMeta meta;
@@ -103,6 +106,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected ModifyListener lsMod;
   protected Label wlBatchSize;
   protected TextVar wBatchSize;
+  protected TextVar wPrefetchCount;
   protected Label wlBatchDuration;
   protected TextVar wBatchDuration;
   protected TextVar wParallelism;
@@ -115,6 +119,8 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected Composite wSetupComp;
   protected Composite wBatchComp;
   protected Composite wResultsComp;
+
+  protected TableView fieldsTable;
 
   public BaseStreamingDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
@@ -202,6 +208,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     wbCreateSubtrans.setLayoutData( fdCreateSubtrans );
 
     wbCreateSubtrans.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         createNewSubtrans();
       }
@@ -257,6 +264,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -264,6 +272,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     wStepname.addSelectionListener( lsDef );
 
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -374,9 +383,18 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     return transMeta;
   }
 
-  protected abstract int[] getFieldTypes();
+  protected TableView getFieldsTable() {
+    return fieldsTable;
+  }
 
-  protected abstract String[] getFieldNames();
+  protected String[] getFieldNames() {
+    return stream( getFieldsTable().getTable().getItems() ).map( row -> row.getText( 2 ) ).toArray( String[]::new );
+  }
+
+  protected int[] getFieldTypes() {
+    return stream( getFieldsTable().getTable().getItems() )
+      .mapToInt( row -> ValueMetaFactory.getIdForValueMeta( row.getText( 3 ) ) ).toArray();
+  }
 
   private void createSubtrans( TransMeta newTransMeta ) {
     TabItem tabItem =  spoonInstance.getTabSet().getSelected(); // remember current tab
@@ -474,6 +492,16 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     wParallelism.addModifyListener( lsMod );
     wParallelism.setLayoutData( new FormDataBuilder().left().top( wlParallelism, 5 ).width( 75 ).result() );
 
+    Label wlPrefetchCount = new Label( wBatchComp, SWT.LEFT );
+    props.setLook( wlPrefetchCount );
+    wlPrefetchCount.setText( BaseMessages.getString( PKG, "BaseStreamingDialog.PrefetchCount" ) );
+    wlPrefetchCount.setLayoutData( new FormDataBuilder().left().top( wParallelism, 10 ).right( 50, 0 ).result() );
+
+    wPrefetchCount = new TextVar( transMeta, wBatchComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wPrefetchCount );
+    wPrefetchCount.addModifyListener( lsMod );
+    wPrefetchCount.setLayoutData( new FormDataBuilder().left().top( wlPrefetchCount, 5 ).width( 125 ).result() );
+
     wBatchComp.layout();
     wBatchTab.setControl( wBatchComp );
   }
@@ -531,12 +559,16 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     if ( this.meta.getParallelism() != null ) {
       wParallelism.setText( meta.getParallelism() );
     }
+    if ( meta.getPrefetchCount() != null ) {
+      wPrefetchCount.setText( meta.getPrefetchCount() );
+    }
     if ( this.meta.getSubStep() != null ) {
       wSubStep.setText( this.meta.getSubStep() );
     }
     specificationMethod = meta.getSpecificationMethod();
   }
 
+  @SuppressWarnings( "squid:S1172" )
   protected void populateSubSteps( Event event ) {
     try {
       String current = wSubStep.getText();
@@ -596,6 +628,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     streamMeta.setBatchSize( wBatchSize.getText() );
     streamMeta.setBatchDuration( wBatchDuration.getText() );
     streamMeta.setParallelism( wParallelism.getText() );
+    streamMeta.setPrefetchCount( wPrefetchCount.getText() );
     streamMeta.setSpecificationMethod( specificationMethod );
     streamMeta.setSubStep( wSubStep.getText() );
     switch ( specificationMethod ) {
@@ -609,7 +642,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
         String transPath = wFileSection.wFileName.getText();
         String transName = transPath;
         String directory = "";
-        int index = transPath.lastIndexOf( "/" );
+        int index = transPath.lastIndexOf( '/' );
         if ( index != -1 ) {
           transName = transPath.substring( index + 1 );
           directory = transPath.substring( 0, index );
@@ -646,10 +679,8 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
       // Take no action
     }
 
-    if ( filePath != null ) {
-      if ( parentFolder != null && filePath.startsWith( parentFolder ) ) {
-        filePath = filePath.replace( parentFolder, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-      }
+    if ( filePath != null && parentFolder != null && filePath.startsWith( parentFolder ) ) {
+      filePath = filePath.replace( parentFolder, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
     }
 
     return filePath;

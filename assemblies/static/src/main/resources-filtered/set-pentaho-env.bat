@@ -21,6 +21,11 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
+::remove any existing quotes from PENTAHO_JAVA, PENTAHO_JAVA_HOME and JAVA_HOME env vars if present
+for /f "delims=" %%G IN ("%PENTAHO_JAVA%") DO SET "PENTAHO_JAVA=%%~G"
+for /f "delims=" %%G IN ("%PENTAHO_JAVA_HOME%") DO SET "PENTAHO_JAVA_HOME=%%~G"
+for /f "delims=" %%G IN ("%JAVA_HOME%") DO SET "JAVA_HOME=%%~G"
+
 rem ---------------------------------------------------------------------------
 rem Finds a suitable Java
 rem
@@ -138,8 +143,19 @@ goto end
 
 :gotPath
 echo WARNING: Using java from path
-set _PENTAHO_JAVA_HOME=
-set _PENTAHO_JAVA=%__LAUNCHER%
+
+REM # Try to get java.home from java itself
+FOR /F "tokens=2 delims==" %%a IN ('%__LAUNCHER% -XshowSettings:properties -version 2^>^&1^|findstr "java.home"') DO (SET _PENTAHO_JAVA_HOME=%%~a)
+REM # Trim spaces
+FOR /F "tokens=* delims= " %%a IN ("%_PENTAHO_JAVA_HOME%") DO (SET _PENTAHO_JAVA_HOME=%%~a)
+
+if exist "%_PENTAHO_JAVA_HOME%\bin\%__LAUNCHER%" (
+	echo DEBUG: Getting java.home from java settings
+	set "_PENTAHO_JAVA=%_PENTAHO_JAVA_HOME%\bin\%__LAUNCHER%"
+) else (
+	set _PENTAHO_JAVA_HOME=
+	set _PENTAHO_JAVA=%__LAUNCHER%
+)
 
 goto end
 

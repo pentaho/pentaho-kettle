@@ -22,16 +22,18 @@
 package org.pentaho.di.www;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.jetty.server.LowResourceMonitor;
+import org.eclipse.jetty.server.ServerConnector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.bio.SocketConnector;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -79,9 +81,9 @@ public class WebServerTest {
   private SlaveServer sServer = mock( SlaveServer.class );
   private JobMap jbMapMock = mock( JobMap.class );
   private SocketRepository sRepoMock = mock( SocketRepository.class );
-  private List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
+  private List<SlaveServerDetection> detections = new ArrayList<>();
   private LogChannelInterface logMock = mock( LogChannelInterface.class );
-  private static final SocketConnector defSocketConnector = new SocketConnector();
+  private ServerConnector defServerConnector;
 
   @Before
   public void setup() throws Exception {
@@ -95,7 +97,7 @@ public class WebServerTest {
     when( sServer.getUsername() ).thenReturn( "cluster" );
     webServer =
         new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null );
-
+    defServerConnector = new ServerConnector(webServer.getServer(), -1, -1);
   }
 
   @After
@@ -111,8 +113,8 @@ public class WebServerTest {
 
   @Test
   public void testJettyOption_AcceptorsSetUp() throws Exception {
-    assertEquals( getSocketConnectors( webServer ).size(), EXPECTED_CONNECTORS_SIZE );
-    for ( SocketConnector sc : getSocketConnectors( webServer ) ) {
+    assertEquals( EXPECTED_CONNECTORS_SIZE, getServerConnectors( webServer ).size() );
+    for ( ServerConnector sc : getServerConnectors( webServer ) ) {
       assertEquals( EXPECTED_ACCEPTORS, sc.getAcceptors() );
 
     }
@@ -121,8 +123,8 @@ public class WebServerTest {
 
   @Test
   public void testJettyOption_AcceptQueueSizeSetUp() throws Exception {
-    assertEquals( getSocketConnectors( webServer ).size(), EXPECTED_CONNECTORS_SIZE );
-    for ( SocketConnector sc : getSocketConnectors( webServer ) ) {
+    assertEquals( EXPECTED_CONNECTORS_SIZE, getServerConnectors( webServer ).size() );
+    for ( ServerConnector sc : getServerConnectors( webServer ) ) {
       assertEquals( EXPECTED_ACCEPT_QUEUE_SIZE, sc.getAcceptQueueSize() );
     }
 
@@ -130,11 +132,9 @@ public class WebServerTest {
 
   @Test
   public void testJettyOption_LowResourceMaxIdleTimeSetUp() throws Exception {
-    assertEquals( getSocketConnectors( webServer ).size(), EXPECTED_CONNECTORS_SIZE );
-    for ( SocketConnector sc : getSocketConnectors( webServer ) ) {
-      assertEquals( EXPECTED_RES_MAX_IDLE_TIME, sc.getLowResourceMaxIdleTime() );
-    }
-
+    LowResourceMonitor lowResourceMonitor = webServer.getServer().getBean( LowResourceMonitor.class );
+    assertNotNull( lowResourceMonitor );
+    assertEquals( EXPECTED_RES_MAX_IDLE_TIME, lowResourceMonitor.getLowResourcesIdleTimeout() );
   }
 
   @Test
@@ -146,9 +146,9 @@ public class WebServerTest {
     } catch ( NumberFormatException nmbfExc ) {
       fail( "Should not have thrown any NumberFormatException but it does: " + nmbfExc );
     }
-    assertEquals( getSocketConnectors( webServerNg ).size(), EXPECTED_CONNECTORS_SIZE );
-    for ( SocketConnector sc : getSocketConnectors( webServerNg ) ) {
-      assertEquals( defSocketConnector.getAcceptors(), sc.getAcceptors() );
+    assertEquals( EXPECTED_CONNECTORS_SIZE, getServerConnectors( webServerNg ).size() );
+    for ( ServerConnector sc : getServerConnectors( webServerNg ) ) {
+      assertEquals( defServerConnector.getAcceptors(), sc.getAcceptors() );
     }
     webServerNg.setWebServerShutdownHandler( null ); // disable system.exit
     webServerNg.stopServer();
@@ -163,23 +163,22 @@ public class WebServerTest {
     } catch ( NumberFormatException nmbfExc ) {
       fail( "Should not have thrown any NumberFormatException but it does: " + nmbfExc );
     }
-    assertEquals( getSocketConnectors( webServerNg ).size(), EXPECTED_CONNECTORS_SIZE );
-    for ( SocketConnector sc : getSocketConnectors( webServerNg ) ) {
-      assertEquals( defSocketConnector.getAcceptors(), sc.getAcceptors() );
+    assertEquals( EXPECTED_CONNECTORS_SIZE, getServerConnectors( webServerNg ).size() );
+    for ( ServerConnector sc : getServerConnectors( webServerNg ) ) {
+      assertEquals( defServerConnector.getAcceptors(), sc.getAcceptors() );
     }
     webServerNg.setWebServerShutdownHandler( null ); // disable system.exit
     webServerNg.stopServer();
   }
 
-  private List<SocketConnector> getSocketConnectors( WebServer wServer ) {
-    List<SocketConnector> sConnectors = new ArrayList<SocketConnector>();
+  private List<ServerConnector> getServerConnectors( WebServer wServer ) {
+    List<ServerConnector> sConnectors = new ArrayList<>();
     Connector[] connectors = wServer.getServer().getConnectors();
     for ( Connector cn : connectors ) {
-      if ( cn instanceof SocketConnector ) {
-        sConnectors.add( (SocketConnector) cn );
+      if ( cn instanceof ServerConnector ) {
+        sConnectors.add( (ServerConnector) cn );
       }
     }
     return sConnectors;
   }
-
 }

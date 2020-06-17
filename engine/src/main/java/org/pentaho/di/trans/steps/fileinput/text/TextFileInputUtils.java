@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,8 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -286,6 +288,55 @@ public class TextFileInputUtils {
       StringBuilder line ) throws KettleFileException {
     EncodingType type = EncodingType.guessEncodingType( reader.getEncoding() );
     return getLine( log, reader, type, formatNr, line );
+  }
+
+  public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                      int fileFormatType, StringBuilder line, String regex )
+    throws KettleFileException {
+
+    return getLine( log, reader, encodingType, fileFormatType, line, regex, 0 ).line;
+
+  }
+
+  /**
+   *
+   * Returns in the first position a line; ;
+   * on the second position how many lines from file were read to get a full line
+   *
+   */
+  public static final TextFileLine getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                      int fileFormatType, StringBuilder line, String regex, long lineNumberInFile )
+    throws KettleFileException {
+
+    String sline = getLine( log, reader, encodingType, fileFormatType, line );
+
+    boolean lenientEnclosureHandling = ValueMetaBase.convertStringToBoolean(
+      Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING ), "N" ) );
+
+    if ( !lenientEnclosureHandling ) {
+
+      while ( sline != null ) {
+      /*
+      Check that the number of enclosures in a line is even.
+      If not even it means that there was an enclosed line break.
+      We need to read the next line(s) to get the remaining data in this row.
+      */
+        if ( checkPattern( sline, regex ) % 2 == 0 ) {
+          return new TextFileLine( sline, lineNumberInFile, null );
+        }
+
+        String nextLine = getLine( log, reader, encodingType, fileFormatType, line );
+
+        if ( nextLine == null ) {
+          break;
+        }
+
+        sline = sline + nextLine;
+        lineNumberInFile++;
+      }
+
+    }
+    return new TextFileLine( sline, lineNumberInFile, null );
   }
 
   public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
@@ -889,7 +940,7 @@ public class TextFileInputUtils {
 
     int matches = 0;
 
-    if ( StringUtils.isBlank( text ) ) {
+    if ( StringUtils.isBlank( text ) || StringUtils.isBlank( regex ) ) {
       return matches;
     }
 
@@ -901,5 +952,26 @@ public class TextFileInputUtils {
     }
 
     return matches;
+  }
+
+  /**
+   *
+   * Returns the line number in file
+   *
+   */
+
+  public static long skipLines( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                int fileFormatType, StringBuilder line, int nrLinesToSkip,
+                                String regex, long lineNumberInFile ) throws KettleFileException {
+
+    TextFileLine textFileLine = getLine( log, reader, encodingType, fileFormatType, line, regex, lineNumberInFile );
+    int skipped = 1;
+
+    while ( textFileLine.line != null && skipped < nrLinesToSkip ) {
+      textFileLine = getLine( log, reader, encodingType, fileFormatType, line, regex, textFileLine.lineNumber );
+      skipped++;
+    }
+
+    return textFileLine.lineNumber;
   }
 }

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>repositories</artifactId>
-  <version>9.0.0.0-SNAPSHOT</version>
+  <version>9.1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Repositories Plugin</name>
@@ -12,25 +12,29 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>9.0.0.0-SNAPSHOT</version>
+    <version>9.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <angular.version>1.5.8</angular.version>
-    <angular-route.version>${angular.version}</angular-route.version>
-    <angular-sanitize.version>${angular.version}</angular-sanitize.version>
-    <angular-animate.version>${angular.version}</angular-animate.version>
-    <angular-translate.version>2.12.1</angular-translate.version>
-    <angular-ui-router.version>0.4.2</angular-ui-router.version>
+    <pdi.version>9.1.0.0-SNAPSHOT</pdi.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
     <require-css.version>0.1.8</require-css.version>
     <dojo.version>1.9.2</dojo.version>
-    <angular-i18n.version>${angular.version}</angular-i18n.version>
   </properties>
 
   <modules>
     <module>core</module>
     <module>assemblies</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.pentaho.di.plugins</groupId>
+        <artifactId>core-ui</artifactId>
+        <version>${pdi.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
 </project>

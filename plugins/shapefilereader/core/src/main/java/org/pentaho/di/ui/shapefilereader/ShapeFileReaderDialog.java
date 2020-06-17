@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,13 +26,17 @@
  */
 package org.pentaho.di.ui.shapefilereader;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -40,39 +44,67 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.shapefilereader.ShapeFileReaderMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.ui.core.ConstUI;
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
-import java.util.Enumeration;
-import java.util.Properties;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+class ShapeSelectionAdapterFileDialogTextVar extends SelectionAdapterFileDialogTextVar {
+  private TextVar wDbf;
+
+  public ShapeSelectionAdapterFileDialogTextVar( LogChannelInterface log, TextVar textUiWidget, AbstractMeta meta,
+                                        SelectionAdapterOptions options, TextVar wDbf ) {
+    super( log, textUiWidget, meta, options );
+    this.wDbf = wDbf;
+  }
+
+  @Override
+  protected void setText(String text) {
+    super.setText(text);
+    if ( text.toUpperCase().endsWith( ".SHP" ) && ( wDbf.getText( ) == null || wDbf.getText( ).length( ) == 0 ) ) {
+      String strdbf = text.substring( 0, text.length( ) - 4 );
+      wDbf.setText( strdbf + ".dbf" );
+    }
+  }
+}
 
 public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ShapeFileReaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlShape;
   private Button wbShape;
-  private Button wbcShape;
-  private Text wShape;
+  private TextVar wShape;
   private FormData fdlShape, fdbShape, fdbcShape, fdShape;
 
   private Label wlDbf;
   private Button wbDbf;
-  private Button wbcDbf;
-  private Text wDbf;
+  private TextVar wDbf;
   private FormData fdlDbf, fdbDbf, fdbcDbf, fdDbf;
+
+  private Label wlEncoding;
+  private CCombo wEncoding;
+  private FormData fdlEncoding, fdEncoding;
 
   private ShapeFileReaderMeta input;
   private boolean backup_changed;
@@ -85,10 +117,15 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
+    //set encoding based on environment variable or empty otherwise
+    if ( StringUtils.isBlank( input.getEncoding() ) ) {
+      input.setEncoding( StringUtils.isNotBlank( transMeta.getVariable( "ESRI.encoding" ) )
+        ? transMeta.getVariable( "ESRI.encoding" ) : "" );
+    }
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
-    shell.setImage( getImage() );
+    setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
@@ -144,20 +181,12 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
     fdbShape.top = new FormAttachment( wStepname, margin );
     wbShape.setLayoutData( fdbShape );
 
-    wbcShape = new Button( shell, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbcShape );
-    wbcShape.setText( "&Variable..." );
-    fdbcShape = new FormData();
-    fdbcShape.right = new FormAttachment( wbShape, -margin );
-    fdbcShape.top = new FormAttachment( wStepname, margin );
-    wbcShape.setLayoutData( fdbcShape );
-
-    wShape = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wShape = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wShape );
     wShape.addModifyListener( lsMod );
     fdShape = new FormData();
     fdShape.left = new FormAttachment( middle, 0 );
-    fdShape.right = new FormAttachment( wbcShape, -margin );
+    fdShape.right = new FormAttachment( wbShape, -margin );
     fdShape.top = new FormAttachment( wStepname, margin );
     wShape.setLayoutData( fdShape );
 
@@ -179,22 +208,47 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
     fdbDbf.top = new FormAttachment( wShape, margin );
     wbDbf.setLayoutData( fdbDbf );
 
-    wbcDbf = new Button( shell, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbcDbf );
-    wbcDbf.setText( "&Variable..." );
-    fdbcDbf = new FormData();
-    fdbcDbf.right = new FormAttachment( wbDbf, -margin );
-    fdbcDbf.top = new FormAttachment( wShape, margin );
-    wbcDbf.setLayoutData( fdbcDbf );
-
-    wDbf = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wDbf = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wDbf );
     wDbf.addModifyListener( lsMod );
     fdDbf = new FormData();
     fdDbf.left = new FormAttachment( middle, 0 );
-    fdDbf.right = new FormAttachment( wbcDbf, -margin );
+    fdDbf.right = new FormAttachment( wbDbf, -margin );
     fdDbf.top = new FormAttachment( wShape, margin );
     wDbf.setLayoutData( fdDbf );
+
+    //Encoding
+    wlEncoding = new Label( shell, SWT.RIGHT );
+    wlEncoding.setText( BaseMessages.getString( PKG, "ShapeFileReader.Encoding.Label" ) );
+    props.setLook( wlEncoding );
+    fdlEncoding = new FormData();
+    fdlEncoding.left = new FormAttachment( 0, 0 );
+    fdlEncoding.top = new FormAttachment( wDbf, margin );
+    fdlEncoding.right = new FormAttachment( middle, -margin );
+    wlEncoding.setLayoutData( fdlEncoding );
+    wEncoding = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
+    wEncoding.setEditable( false );
+    props.setLook( wEncoding );
+    wEncoding.addModifyListener( lsMod );
+    fdEncoding = new FormData();
+    fdEncoding.left = new FormAttachment( middle, 0 );
+    fdEncoding.top = new FormAttachment( wDbf, margin );
+    fdEncoding.right = new FormAttachment( 100, 0 );
+    wEncoding.setLayoutData( fdEncoding );
+    wEncoding.addFocusListener( new FocusListener() {
+      public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
+      }
+
+      public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
+        if ( wEncoding.getItemCount() == 0 ) {
+          Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
+          shell.setCursor( busy );
+          setEncodings();
+          shell.setCursor( null );
+          busy.dispose();
+        }
+      }
+    } );
 
     // Some buttons
     wOK = new Button( shell, SWT.PUSH );
@@ -233,55 +287,17 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
       }
     } );
 
-    wbShape.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.shp;*.SHP", "*" } );
-        if ( wShape.getText() != null ) {
-          dialog.setFileName( wShape.getText() );
-        }
-
-        dialog.setFilterNames( new String[] { "Shape files", "All files" } );
-
-        if ( dialog.open() != null ) {
-          String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-          wShape.setText( str );
-          if ( str.toUpperCase().endsWith( ".SHP" ) && ( wDbf.getText() == null || wDbf.getText().length() == 0 ) ) {
-            String strdbf = str.substring( 0, str.length() - 4 );
-            wDbf.setText( strdbf + ".dbf" );
-          }
-        }
-      }
-    } );
-
-    // Listen to the Variable... button
-    wbcShape.addSelectionListener( new SelectionAdapter() {
-      @SuppressWarnings( "unchecked" )
-      public void widgetSelected( SelectionEvent e ) {
-        Properties sp = System.getProperties();
-        Enumeration keys = sp.keys();
-        int size = sp.values().size();
-        String[] key = new String[size];
-        String[] val = new String[size];
-        String[] str = new String[size];
-        int i = 0;
-        while ( keys.hasMoreElements() ) {
-          key[i] = (String) keys.nextElement();
-          val[i] = sp.getProperty( key[i] );
-          str[i] = key[i] + "  [" + val[i] + "]";
-          i++;
-        }
-
-        EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, str, "Select an Environment Variable", "Select an Environment Variable" );
-        if ( esd.open() != null ) {
-          int nr = esd.getSelectionNr();
-          wShape.insert( "%%" + key[nr] + "%%" );
-          wShape.setToolTipText( transMeta.environmentSubstitute( wShape.getText() ) );
-        }
-      }
-
-    } );
+    wbShape.addSelectionListener(
+            new ShapeSelectionAdapterFileDialogTextVar(
+                    log,
+                    wShape,
+                    transMeta,
+                    new SelectionAdapterOptions(
+                            SelectionOperation.FILE,
+                            new FilterType[] { FilterType.SHP, FilterType.ALL },
+                            FilterType.SHP,
+                            new ProviderFilterType[] {ProviderFilterType.LOCAL} ),
+                    wDbf ) );
 
     wDbf.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent arg0 ) {
@@ -289,51 +305,16 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
       }
     } );
 
-    wbDbf.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.dbf;*.DBF", "*" } );
-        if ( wDbf.getText() != null ) {
-          dialog.setFileName( wDbf.getText() );
-        }
-
-        dialog.setFilterNames( new String[] { "DBF files", "All files" } );
-
-        if ( dialog.open() != null ) {
-          String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-          wDbf.setText( str );
-        }
-      }
-    } );
-
-    // Listen to the Variable... button
-    wbcDbf.addSelectionListener( new SelectionAdapter() {
-      @SuppressWarnings( "unchecked" )
-      public void widgetSelected( SelectionEvent e ) {
-        Properties sp = System.getProperties();
-        Enumeration keys = sp.keys();
-        int size = sp.values().size();
-        String[] key = new String[size];
-        String[] val = new String[size];
-        String[] str = new String[size];
-        int i = 0;
-        while ( keys.hasMoreElements() ) {
-          key[i] = (String) keys.nextElement();
-          val[i] = sp.getProperty( key[i] );
-          str[i] = key[i] + "  [" + val[i] + "]";
-          i++;
-        }
-
-        EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, str, "Select an Environment Variable", "Select an Environment Variable" );
-        if ( esd.open() != null ) {
-          int nr = esd.getSelectionNr();
-          wDbf.insert( "${" + key[nr] + "}" );
-          wDbf.setToolTipText( transMeta.environmentSubstitute( wDbf.getText() ) );
-        }
-      }
-
-    } );
+    wbDbf.addSelectionListener(
+            new SelectionAdapterFileDialogTextVar(
+                    log,
+                    wDbf,
+                    transMeta,
+                    new SelectionAdapterOptions(
+                            SelectionOperation.FILE,
+                            new FilterType[] { FilterType.DBF, FilterType.ALL },
+                            FilterType.DBF,
+                            new ProviderFilterType[] {ProviderFilterType.LOCAL} ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -365,8 +346,23 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
     if ( input.getDbfFilename() != null ) {
       wDbf.setText( input.getDbfFilename() );
     }
+    if ( StringUtils.isNotBlank( input.getEncoding() ) ) {
+      wEncoding.setText( input.getEncoding() );
+    }
 
     wStepname.selectAll();
+  }
+
+  private void setEncodings() {
+    List<Charset> values = new ArrayList<>( Charset.availableCharsets().values() );
+    for ( Charset charSet : values ) {
+      wEncoding.add( charSet.displayName() );
+    }
+
+    int idx = Const.indexOfString( input.getEncoding(), wEncoding.getItems() );
+    if ( idx >= 0 ) {
+      wEncoding.select( idx );
+    }
   }
 
   private void cancel() {
@@ -380,6 +376,8 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
 
     input.setShapeFilename( wShape.getText() );
     input.setDbfFilename( wDbf.getText() );
+    input.setEncoding( StringUtils.isNotBlank( wEncoding.getText() )
+      ? wEncoding.getText() : input.getEncoding() );
 
     dispose();
   }

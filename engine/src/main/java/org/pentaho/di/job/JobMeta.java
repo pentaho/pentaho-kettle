@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2335,6 +2335,14 @@ public class JobMeta extends AbstractMeta
     return null;
   }
 
+  @Override
+  public void initializeVariablesFrom( VariableSpace parent ) {
+    super.initializeVariablesFrom( parent );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, null );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, null );
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, null );
+  }
+
   /**
    * This method sets various internal kettle variables that can be used by the transformation.
    */
@@ -2551,9 +2559,8 @@ public class JobMeta extends AbstractMeta
         //
         Map<String, String> directoryMap = namingInterface.getDirectoryMap();
         if ( directoryMap != null ) {
-          for ( String directory : directoryMap.keySet() ) {
-            String parameterName = directoryMap.get( directory );
-            jobMeta.addParameterDefinition( parameterName, directory, "Data file path discovered during export" );
+          for ( Map.Entry<String, String> entry : directoryMap.entrySet() ) {
+            jobMeta.addParameterDefinition( entry.getValue(), entry.getKey(), "Data file path discovered during export" );
           }
         }
 

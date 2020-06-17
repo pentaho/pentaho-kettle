@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -213,6 +213,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
         trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
         trans.injectVariables( executionConfiguration.getVariables() );
         trans.setPreviousResult( executionConfiguration.getPreviousResult() );
+        trans.setExecutingClustered( executionConfiguration.isExecutingClustered() );
 
         try {
           trans.prepareExecution( null );

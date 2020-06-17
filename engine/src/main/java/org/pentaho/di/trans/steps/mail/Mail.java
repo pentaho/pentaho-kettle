@@ -481,7 +481,7 @@ public class Mail extends BaseStep implements StepInterface {
       }
       String authpass = null;
       if ( data.indexOfAuthenticationPass > -1 ) {
-        authpass = data.previousRowMeta.getString( r, data.indexOfAuthenticationPass );
+        authpass = Utils.resolvePassword( getParentVariableSpace(), data.previousRowMeta.getString( r, data.indexOfAuthenticationPass ) );
       }
 
       String subject = null;

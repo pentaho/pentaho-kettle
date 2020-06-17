@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,7 @@ public class ConnectionDialog extends ThinDialog {
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
-  private static final String LOCALHOST = "localhost";
+  private static final String LOCALHOST = "127.0.0.1";
 
   public ConnectionDialog( Shell shell, int width, int height ) {
     super( shell, width, height );
@@ -62,10 +62,10 @@ public class ConnectionDialog extends ThinDialog {
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
     if ( connectionName != null ) {
-      clientPath.append( "#/summary" );
+      clientPath.append( "#!/summary" );
       clientPath.append( "?connection=" ).append( connectionName );
     } else {
-      clientPath.append( "#/intro" );
+      clientPath.append( "#!/intro" );
     }
     super.createDialog( title, getRepoURL( clientPath.toString() ),
       OPTIONS, LOGO );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,6 @@
 
 package org.pentaho.di.job.entries.evaluatetablecontent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,7 +36,6 @@ import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.InfobrightDatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -57,15 +46,24 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /*
  * tests fix for PDI-1044
  * Job entry: Evaluate rows number in a table:
  * PDI Server logs with error from Quartz even though the job finishes successfully.
  */
 public class JobEntryEvalTableContentTest {
-  private static final Map<Class<?>, String> dbMap = new HashMap<Class<?>, String>();
+  private static final Map<Class<?>, String> dbMap = new HashMap<>();
   JobEntryEvalTableContent entry;
-  private static PluginInterface mockDbPlugin;
 
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -77,8 +75,8 @@ public class JobEntryEvalTableContentTest {
     }
 
     @Override
-    public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-        boolean add_fieldname, boolean add_cr ) {
+    public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean useAutoinc,
+                                      boolean addFieldName, boolean addCr ) {
       // TODO Auto-generated method stub
       return null;
     }
@@ -89,20 +87,20 @@ public class JobEntryEvalTableContentTest {
     }
 
     @Override
-    public String getURL( String hostname, String port, String databaseName ) throws KettleDatabaseException {
+    public String getURL( String hostname, String port, String databaseName ) {
       return "";
     }
 
     @Override
-    public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-        String pk, boolean semicolon ) {
+    public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
+                                         String pk, boolean semicolon ) {
       // TODO Auto-generated method stub
       return null;
     }
 
     @Override
     public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk,
-        boolean use_autoinc, String pk, boolean semicolon ) {
+                                            boolean useAutoinc, String pk, boolean semicolon ) {
       // TODO Auto-generated method stub
       return null;
     }
@@ -121,8 +119,6 @@ public class JobEntryEvalTableContentTest {
 
   }
 
-  // private static DBMockIface dbi = DBMockIface();
-
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     KettleClientEnvironment.init();
@@ -131,7 +127,7 @@ public class JobEntryEvalTableContentTest {
 
     PluginRegistry preg = PluginRegistry.getInstance();
 
-    mockDbPlugin = mock( PluginInterface.class );
+    PluginInterface mockDbPlugin = mock( PluginInterface.class );
     when( mockDbPlugin.matches( anyString() ) ).thenReturn( true );
     when( mockDbPlugin.isNativePlugin() ).thenReturn( true );
     when( mockDbPlugin.getMainType() ).thenAnswer( (Answer<Class<?>>) invocation -> DatabaseInterface.class );
@@ -147,7 +143,7 @@ public class JobEntryEvalTableContentTest {
   }
 
   @AfterClass
-  public static void tearDownAfterClass() throws Exception {
+  public static void tearDownAfterClass() {
     KettleClientEnvironment.reset();
   }
 
@@ -166,6 +162,8 @@ public class JobEntryEvalTableContentTest {
     dbMeta.setDatabaseType( "mock-db" );
 
     entry.setDatabase( dbMeta );
+    // set KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES to default, in case overwritten at any point.
+    entry.setVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" );
   }
 
   @After
@@ -174,7 +172,7 @@ public class JobEntryEvalTableContentTest {
   }
 
   @Test
-  public void testNrErrorsFailureNewBehavior() throws Exception {
+  public void testNrErrorsFailureNewBehavior() {
     entry.setLimit( "1" );
     entry.setSuccessCondition( JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL );
     entry.setTablename( "table" );
@@ -183,11 +181,11 @@ public class JobEntryEvalTableContentTest {
 
     assertFalse( "Eval number of rows should fail", res.getResult() );
     assertEquals(
-        "No errors should be reported in result object accoding to the new behavior", res.getNrErrors(), 0 );
+      "No errors should be reported in result object accoding to the new behavior", 0, res.getNrErrors() );
   }
 
   @Test
-  public void testNrErrorsFailureOldBehavior() throws Exception {
+  public void testNrErrorsFailureOldBehavior() {
     entry.setLimit( "1" );
     entry.setSuccessCondition( JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL );
     entry.setTablename( "table" );
@@ -198,11 +196,13 @@ public class JobEntryEvalTableContentTest {
 
     assertFalse( "Eval number of rows should fail", res.getResult() );
     assertEquals(
-        "An error should be reported in result object accoding to the old behavior", res.getNrErrors(), 1 );
+      "An error should be reported in result object accoding to the old behavior", 1, res.getNrErrors() );
   }
 
   @Test
-  public void testNrErrorsSuccess() throws Exception {
+  public void testNrErrorsSuccess() {
+
+
     entry.setLimit( "5" );
     entry.setSuccessCondition( JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL );
     entry.setTablename( "table" );
@@ -210,7 +210,7 @@ public class JobEntryEvalTableContentTest {
     Result res = entry.execute( new Result(), 0 );
 
     assertTrue( "Eval number of rows should be suceeded", res.getResult() );
-    assertEquals( "Apparently there should no error", res.getNrErrors(), 0 );
+    assertEquals( "Apparently there should no error", 0, res.getNrErrors() );
 
     // that should work regardless of old/new behavior flag
     entry.setVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "Y" );
@@ -218,11 +218,11 @@ public class JobEntryEvalTableContentTest {
     res = entry.execute( new Result(), 0 );
 
     assertTrue( "Eval number of rows should be suceeded", res.getResult() );
-    assertEquals( "Apparently there should no error", res.getNrErrors(), 0 );
+    assertEquals( "Apparently there should no error", 0, res.getNrErrors() );
   }
 
   @Test
-  public void testNrErrorsNoCustomSql() throws Exception {
+  public void testNrErrorsNoCustomSql() {
     entry.setLimit( "5" );
     entry.setSuccessCondition( JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL );
     entry.setUseCustomSQL( true );
@@ -231,7 +231,7 @@ public class JobEntryEvalTableContentTest {
     Result res = entry.execute( new Result(), 0 );
 
     assertFalse( "Eval number of rows should fail", res.getResult() );
-    assertEquals( "Apparently there should be an error", res.getNrErrors(), 1 );
+    assertEquals( "Apparently there should be an error", 1, res.getNrErrors() );
 
     // that should work regardless of old/new behavior flag
     entry.setVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "Y" );
@@ -239,6 +239,6 @@ public class JobEntryEvalTableContentTest {
     res = entry.execute( new Result(), 0 );
 
     assertFalse( "Eval number of rows should fail", res.getResult() );
-    assertEquals( "Apparently there should be an error", res.getNrErrors(), 1 );
+    assertEquals( "Apparently there should be an error", 1, res.getNrErrors() );
   }
 }

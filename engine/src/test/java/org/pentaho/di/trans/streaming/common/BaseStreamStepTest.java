@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -174,5 +175,49 @@ public class BaseStreamStepTest {
     } catch ( IllegalStateException ignored ) {
     }
     verify( streamSource ).close();
+  }
+
+  @Test
+  public void testPrefetchCount() throws IOException {
+    File testFile = File.createTempFile( "testInitFilenameSubstitution", ".ktr",
+      folder.getRoot() );
+    try ( PrintWriter pw = new PrintWriter( testFile ) ) {
+      // empty subtrans definition
+      pw.write( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        + "<transformation/>" );
+    }
+
+    when( meta.withVariables( baseStreamStep ) ).thenReturn( metaWithVariables );
+
+    baseStreamStep.getParentVariableSpace()
+      .setVariable( "Internal.Entry.Current.Directory",
+        testFile.getParentFile().getAbsolutePath() );
+    when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    when( meta.getFileName() ).thenReturn( "${Internal.Entry.Current.Directory}/" + testFile.getName() );
+
+    baseStreamStep.init( meta, stepData );
+
+    when( metaWithVariables.getPrefetchCount() ).thenReturn( "100000" );
+    assertEquals( 100000, baseStreamStep.getPrefetchCount() );
+
+    //Max int
+    when( metaWithVariables.getPrefetchCount() ).thenReturn( "2147483647" );
+    assertEquals( 2147483647, baseStreamStep.getPrefetchCount() );
+
+    //Max int + 1
+    //Should return default
+    when( metaWithVariables.getPrefetchCount() ).thenReturn( "2147483648" );
+    assertEquals( 100000, baseStreamStep.getPrefetchCount() );
+
+    //Later validation will catch an issue with this being 0
+    when( metaWithVariables.getPrefetchCount() ).thenReturn( "0" );
+    assertEquals( 0, baseStreamStep.getPrefetchCount() );
+
+    //Later validation will catch an issue with this being negative
+    when( metaWithVariables.getPrefetchCount() ).thenReturn( "-1" );
+    assertEquals( -1, baseStreamStep.getPrefetchCount() );
+
+    when( metaWithVariables.getPrefetchCount() ).thenReturn( "" );
+    assertEquals( 100000, baseStreamStep.getPrefetchCount() );
   }
 }

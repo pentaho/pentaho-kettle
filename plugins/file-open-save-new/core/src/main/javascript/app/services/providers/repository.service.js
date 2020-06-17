@@ -49,7 +49,8 @@ define(
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "repository",
-          order: 1,
+          order: 0,
+          root: "Pentaho Repository",
           matchPath: matchPath,
           selectFolder: selectFolder,
           getTreePath: getTreePath,
@@ -72,7 +73,7 @@ define(
 
         function getBreadcrumbPath(file) {
           var path = {
-            type: "repository",
+            type: this.provider,
             fileType: file.type ? file.type : "folder",
             prefix: null,
             uri: _getFilePath(file),
@@ -93,13 +94,14 @@ define(
         }
 
         function resolvePath(path, properties) {
+          var self = this;
           return $q(function (resolve, reject) {
-            resolve("Pentaho Repository" + path);
+            resolve(self.root + path);
           });
         }
 
         function matchPath(path) {
-          return path && path.indexOf("/") === 0;
+          return (path && path.indexOf("/") === 0) ? 1 : 0;
         }
 
         function selectFolder(folder, filters, useCache) {
@@ -183,14 +185,26 @@ define(
         }
 
         function open(file) {
-          select(file.objectId, file.name, file.path, file.parent,null, file.provider, file.type);
+          select(JSON.stringify({
+            objectId: file.objectId,
+            name: file.name,
+            path: file.path,
+            parent: file.parent,
+            connection: file.connection,
+            provider: file.provider,
+            type: file.type
+          }));
         }
 
         function save(filename, folder, currentFilename, override) {
           return $q(function(resolve, reject) {
             dt.checkForSecurityOrDupeIssues(folder.path, filename, currentFilename, override ? override : false).then(function(response) {
               if (response.status === 200) {
-                select(null, filename, null, folder.path, null, folder.provider, null);
+                select(JSON.stringify({
+                  name: filename,
+                  parent: folder.path,
+                  provider: folder.provider
+                }));
                 resolve();
               } else {
                 reject();

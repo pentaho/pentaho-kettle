@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-core</artifactId>
-  <version>9.0.0.0-SNAPSHOT</version>
+  <version>9.1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Core</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>9.0.0.0-SNAPSHOT</version>
+    <version>9.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -26,11 +26,9 @@
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <commons-vfs2.version>2.2</commons-vfs2.version>
     <commons-io.version>2.2</commons-io.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-pool.version>1.5.7</commons-pool.version>
-    <jetty-util.version>8.1.15.v20140411</jetty-util.version>
     <jug-lgpl.version>2.0.0</jug-lgpl.version>
     <jsch.version>0.1.54</jsch.version>
     <jzlib.version>1.0.7</jzlib.version>
@@ -39,12 +37,11 @@
     <com.wcohen.secondstring.version>0.1</com.wcohen.secondstring.version>
     <javassist.version>3.20.0-GA</javassist.version>
     <jcifs.version>1.3.3</jcifs.version>
-    <simple-jndi.version>1.0.2</simple-jndi.version>
+    <simple-jndi.version>1.0.3</simple-jndi.version>
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
-    <httpclient.version>4.5.3</httpclient.version>
-    <httpccore.version>4.4.6</httpccore.version>
     <xmlunit.version>1.5</xmlunit.version>
     <joda.version>2.10.2</joda.version>
+    <encryption-support.version>9.1.0.0-SNAPSHOT</encryption-support.version>
   </properties>
 
   <dependencies>
@@ -291,23 +288,14 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>${httpccore.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
-      <version>${commons-vfs2.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -353,7 +341,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
-      <version>${jetty-util.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -505,6 +492,17 @@
       <version>${xmlunit.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-jdbc</artifactId>
+      <version>8.5.27</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pentaho-encryption-support</artifactId>
+      <version>${encryption-support.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -520,6 +518,7 @@
               <includes>
                 <include>org/pentaho/di/junit/**</include>
                 <include>org/pentaho/di/concurrency/**</include>
+                <include>*.xml</include>
               </includes>
             </configuration>
           </execution>

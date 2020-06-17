@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -87,6 +86,11 @@ import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.ComboVar;
@@ -679,28 +683,11 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     if ( wbbFilename != null ) {
       // Listen to the browse button next to the file name
-      wbbFilename.addSelectionListener( new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent e ) {
-          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-          dialog.setFilterExtensions( new String[] { "*.txt;*.csv", "*.csv", "*.txt", "*" } );
-          if ( wFilename.getText() != null ) {
-            String fname = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFileName( fname );
-          }
-
-          dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ) + ", "
-              + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-            wFilename.setText( str );
-          }
-        }
-      } );
+      wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+        new SelectionAdapterOptions( SelectionOperation.FILE,
+          new String[] { FilterType.CSV_TXT.toString(), FilterType.CSV.toString(), FilterType.TXT.toString(),
+            FilterType.ALL.toString() }, FilterType.CSV_TXT.toString(),
+          new String[] { ProviderFilterType.LOCAL.toString() }, false ) ) );
     }
 
     // Detect X or ALT-F4 or something that kills this window...
@@ -812,7 +799,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       : newFieldNames.stream().map( String::toString ).collect( Collectors.toList() );
     for ( int i = 0; i < inputMeta.getInputFields().length; i++ ) {
       TextFileInputField field = inputMeta.getInputFields()[i];
-      final TableItem item = getTableItem( field.getName() );
+      final TableItem item = getTableItem( field.getName(), reloadAllFields );
       // update the item only if we are reloading all fields, or the field is new
       if ( !reloadAllFields && !fieldName.contains( field.getName() ) ) {
         continue;

@@ -23,8 +23,8 @@
  * @property {String} name The name of the module.
  */
 define(
-    [],
-    function(fileService) {
+    ['./fileutil'],
+    function(fileutil) {
       "use strict";
 
       var factoryArray = ["helperService", "$http", "$q", factory];
@@ -46,7 +46,8 @@ define(
         var baseUrl = "/cxf/browser-new";
         return {
           provider: "local",
-          order: 2,
+          order: 1,
+          root: "Local",
           getBreadcrumbPath: getBreadcrumbPath,
           selectFolder: selectFolder,
           matchPath: matchPath,
@@ -66,13 +67,26 @@ define(
         }
 
         function resolvePath(path, properties) {
+          var self = this;
+          var varRoot = this.root;
           return $q(function (resolve, reject) {
-            resolve("Local" + path);
+            if (path && path.indexOf("file://") === 0) {
+              path = path.replace("file://", "");
+            }
+            if (fileutil.isWindows(path)) {
+              path = fileutil.convertWindowsPath(path);
+            }
+            resolve(varRoot + path);
           });
         }
 
         function matchPath(path) {
-          return path && path.indexOf("/") === 0;
+          if (path && path.indexOf("file://") === 0) {
+            return 1;
+          }
+          var isUnix = fileutil.isUnix(path);
+          var isWindows = fileutil.isWindows(path);
+          return (isUnix || isWindows) ? 1 : 0;
         }
 
         function selectFolder(folder, filters) {
@@ -102,11 +116,13 @@ define(
           };
         }
 
+
         function _getTreePath(folder) {
           if (!folder.path) {
             return folder.root ? folder.root + "/" + folder.name : folder.name;
           }
-          return folder.root + folder.path;
+          var path = fileutil.isWindows(folder.path) ? fileutil.convertWindowsPath(folder.path) : folder.path;
+          return folder.root + path;
         }
 
         function _getFilePath(file) {
@@ -152,12 +168,23 @@ define(
         }
 
         function open(file) {
-          console.log("Opening Local File: " + file.path);
-          select(null, file.name, file.path, file.parent, file.connection, file.provider, null);
+          select(JSON.stringify({
+            name: file.name,
+            path: file.path,
+            parent: file.parent,
+            connection: file.connection,
+            provider: file.provider
+          }));
         }
 
-        function save(filename, folder, currentFilename, override) {
-          select(null, filename, null, folder.path, null, folder.provider, null);
+        function save(filename, folder) {
+          select(JSON.stringify({
+            name: filename,
+            path: folder.path,
+            parent: folder.parent,
+            provider: folder.provider
+          }));
+
           return $q.resolve();
         }
       }

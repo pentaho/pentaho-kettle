@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,10 @@ import org.mockito.Mockito;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.steps.file.BaseFileField;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class TextFileInputUtilsTest {
   @Test
@@ -156,4 +160,35 @@ public class TextFileInputUtilsTest {
     Assert.assertEquals( "C", strings[ 1 ] );
   }
 
+  @Test
+  public void getLineWithEnclosureTest() throws Exception {
+    String text = "\"firstLine\"\n\"secondLine\"";
+    StringBuilder linebuilder = new StringBuilder( "" );
+    InputStream is = new ByteArrayInputStream( text.getBytes() );
+    InputStreamReader isr = new InputStreamReader( is );
+    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
+    Assert.assertEquals( "\"firstLine\"", line.getLine() );
+  }
+
+  @Test
+  public void getLineBrokenByEnclosureTest() throws Exception {
+    String text = "\"firstLine\n\"\"secondLine\"";
+    StringBuilder linebuilder = new StringBuilder( "" );
+    InputStream is = new ByteArrayInputStream( text.getBytes() );
+    InputStreamReader isr = new InputStreamReader( is );
+    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
+    Assert.assertEquals( "\"firstLine\"\"secondLine\"", line.getLine() );
+  }
+
+  @Test
+  public void getLineBrokenByEnclosureLenientTest() throws Exception {
+    System.setProperty( "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING", "Y" );
+    String text = "\"firstLine\n\"\"secondLine\"";
+    StringBuilder linebuilder = new StringBuilder( "" );
+    InputStream is = new ByteArrayInputStream( text.getBytes() );
+    InputStreamReader isr = new InputStreamReader( is );
+    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
+    Assert.assertEquals( "\"firstLine", line.getLine() );
+    System.clearProperty( "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING" );
+  }
 }

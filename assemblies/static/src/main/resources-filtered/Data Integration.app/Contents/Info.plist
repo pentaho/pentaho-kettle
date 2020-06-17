@@ -7,7 +7,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>English</string>
 		<key>CFBundleGetInfoString</key>
-		<string>Pentaho Data Integration ${project.version} (c) 2007 - 2019 Hitachi Vantara</string>
+		<string>Pentaho Data Integration ${project.version} (c) 2007 - 2020 Hitachi Vantara</string>
 		<key>CFBundleExecutable</key>
 		<string>JavaApplicationStub</string>
 		<key>CFBundleIconFile</key>

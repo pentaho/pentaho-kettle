@@ -24,44 +24,50 @@ addressbar .navigation-buttons input[type="button"] {
   padding: 0;
   border: 0;
   border-radius: 0;
+  background-color: transparent;
 }
 
-addressbar input.forwardHistory {
-  background: url("../../img/nav-back.svg") no-repeat center center;
+addressbar input.forward {
+  background-repeat: no-repeat;
+  background-image: url("../../img/Forwards.S_D.svg");
+  background-color: transparent;
+  background-size: 32px 32px;
+  background-position: center center;
+  cursor: pointer;
   height: 17px;
   width: 10px;
+}
+
+addressbar input.forward:hover {
+
+}
+
+addressbar input.forward:disabled {
+  background-image: url("../../img/Forwards.S_D_disabled.svg");
+}
+
+addressbar input.back {
+  background-repeat: no-repeat;
+  background-image: url("../../img/Backwards.S_D.svg");
+  background-color: transparent;
+  background-size: 32px 32px;
+  background-position: center center;
   cursor: pointer;
-  transform: rotate(180deg);
-  -ms-transform: rotate(180deg);
-  -webkit-transform: rotate(180deg);
-  -moz-transform: rotate(180deg);
-}
-
-addressbar input.forwardHistory:hover {
-  background-position: right center;
-}
-
-addressbar input.forwardHistory[disabled] {
-  background-position: left center;
-}
-
-addressbar input.backHistory {
-  background: url("../../img/nav-back.svg") no-repeat center center;
   height: 17px;
   width: 10px;
-  cursor: pointer;
   margin-right: 10px;
 }
 
-addressbar input.backHistory:hover {
-  background-position: right center;
+addressbar input.back:hover {
+
 }
 
-addressbar input.backHistory[disabled] {
-  background-position: left center;
+addressbar input.back:disabled {
+  background-image: url("../../img/Backwards.S_D_disabled.svg");
 }
 
 addressbar .breadcrumb {
+  padding-left: 10px;
   position: relative;
 }
 
@@ -122,50 +128,64 @@ addressbar .breadcrumb ul.parts>li:last-child {
 }
 
 addressbar .breadcrumb ul.parts {
-  padding: 0px 10px 0 10px;
+  padding: 0 10px 0 0;
 }
 
 addressbar .breadcrumb ul.parts>li {
   cursor: pointer;
   color: #005DA6;
   display: inline-block;
-  background: url("../../img/chevron_right_tree.svg") no-repeat right center;
+  background: url("../../img/DropRight.XS_D.svg") no-repeat right -5px center;
   padding-right: 20px;
 }
 
-addressbar .breadcrumb ul.parts .repository {
-  background: url("../../img/chevron_right_tree.svg"),
-  url("../../img/repository.svg");
-  background-repeat: no-repeat,
-  no-repeat;
-  background-position: right center,
-  left center;
-  width: 22px;
+addressbar .breadcrumb ul.parts>li.part {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-addressbar .breadcrumb ul.parts .local {
-  background: url("../../img/chevron_right_tree.svg"),
-  url("../../img/local.svg");
-  background-repeat: no-repeat,
-  no-repeat;
-  background-position: right center,
-  left center;
-  width: 15px;
-}
-
-addressbar .breadcrumb ul.parts .vfs {
-  background: url("../../img/chevron_right_tree.svg"),
-    url("../../img/vfs.svg");
-  background-repeat: no-repeat,
-    no-repeat;
-  background-position: right center,
-    left center;
+addressbar .breadcrumb .type {
   width: 20px;
+}
+
+addressbar .breadcrumb .arrow {
+  background: url("../../img/DropRight.XS_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 20px;
+}
+
+addressbar .breadcrumb .repository {
+  background: url("../../img/Cloud.S_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+addressbar .breadcrumb .local {
+  background: url("../../img/Disk.S_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+addressbar .breadcrumb .vfs {
+  background: url("../../img/VFS_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 32px;
+}
+
+addressbar .breadcrumb .recents {
+  background: url("../../img/Time.S_D.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 32px;
 }
 
 addressbar .breadcrumb:hover .dropdown,
 addressbar .breadcrumb.selected .dropdown {
-  background-image: url('../../img/chevron_down_tree.svg');
+  background-image: url('../../img/DropDown.XS_D.svg');
   background-repeat: no-repeat;
   background-position: right center;
   width: 32px;

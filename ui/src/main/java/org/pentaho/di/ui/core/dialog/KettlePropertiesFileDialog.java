@@ -274,7 +274,7 @@ public class KettlePropertiesFileDialog extends Dialog {
   }
 
   private String getKettlePropertiesFilename() {
-    return Const.getKettleDirectory() + "/" + Const.KETTLE_PROPERTIES;
+    return Const.getKettlePropertiesFilename();
   }
 
   private void cancel() {

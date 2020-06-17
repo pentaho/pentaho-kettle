@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,14 +54,14 @@ public class GoogleBigQueryDatabaseMeta extends BaseDatabaseMeta implements Data
     return "https://cloud.google.com/bigquery/partners/simba-drivers/";
   }
 
-  @Override public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-    boolean add_fieldname, boolean add_cr ) {
+  @Override public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean useAutoinc,
+                                              boolean addFieldName, boolean addCr ) {
     String retval = "";
 
     String fieldname = v.getName();
     int precision = v.getPrecision();
 
-    if ( add_fieldname ) {
+    if ( addFieldName ) {
       retval += fieldname + " ";
     }
 
@@ -106,7 +106,7 @@ public class GoogleBigQueryDatabaseMeta extends BaseDatabaseMeta implements Data
         break;
     }
 
-    if ( add_cr ) {
+    if ( addCr ) {
       retval += Const.CR;
     }
 
@@ -115,14 +115,14 @@ public class GoogleBigQueryDatabaseMeta extends BaseDatabaseMeta implements Data
 
   @Override public String getAddColumnStatement(
     String tablename, ValueMetaInterface v, String tk,
-    boolean use_autoinc, String pk, boolean semicolon ) {
+    boolean useAutoinc, String pk, boolean semicolon ) {
     // BigQuery does not support DDL through JDBC.
     // https://cloud.google.com/bigquery/partners/simba-drivers/#do_the_drivers_provide_the_ability_to_manage_tables_create_table
     return null;
   }
 
   @Override public String getModifyColumnStatement(
-    String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+    String tablename, ValueMetaInterface v, String tk, boolean useAutoinc,
     String pk, boolean semicolon ) {
     // BigQuery does not support DDL through JDBC.
     // https://cloud.google.com/bigquery/partners/simba-drivers/#do_the_drivers_provide_the_ability_to_manage_tables_create_table

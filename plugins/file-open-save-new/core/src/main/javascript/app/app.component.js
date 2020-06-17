@@ -29,11 +29,13 @@ define([
   "./services/folder.service",
   "./services/modal.service",
   "./services/search.service",
+  "./services/message.service",
   "text!./app.html",
   "pentaho/i18n-osgi!file-open-save-new.messages",
   "./components/utils",
   "css!./app.css"
-], function (angular, dataService, fileService, folderService, modalService, searchService, template, i18n, utils) {
+], function (angular, dataService, fileService, folderService, modalService, searchService, messageService, template,
+             i18n, utils) {
   "use strict";
 
   var options = {
@@ -44,7 +46,7 @@ define([
   };
 
   appController.$inject = [dataService.name, fileService.name, folderService.name,
-    modalService.name, searchService.name, "$location", "$timeout", "$interval", "$state", "$q"];
+    modalService.name, searchService.name, messageService.name, "$location", "$timeout", "$interval", "$state", "$q"];
 
   /**
    * The App Controller.
@@ -62,7 +64,8 @@ define([
    * @param $state
    * @param $q
    */
-  function appController(dt, fileService, folderService, modalService, searchService, $location, $timeout, $interval, $state, $q) {
+  function appController(dt, fileService, folderService, modalService, searchService, messageService,$location,
+                         $timeout, $interval, $state, $q) {
     var vm = this;
     vm.$onInit = onInit;
     vm.openFolder = openFolder;
@@ -76,21 +79,20 @@ define([
     vm.onSelectFile = onSelectFile;
     vm.onOpenClick = onOpenClick;
     vm.onSaveClick = onSaveClick;
-    vm.onOKClick = onOKClick;
     vm.onCancelClick = onCancelClick;
     vm.onHighlight = onHighlight;
     vm.confirmError = confirmError;
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
     vm.renameError = renameError;
-    vm.recentsHasScrollBar = recentsHasScrollBar;
     vm.onKeyUp = onKeyUp;
     vm.onKeyDown = onKeyDown;
     vm.onSelectFilter = selectFilter;
+    vm.isSaveState = isSaveState;
 
-    vm.isShowRecents = true;
+    vm.isCardView = false;
+    vm.isFileView = false;
     vm.isSaveEnabled = false;
-
     vm.addDisabled = true;
     vm.deleteDisabled = true;
     vm.upDisabled = true;
@@ -114,9 +116,9 @@ define([
     vm.fileLoading = false;
     vm.searching = false;
     vm.state = $state;
-    vm.searchResults = [];
+    vm.searchResults = null;
     vm.status = "";
-    vm.breadcrumbPath = { prefix: null, path: "Recents", uri: null };
+    vm.breadcrumbPath = null;
     vm.type = null;
 
     /**
@@ -127,47 +129,47 @@ define([
     function onInit() {
       vm.loadingTitle = i18n.get("file-open-save-plugin.loading.title");
       vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
-      vm.showRecents = false;
       vm.selectedFiles = [];
+      vm.errorFiles = [];
       vm.autoExpand = false;
       vm.searchString = "";
-      _resetFileAreaMessage();
+      vm.myfile = "";
 
+      vm.tree = [];
       vm.filename = $location.search().filename;
       vm.fileType = $location.search().fileType;
       vm.origin = $location.search().origin;
-      vm.filters = $location.search().filters;
-      vm.tree = [
-        {name: "Recents", hasChildren: false, provider: "recents", order: 0}
-      ];
-      folderService.folder = vm.tree[0];
-      _update();
+      vm.filter = $location.search().filter;
+      vm.defaultFilter = $location.search().defaultFilter;
+      vm.connectionTypes = $location.search().connectionTypes;
+      vm.fileTypes = vm.filter ? vm.filter.split(',') : false;
+      vm.providerFilter = $location.search().providerFilter;
       vm.selectedFolder = "";
       $timeout(function () {
         var state = $state.current.name;
         vm.headerTitle = i18n.get("file-open-save-plugin.app.header." + state + ".title");
-        if (!$state.is('selectFolder')) {
-          dt.getDirectoryTree($location.search().filter).then(function(response) {
-            _populateTree(response);
-            _init();
-          });
-          dt.getRecentFiles().then(_populateRecentFiles);
-          vm.showRecents = true;
-        } else {
-          dt.getDirectoryTree("false").then(_populateTree);
-        }
-        dt.getRecentSearches().then(_populateRecentSearches);
+        dt.getDirectoryTree(vm.providerFilter, vm.connectionTypes).then(function(response) {
+          _populateTree(response);
+          _init();
+        });
         vm.loading = false;
       });
     }
 
     function _init() {
       var path = decodeURIComponent($location.search().path);
+
+      // URLs come over with '+' instead of spaces
+      path = path.replace(/\+/g, " ");
+
       if (path && path !== "undefined") {
         vm.autoExpand = true;
-        openPath(path, $location.search());
+        openPath(path, $location.search()).then(function() {
+          _setFileToSaveName();
+        });
+      } else {
+        _setFileToSaveName();
       }
-      _setFileToSaveName();
     }
 
     /**
@@ -178,25 +180,12 @@ define([
      */
     function _populateTree(response) {
       vm.tree = vm.tree.concat(response.data);
-    }
-
-    /**
-     * Sets the recents folders
-     *
-     * @param {Object} response - $http response from call to the data service
-     * @private
-     */
-    function _populateRecentFiles(response) {
-      vm.recentFiles = response.data;
-    }
-
-    /**
-     * Determines if the Recents view has a vertical scrollbar
-     * @return {boolean} - true if Recents view has a vertical scrollbar, false otherwise
-     */
-    function recentsHasScrollBar() {
-      var recentsView = document.getElementsByClassName("recentsView");
-      return recentsView.scrollHeight > recentsView.clientHeight;
+      folderService.tree = vm.tree;
+      for (var i = 0; i < vm.tree.length; i++) {
+        if (vm.tree[i].order === 0) {
+          selectFolder(vm.tree[i], true);
+        }
+      }
     }
 
     function selectFilter(value) {
@@ -208,10 +197,13 @@ define([
      * @private
      */
     function _setFileToSaveName() {
-      if ($state.is("save")) {
+      if (isSaveState()) {
+        vm.fileToSave = "";
+
         if (vm.filename !== undefined) {
           vm.fileToSave = vm.filename;
-        } else {
+        } else if (vm.state.is('save')) {
+          // Only update with trans/job filename in save state.
           dt.getActiveFileName().then(function (response) {
             vm.fileToSave = response.data.fileName;
           }, function () {
@@ -226,7 +218,7 @@ define([
      * @param {folder} folder - Folder to open
      */
     function openFolder(folder) {
-      return folderService.openFolder(folder);
+      return folderService.selectFolder(folder);
     }
 
     /**
@@ -236,21 +228,23 @@ define([
      * @param {Boolean} useCache - should use cache
      */
     function selectFolder(folder, useCache) {
-      vm.searchResults = [];
+      messageService.set("file", null);
+      vm.searchResults = null;
       if (vm.searching) {
-        _clearSearch();
+        vm.searchValue = "";
       }
-      _resetFileAreaMessage();
       fileService.files = [];
-      vm.showRecents = folder.provider === "recents";
       vm.fileLoading = true;
       vm.folder = folder;
-      folderService.selectFolder(folder, vm.filters, useCache).then(function(folder) {
+      folderService.selectFolder(folder, undefined, useCache).then(function(folder) {
         vm.fileLoading = false;
-        vm.showRecents = folder.provider === "recents";
         _update();
-      }).catch(function() {
-        vm.fileLoading = false;
+      }, function(error) {
+        modalService.open("error-dialog", error.title, error.message).then(function() {
+          folder.loading = false;
+          vm.fileLoading = false;
+          _update();
+        });
       });
     }
 
@@ -262,19 +256,38 @@ define([
      */
     function selectFolderByPath(path, props) {
       vm.fileLoading = true;
-      vm.showRecents = false;
-      folderService.selectFolderByPath(vm.tree, path, props).then(function() {
+      folderService.selectFolderByPath(path, props).then(function() {
         vm.fileLoading = false;
         _update();
       });
     }
 
+    function _resetFolder() {
+      if (vm.folder.provider) {
+        selectFolder(vm.folder, true);
+      } else {
+        selectFolderByPath(vm.folder.path, null);
+      }
+    }
+
     function openPath(path, properties) {
-      vm.fileLoading = true;
-      vm.showRecents = false;
-      folderService.openPath(vm.tree, path, properties).then(function() {
-        vm.fileLoading = false;
-        _update();
+      return $q(function(resolve) {
+        vm.fileLoading = true;
+        folderService.openPath(path, properties).then(function() {
+          vm.fileLoading = false;
+          _update();
+          resolve();
+        }, function(error) {
+          vm.fileLoading = false;
+          if (error) {
+            modalService.open("error-dialog", error.title, error.message).then(function () {
+              _resetFolder();
+            });
+          } else {
+            _resetFolder();
+          }
+          resolve();
+        });
       });
     }
 
@@ -282,18 +295,18 @@ define([
       vm.folder = folderService.folder;
       vm.selectedFiles = fileService.files;
       vm.breadcrumbPath = folderService.getBreadcrumbPath(vm.selectedFiles.length === 1 ? vm.selectedFiles[0] : vm.folder);
-      vm.isShowRecents = vm.recentFiles
-          && (!vm.showMessage
-          && vm.showRecents
-          && vm.recentFiles.length > 0
-          && !$state.is('selectFolder')
-          && !$state.is('selectFile'));
-
+      vm.myfile = vm.selectedFiles.length === 1 ? vm.selectedFiles[0] : vm.folder;
       vm.placeholder = utils.getPlaceholder(i18n.get("file-open-save-plugin.app.header.search.placeholder"), vm.folder, vm.currentRepo);
       vm.fileList = _getFiles();
       if (vm.selectedFiles.length === 1) {
         vm.fileToSave = vm.selectedFiles[0].type === "folder" ? vm.fileToSave : vm.selectedFiles[0].name;
+      } else {
+        vm.fileToSave = "";
       }
+      vm.errorFiles = vm.selectedFiles;
+      vm.isCardView = !vm.folder.root && !vm.folder.hasChildren && !vm.folder.path;
+      vm.isFileView = (!vm.showMessage && (vm.folder.hasChildren || vm.folder.root)) || vm.folder.path;
+      vm.fileAreaMessage = messageService.get("file");
     }
 
     /**
@@ -305,8 +318,8 @@ define([
     function onSelectFile(file) {
       if (file.type === "folder") {
         vm.searchString = "";
-        selectFolder(file);
-      } else if ($state.is("open")) {
+        selectFolder(file, true);
+      } else if (!isSaveState()) {
         _open(file);
       }
     }
@@ -316,26 +329,7 @@ define([
      * @returns {Array} - Search result files or selected folder children
      */
     function _getFiles() {
-      return vm.searchResults.length !== 0 ? vm.searchResults : vm.folder.children;
-    }
-
-    /**
-     * Sets the message for the file area to No Results
-     * @private
-     */
-    function _setFileAreaMessage() {
-      if (vm.showMessage) {
-        vm.fileAreaMessage = i18n.get("file-open-save-plugin.app.middle.no-results.message");
-      }
-    }
-
-    /**
-     * Resets the showMessage and file area message to default values
-     * @private
-     */
-    function _resetFileAreaMessage() {
-      vm.showMessage = false;
-      vm.fileAreaMessage = i18n.get("file-open-save-plugin.app.middle.no-recents.message");
+      return vm.searchResults !== null ? vm.searchResults : vm.folder.children;
     }
 
     /**
@@ -353,11 +347,19 @@ define([
      * Called when user clicks "Open"
      */
     function onOpenClick() {
-      if (fileService.files.length === 1 && fileService.files[0].type === "folder") {
-        vm.searchString = "";
-        selectFolder(fileService.files[0]);
-      } else if (fileService.files.length === 1) {
-        _open(fileService.files[0]);
+      if (fileService.files.length === 1) {
+        // If something is selected either open the folder or return it depending on state
+        if (fileService.files[0].type === "folder" && !$state.is("selectFolder") && !$state.is("selectFileFolder")) {
+          vm.searchString = "";
+          selectFolder(fileService.files[0], true);
+        } else {
+          _open(fileService.files[0]);
+        }
+      } else {
+        // Nothing is selected return the folder path if in Select Folder state
+        if ($state.is("selectFolder") || $state.is("selectFileFolder")) {
+          _open(folderService.folder)
+        }
       }
     }
 
@@ -374,31 +376,7 @@ define([
      * @private
      */
     function _open(file) {
-      try {
-        if (vm.selectedFolder === "Recents" && vm.origin === "spoon") {
-          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
-              file.objectId).then(function (response) {
-            _closeBrowser();
-          }, function (response) {
-            _triggerError(16);
-          });
-        } else {
-          fileService.open(file);
-        }
-      } catch (e) {
-        if (file.repository) {
-          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
-              file.objectId).then(function (response) {
-            _closeBrowser();
-          }, function (response) {
-            _triggerError(16);
-          });
-        } else {
-          dt.openFile(file.objectId, file.type, file.path).then(function (response) {
-            _closeBrowser();
-          });
-        }
-      }
+      fileService.open(file);
     }
 
     /**
@@ -407,28 +385,37 @@ define([
      * @private
      */
     function _save(override) {
+      var duplicate = null;
+      var folderToUse = vm.folder;
+
+      if (vm.fileToSave === "" && vm.state.is("saveToFileFolder") ) {
+        if ( fileService.files.length >= 1 ) {
+          // Set the file/folder to the selected item if fileToSave is blank and something is selected.
+          duplicate = folderService.getDuplicate(fileService.files[0].name);
+          folderToUse = fileService.files[0];
+        } else {
+          // Nothing selected use the current directory which is a duplicate.
+          duplicate = folderService.folder;
+        }
+      }
+      if (duplicate === null ) {
+        // Determine if the file/folder to save is a duplicate to prompt the user to overwrite.
+        duplicate = folderService.getDuplicate(vm.fileToSave);
+      }
+
       if (_isInvalidName()) {
         _triggerError(17);
-      } else if (override || !_isDuplicate()) {
-        var currentFilename = "";
-        if (vm.selectedFiles.length > 0) {
-          currentFilename = vm.selectedFiles[0].name;
-        }
-        fileService.save(vm.fileToSave, vm.folder, currentFilename, override).then(function() {
+      } else if (override || duplicate === null) {
+        var currentFilename = duplicate !== null ? duplicate.name : null;
+        fileService.save(vm.fileToSave, folderToUse, currentFilename, override).then(function() {
           // Dialog should close
         }, function() {
           _triggerError(3);
         });
       } else {
-        _triggerError(1);
+        vm.errorFiles = [duplicate];
+        vm.state.is("save") ? _triggerError(1) : _triggerError(22);
       }
-    }
-
-    /**
-     * Handler for when the ok button is clicked
-     */
-    function onOKClick() {
-      select(vm.file.objectId, vm.file.name, vm.file.path, vm.file.connection, vm.file.provider, vm.file.type);
     }
 
     /**
@@ -465,6 +452,7 @@ define([
     function confirmError() {
       switch (vm.errorType) {
         case 1: // File exists...override
+        case 22:
           _save(true);
           break;
         case 5: // Delete File
@@ -556,13 +544,12 @@ define([
      */
     function commitRemove() {
       if (vm.selectedFiles.length === 0) {
-        folderService.deleteFolder(vm.tree, vm.folder).then(function (parentFolder) {
+        folderService.deleteFolder(vm.folder).then(function (parentFolder) {
           vm.folder = null;
           selectFolder(parentFolder);
           vm.selectedFiles = null;
           vm.searchString = "";
           vm.showMessage = false;
-          dt.getRecentFiles().then(_populateRecentFiles);
         }, function (response) {
           if (response.status === 406) {// folder has open file
             _triggerError(13);
@@ -573,9 +560,8 @@ define([
       } else {
         fileService.deleteFiles(vm.folder, vm.selectedFiles).then(function (response) {
           fileService.files = [];
-          dt.getRecentFiles().then(_populateRecentFiles);
         }, function (response) {
-          if (vm.file.type === "folder") {
+          if (fileService.files[0].type === "folder") {
             if (response.status === 406) {// folder has open file
               _triggerError(13);
             } else {
@@ -589,6 +575,14 @@ define([
         });
       }
       _update();
+    }
+
+    function isSelectState() {
+      return (vm.state.is('selectFile') || vm.state.is('selectFolder') || vm.state.is('selectFileFolder'));
+    }
+
+    function isSaveState() {
+      return (vm.state.is('save') || vm.state.is('saveTo') || vm.state.is('saveToFileFolder'));
     }
 
     /**
@@ -607,6 +601,7 @@ define([
     function onCreateFolder(folder) {
       return $q(function (resolve, reject) {
         folderService.createFolder(folder).then(function () {
+          _update();
           resolve();
         }, function (result) {
           switch (result.status) {
@@ -614,7 +609,11 @@ define([
               // TODO: This should be a file already exists error
               _triggerError(4);
               break;
+            case "ERROR":
+              _triggerError(4);
+              break;
           }
+          _resetFolder();
           reject(result.status);
         });
       });
@@ -654,7 +653,7 @@ define([
       fileService.moveFiles(from, to).then(function (response) {
         to.loaded = false;
         // TODO: Do some cleanup here instead of full refresh
-        var parentFolder = folderService.findFolderByPath(vm.tree, from[0]);
+        var parentFolder = folderService.findFolderByPath(from[0]);
         parentFolder.loaded = false;
         onRefreshFolder();
       }, function (response) {
@@ -700,25 +699,6 @@ define([
     }
 
     /**
-     * Checks to see if the user has entered a file to save the same as a file already in current directory
-     * NOTE: does not check for hidden files. That is done in the checkForSecurityOrDupeIssues rest call
-     * @return {boolean} - true if duplicate, false otherwise
-     * @private
-     */
-    function _isDuplicate() {
-      if (vm.folder && vm.folder.children) {
-        for (var i = 0; i < vm.folder.children.length; i++) {
-          if (vm.fileToSave === vm.folder.children[i].name) {
-            fileService.files = [vm.folder.children[i]];
-            return true;
-          }
-        }
-      }
-      _update();
-      return false;
-    }
-
-    /**
      * Checks if the file name to save is valid or not. An invalid name contains forward or backward slashes
      * @returns {boolean} - true if the name is invalid, false otherwise
      * @private
@@ -746,12 +726,10 @@ define([
      */
     function onKeyUp(event) {
       if (event.keyCode === 13 && event.target.tagName !== "INPUT") {
-        if ($state.is("open")) {
-          if (vm.selectedFiles.length === 1) {
-            onSelectFile(vm.selectedFiles[0]);
-          }
-        } else if (!vm.showRecents) {
+        if (isSaveState()) {
           _save(false);
+        } else if (vm.selectedFiles.length === 1) {
+          onSelectFile(vm.selectedFiles[0]);
         }
       }
     }
@@ -761,7 +739,7 @@ define([
      */
     function onUpDirectory() {
       vm.fileLoading = true;
-      folderService.upDirectory(vm.tree).then(function() {
+      folderService.upDirectory().then(function() {
         vm.fileLoading = false;
         _update();
       });
@@ -772,17 +750,19 @@ define([
      */
     function onRefreshFolder() {
       vm.fileLoading = true;
-      folderService.refreshFolder(vm.tree).then(function() {
+      folderService.refreshFolder().then(function() {
         vm.fileLoading = false;
         _update();
       });
     }
 
     function doSearch(value) {
-      vm.searchResults = [];
+      vm.searchResults = null;
       if (value !== "") {
+        vm.searchResults = [];
         searchService.search(vm.folder, vm.searchResults, value);
       }
+      _update();
     }
   }
 
