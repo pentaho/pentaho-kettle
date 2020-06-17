@@ -397,7 +397,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         long currentTime = new Date().getTime();
         if ( data.lastFileFlushTime == 0 ) {
           data.lastFileFlushTime = currentTime;
-        } else if ( data.lastFileFlushTime - currentTime > flushInterval ) {
+        } else if ( currentTime - data.lastFileFlushTime > flushInterval ) {
           try {
             data.getFileStreamsCollection().flushOpenFiles( false );
           } catch ( IOException e ) {
