@@ -45,7 +45,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 
@@ -129,17 +133,26 @@ public class PentahoReportingOutputTest {
 
   @Test
   public void testProcessRowWithoutUsingValuesFromFields() throws KettleException {
+    String inputFileString = "inputFile";
+    String outputFileString = "outputFile";
     PentahoReportingOutput pentahoReportingOutput = mock( PentahoReportingOutput.class );
     PentahoReportingOutputMeta meta = mock( PentahoReportingOutputMeta.class );
     PentahoReportingOutputData data = mock( PentahoReportingOutputData.class );
+    LogChannelInterface log = mock( LogChannelInterface.class );
 
     when( pentahoReportingOutput.getRow() ).thenReturn( new Object[] { "Value1", "value2" } );
     when( pentahoReportingOutput.processRow( meta, data ) ).thenCallRealMethod();
     when( meta.getUseValuesFromFields() ).thenReturn( false );
+    when( meta.getInputFile() ).thenReturn( inputFileString);
+    when( meta.getOutputFile() ).thenReturn( outputFileString );
 
     setInternalState( pentahoReportingOutput, "first", true );
+    setInternalState( pentahoReportingOutput, "log", log );
 
     pentahoReportingOutput.processRow( meta, data );
+
+    verify( pentahoReportingOutput, times( 1 ) )
+      .processReport( any(), eq( inputFileString ), eq( outputFileString ), any(), any() );
   }
 
 }

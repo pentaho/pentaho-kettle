@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.pentahoreporting;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
@@ -220,7 +221,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
     return fileObject instanceof LocalFile ? new URL( fileObject.getName().getURI() ) : fileObject;
   }
 
-  private void processReport( Object[] r, String sourceFilename, String targetFilename,
+  @VisibleForTesting
+  public void processReport( Object[] r, String sourceFilename, String targetFilename,
     ProcessorType outputProcessorType, Boolean createParentFolder ) throws KettleException {
     try {
 
