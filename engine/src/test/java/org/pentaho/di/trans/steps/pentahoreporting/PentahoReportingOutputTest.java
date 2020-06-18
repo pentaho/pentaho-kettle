@@ -25,7 +25,11 @@ package org.pentaho.di.trans.steps.pentahoreporting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.util.reflection.Whitebox;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.reporting.engine.classic.core.DataFactory;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.libraries.resourceloader.CompoundResource;
@@ -44,6 +48,7 @@ import java.net.URL;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( DefaultResourceManagerBackend.class )
@@ -101,6 +106,41 @@ public class PentahoReportingOutputTest {
 
     assertTrue( keyValue instanceof URL );
 
+  }
+
+  @Test( expected = KettleException.class)
+  public void testProcessRowWitUsingValuesFromFields() throws KettleException {
+    PentahoReportingOutput pentahoReportingOutput = mock( PentahoReportingOutput.class );
+    PentahoReportingOutputMeta meta = mock( PentahoReportingOutputMeta.class );
+    PentahoReportingOutputData data = mock( PentahoReportingOutputData.class );
+    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+    LogChannelInterface log = mock( LogChannelInterface.class );
+
+    when( pentahoReportingOutput.getRow() ).thenReturn( new Object[] { "Value1", "value2" } );
+    when( pentahoReportingOutput.processRow( meta, data ) ).thenCallRealMethod();
+    when( meta.getUseValuesFromFields() ).thenReturn( true );
+    when( pentahoReportingOutput.getInputRowMeta() ).thenReturn( rowMetaInterface );
+    when( meta.getInputFileField() ).thenReturn( "field" );
+    when( rowMetaInterface.indexOfValue( "field" ) ).thenReturn( -1 );
+    setInternalState( pentahoReportingOutput, "first", true );
+    setInternalState( pentahoReportingOutput, "log", log );
+
+    pentahoReportingOutput.processRow( meta, data );
+  }
+
+  @Test
+  public void testProcessRowWithoutUsingValuesFromFields() throws KettleException {
+    PentahoReportingOutput pentahoReportingOutput = mock( PentahoReportingOutput.class );
+    PentahoReportingOutputMeta meta = mock( PentahoReportingOutputMeta.class );
+    PentahoReportingOutputData data = mock( PentahoReportingOutputData.class );
+
+    when( pentahoReportingOutput.getRow() ).thenReturn( new Object[] { "Value1", "value2" } );
+    when( pentahoReportingOutput.processRow( meta, data ) ).thenCallRealMethod();
+    when( meta.getUseValuesFromFields() ).thenReturn( false );
+
+    setInternalState( pentahoReportingOutput, "first", true );
+
+    pentahoReportingOutput.processRow( meta, data );
   }
 
 }

@@ -108,6 +108,14 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   private String inputFileField;
   @Injection( name = "OUTPUT_FILE_FIELD" )
   private String outputFileField;
+
+  @Injection( name = "INPUT_FILE" )
+  private String inputFile;
+  @Injection( name = "OUTPUT_FILE" )
+  private String outputFile;
+  @Injection( name = "USE_VALUES_FROM_FIELDS" )
+  private Boolean useValuesFromFields;
+  
   private Map<String, String> parameterFieldMap;
 
   @Injection( name = "OUTPUT_PROCESSOR_TYPE" )
@@ -138,6 +146,10 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     try {
       inputFileField = XMLHandler.getTagValue( stepnode, "input_file_field" );
       outputFileField = XMLHandler.getTagValue( stepnode, "output_file_field" );
+      inputFile = XMLHandler.getTagValue( stepnode, "input_file" );
+      outputFile = XMLHandler.getTagValue( stepnode, "output_file" );
+      useValuesFromFields = "Y".equals( XMLHandler.getTagValue( stepnode, "use_values_from_fields" ) )
+        || XMLHandler.getTagValue( stepnode, "use_values_from_fields" )  == null;
       createParentfolder = "Y".equals( XMLHandler.getTagValue( stepnode, "create_parent_folder" ) );
       parameterFieldMap = new HashMap<String, String>();
       Node parsNode = XMLHandler.getSubNode( stepnode, XML_TAG_PARAMETERS );
@@ -161,6 +173,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   public void setDefault() {
     outputProcessorType = ProcessorType.PDF;
     createParentfolder = false;
+    useValuesFromFields = true;
   }
 
   public String getXML() {
@@ -169,6 +182,9 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     retval.append( "  " + XMLHandler.addTagValue( "input_file_field", inputFileField ) );
     retval.append( "  " + XMLHandler.addTagValue( "output_file_field", outputFileField ) );
     retval.append( "  " + XMLHandler.addTagValue( "create_parent_folder", createParentfolder ) );
+    retval.append( "  " + XMLHandler.addTagValue( "input_file", inputFile ) );
+    retval.append( "  " + XMLHandler.addTagValue( "output_file", outputFile ) );
+    retval.append( "  " + XMLHandler.addTagValue( "use_values_from_fields", useValuesFromFields ) );
     retval.append( "  " + XMLHandler.openTag( XML_TAG_PARAMETERS ) );
     List<String> parameters = new ArrayList<String>();
     parameters.addAll( parameterFieldMap.keySet() );
@@ -191,6 +207,9 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     try {
       inputFileField = rep.getStepAttributeString( idStep, "file_input_field" );
       outputFileField = rep.getStepAttributeString( idStep, "file_output_field" );
+      inputFile = rep.getStepAttributeString( idStep, "file_input" );
+      outputFile = rep.getStepAttributeString( idStep, "file_output" );
+      useValuesFromFields = rep.getStepAttributeBoolean( idStep, "use_values_from_fields" );
       createParentfolder = rep.getStepAttributeBoolean( idStep, "create_parent_folder" );
       parameterFieldMap = new HashMap<String, String>();
       int nrParameters = rep.countNrStepAttributes( idStep, "parameter_name" );
@@ -214,6 +233,9 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     try {
       rep.saveStepAttribute( idTransformation, idStep, "file_input_field", inputFileField );
       rep.saveStepAttribute( idTransformation, idStep, "file_output_field", outputFileField );
+      rep.saveStepAttribute( idTransformation, idStep, "file_input", inputFile );
+      rep.saveStepAttribute( idTransformation, idStep, "file_output", outputFile );
+      rep.saveStepAttribute( idTransformation, idStep, "use_values_from_fields", useValuesFromFields );
       rep.saveStepAttribute( idTransformation, idStep, "create_parent_folder", createParentfolder );
       List<String> pars = new ArrayList<String>( parameterFieldMap.keySet() );
       Collections.sort( pars );
@@ -305,6 +327,50 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
    */
   public void setOutputFileField( String outputFileField ) {
     this.outputFileField = outputFileField;
+  }
+
+  /**
+   * @return the useValuesFromFields
+   */
+  public Boolean getUseValuesFromFields() {
+    return useValuesFromFields;
+  }
+  /**
+   * @param useValuesFromFields
+   *          the useValuesFromFields to set
+   */
+  public void setUseValuesFromFields( Boolean useValuesFromFields ) {
+    this.useValuesFromFields = useValuesFromFields;
+  }
+
+  /**
+   * @return the inputFile
+   */
+  public String getInputFile() {
+    return inputFile;
+  }
+
+  /**
+   * @param inputFile
+   *          the inputFile to set
+   */
+  public void setInputFile( String inputFile ) {
+    this.inputFile = inputFile;
+  }
+
+  /**
+   * @return the outputFile
+   */
+  public String getOutputFile() {
+    return outputFile;
+  }
+
+  /**
+   * @param outputFile
+   *          the outputFile to set
+   */
+  public void setOutputFile( String outputFile ) {
+    this.outputFile = outputFile;
   }
 
   /**

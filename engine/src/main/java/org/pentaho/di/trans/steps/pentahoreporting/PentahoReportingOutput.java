@@ -130,26 +130,29 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       setOutputDone();
       return false;
     }
-
     if ( first ) {
       first = false;
 
-      data.inputFieldIndex = getInputRowMeta().indexOfValue( meta.getInputFileField() );
-      if ( data.inputFieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getInputFileField() ) );
-      }
-      data.outputFieldIndex = getInputRowMeta().indexOfValue( meta.getOutputFileField() );
-      if ( data.inputFieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getOutputFileField() ) );
+      if ( meta.getUseValuesFromFields() ) {
+        data.inputFieldIndex = getInputRowMeta().indexOfValue( meta.getInputFileField() );
+        if ( data.inputFieldIndex < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getInputFileField() ) );
+        }
+        data.outputFieldIndex = getInputRowMeta().indexOfValue( meta.getOutputFileField() );
+        if ( data.inputFieldIndex < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getOutputFileField() ) );
+        }
       }
 
-      performPentahoReportingBoot( log, getClass() );
     }
+    performPentahoReportingBoot( log, getClass() );
 
-    String sourceFilename = getInputRowMeta().getString( r, data.inputFieldIndex );
-    String targetFilename = getInputRowMeta().getString( r, data.outputFieldIndex );
+    String sourceFilename = meta.getUseValuesFromFields()
+      ? getInputRowMeta().getString( r, data.inputFieldIndex ) : meta.getInputFile();
+    String targetFilename =  meta.getUseValuesFromFields()
+      ? getInputRowMeta().getString( r, data.outputFieldIndex ) : meta.getOutputFile();
     processReport( r, sourceFilename, targetFilename, meta.getOutputProcessorType(), meta.getCreateParentfolder() );
 
     // in case we want the input data to go to more steps.
