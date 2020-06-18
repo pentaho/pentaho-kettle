@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.pentahoreporting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -54,7 +53,7 @@ import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 @PrepareForTest( DefaultResourceManagerBackend.class )
 public class PentahoReportingOutputTest {
 
-  private final static String QUERY_NAME = "LocalFileQueryName";
+  private static final String QUERY_NAME = "LocalFileQueryName";
   private URL testResourceUrl;
   private ResourceKey resourceKey;
 
@@ -108,7 +107,7 @@ public class PentahoReportingOutputTest {
 
   }
 
-  @Test( expected = KettleException.class)
+  @Test( expected = KettleException.class )
   public void testProcessRowWitUsingValuesFromFields() throws KettleException {
     PentahoReportingOutput pentahoReportingOutput = mock( PentahoReportingOutput.class );
     PentahoReportingOutputMeta meta = mock( PentahoReportingOutputMeta.class );

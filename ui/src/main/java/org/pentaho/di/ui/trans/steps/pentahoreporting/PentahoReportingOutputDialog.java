@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -243,7 +243,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     fdlInput.right = new FormAttachment( middle, -margin );
     wlInput.setLayoutData( fdlInput );
     wInput = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wInput);
+    props.setLook( wInput );
     wInput.addModifyListener( lsMod );
     FormData fdInput = new FormData();
     fdInput.left = new FormAttachment( middle, 0 );
@@ -431,7 +431,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
 
   private void setActiveFields() {
-    if( wUseValuesFromFields.getSelection() ) {
+    if ( wUseValuesFromFields.getSelection() ) {
       wInputField.setEnabled( true );
       wOutputField.setEnabled( true );
       wInput.setEnabled( false );

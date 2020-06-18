@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -115,7 +115,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   private String outputFile;
   @Injection( name = "USE_VALUES_FROM_FIELDS" )
   private Boolean useValuesFromFields;
-  
+
   private Map<String, String> parameterFieldMap;
 
   @Injection( name = "OUTPUT_PROCESSOR_TYPE" )
