@@ -576,7 +576,13 @@ public class SpoonJobDelegate extends SpoonDelegate {
               + sourceDbInfo + "].[" + tables[i]
               + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname2" ) + targetDbInfo + "]";
 
+          //PDI-18139 REST api of pentaho server gives 400 bad request if the resource has '[',']' symbols.
+          //replace them with acceptable alternative
+          transname = transname.replaceAll("[\\[,\\]]", "'");
           TransMeta transMeta = new TransMeta();
+          //during the saving to repository name is not filled in, but it is required to get to the step of submitting to REST api
+          //init it to make sure it is available on the next steps
+          transMeta.setName(transname);
           if ( repdir != null ) {
             transMeta.setRepositoryDirectory( repdir );
           } else {
