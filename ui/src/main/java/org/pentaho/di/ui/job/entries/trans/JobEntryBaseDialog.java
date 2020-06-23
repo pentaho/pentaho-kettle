@@ -707,14 +707,16 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
         } catch ( KettleException ignored ) {
           // Ignore errors
         }
-        display.asyncExec( () -> {
-          if ( (Boolean) items.get( IS_PENTAHO ) ) {
-            wWaitingToFinish.setSelection( false );
-            wWaitingToFinish.setEnabled( false );
-          } else {
-            wWaitingToFinish.setEnabled( true );
-          }
-        } );
+        if ( wWaitingToFinish != null && !wWaitingToFinish.isDisposed() ) {
+          display.asyncExec( () -> {
+            if ( (Boolean) items.get( IS_PENTAHO ) ) {
+              wWaitingToFinish.setSelection( false );
+              wWaitingToFinish.setEnabled( false );
+            } else {
+              wWaitingToFinish.setEnabled( true );
+            }
+          }   );
+        }
       } );
     }
   }
