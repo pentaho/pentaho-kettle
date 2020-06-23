@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -62,9 +63,9 @@ public class JobFileListener implements FileListener, ConnectionListener {
           return true;
         }
       }
-      if ( jobMeta.getRepositoryDirectory() == null || !importfile ) {
-        jobMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( jobMeta ) );
-      }
+      //same fix as in PDI-18786 where the clearCurrentDirectoryChangedListeners method was added
+      clearCurrentDirectoryChangedListenersWhenImporting( importfile, jobMeta );
+      jobMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( jobMeta ) );
       jobMeta.setRepository( spoon.getRepository() );
       jobMeta.setMetaStore( spoon.getMetaStore() );
       if ( connection != null ) {
@@ -102,6 +103,13 @@ public class JobFileListener implements FileListener, ConnectionListener {
         + fname, e );
     }
     return false;
+  }
+
+  @VisibleForTesting
+  void clearCurrentDirectoryChangedListenersWhenImporting( boolean importfile, JobMeta jobMeta ) {
+    if ( importfile ) {
+      jobMeta.clearCurrentDirectoryChangedListeners();
+    }
   }
 
   private JobMeta fixLinks( JobMeta jobMeta ) {
