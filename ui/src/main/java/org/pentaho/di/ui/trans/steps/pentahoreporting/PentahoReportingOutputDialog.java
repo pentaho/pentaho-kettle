@@ -228,6 +228,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     wUseValuesFromFields.setLayoutData( fdUseValuesFromFields );
     wUseValuesFromFields.setSelection( input.getUseValuesFromFields() );
     wUseValuesFromFields.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         setActiveFields();
