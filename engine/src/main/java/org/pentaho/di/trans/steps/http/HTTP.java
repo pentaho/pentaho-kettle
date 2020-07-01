@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -149,7 +149,7 @@ public class HTTP extends BaseStep implements StepInterface {
 
         // Preemptive authentication
         if ( StringUtils.isNotBlank( data.realProxyHost ) ) {
-          HttpHost target = new HttpHost( data.realProxyHost, data.realProxyPort, "http" );
+          HttpHost target = new HttpHost( uri.getHost(), uri.getPort(), uri.getScheme() );
           // Create AuthCache instance
           AuthCache authCache = new BasicAuthCache();
           // Generate BASIC scheme object and add it to the local
