@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -669,4 +670,29 @@ public class TransTest {
     verify( step2 ).cleanup();
   }
 
+  /**
+   * <p>PDI-18459 - Some Steps fail on initialization but don't set the status.</p>
+   * <p>Calling org.pentaho.di.trans.Trans#setStopped(boolean) should guarantee that all step's status is 'Stopped', whatever its initial status.</p>
+   */
+  @Test
+  public void testSetStoppedShouldStopEveryStep() throws Exception {
+    List<StepMetaDataCombi> stepList = new ArrayList<>();
+
+    // Create steps with all possible status
+    for ( BaseStepData.StepExecutionStatus status : BaseStepData.StepExecutionStatus.values() ) {
+      StepDataInterface sdi = mock( StepDataInterface.class );
+      doReturn( status ).when( sdi ).getStatus();
+      stepList.add( combi( mock( StepInterface.class ), sdi, mock( StepMeta.class ) ) );
+    }
+
+    trans.setSteps( stepList );
+
+    // Not all steps are stopped
+    assertFalse( trans.isStopped() );
+
+    trans.setStopped( true );
+
+    // Now, all steps should be stopped
+    assertTrue( trans.isStopped() );
+  }
 }
