@@ -23,6 +23,7 @@
 package org.pentaho.di.core.variables;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -30,8 +31,11 @@ import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.version.BuildVersion;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -259,6 +263,37 @@ public class Variables implements VariableSpace {
   // Method is defined as package-protected in order to be accessible by unit tests
   Map<String, String> getProperties() {
     return properties;
+  }
+
+  /**
+   * save modification variable to file, and refresh variable in memory
+   *
+   * @param variableName
+   *          The variable to look up.
+   * @param variableValue
+   *          The default value to return.
+   */
+  public void saveVariableToFile(String variableName, String variableValue) {
+    FileOutputStream out = null;
+    try {
+      Properties prop = EnvUtil.readProperties(getKettlePropertiesFilename());
+      prop.put(variableName, variableValue);
+      setVariable(variableName, variableValue);
+      out = new FileOutputStream(getKettlePropertiesFilename());
+      prop.store(out, Const.getKettlePropertiesFileHeader());
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        out.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  private String getKettlePropertiesFilename() {
+    return Const.getKettleDirectory() + "/" + Const.KETTLE_PROPERTIES;
   }
 
 }

@@ -191,4 +191,14 @@ public interface VariableSpace {
    *           In case there is a String conversion error
    */
   public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException;
+
+  /**
+   * default method, save modification variable to file, and refresh variable in memory
+   *
+   * @param variableName
+   *          The variable to look up.
+   * @param variableValue
+   *          The default value to return.
+   */
+  default void saveVariableToFile(String variableName, String variableValue) {}
 }
