@@ -30,7 +30,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -40,7 +39,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.StepLogTable;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
@@ -51,6 +52,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -70,6 +74,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -78,7 +83,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith ( MockitoJUnitRunner.class )
+@RunWith ( PowerMockRunner.class )
+@PrepareForTest( { Database.class, Trans.class } )
 public class TransTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -626,4 +632,198 @@ public class TransTest {
     verify( stepMock2 ).cleanup();
   }
 
+
+  /**
+   * <p>PDI-18458: A Stopped transformation would be logged as 'Running'.</p>
+   *
+   * @see #testEndProcessing_StatusCalculation_Base()
+   * @see #testEndProcessing_StatusCalculation_Finished()
+   * @see #testEndProcessing_StatusCalculation_Paused()
+   * @see #testEndProcessing_StatusCalculation_Running()
+   */
+  @Test
+  public void testEndProcessing_StatusCalculation_Stopped() throws Exception {
+    Database database = testEndProcessing_StatusCalculation_Base();
+
+    // Set 'Stopped'
+    trans.setStopped( true );
+
+    int allCount = 0;
+
+    for( boolean finished : new boolean[] { false, true } ) {
+      for( boolean initializing : new boolean[] { false, true } ) {
+        for( boolean paused : new boolean[] { false, true } ) {
+          for( boolean preparing : new boolean[] { false, true } ) {
+            for( boolean running : new boolean[] { false, true } ) {
+              trans.setFinished( finished );
+              trans.setInitializing( initializing );
+              trans.setPaused( paused );
+              trans.setPreparing( preparing );
+              trans.setRunning( running );
+
+              trans.fireTransFinishedListeners();
+
+              ++allCount;
+            }
+          }
+        }
+      }
+    }
+
+    // All cases should result in status being 'Stopped'.
+    verify( database, times( allCount ) ).writeLogRecord( meta.getTransLogTable(), LogStatus.STOP, trans, null );
+  }
+
+  /**
+   * <p>PDI-18458: A Stopped transformation would be logged as 'Running'.</p>
+   *
+   * @see #testEndProcessing_StatusCalculation_Base()
+   * @see #testEndProcessing_StatusCalculation_Paused()
+   * @see #testEndProcessing_StatusCalculation_Running()
+   * @see #testEndProcessing_StatusCalculation_Stopped()
+   */
+  @Test
+  public void testEndProcessing_StatusCalculation_Finished() throws Exception {
+    Database database = testEndProcessing_StatusCalculation_Base();
+
+    // Set 'Finished'
+    trans.setFinished( true );
+
+    int stopCount = 0;
+    int allCount = 0;
+
+    for( boolean initializing : new boolean[] { false, true } ) {
+      for( boolean paused : new boolean[] { false, true } ) {
+        for( boolean preparing : new boolean[] { false, true } ) {
+          for( boolean running : new boolean[] { false, true } ) {
+            for( boolean stopped : new boolean[] { false, true } ) {
+              trans.setInitializing( initializing );
+              trans.setPaused( paused );
+              trans.setPreparing( preparing );
+              trans.setRunning( running );
+              trans.setStopped( stopped );
+
+              trans.fireTransFinishedListeners();
+
+              ++allCount;
+              if( stopped ) {
+                ++stopCount;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // All cases, except where stopped is set, should result in status being 'End'.
+    verify( database, times( allCount - stopCount ) ).writeLogRecord( meta.getTransLogTable(), LogStatus.END, trans, null );
+    verify( database, times( stopCount ) ).writeLogRecord( meta.getTransLogTable(), LogStatus.STOP, trans, null );
+  }
+
+  /**
+   * <p>PDI-18458: A Stopped transformation would be logged as 'Running'.</p>
+   *
+   * @see #testEndProcessing_StatusCalculation_Base()
+   * @see #testEndProcessing_StatusCalculation_Finished()
+   * @see #testEndProcessing_StatusCalculation_Running()
+   * @see #testEndProcessing_StatusCalculation_Stopped()
+   */
+  @Test
+  public void testEndProcessing_StatusCalculation_Paused() throws Exception {
+    Database database = testEndProcessing_StatusCalculation_Base();
+
+    // Set 'Paused'
+    trans.setPaused( true );
+
+    // It can't be 'Finished' nor 'Stopped'
+    trans.setFinished( false );
+    trans.setStopped( false );
+
+    int allCount = 0;
+
+    for( boolean initializing : new boolean[] { false, true } ) {
+      for( boolean preparing : new boolean[] { false, true } ) {
+        for( boolean running : new boolean[] { false, true } ) {
+          trans.setInitializing( initializing );
+          trans.setPreparing( preparing );
+          trans.setRunning( running );
+
+          trans.fireTransFinishedListeners();
+
+          ++allCount;
+        }
+      }
+    }
+
+    // All cases should result in status being 'End'.
+    verify( database, times( allCount ) ).writeLogRecord( meta.getTransLogTable(), LogStatus.PAUSED, trans, null );
+  }
+
+  /**
+   * <p>PDI-18458: A Stopped transformation would be logged as 'Running'.</p>
+   *
+   * @see #testEndProcessing_StatusCalculation_Base()
+   * @see #testEndProcessing_StatusCalculation_Finished()
+   * @see #testEndProcessing_StatusCalculation_Paused()
+   * @see #testEndProcessing_StatusCalculation_Stopped()
+   */
+  @Test
+  public void testEndProcessing_StatusCalculation_Running() throws Exception {
+    Database database = testEndProcessing_StatusCalculation_Base();
+
+    // It can't be 'Finished', 'Paused' nor 'Stopped'
+    trans.setFinished( false );
+    trans.setPaused( false );
+    trans.setStopped( false );
+
+    int allCount = 0;
+
+    for( boolean initializing : new boolean[] { false, true } ) {
+      for( boolean preparing : new boolean[] { false, true } ) {
+        for( boolean running : new boolean[] { false, true } ) {
+          trans.setInitializing( initializing );
+          trans.setPreparing( preparing );
+          trans.setRunning( running );
+
+          trans.fireTransFinishedListeners();
+
+          ++allCount;
+        }
+      }
+    }
+
+    // All cases should result in status being 'Running'.
+    verify( database, times( allCount ) ).writeLogRecord( meta.getTransLogTable(), LogStatus.RUNNING, trans, null );
+  }
+
+  /**
+   * <p>PDI-18458: A Stopped transformation would be logged as 'Running'.</p>
+   * <p>Base for the testEndProcessing_StatusCalculation's tests.</p>
+   *
+   * @return the mocked {@link Database} object used on the test
+   *
+   * @see #testEndProcessing_StatusCalculation_Finished()
+   * @see #testEndProcessing_StatusCalculation_Paused()
+   * @see #testEndProcessing_StatusCalculation_Running()
+   * @see #testEndProcessing_StatusCalculation_Stopped()
+   */
+  private Database testEndProcessing_StatusCalculation_Base() throws Exception {
+    TransLogTable transLogTable = spy( new TransLogTable(null, null, null) );
+    doReturn("AnActualTableNametransLogTable").when(transLogTable).getActualTableName();
+    doReturn("AnActualConnectionName").when(transLogTable).getActualConnectionName();
+    doReturn("AnActualSchemaName").when(transLogTable).getActualSchemaName();
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    doReturn( databaseMeta).when( transLogTable ).getDatabaseMeta();
+    doReturn( transLogTable).when( meta ).getTransLogTable();
+    doReturn( false ).when( transLogTable ).isBatchIdUsed();
+    doReturn( "MetaName" ).when( meta ).getName();
+    Database database = mock( Database.class );
+    PowerMockito.whenNew( Database.class ).withAnyArguments().thenReturn(database);
+    doNothing().when( database ).connect();
+
+    trans.calculateBatchIdAndDateRange();
+    trans.beginProcessing();
+
+    return database;
+  }
 }
