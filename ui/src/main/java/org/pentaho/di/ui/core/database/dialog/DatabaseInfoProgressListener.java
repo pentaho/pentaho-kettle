@@ -19,9 +19,15 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package org.pentaho.di.ui.core.database.dialog;
 
-public enum UiPostActionStatus {
-  OK, ERROR_DIALOG_SHOWN, ERROR, NONE, CANCEL;
+import org.eclipse.core.runtime.IProgressMonitor;
+
+public interface DatabaseInfoProgressListener {
+
+  /**
+   * Notifies that the database progress info dialog has finished
+   * @param progressMonitor the progress monitor with the state of the progress
+   */
+  void databaseInfoProgressFinished( IProgressMonitor progressMonitor );
 }
