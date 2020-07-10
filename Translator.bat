@@ -72,7 +72,7 @@ REM ** Set java runtime options                                     **
 REM ** Change 512m to higher values in case you run out of memory   **
 REM ******************************************************************
 
-set OPT="-Xmx512m" "-XX:MaxPermSize=256m"
+set OPT="-Xmx512m"
 
 REM ***************
 REM ** Run...    **
