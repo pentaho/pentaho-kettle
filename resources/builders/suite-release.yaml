@@ -40,6 +40,15 @@ buildProperties:
   RUN_STAGE_TAG: true
   TAG_NAME: ${RELEASE_VERSION}-RC
 
+  # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
+  # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
+  # parallel tasks like checkout, test, tagging, and archiving, reduce
+  # to a reasonable size to reduce the risk of timeout failures
+  PARALLEL_SIZE_CHECKOUT: 15
+  PARALLEL_SIZE_TEST    : 20
+  PARALLEL_SIZE_TAG     : 20
+  PARALLEL_SIZE_ARCHIVE : 10
+
   # Reports
   BUILD_ORDER_REPORT  : true
 

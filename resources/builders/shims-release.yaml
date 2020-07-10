@@ -27,7 +27,7 @@ buildProperties:
   ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
 
   # Version based control properties
-  RUN_VERSIONING                 : true
+  RUN_STAGE_VERSION                 : true
   RELEASE_VERSION                : [shim-release-version]
   DEPLOYMENT_FOLDER              : [shim-release-version]
   RELEASE_MODE                   : true
@@ -40,7 +40,7 @@ buildProperties:
   BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
 
   # Tagging
-  CREATE_TAG                     : true
+  RUN_STAGE_TAG                     : true
   TAG_NAME                       : ${RELEASE_VERSION}-R
 
   # Slack Reporting

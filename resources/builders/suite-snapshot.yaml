@@ -18,6 +18,15 @@ buildProperties:
   DOCKER_PUBLIC_PUSH_REPO     : pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com/
   DOCKER_PRIVATE_PUSH_REPO    : pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com/
 
+  # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
+  # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
+  # parallel tasks like checkout, test, tagging, and archiving, reduce
+  # to a reasonable size to reduce the risk of timeout failures.
+  PARALLEL_SIZE_CHECKOUT: 15
+  PARALLEL_SIZE_TEST    : 20
+  PARALLEL_SIZE_TAG     : 20
+  PARALLEL_SIZE_ARCHIVE : 10
+
   MAVEN_DEFAULT_DIRECTIVES:
     build: clean deploy -DskipTests
     test: test
