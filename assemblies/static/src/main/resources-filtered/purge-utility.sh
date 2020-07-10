@@ -32,4 +32,4 @@ setPentahoEnv
 
 # uses Java 6 classpath wildcards
 # quotes required around classpath to prevent shell expansion
-"$_PENTAHO_JAVA" -Xmx2048m -XX:MaxPermSize=256m -classpath "$DIR/plugins/pdi-pur-plugin/*:$DIR/lib/*" com.pentaho.di.purge.RepositoryCleanupUtil "$@"
+"$_PENTAHO_JAVA" -Xmx2048m -classpath "$DIR/plugins/pdi-pur-plugin/*:$DIR/lib/*" com.pentaho.di.purge.RepositoryCleanupUtil "$@"
