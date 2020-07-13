@@ -43,7 +43,7 @@ buildProperties:
   # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
   # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
   # parallel tasks like checkout, test, tagging, and archiving, reduce
-  # to a reasonable size to reduce the risk of timeout failures
+  # to a reasonable size to reduce the risk of timeout failures.
   PARALLEL_SIZE_CHECKOUT: 15
   PARALLEL_SIZE_TEST    : 20
   PARALLEL_SIZE_TAG     : 20
@@ -741,7 +741,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
        dockerImage     :  jenkins-build/installanywhere-installbuilder
        root            :  installer-tool
-       archivable      :  true
        versionProperty :  pentaho.version
 
   4700:
