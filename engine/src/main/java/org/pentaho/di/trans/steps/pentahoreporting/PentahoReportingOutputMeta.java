@@ -104,6 +104,16 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   public static final String XML_TAG_PARAMETERS = "parameters";
   public static final String XML_TAG_PARAMETER = "parameter";
 
+  public static final String XML_TAG_INPUT_FILE_FIELD = "input_file_field";
+  public static final String XML_TAG_OUTPUT_FILE_FIELD = "output_file_field";
+  public static final String XML_TAG_INPUT_FILE = "input_file";
+  public static final String XML_TAG_OUTPUT_FILE = "output_file";
+  public static final String XML_TAG_USE_VALUES_FROM_FIELDS = "use_values_from_fields";
+  public static final String XML_TAG_CREATE_PARENT_FOLDER = "create_parent_folder";
+  public static final String XML_TAG_NAME = "name";
+  public static final String XML_TAG_FIELD = "field";
+  public static final String XML_TAG_PROCESSOR_TYPE = "processor_type";
+
   @Injection( name = "INPUT_FILE_FIELD" )
   private String inputFileField;
   @Injection( name = "OUTPUT_FILE_FIELD" )
@@ -125,7 +135,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   private Param[] params;
 
   @Injection( name = "CREATE_PARENT_FOLDER" )
-  private Boolean createParentfolder;
+  private Boolean createParentFolder;
 
   public PentahoReportingOutputMeta() {
     super(); // allocate BaseStepMeta
@@ -144,26 +154,26 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      inputFileField = XMLHandler.getTagValue( stepnode, "input_file_field" );
-      outputFileField = XMLHandler.getTagValue( stepnode, "output_file_field" );
-      inputFile = XMLHandler.getTagValue( stepnode, "input_file" );
-      outputFile = XMLHandler.getTagValue( stepnode, "output_file" );
-      useValuesFromFields = "Y".equals( XMLHandler.getTagValue( stepnode, "use_values_from_fields" ) )
-        || XMLHandler.getTagValue( stepnode, "use_values_from_fields" )  == null;
-      createParentfolder = "Y".equals( XMLHandler.getTagValue( stepnode, "create_parent_folder" ) );
+      inputFileField = XMLHandler.getTagValue( stepnode, XML_TAG_INPUT_FILE_FIELD );
+      outputFileField = XMLHandler.getTagValue( stepnode, XML_TAG_OUTPUT_FILE_FIELD );
+      inputFile = XMLHandler.getTagValue( stepnode, XML_TAG_INPUT_FILE );
+      outputFile = XMLHandler.getTagValue( stepnode, XML_TAG_OUTPUT_FILE );
+      useValuesFromFields = "Y".equals( XMLHandler.getTagValue( stepnode, XML_TAG_USE_VALUES_FROM_FIELDS ) )
+        || XMLHandler.getTagValue( stepnode, XML_TAG_USE_VALUES_FROM_FIELDS )  == null;
+      createParentFolder = "Y".equals( XMLHandler.getTagValue( stepnode, XML_TAG_CREATE_PARENT_FOLDER ) );
       parameterFieldMap = new HashMap<String, String>();
       Node parsNode = XMLHandler.getSubNode( stepnode, XML_TAG_PARAMETERS );
       List<Node> nodes = XMLHandler.getNodes( parsNode, XML_TAG_PARAMETER );
       for ( Node node : nodes ) {
-        String parameter = XMLHandler.getTagValue( node, "name" );
-        String fieldname = XMLHandler.getTagValue( node, "field" );
+        String parameter = XMLHandler.getTagValue( node, XML_TAG_NAME );
+        String fieldname = XMLHandler.getTagValue( node, XML_TAG_FIELD );
         if ( !Utils.isEmpty( parameter ) && !Utils.isEmpty( fieldname ) ) {
           parameterFieldMap.put( parameter, fieldname );
         }
       }
 
       outputProcessorType =
-        ProcessorType.getProcessorTypeByCode( XMLHandler.getTagValue( stepnode, "processor_type" ) );
+        ProcessorType.getProcessorTypeByCode( XMLHandler.getTagValue( stepnode, XML_TAG_PROCESSOR_TYPE ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
         PKG, "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo" ), e );
@@ -172,19 +182,19 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
   public void setDefault() {
     outputProcessorType = ProcessorType.PDF;
-    createParentfolder = false;
+    createParentFolder = false;
     useValuesFromFields = true;
   }
 
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
-    retval.append( "  " + XMLHandler.addTagValue( "input_file_field", inputFileField ) );
-    retval.append( "  " + XMLHandler.addTagValue( "output_file_field", outputFileField ) );
-    retval.append( "  " + XMLHandler.addTagValue( "create_parent_folder", createParentfolder ) );
-    retval.append( "  " + XMLHandler.addTagValue( "input_file", inputFile ) );
-    retval.append( "  " + XMLHandler.addTagValue( "output_file", outputFile ) );
-    retval.append( "  " + XMLHandler.addTagValue( "use_values_from_fields", useValuesFromFields ) );
+    retval.append( "  " + XMLHandler.addTagValue( XML_TAG_INPUT_FILE_FIELD, inputFileField ) );
+    retval.append( "  " + XMLHandler.addTagValue( XML_TAG_OUTPUT_FILE_FIELD, outputFileField ) );
+    retval.append( "  " + XMLHandler.addTagValue( XML_TAG_CREATE_PARENT_FOLDER, createParentFolder ) );
+    retval.append( "  " + XMLHandler.addTagValue( XML_TAG_INPUT_FILE, inputFile ) );
+    retval.append( "  " + XMLHandler.addTagValue( XML_TAG_OUTPUT_FILE, outputFile ) );
+    retval.append( "  " + XMLHandler.addTagValue( XML_TAG_USE_VALUES_FROM_FIELDS, useValuesFromFields ) );
     retval.append( "  " + XMLHandler.openTag( XML_TAG_PARAMETERS ) );
     List<String> parameters = new ArrayList<String>();
     parameters.addAll( parameterFieldMap.keySet() );
@@ -192,37 +202,37 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     for ( String name : parameters ) {
       String field = parameterFieldMap.get( name );
       retval.append( "   " + XMLHandler.openTag( XML_TAG_PARAMETER ) );
-      retval.append( "   " + XMLHandler.addTagValue( "name", name, false ) );
-      retval.append( "   " + XMLHandler.addTagValue( "field", field, false ) );
+      retval.append( "   " + XMLHandler.addTagValue( XML_TAG_NAME, name, false ) );
+      retval.append( "   " + XMLHandler.addTagValue( XML_TAG_FIELD, field, false ) );
       retval.append( "   " + XMLHandler.closeTag( XML_TAG_PARAMETER ) ).append( Const.CR );
     }
     retval.append( "  " + XMLHandler.closeTag( XML_TAG_PARAMETERS ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( "processor_type", outputProcessorType.getCode() ) );
+    retval.append( "    " + XMLHandler.addTagValue( XML_TAG_PROCESSOR_TYPE, outputProcessorType.getCode() ) );
 
     return retval.toString();
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases ) throws KettleException {
     try {
-      inputFileField = rep.getStepAttributeString( idStep, "file_input_field" );
-      outputFileField = rep.getStepAttributeString( idStep, "file_output_field" );
-      inputFile = rep.getStepAttributeString( idStep, "file_input" );
-      outputFile = rep.getStepAttributeString( idStep, "file_output" );
-      useValuesFromFields = rep.getStepAttributeBoolean( idStep, "use_values_from_fields" );
-      createParentfolder = rep.getStepAttributeBoolean( idStep, "create_parent_folder" );
+      inputFileField = rep.getStepAttributeString( idStep, XML_TAG_INPUT_FILE_FIELD );
+      outputFileField = rep.getStepAttributeString( idStep, XML_TAG_OUTPUT_FILE_FIELD );
+      inputFile = rep.getStepAttributeString( idStep, XML_TAG_INPUT_FILE );
+      outputFile = rep.getStepAttributeString( idStep, XML_TAG_OUTPUT_FILE );
+      useValuesFromFields = rep.getStepAttributeBoolean( idStep, XML_TAG_USE_VALUES_FROM_FIELDS );
+      createParentFolder = rep.getStepAttributeBoolean( idStep, XML_TAG_CREATE_PARENT_FOLDER );
       parameterFieldMap = new HashMap<String, String>();
-      int nrParameters = rep.countNrStepAttributes( idStep, "parameter_name" );
+      int nrParameters = rep.countNrStepAttributes( idStep, XML_TAG_PARAMETER + "_" + XML_TAG_NAME );
       for ( int i = 0; i < nrParameters; i++ ) {
-        String parameter = rep.getStepAttributeString( idStep, i, "parameter_name" );
-        String fieldname = rep.getStepAttributeString( idStep, i, "parameter_field" );
+        String parameter = rep.getStepAttributeString( idStep, i, XML_TAG_PARAMETER + "_" + XML_TAG_NAME );
+        String fieldname = rep.getStepAttributeString( idStep, i, XML_TAG_PARAMETER + "_" + XML_TAG_FIELD );
         if ( !Utils.isEmpty( parameter ) && !Utils.isEmpty( fieldname ) ) {
           parameterFieldMap.put( parameter, fieldname );
         }
       }
 
       outputProcessorType =
-        ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString( idStep, "processor_type" ) );
+        ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString( idStep, XML_TAG_PROCESSOR_TYPE ) );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
@@ -231,22 +241,22 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
-      rep.saveStepAttribute( idTransformation, idStep, "file_input_field", inputFileField );
-      rep.saveStepAttribute( idTransformation, idStep, "file_output_field", outputFileField );
-      rep.saveStepAttribute( idTransformation, idStep, "file_input", inputFile );
-      rep.saveStepAttribute( idTransformation, idStep, "file_output", outputFile );
-      rep.saveStepAttribute( idTransformation, idStep, "use_values_from_fields", useValuesFromFields );
-      rep.saveStepAttribute( idTransformation, idStep, "create_parent_folder", createParentfolder );
+      rep.saveStepAttribute( idTransformation, idStep, XML_TAG_INPUT_FILE_FIELD, inputFileField );
+      rep.saveStepAttribute( idTransformation, idStep, XML_TAG_OUTPUT_FILE_FIELD, outputFileField );
+      rep.saveStepAttribute( idTransformation, idStep, XML_TAG_INPUT_FILE, inputFile );
+      rep.saveStepAttribute( idTransformation, idStep, XML_TAG_OUTPUT_FILE, outputFile );
+      rep.saveStepAttribute( idTransformation, idStep, XML_TAG_USE_VALUES_FROM_FIELDS, useValuesFromFields );
+      rep.saveStepAttribute( idTransformation, idStep, XML_TAG_CREATE_PARENT_FOLDER, createParentFolder );
       List<String> pars = new ArrayList<String>( parameterFieldMap.keySet() );
       Collections.sort( pars );
       for ( int i = 0; i < pars.size(); i++ ) {
         String parameter = pars.get( i );
         String fieldname = parameterFieldMap.get( parameter );
-        rep.saveStepAttribute( idTransformation, idStep, i, "parameter_name", parameter );
-        rep.saveStepAttribute( idTransformation, idStep, i, "parameter_field", fieldname );
+        rep.saveStepAttribute( idTransformation, idStep, i, XML_TAG_PARAMETER + "_" + XML_TAG_NAME, parameter );
+        rep.saveStepAttribute( idTransformation, idStep, i, XML_TAG_PARAMETER + "_" + XML_TAG_FIELD, fieldname );
       }
 
-      rep.saveStepAttribute( idTransformation, idStep, "processor_type", outputProcessorType.getCode() );
+      rep.saveStepAttribute( idTransformation, idStep, XML_TAG_PROCESSOR_TYPE, outputProcessorType.getCode() );
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -286,17 +296,17 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   }
 
   /**
-  * @return the createParentfolder
+  * @return the createParentFolder
    */
-  public Boolean getCreateParentfolder() {
-    return createParentfolder;
+  public Boolean getCreateParentFolder() {
+    return createParentFolder;
   }
   /**
-   * @param createParentfolder
-   *          the createParentfolder to set
+   * @param createParentFolder
+   *          the createParentFolder to set
    */
-  public void setCreateParentfolder( Boolean createParentfolder ) {
-    this.createParentfolder = createParentfolder;
+  public void setCreateParentFolder( Boolean createParentFolder ) {
+    this.createParentFolder = createParentFolder;
   }
 
   /**

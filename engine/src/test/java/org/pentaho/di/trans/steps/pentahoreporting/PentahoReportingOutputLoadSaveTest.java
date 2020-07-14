@@ -42,7 +42,7 @@ public class PentahoReportingOutputLoadSaveTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Test
   public void testSerialization() throws KettleException {
-    List<String> attributes = Arrays.asList( "InputFileField", "OutputFileField", "InputFile", "OutputFile", "ParameterFieldMap", "OutputProcessorType", "CreateParentfolder", "UseValuesFromFields" );
+    List<String> attributes = Arrays.asList( "InputFileField", "OutputFileField", "InputFile", "OutputFile", "ParameterFieldMap", "OutputProcessorType", "CreateParentFolder", "UseValuesFromFields" );
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
 

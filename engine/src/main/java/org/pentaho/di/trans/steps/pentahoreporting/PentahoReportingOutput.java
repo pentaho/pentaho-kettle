@@ -154,7 +154,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       ? getInputRowMeta().getString( r, data.inputFieldIndex ) : meta.getInputFile();
     String targetFilename =  meta.getUseValuesFromFields()
       ? getInputRowMeta().getString( r, data.outputFieldIndex ) : meta.getOutputFile();
-    processReport( r, sourceFilename, targetFilename, meta.getOutputProcessorType(), meta.getCreateParentfolder() );
+    processReport( r, sourceFilename, targetFilename, meta.getOutputProcessorType(), meta.getCreateParentFolder() );
 
     // in case we want the input data to go to more steps.
     //

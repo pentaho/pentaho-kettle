@@ -82,7 +82,7 @@ public class PentahoReportingOutputMetaTest extends BaseMetadataInjectionTest<Pe
     }, PentahoReportingOutputMeta.ProcessorType.class );
     check( "CREATE_PARENT_FOLDER", new BooleanGetter() {
       public boolean get() {
-        return meta.getCreateParentfolder();
+        return meta.getCreateParentFolder();
       }
     } );
   }

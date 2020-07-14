@@ -126,7 +126,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
         input.setChanged();
       }
     };
-    SelectionListener selMod = new SelectionAdapter( ) {
+    SelectionListener selMod = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
@@ -185,7 +185,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     try {
       fieldNames = Const.sortStrings( transMeta.getPrevStepFields( stepMeta ).getFieldNames() );
     } catch ( KettleException e ) {
-      log.logError( "Unexpected error getting fields from previous steps...", e );
+      log.logError( BaseMessages.getString( PKG, "PentahoReportingOutputDialog.log.error.gettingFields" ), e );
     }
 
     wInputField.setItems( fieldNames );
@@ -211,7 +211,8 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
     //Use values from fields
     wlUseValuesFromFields = new Label( shell, SWT.RIGHT );
-    wlUseValuesFromFields.setText( BaseMessages.getString( PKG, "PentahoReportingOutputDialog.UseValuesFromField.Label" ) );
+    wlUseValuesFromFields
+      .setText( BaseMessages.getString( PKG, "PentahoReportingOutputDialog.UseValuesFromField.Label" ) );
     props.setLook( wlUseValuesFromFields );
     FormData fdlUseValuesFromFields = new FormData();
     fdlUseValuesFromFields.left = new FormAttachment( 10, 10 );
@@ -287,7 +288,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     fdParentFolder.top = new FormAttachment( wOutput, margin + 15 );
     fdParentFolder.right = new FormAttachment( 100, 10 );
     wParentFolder.setLayoutData( fdParentFolder );
-    wParentFolder.setSelection( input.getCreateParentfolder() );
+    wParentFolder.setSelection( input.getCreateParentFolder() );
     // Fields
     ColumnInfo[] colinf =
       new ColumnInfo[] {
@@ -408,7 +409,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     wInput.setText( Const.NVL( input.getInputFile(), "" ) );
     wOutput.setText( Const.NVL( input.getOutputFile(), "" ) );
 
-    wParentFolder.setSelection( input.getCreateParentfolder() );
+    wParentFolder.setSelection( input.getCreateParentFolder() );
     wUseValuesFromFields.setSelection( input.getUseValuesFromFields() );
 
     setActiveFields();
@@ -470,8 +471,8 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     input.setOutputFileField( wOutputField.getText() );
     input.setInputFile( wInput.getText() );
     input.setOutputFile( wOutput.getText() );
-    input.setOutputProcessorType( ProcessorType.values()[wProcessor.getSelectionIndex()] );
-    input.setCreateParentfolder( wParentFolder.getSelection() );
+    input.setOutputProcessorType( ProcessorType.values()[ wProcessor.getSelectionIndex() ] );
+    input.setCreateParentFolder( wParentFolder.getSelection() );
     input.setUseValuesFromFields( wUseValuesFromFields.getSelection() );
     dispose();
   }
@@ -563,21 +564,21 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     Class<?> clazz = entry.getValueType();
     String extra = " (";
 
-    String namespace = entry.getParameterAttributeNamespaces()[0];
+    String namespace = entry.getParameterAttributeNamespaces()[ 0 ];
     String[] attributes = entry.getParameterAttributeNames( namespace );
     for ( int i = 0; i < attributes.length; i++ ) {
       if ( i > 0 ) {
         extra += ", ";
       }
-      String attr = entry.getParameterAttribute( namespace, attributes[i], null );
-      extra += attributes[i] + "=" + attr;
+      String attr = entry.getParameterAttribute( namespace, attributes[ i ], null );
+      extra += attributes[ i ] + "=" + attr;
     }
     extra += ")";
     String type;
 
     if ( clazz.equals( String.class ) ) {
       type = BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParameterType.String" );
-    } else if ( clazz.equals( ( new String[0] ).getClass() ) ) {
+    } else if ( clazz.equals( ( new String[ 0 ] ).getClass() ) ) {
       type = BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParameterType.StringArray" );
     } else if ( clazz.equals( Date.class ) ) {
       type = BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParameterType.Date" );
@@ -599,7 +600,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
       type = BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParameterType.Boolean" );
     } else if ( clazz.equals( BigDecimal.class ) ) {
       type = BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParameterType.BigNumber" );
-    } else if ( clazz.equals( ( new byte[0] ).getClass() ) ) {
+    } else if ( clazz.equals( ( new byte[ 0 ] ).getClass() ) ) {
       type = BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParameterType.Binary" );
     } else {
       // We don't know
