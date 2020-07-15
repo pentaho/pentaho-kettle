@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -708,11 +708,13 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
           // Ignore errors
         }
         display.asyncExec( () -> {
-          if ( (Boolean) items.get( IS_PENTAHO ) ) {
-            wWaitingToFinish.setSelection( false );
-            wWaitingToFinish.setEnabled( false );
-          } else {
-            wWaitingToFinish.setEnabled( true );
+          if ( wWaitingToFinish != null && !wWaitingToFinish.isDisposed() ) {
+            if ( (Boolean) items.get( IS_PENTAHO ) ) {
+              wWaitingToFinish.setSelection( false );
+              wWaitingToFinish.setEnabled( false );
+            } else {
+              wWaitingToFinish.setEnabled( true );
+            }
           }
         } );
       } );
