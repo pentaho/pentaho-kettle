@@ -288,7 +288,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     fdParentFolder.top = new FormAttachment( wOutput, margin + 15 );
     fdParentFolder.right = new FormAttachment( 100, 10 );
     wParentFolder.setLayoutData( fdParentFolder );
-    wParentFolder.setSelection( input.getCreateParentFolder() );
+    wParentFolder.setSelection( input.getCreateParentfolder() );
     // Fields
     ColumnInfo[] colinf =
       new ColumnInfo[] {
@@ -409,7 +409,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     wInput.setText( Const.NVL( input.getInputFile(), "" ) );
     wOutput.setText( Const.NVL( input.getOutputFile(), "" ) );
 
-    wParentFolder.setSelection( input.getCreateParentFolder() );
+    wParentFolder.setSelection( input.getCreateParentfolder() );
     wUseValuesFromFields.setSelection( input.getUseValuesFromFields() );
 
     setActiveFields();
@@ -472,7 +472,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     input.setInputFile( wInput.getText() );
     input.setOutputFile( wOutput.getText() );
     input.setOutputProcessorType( ProcessorType.values()[ wProcessor.getSelectionIndex() ] );
-    input.setCreateParentFolder( wParentFolder.getSelection() );
+    input.setCreateParentfolder( wParentFolder.getSelection() );
     input.setUseValuesFromFields( wUseValuesFromFields.getSelection() );
     dispose();
   }
