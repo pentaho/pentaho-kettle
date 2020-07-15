@@ -56,6 +56,8 @@ public class JavaScriptUtilsTest {
   private static final String NATIVE_NUMBER = "org.mozilla.javascript.NativeNumber";
 
   private static final BigDecimal BIG_DECIMAL_ONE_DOT_ZERO = BigDecimal.valueOf( 1.0 );
+  private static final Long LONG_ONE = 1L;
+  private static final Double DOUBLE_ONE = 1.0;
   private static final double A_POSITIVE_DOUBLE = 90.01;
   private static final BigDecimal A_POSITIVE_BIG_DECIMAL = BigDecimal.valueOf( A_POSITIVE_DOUBLE );
   private static final double A_NEGATIVE_DOUBLE = -0.0102030405;
@@ -64,6 +66,8 @@ public class JavaScriptUtilsTest {
   private static final BigDecimal ALMOST_ONE_BIG_DECIMAL = BigDecimal.valueOf( ALMOST_ONE_DOUBLE );
   private static final double ALMOST_MINUS_ONE_DOUBLE = -1.00000000001;
   private static final BigDecimal ALMOST_MINUS_ONE_BIG_DECIMAL = BigDecimal.valueOf( ALMOST_MINUS_ONE_DOUBLE );
+  private static final double ASSERT_DELTA = 1e-6;
+
   private static Context ctx;
   private static ScriptableObject scope;
 
@@ -104,27 +108,25 @@ public class JavaScriptUtilsTest {
   public void jsToNumber_NativeJavaObject_Double() throws Exception {
     Scriptable value = getDoubleValue();
     Number number = JavaScriptUtils.jsToNumber( value, JAVA_OBJECT );
-    assertEquals( 1.0, number.doubleValue(), 1e-6 );
+    assertEquals( DOUBLE_ONE, number );
   }
 
   @Test
   public void jsToNumber_NativeJavaObject_Int() throws Exception {
     Scriptable value = getIntValue();
-    Number number = JavaScriptUtils.jsToNumber( value, JAVA_OBJECT );
-    assertEquals( 1.0, number.doubleValue(), 1e-6 );
+    assertEquals( DOUBLE_ONE, JavaScriptUtils.jsToNumber( value, JAVA_OBJECT ) );
   }
 
   @Test
   public void jsToNumber_NativeNumber() throws Exception {
     Scriptable value = Context.toObject( 1.0, scope );
-    Number number = JavaScriptUtils.jsToNumber( value, NATIVE_NUMBER );
-    assertEquals( 1.0, number.doubleValue(), 1e-6 );
+    assertEquals( DOUBLE_ONE, JavaScriptUtils.jsToNumber( value, NATIVE_NUMBER ) );
   }
 
   @Test
   public void jsToNumber_JavaNumber() throws Exception {
     Number number = JavaScriptUtils.jsToNumber( 1.0, Double.class.getName() );
-    assertEquals( 1.0, number.doubleValue(), 1e-6 );
+    assertEquals( DOUBLE_ONE, number.doubleValue(), ASSERT_DELTA);
   }
 
   // jsToInteger tests
@@ -139,13 +141,13 @@ public class JavaScriptUtilsTest {
     Number[] naturalNumbers = new Number[] { (byte) 1, (short) 1, 1, (long) 1 };
 
     for ( Number number : naturalNumbers ) {
-      assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( number, number.getClass() ) );
+      assertEquals( LONG_ONE, JavaScriptUtils.jsToInteger( number, number.getClass() ) );
     }
   }
 
   @Test
   public void jsToInteger_String() throws Exception {
-    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( "1", String.class ) );
+    assertEquals( LONG_ONE, JavaScriptUtils.jsToInteger( "1", String.class ) );
   }
 
   @Test( expected = NumberFormatException.class )
@@ -155,24 +157,24 @@ public class JavaScriptUtilsTest {
 
   @Test
   public void jsToInteger_Double() throws Exception {
-    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( 1.0, Double.class ) );
+    assertEquals( LONG_ONE, JavaScriptUtils.jsToInteger( 1.0, Double.class ) );
   }
 
   @Test
   public void jsToInteger_NativeJavaObject_Int() throws Exception {
     Scriptable value = getIntValue();
-    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( value, NativeJavaObject.class ) );
+    assertEquals( LONG_ONE, JavaScriptUtils.jsToInteger( value, NativeJavaObject.class ) );
   }
 
   @Test
   public void jsToInteger_NativeJavaObject_Double() throws Exception {
     Scriptable value = getDoubleValue();
-    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( value, NativeJavaObject.class ) );
+    assertEquals( LONG_ONE, JavaScriptUtils.jsToInteger( value, NativeJavaObject.class ) );
   }
 
   @Test
   public void jsToInteger_Other_Int() throws Exception {
-    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( 1, getClass() ) );
+    assertEquals( LONG_ONE, JavaScriptUtils.jsToInteger( 1, getClass() ) );
   }
 
   @Test( expected = NumberFormatException.class )
