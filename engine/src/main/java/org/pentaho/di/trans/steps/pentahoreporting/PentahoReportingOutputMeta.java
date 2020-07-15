@@ -298,14 +298,14 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   /**
   * @return the createParentFolder
    */
-  public Boolean getCreateParentFolder() {
+  public Boolean getCreateParentfolder() {
     return createParentFolder;
   }
   /**
    * @param createParentFolder
    *          the createParentFolder to set
    */
-  public void setCreateParentFolder( Boolean createParentFolder ) {
+  public void setCreateParentfolder( Boolean createParentFolder ) {
     this.createParentFolder = createParentFolder;
   }
 
