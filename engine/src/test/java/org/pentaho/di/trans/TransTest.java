@@ -48,6 +48,7 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInitThread;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
@@ -73,7 +74,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -82,6 +86,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith ( PowerMockRunner.class )
 @PrepareForTest( { Database.class, Trans.class } )
@@ -825,5 +830,73 @@ public class TransTest {
     trans.beginProcessing();
 
     return database;
+  }
+
+  /**
+   * <p>PDI-18459 - When any step fails on initialization, the transformation should set status to Stopped.</p>
+   */
+  @Test ( expected = KettleException.class )
+  public void testFailOnInitialization() throws Exception {
+    StepInterface stepMock1 = mock( StepInterface.class );
+    StepInterface stepMock2 = mock( StepInterface.class );
+    StepDataInterface stepDataMock1 = mock( StepDataInterface.class );
+    StepDataInterface stepDataMock2 = mock( StepDataInterface.class );
+    StepMeta stepMetaMock1 = mock( StepMeta.class );
+    StepMeta stepMetaMock2 = mock( StepMeta.class );
+    StepMetaInterface stepMetaInterfaceMock1 = mock( StepMetaInterface.class );
+    StepMetaInterface stepMetaInterfaceMock2 = mock( StepMetaInterface.class );
+
+    doReturn( stepDataMock1 ).when( stepMetaInterfaceMock1 ).getStepData();
+    doReturn( stepDataMock2 ).when( stepMetaInterfaceMock2 ).getStepData();
+    doReturn( stepMock1 ).when( stepMetaInterfaceMock1 ).getStep( any( StepMeta.class ), any( StepDataInterface.class ), anyInt(), any( TransMeta.class ), any( Trans.class ) );
+    doReturn( stepMock2 ).when( stepMetaInterfaceMock2 ).getStep( any( StepMeta.class ), any( StepDataInterface.class ), anyInt(), any( TransMeta.class ), any( Trans.class ) );
+    doReturn( stepMetaMock1 ).when( stepMock1 ).getStepMeta();
+    doReturn( stepMetaMock2 ).when( stepMock2 ).getStepMeta();
+    doReturn( stepMetaInterfaceMock1 ).when( stepMetaMock1 ).getStepMetaInterface();
+    doReturn( stepMetaInterfaceMock2 ).when( stepMetaMock2 ).getStepMetaInterface();
+    StepInitThread stepInitThreadMock = mock( StepInitThread.class );
+    doNothing().when( stepInitThreadMock ).run();
+    whenNew( StepInitThread.class ).withAnyArguments().thenReturn( stepInitThreadMock );
+    // Mocking the initialization results: the first step will initialize correctly, the second will fail.
+    // There're four entries because
+    when( stepInitThreadMock.isOk() ).thenReturn( true, false, true, false );
+    StepMetaDataCombi dummyCombi = new StepMetaDataCombi();
+    dummyCombi.stepname = "dummy";
+    dummyCombi.copy = 1;
+    dummyCombi.data = mock( StepDataInterface.class );
+    dummyCombi.step = mock( StepInterface.class );
+    doReturn( dummyCombi ).when( stepInitThreadMock ).getCombi();
+
+    // A step that failed initialization
+    doReturn( false ).when( stepMock1 ).init( any(), any() );
+
+    // A step that passed initialization
+    doReturn( false ).when( stepMock1 ).init( any(), any() );
+
+    trans.setSteps( of(
+            combi( stepMock1, stepDataMock1, stepMetaMock1 ),
+            combi( stepMock2, stepDataMock2, stepMetaMock2 ) ) );
+
+    List<StepMeta> hopsteps = of( stepMetaMock1, stepMetaMock2 );
+    doReturn( true ).when( stepMetaMock1 ).isMapping();
+    doReturn( 1 ).when( stepMetaMock1 ).getCopies();
+    doReturn( 1 ).when( stepMetaMock2 ).getCopies();
+    doReturn( true ).when( stepMetaMock2 ).isMapping();
+    doReturn( hopsteps ).when( meta ).getTransHopSteps( anyBoolean() );
+
+    try {
+      trans.prepareExecution(new String[]{});
+    } catch ( KettleException ke ) {
+      verify( stepInitThreadMock, times( 4 ) ).isOk();
+
+      verify( trans, times( 1 ) ).setPreparing( true );
+      verify( trans, times( 1 ) ).setPreparing( false );
+      verify( trans, times( 1 ) ).setInitializing( true );
+      verify( trans, times( 1 ) ).setInitializing( false );
+
+      throw ke;
+    }
+
+    fail( "Should not have reached here: an exception should have been thrown!");
   }
 }
