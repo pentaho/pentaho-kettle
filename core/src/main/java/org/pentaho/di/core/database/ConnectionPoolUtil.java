@@ -104,14 +104,9 @@ public class ConnectionPoolUtil {
   }
 
   // BACKLOG-674
-  public static String getDataSourceName( DatabaseMeta dbMeta, String partitionId ) {
-
-    String name = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getName(), "" ) );
-    String database = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getDatabaseName(), "" ) );
-    String hostname = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getHostname(), "" ) );
-    String port = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getDatabasePortNumberString(), "" ) );
-
-    return name + database + hostname + port + Const.NVL( partitionId, "" );
+  private static String getDataSourceName( DatabaseMeta dbMeta, String partitionId ) {
+    return dbMeta.getName() + Const.NVL( dbMeta.getDatabaseName(), "" ) + Const.NVL( dbMeta.getHostname(), "" )
+        + Const.NVL( dbMeta.getDatabasePortNumberString(), "" ) + Const.NVL( partitionId, "" );
   }
 
   /**
