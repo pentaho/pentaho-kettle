@@ -458,8 +458,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           String name = databaseMeta.getName();
           try {
             try {
-              String datasourceName = ConnectionPoolUtil.getDataSourceName( databaseMeta, partitionId );
-              this.connection = dsp.getNamedDataSource( datasourceName, DatasourceType.POOLED ).getConnection();
+              this.connection = dsp.getNamedDataSource( name, DatasourceType.POOLED ).getConnection();
             } catch ( UnsupportedOperationException | NullPointerException e ) {
               // UnsupportedOperationException is happen at DatabaseUtil doesn't support pooled DS, use legacy routine
               // NullPointerException is happen when we will try to run the transformation on the remote server but
