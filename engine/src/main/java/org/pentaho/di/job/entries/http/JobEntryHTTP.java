@@ -520,10 +520,13 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           clientBuilder.setDefaultCredentialsProvider( provider );
         }
 
-        if ( !Utils.isEmpty( proxyHostname ) ) {
-          HttpHost proxy = new HttpHost( proxyHostname, Integer.parseInt( proxyPort ) );
+        String proxyHostnameValue = environmentSubstitute( proxyHostname );
+        String proxyPortValue = environmentSubstitute( proxyPort );
+        String nonProxyHostsValue = environmentSubstitute( nonProxyHosts );
+        if ( !Utils.isEmpty( proxyHostnameValue ) ) {
+          HttpHost proxy = new HttpHost( proxyHostnameValue, Integer.parseInt( proxyPortValue ) );
           clientBuilder.setProxy( proxy );
-          if ( !Utils.isEmpty( nonProxyHosts ) ) {
+          if ( !Utils.isEmpty( nonProxyHostsValue ) ) {
             HttpRoutePlanner routePlanner = new DefaultProxyRoutePlanner( proxy ) {
               @Override
               public HttpRoute determineRoute(
@@ -531,7 +534,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
                       final HttpRequest request,
                       final HttpContext context ) throws HttpException {
                 String hostName = host.getHostName();
-                if ( hostName.matches( nonProxyHosts ) ) {
+                if ( hostName.matches( nonProxyHostsValue ) ) {
                   // Return direct route
                   return new HttpRoute( host );
                 }
