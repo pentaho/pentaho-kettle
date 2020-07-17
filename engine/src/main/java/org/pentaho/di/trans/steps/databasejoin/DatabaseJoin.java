@@ -23,7 +23,7 @@
 package org.pentaho.di.trans.steps.databasejoin;
 
 import java.sql.ResultSet;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
@@ -49,7 +49,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class DatabaseJoin extends BaseStep implements StepInterface {
   private static Class<?> PKG = DatabaseJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private final ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
+  private final ReentrantLock dbLock = new ReentrantLock();
 
   public DatabaseJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
@@ -58,7 +58,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
   private void lookupValues( DatabaseJoinMeta meta, DatabaseJoinData data,
       RowMetaInterface rowMeta, Object[] rowData ) throws KettleException {
-    dbLock.writeLock().lock();
+    dbLock.lock();
     final ResultSet rs;
     try {
       if ( first ) {
@@ -145,7 +145,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
       data.db.closeQuery( rs );
     } finally {
-      dbLock.writeLock().unlock();
+      dbLock.unlock();
     }
   }
 
@@ -160,11 +160,8 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
       return false;
     }
 
-    final DatabaseJoinMeta meta = (DatabaseJoinMeta) smi;
-    final DatabaseJoinData data = (DatabaseJoinData) sdi;
-
     try {
-      lookupValues( meta, data, getInputRowMeta(), r ); // add new values to the row in rowset[0].
+      lookupValues( (DatabaseJoinMeta) smi, (DatabaseJoinData) sdi, getInputRowMeta(), r ); // add new values to the row in rowset[0].
       if ( checkFeedback( getLinesRead() ) ) {
         if ( log.isBasic() ) {
           logBasic( BaseMessages.getString( PKG, "DatabaseJoin.Log.LineNumber" ) + getLinesRead() );
@@ -206,7 +203,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
     final DatabaseJoinData data = (DatabaseJoinData) sdi;
 
-    dbLock.writeLock().lock();
+    dbLock.lock();
     try {
       if ( data.db != null && data.db.getConnection() != null && !data.isCanceled ) {
         data.db.cancelStatement( data.pstmt );
@@ -214,7 +211,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
         data.isCanceled = true;
       }
     } finally {
-      dbLock.writeLock().unlock();
+      dbLock.unlock();
     }
   }
 
@@ -229,7 +226,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
         return false;
       }
 
-      dbLock.writeLock().lock();
+      dbLock.lock();
       try {
         data.db = new Database( this, meta.getDatabaseMeta() );
         data.db.shareVariablesWith( this );
@@ -266,7 +263,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
           }
         }
       } finally {
-        dbLock.writeLock().unlock();
+        dbLock.unlock();
       }
     }
 
@@ -275,14 +272,14 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     final DatabaseJoinData data = (DatabaseJoinData) sdi;
-    dbLock.writeLock().lock();
+    dbLock.lock();
     try {
       if ( data.db != null ) {
         data.db.disconnect();
       }
       super.dispose( smi, sdi );
     } finally {
-      dbLock.writeLock().unlock();
+      dbLock.unlock();
     }
   }
 }

@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.tableinput;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -55,7 +55,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class TableInput extends BaseStep implements StepInterface {
   private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private final ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
+  private final ReentrantLock dbLock = new ReentrantLock();
 
   private TableInputMeta meta;
   private TableInputData data;
@@ -98,7 +98,7 @@ public class TableInput extends BaseStep implements StepInterface {
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    dbLock.writeLock().lock();
+    dbLock.lock();
     try {
       if ( first ) { // we just got started
 
@@ -216,7 +216,7 @@ public class TableInput extends BaseStep implements StepInterface {
 
       return true;
     } finally {
-      dbLock.writeLock().unlock();
+      dbLock.unlock();
     }
   }
 
@@ -277,7 +277,7 @@ public class TableInput extends BaseStep implements StepInterface {
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    dbLock.writeLock().lock();
+    dbLock.lock();
     try {
       if ( log.isBasic() ) {
         logBasic( "Finished reading query, closing connection." );
@@ -295,7 +295,7 @@ public class TableInput extends BaseStep implements StepInterface {
       }
       super.dispose( smi, sdi );
     } finally {
-      dbLock.writeLock().unlock();
+      dbLock.unlock();
     }
   }
 
@@ -305,7 +305,7 @@ public class TableInput extends BaseStep implements StepInterface {
       return;
     }
 
-    dbLock.writeLock().lock();
+    dbLock.lock();
     try {
       meta = (TableInputMeta) smi;
       data = (TableInputData) sdi;
@@ -317,12 +317,12 @@ public class TableInput extends BaseStep implements StepInterface {
         data.isCanceled = true;
       }
     } finally {
-      dbLock.writeLock().unlock();
+      dbLock.unlock();
     }
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
-    dbLock.writeLock().lock();
+    dbLock.lock();
     try {
       meta = (TableInputMeta) smi;
       data = (TableInputData) sdi;
@@ -380,7 +380,7 @@ public class TableInput extends BaseStep implements StepInterface {
 
       return false;
     } finally {
-      dbLock.writeLock().unlock();
+      dbLock.unlock();
     }
   }
 

@@ -46,6 +46,5 @@ public class DatabaseJoinData extends BaseStepData implements StepDataInterface 
 
   public DatabaseJoinData() {
     super();
-    notfound = null;
   }
 }
