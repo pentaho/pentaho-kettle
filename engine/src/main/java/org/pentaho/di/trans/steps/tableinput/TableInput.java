@@ -67,7 +67,7 @@ public class TableInput extends BaseStep implements StepInterface {
 
   private RowMetaAndData readStartDate() throws KettleException {
     if ( log.isDetailed() ) {
-      logDetailed( "Reading from step [" + data.infoStream.getStepname() + "]" );
+      logDetailed( BaseMessages.getString( PKG, "TableInput.Log.ReadingFromStep", data.infoStream.getStepname() ) );
     }
 
     RowMetaInterface parametersMeta = new RowMeta();
@@ -84,12 +84,11 @@ public class TableInput extends BaseStep implements StepInterface {
       }
 
       if ( parametersMeta.size() == 0 ) {
-        throw new KettleException( "Expected to read parameters from step ["
-          + data.infoStream.getStepname() + "] but none were found." );
+        throw new KettleException( BaseMessages.getString( PKG,
+          "TableInput.Exception.NoParametersFound", data.infoStream.getStepname() ) );
       }
     } else {
-      throw new KettleException( "Unable to find rowset to read from, perhaps step ["
-        + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
+      throw new KettleException( BaseMessages.getString( PKG, "TableInput.Exception.NoRowSetFound", data.infoStream.getStepname() ) );
     }
 
     RowMetaAndData parameters = new RowMetaAndData( parametersMeta, parametersData );
@@ -110,18 +109,17 @@ public class TableInput extends BaseStep implements StepInterface {
         if ( data.infoStream.getStepMeta() != null ) {
           if ( meta.isExecuteEachInputRow() ) {
             if ( log.isDetailed() ) {
-              logDetailed( "Reading single row from stream [" + data.infoStream.getStepname() + "]" );
+              logDetailed( BaseMessages.getString( PKG, "TableInput.Log.ReadingSingleRow", data.infoStream.getStepname() ) );
             }
             data.rowSet = findInputRowSet( data.infoStream.getStepname() );
             if ( data.rowSet == null ) {
-              throw new KettleException( "Unable to find rowset to read from, perhaps step ["
-                  + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
+              throw new KettleException( BaseMessages.getString( PKG, "TableInput.Exception.NoRowSetFound", data.infoStream.getStepname() ) );
             }
             parameters = getRowFrom( data.rowSet );
             parametersMeta = data.rowSet.getRowMeta();
           } else {
             if ( log.isDetailed() ) {
-              logDetailed( "Reading query parameters from stream [" + data.infoStream.getStepname() + "]" );
+              logDetailed( BaseMessages.getString( PKG, "TableInput.Log.ReadingQueryParameters", data.infoStream.getStepname() ) );
             }
             RowMetaAndData rmad = readStartDate(); // Read values in lookup table (look)
             parameters = rmad.getData();
@@ -129,7 +127,7 @@ public class TableInput extends BaseStep implements StepInterface {
           }
           if ( parameters != null ) {
             if ( log.isDetailed() ) {
-              logDetailed( "Query parameters found = " + parametersMeta.getString( parameters ) );
+              logDetailed( BaseMessages.getString( PKG, "TableInput.Log.QueryParametersFound", parametersMeta.getString( parameters ) ) );
             }
           }
         } else {
@@ -190,7 +188,7 @@ public class TableInput extends BaseStep implements StepInterface {
 
               if ( checkFeedback( getLinesInput() ) ) {
                 if ( log.isBasic() ) {
-                  logBasic( "linenr " + getLinesInput() );
+                  logBasic( BaseMessages.getString( PKG, "TableInput.Log.LineNumber", String.valueOf( getLinesInput() ) ) );
                 }
               }
             }
@@ -209,7 +207,7 @@ public class TableInput extends BaseStep implements StepInterface {
 
         if ( checkFeedback( getLinesInput() ) ) {
           if ( log.isBasic() ) {
-            logBasic( "linenr " + getLinesInput() );
+            logBasic( BaseMessages.getString( PKG, "TableInput.Log.LineNumber", String.valueOf( getLinesInput() ) ) );
           }
         }
       }
@@ -238,7 +236,7 @@ public class TableInput extends BaseStep implements StepInterface {
     }
 
     if ( log.isDetailed() ) {
-      logDetailed( "SQL query : " + sql );
+      logDetailed( BaseMessages.getString( PKG, "TableInput.Log.SqlQuery", sql ) );
     }
     if ( parametersMeta.isEmpty() ) {
       data.rs = data.db.openQuery( sql, null, null, ResultSet.FETCH_FORWARD, meta.isLazyConversionActive() );
@@ -248,7 +246,7 @@ public class TableInput extends BaseStep implements StepInterface {
           .isLazyConversionActive() );
     }
     if ( data.rs == null ) {
-      logError( "Couldn't open Query [" + sql + "]" );
+      logError( BaseMessages.getString( PKG, "TableInput.Log.CanNotOpenQuery", sql ) );
       setErrors( 1 );
       stopAll();
       success = false;
@@ -280,12 +278,12 @@ public class TableInput extends BaseStep implements StepInterface {
     dbLock.lock();
     try {
       if ( log.isBasic() ) {
-        logBasic( "Finished reading query, closing connection." );
+        logBasic( BaseMessages.getString( PKG, "TableInput.Log.FinishedReadingQuery" ) );
       }
       try {
         closePreviousQuery();
       } catch ( KettleException e ) {
-        logError( "Unexpected error closing query : " + e.toString() );
+        logError( BaseMessages.getString( PKG, "TableInput.Log.ErrorClosingQuery", e.toString() ) );
         setErrors( 1 );
         stopAll();
       } finally {
@@ -367,12 +365,11 @@ public class TableInput extends BaseStep implements StepInterface {
             data.db.setCommit( 100 ); // needed for PGSQL it seems...
           }
           if ( log.isDetailed() ) {
-            logDetailed( "Connected to database..." );
+            logDetailed( BaseMessages.getString( PKG, "TableInput.Log.ConnectedToDatabase" ) );
           }
-
           return true;
         } catch ( KettleException e ) {
-          logError( "An error occurred, processing will be stopped: " + e.getMessage() );
+          logError( BaseMessages.getString( PKG, "TableInput.Log.ErrorOccurred", e.getMessage() ) );
           setErrors( 1 );
           stopAll();
         }
