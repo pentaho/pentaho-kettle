@@ -1238,8 +1238,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     if ( !ok ) {
-      // Some Steps fail on initialization but don't set the status.
-      // Let's guarantee that Transformation has the proper status.
+      // One or more steps failed on initialization.
+      // Transformation is now stopped.
       setStopped( true );
 
       // Halt the other threads as well, signal end-of-the line to the outside world...
@@ -2772,12 +2772,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private synchronized boolean endProcessing() throws KettleException {
     LogStatus status;
 
-    if ( isFinishedOrStopped() ) {
-      if ( isStopped() ) {
-        status = LogStatus.STOP;
-      } else {
-        status = LogStatus.END;
-      }
+    if ( isStopped() ) {
+      status = LogStatus.STOP;
+    } else if ( isFinished() ) {
+      status = LogStatus.END;
     } else if ( isPaused() ) {
       status = LogStatus.PAUSED;
     } else {

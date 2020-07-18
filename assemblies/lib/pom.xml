@@ -28,6 +28,7 @@
     <platform.version>9.1.0.0-SNAPSHOT</platform.version>
     <pentaho-reporting.version>9.1.0.0-SNAPSHOT</pentaho-reporting.version>
     <big-data-plugin.version>9.1.0.0-SNAPSHOT</big-data-plugin.version>
+    <pentaho-hadoop-shims.version>9.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
 
     <!-- third party -->
     <derbyclient.version>10.2.1.6</derbyclient.version>
@@ -253,6 +254,17 @@
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-hadoop-shims-common-mapreduce</artifactId>
+      <version>${pentaho-hadoop-shims.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>shim-api-core</artifactId>
       <version>${pentaho-hadoop-shims.version}</version>
       <exclusions>
         <exclusion>

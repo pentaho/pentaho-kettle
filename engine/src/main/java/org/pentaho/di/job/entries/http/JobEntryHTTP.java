@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,31 @@
 
 package org.pentaho.di.job.entries.http;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.protocol.HttpContext;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -69,6 +81,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -464,10 +477,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       resultRows.add( row );
     }
 
-    String beforeProxyHost = System.getProperty( "http.proxyHost" );
-    String beforeProxyPort = System.getProperty( "http.proxyPort" );
-    String beforeNonProxyHosts = System.getProperty( "http.nonProxyHosts" );
-
     for ( int i = 0; i < resultRows.size() && result.getNrErrors() == 0; i++ ) {
       RowMetaAndData row = resultRows.get( i );
 
@@ -480,14 +489,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         String realTargetFile = environmentSubstitute( row.getString( destinationFieldnameToUse, "" ) );
 
         logBasic( BaseMessages.getString( PKG, "JobHTTP.Log.ConnectingURL", urlToUse ) );
-
-        if ( !Utils.isEmpty( proxyHostname ) ) {
-          System.setProperty( "http.proxyHost", environmentSubstitute( proxyHostname ) );
-          System.setProperty( "http.proxyPort", environmentSubstitute( proxyPort ) );
-          if ( nonProxyHosts != null ) {
-            System.setProperty( "http.nonProxyHosts", environmentSubstitute( nonProxyHosts ) );
-          }
-        }
 
         if ( dateTimeAdded ) {
           SimpleDateFormat daf = new SimpleDateFormat();
@@ -506,7 +507,9 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         // Create the output File...
         outputFile = KettleVFS.getOutputStream( realTargetFile, this, fileAppended );
 
+        URI uri = (new URIBuilder( urlToUse )).build();
         HttpClient client = null;
+        HttpClientBuilder clientBuilder = HttpClientBuilder.create();
         if ( !Utils.isEmpty( username ) ) {
           String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
           String realUser = environmentSubstitute( username );
@@ -514,11 +517,35 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
             new UsernamePasswordCredentials( realUser, realPassword != null ? realPassword : "" );
           CredentialsProvider provider = new BasicCredentialsProvider();
           provider.setCredentials( AuthScope.ANY, credentials );
-          client = HttpClientBuilder.create().setDefaultCredentialsProvider( provider ).build();
-        } else {
-          client = HttpClientBuilder.create().build();
+          clientBuilder.setDefaultCredentialsProvider( provider );
         }
 
+        String proxyHostnameValue = environmentSubstitute( proxyHostname );
+        String proxyPortValue = environmentSubstitute( proxyPort );
+        String nonProxyHostsValue = environmentSubstitute( nonProxyHosts );
+        if ( !Utils.isEmpty( proxyHostnameValue ) ) {
+          HttpHost proxy = new HttpHost( proxyHostnameValue, Integer.parseInt( proxyPortValue ) );
+          clientBuilder.setProxy( proxy );
+          if ( !Utils.isEmpty( nonProxyHostsValue ) ) {
+            HttpRoutePlanner routePlanner = new DefaultProxyRoutePlanner( proxy ) {
+              @Override
+              public HttpRoute determineRoute(
+                      final HttpHost host,
+                      final HttpRequest request,
+                      final HttpContext context ) throws HttpException {
+                String hostName = host.getHostName();
+                if ( hostName.matches( nonProxyHostsValue ) ) {
+                  // Return direct route
+                  return new HttpRoute( host );
+                }
+                return super.determineRoute( host, request, context );
+              }
+            };
+            clientBuilder.setRoutePlanner( routePlanner );
+          }
+        }
+
+        client = clientBuilder.build();
 
         HttpRequestBase httpRequestBase;
         // See if we need to send a file over?
@@ -526,7 +553,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.SendingFile", realUploadFile ) );
           }
-          httpRequestBase = new HttpPost( urlToUse );
+          httpRequestBase = new HttpPost( uri );
 
           // Get content of file
           String content = new String( Files.readAllBytes( Paths.get( realUploadFile ) ) );
@@ -540,7 +567,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
             logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.FinishedSendingFile" ) );
           }
         } else {
-          httpRequestBase = new HttpGet( urlToUse );
+          httpRequestBase = new HttpGet( uri );
         }
 
 
@@ -563,7 +590,22 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         }
 
         // Get a stream for the specified URL
-        HttpResponse response = client.execute( httpRequestBase );
+        HttpResponse response = null;
+        if ( !Utils.isEmpty( proxyHostname ) ) {
+          HttpHost target = new HttpHost( uri.getHost(), uri.getPort(), uri.getScheme() );
+          // Create AuthCache instance
+          AuthCache authCache = new BasicAuthCache();
+          // Generate BASIC scheme object and add it to the local
+          // auth cache
+          BasicScheme basicAuth = new BasicScheme();
+          authCache.put( target, basicAuth );
+          // Add AuthCache to the execution context
+          HttpClientContext localContext = HttpClientContext.create();
+          localContext.setAuthCache( authCache );
+          response = client.execute( target, httpRequestBase, localContext );
+        } else {
+          response = client.execute( httpRequestBase );
+        }
         int statusCode = response.getStatusLine().getStatusCode();
 
         if ( HttpStatus.SC_OK != statusCode ) {
@@ -627,10 +669,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           result.setNrErrors( 1 );
         }
 
-        // Set the proxy settings back as they were on the system!
-        System.setProperty( "http.proxyHost", Const.NVL( beforeProxyHost, "" ) );
-        System.setProperty( "http.proxyPort", Const.NVL( beforeProxyPort, "" ) );
-        System.setProperty( "http.nonProxyHosts", Const.NVL( beforeNonProxyHosts, "" ) );
       }
 
     }
