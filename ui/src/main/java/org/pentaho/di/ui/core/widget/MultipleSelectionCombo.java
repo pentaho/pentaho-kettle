@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.core.widget;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
@@ -31,42 +32,48 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultipleSelectionCombo extends Composite {
-  Button arrow;
-  Text displayText = null;
-  String[] comboItems;
-  int[] comboSelection;
-  Shell floatShell = null;
-  List list = null;
+  private Text displayText = null;
+  private String[] displayItems;
+  private int[] comboSelection;
+  private Shell floatShell = null;
+  private List list = null;
+  private String[] selectedItemLabels;
+  private Composite bottomRow;
+  private MouseAdapter exitAction;
 
   public MultipleSelectionCombo( Composite parent, int style ) {
     super( parent, style );
-    comboItems = new String[]{};
     comboSelection = new int[]{};
+    selectedItemLabels = new String[]{};
     init();
   }
 
   private void init() {
-    GridLayout layout = new GridLayout( 2, false );
-    layout.marginBottom = 0;
-    layout.marginTop = 0;
-    layout.marginLeft = 0;
-    layout.marginRight = 0;
-    layout.marginWidth = 0;
-    layout.marginHeight = 0;
-    setLayout( layout );
-    displayText = new Text( this, SWT.SINGLE );
-    displayText.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
+    setLayout( new GridLayout( 1, true ) );
+    Composite topRow = new Composite( this, SWT.NONE );
+    topRow.setLayout( new GridLayout( 3, false ) );
 
-    arrow = new Button( this, SWT.ARROW | SWT.DOWN );
+    displayText = new Text( topRow, SWT.BORDER );
+    GridData gridData = new GridData( GridData.FILL_HORIZONTAL );
+    gridData.minimumWidth = 200;
+    displayText.setLayoutData( gridData );
+
+    Button arrow = new Button( topRow, SWT.ARROW | SWT.DOWN );
     arrow.setBackground( Display.getCurrent().getSystemColor( SWT.COLOR_BLUE ) );
     arrow.setSize( 25, 25 );
-    arrow.setLocation( displayText.getLocation() );
+
     arrow.addMouseListener( new MouseAdapter() {
       @Override
       public void mouseDown( MouseEvent event ) {
@@ -78,6 +85,159 @@ public class MultipleSelectionCombo extends Composite {
         }
       }
     } );
+
+    Button add = new Button( topRow, SWT.PUSH );
+    add.setText( "ADD" );
+
+    bottomRow = new Composite( this, SWT.NONE );
+    GridLayout gridLayout = new GridLayout( 2, true );
+    gridLayout.marginBottom = 5;
+    gridLayout.marginLeft = 0;
+    gridLayout.marginRight = 5;
+    bottomRow.setLayout( gridLayout );
+
+    GridData rowGridData = new GridData( SWT.NONE );
+    rowGridData.widthHint = 297;
+    rowGridData.minimumWidth = 297;
+    bottomRow.setLayoutData( rowGridData );
+
+    exitAction = new MouseAdapter() {
+      @Override
+      public void mouseUp( MouseEvent e ) {
+        super.mouseUp( e );
+
+        String labelText = ((SelectionLabel) ((Label) e.widget).getParent()).getLabelText();
+        addRemovedTagBackToListUI( labelText );
+
+        selectedItemLabels = removeItemFromSelectedList( labelText );
+
+        SelectionLabel removedItem = (SelectionLabel) ((Label) e.widget).getParent();
+
+        Composite selectionArea = removedItem.getParent();
+        int decreasedHeight = calculateTotalHeight( removedItem );
+        removedItem.dispose();
+        selectionArea.layout( true, true );
+        int numRemainingItems = selectionArea.getChildren().length;
+        if ( numRemainingItems % 2 == 0 ) {
+          updateTagsUI( decreasedHeight );
+        }
+      }
+    };
+
+    Label separator = new Label( this, SWT.HORIZONTAL | SWT.SEPARATOR );
+    separator.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
+
+    add.addMouseListener( new MouseAdapter() {
+      @Override
+      public void mouseUp( MouseEvent e ) {
+        super.mouseUp( e );
+        if ( floatShell != null
+                && comboSelection != null
+                && comboSelection.length > 0 ) {
+          Set<String> selectedItems = new HashSet<>( comboSelection.length );
+
+          SelectionLabel ref = null;
+          for ( int i = 0; i < comboSelection.length; i++ ) {
+            ref = new SelectionLabel( bottomRow, SWT.BORDER, displayItems[comboSelection[i]], exitAction );
+            selectedItems.add( displayItems[comboSelection[i]] );
+          }
+
+          //remove from display list
+          displayItems = Arrays.stream( displayItems )
+                  .filter( item -> !selectedItems.contains( item ) )
+                  .toArray( String[]::new );
+
+          selectedItemLabels = addToSelectedTags( selectedItems );
+          if ( ref != null ) {
+            updateTagsUI( calculateTotalHeight( ref ) );
+          }
+
+          floatShell.dispose();
+        }
+      }
+    } );
+  }
+
+  private void addRemovedTagBackToListUI( String labelText ) {
+    String[] tempItems = new String[displayItems.length + 1];
+    AtomicInteger idx = new AtomicInteger();
+    Arrays.stream( displayItems )
+            .forEach( str -> tempItems[idx.getAndIncrement()] = str );
+
+    tempItems[tempItems.length - 1] = labelText;
+    displayItems = tempItems;
+    Arrays.sort( displayItems );
+  }
+
+  private String[] removeItemFromSelectedList( String labelText ) {
+    String[] tempSelectedItems = new String[selectedItemLabels.length - 1];
+    int tempIdx = 0;
+    for ( int i = 0; i < selectedItemLabels.length; i++ ) {
+      if ( !selectedItemLabels[i].equals( labelText ) ) {
+        tempSelectedItems[tempIdx++] = selectedItemLabels[i];
+      }
+    }
+
+    return tempSelectedItems;
+  }
+
+  private int calculateTotalHeight( SelectionLabel label ) {
+    GridLayout layout = (GridLayout) label.getLayout();
+
+    return layout.marginHeight + label.getHeight();
+  }
+
+  private void updateTagsUI( int height ) {
+    int numRows = ( selectedItemLabels.length / 2 ) + ( selectedItemLabels.length % 2 );
+    GridData newData = (GridData) bottomRow.getLayoutData();
+
+    newData.minimumHeight = numRows * height;
+    newData.heightHint = numRows * height;
+    bottomRow.setLayoutData( newData );
+
+    triggerShellResize();
+  }
+
+  private String[] addToSelectedTags( Set<String> selectedItems ) {
+    if ( selectedItemLabels.length == 0 ) {
+      selectedItemLabels = new String[selectedItems.size()];
+
+      return selectedItems.toArray( selectedItemLabels );
+    } else {
+      String[] tempLabels = new String[selectedItemLabels.length + selectedItems.size()];
+      int tempIdx = 0;
+      for ( int i = 0; i < selectedItemLabels.length; i++ ) {
+        tempLabels[tempIdx++] = selectedItemLabels[i];
+      }
+
+      String[] selectedAry = new String[selectedItems.size()];
+      selectedItems.toArray( selectedAry );
+      for ( int i = 0; i < selectedAry.length; i++ ) {
+        tempLabels[tempIdx++] = selectedAry[i];
+      }
+
+      return tempLabels;
+    }
+  }
+
+  private void triggerShellResize() {
+    Composite scrollFinder = findScrollingParent();
+
+    if ( scrollFinder != null ) {
+      scrollFinder.layout( true, true );
+      Point p = scrollFinder.getSize();
+      final Point size = scrollFinder.computeSize( p.x, p.y, true );
+      scrollFinder.setSize( size );
+    }
+  }
+
+  private Composite findScrollingParent() {
+    Composite finder = this.getParent();
+    while ( finder != null && !( finder instanceof ScrolledComposite ) ) {
+      finder = finder.getParent();
+    }
+
+    return finder;
   }
 
   private void initFloatShell() {
@@ -98,7 +258,7 @@ public class MultipleSelectionCombo extends Composite {
 
     list = new List( floatShell, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL
             | SWT.V_SCROLL );
-    for ( String value : comboItems ) {
+    for ( String value : displayItems ) {
       list.add( value );
     }
 
@@ -111,7 +271,6 @@ public class MultipleSelectionCombo extends Composite {
       public void mouseUp( MouseEvent event ) {
         super.mouseUp( event );
         comboSelection = list.getSelectionIndices();
-        displayText();
       }
     } );
 
@@ -121,37 +280,62 @@ public class MultipleSelectionCombo extends Composite {
   private void closeShellAndUpdate() {
     if ( floatShell != null && !floatShell.isDisposed() ) {
       comboSelection = list.getSelectionIndices();
-      displayText();
       floatShell.dispose();
     }
   }
 
-  private void displayText() {
-    if ( comboSelection != null && comboSelection.length > 0 ) {
-      StringBuilder sb = new StringBuilder();
-      for ( int i = 0; i < comboSelection.length; i++ ) {
-        if ( i > 0 ) {
-          sb.append( "," );
-        }
-        sb.append( comboItems[comboSelection[i]] );
-      }
-      displayText.setText( sb.toString() );
+  private void bindDataToUI( String selectedItems ) {
+    Set<String> selectedSet = new HashSet<>( selectedItemLabels.length );
+    for ( String label : selectedItemLabels ) {
+      new SelectionLabel( bottomRow, SWT.BORDER, label, exitAction );
+      selectedSet.add( label );
     }
-  }
 
-  public void setText( String text ) {
-    displayText.setText( text );
-  }
-
-  public String getText() {
-    return displayText.getText();
-  }
-
-  public Text getTextWidget() {
-    return displayText;
+    displayItems = Arrays.stream( displayItems )
+            .filter( item -> !selectedItems.contains( item ) )
+            .toArray( String[]::new );
   }
 
   public void setItems( String[] items ) {
-    this.comboItems = items;
+    Arrays.sort( items );
+    this.displayItems = Arrays.stream( items ).toArray( String[]::new );
+  }
+
+  /**
+   * Serializes all selected tags in comma separated list to be returned
+   * and saved in the steps metadata
+   *
+   * @return comma separated string of all selected tags
+   */
+  public String getSelectedItems() {
+    return String.join( ",", selectedItemLabels );
+  }
+
+  /**
+   * Takes a comma separated string of tags and binds it to the data object
+   * Then updates the UI for both the tag dropdown and the selected items
+   *
+   * @param selectedItems
+   */
+  public void setSelectedItems( String selectedItems ) {
+    this.selectedItemLabels = selectedItems.split( "," );
+    bindDataToUI( selectedItems );
+  }
+
+  /**
+   * Simply a convenience interface to keep backward compatibility
+   */
+  @Deprecated
+  public String getText() {
+    return this.getSelectedItems();
+  }
+
+  /**
+   * Simply a convenience interface to keep backward compatibility
+   * @param selectedItems
+   */
+  @Deprecated
+  public void setText( String selectedItems ) {
+    this.setSelectedItems( selectedItems );
   }
 }
