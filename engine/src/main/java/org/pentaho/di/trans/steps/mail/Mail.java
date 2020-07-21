@@ -130,7 +130,7 @@ public class Mail extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicZipFilenameFieldEmpty" ) );
       }
 
-      if ( meta.isZipFiles() && Utils.isEmpty( meta.getZipFilename() ) ) {
+      if ( meta.isZipFiles() && ( Utils.isEmpty( meta.getZipFilename() ) && !meta.isZipFilenameDynamic() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ZipFilenameEmpty" ) );
       }
 
@@ -703,7 +703,7 @@ public class Mail extends BaseStep implements StepInterface {
         .getString( r, data.indexOfAttachedContent ) );
     } else {
       // attached files
-      if ( meta.isDynamicFilename() ) {
+      if ( meta.isDynamicFilename() || meta.isZipFilenameDynamic() ) {
         setAttachedFilesList( r, log );
       } else {
         setAttachedFilesList( null, log );
