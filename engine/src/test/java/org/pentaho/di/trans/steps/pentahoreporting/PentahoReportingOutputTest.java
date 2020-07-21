@@ -25,7 +25,10 @@ package org.pentaho.di.trans.steps.pentahoreporting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.reporting.engine.classic.core.DataFactory;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.libraries.resourceloader.CompoundResource;
@@ -42,14 +45,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( DefaultResourceManagerBackend.class )
 public class PentahoReportingOutputTest {
 
-  private final static String QUERY_NAME = "LocalFileQueryName";
+  private static final String QUERY_NAME = "LocalFileQueryName";
   private URL testResourceUrl;
   private ResourceKey resourceKey;
 
@@ -101,6 +109,50 @@ public class PentahoReportingOutputTest {
 
     assertTrue( keyValue instanceof URL );
 
+  }
+
+  @Test( expected = KettleException.class )
+  public void testProcessRowWitUsingValuesFromFields() throws KettleException {
+    PentahoReportingOutput pentahoReportingOutput = mock( PentahoReportingOutput.class );
+    PentahoReportingOutputMeta meta = mock( PentahoReportingOutputMeta.class );
+    PentahoReportingOutputData data = mock( PentahoReportingOutputData.class );
+    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+    LogChannelInterface log = mock( LogChannelInterface.class );
+
+    when( pentahoReportingOutput.getRow() ).thenReturn( new Object[] { "Value1", "value2" } );
+    when( pentahoReportingOutput.processRow( meta, data ) ).thenCallRealMethod();
+    when( meta.getUseValuesFromFields() ).thenReturn( true );
+    when( pentahoReportingOutput.getInputRowMeta() ).thenReturn( rowMetaInterface );
+    when( meta.getInputFileField() ).thenReturn( "field" );
+    when( rowMetaInterface.indexOfValue( "field" ) ).thenReturn( -1 );
+    setInternalState( pentahoReportingOutput, "first", true );
+    setInternalState( pentahoReportingOutput, "log", log );
+
+    pentahoReportingOutput.processRow( meta, data );
+  }
+
+  @Test
+  public void testProcessRowWithoutUsingValuesFromFields() throws KettleException {
+    String inputFileString = "inputFile";
+    String outputFileString = "outputFile";
+    PentahoReportingOutput pentahoReportingOutput = mock( PentahoReportingOutput.class );
+    PentahoReportingOutputMeta meta = mock( PentahoReportingOutputMeta.class );
+    PentahoReportingOutputData data = mock( PentahoReportingOutputData.class );
+    LogChannelInterface log = mock( LogChannelInterface.class );
+
+    when( pentahoReportingOutput.getRow() ).thenReturn( new Object[] { "Value1", "value2" } );
+    when( pentahoReportingOutput.processRow( meta, data ) ).thenCallRealMethod();
+    when( meta.getUseValuesFromFields() ).thenReturn( false );
+    when( meta.getInputFile() ).thenReturn( inputFileString);
+    when( meta.getOutputFile() ).thenReturn( outputFileString );
+
+    setInternalState( pentahoReportingOutput, "first", true );
+    setInternalState( pentahoReportingOutput, "log", log );
+
+    pentahoReportingOutput.processRow( meta, data );
+
+    verify( pentahoReportingOutput, times( 1 ) )
+      .processReport( any(), eq( inputFileString ), eq( outputFileString ), any(), any() );
   }
 
 }

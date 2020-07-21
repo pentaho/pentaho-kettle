@@ -49,8 +49,8 @@ public class PentahoReportingOutputMetaLoadSaveTest {
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( false );
-    List<String> attributes =
-        Arrays.asList( "inputFileField", "outputFileField", "parameterFieldMap", "outputProcessorType", "createParentfolder" );
+    List<String> attributes = Arrays.asList( "inputFileField", "outputFileField", "inputFile", "outputFile",
+      "parameterFieldMap", "outputProcessorType", "createParentfolder", "useValuesFromFields" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
