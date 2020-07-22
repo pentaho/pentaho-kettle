@@ -758,7 +758,7 @@ public class Mail extends BaseStep implements StepInterface {
   }
 
   @VisibleForTesting
-  void setAttachedFiles( MailMeta meta, Object[] r, LogChannelInterface log ) throws Exception{
+  void setAttachedFiles( MailMeta meta, Object[] r, LogChannelInterface log ) throws Exception {
     if ( meta.isDynamicFilename() || meta.isZipFilenameDynamic() ) {
       setAttachedFilesList( r, log );
     } else {
