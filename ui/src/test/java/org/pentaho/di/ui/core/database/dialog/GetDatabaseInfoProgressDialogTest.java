@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.ui.core.database.dialog;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
