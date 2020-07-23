@@ -42,7 +42,7 @@ public class GetDatabaseInfoProgressDialogTest {
   @Test
   public void databaseProgressDialogNotifyStateTest() throws Exception {
     DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
-    Shell shell = new Shell();
+    Shell shell = mock( Shell.class );
     GetDatabaseInfoProgressDialog dialog = new GetDatabaseInfoProgressDialog( shell, dbMetaMock );
     ProgressMonitorDialog progMonitorDialogMock = mock( ProgressMonitorDialog.class );
     whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
@@ -62,7 +62,7 @@ public class GetDatabaseInfoProgressDialogTest {
   @Test
   public void databaseProgressDialogNotifyStateNoListenersTest() throws Exception {
     DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
-    Shell shell = new Shell();
+    Shell shell = mock( Shell.class );
     GetDatabaseInfoProgressDialog dialog = new GetDatabaseInfoProgressDialog( shell, dbMetaMock );
     ProgressMonitorDialog progMonitorDialogMock = mock( ProgressMonitorDialog.class );
     whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
@@ -81,7 +81,7 @@ public class GetDatabaseInfoProgressDialogTest {
   @Test
   public void databaseProgressDialogNotifyStateAddAndRemoveListenersTest() throws Exception {
     DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
-    Shell shell = new Shell();
+    Shell shell = mock( Shell.class );
     GetDatabaseInfoProgressDialog dialog = new GetDatabaseInfoProgressDialog( shell, dbMetaMock );
     ProgressMonitorDialog progMonitorDialogMock = mock( ProgressMonitorDialog.class );
     whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
