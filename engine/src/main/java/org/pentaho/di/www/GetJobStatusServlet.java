@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,12 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
   private static final byte[] XML_HEADER =
     XMLHandler.getXMLHeader( Const.XML_ENCODING ).getBytes( Charset.forName( Const.XML_ENCODING ) );
+
+  // Servlet parameters
+  public static final String PARM_JOB_NAME = "name";
+  public static final String PARM_JOB_ID = "id";
+  public static final String PARM_USE_XML_OUTPUT = "xml";
+  public static final String PARM_FROM = "from";
 
   @VisibleForTesting
   CarteStatusCache cache = CarteStatusCache.getInstance();
@@ -193,13 +199,13 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       logDebug( BaseMessages.getString( PKG, "GetJobStatusServlet.Log.JobStatusRequested" ) );
     }
 
-    String jobName = request.getParameter( "name" );
-    String id = request.getParameter( "id" );
+    String jobName = request.getParameter( PARM_JOB_NAME );
+    String id = request.getParameter( PARM_JOB_ID );
     String root = request.getRequestURI() == null ? StatusServletUtils.PENTAHO_ROOT
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
     String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
-    int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
+    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( PARM_USE_XML_OUTPUT ) );
+    int startLineNr = Const.toInt( request.getParameter( PARM_FROM ), 0 );
 
     response.setStatus( HttpServletResponse.SC_OK );
 

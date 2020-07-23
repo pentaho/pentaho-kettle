@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.UUID;
 
@@ -31,7 +32,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -47,16 +47,22 @@ import org.pentaho.di.www.cache.CarteStatusCache;
 
 
 public class StartJobServlet extends BaseHttpServlet implements CartePluginInterface {
-  private static Class<?> PKG = StartJobServlet.class; // for i18n purposes,
-  // needed by
-  // Translator2!!
+  private static Class<?> PKG = StartJobServlet.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = -8487225953910464032L;
 
   public static final String CONTEXT_PATH = "/kettle/startJob";
+  // Used when we need to refer to other servlets
+  private static final String CONTEXT_PATH_2_ROOT = "..";
+  // Value to be used on the http-equiv/refresh
+  private static final int REFRESH_PERIOD_VALUE = 10;
 
-  @VisibleForTesting
-  CarteStatusCache cache = CarteStatusCache.getInstance();
+  public static final String KETTLE_DEFAULT_SERVLET_ENCODING = "KETTLE_DEFAULT_SERVLET_ENCODING";
+
+  // Servlet parameters
+  public static final String PARM_JOB_NAME = "name";
+  public static final String PARM_JOB_ID = "id";
+  public static final String PARM_USE_XML_OUTPUT = "xml";
 
   public StartJobServlet() {
   }
@@ -150,8 +156,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
   </table>
   </div>
     */
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
-    IOException {
+  @Override
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -160,154 +166,302 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
       logDebug( BaseMessages.getString( PKG, "StartJobServlet.Log.StartJobRequested" ) );
     }
 
-    String jobName = request.getParameter( "name" );
-    String id = request.getParameter( "id" );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    // Set the response encoding
+    String encoding = setResponseEncoding( response );
 
-    response.setStatus( HttpServletResponse.SC_OK );
+    // Collect parameters
+    String jobName = getParameter( request, PARM_JOB_NAME );
+    String jobId = getParameter( request, PARM_JOB_ID );
+    boolean useXML = "Y".equalsIgnoreCase( getParameter( request, PARM_USE_XML_OUTPUT ) );
 
     PrintWriter out = response.getWriter();
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-      out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
-    } else {
-      response.setContentType( "text/html;charset=UTF-8" );
-      out.println( "<HTML>" );
-      out.println( "<HEAD>" );
-      out.println( "<TITLE>Start job</TITLE>" );
-      out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
-        + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( jobName, "UTF-8" )
-        + "\">" );
-      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
-      out.println( "</HEAD>" );
-      out.println( "<BODY>" );
+
+    // jobName is mandatory
+    if ( null == jobName ) {
+      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+
+      String message = BaseMessages.getString( PKG, "StartJobServlet.Error.MissingMandatoryParameter", PARM_JOB_NAME );
+
+      if ( useXML ) {
+        out.print( XMLHandler.getXMLHeader( encoding ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      } else {
+        printHtmlHeader( out, null, encoding );
+        printHtmlMessage( out, message );
+        printHtmlFooter( out );
+      }
+
+      return;
+    }
+
+    // Get the CarteObjectEntry that corresponds to the given job name/id and, then, the job itself
+    CarteObjectEntry entry = null;
+    Job job = null;
+
+    entry = getCarteObjectEntry( jobName, jobId );
+    if ( null != entry ) {
+      // Guarantee that both name and id are correct
+      jobName = entry.getName();
+      jobId = entry.getId();
+
+      // Get the job
+      job = getJobMap().getJob( entry );
     }
 
     try {
-      // ID is optional...
-      //
-      Job job;
-      CarteObjectEntry entry;
-      if ( Utils.isEmpty( id ) ) {
-        // get the first job that matches...
-        //
-        entry = getJobMap().getFirstCarteObjectEntry( jobName );
-        if ( entry == null ) {
-          job = null;
-        } else {
-          id = entry.getId();
-          job = getJobMap().getJob( entry );
-        }
-      } else {
-        // Take the ID into account!
-        //
-        entry = new CarteObjectEntry( jobName, id );
-        job = getJobMap().getJob( entry );
-      }
-
       if ( job != null ) {
-        // First see if this job already ran to completion.
-        // If so, we get an exception is we try to start() the job thread
-        //
+        // Has this job already ran to completion?
         if ( job.isInitialized() && !job.isActive() ) {
-          // Re-create the job from the jobMeta
-          //
-          // We might need to re-connect to the repository
-          //
-          if ( job.getRep() != null && !job.getRep().isConnected() ) {
-            if ( job.getRep().getUserInfo() != null ) {
-              job.getRep().connect(
-                job.getRep().getUserInfo().getLogin(), job.getRep().getUserInfo().getPassword() );
-            } else {
-              job.getRep().connect( null, null );
-            }
-          }
-
-          cache.remove( job.getLogChannelId() );
-
-          // Create a new job object to start from a sane state. Then replace
-          // the new job in the job map
-          //
-          synchronized ( this ) {
-            JobConfiguration jobConfiguration = getJobMap().getConfiguration( jobName );
-
-            String carteObjectId = UUID.randomUUID().toString();
-            SimpleLoggingObject servletLoggingObject =
-              new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
-            servletLoggingObject.setContainerObjectId( carteObjectId );
-
-            Job newJob = new Job( job.getRep(), job.getJobMeta(), servletLoggingObject );
-            newJob.setLogLevel( job.getLogLevel() );
-
-            // Discard old log lines from the old job
-            //
-            KettleLogStore.discardLines( job.getLogChannelId(), true );
-
-            getJobMap().replaceJob( entry, newJob, jobConfiguration );
-            job = newJob;
-          }
+          // An exception will be thrown if we try to start() the job thread
+          job = recreateJob( entry, job );
         }
 
+        // Start the job
         runJob( job );
 
-        String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobStarted", jobName );
-        if ( useXML ) {
-          out.println( new WebResult( WebResult.STRING_OK, message, id ).getXML() );
-        } else {
+        // All went well
+        response.setStatus( HttpServletResponse.SC_OK );
 
-          out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
-          out.println( "<a href=\""
-            + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-            + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-            + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + "</a><p>" );
+        String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobStarted", jobName );
+
+        if ( useXML ) {
+          out.print( XMLHandler.getXMLHeader( encoding ) );
+          out.println( new WebResult( WebResult.STRING_OK, message, jobId ).getXML() );
+        } else {
+          printHtmlHeader( out, entry, encoding );
+          printHtmlMessage( out, message );
+          out.println( "<a href=\"" + convertContextPath2local( GetJobStatusServlet.CONTEXT_PATH )
+            + '?' + GetJobStatusServlet.PARM_JOB_NAME
+            + '=' + URLEncoder.encode( jobName, encoding )
+            + '&' + GetJobStatusServlet.PARM_JOB_ID
+            + '=' + URLEncoder.encode( jobId, encoding ) + "\">"
+            + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + "</a><p/>" );
+          printHtmlFooter( out );
         }
       } else {
-        String message = BaseMessages.getString( PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName );
+        String message = BaseMessages.getString( PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, jobId );
+        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+
         if ( useXML ) {
+          out.print( XMLHandler.getXMLHeader( encoding ) );
           out.println( new WebResult( WebResult.STRING_ERROR, message ) );
         } else {
-          out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
-          out.println( "<a href=\""
-            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
-          response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+          printHtmlHeader( out, null, encoding );
+          printHtmlMessage( out, message );
+          out.println( "<a href=\"" + convertContextPath2local( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p/>" );
+          printHtmlFooter( out );
         }
       }
     } catch ( Exception ex ) {
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+
       if ( useXML ) {
+        out.print( XMLHandler.getXMLHeader( encoding ) );
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
           PKG, "StartJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
       } else {
-        out.println( "<p>" );
-        out.println( "<pre>" );
+        printHtmlHeader( out, null, encoding );
+        out.println( "<p/><pre>" );
         out.println( Encode.forHtml( Const.getStackTracker( ex ) ) );
         out.println( "</pre>" );
-        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+        printHtmlFooter( out );
       }
-    }
-
-    if ( !useXML ) {
-      out.println( "<p>" );
-      out.println( "</BODY>" );
-      out.println( "</HTML>" );
     }
   }
 
+  /**
+   * <p>Recreates a given job from its jobMeta so that it starts from a sane state.</p>
+   * <p>The old job will be replaced in the job map.</p>
+   *
+   * @param entry the CarteObjectEntry corresponding to the job to be recreated
+   * @param job   the job to be recreated
+   * @return the recreated job
+   * @throws KettleException
+   */
+  protected Job recreateJob( CarteObjectEntry entry, Job job ) throws KettleException {
+    Job newJob = null;
+
+    // We might need to re-connect to the repository
+    if ( job.getRep() != null && !job.getRep().isConnected() ) {
+      if ( job.getRep().getUserInfo() != null ) {
+        job.getRep().connect(
+          job.getRep().getUserInfo().getLogin(), job.getRep().getUserInfo().getPassword() );
+      } else {
+        job.getRep().connect( null, null );
+      }
+    }
+
+    CarteStatusCache.getInstance().remove( job.getLogChannelId() );
+
+    synchronized ( this ) {
+      JobConfiguration jobConfiguration = getJobMap().getConfiguration( entry.getName() );
+
+      String carteObjectId = UUID.randomUUID().toString();
+      SimpleLoggingObject servletLoggingObject =
+        new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+      servletLoggingObject.setContainerObjectId( carteObjectId );
+
+      // Create the new job
+      newJob = new Job( job.getRep(), job.getJobMeta(), servletLoggingObject );
+      newJob.setLogLevel( job.getLogLevel() );
+
+      // Discard old log lines from the old job
+      KettleLogStore.discardLines( job.getLogChannelId(), true );
+
+      // Replace the new job in the job map
+      getJobMap().replaceJob( entry, newJob, jobConfiguration );
+    }
+
+    return newJob;
+  }
+
+  /**
+   * <p>Prints the header section of the HTML response page.</p>
+   * <p>If information on the job being handled is given, a refresh instruction pointing to the job status page will be generated.</p>
+   *
+   * @param printWriter the {@link PrintWriter} instance to write to
+   * @param entry       information on the job being handled
+   * @throws UnsupportedEncodingException
+   */
+  private void printHtmlHeader( PrintWriter printWriter, CarteObjectEntry entry, String encoding ) throws UnsupportedEncodingException {
+    printWriter.println( "<html>" );
+    printWriter.println( "<head>" );
+    printWriter.println( "<title>Start job</title>" );
+    if ( null != entry && null != entry.getName() && null != entry.getId() ) {
+      printWriter.println( "<meta http-equiv=\"refresh\" content=\"" + REFRESH_PERIOD_VALUE
+              + ";url=" + convertContextPath2local( GetJobStatusServlet.CONTEXT_PATH )
+              + '?' + GetJobStatusServlet.PARM_JOB_NAME
+              + '=' + URLEncoder.encode( entry.getName(), encoding )
+              + '&' + GetJobStatusServlet.PARM_JOB_ID
+              + '=' + URLEncoder.encode( entry.getId(), encoding )
+              + "\">" );
+    }
+    printWriter.println( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
+    printWriter.println( "</head>" );
+    printWriter.println( "<body>" );
+  }
+
+  private void printHtmlMessage( PrintWriter printWriter, String message ) {
+    printWriter.println( "<h1>" + Encode.forHtml( message ) + "</h1>" );
+  }
+
+  /**
+   * <p>Prints the bottom section of the HTML response page.</p>
+   *
+   * @param printWriter the {@link PrintWriter} instance to write to
+   */
+  private void printHtmlFooter( PrintWriter printWriter ) {
+    printWriter.println( "<p/>" );
+    printWriter.println( "</body>" );
+    printWriter.println( "</html>" );
+  }
+
+  @Override
   public String toString() {
     return "Start job";
   }
 
+  @Override
   public String getService() {
-    return CONTEXT_PATH + " (" + toString() + ")";
+    return getContextPath() + " (" + toString() + ')';
   }
 
   protected void runJob( Job job ) throws KettleException {
     job.start(); // runs the thread in the background...
   }
 
+  @Override
   public String getContextPath() {
     return CONTEXT_PATH;
   }
 
+  /**
+   * <p>Sets the response encoding.</p>
+   * <p>By default {@value Const#XML_ENCODING} is used, but it can be overrided via a system property ({@value #KETTLE_DEFAULT_SERVLET_ENCODING}). </p>
+   *
+   * @param response the response object
+   * @return the encoding used
+   */
+  protected String setResponseEncoding( HttpServletResponse response ) {
+    String encoding = System.getProperty( KETTLE_DEFAULT_SERVLET_ENCODING, Const.XML_ENCODING );
+
+    if ( Utils.isEmpty( encoding ) || Utils.isEmpty( encoding.trim() ) ) {
+      encoding = Const.XML_ENCODING;
+    }
+
+    response.setCharacterEncoding( encoding );
+    response.setContentType( "text/html; charset=" + encoding );
+
+    return encoding;
+  }
+
+  /**
+   * <p>Returns the value of the specified parameter.</p>
+   * <p>The value is trimmed and, if empty, <code>null</code> is returned.</p>
+   *
+   * @param request       the request instance
+   * @param parameterName the parameter name
+   * @return the trimmed parameter value or null if empty
+   */
+  protected String getParameter( HttpServletRequest request, String parameterName ) {
+    String paramValue = request.getParameter( parameterName );
+
+    if ( !Utils.isEmpty( paramValue ) ) {
+      paramValue = paramValue.trim();
+
+      if ( Utils.isEmpty( paramValue ) ) {
+        paramValue = null;
+      }
+    } else {
+      paramValue = null;
+    }
+
+    return paramValue;
+  }
+
+  /**
+   * <p>Returns the Carte Object that corresponds to a given job name and/or job id.</p>
+   *
+   * @param jobName the name of the job to find
+   * @param jobId the id of the job to find
+   * @return the entry that corresponds to the given name/id
+   */
+  protected CarteObjectEntry getCarteObjectEntry( String jobName, String jobId ) {
+    CarteObjectEntry carteObjectEntry = null;
+
+    if ( Utils.isEmpty( jobId ) ) {
+      // No id, get the first job that matches the name...
+      carteObjectEntry = getJobMap().getFirstCarteObjectEntry( jobName );
+    } else {
+      // Use the id to get the job!
+      carteObjectEntry = new CarteObjectEntry( null, jobId );
+
+      Job job = getJobMap().getJob( carteObjectEntry );
+
+      if ( null != job ) {
+        // Set the job name
+        carteObjectEntry.setName( job.getJobname() );
+      } else {
+        // Not found
+        carteObjectEntry = null;
+      }
+    }
+
+    return carteObjectEntry;
+  }
+
+  /**
+   * <p>Converts the context path for other servlets of this API, so
+   * that it can be used on links on HTML responses.</p>
+   *
+   * @param contextPath the other servlet' context path
+   * @return the converted context
+   */
+  private String convertContextPath2local( String contextPath ) {
+    if ( '/' == contextPath.charAt( 0 ) ) {
+      contextPath = CONTEXT_PATH_2_ROOT + contextPath;
+    }
+    return contextPath;
+  }
 }
