@@ -382,11 +382,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
       theDatabase.connect();
       GetDatabaseInfoProgressDialog gdipd =
         new GetDatabaseInfoProgressDialog( dialogsParent, this.model.getDatabaseMeta() );
-      gdipd.addDatabaseProgressListener( new DatabaseInfoProgressListener() {
-        @Override public void databaseInfoProgressFinished( IProgressMonitor progressMonitor ) {
-          if ( progressMonitor.isCanceled() ) {
-            status = UiPostActionStatus.CANCEL;
-          }
+      gdipd.addDatabaseProgressListener( progressMonitor -> {
+        if ( progressMonitor.isCanceled() ) {
+          status = UiPostActionStatus.CANCEL;
         }
       } );
       DatabaseMetaInformation dmi = gdipd.open();

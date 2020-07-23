@@ -48,11 +48,7 @@ public class GetDatabaseInfoProgressDialogTest {
     whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
     boolean[] changeState = { false };
     //Add a progress listener to the dialog
-    dialog.addDatabaseProgressListener( new DatabaseInfoProgressListener() {
-      @Override public void databaseInfoProgressFinished( IProgressMonitor progressMonitor ) {
-        changeState[ 0 ] = true;
-      }
-    } );
+    dialog.addDatabaseProgressListener( progressMonitor -> changeState[ 0 ] = true );
     //dialog will open and notify all listeners that the progress has finished
     dialog.open();
     //The listener has been notified and the changeState must now be true!
@@ -67,11 +63,7 @@ public class GetDatabaseInfoProgressDialogTest {
     ProgressMonitorDialog progMonitorDialogMock = mock( ProgressMonitorDialog.class );
     whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
     boolean[] changeState = { false };
-    DatabaseInfoProgressListener dbProgressListener = new DatabaseInfoProgressListener() {
-      @Override public void databaseInfoProgressFinished( IProgressMonitor progressMonitor ) {
-        changeState[ 0 ] = true;
-      }
-    };
+    DatabaseInfoProgressListener dbProgressListener = progressMonitor -> changeState[ 0 ] = true;
     //dialog will open and notify all listeners that the progress has finished.
     dialog.open();
     //There were no listeners so changeState must still be false!
@@ -86,11 +78,7 @@ public class GetDatabaseInfoProgressDialogTest {
     ProgressMonitorDialog progMonitorDialogMock = mock( ProgressMonitorDialog.class );
     whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
     boolean[] changeState = { false };
-    DatabaseInfoProgressListener dbProgressListener = new DatabaseInfoProgressListener() {
-      @Override public void databaseInfoProgressFinished( IProgressMonitor progressMonitor ) {
-        changeState[ 0 ] = true;
-      }
-    };
+    DatabaseInfoProgressListener dbProgressListener = progressMonitor -> changeState[ 0 ] = true;
     //Add a progress listener to the dialog
     dialog.addDatabaseProgressListener( dbProgressListener );
     //Remove the listener
