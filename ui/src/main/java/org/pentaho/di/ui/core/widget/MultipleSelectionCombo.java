@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -57,6 +58,7 @@ public class MultipleSelectionCombo extends Composite {
     super( parent, style );
     comboSelection = new int[]{};
     selectedItemLabels = new String[]{};
+    displayItems = new String[]{};
     init();
   }
 
@@ -284,7 +286,7 @@ public class MultipleSelectionCombo extends Composite {
     }
   }
 
-  private void bindDataToUI( String selectedItems ) {
+  private void bindDataToUI() {
     Set<String> selectedSet = new HashSet<>( selectedItemLabels.length );
     for ( String label : selectedItemLabels ) {
       new SelectionLabel( bottomRow, SWT.BORDER, label, exitAction );
@@ -292,7 +294,7 @@ public class MultipleSelectionCombo extends Composite {
     }
 
     displayItems = Arrays.stream( displayItems )
-            .filter( item -> !selectedItems.contains( item ) )
+            .filter( item -> !selectedSet.contains( item ) )
             .toArray( String[]::new );
   }
 
@@ -318,8 +320,10 @@ public class MultipleSelectionCombo extends Composite {
    * @param selectedItems
    */
   public void setSelectedItems( String selectedItems ) {
-    this.selectedItemLabels = selectedItems.split( "," );
-    bindDataToUI( selectedItems );
+    if ( !StringUtil.isEmpty( selectedItems ) ) {
+      this.selectedItemLabels = selectedItems.split( "," );
+      bindDataToUI();
+    }
   }
 
   /**
