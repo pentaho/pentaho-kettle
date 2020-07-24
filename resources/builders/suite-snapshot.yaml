@@ -284,10 +284,6 @@ jobGroups:
       archivable      :  true
 
   2500:
-     - jobID           :  pdi-plugins-ee
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       #parallelize     :  true
-
      - jobID           :  snowflake-plugin
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        root            :  snowflake
@@ -341,8 +337,9 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-data-refinery.git
 
   2800:
-     - jobID           :  pdi-daemon
-       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
+     - jobID           :  pdi-plugins-ee
+       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+       #parallelize     :  true
 
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
@@ -354,6 +351,9 @@ jobGroups:
        scmUrl          :  https://github.com/webdetails/cgg.git
 
   2900:
+     - jobID           :  pdi-daemon
+       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
+
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
 
