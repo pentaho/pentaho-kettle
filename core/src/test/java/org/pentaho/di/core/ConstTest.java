@@ -632,7 +632,7 @@ public class ConstTest {
   private void testSplitStringRemoveEnclosureNested( String e, String d ) {
     //"""a,b,c"""
     String mask = "%s%s%sa" + "%s" + "b" + "%s" + "c%s%s%s";
-    String[] chunks = { e + e + "a" + d  + "b" + d + "c" + e + e};
+    String[] chunks = { e + "a", "b", "c" +  e };
 
     String stringToSplit = String.format( mask, e, e, e, d, d, e, e, e );
     String[] result = Const.splitString( stringToSplit, d, e, true );
@@ -668,6 +668,36 @@ public class ConstTest {
     assertEquals( result[0], "Hello\\, world" );
     assertEquals( result[1], "Hello\\, planet" );
     assertEquals( result[2], "Hello\\, 3rd rock" );
+  }
+
+    /**
+   * Test splitString with delimiter and string contains nested escaped enclosure
+   */
+  @Test
+  public void testSplitStringWithNestedEscapedEnclosure() {
+    String[] result;
+    String enclosure = "\"";
+    String delimiter = ",";
+    // Actual data contains enclosure withing data with escaped enclosure like: "0","Test\"Data1","Test\"Data2","Test\"Data3"
+    String splitString = "\"0\",\"Test\\\"Data1\",\"Test\\\"Data2\",\"Test\\\"Data3\"";
+
+    // Test with removeEnclosure=false
+    result = Const.splitString( splitString, delimiter, enclosure, false );
+    assertNotNull( result );
+    assertEquals( result.length, 4 );
+    assertEquals( result[0], "\"0\"" );
+    assertEquals( result[1], "\"Test\\\"Data1\"" );
+    assertEquals( result[2], "\"Test\\\"Data2\"" );
+    assertEquals( result[3], "\"Test\\\"Data3\"" );
+
+    // Test with removeEnclosure=true
+    result = Const.splitString( splitString, delimiter, enclosure, true );
+    assertNotNull( result );
+    assertEquals( result.length, 4 );
+    assertEquals( result[0], "0" );
+    assertEquals( result[1], "Test\\\"Data1" );
+    assertEquals( result[2], "Test\\\"Data2" );
+    assertEquals( result[3], "Test\\\"Data3" );
   }
 
   /**
