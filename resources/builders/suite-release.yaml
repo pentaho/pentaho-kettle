@@ -377,10 +377,6 @@ jobGroups:
       versionProperty :  pdi-monitoring-plugin.version
 
   2500:
-     - jobID           :  pdi-plugins-ee
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       versionProperty :  pdi-plugins-ee.version
-       
      - jobID           :  snowflake-plugin
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        directives      :  += -Deula-wrap
@@ -448,9 +444,9 @@ jobGroups:
        versionProperty :  pdi-data-refinery-plugin.version
 
   2800:
-     - jobID           :  pdi-daemon
-       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
-       versionProperty :  ael.version
+     - jobID           :  pdi-plugins-ee
+       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+       versionProperty :  pdi-plugins-ee.version
 
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
@@ -465,6 +461,10 @@ jobGroups:
        versionProperty :  pentaho-cgg-plugin.version
 
   2900:
+     - jobID           :  pdi-daemon
+       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
+       versionProperty :  ael.version
+
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
        versionProperty :  pentaho-sparkl-plugin.version
