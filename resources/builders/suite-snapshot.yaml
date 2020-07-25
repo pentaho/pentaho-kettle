@@ -284,11 +284,6 @@ jobGroups:
       archivable      :  true
 
   2500:
-     - jobID           :  snowflake-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       root            :  snowflake
-       archivable      :  true
-
      - jobID           :  camel-components
        scmUrl          :  https://github.com/pentaho/pentaho-camel-components.git
 
@@ -340,6 +335,11 @@ jobGroups:
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        #parallelize     :  true
+
+     - jobID           :  snowflake-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+       root            :  snowflake
+       archivable      :  true
 
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git

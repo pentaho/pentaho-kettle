@@ -377,13 +377,6 @@ jobGroups:
       versionProperty :  pdi-monitoring-plugin.version
 
   2500:
-     - jobID           :  snowflake-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       directives      :  += -Deula-wrap
-       root            :  snowflake
-       archivable      :  true
-       versionProperty :  snowflake-plugin.version
-
      - jobID           :  camel-components
        scmUrl          :  https://github.com/pentaho/pentaho-camel-components.git
        versionProperty :  pentaho-camel.version
@@ -447,6 +440,13 @@ jobGroups:
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        versionProperty :  pdi-plugins-ee.version
+
+     - jobID           :  snowflake-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+       directives      :  += -Deula-wrap
+       root            :  snowflake
+       archivable      :  true
+       versionProperty :  snowflake-plugin.version
 
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
