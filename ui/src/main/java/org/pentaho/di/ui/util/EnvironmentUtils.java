@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 - 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017 - 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -89,18 +89,14 @@ public class EnvironmentUtils {
   }
 
   /**
-   * Checks the existence of the webkit library on ubuntu 16 or ubuntu 14 .
+   * Checks the existence of the webkit library on ubuntu.
    *
-   * @return 'true' if the webkit library is not present in ubuntu 16 or ubuntu 14 , 'false' otherwise.
+   * @return 'true' if the webkit library is not present in ubuntu, 'false' otherwise.
    */
   public synchronized boolean isWebkitUnavailable() {
     String path = getWebkitPath();
     String osName = getEnvironmentName();
-    return  ( ( path == null || path.length() < 1 || !path.contains( "webkit" ) )
-        &&
-        ( osName.contains( SUPPORTED_DISTRIBUTION_NAME + " " + getSupportedVersion( "max.ubuntu.os.distribution.supported" ) )
-            ||
-            osName.contains( SUPPORTED_DISTRIBUTION_NAME + " " + getSupportedVersion( "min.ubuntu.os.distribution.supported" ) ) ) );
+    return  ( path == null || path.length() < 1 || !path.contains( "webkit" ) ) && osName.contains( SUPPORTED_DISTRIBUTION_NAME );
   }
 
   /**
