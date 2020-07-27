@@ -1,6 +1,8 @@
 # Change Log
 
 ## Unreleased
+
+## 0.9.0.22 - 2020-07-27
 ### Changed
 - [docker] Changed Tomcat from 8.5.X to 9.X as the official Tomcat Docker tag `tomcat:jdk8` refers to `tomcat:9-jdk8`.
 
