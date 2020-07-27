@@ -2865,7 +2865,8 @@ public class Const {
             // and reset the "concatSplit" buffer. Otherwise continue
             addSplit = oddNumberOfEnclosures;
           }
-          if ( addSplit ) {
+          // Check if enclosure is also using inside data
+          if ( addSplit || numEnclosures > 2 ) {
             String splitResult = concatSplit.toString();
             //remove enclosure from resulting split
             if ( removeEnclosure ) {
