@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-static</artifactId>
-  <version>9.0.0.0-423-21</version>
+  <version>9.0.0.0-423-22</version>
   <packaging>pom</packaging>
 
   <name>PDI Client Static Assets</name>
