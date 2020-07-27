@@ -26,9 +26,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -57,6 +59,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
@@ -344,4 +347,175 @@ public class MailTest {
     assertEquals( null, stepMockHelper.initStepDataInterface.realSourceFileFoldername );
     assertEquals( null, stepMockHelper.initStepDataInterface.realSourceWildcard );
   }
+
+  @Test
+  public void setAttachedFilesTestCallWithDynamicFilename() throws Exception {
+    Mail step =
+      spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans ) );
+
+    Object[] p = new Object[1];
+
+
+    step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+    step.setParentVariableSpace( new Variables() );
+
+    RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isDynamicFilename() ).thenReturn( true );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceFilename", 0 );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "previousRowMeta", rowMetaMock );
+    //Index of Source Wildcard is not yet set (value is -1)
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceWildcard", -1 );
+    //Index that will be set in the dynamicWildcard
+    when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
+    when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
+
+    step.setAttachedFiles( stepMockHelper.initStepMetaInterface, p, null );
+
+    verify( step , times( 1 ) ).setAttachedFilesList( p, null );
+
+  }
+
+  @Test
+  public void setAttachedFilesTestCallWithZipDynamicFilename() throws Exception {
+    Mail step =
+      spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans ) );
+
+    Object[] p = new Object[1];
+
+
+    step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+    step.setParentVariableSpace( new Variables() );
+
+    RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFilenameDynamic() ).thenReturn( true );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceFilename", 0 );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "previousRowMeta", rowMetaMock );
+    //Index of Source Wildcard is not yet set (value is -1)
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceWildcard", -1 );
+    //Index that will be set in the dynamicWildcard
+    when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
+    when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
+
+    step.setAttachedFiles( stepMockHelper.initStepMetaInterface, p, null );
+
+    verify( step , times( 1 ) ).setAttachedFilesList( p, null );
+
+  }
+
+  @Test
+  public void setAttachedFilesTestWithNonDynamicFields() throws Exception {
+    Mail step =
+      spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans ) );
+
+    Object[] p = new Object[1];
+
+
+    step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+    step.setParentVariableSpace( new Variables() );
+
+    RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isDynamicFilename() ).thenReturn( false );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceFilename", 0 );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "previousRowMeta", rowMetaMock );
+    //Index of Source Wildcard is not yet set (value is -1)
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceWildcard", -1 );
+    //Index that will be set in the dynamicWildcard
+    when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
+    when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
+
+    step.setAttachedFiles( stepMockHelper.initStepMetaInterface, p, null );
+
+    verify( step , times( 1 ) ).setAttachedFilesList( null, null );
+
+  }
+
+  @Test( expected = KettleException.class )
+  public void validateZipFilesTestWithoutDynamicFields() throws Exception {
+    Mail step =
+      spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans ) );
+
+    Object[] p = new Object[1];
+
+
+    step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+    step.setParentVariableSpace( new Variables() );
+
+    RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFiles() ).thenReturn( true );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getZipFilename() ).thenReturn( "" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFilenameDynamic() ).thenReturn( false );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceFilename", 0 );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "previousRowMeta", rowMetaMock );
+    //Index of Source Wildcard is not yet set (value is -1)
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceWildcard", -1 );
+    //Index that will be set in the dynamicWildcard
+    when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
+    when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
+
+    step.validateZipFiles( stepMockHelper.initStepMetaInterface );
+
+  }
+
+  @Test
+  public void validateZipFilesTestWithDynamicFields() throws Exception {
+    Mail step =
+      spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans ) );
+
+    Object[] p = new Object[1];
+
+
+    step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+    step.setParentVariableSpace( new Variables() );
+
+    RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFiles() ).thenReturn( true );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getZipFilename() ).thenReturn( "" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFilenameDynamic() ).thenReturn( true );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceFilename", 0 );
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "previousRowMeta", rowMetaMock );
+    //Index of Source Wildcard is not yet set (value is -1)
+    Whitebox.setInternalState( stepMockHelper.initStepDataInterface, "indexOfSourceWildcard", -1 );
+    //Index that will be set in the dynamicWildcard
+    when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
+
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
+    when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
+
+    step.validateZipFiles( stepMockHelper.initStepMetaInterface );
+
+  }
+
 }
