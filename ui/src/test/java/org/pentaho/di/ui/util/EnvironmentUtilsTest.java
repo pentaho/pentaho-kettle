@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,9 @@ public class EnvironmentUtilsTest {
 
   @Test
   public void isUnSupportedBrowserEnvironmentTest( ) {
-    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU_16 );
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU );
+    assertTrue( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
+    mock = new EnvironmentUtilsMock( Case.UBUNTU_WRONG );
     assertFalse( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
     mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
     assertFalse( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
@@ -49,23 +51,19 @@ public class EnvironmentUtilsTest {
 
   @Test
   public void isWebkitUnavailableTest( ) {
-    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU_16 );
-    assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
-    mock = new EnvironmentUtilsMock( Case.UBUNTU_14 );
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU );
     assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
     mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
     assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
     mock = new EnvironmentUtilsMock( Case.WINDOWS );
     assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
     mock = new EnvironmentUtilsMock( Case.UBUNTU_WRONG );
-    assertTrue( mock.getMockedInstance().isWebkitUnavailable() );
+    assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
   }
 
   @Test
   public void getBrowserName( ) {
-    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU_16 );
-    assertEquals( mock.getMockedInstance().getBrowserName(), "Midori" );
-    mock = new EnvironmentUtilsMock( Case.UBUNTU_14 );
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU );
     assertEquals( mock.getMockedInstance().getBrowserName(), "Midori" );
     mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
     assertEquals( mock.getMockedInstance().getBrowserName(), "Safari" );
@@ -82,9 +80,8 @@ public class EnvironmentUtilsTest {
     private Case option;
     private static final String WEBKIT_PATH = "/path/mock/webkit";
     private static final String MAC_OS_X_NAME = "mac os x";
-    private static final String LINUX_NAME = "linux";
-    private static final String UBUNTU_16_NAME = "ubuntu 16";
-    private static final String UBUNTU_14_NAME = "ubuntu 14";
+    private static final String UBUNTU_NAME = "ubuntu";
+    private static final String UBUNTU_WRONG_NAME = "linux";
     private static final String WINDOWS_NAME = "windows";
     private static final String IE_10_AGENT = "Mozilla/4.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/5.0)";
     private static final String MIDORI_AGENT = "Mozilla/5.0 (X11; Linux) AppleWebKit/538.15 ("
@@ -106,8 +103,7 @@ public class EnvironmentUtilsTest {
     @Override
     protected String getWebkitPath() {
       switch ( option ) {
-        case UBUNTU_16:
-        case UBUNTU_14:
+        case UBUNTU:
           return WEBKIT_PATH;
         case UBUNTU_WRONG:
           return "";
@@ -119,10 +115,10 @@ public class EnvironmentUtilsTest {
     @Override
     protected String getOsName() {
       switch ( option ) {
-        case UBUNTU_16:
         case UBUNTU_WRONG:
-        case UBUNTU_14:
-          return LINUX_NAME;
+          return UBUNTU_WRONG_NAME;
+        case UBUNTU:
+          return UBUNTU_NAME;
         case MAC_OS_X:
         case MACOS_X_WRONG:
           return MAC_OS_X_NAME;
@@ -137,8 +133,7 @@ public class EnvironmentUtilsTest {
     @Override
     protected String getUserAgent() {
       switch ( option ) {
-        case UBUNTU_16:
-        case UBUNTU_14:
+        case UBUNTU:
           return MIDORI_AGENT;
         case MAC_OS_X:
           return SAFARI_9_AGENT;
@@ -155,14 +150,10 @@ public class EnvironmentUtilsTest {
 
     @Override
     protected int getSupportedVersion( String property ) {
-      if ( property.contains("min.mac.browser.supported") ) {
+      if ( property.contains( "min.mac.browser.supported" ) ) {
         return 601;
-      } else if ( property.contains("min.windows.browser.supported") ) {
+      } else if ( property.contains( "min.windows.browser.supported" ) ) {
         return 11;
-      } else if ( property.contains("min.ubuntu.os.distribution.supported") ) {
-        return 15;
-      } else if ( property.contains("max.ubuntu.os.distribution.supported") ) {
-        return 16;
       }
       return 0;
     }
@@ -177,14 +168,11 @@ public class EnvironmentUtilsTest {
       BufferedReader bufferedReader = Mockito.mock( BufferedReader.class );
       try {
         switch ( option ) {
-          case UBUNTU_16:
-            when( bufferedReader.readLine() ).thenReturn( UBUNTU_16_NAME );
-            break;
-          case UBUNTU_14:
-            when( bufferedReader.readLine() ).thenReturn( UBUNTU_14_NAME );
+          case UBUNTU:
+            when( bufferedReader.readLine() ).thenReturn( UBUNTU_NAME );
             break;
           case UBUNTU_WRONG:
-            when( bufferedReader.readLine() ).thenReturn( UBUNTU_16_NAME );
+            when( bufferedReader.readLine() ).thenReturn( UBUNTU_WRONG_NAME );
             break;
           default:
             when( bufferedReader.readLine() ).thenReturn( "" );
@@ -198,7 +186,7 @@ public class EnvironmentUtilsTest {
   }
 
   enum Case {
-    UBUNTU_16, UBUNTU_14, UBUNTU_WRONG, MAC_OS_X, MACOS_X_WRONG, WINDOWS, WINDOWS_WRONG
+    UBUNTU, UBUNTU_WRONG, MAC_OS_X, MACOS_X_WRONG, WINDOWS, WINDOWS_WRONG
   }
 
 }
