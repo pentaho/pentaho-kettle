@@ -105,299 +105,11 @@ public class Mail extends BaseStep implements StepInterface {
       // get the RowMeta
       data.previousRowMeta = getInputRowMeta().clone();
 
-      // Check is filename field is provided
-      if ( Utils.isEmpty( meta.getDestination() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DestinationFieldEmpty" ) );
-      }
+      validateMetaFields( meta );
 
-      // Check is replyname field is provided
-      if ( Utils.isEmpty( meta.getReplyAddress() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ReplyFieldEmpty" ) );
-      }
+      cacheFieldsPosition( meta, data );
 
-      // Check is SMTP server is provided
-      if ( Utils.isEmpty( meta.getServer() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ServerFieldEmpty" ) );
-      }
-
-      // Check Attached filenames when dynamic
-      if ( meta.isDynamicFilename() && Utils.isEmpty( meta.getDynamicFieldname() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicFilenameFielddEmpty" ) );
-      }
-
-      // Check Attached zipfilename when dynamic
-      if ( meta.isZipFilenameDynamic() && Utils.isEmpty( meta.getDynamicZipFilenameField() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicZipFilenameFieldEmpty" ) );
-      }
-
-      if ( meta.isZipFiles() && Utils.isEmpty( meta.getZipFilename() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ZipFilenameEmpty" ) );
-      }
-
-      // check authentication
-      if ( meta.isUsingAuthentication() ) {
-        // check authentication user
-        if ( Utils.isEmpty( meta.getAuthenticationUser() ) ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.AuthenticationUserFieldEmpty" ) );
-        }
-
-        // check authentication pass
-        if ( Utils.isEmpty( meta.getAuthenticationPassword() ) ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.AuthenticationPasswordFieldEmpty" ) );
-        }
-      }
-
-      // cache the position of the destination field
-      if ( data.indexOfDestination < 0 ) {
-        String realDestinationFieldname = meta.getDestination();
-        data.indexOfDestination = data.previousRowMeta.indexOfValue( realDestinationFieldname );
-        if ( data.indexOfDestination < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.CouldnotFindDestinationField", realDestinationFieldname ) );
-        }
-      }
-
-      // Cc
-      if ( !Utils.isEmpty( meta.getDestinationCc() ) ) {
-        // cache the position of the Cc field
-        if ( data.indexOfDestinationCc < 0 ) {
-          String realDestinationCcFieldname = meta.getDestinationCc();
-          data.indexOfDestinationCc = data.previousRowMeta.indexOfValue( realDestinationCcFieldname );
-          if ( data.indexOfDestinationCc < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindDestinationCcField", realDestinationCcFieldname ) );
-          }
-        }
-      }
-      // BCc
-      if ( !Utils.isEmpty( meta.getDestinationBCc() ) ) {
-        // cache the position of the BCc field
-        if ( data.indexOfDestinationBCc < 0 ) {
-          String realDestinationBCcFieldname = meta.getDestinationBCc();
-          data.indexOfDestinationBCc = data.previousRowMeta.indexOfValue( realDestinationBCcFieldname );
-          if ( data.indexOfDestinationBCc < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindDestinationBCcField", realDestinationBCcFieldname ) );
-          }
-        }
-      }
-      // Sender Name
-      if ( !Utils.isEmpty( meta.getReplyName() ) ) {
-        // cache the position of the sender field
-        if ( data.indexOfSenderName < 0 ) {
-          String realSenderName = meta.getReplyName();
-          data.indexOfSenderName = data.previousRowMeta.indexOfValue( realSenderName );
-          if ( data.indexOfSenderName < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindReplyNameField", realSenderName ) );
-          }
-        }
-      }
-      // Sender address
-      // cache the position of the sender field
-      if ( data.indexOfSenderAddress < 0 ) {
-        String realSenderAddress = meta.getReplyAddress();
-        data.indexOfSenderAddress = data.previousRowMeta.indexOfValue( realSenderAddress );
-        if ( data.indexOfSenderAddress < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.CouldnotFindReplyAddressField", realSenderAddress ) );
-        }
-      }
-
-      // Reply to
-      if ( !Utils.isEmpty( meta.getReplyToAddresses() ) ) {
-        // cache the position of the reply to field
-        if ( data.indexOfReplyToAddresses < 0 ) {
-          String realReplyToAddresses = meta.getReplyToAddresses();
-          data.indexOfReplyToAddresses = data.previousRowMeta.indexOfValue( realReplyToAddresses );
-          if ( data.indexOfReplyToAddresses < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindReplyToAddressesField", realReplyToAddresses ) );
-          }
-        }
-      }
-
-      // Contact Person
-      if ( !Utils.isEmpty( meta.getContactPerson() ) ) {
-        // cache the position of the destination field
-        if ( data.indexOfContactPerson < 0 ) {
-          String realContactPerson = meta.getContactPerson();
-          data.indexOfContactPerson = data.previousRowMeta.indexOfValue( realContactPerson );
-          if ( data.indexOfContactPerson < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindContactPersonField", realContactPerson ) );
-          }
-        }
-      }
-      // Contact Phone
-      if ( !Utils.isEmpty( meta.getContactPhone() ) ) {
-        // cache the position of the destination field
-        if ( data.indexOfContactPhone < 0 ) {
-          String realContactPhone = meta.getContactPhone();
-          data.indexOfContactPhone = data.previousRowMeta.indexOfValue( realContactPhone );
-          if ( data.indexOfContactPhone < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindContactPhoneField", realContactPhone ) );
-          }
-        }
-      }
-      // cache the position of the Server field
-      if ( data.indexOfServer < 0 ) {
-        String realServer = meta.getServer();
-        data.indexOfServer = data.previousRowMeta.indexOfValue( realServer );
-        if ( data.indexOfServer < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.CouldnotFindServerField", realServer ) );
-        }
-      }
-      // Port
-      if ( !Utils.isEmpty( meta.getPort() ) ) {
-        // cache the position of the port field
-        if ( data.indexOfPort < 0 ) {
-          String realPort = meta.getPort();
-          data.indexOfPort = data.previousRowMeta.indexOfValue( realPort );
-          if ( data.indexOfPort < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindPortField", realPort ) );
-          }
-        }
-      }
-      // Authentication
-      if ( meta.isUsingAuthentication() ) {
-        // cache the position of the Authentication user field
-        if ( data.indexOfAuthenticationUser < 0 ) {
-          String realAuthenticationUser = meta.getAuthenticationUser();
-          data.indexOfAuthenticationUser = data.previousRowMeta.indexOfValue( realAuthenticationUser );
-          if ( data.indexOfAuthenticationUser < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindAuthenticationUserField", realAuthenticationUser ) );
-          }
-        }
-
-        // cache the position of the Authentication password field
-        if ( data.indexOfAuthenticationPass < 0 ) {
-          String realAuthenticationPassword = Utils.resolvePassword( variables, meta.getAuthenticationPassword() );
-          data.indexOfAuthenticationPass = data.previousRowMeta.indexOfValue( realAuthenticationPassword );
-          if ( data.indexOfAuthenticationPass < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindAuthenticationPassField", realAuthenticationPassword ) );
-          }
-        }
-      }
-      // Mail Subject
-      if ( !Utils.isEmpty( meta.getSubject() ) ) {
-        // cache the position of the subject field
-        if ( data.indexOfSubject < 0 ) {
-          String realSubject = meta.getSubject();
-          data.indexOfSubject = data.previousRowMeta.indexOfValue( realSubject );
-          if ( data.indexOfSubject < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindSubjectField", realSubject ) );
-          }
-        }
-      }
-      // Mail Comment
-      if ( !Utils.isEmpty( meta.getComment() ) ) {
-        // cache the position of the comment field
-        if ( data.indexOfComment < 0 ) {
-          String realComment = meta.getComment();
-          data.indexOfComment = data.previousRowMeta.indexOfValue( realComment );
-          if ( data.indexOfComment < 0 ) {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Mail.Exception.CouldnotFindCommentField", realComment ) );
-          }
-        }
-      }
-
-      if ( meta.isAttachContentFromField() ) {
-        // We are dealing with file content directly loaded from file
-        // and not physical file
-        String attachedContentField = meta.getAttachContentField();
-        if ( Utils.isEmpty( attachedContentField ) ) {
-          // Empty Field
-          throw new KettleException( BaseMessages.getString( PKG, "Mail.Exception.AttachedContentFieldEmpty" ) );
-        }
-        data.indexOfAttachedContent = data.previousRowMeta.indexOfValue( attachedContentField );
-        if ( data.indexOfAttachedContent < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.CouldnotFindAttachedContentField", attachedContentField ) );
-        }
-        // Attached content filename
-        String attachedContentFileNameField = meta.getAttachContentFileNameField();
-        if ( Utils.isEmpty( attachedContentFileNameField ) ) {
-          // Empty Field
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.AttachedContentFileNameFieldEmpty" ) );
-        }
-        data.IndexOfAttachedFilename = data.previousRowMeta.indexOfValue( attachedContentFileNameField );
-        if ( data.IndexOfAttachedFilename < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.CouldnotFindAttachedContentFileNameField", attachedContentFileNameField ) );
-        }
-
-      } else {
-
-        // Dynamic Zipfilename
-        if ( meta.isZipFilenameDynamic() ) {
-          // cache the position of the attached source filename field
-          if ( data.indexOfDynamicZipFilename < 0 ) {
-            String realZipFilename = meta.getDynamicZipFilenameField();
-            data.indexOfDynamicZipFilename = data.previousRowMeta.indexOfValue( realZipFilename );
-            if ( data.indexOfDynamicZipFilename < 0 ) {
-              throw new KettleException( BaseMessages.getString(
-                PKG, "Mail.Exception.CouldnotSourceAttachedZipFilenameField", realZipFilename ) );
-            }
-          }
-        }
-        data.zipFileLimit = Const.toLong( environmentSubstitute( meta.getZipLimitSize() ), 0 );
-        if ( data.zipFileLimit > 0 ) {
-          data.zipFileLimit = data.zipFileLimit * 1048576; // Mo
-        }
-
-        if ( !meta.isZipFilenameDynamic() ) {
-          data.ZipFilename = environmentSubstitute( meta.getZipFilename() );
-        }
-        // Attached files
-        processAttachedFiles();
-      }
-
-      // check embedded images
-      if ( meta.getEmbeddedImages() != null && meta.getEmbeddedImages().length > 0 ) {
-        FileObject image = null;
-        data.embeddedMimePart = new HashSet<MimeBodyPart>();
-        try {
-          for ( int i = 0; i < meta.getEmbeddedImages().length; i++ ) {
-            String imageFile = environmentSubstitute( meta.getEmbeddedImages()[i] );
-            String contentID = environmentSubstitute( meta.getContentIds()[i] );
-            image = KettleVFS.getFileObject( imageFile );
-
-            if ( image.exists() && image.getType() == FileType.FILE ) {
-              // Create part for the image
-              MimeBodyPart imagePart = new MimeBodyPart();
-              // Load the image
-              URLDataSource fds = new URLDataSource( image.getURL() );
-              imagePart.setDataHandler( new DataHandler( fds ) );
-              // Setting the header
-              imagePart.setHeader( "Content-ID", "<" + contentID + ">" );
-              // keep this part for further user
-              data.embeddedMimePart.add( imagePart );
-              logBasic( BaseMessages.getString( PKG, "Mail.Log.ImageAdded", imageFile ) );
-
-            } else {
-              logError( BaseMessages.getString( PKG, "Mail.Log.WrongImage", imageFile ) );
-            }
-          }
-        } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "Mail.Error.AddingImage", e.getMessage() ) );
-        } finally {
-          if ( image != null ) {
-            try {
-              image.close();
-            } catch ( Exception e ) { /* Ignore */
-            }
-          }
-        }
-      }
+      checkEmbeddedImages( meta, data );
 
     } // end if first
 
@@ -495,6 +207,311 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     return true;
+  }
+
+  private void checkEmbeddedImages( MailMeta meta, MailData data ) {
+    if ( meta.getEmbeddedImages() != null && meta.getEmbeddedImages().length > 0 ) {
+      FileObject image = null;
+      data.embeddedMimePart = new HashSet<MimeBodyPart>();
+      try {
+        for ( int i = 0; i < meta.getEmbeddedImages().length; i++ ) {
+          String imageFile = environmentSubstitute( meta.getEmbeddedImages()[i] );
+          String contentID = environmentSubstitute( meta.getContentIds()[i] );
+          image = KettleVFS.getFileObject( imageFile );
+
+          if ( image.exists() && image.getType() == FileType.FILE ) {
+            // Create part for the image
+            MimeBodyPart imagePart = new MimeBodyPart();
+            // Load the image
+            URLDataSource fds = new URLDataSource( image.getURL() );
+            imagePart.setDataHandler( new DataHandler( fds ) );
+            // Setting the header
+            imagePart.setHeader( "Content-ID", "<" + contentID + ">" );
+            // keep this part for further user
+            data.embeddedMimePart.add( imagePart );
+            logBasic( BaseMessages.getString( PKG, "Mail.Log.ImageAdded", imageFile ) );
+
+          } else {
+            logError( BaseMessages.getString( PKG, "Mail.Log.WrongImage", imageFile ) );
+          }
+        }
+      } catch ( Exception e ) {
+        logError( BaseMessages.getString( PKG, "Mail.Error.AddingImage", e.getMessage() ) );
+      } finally {
+        if ( image != null ) {
+          try {
+            image.close();
+          } catch ( Exception e ) { /* Ignore */
+          }
+        }
+      }
+    }
+  }
+
+  private void cacheFieldsPosition( MailMeta meta, MailData data ) throws KettleException {
+    // cache the position of the destination field
+    if ( data.indexOfDestination < 0 ) {
+      String realDestinationFieldname = meta.getDestination();
+      data.indexOfDestination = data.previousRowMeta.indexOfValue( realDestinationFieldname );
+      if ( data.indexOfDestination < 0 ) {
+        throw new KettleException( BaseMessages.getString(
+          PKG, "Mail.Exception.CouldnotFindDestinationField", realDestinationFieldname ) );
+      }
+    }
+
+    // Cc
+    if ( !Utils.isEmpty( meta.getDestinationCc() ) ) {
+      // cache the position of the Cc field
+      if ( data.indexOfDestinationCc < 0 ) {
+        String realDestinationCcFieldname = meta.getDestinationCc();
+        data.indexOfDestinationCc = data.previousRowMeta.indexOfValue( realDestinationCcFieldname );
+        if ( data.indexOfDestinationCc < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindDestinationCcField", realDestinationCcFieldname ) );
+        }
+      }
+    }
+    // BCc
+    if ( !Utils.isEmpty( meta.getDestinationBCc() ) ) {
+      // cache the position of the BCc field
+      if ( data.indexOfDestinationBCc < 0 ) {
+        String realDestinationBCcFieldname = meta.getDestinationBCc();
+        data.indexOfDestinationBCc = data.previousRowMeta.indexOfValue( realDestinationBCcFieldname );
+        if ( data.indexOfDestinationBCc < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindDestinationBCcField", realDestinationBCcFieldname ) );
+        }
+      }
+    }
+    // Sender Name
+    if ( !Utils.isEmpty( meta.getReplyName() ) ) {
+      // cache the position of the sender field
+      if ( data.indexOfSenderName < 0 ) {
+        String realSenderName = meta.getReplyName();
+        data.indexOfSenderName = data.previousRowMeta.indexOfValue( realSenderName );
+        if ( data.indexOfSenderName < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindReplyNameField", realSenderName ) );
+        }
+      }
+    }
+    // Sender address
+    // cache the position of the sender field
+    if ( data.indexOfSenderAddress < 0 ) {
+      String realSenderAddress = meta.getReplyAddress();
+      data.indexOfSenderAddress = data.previousRowMeta.indexOfValue( realSenderAddress );
+      if ( data.indexOfSenderAddress < 0 ) {
+        throw new KettleException( BaseMessages.getString(
+          PKG, "Mail.Exception.CouldnotFindReplyAddressField", realSenderAddress ) );
+      }
+    }
+
+    // Reply to
+    if ( !Utils.isEmpty( meta.getReplyToAddresses() ) ) {
+      // cache the position of the reply to field
+      if ( data.indexOfReplyToAddresses < 0 ) {
+        String realReplyToAddresses = meta.getReplyToAddresses();
+        data.indexOfReplyToAddresses = data.previousRowMeta.indexOfValue( realReplyToAddresses );
+        if ( data.indexOfReplyToAddresses < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindReplyToAddressesField", realReplyToAddresses ) );
+        }
+      }
+    }
+
+    // Contact Person
+    if ( !Utils.isEmpty( meta.getContactPerson() ) ) {
+      // cache the position of the destination field
+      if ( data.indexOfContactPerson < 0 ) {
+        String realContactPerson = meta.getContactPerson();
+        data.indexOfContactPerson = data.previousRowMeta.indexOfValue( realContactPerson );
+        if ( data.indexOfContactPerson < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindContactPersonField", realContactPerson ) );
+        }
+      }
+    }
+    // Contact Phone
+    if ( !Utils.isEmpty( meta.getContactPhone() ) ) {
+      // cache the position of the destination field
+      if ( data.indexOfContactPhone < 0 ) {
+        String realContactPhone = meta.getContactPhone();
+        data.indexOfContactPhone = data.previousRowMeta.indexOfValue( realContactPhone );
+        if ( data.indexOfContactPhone < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindContactPhoneField", realContactPhone ) );
+        }
+      }
+    }
+    // cache the position of the Server field
+    if ( data.indexOfServer < 0 ) {
+      String realServer = meta.getServer();
+      data.indexOfServer = data.previousRowMeta.indexOfValue( realServer );
+      if ( data.indexOfServer < 0 ) {
+        throw new KettleException( BaseMessages.getString(
+          PKG, "Mail.Exception.CouldnotFindServerField", realServer ) );
+      }
+    }
+    // Port
+    if ( !Utils.isEmpty( meta.getPort() ) ) {
+      // cache the position of the port field
+      if ( data.indexOfPort < 0 ) {
+        String realPort = meta.getPort();
+        data.indexOfPort = data.previousRowMeta.indexOfValue( realPort );
+        if ( data.indexOfPort < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindPortField", realPort ) );
+        }
+      }
+    }
+    // Authentication
+    if ( meta.isUsingAuthentication() ) {
+      // cache the position of the Authentication user field
+      if ( data.indexOfAuthenticationUser < 0 ) {
+        String realAuthenticationUser = meta.getAuthenticationUser();
+        data.indexOfAuthenticationUser = data.previousRowMeta.indexOfValue( realAuthenticationUser );
+        if ( data.indexOfAuthenticationUser < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindAuthenticationUserField", realAuthenticationUser ) );
+        }
+      }
+
+      // cache the position of the Authentication password field
+      if ( data.indexOfAuthenticationPass < 0 ) {
+        String realAuthenticationPassword = Utils.resolvePassword( variables, meta.getAuthenticationPassword() );
+        data.indexOfAuthenticationPass = data.previousRowMeta.indexOfValue( realAuthenticationPassword );
+        if ( data.indexOfAuthenticationPass < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindAuthenticationPassField", realAuthenticationPassword ) );
+        }
+      }
+    }
+    // Mail Subject
+    if ( !Utils.isEmpty( meta.getSubject() ) ) {
+      // cache the position of the subject field
+      if ( data.indexOfSubject < 0 ) {
+        String realSubject = meta.getSubject();
+        data.indexOfSubject = data.previousRowMeta.indexOfValue( realSubject );
+        if ( data.indexOfSubject < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindSubjectField", realSubject ) );
+        }
+      }
+    }
+    // Mail Comment
+    if ( !Utils.isEmpty( meta.getComment() ) ) {
+      // cache the position of the comment field
+      if ( data.indexOfComment < 0 ) {
+        String realComment = meta.getComment();
+        data.indexOfComment = data.previousRowMeta.indexOfValue( realComment );
+        if ( data.indexOfComment < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindCommentField", realComment ) );
+        }
+      }
+    }
+
+    if ( meta.isAttachContentFromField() ) {
+      // We are dealing with file content directly loaded from file
+      // and not physical file
+      String attachedContentField = meta.getAttachContentField();
+      if ( Utils.isEmpty( attachedContentField ) ) {
+        // Empty Field
+        throw new KettleException( BaseMessages.getString( PKG, "Mail.Exception.AttachedContentFieldEmpty" ) );
+      }
+      data.indexOfAttachedContent = data.previousRowMeta.indexOfValue( attachedContentField );
+      if ( data.indexOfAttachedContent < 0 ) {
+        throw new KettleException( BaseMessages.getString(
+          PKG, "Mail.Exception.CouldnotFindAttachedContentField", attachedContentField ) );
+      }
+      // Attached content filename
+      String attachedContentFileNameField = meta.getAttachContentFileNameField();
+      if ( Utils.isEmpty( attachedContentFileNameField ) ) {
+        // Empty Field
+        throw new KettleException( BaseMessages.getString(
+          PKG, "Mail.Exception.AttachedContentFileNameFieldEmpty" ) );
+      }
+      data.IndexOfAttachedFilename = data.previousRowMeta.indexOfValue( attachedContentFileNameField );
+      if ( data.IndexOfAttachedFilename < 0 ) {
+        throw new KettleException( BaseMessages.getString(
+          PKG, "Mail.Exception.CouldnotFindAttachedContentFileNameField", attachedContentFileNameField ) );
+      }
+
+    } else {
+
+      // Dynamic Zipfilename
+      if ( meta.isZipFilenameDynamic() ) {
+        // cache the position of the attached source filename field
+        if ( data.indexOfDynamicZipFilename < 0 ) {
+          String realZipFilename = meta.getDynamicZipFilenameField();
+          data.indexOfDynamicZipFilename = data.previousRowMeta.indexOfValue( realZipFilename );
+          if ( data.indexOfDynamicZipFilename < 0 ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "Mail.Exception.CouldnotSourceAttachedZipFilenameField", realZipFilename ) );
+          }
+        }
+      }
+      data.zipFileLimit = Const.toLong( environmentSubstitute( meta.getZipLimitSize() ), 0 );
+      if ( data.zipFileLimit > 0 ) {
+        data.zipFileLimit = data.zipFileLimit * 1048576; // Mo
+      }
+
+      if ( !meta.isZipFilenameDynamic() ) {
+        data.ZipFilename = environmentSubstitute( meta.getZipFilename() );
+      }
+      // Attached files
+      processAttachedFiles();
+    }
+  }
+
+  @VisibleForTesting
+  void validateMetaFields( MailMeta meta ) throws KettleException {
+    // Check is filename field is provided
+    if ( Utils.isEmpty( meta.getDestination() ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DestinationFieldEmpty" ) );
+    }
+
+    // Check is replyname field is provided
+    if ( Utils.isEmpty( meta.getReplyAddress() ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ReplyFieldEmpty" ) );
+    }
+
+    // Check is SMTP server is provided
+    if ( Utils.isEmpty( meta.getServer() ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ServerFieldEmpty" ) );
+    }
+
+    // Check Attached filenames when dynamic
+    if ( meta.isDynamicFilename() && Utils.isEmpty( meta.getDynamicFieldname() ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicFilenameFielddEmpty" ) );
+    }
+
+    // Check Attached zipfilename when dynamic
+    if ( meta.isZipFilenameDynamic() && Utils.isEmpty( meta.getDynamicZipFilenameField() ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicZipFilenameFieldEmpty" ) );
+    }
+
+    validateZipFiles( meta );
+
+    // check authentication
+    if ( meta.isUsingAuthentication() ) {
+      // check authentication user
+      if ( Utils.isEmpty( meta.getAuthenticationUser() ) ) {
+        throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.AuthenticationUserFieldEmpty" ) );
+      }
+
+      // check authentication pass
+      if ( Utils.isEmpty( meta.getAuthenticationPassword() ) ) {
+        throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.AuthenticationPasswordFieldEmpty" ) );
+      }
+    }
+  }
+
+  @VisibleForTesting
+  void validateZipFiles( MailMeta meta ) throws KettleException {
+    if ( meta.isZipFiles() && ( Utils.isEmpty( meta.getZipFilename() ) && !meta.isZipFilenameDynamic() ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ZipFilenameEmpty" ) );
+    }
   }
 
   @VisibleForTesting
@@ -702,12 +719,7 @@ public class Mail extends BaseStep implements StepInterface {
       addAttachedContent( data.previousRowMeta.getString( r, data.IndexOfAttachedFilename ), data.previousRowMeta
         .getString( r, data.indexOfAttachedContent ) );
     } else {
-      // attached files
-      if ( meta.isDynamicFilename() ) {
-        setAttachedFilesList( r, log );
-      } else {
-        setAttachedFilesList( null, log );
-      }
+      setAttachedFiles( meta, r, log );
     }
 
     // add embedded images
@@ -745,13 +757,23 @@ public class Mail extends BaseStep implements StepInterface {
 
   }
 
+  @VisibleForTesting
+  void setAttachedFiles( MailMeta meta, Object[] r, LogChannelInterface log ) throws Exception {
+    if ( meta.isDynamicFilename() || meta.isZipFilenameDynamic() ) {
+      setAttachedFilesList( r, log );
+    } else {
+      setAttachedFilesList( null, log );
+    }
+  }
+
   private void setMailMimeCharsetProperty() {
     if ( isBlank( System.getProperty( MAIL_CHARSET_KEY ) ) ) {
       System.setProperty( MAIL_CHARSET_KEY, MAIL_CHARSET );
     }
   }
 
-  private void setAttachedFilesList( Object[] r, LogChannelInterface log ) throws Exception {
+  @VisibleForTesting
+  void setAttachedFilesList( Object[] r, LogChannelInterface log ) throws Exception {
     String realSourceFileFoldername = null;
     String realSourceWildcard = null;
     FileObject sourcefile = null;
