@@ -2766,12 +2766,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private synchronized boolean endProcessing() throws KettleException {
     LogStatus status;
 
-    if ( isFinishedOrStopped() ) {
-      if ( isStopped() ) {
-        status = LogStatus.STOP;
-      } else {
-        status = LogStatus.END;
-      }
+    if ( isStopped() ) {
+      status = LogStatus.STOP;
+    } else if ( isFinished() ) {
+      status = LogStatus.END;
     } else if ( isPaused() ) {
       status = LogStatus.PAUSED;
     } else {
