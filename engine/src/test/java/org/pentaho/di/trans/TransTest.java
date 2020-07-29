@@ -47,7 +47,9 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInitThread;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
@@ -64,6 +66,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Collections.emptyList;
@@ -73,7 +76,11 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -82,6 +89,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith ( PowerMockRunner.class )
 @PrepareForTest( { Database.class, Trans.class } )
@@ -102,7 +110,7 @@ public class TransTest {
   public void beforeTest() throws Exception {
     meta = spy( new TransMeta() );
     trans = spy( new Trans( meta ) );
-    trans.setLog( Mockito.mock( LogChannelInterface.class ) );
+    trans.setLog( mock( LogChannelInterface.class ) );
   }
 
   /**
@@ -279,6 +287,16 @@ public class TransTest {
   }
 
   @Test
+  public void testSafeStop_WithoutSteps_null() {
+    trans.setSteps( null );
+    assertNull( trans.getSteps() );
+
+    trans.safeStop();
+
+    verify( trans, times( 0 ) ).notifyStoppedListeners();
+  }
+
+  @Test
   public void testSafeStop() {
     StepInterface stepMock1 = mock( StepInterface.class );
     StepDataInterface stepDataMock1 = mock( StepDataInterface.class );
@@ -309,10 +327,11 @@ public class TransTest {
     trans.safeStop();
 
     verifyStopped( stepMock1, 1 );
+    verify( trans ).notifyStoppedListeners();
   }
 
   @Test
-  public void safeLetsNonInputStepsKeepRunning() throws Exception {
+  public void safeStopLetsNonInputStepsKeepRunning() throws Exception {
     StepInterface stepMock1 = mock( StepInterface.class );
     StepInterface stepMock2 = mock( StepInterface.class );
     StepDataInterface stepDataMock1 = mock( StepDataInterface.class );
@@ -333,6 +352,8 @@ public class TransTest {
     verifyStopped( stepMock1, 1 );
     // non input step shouldn't have stop called
     verifyStopped( stepMock2, 0 );
+
+    verify( trans ).notifyStoppedListeners();
   }
 
   private void verifyStopped( StepInterface step, int numberTimesCalled ) throws Exception {
@@ -593,7 +614,9 @@ public class TransTest {
   @Test
   public void testCleanup_WithoutSteps_emptyList() throws Exception {
     trans.setSteps( new ArrayList<>() );
-    assertNotNull( trans.getSteps() );
+    List<StepMetaDataCombi> steps = trans.getSteps();
+    assertNotNull( steps );
+    assertTrue( steps.isEmpty() );
 
     // this should also work (no exception thrown)
     trans.cleanup();
@@ -825,5 +848,269 @@ public class TransTest {
     trans.beginProcessing();
 
     return database;
+  }
+
+  /**
+   * <p>PDI-18459 - When any step fails on initialization, the transformation should set status to Stopped.</p>
+   */
+  @Test ( expected = KettleException.class )
+  public void testFailOnInitialization() throws Exception {
+    StepInterface stepMock1 = mock( StepInterface.class );
+    StepInterface stepMock2 = mock( StepInterface.class );
+    StepDataInterface stepDataMock1 = mock( StepDataInterface.class );
+    StepDataInterface stepDataMock2 = mock( StepDataInterface.class );
+    StepMeta stepMetaMock1 = mock( StepMeta.class );
+    StepMeta stepMetaMock2 = mock( StepMeta.class );
+    StepMetaInterface stepMetaInterfaceMock1 = mock( StepMetaInterface.class );
+    StepMetaInterface stepMetaInterfaceMock2 = mock( StepMetaInterface.class );
+
+    doReturn( stepDataMock1 ).when( stepMetaInterfaceMock1 ).getStepData();
+    doReturn( stepDataMock2 ).when( stepMetaInterfaceMock2 ).getStepData();
+    doReturn( stepMock1 ).when( stepMetaInterfaceMock1 ).getStep( any( StepMeta.class ), any( StepDataInterface.class ), anyInt(), any( TransMeta.class ), any( Trans.class ) );
+    doReturn( stepMock2 ).when( stepMetaInterfaceMock2 ).getStep( any( StepMeta.class ), any( StepDataInterface.class ), anyInt(), any( TransMeta.class ), any( Trans.class ) );
+    doReturn( stepMetaMock1 ).when( stepMock1 ).getStepMeta();
+    doReturn( stepMetaMock2 ).when( stepMock2 ).getStepMeta();
+    doReturn( stepMetaInterfaceMock1 ).when( stepMetaMock1 ).getStepMetaInterface();
+    doReturn( stepMetaInterfaceMock2 ).when( stepMetaMock2 ).getStepMetaInterface();
+    StepInitThread stepInitThreadMock = mock( StepInitThread.class );
+    doNothing().when( stepInitThreadMock ).run();
+    whenNew( StepInitThread.class ).withAnyArguments().thenReturn( stepInitThreadMock );
+    // Mocking the initialization results: the first step will initialize correctly, the second will fail.
+    // There're four entries because
+    when( stepInitThreadMock.isOk() ).thenReturn( true, false, true, false );
+    StepMetaDataCombi dummyCombi = new StepMetaDataCombi();
+    dummyCombi.stepname = "dummy";
+    dummyCombi.copy = 1;
+    dummyCombi.data = mock( StepDataInterface.class );
+    dummyCombi.step = mock( StepInterface.class );
+    doReturn( dummyCombi ).when( stepInitThreadMock ).getCombi();
+
+    // A step that failed initialization
+    doReturn( false ).when( stepMock1 ).init( any(), any() );
+
+    // A step that passed initialization
+    doReturn( false ).when( stepMock1 ).init( any(), any() );
+
+    trans.setSteps( of(
+            combi( stepMock1, stepDataMock1, stepMetaMock1 ),
+            combi( stepMock2, stepDataMock2, stepMetaMock2 ) ) );
+
+    List<StepMeta> hopsteps = of( stepMetaMock1, stepMetaMock2 );
+    doReturn( true ).when( stepMetaMock1 ).isMapping();
+    doReturn( 1 ).when( stepMetaMock1 ).getCopies();
+    doReturn( 1 ).when( stepMetaMock2 ).getCopies();
+    doReturn( true ).when( stepMetaMock2 ).isMapping();
+    doReturn( hopsteps ).when( meta ).getTransHopSteps( anyBoolean() );
+
+    try {
+      trans.prepareExecution(new String[]{});
+    } catch ( KettleException ke ) {
+      verify( stepInitThreadMock, times( 4 ) ).isOk();
+
+      verify( trans, times( 1 ) ).setPreparing( true );
+      verify( trans, times( 1 ) ).setPreparing( false );
+      verify( trans, times( 1 ) ).setInitializing( true );
+      verify( trans, times( 1 ) ).setInitializing( false );
+
+      throw ke;
+    }
+
+    fail( "Should not have reached here: an exception should have been thrown!");
+  }
+
+  @Test
+  public void testShutdownHeartbeat_null() throws Exception {
+    doCallRealMethod().when( trans ).shutdownHeartbeat( any( ExecutorService.class ) );
+
+    trans.shutdownHeartbeat( null );
+  }
+
+  @Test
+  public void testShutdownHeartbeat_exception() throws Exception {
+    doCallRealMethod().when( trans ).shutdownHeartbeat( any( ExecutorService.class ) );
+    ExecutorService executorService = mock( ExecutorService.class );
+    doThrow( new SecurityException() ).when( executorService ).shutdownNow();
+
+    trans.shutdownHeartbeat( executorService );
+
+    verify( executorService, times ( 1 ) ).shutdownNow();
+  }
+
+  @Test
+  public void testShutdownHeartbeat_success() throws Exception {
+    doCallRealMethod().when( trans ).shutdownHeartbeat( any( ExecutorService.class ) );
+    ExecutorService executorService = mock( ExecutorService.class );
+    doReturn( null ).when( executorService ).shutdownNow();
+
+    trans.shutdownHeartbeat( executorService );
+
+    verify( executorService, times ( 1 ) ).shutdownNow();
+  }
+
+  @Test
+  public void testSetAndGetLog() {
+    LogChannelInterface logMock = mock( LogChannelInterface.class );
+    trans.setLog( logMock );
+    assertEquals( logMock, trans.getLogChannel() );
+  }
+
+  @Test
+  public void testGetName() {
+    String str = "dummyName";
+
+    doReturn( str ).when( meta ).getName();
+
+    assertEquals( str, trans.getName() );
+  }
+
+  @Test
+  public void testGetErrors_nullSteps() {
+    trans.setSteps( null );
+
+    assertEquals( 0, trans.getErrors() );
+  }
+
+  @Test
+  public void testGetErrors_withSteps() {
+    StepInterface stepMock1 = mock( StepInterface.class );
+    StepInterface stepMock2 = mock( StepInterface.class );
+    StepInterface stepMock3 = mock( StepInterface.class );
+    StepInterface stepMock4 = mock( StepInterface.class );
+    StepDataInterface stepDataMock1 = mock( StepDataInterface.class );
+    StepDataInterface stepDataMock2 = mock( StepDataInterface.class );
+    StepDataInterface stepDataMock3 = mock( StepDataInterface.class );
+    StepDataInterface stepDataMock4 = mock( StepDataInterface.class );
+    StepMeta stepMetaMock1 = mock( StepMeta.class );
+    StepMeta stepMetaMock2 = mock( StepMeta.class );
+    StepMeta stepMetaMock3 = mock( StepMeta.class );
+    StepMeta stepMetaMock4 = mock( StepMeta.class );
+
+    // Step with no errors
+    doReturn( 0L ).when( stepMock1 ).getErrors();
+    // Step with three (3) errors
+    doReturn( 3L ).when( stepMock2 ).getErrors();
+    // Another step with no errors
+    doReturn( 0L ).when( stepMock3 ).getErrors();
+    // Step with two (2) errors
+    doReturn( 2L ).when( stepMock4 ).getErrors();
+
+    // A total of 5 (0 + 3 + 0 + 2) errors
+
+    trans.setSteps( of(
+            combi( stepMock1, stepDataMock1, stepMetaMock1 ),
+            combi( stepMock2, stepDataMock2, stepMetaMock2 ),
+            combi( stepMock3, stepDataMock3, stepMetaMock3 ),
+            combi( stepMock4, stepDataMock4, stepMetaMock4 ) ) );
+
+    assertEquals( 5, trans.getErrors() );
+  }
+
+  @Test
+  public void testGetEnded_nullSteps() {
+    trans.setSteps( null );
+
+    assertEquals( 0, trans.getEnded() );
+  }
+
+  @Test
+  public void testGetEnded_withSteps() {
+    List<StepMetaDataCombi> steps = new ArrayList<>();
+    int ended = 0;
+
+    // Steps with all possible status (and still running).
+    // Finished, Halted, or Stopped (three in total) should be counted.
+    ended += 3;
+    for( BaseStepData.StepExecutionStatus status: BaseStepData.StepExecutionStatus.values() ) {
+      StepInterface stepMock = mock( StepInterface.class );
+      StepDataInterface stepDataMock = mock( StepDataInterface.class );
+      StepMeta stepMetaMock = mock( StepMeta.class );
+
+      doReturn( true ).when( stepMock ).isRunning();
+      doReturn( status ).when( stepDataMock ).getStatus();
+
+      steps.add( combi( stepMock, stepDataMock, stepMetaMock ) );
+    }
+
+    // Step not running (also to be counted)
+    ++ended;
+    StepInterface stepMock = mock( StepInterface.class );
+
+    doReturn( false ).when( stepMock ).isRunning();
+
+    steps.add( combi( stepMock, mock( StepDataInterface.class ), mock( StepMeta.class )) );
+
+    // Add created steps
+    trans.setSteps( steps );
+
+    // A total of four (4) steps should be counted as ended.
+    assertEquals( ended, trans.getEnded() );
+  }
+
+  @Test
+  public void testNrSteps_nullSteps() {
+    trans.setSteps( null );
+
+    assertEquals( 0, trans.nrSteps() );
+  }
+
+  @Test
+  public void testNrSteps_withSteps() {
+    List<StepMetaDataCombi> steps = new ArrayList<>();
+    int nrSteps = 3;
+
+    for ( int i = 0; i < nrSteps; ++i ) {
+      steps.add( combi(mock( StepInterface.class ), mock( StepDataInterface.class ), mock( StepMeta.class ) ) );
+    }
+
+    // Add created steps
+    trans.setSteps( steps );
+
+    assertEquals( nrSteps, trans.nrSteps() );
+  }
+
+  @Test
+  public void testNrActiveSteps_nullSteps() {
+    trans.setSteps( null );
+
+    assertEquals( 0, trans.nrActiveSteps() );
+  }
+
+  @Test
+  public void testNrActiveSteps_withSteps() {
+    List<StepMetaDataCombi> steps = new ArrayList<>();
+    int nrActiveSteps = 0;
+
+    // Steps with all possible status (and still running).
+    // All should be counted.
+    nrActiveSteps += BaseStepData.StepExecutionStatus.values().length;
+    for( BaseStepData.StepExecutionStatus status: BaseStepData.StepExecutionStatus.values() ) {
+      StepInterface stepMock = mock( StepInterface.class );
+      StepDataInterface stepDataMock = mock( StepDataInterface.class );
+      StepMeta stepMetaMock = mock( StepMeta.class );
+
+      doReturn( true ).when( stepMock ).isRunning();
+      doReturn( status ).when( stepMock ).getStatus();
+
+      steps.add( combi( stepMock, stepDataMock, stepMetaMock ) );
+    }
+
+    // Steps with all possible status (and not running).
+    // All except Finished should be counted.
+    nrActiveSteps += ( BaseStepData.StepExecutionStatus.values().length - 1 );
+    for( BaseStepData.StepExecutionStatus status: BaseStepData.StepExecutionStatus.values() ) {
+      StepInterface stepMock = mock( StepInterface.class );
+      StepDataInterface stepDataMock = mock( StepDataInterface.class );
+      StepMeta stepMetaMock = mock( StepMeta.class );
+
+      doReturn( false ).when( stepMock ).isRunning();
+      doReturn( status ).when( stepMock ).getStatus();
+
+      steps.add( combi( stepMock, stepDataMock, stepMetaMock ) );
+    }
+
+    // Add created steps
+    trans.setSteps( steps );
+
+    assertEquals( nrActiveSteps, trans.nrActiveSteps() );
   }
 }
