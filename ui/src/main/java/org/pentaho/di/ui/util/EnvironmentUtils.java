@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 - 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017 - 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -67,7 +67,7 @@ public class EnvironmentUtils {
   }
 
   private boolean checkUserAgent( Matcher matcher, int version ) {
-    return  ( matcher.find() && Integer.parseInt( matcher.group( 1 ) ) < version );
+    return  matcher.find() && Integer.parseInt( matcher.group( 1 ) ) < version;
   }
 
   /**
