@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,9 @@ package org.pentaho.di.ui.spoon.delegates;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.JobLogTable;
@@ -40,6 +42,9 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.job.dialog.JobExecutionConfigurationDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.job.JobGraph;
@@ -49,7 +54,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -200,6 +207,47 @@ public class SpoonJobDelegateTest {
 
     // cleanup
     registry.removePlugin( JobEntryPluginType.class, plugin );
+  }
+
+  @Test
+  public void setTransMetaFileNamingWithRepTest() {
+    RepositoryDirectoryInterface repDirMock = mock( RepositoryDirectoryInterface.class );
+    String directory = "directory";
+    DatabaseMeta sourceDataBaseMetaMock = mock( DatabaseMeta.class );
+    DatabaseMeta targetDataBaseMetaMock = mock( DatabaseMeta.class );
+    String[] tables = { "table1", "table2", "table3" };
+    int index = 1;
+    TransMeta transMeta = new TransMeta();
+    doCallRealMethod().when( delegate ).setTransMetaFileNaming( repDirMock, directory, sourceDataBaseMetaMock, targetDataBaseMetaMock, tables, index, transMeta );
+    delegate.setTransMetaFileNaming( repDirMock, directory, sourceDataBaseMetaMock, targetDataBaseMetaMock, tables, index, transMeta );
+    String transname =
+      "copy ["
+        + sourceDataBaseMetaMock + "].[" + "table2"
+        + "] to [" + targetDataBaseMetaMock + "]";
+    assertEquals( repDirMock, transMeta.getRepositoryDirectory() );
+    assertEquals( transname, transMeta.getName() );
+    assertNull( transMeta.getFilename() );
+  }
+
+  @Test
+  public void setTransMetaFileNamingWithoutRepTest() {
+    RepositoryDirectoryInterface repDirMock = null;
+    String directory = "directory";
+    DatabaseMeta sourceDataBaseMetaMock = mock( DatabaseMeta.class );
+    DatabaseMeta targetDataBaseMetaMock = mock( DatabaseMeta.class );
+    String[] tables = { "table1", "table2", "table3" };
+    int index = 1;
+    TransMeta transMeta = new TransMeta();
+    doCallRealMethod().when( delegate ).setTransMetaFileNaming( repDirMock, directory, sourceDataBaseMetaMock, targetDataBaseMetaMock, tables, index, transMeta );
+    delegate.setTransMetaFileNaming( repDirMock, directory, sourceDataBaseMetaMock, targetDataBaseMetaMock, tables, index, transMeta );
+    String transname =
+      "copy ["
+        + sourceDataBaseMetaMock + "].[" + "table2"
+        + "] to [" + targetDataBaseMetaMock + "]";
+    assertEquals( new RepositoryDirectory().getName(), transMeta.getRepositoryDirectory().getName() );
+    assertNull( transMeta.getName() );
+    assertEquals( Const.createFilename( directory, transname, "."
+      + Const.STRING_TRANS_DEFAULT_EXT ), transMeta.getFilename() );
   }
 
   public interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
