@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -106,9 +106,6 @@ public class JsonInputAnalyzerTest {
     when( mockJsonInput.getStepMetaInterface() ).thenReturn( meta );
     when( mockJsonInput.getStepMeta() ).thenReturn( mockStepMeta );
     when( mockStepMeta.getStepMetaInterface() ).thenReturn( meta );
-
-    Whitebox.setInternalState( ExternalResourceCache.getInstance(), "transMap", new ConcurrentHashMap() );
-    Whitebox.setInternalState( ExternalResourceCache.getInstance(), "resourceMap", new ConcurrentHashMap() );
   }
 
   @Test
