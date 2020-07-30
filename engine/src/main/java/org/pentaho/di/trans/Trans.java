@@ -1234,10 +1234,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     if ( !ok ) {
-      // Halt the other threads as well, signal end-of-the line to the outside
-      // world...
-      // Also explicitly call dispose() to clean up resources opened during
-      // init();
+      // One or more steps failed on initialization.
+      // Transformation is now stopped.
+      setStopped( true );
+
+      // Halt the other threads as well, signal end-of-the line to the outside world...
+      // Also explicitly call dispose() to clean up resources opened during init();
       //
       for ( int i = 0; i < initThreads.length; i++ ) {
         StepMetaDataCombi combi = initThreads[ i ].getCombi();
@@ -1259,7 +1261,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       } catch ( KettleException e ) {
         // listeners produces errors
         log.logError( BaseMessages.getString( PKG, "Trans.FinishListeners.Exception" ) );
-        // we will not pass this exception up to prepareExecuton() entry point.
+        // we will not pass this exception up to prepareExecution() entry point.
       } finally {
         // Flag the transformation as finished even if exception was thrown
         setFinished( true );
@@ -2766,12 +2768,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private synchronized boolean endProcessing() throws KettleException {
     LogStatus status;
 
-    if ( isFinished() ) {
-      if ( isStopped() ) {
-        status = LogStatus.STOP;
-      } else {
-        status = LogStatus.END;
-      }
+    if ( isStopped() ) {
+      status = LogStatus.STOP;
+    } else if ( isFinished() ) {
+      status = LogStatus.END;
     } else if ( isPaused() ) {
       status = LogStatus.PAUSED;
     } else {
