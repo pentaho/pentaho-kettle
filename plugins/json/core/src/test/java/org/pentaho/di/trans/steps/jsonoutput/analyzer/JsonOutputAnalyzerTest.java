@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.jsonoutput.analyzer;
 
+import com.google.common.cache.CacheBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,6 +50,7 @@ import org.powermock.reflect.Whitebox;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.spy;
@@ -94,9 +96,6 @@ public class JsonOutputAnalyzerTest {
     when( mockJsonOutput.getStepMetaInterface() ).thenReturn( meta );
     when( mockJsonOutput.getStepMeta() ).thenReturn( mockStepMeta );
     when( mockStepMeta.getStepMetaInterface() ).thenReturn( meta );
-
-    Whitebox.setInternalState( ExternalResourceCache.getInstance(), "transMap", new ConcurrentHashMap() );
-    Whitebox.setInternalState( ExternalResourceCache.getInstance(), "resourceMap", new ConcurrentHashMap() );
   }
 
   @Test
@@ -152,7 +151,8 @@ public class JsonOutputAnalyzerTest {
     when( meta.writesToFile() ).thenReturn( true );
     resources = consumer.getResourcesFromMeta( meta );
     assertFalse( resources.isEmpty() );
-    assertEquals( 2, resources.size() );
+    assertTrue( resources.stream().anyMatch( eri -> eri.getName().endsWith( outputFilePaths[0] ) ) );
+    assertTrue( resources.stream().anyMatch( eri -> eri.getName().endsWith( outputFilePaths[1] ) ) );
   }
 
   @Test
