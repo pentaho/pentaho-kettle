@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -371,14 +371,31 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
   @Override
   public List<IMetaStoreElement> getElements( String namespace, IMetaStoreElementType elementType )
     throws MetaStoreException {
+    return getElements( namespace, elementType, true, null );
+  }
+
+  @Override
+  public List<IMetaStoreElement> getElements( String namespace, IMetaStoreElementType elementType, boolean lock,
+                                              List<MetaStoreException> exceptionList ) throws MetaStoreException {
     List<IMetaStoreElement> elements = new ArrayList<IMetaStoreElement>();
 
     RepositoryFile typeFolder = validateElementTypeRepositoryFolder( namespace, elementType );
     List<RepositoryFile> children = getChildren( typeFolder.getId() );
     removeHiddenFilesFromList( children );
     for ( RepositoryFile child : children ) {
-      IMetaStoreElement element = getElement( namespace, elementType, child.getId().toString() );
-      elements.add( element );
+      try {
+        IMetaStoreElement element = getElement( namespace, elementType, child.getId().toString() );
+        elements.add( element );
+      } catch ( Exception e ) {
+        // If we are collecting exceptions instead of fatally exiting, add to the list of exceptions and continue
+        if ( exceptionList != null ) {
+          exceptionList.add( new MetaStoreException( "Could not load metaStore element '" + child.getId().toString()
+            + "'", e ) );
+        } else {
+          // Strict run. abort list
+          throw e;
+        }
+      }
     }
 
     return elements;
@@ -387,7 +404,8 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
   @Override
   public IMetaStoreElement getElementByName( String namespace, IMetaStoreElementType elementType, String name )
     throws MetaStoreException {
-    for ( IMetaStoreElement element : getElements( namespace, elementType ) ) {
+    for ( IMetaStoreElement element : getElements( namespace, elementType, true,
+      new ArrayList<MetaStoreException>() ) ) {
       if ( element.getName().equals( name ) ) {
         return element;
       }
