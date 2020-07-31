@@ -63,7 +63,11 @@ public class MultipleSelectionCombo extends Composite {
   }
 
   private void init() {
-    setLayout( new GridLayout( 1, true ) );
+    GridLayout masterGridLayout = new GridLayout( 1, true );
+    masterGridLayout.marginBottom = 0;
+    masterGridLayout.marginTop = 0;
+    masterGridLayout.verticalSpacing = 0;
+    setLayout( masterGridLayout );
     Composite topRow = new Composite( this, SWT.NONE );
     topRow.setLayout( new GridLayout( 3, false ) );
 
@@ -93,9 +97,10 @@ public class MultipleSelectionCombo extends Composite {
 
     bottomRow = new Composite( this, SWT.NONE );
     GridLayout gridLayout = new GridLayout( 2, true );
-    gridLayout.marginBottom = 5;
+    gridLayout.marginBottom = 0;
     gridLayout.marginLeft = 0;
-    gridLayout.marginRight = 5;
+    gridLayout.marginRight = 0;
+    gridLayout.marginTop = 0;
     bottomRow.setLayout( gridLayout );
 
     GridData rowGridData = new GridData( SWT.NONE );
@@ -125,9 +130,6 @@ public class MultipleSelectionCombo extends Composite {
         }
       }
     };
-
-    Label separator = new Label( this, SWT.HORIZONTAL | SWT.SEPARATOR );
-    separator.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
 
     add.addMouseListener( new MouseAdapter() {
       @Override
@@ -296,6 +298,8 @@ public class MultipleSelectionCombo extends Composite {
     displayItems = Arrays.stream( displayItems )
             .filter( item -> !selectedSet.contains( item ) )
             .toArray( String[]::new );
+
+    triggerShellResize();
   }
 
   public void setItems( String[] items ) {
