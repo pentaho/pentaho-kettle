@@ -33,6 +33,8 @@ import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.pentaho.di.connections.ConnectionDetails;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -52,6 +54,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Comparator;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,7 +69,8 @@ public class KettleVFS {
   private static final int TIMEOUT_LIMIT = 9000;
   private static final int TIME_TO_SLEEP_STEP = 50;
   private static final String PROVIDER_PATTERN_SCHEME = "^[\\w\\d]+://(.*)";
-
+  private static Supplier<ConnectionManager> connectionManager = ConnectionManager::getInstance;
+  private static final String DEFAULT_S3_CONFIG_PROPERTY = "defaultS3Config";
   private static VariableSpace defaultVariableSpace;
 
   static {
@@ -250,12 +254,31 @@ public class KettleVFS {
     String[] varList = varSpace.listVariables();
 
     for ( String var : varList ) {
+      if ( scheme == "s3" || scheme == "s3n" || scheme == "s3a" ) {
+        ConnectionDetails defaultS3Connection = null;
+        try {
+          defaultS3Connection =
+            connectionManager.get().getConnectionDetailsByScheme( "s3" ).stream().filter(
+              connectionDetails -> connectionDetails.getProperties().get( DEFAULT_S3_CONFIG_PROPERTY ) != null
+                && connectionDetails.getProperties().get( DEFAULT_S3_CONFIG_PROPERTY ).equalsIgnoreCase( "true" ) )
+              .findFirst().get();
+
+          if ( defaultS3Connection != null ) {
+            String vfsHelperUrl = vfsFilename.replaceFirst(scheme, "s3" );
+            fsOptions = VFSHelper.getOpts( vfsHelperUrl, defaultS3Connection.getName() );
+          }
+        } catch ( Exception ex ) {
+
+        }
+      }
+
       if ( var.equalsIgnoreCase( CONNECTION ) && varSpace.getVariable( var ) != null ) {
         FileSystemOptions fileSystemOptions = VFSHelper.getOpts( vfsFilename, varSpace.getVariable( var ) );
         if ( fileSystemOptions != null ) {
           return fileSystemOptions;
         }
       }
+
       if ( var.startsWith( "vfs." ) ) {
         String param = configBuilder.parseParameterName( var, scheme );
         String varScheme = KettleGenericFileSystemConfigBuilder.extractScheme( var );
