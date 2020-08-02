@@ -2303,6 +2303,7 @@ public class TableView extends Composite {
     if ( colinfo.getType() == ColumnInfo.COLUMN_TYPE_FORMAT ) {
       int type = ValueMetaFactory.getIdForValueMeta( row.getText( colinfo.getFieldTypeColumn() ) );
       switch ( type ) {
+        case ValueMetaInterface.TYPE_TIMESTAMP:
         case ValueMetaInterface.TYPE_DATE:
           return Const.getDateFormats();
         case ValueMetaInterface.TYPE_INTEGER:
