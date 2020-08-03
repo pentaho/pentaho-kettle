@@ -142,6 +142,9 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
   private String[] headerValue;
 
+  // Response status
+  private int responseStatusCode = 0;
+
   public JobEntryHTTP( String n ) {
     super( n, "" );
     url = null;
@@ -424,6 +427,10 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     this.headerValue = headerValue;
   }
 
+  public int getResponseStatusCode() {
+    return responseStatusCode;
+  }
+
   /**
    * We made this one synchronized in the JVM because otherwise, this is not thread safe. In that case if (on an
    * application server for example) several HTTP's are running at the same time, you get into problems because the
@@ -433,6 +440,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   public synchronized Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
+    responseStatusCode = 0;
 
     logBasic( BaseMessages.getString( PKG, "JobHTTP.StartJobEntry" ) );
 
@@ -606,10 +614,10 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         } else {
           response = client.execute( httpRequestBase );
         }
-        int statusCode = response.getStatusLine().getStatusCode();
+        responseStatusCode = response.getStatusLine().getStatusCode();
 
-        if ( HttpStatus.SC_OK != statusCode ) {
-          throw new KettleException( "StatusCode: " + statusCode );
+        if ( HttpStatus.SC_OK != responseStatusCode ) {
+          throw new KettleException( "StatusCode: " + responseStatusCode );
         }
 
 
