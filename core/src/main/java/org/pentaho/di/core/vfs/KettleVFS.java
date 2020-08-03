@@ -235,6 +235,7 @@ public class KettleVFS {
     return vfsFilename.replaceAll( ":[^:@/]+@", ":<password>@" );
   }
 
+  @SuppressWarnings( "squid:S108" )
   private static FileSystemOptions buildFsOptions( VariableSpace varSpace, FileSystemOptions sourceOptions,
                                                    String vfsFilename, String scheme ) throws IOException {
     if ( varSpace == null || vfsFilename == null ) {
@@ -263,6 +264,7 @@ public class KettleVFS {
             fsOptions = VFSHelper.getOpts( vfsHelperUrl, defaultS3Connection.get().getName() );
           }
         } catch ( Exception ignored ) {
+          // Ignore the exception, it's OK if we can't find a default S3 connection.
         }
       }
 
