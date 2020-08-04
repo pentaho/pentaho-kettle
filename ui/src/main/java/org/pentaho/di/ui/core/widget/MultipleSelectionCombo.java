@@ -156,6 +156,7 @@ public class MultipleSelectionCombo extends Composite {
             updateTagsUI( calculateTotalHeight( ref ) );
           }
 
+          comboSelection = new int[]{};
           floatShell.dispose();
         }
       }
