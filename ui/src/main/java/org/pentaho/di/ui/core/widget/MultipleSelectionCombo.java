@@ -85,6 +85,7 @@ public class MultipleSelectionCombo extends Composite {
       public void mouseDown( MouseEvent event ) {
         super.mouseDown( event );
         if ( floatShell == null || floatShell.isDisposed() ) {
+          closeOtherFloatShells();
           initFloatShell();
         } else {
           closeShellAndUpdate();
@@ -160,6 +161,18 @@ public class MultipleSelectionCombo extends Composite {
         }
       }
     } );
+  }
+
+  private void closeOtherFloatShells() {
+    Composite parent = this.getParent();
+
+    while ( !( parent instanceof Shell ) ) {
+      Arrays.stream( parent.getChildren() )
+              .filter( c -> c instanceof MultipleSelectionCombo )
+              .forEach( c -> ((MultipleSelectionCombo) c).triggerDropdownClose() );
+
+      parent = parent.getParent();
+    }
   }
 
   private void addRemovedTagBackToListUI( String labelText ) {
@@ -327,6 +340,16 @@ public class MultipleSelectionCombo extends Composite {
     if ( !StringUtil.isEmpty( selectedItems ) ) {
       this.selectedItemLabels = selectedItems.split( "," );
       bindDataToUI();
+    }
+  }
+
+  /**
+   * Public interface for other dropdowns or components
+   * to trigger open dropdowns to close
+   */
+  public void triggerDropdownClose() {
+    if ( floatShell != null && !floatShell.isDisposed() ) {
+      floatShell.dispose();
     }
   }
 
