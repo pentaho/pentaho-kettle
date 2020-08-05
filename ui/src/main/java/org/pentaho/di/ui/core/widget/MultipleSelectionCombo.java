@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.util.StringUtil;
@@ -291,6 +292,16 @@ public class MultipleSelectionCombo extends Composite {
         comboSelection = list.getSelectionIndices();
       }
     } );
+
+    final Listener listener = event -> floatShell.dispose();
+
+    Composite scroll = findScrollingParent();
+
+    if ( scroll != null ) {
+      scroll.getVerticalBar().addListener( SWT.Selection, listener );
+    }
+
+    this.getShell().addListener( SWT.Resize, listener );
 
     floatShell.open();
   }
