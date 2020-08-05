@@ -727,6 +727,10 @@ public class DatabaseTest {
     when( meta.isNeedUpdate() ).thenReturn( true );
 
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
+    DataSource dataSource = mock( DataSource.class );
+    Connection connection = mock( Connection.class );
+    when( provider.getNamedDataSource( any(), any() ) ).thenReturn( dataSource );
+    when( dataSource.getConnection() ).thenReturn( connection );
     Database db = new Database( log, meta );
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
     try {
@@ -761,7 +765,7 @@ public class DatabaseTest {
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
     try {
       DataSourceProviderFactory.setDataSourceProviderInterface( provider );
-      db.normalConnect( "ConnectThatDoesNotExistInProvider" );
+      db.normalConnect( null );
       verify( meta, times( 0 ) ).setNeedUpdate( false );
       verify( provider, times( 0 ) ).invalidateNamedDataSource( any(), any() );
     } finally {
