@@ -302,6 +302,7 @@ public class MultipleSelectionCombo extends Composite {
     }
 
     this.getShell().addListener( SWT.Resize, listener );
+    this.getShell().addListener( SWT.Move, listener );
 
     floatShell.open();
   }
