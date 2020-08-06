@@ -732,7 +732,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       while ( ( first && !execPerRow )
         || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
         first = false;
-
         // Clear the result rows of the result
         // Otherwise we double the amount of rows every iteration in the simple cases.
         //
