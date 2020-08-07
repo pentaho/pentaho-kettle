@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>file-open-save-new</artifactId>
-  <version>9.1.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI File Open and Save New Plugin</name>
@@ -22,10 +22,10 @@
   </modules>
 
   <properties>
-    <pdi.version>9.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.2.0.0-SNAPSHOT</pdi.version>
     <version.for.license>${project.version}</version.for.license>
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
-    <pentaho-osgi-bundles.version>9.1.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
+    <pentaho-osgi-bundles.version>9.2.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
     <require-css.version>0.1.8</require-css.version>
     <swt.version>4.6</swt.version>

@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>connections-assemblies</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>connections-plugin</artifactId>
-  <version>9.1.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>kar</packaging>
 
   <name>Connections Plugin Distribution</name>

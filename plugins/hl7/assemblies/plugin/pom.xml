@@ -5,17 +5,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>hl7-assemblies</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kettle-hl7-plugin</artifactId>
-  <version>9.1.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI HL7 Plugin Distribution</name>
 
   <properties>
-    <project.revision>9.1.0.0-SNAPSHOT</project.revision>
+    <project.revision>9.2.0.0-SNAPSHOT</project.revision>
   </properties>
 
   <dependencies>

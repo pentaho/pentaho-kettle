@@ -6,13 +6,13 @@
 
   <groupId>org.pentaho.di.plugins</groupId>
   <artifactId>pentaho-streaming-impls</artifactId>
-  <version>9.1.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-streaming</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
 

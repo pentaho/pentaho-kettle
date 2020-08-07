@@ -7,17 +7,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>google-analytics-assemblies</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>pdi-google-analytics-plugin</artifactId>
-  <version>9.1.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Google Analytics Plugin Distribution</name>
 
   <properties>
-    <project.revision>9.1.0.0-SNAPSHOT</project.revision>
+    <project.revision>9.2.0.0-SNAPSHOT</project.revision>
   </properties>
 
   <dependencies>

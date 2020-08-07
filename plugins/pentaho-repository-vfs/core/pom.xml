@@ -7,7 +7,7 @@
 	<parent>
 		<artifactId>pentaho-repository-vfs</artifactId>
 		<groupId>org.pentaho.di.plugins</groupId>
-		<version>9.1.0.0-SNAPSHOT</version>
+		<version>9.2.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pentaho-repository-vfs-core</artifactId>
@@ -15,7 +15,7 @@
 	<name>Pentaho Repository VFS Plugin Core</name>
 
 	<properties>
-		<pdi.version>9.1.0.0-SNAPSHOT</pdi.version>
+		<pdi.version>9.2.0.0-SNAPSHOT</pdi.version>
 	</properties>
 
 	<dependencies>
