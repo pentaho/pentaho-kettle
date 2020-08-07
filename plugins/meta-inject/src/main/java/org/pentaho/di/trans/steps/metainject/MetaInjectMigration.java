@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.metainject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,19 +32,28 @@ import java.util.Map;
  * @author Alexander Buloichik
  */
 public class MetaInjectMigration {
+
+  /* migration mapping of keys.
+     key is the old version of the mapping
+     value is the new version of the mapping */
+  private static Map<String, String> migrationMappings = new HashMap<>();
+  static {
+    migrationMappings.put( "SCHENAMENAMEFIELD", "SCHEMANAMEFIELD" );
+    migrationMappings.put( "DATABASE_FIELDNAME", "DATABASE_FIELD_NAME" );
+    migrationMappings.put( "STREAM_FIELDNAME", "DATABASE_STREAM_NAME" );
+  }
+
   /**
-   * Migrate mapping from 7.0 version.
+   * Migrate mapping from previous versions.
    */
-  public static void migrateFrom70( Map<TargetStepAttribute, SourceStepField> targetSourceMapping ) {
-    /*
-     * Need to convert GetTableNamesMeta.SCHENAMENAMEFIELD to the GetTableNamesMeta.SCHEMANAMEFIELD
-     */
-    for ( TargetStepAttribute target : new ArrayList<>( targetSourceMapping.keySet() ) ) {
-      if ( "SCHENAMENAMEFIELD".equals( target.getAttributeKey() ) ) {
-        SourceStepField so = targetSourceMapping.remove( target );
-        TargetStepAttribute target2 =
-            new TargetStepAttribute( target.getStepname(), "SCHEMANAMEFIELD", target.isDetail() );
-        targetSourceMapping.put( target2, so );
+  public static void migrate( Map<TargetStepAttribute, SourceStepField> targetSourceMapping ) {
+    for ( TargetStepAttribute oldTarget : new ArrayList<>( targetSourceMapping.keySet() ) ) {
+      for ( Map.Entry<String, String> mapping : migrationMappings.entrySet() ) {
+        if ( mapping.getKey().equals( oldTarget.getAttributeKey() ) ) {
+          SourceStepField so = targetSourceMapping.remove( oldTarget );
+          TargetStepAttribute newTarget = new TargetStepAttribute( oldTarget.getStepname(), mapping.getValue(), oldTarget.isDetail() );
+          targetSourceMapping.put( newTarget, so );
+        }
       }
     }
   }
