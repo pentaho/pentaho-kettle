@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-core</artifactId>
-  <version>9.1.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Core</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -41,7 +41,7 @@
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
     <xmlunit.version>1.5</xmlunit.version>
     <joda.version>2.10.2</joda.version>
-    <encryption-support.version>9.1.0.0-SNAPSHOT</encryption-support.version>
+    <encryption-support.version>9.2.0.0-SNAPSHOT</encryption-support.version>
   </properties>
 
   <dependencies>

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>ms-access</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>ms-access-plugins-ui</artifactId>

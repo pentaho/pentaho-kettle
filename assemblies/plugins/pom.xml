@@ -11,7 +11,7 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -25,22 +25,22 @@
     <kettle-gpload-plugin.version>${project.version}</kettle-gpload-plugin.version>
     <kettle-hl7-plugin.version>${project.version}</kettle-hl7-plugin.version>
     <kettle-palo-plugin.version>${project.version}</kettle-palo-plugin.version>
-    <pdi-google-analytics-plugin.version>9.1.0.0-SNAPSHOT</pdi-google-analytics-plugin.version>
-    <pdi-salesforce-plugin.version>9.1.0.0-SNAPSHOT</pdi-salesforce-plugin.version>
+    <pdi-google-analytics-plugin.version>9.2.0.0-SNAPSHOT</pdi-google-analytics-plugin.version>
+    <pdi-salesforce-plugin.version>9.2.0.0-SNAPSHOT</pdi-salesforce-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
-    <pdi-xml-plugin.version>9.1.0.0-SNAPSHOT</pdi-xml-plugin.version>
-    <pdi-json-plugin.version>9.1.0.0-SNAPSHOT</pdi-json-plugin.version>
-    <pdi-sap-plugin.version>9.1.0.0-SNAPSHOT</pdi-sap-plugin.version>
-    <big-data-plugin.version>9.1.0.0-SNAPSHOT</big-data-plugin.version>
-    <pentaho-cassandra-plugin.version>9.1.0.0-SNAPSHOT</pentaho-cassandra-plugin.version>
+    <pdi-xml-plugin.version>9.2.0.0-SNAPSHOT</pdi-xml-plugin.version>
+    <pdi-json-plugin.version>9.2.0.0-SNAPSHOT</pdi-json-plugin.version>
+    <pdi-sap-plugin.version>9.2.0.0-SNAPSHOT</pdi-sap-plugin.version>
+    <big-data-plugin.version>9.2.0.0-SNAPSHOT</big-data-plugin.version>
+    <pentaho-cassandra-plugin.version>9.2.0.0-SNAPSHOT</pentaho-cassandra-plugin.version>
     <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
-    <pdi-platform-utils-plugin.version>9.1.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
-    <vertica-bulkloader-plugin.version>9.1.0.0-SNAPSHOT</vertica-bulkloader-plugin.version>
-    <pdi-pur-plugin.version>9.1.0.0-SNAPSHOT</pdi-pur-plugin.version>
+    <pdi-platform-utils-plugin.version>9.2.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
+    <vertica-bulkloader-plugin.version>9.2.0.0-SNAPSHOT</vertica-bulkloader-plugin.version>
+    <pdi-pur-plugin.version>9.2.0.0-SNAPSHOT</pdi-pur-plugin.version>
   </properties>
 
   <dependencies>
