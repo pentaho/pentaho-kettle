@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -143,6 +143,10 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         <td>Request was processed.</td>
       </tr>
       <tr>
+        <td>404</td>
+        <td>Not found: Job not found</td>
+      </tr>
+      <tr>
         <td>500</td>
         <td>Internal server error occurs during request processing.</td>
       </tr>
@@ -167,6 +171,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
     response.setStatus( HttpServletResponse.SC_OK );
 
     PrintWriter out = response.getWriter();
+
     if ( useXML ) {
       response.setContentType( "text/xml" );
       response.setCharacterEncoding( Const.XML_ENCODING );
@@ -264,6 +269,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         }
       } else {
         String message = BaseMessages.getString( PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName );
+        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
         if ( useXML ) {
           out.println( new WebResult( WebResult.STRING_ERROR, message ) );
         } else {
@@ -271,10 +277,10 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           out.println( "<a href=\""
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
-          response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
         }
       }
     } catch ( Exception ex ) {
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
           PKG, "StartJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
@@ -283,7 +289,6 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         out.println( "<pre>" );
         out.println( Encode.forHtml( Const.getStackTracker( ex ) ) );
         out.println( "</pre>" );
-        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
       }
     }
 
