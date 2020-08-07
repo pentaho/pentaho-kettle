@@ -143,6 +143,10 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         <td>Request was processed.</td>
       </tr>
       <tr>
+        <td>400</td>
+        <td>Bad Request: Mandatory parameter name missing</td>
+      </tr>
+      <tr>
         <td>404</td>
         <td>Not found: Job not found</td>
       </tr>
@@ -171,6 +175,35 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
     response.setStatus( HttpServletResponse.SC_OK );
 
     PrintWriter out = response.getWriter();
+
+    //jobName is a mandatory parameter
+    if ( jobName == null ) {
+      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+      String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobNameIsMandatory" );
+      if ( useXML ) {
+        response.setContentType( "text/xml" );
+        response.setCharacterEncoding( Const.XML_ENCODING );
+        out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      } else {
+        response.setContentType( "text/html;charset=UTF-8" );
+        out.println( "<HTML>" );
+        out.println( "<HEAD>" );
+        out.println( "<TITLE>Start job</TITLE>" );
+        out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+        out.println( "</HEAD>" );
+        out.println( "<BODY>" );
+        out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
+        out.println( "<a href=\""
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+        out.println( "</BODY>" );
+        out.println( "</HTML>" );
+      }
+      return;
+    }
 
     if ( useXML ) {
       response.setContentType( "text/xml" );
