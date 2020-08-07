@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -730,9 +730,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
       while ( ( first && !execPerRow )
-        || ( execPerRow && rows != null && iteration <= rows.size() && result.getNrErrors() == 0 ) ) {
+        || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
         first = false;
-
         // Clear the result rows of the result
         // Otherwise we double the amount of rows every iteration in the simple cases.
         //
@@ -740,7 +739,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           result.getRows().clear();
         }
 
-        if ( rows != null && execPerRow && !rows.isEmpty() ) {
+        if ( rows != null && execPerRow ) {
           resultRow = rows.get( iteration );
         } else {
           resultRow = null;
@@ -818,9 +817,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           } else {
             // Just pass a single row
             List<RowMetaAndData> newList = new ArrayList<RowMetaAndData>();
-            if ( resultRow != null ) {
-              newList.add( resultRow );
-            }
+            newList.add( resultRow );
             sourceRows = newList;
           }
 

@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.util.StringUtil;
@@ -85,6 +86,7 @@ public class MultipleSelectionCombo extends Composite {
       public void mouseDown( MouseEvent event ) {
         super.mouseDown( event );
         if ( floatShell == null || floatShell.isDisposed() ) {
+          closeOtherFloatShells();
           initFloatShell();
         } else {
           closeShellAndUpdate();
@@ -156,10 +158,23 @@ public class MultipleSelectionCombo extends Composite {
             updateTagsUI( calculateTotalHeight( ref ) );
           }
 
+          comboSelection = new int[]{};
           floatShell.dispose();
         }
       }
     } );
+  }
+
+  private void closeOtherFloatShells() {
+    Composite parent = this.getParent();
+
+    while ( !( parent instanceof Shell ) ) {
+      Arrays.stream( parent.getChildren() )
+              .filter( c -> c instanceof MultipleSelectionCombo )
+              .forEach( c -> ((MultipleSelectionCombo) c).triggerDropdownClose() );
+
+      parent = parent.getParent();
+    }
   }
 
   private void addRemovedTagBackToListUI( String labelText ) {
@@ -278,6 +293,17 @@ public class MultipleSelectionCombo extends Composite {
       }
     } );
 
+    final Listener listener = event -> floatShell.dispose();
+
+    Composite scroll = findScrollingParent();
+
+    if ( scroll != null ) {
+      scroll.getVerticalBar().addListener( SWT.Selection, listener );
+    }
+
+    this.getShell().addListener( SWT.Resize, listener );
+    this.getShell().addListener( SWT.Move, listener );
+
     floatShell.open();
   }
 
@@ -327,6 +353,16 @@ public class MultipleSelectionCombo extends Composite {
     if ( !StringUtil.isEmpty( selectedItems ) ) {
       this.selectedItemLabels = selectedItems.split( "," );
       bindDataToUI();
+    }
+  }
+
+  /**
+   * Public interface for other dropdowns or components
+   * to trigger open dropdowns to close
+   */
+  public void triggerDropdownClose() {
+    if ( floatShell != null && !floatShell.isDisposed() ) {
+      floatShell.dispose();
     }
   }
 
