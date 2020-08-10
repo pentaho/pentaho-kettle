@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -253,13 +253,12 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     if ( trans != null ) {
       if ( useXML ) {
         try {
-          OutputStream out = null;
-          byte[] data = null;
+          OutputStream out;
+          byte[] data;
           String logId = trans.getLogChannelId();
           boolean finishedOrStopped = trans.isFinishedOrStopped();
           boolean sendResultXmlWithStatus = "Y".equalsIgnoreCase( request.getParameter( SEND_RESULT ) );
-          boolean dontUseCache = sendResultXmlWithStatus;
-          if ( finishedOrStopped && ( data = cache.get( logId, startLineNr ) ) != null && !dontUseCache ) {
+          if ( finishedOrStopped && ( data = cache.get( logId, startLineNr ) ) != null && !sendResultXmlWithStatus ) {
             response.setContentLength( XML_HEADER.length + data.length );
             out = response.getOutputStream();
             out.write( XML_HEADER );
@@ -311,7 +310,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             out.write( XML_HEADER );
             out.write( data );
             out.flush();
-            if ( finishedOrStopped && ( transStatus.isFinished() || transStatus.isStopped() ) && logId != null && !dontUseCache ) {
+            if ( finishedOrStopped && ( transStatus.isFinished() || transStatus.isStopped() ) && logId != null && !sendResultXmlWithStatus ) {
               cache.put( logId, xml, startLineNr );
             }
           }
@@ -375,7 +374,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableFirstColumn\">" + Encode.forHtml( id ) + "</td>" );
           out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell\" id=\"statusColor\" style=\"font-weight: bold;\">" + Encode.forHtml( trans.getStatus() ) + "</td>" );
           String dateStr = XMLHandler.date2string( trans.getLogDate() );
-          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableLastColumn\">" + dateStr.substring( 0, dateStr.indexOf( ' ' ) ) + "</td>" );
+          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableLastColumn\">" +  ( trans.getLogDate() == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) ) ) + "</td>" );
           out.print( "</tr>" );
           out.print( "</table>" );
           out.print( "</div>" );
@@ -419,10 +418,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             StepInterface step = trans.getRunThread( i );
             if ( ( step.isRunning() ) || step.getStatus() != StepExecutionStatus.STATUS_EMPTY ) {
               StepStatus stepStatus = new StepStatus( step );
-              boolean snif = false;
-              String htmlString = "";
               if ( step.isRunning() && !step.isStopped() && !step.isPaused() ) {
-                snif = true;
                 String sniffLink =
                     " <a href=\""
                         + convertContextPath( SniffStepServlet.CONTEXT_PATH ) + "?trans="
@@ -435,7 +431,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
               String rowClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow";
               String cellClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
-              htmlString = "<tr class=\"" + rowClass + "\"><td class=\"cellTableCell cellTableFirstColumn " + cellClass + "\">" + stepStatus.getStepname() + "</td>"
+              String htmlString = "<tr class=\"" + rowClass + "\"><td class=\"cellTableCell cellTableFirstColumn " + cellClass + "\">" + stepStatus.getStepname() + "</td>"
                   + "<td class=\"cellTableCell " + cellClass + "\">" + stepStatus.getCopy() + "</td>"
                   + "<td class=\"cellTableCell " + cellClass + "\">" + stepStatus.getLinesRead() + "</td>"
                   + "<td class=\"cellTableCell " + cellClass + "\">" + stepStatus.getLinesWritten() + "</td>"

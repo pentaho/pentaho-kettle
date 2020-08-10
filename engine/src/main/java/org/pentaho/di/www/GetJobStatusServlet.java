@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -244,8 +244,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
       if ( useXML ) {
         try {
-          OutputStream out = null;
-          byte[] data = null;
+          OutputStream out;
+          byte[] data;
           String logId = job.getLogChannelId();
           boolean finishedOrStopped = job.isFinished() || job.isStopped();
           if ( finishedOrStopped && ( data = cache.get( logId, startLineNr ) ) != null ) {
@@ -348,7 +348,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableFirstColumn\">" + Const.NVL( Encode.forHtml( id ), "" ) + "</td>" );
           out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell\" id=\"statusColor\" style=\"font-weight: bold;\">" + job.getStatus() + "</td>" );
           String dateStr = XMLHandler.date2string( job.getLogDate() );
-          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableLastColumn\">" + dateStr.substring( 0, dateStr.indexOf( ' ' ) ) + "</td>" );
+          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableLastColumn\">" +  ( job.getLogDate() == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) ) ) + "</td>" );
           out.print( "</tr>" );
           out.print( "</table>" );
           out.print( "</div>" );
@@ -427,7 +427,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
           PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id ) ) );
       } else {
-        out.println( "<H1>Job " + Encode.forHtml( "\'" + jobName + "\'" ) + " could not be found.</H1>" );
+        out.println( "<H1>Job " + Encode.forHtml( "'" + jobName + "'" ) + " could not be found.</H1>" );
         out.println( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
           + BaseMessages.getString( PKG, "JobStatusServlet.BackToStatusPage" ) + "</a><p>" );

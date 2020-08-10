@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -409,7 +409,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
             + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
             + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
             + "id=\"cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">"
-            + ( trans.getLogDate() == null ? "-" : dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) ) + "</td>" );
+            + ( trans.getLogDate() == null ? "-" : dateStr.substring( dateStr.indexOf( ' ' ) ) ) + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table></table>" );
@@ -512,7 +512,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
             + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
             + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
             + "id=\"j-cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">"
-            + ( job.getLogDate() == null ? "-" : dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) ) + "</td>" );
+            + ( job.getLogDate() == null ? "-" : dateStr.substring( dateStr.indexOf( ' ' ) ) ) + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table></table>" );
@@ -534,7 +534,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       //
       SlaveServerConfig serverConfig = getTransformationMap().getSlaveServerConfig();
       if ( serverConfig != null ) {
-        String maxLines = "";
+        String maxLines;
         if ( serverConfig.getMaxLogLines() == 0 ) {
           maxLines = BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
         } else {
@@ -551,7 +551,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
         // The max age of log lines
         //
-        String maxAge = "";
+        String maxAge;
         if ( serverConfig.getMaxLogTimeoutMinutes() == 0 ) {
           maxAge = BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
         } else {
@@ -568,7 +568,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
         // The max age of stale objects
         //
-        String maxObjAge = "";
+        String maxObjAge;
         if ( serverConfig.getObjectTimeoutMinutes() == 0 ) {
           maxObjAge = BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
         } else {
