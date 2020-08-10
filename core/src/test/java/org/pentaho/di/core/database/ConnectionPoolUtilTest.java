@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,11 +43,14 @@ import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.logging.Logger;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.any;
@@ -147,6 +150,33 @@ public class ConnectionPoolUtilTest implements Driver {
     connectionName = ConnectionPoolUtil.buildPoolName( dbMeta, "" );
     assertTrue( connectionName.equals( "CP2pentaholocal3306" ) );
   }
+
+  @Test
+  public void testGetDataSourceName() {
+    ConnectionPoolUtil connectionPoolUtil = new ConnectionPoolUtil();
+    DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
+    String dbMetaName = UUID.randomUUID().toString();
+    String dbMetaDatabase = UUID.randomUUID().toString();
+    String dbMetaHostname = UUID.randomUUID().toString();
+    String dbMetaPort = UUID.randomUUID().toString();
+    String partitionId = UUID.randomUUID().toString();
+
+    when( dbMetaMock.getName() ).thenReturn( dbMetaName );
+    when( dbMetaMock.getDatabaseName() ).thenReturn( dbMetaDatabase );
+    when( dbMetaMock.getHostname() ).thenReturn( dbMetaHostname );
+    when( dbMetaMock.getDatabasePortNumberString() ).thenReturn( dbMetaPort );
+
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaName ) ) ).thenReturn( dbMetaName );
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaDatabase ) ) ).thenReturn( dbMetaDatabase );
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaHostname ) ) ).thenReturn( dbMetaHostname );
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaPort ) ) ).thenReturn( dbMetaPort );
+
+    String dataSourceNameExpected = dbMetaName + dbMetaDatabase + dbMetaHostname + dbMetaPort + partitionId;
+    String dataSourceName = connectionPoolUtil.getDataSourceName( dbMetaMock, partitionId );
+
+    assertEquals( dataSourceNameExpected, dataSourceName );
+  }
+
 
   @Test
   public void testConfigureDataSource() throws KettleDatabaseException {

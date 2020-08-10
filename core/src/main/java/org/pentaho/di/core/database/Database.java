@@ -456,6 +456,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       } else {
         if ( databaseMeta.isUsingConnectionPool() ) {
           String name = databaseMeta.getName();
+          if ( databaseMeta.isNeedUpdate() ) {
+            dsp.invalidateNamedDataSource( name, DatasourceType.POOLED );
+            databaseMeta.setNeedUpdate( false );
+          }
           try {
             try {
               this.connection = dsp.getNamedDataSource( name, DatasourceType.POOLED ).getConnection();
