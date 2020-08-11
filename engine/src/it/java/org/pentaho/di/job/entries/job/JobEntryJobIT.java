@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.job.entries.job;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
@@ -41,9 +41,23 @@ import org.pentaho.di.www.SlaveServerJobStatus;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
+import java.io.IOException;
+
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
@@ -65,18 +79,18 @@ public class JobEntryJobIT extends JobEntryJob {
           + "<webresult><result>OK</result><id>0</id></webresult>";
   private final String LOG = "Log";
 
-  private Path file;
+  private static Path FILE;
 
   @BeforeClass
   public static void setUpBeforeClass() {
     KettleLogStore.init();
   }
 
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
     // Wait for LogChannelFileWriter to close outputstream
     Thread.sleep( 1000 );
-    FileUtils.forceDelete( file.toFile() );
+    FileUtils.forceDelete( FILE.toFile() );
   }
 
   @Test
@@ -105,10 +119,10 @@ public class JobEntryJobIT extends JobEntryJob {
     when( status.getResult() ).thenReturn( mock( Result.class ) );
     when( status.getLoggingString() ).thenReturn( LOG );
 
-    file = Files.createTempFile( "file", "" );
+    FILE = Files.createTempFile( "file", "" );
 
     doReturn( LOG_FILE_NAME ).when( job ).getLogFilename();
-    doReturn( file.toString() ).when( job ).environmentSubstitute( LOG_FILE_NAME );
+    doReturn( FILE.toString() ).when( job ).environmentSubstitute( LOG_FILE_NAME );
     doReturn( REMOTE_SLAVE_SERVER_NAME ).when( job ).environmentSubstitute( REMOTE_SLAVE_SERVER_NAME );
     doReturn( jobMeta ).when( job ).getJobMeta( any( Repository.class ), any( VariableSpace.class ) );
     doNothing().when( job ).copyVariablesFrom( anyObject() );
@@ -127,7 +141,33 @@ public class JobEntryJobIT extends JobEntryJob {
     job.setParentJobMeta( parentJobMeta );
 
     job.execute( new Result(), 0 );
-    String result = Files.lines( file ).collect( Collectors.joining( "" ) );
+    String result = Files.lines( FILE ).collect( Collectors.joining( "" ) );
     assertTrue( result.contains( LOG ) );
   }
+
+  @Test
+  public void testPDI18776() throws KettleException, IOException {
+    KettleEnvironment.init();
+    String path = getClass().getResource( "Random_value.ktr" ).getPath();
+    Variables variables = new Variables();
+    TransMeta transMeta = new TransMeta( path, variables );
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( null );
+    trans.startThreads();
+    trans.waitUntilFinished();
+
+    String childJobStep = trans.getSteps().get( 1 ).step.toString();
+    assertTrue( childJobStep.contains( "Dummy" ) );
+  }
+
+  @BeforeClass
+  public static void init() throws Exception {
+    KettleClientEnvironment.init();
+    PluginRegistry.addPluginType( StepPluginType.getInstance() );
+    PluginRegistry.init();
+    if ( !Props.isInitialized() ) {
+      Props.init( 0 );
+    }
+  }
+
 }
