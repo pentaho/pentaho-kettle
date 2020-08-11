@@ -16,3 +16,4 @@ bin
 routes.yml
 
 rebel.xml
+*.java

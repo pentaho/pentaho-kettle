@@ -213,7 +213,15 @@ public class GPLoad extends BaseStep implements StepInterface {
     if ( Utils.isEmpty( delimiter ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DelimiterMissing" ) );
     }
-
+    if (delimiter.startsWith("\\u")) {
+      try {
+        int codepoint = Integer.parseInt(delimiter.substring(2), 16);
+        char[] ch = Character.toChars(codepoint);
+        delimiter = String.valueOf(ch);
+      } catch (Exception ex) {
+        throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DelimiterInvalidUnicode" ), ex );
+      }
+    }
     // Now we start building the contents
     StringBuffer contents = new StringBuffer( 1000 );
 
@@ -280,8 +288,15 @@ public class GPLoad extends BaseStep implements StepInterface {
     // See also page 155 for formatting information & escaping
     // delimiter validation should have been perfomed
     contents.append( GPLoad.INDENT ).append( "- FORMAT: TEXT" ).append( Const.CR );
-    contents.append( GPLoad.INDENT ).append( "- DELIMITER: " ).append( GPLoad.SINGLE_QUOTE ).append( delimiter )
-        .append( GPLoad.SINGLE_QUOTE ).append( Const.CR );
+//    contents.append( GPLoad.INDENT ).append( "- DELIMITER: " ).append( GPLoad.SINGLE_QUOTE ).append( delimiter )
+//        .append( GPLoad.SINGLE_QUOTE ).append( Const.CR );
+    String delimiter_quote = GPLoad.SINGLE_QUOTE;
+    if(delimiter.startsWith("\\u"))
+      {//unicode delimiter should double quoted
+        delimiter_quote = String.valueOf(GPLoad.DOUBLE_QUOTE);
+        contents.append(GPLoad.INDENT).append("- DELIMITER: ").append(delimiter_quote).append(delimiter)
+                .append(delimiter_quote).append(Const.CR);
+      }
 //  if ( !Utils.isEmpty( meta.getNullAs() ) ) {
     if ( !Utils.isEmpty( meta.getNullAs() ) ) {
       contents.append( GPLoad.INDENT ).append( "- NULL_AS: " ).append( GPLoad.SINGLE_QUOTE ).append( meta.getNullAs() ).append( GPLoad.SINGLE_QUOTE ).append( Const.CR );
