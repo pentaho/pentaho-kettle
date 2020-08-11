@@ -177,6 +177,18 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
    <td>Request was processed.</td>
    </tr>
    <tr>
+   <td>400</td>
+   <td>Bad Request: Mandatory parameter name missing</td>
+   </tr>
+   <tr>
+   <td>404</td>
+   <td>Not found: Job not found</td>
+   </tr>
+   <tr>
+   <td>409</td>
+   <td>Conflicting: multiple jobs with the same name. must provide id</td>
+   </tr>
+   <tr>
    <td>500</td>
    <td>Internal server error occurs during request processing.</td>
    </tr>
