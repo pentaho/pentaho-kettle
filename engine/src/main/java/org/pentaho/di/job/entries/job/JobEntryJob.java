@@ -730,7 +730,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
       while ( ( first && !execPerRow )
-        || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
+        || ( execPerRow && rows != null && iteration <= rows.size() && result.getNrErrors() == 0 ) ) {
+        // PDI-18776: '<' was changed to '<=' to make sure we iterate once in case Execute Every Input Row checkbox is checked
+
         first = false;
         // Clear the result rows of the result
         // Otherwise we double the amount of rows every iteration in the simple cases.
@@ -739,8 +741,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           result.getRows().clear();
         }
 
-        if ( rows != null && execPerRow ) {
-          resultRow = rows.get( iteration );
+        // PDI-18776: Get the result row from rows based on iteration index if rows is not empty otherwise result row is null
+        if ( rows != null && execPerRow && !rows.isEmpty() ) {
+          // This check is for avoiding OutOfBoundException in next statement as iteration <= rows.size() condition is not leaving while loop
+          // after processing the last row. Otherwise if iteration == rows.size() indicates that we processed already the last row and just need to break from the loop
+          if ( iteration != rows.size() ) {
+            resultRow = rows.get( iteration );
+          } else {
+            break;
+          }
         } else {
           resultRow = null;
         }
@@ -817,7 +826,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           } else {
             // Just pass a single row
             List<RowMetaAndData> newList = new ArrayList<RowMetaAndData>();
-            newList.add( resultRow );
+            if ( resultRow != null ) {
+              newList.add( resultRow );
+            }
             sourceRows = newList;
           }
 
