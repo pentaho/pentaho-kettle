@@ -840,9 +840,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         try {
           initOutput();
         } catch ( Exception e ) {
-          logError( "Couldn't open file "
-              + KettleVFS.getFriendlyURI( getParentVariableSpace().environmentSubstitute( meta.getFileName() ) )
-              + "." + getParentVariableSpace().environmentSubstitute( meta.getExtension() ), e );
+          if ( getParentVariableSpace() == null ) {
+            logError( "Couldn't open file "
+                + KettleVFS.getFriendlyURI( meta.getFileName() ) + "." + meta.getExtension(), e );
+          } else {
+            logError( "Couldn't open file "
+                + KettleVFS.getFriendlyURI( getParentVariableSpace().environmentSubstitute( meta.getFileName() ) )
+                + "." + getParentVariableSpace().environmentSubstitute( meta.getExtension() ), e );
+          }
           setErrors( 1L );
           stopAll();
         }
