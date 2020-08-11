@@ -296,13 +296,11 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
         String logging = KettleLogStore.getAppender().getBuffer( job.getLogChannelId(), false ).toString();
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
           PKG, "RunJobServlet.Error.ErrorExecutingJob", serverConfig.getRepositoryId(), logging ) ) );
-        return;
       }
     } catch ( IdNotFoundException idEx ) {
       response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
       out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
         PKG, "RunJobServlet.Error.UnableToRunJob", serverConfig.getRepositoryId() ) ) );
-      return;
     } catch ( Exception ex ) {
       if ( ex.getMessage().contains( UNAUTHORIZED_ACCESS_TO_REPOSITORY ) ) {
         response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
