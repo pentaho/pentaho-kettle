@@ -52,7 +52,8 @@ public class DatabaseJoinIT {
           trans.startThreads();
           trans.waitUntilFinished();
         } catch ( KettleException e ) {
-          e.printStackTrace();
+          //should not occur
+          fail( "Something went wrong" );
         }
       }
     } );
@@ -65,7 +66,8 @@ public class DatabaseJoinIT {
       // (It ends with errors because there is a step that fails on purpose)
       assertEquals( trans.getStatus(), "Finished (with errors)" );
     } catch ( InterruptedException e ) {
-      e.printStackTrace();
+      //should not occur
+      fail( "Something went wrong" );
     } finally {
       //Clean db files created by running the transformation
       File db = new File( "TESTING.h2.db" );
