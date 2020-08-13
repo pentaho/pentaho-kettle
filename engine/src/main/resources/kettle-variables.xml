@@ -562,18 +562,6 @@
   </kettle-variable>
 
   <kettle-variable>
-    <description>This environment variable is used to define the minimum PUC user password length. The default password length is 0.</description>
-    <variable>PUC_USER_PASSWORD_LENGTH</variable>
-    <default-value>0</default-value>
-  </kettle-variable>
-
-  <kettle-variable>
-    <description>This environment variable is used to require the use of at least one special character in the PUC user password. This is set to false by default.</description>
-    <variable>PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER</variable>
-    <default-value>false</default-value>
-  </kettle-variable>
-
-  <kettle-variable>
     <description>This environment variable is used to enable the checking of zip bomb. This is set to false by default.</description>
     <variable>KETTLE_XLSX_ZIP_BOMB_CHECK</variable>
     <default-value>false</default-value>
