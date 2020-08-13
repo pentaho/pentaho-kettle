@@ -1373,26 +1373,6 @@ public class Const {
   }
 
   /**
-   * <p>This environment variable is used to define the minimum PUC user password length. The default password length is 0.</p>
-   */
-  private static final String PUC_USER_PASSWORD_LENGTH = "PUC_USER_PASSWORD_LENGTH";
-  private static final String DEFAULT_PASSWORD_LENGTH = "0";
-  public static int getPucUserPasswordLength() {
-    String passwordLengthStr = System.getProperty( PUC_USER_PASSWORD_LENGTH, DEFAULT_PASSWORD_LENGTH );
-    return Integer.parseInt( passwordLengthStr );
-  }
-
-  /**
-   * <p>This environment variable is used to require the use of at least one special character in the PUC user password. This is set to false by default.</p>
-   */
-  private static final String PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER = "PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER";
-  private static final String DEFAULT_SPEC_CHARACTER_USE = "false";
-  public static boolean isPassSpecialCharRequired() {
-    String specialCharReqStr = System.getProperty( PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER, DEFAULT_SPEC_CHARACTER_USE );
-    return Boolean.valueOf( specialCharReqStr );
-  }
-
-  /**
    * <p>This environment is used to specify how many attempts before failing to read an XML from within a Zip file
    * while multy-thread execution and using XMLHandler.</p>
    */
