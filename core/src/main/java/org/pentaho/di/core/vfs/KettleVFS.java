@@ -33,8 +33,6 @@ import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.local.LocalFile;
-import org.pentaho.di.connections.ConnectionDetails;
-import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -54,21 +52,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Comparator;
-import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class KettleVFS {
   public static final String TEMP_DIR = System.getProperty( "java.io.tmpdir" );
   public static final String CONNECTION = "connection";
+
+  private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
+
   private static final KettleVFS kettleVFS = new KettleVFS();
+  private final DefaultFileSystemManager fsm;
   private static final int TIMEOUT_LIMIT = 9000;
   private static final int TIME_TO_SLEEP_STEP = 50;
   private static final String PROVIDER_PATTERN_SCHEME = "^[\\w\\d]+://(.*)";
-  private static final String DEFAULT_S3_CONFIG_PROPERTY = "defaultS3Config";
-  private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
-  private static Supplier<ConnectionManager> connectionManager = ConnectionManager::getInstance;
+
   private static VariableSpace defaultVariableSpace;
 
   static {
@@ -77,8 +75,6 @@ public class KettleVFS {
     defaultVariableSpace = new Variables();
     defaultVariableSpace.initializeVariablesFrom( null );
   }
-
-  private final DefaultFileSystemManager fsm;
 
   private KettleVFS() {
     fsm = new ConcurrentFileSystemManager();
@@ -109,6 +105,10 @@ public class KettleVFS {
     } ) );
   }
 
+  public FileSystemManager getFileSystemManager() {
+    return fsm;
+  }
+
   public static KettleVFS getInstance() {
     return kettleVFS;
   }
@@ -124,7 +124,6 @@ public class KettleVFS {
   public static FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions ) throws KettleFileException {
     return getFileObject( vfsFilename, defaultVariableSpace, fsOptions );
   }
-
   // IMPORTANT:
   // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
   // In that case, VFS doesn't parse the file correctly.
@@ -152,8 +151,7 @@ public class KettleVFS {
       //Waiting condition - PPP-4374:
       //We have to check for hasScheme even if scheme is null because that scheme could not
       //be available by getScheme at the time we validate our scheme flag ( Kitchen loading problem )
-      //So we check if - even it has not a scheme - our vfsFilename has a possible scheme format
-      // (PROVIDER_PATTERN_SCHEME)
+      //So we check if - even it has not a scheme - our vfsFilename has a possible scheme format (PROVIDER_PATTERN_SCHEME)
       //If it does, then give it some time and tries to load. It stops when timeout is up or a scheme is found.
       int timeOut = TIMEOUT_LIMIT;
       if ( hasSchemePattern( vfsFilename, PROVIDER_PATTERN_SCHEME ) ) {
@@ -228,14 +226,15 @@ public class KettleVFS {
   }
 
   /**
-   * Private method for stripping password from filename when a FileObject can not be obtained.
-   * getFriendlyURI(FileObject) or getFriendlyURI(String) are the public methods.
+   * Private method for stripping password from filename when a FileObject
+   * can not be obtained.
+   * getFriendlyURI(FileObject) or getFriendlyURI(String) are the public
+   * methods.
    */
   private static String cleanseFilename( String vfsFilename ) {
     return vfsFilename.replaceAll( ":[^:@/]+@", ":<password>@" );
   }
 
-  @SuppressWarnings( "squid:S108" )
   private static FileSystemOptions buildFsOptions( VariableSpace varSpace, FileSystemOptions sourceOptions,
                                                    String vfsFilename, String scheme ) throws IOException {
     if ( varSpace == null || vfsFilename == null ) {
@@ -251,30 +250,12 @@ public class KettleVFS {
     String[] varList = varSpace.listVariables();
 
     for ( String var : varList ) {
-      if ( scheme.equals( "s3" ) || scheme.equals( "s3n" ) || scheme.equals( "s3a" ) ) {
-        try {
-          Optional<? extends ConnectionDetails> defaultS3Connection =
-            connectionManager.get().getConnectionDetailsByScheme( "s3" ).stream().filter(
-              connectionDetails -> connectionDetails.getProperties().get( DEFAULT_S3_CONFIG_PROPERTY ) != null
-                && connectionDetails.getProperties().get( DEFAULT_S3_CONFIG_PROPERTY ).equalsIgnoreCase( "true" ) )
-              .findFirst();
-
-          if ( defaultS3Connection.isPresent() ) {
-            String vfsHelperUrl = vfsFilename.replaceFirst( scheme, "s3" );
-            fsOptions = VFSHelper.getOpts( vfsHelperUrl, defaultS3Connection.get().getName() );
-          }
-        } catch ( Exception ignored ) {
-          // Ignore the exception, it's OK if we can't find a default S3 connection.
-        }
-      }
-
       if ( var.equalsIgnoreCase( CONNECTION ) && varSpace.getVariable( var ) != null ) {
         FileSystemOptions fileSystemOptions = VFSHelper.getOpts( vfsFilename, varSpace.getVariable( var ) );
         if ( fileSystemOptions != null ) {
           return fileSystemOptions;
         }
       }
-
       if ( var.startsWith( "vfs." ) ) {
         String param = configBuilder.parseParameterName( var, scheme );
         String varScheme = KettleGenericFileSystemConfigBuilder.extractScheme( var );
@@ -567,8 +548,8 @@ public class KettleVFS {
   }
 
   /**
-   * Check if filename starts with one of the known protocols like file: zip: ram: smb: jar: etc. If yes, return true
-   * otherwise return false
+   * Check if filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
+   * If yes, return true otherwise return false
    *
    * @param vfsFileName
    * @return boolean
@@ -595,17 +576,6 @@ public class KettleVFS {
     }
   }
 
-  /**
-   * @see StandardFileSystemManager#freeUnusedResources()
-   */
-  public static void freeUnusedResources() {
-    ( (StandardFileSystemManager) getInstance().getFileSystemManager() ).freeUnusedResources();
-  }
-
-  public FileSystemManager getFileSystemManager() {
-    return fsm;
-  }
-
   public void reset() {
     defaultVariableSpace = new Variables();
     defaultVariableSpace.initializeVariablesFrom( null );
@@ -616,6 +586,13 @@ public class KettleVFS {
     } catch ( FileSystemException ignored ) {
     }
 
+  }
+
+  /**
+   * @see StandardFileSystemManager#freeUnusedResources()
+   */
+  public static void freeUnusedResources() {
+    ( (StandardFileSystemManager) getInstance().getFileSystemManager() ).freeUnusedResources();
   }
 
   public enum Suffix {
