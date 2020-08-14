@@ -24,7 +24,10 @@ package org.pentaho.di.job.entries.shell;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.verify;
-import junit.framework.Assert;
+import java.util.Map;
+
+import org.apache.commons.lang.RandomStringUtils;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,9 +35,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class JobEntryShellTest {
-
+  private static final String TEST_MAX_ARG_LENGTH_VAR = "TEST_MAX_ARG_LENGTH_VAR";
+  private static final String TEST_MAX_ARG_LENGTH_EXCEEDING_VAR = "TEST_MAX_ARG_LENGTH_EXCEEDING_VAR";
+  
   @Mock
   private JobEntryShell jobEntryShellMock;
+  
+  private JobEntryShell jobEntryShell = new JobEntryShell();
 
   @Before
   public void setUp() {
@@ -61,4 +68,21 @@ public class JobEntryShellTest {
     Assert.assertFalse( assertionFailedMessage, content.contains( "\r" ) );
   }
 
+  /**
+   * Verifies whether variables having value exceeding the maximum argument length are excluded or not.
+   *
+   * @see <a href="https://jira.pentaho.com/browse/PDI-18803">PDI-18803</a>
+   */
+  @Test
+  public void testPopulateProcessBuilderEnvironment() {
+    ProcessBuilder procBuilder = new ProcessBuilder();
+    Map<String, String> pbEnv = procBuilder.environment();
+    int maxArgStrLen = jobEntryShell.getMaxArgStrLen();
+    String validValue = RandomStringUtils.randomAscii( maxArgStrLen );
+    jobEntryShell.setVariable( TEST_MAX_ARG_LENGTH_VAR, validValue );
+    jobEntryShell.setVariable( TEST_MAX_ARG_LENGTH_EXCEEDING_VAR, RandomStringUtils.randomAscii( maxArgStrLen + 1 ) );
+    jobEntryShell.populateProcessBuilderEnvironment( procBuilder );
+    Assert.assertNull( "The process builder environment must not contains a variable which value exceeds the maximum allowed length.", pbEnv.get( TEST_MAX_ARG_LENGTH_EXCEEDING_VAR ) );
+    Assert.assertEquals( "Variable having a valid value must be present in the process builder environment after population.", validValue, pbEnv.get( TEST_MAX_ARG_LENGTH_VAR ) );
+  }
 }

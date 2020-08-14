@@ -1428,6 +1428,47 @@ public class Const {
     KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY;
 
   /**
+   * <p>
+   * A variable to configure the maximum number of characters of text that are allowed for a environment variable value to be added as argument to a system process executed by
+   * Kettle (i.e. by JobEntryShell)
+   * </p>
+   * <p>
+   * If not set or if the configured value is invalid, it defaults to {@value #KETTLE_MAX_ARG_STRLEN_DEFAULT}
+   * </p>
+   * <p>
+   * Check PDI-18803 for more details.
+   * </p>
+   *
+   * @see #KETTLE_MAX_ARG_STRLEN_DEFAULT
+   */
+  public static final String KETTLE_MAX_ARG_STRLEN = "KETTLE_MAX_ARG_STRLEN";
+
+  /**
+   * <p>
+   * The default value for the {@link #KETTLE_MAX_ARG_STRLEN} as a Integer.
+   * </p>
+   * <p>
+   * Check PDI-18803 for more details.
+   * </p>
+   *
+   * @see #KETTLE_MAX_ARG_STRLEN
+   */
+  public static final Integer KETTLE_MAX_ARG_STRLEN_DEFAULT = 2048;
+
+  /**
+   * <p>
+   * The default value for the {@link #KETTLE_MAX_ARG_STRLEN} as a String.
+   * </p>
+   * <p>
+   * Check PDI-18803 for more details.
+   * </p>
+   *
+   * @see #KETTLE_MAX_ARG_STRLEN
+   * @see #KETTLE_MAX_ARG_STRLEN_DEFAULT
+   */
+  public static final String KETTLE_MAX_ARG_STRLEN_DEFAULT_STRING = String.valueOf( KETTLE_MAX_ARG_STRLEN_DEFAULT );
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *

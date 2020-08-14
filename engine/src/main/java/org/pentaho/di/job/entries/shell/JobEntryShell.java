@@ -581,11 +581,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
       // Build the environment variable list...
       ProcessBuilder procBuilder = new ProcessBuilder( cmds );
-      Map<String, String> env = procBuilder.environment();
-      String[] variables = listVariables();
-      for ( int i = 0; i < variables.length; i++ ) {
-        env.put( variables[i], getVariable( variables[i] ) );
-      }
+      populateProcessBuilderEnvironment( procBuilder );
 
       if ( getWorkDirectory() != null && !Utils.isEmpty( Const.rtrim( getWorkDirectory() ) ) ) {
         String vfsFilename = environmentSubstitute( getWorkDirectory() );
@@ -659,6 +655,47 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       result.setResult( false );
     } else {
       result.setResult( true );
+    }
+  }
+
+  /**
+   * Adds the job variables which are compliant with the maximum size requirement to a process builder environment.
+   *
+   * @param procBuilder the process builder to populate.
+   */
+  @VisibleForTesting
+  void populateProcessBuilderEnvironment( ProcessBuilder procBuilder ) {
+    Map<String, String> env = procBuilder.environment();
+    String[] variables = listVariables();
+    int maxArgStrLen = getMaxArgStrLen();
+    String variable;
+    for ( int i = 0; i < variables.length; i++ ) {
+      variable = getVariable( variables[i] );
+      if ( variable != null && variable.length() <= maxArgStrLen ) {
+        env.put( variables[i], variable );
+        // PDI-12885
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "JobEntryShell.VariableAddedToProcessBuilderEnvironment", variables[i], variable.length(), variable ) );
+        }
+      } else {
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryShell.VariableSizeExceeded", variables[i], maxArgStrLen ) );
+        }
+      }
+    }
+  }
+
+  /**
+   * Gets the maximum number of characters of text that are allowed for an environment variable value to be added as argument to a system process.
+   *
+   * @return the maximum number of characters of text that are allowed for an environment variable to be added as argument to a system process.
+   */
+  int getMaxArgStrLen() {
+    String maxArgStrlenVariable = getVariable( Const.KETTLE_MAX_ARG_STRLEN, Const.KETTLE_MAX_ARG_STRLEN_DEFAULT_STRING );
+    try {
+      return Integer.parseInt( maxArgStrlenVariable );
+    } catch ( NullPointerException | NumberFormatException e ) {
+      return Const.KETTLE_MAX_ARG_STRLEN_DEFAULT;
     }
   }
 
