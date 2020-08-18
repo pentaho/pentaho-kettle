@@ -46,12 +46,51 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultipleSelectionCombo extends Composite {
+
+  private Composite topRow = null;
   private Text displayText = null;
+  private Button add = null;
+  private Button arrow = null;
+
+  public Composite getTopRowComposite() {
+    return topRow;
+  }
+
+  public Text getDisplayText() {
+    return displayText;
+  }
+
+  public Button getAddButton() {
+    return add;
+  }
+
+  public Button getArrowButton() {
+    return arrow;
+  }
+
   private String[] displayItems;
   private int[] comboSelection;
   private Shell floatShell = null;
   private List list = null;
+
+  public String[] getSelectedItemLabels() {
+    return selectedItemLabels;
+  }
+
+  public void setSelectedItemLabels( String[] selectedItemLabels ) {
+    this.selectedItemLabels = selectedItemLabels;
+  }
+
   private String[] selectedItemLabels;
+
+  public Composite getBottomRow() {
+    return bottomRow;
+  }
+
+  public MouseAdapter getExitAction() {
+    return exitAction;
+  }
+
   private Composite bottomRow;
   private MouseAdapter exitAction;
 
@@ -63,21 +102,21 @@ public class MultipleSelectionCombo extends Composite {
     init();
   }
 
-  private void init() {
+  protected void init() {
     GridLayout masterGridLayout = new GridLayout( 1, true );
     masterGridLayout.marginBottom = 0;
     masterGridLayout.marginTop = 0;
     masterGridLayout.verticalSpacing = 0;
     setLayout( masterGridLayout );
-    Composite topRow = new Composite( this, SWT.NONE );
-    topRow.setLayout( new GridLayout( 3, false ) );
+    topRow = new Composite( this, SWT.NONE );
+    topRow.setLayout( new GridLayout( 4, false ) );
 
     displayText = new Text( topRow, SWT.BORDER );
     GridData gridData = new GridData( GridData.FILL_HORIZONTAL );
     gridData.minimumWidth = 200;
     displayText.setLayoutData( gridData );
 
-    Button arrow = new Button( topRow, SWT.ARROW | SWT.DOWN );
+    arrow = new Button( topRow, SWT.ARROW | SWT.DOWN );
     arrow.setBackground( Display.getCurrent().getSystemColor( SWT.COLOR_BLUE ) );
     arrow.setSize( 25, 25 );
 
@@ -94,7 +133,7 @@ public class MultipleSelectionCombo extends Composite {
       }
     } );
 
-    Button add = new Button( topRow, SWT.PUSH );
+    add = new Button( topRow, SWT.PUSH );
     add.setText( "ADD" );
 
     bottomRow = new Composite( this, SWT.NONE );
@@ -200,13 +239,13 @@ public class MultipleSelectionCombo extends Composite {
     return tempSelectedItems;
   }
 
-  private int calculateTotalHeight( SelectionLabel label ) {
+  protected int calculateTotalHeight( SelectionLabel label ) {
     GridLayout layout = (GridLayout) label.getLayout();
 
     return layout.marginHeight + label.getHeight();
   }
 
-  private void updateTagsUI( int height ) {
+  protected void updateTagsUI( int height ) {
     int numRows = ( selectedItemLabels.length / 2 ) + ( selectedItemLabels.length % 2 );
     GridData newData = (GridData) bottomRow.getLayoutData();
 
@@ -367,6 +406,7 @@ public class MultipleSelectionCombo extends Composite {
   }
 
   /**
+   * @deprecated
    * Simply a convenience interface to keep backward compatibility
    */
   @Deprecated
@@ -375,6 +415,7 @@ public class MultipleSelectionCombo extends Composite {
   }
 
   /**
+   * @deprecated
    * Simply a convenience interface to keep backward compatibility
    * @param selectedItems
    */
