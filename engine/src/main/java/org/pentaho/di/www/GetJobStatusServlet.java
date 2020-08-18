@@ -348,7 +348,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableFirstColumn\">" + Const.NVL( Encode.forHtml( id ), "" ) + "</td>" );
           out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell\" id=\"statusColor\" style=\"font-weight: bold;\">" + job.getStatus() + "</td>" );
           String dateStr = XMLHandler.date2string( job.getLogDate() );
-          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableLastColumn\">" + dateStr.substring( 0, dateStr.indexOf( ' ' ) ) + "</td>" );
+          dateStr = dateStr == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) );
+          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableLastColumn\">" + dateStr + "</td>" );
           out.print( "</tr>" );
           out.print( "</table>" );
           out.print( "</div>" );
