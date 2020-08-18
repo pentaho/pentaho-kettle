@@ -54,6 +54,7 @@ public class MultipleSelectionCombo extends Composite {
   private String[] selectedItemLabels;
   private Composite bottomRow;
   private MouseAdapter exitAction;
+  private static final int MARGIN_OFFSET = 1;
 
   public MultipleSelectionCombo( Composite parent, int style ) {
     super( parent, style );
@@ -203,7 +204,7 @@ public class MultipleSelectionCombo extends Composite {
   private int calculateTotalHeight( SelectionLabel label ) {
     GridLayout layout = (GridLayout) label.getLayout();
 
-    return layout.marginHeight + label.getHeight();
+    return layout.marginHeight + label.getHeight() + MARGIN_OFFSET;
   }
 
   private void updateTagsUI( int height ) {
