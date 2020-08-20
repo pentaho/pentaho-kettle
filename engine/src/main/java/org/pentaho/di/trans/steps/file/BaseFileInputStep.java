@@ -187,7 +187,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
   protected boolean handleOpenFileException( Exception e ) {
     String errorMsg =
       "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI();
-    if ( !failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
+    if ( !failAfterBadFile( errorMsg ) ) {
       return true;
     }
     stopAll();
@@ -276,7 +276,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
    * TODO: should we set charset for error files from content meta ? What about case for automatic charset ?
    */
   private void initErrorHandling() {
-    List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<FileErrorHandler>( 2 );
+    List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<>( 2 );
     if ( meta.errorHandling.lineNumberFilesDestinationDirectory != null ) {
       dataErrorLineHandlers.add( new FileErrorHandlerContentLineNumber( getTrans().getCurrentDate(),
           environmentSubstitute( meta.errorHandling.lineNumberFilesDestinationDirectory ),
@@ -328,9 +328,12 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
         }
 
         if ( meta.inputFiles.passingThruFields ) {
-          StringBuilder sb = new StringBuilder();
-          sb.append( data.files.nrOfFiles() > 0 ? data.files.nrOfFiles() - 1 : 0 ).append( "_" ).append( parentFileObject != null ? parentFileObject.toString() : "" );
-          data.passThruFields.put( sb.toString(), fileRow );
+          for ( int fileIndex = 0; fileIndex < data.files.nrOfFiles(); fileIndex++ ) {
+            StringBuilder sb = new StringBuilder();
+            FileObject file = data.files.getFile( fileIndex );
+            sb.append( fileIndex ).append( "_" ).append( file != null ? file.toString() : "" );
+            data.passThruFields.put( sb.toString(), fileRow );
+          }
         }
       } catch ( FileSystemException e ) {
         logError( BaseMessages.getString( PKG, "BaseFileInputStep.Log.Error.UnableToCreateFileObject", fileValue ), e );
