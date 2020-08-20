@@ -156,7 +156,10 @@ public class MultipleSelectionCombo extends Composite {
         super.mouseUp( e );
 
         String labelText = ((SelectionLabel) ((Label) e.widget).getParent()).getLabelText();
-        addRemovedTagBackToListUI( labelText );
+        // Put the label back on the list unless it's a parameter.
+        if ( !labelText.startsWith( "$" ) ) {
+          addRemovedTagBackToListUI( labelText );
+        }
 
         selectedItemLabels = removeItemFromSelectedList( labelText );
 
