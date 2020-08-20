@@ -73,6 +73,7 @@ public class TextFileInputIT {
     // The path contains 7 entries containing csv file paths
     assertEquals( 7, trans.getSteps().get( 0 ).step.getLinesWritten() );
   }
+
   @Test
   public void testGetDataFromFolderRecursively() throws KettleException {
     KettleEnvironment.init();
@@ -132,6 +133,28 @@ public class TextFileInputIT {
     assertEquals( 0, trans.getSteps().get( 1 ).step.getLinesInput() );
     // The path contains one entry of a folder
     assertEquals( 1, trans.getSteps().get( 0 ).step.getLinesWritten() );
+  }
+
+  @Test
+  public void testPDI18818() throws KettleException {
+    KettleEnvironment.init();
+    String path = getClass().getResource( "text-file-input-pdi-18818.ktr" ).getPath();
+    Variables variables = new Variables();
+    variables.setVariable( "testfolder", getClass().getResource( "" ).getPath() );
+    TransMeta transMeta = new TransMeta( path, variables );
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( null );
+    trans.startThreads();
+    trans.waitUntilFinished();
+
+    //Did we read both values?
+    assertEquals( 1, trans.getSteps().get( 0 ).step.getLinesWritten() );
+
+    //Did we read both files?
+    assertEquals( 6, trans.getSteps().get( 1 ).step.getLinesWritten() );
+
+    //Did we find any nulls?
+    assertEquals( 0, trans.getSteps().get( 4 ).step.getLinesRead() );
   }
 
   @BeforeClass
