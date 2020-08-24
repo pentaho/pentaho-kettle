@@ -156,22 +156,38 @@ public class ConnectionPoolUtilTest implements Driver {
     ConnectionPoolUtil connectionPoolUtil = new ConnectionPoolUtil();
     DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
     String dbMetaName = UUID.randomUUID().toString();
+    String dbMetaUsername = UUID.randomUUID().toString();
+    String dbMetaPassword = UUID.randomUUID().toString();
+    String dbMetaSchema = UUID.randomUUID().toString();
     String dbMetaDatabase = UUID.randomUUID().toString();
     String dbMetaHostname = UUID.randomUUID().toString();
     String dbMetaPort = UUID.randomUUID().toString();
+    String dbMetaInitialPoolSize = UUID.randomUUID().toString();
+    String dbMetaMaximumPoolSize = UUID.randomUUID().toString();
     String partitionId = UUID.randomUUID().toString();
 
     when( dbMetaMock.getName() ).thenReturn( dbMetaName );
+    when( dbMetaMock.getUsername() ).thenReturn( dbMetaUsername );
+    when( dbMetaMock.getPassword() ).thenReturn( dbMetaPassword );
+    when( dbMetaMock.getPreferredSchemaName() ).thenReturn( dbMetaSchema );
     when( dbMetaMock.getDatabaseName() ).thenReturn( dbMetaDatabase );
     when( dbMetaMock.getHostname() ).thenReturn( dbMetaHostname );
     when( dbMetaMock.getDatabasePortNumberString() ).thenReturn( dbMetaPort );
+    when( dbMetaMock.getInitialPoolSizeString() ).thenReturn( dbMetaInitialPoolSize );
+    when( dbMetaMock.getMaximumPoolSizeString() ).thenReturn( dbMetaMaximumPoolSize );
 
     when( dbMetaMock.environmentSubstitute( eq( dbMetaName ) ) ).thenReturn( dbMetaName );
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaUsername ) ) ).thenReturn( dbMetaUsername );
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaPassword ) ) ).thenReturn( dbMetaPassword );
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaSchema ) ) ).thenReturn( dbMetaSchema );
     when( dbMetaMock.environmentSubstitute( eq( dbMetaDatabase ) ) ).thenReturn( dbMetaDatabase );
     when( dbMetaMock.environmentSubstitute( eq( dbMetaHostname ) ) ).thenReturn( dbMetaHostname );
     when( dbMetaMock.environmentSubstitute( eq( dbMetaPort ) ) ).thenReturn( dbMetaPort );
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaInitialPoolSize ) ) ).thenReturn( dbMetaInitialPoolSize );
+    when( dbMetaMock.environmentSubstitute( eq( dbMetaMaximumPoolSize ) ) ).thenReturn( dbMetaMaximumPoolSize );
 
-    String dataSourceNameExpected = dbMetaName + dbMetaDatabase + dbMetaHostname + dbMetaPort + partitionId;
+    String dataSourceNameExpected = dbMetaName + dbMetaUsername + dbMetaPassword + dbMetaSchema + dbMetaDatabase +
+      dbMetaHostname + dbMetaPort + dbMetaInitialPoolSize + dbMetaMaximumPoolSize + partitionId;
     String dataSourceName = connectionPoolUtil.getDataSourceName( dbMetaMock, partitionId );
 
     assertEquals( dataSourceNameExpected, dataSourceName );
