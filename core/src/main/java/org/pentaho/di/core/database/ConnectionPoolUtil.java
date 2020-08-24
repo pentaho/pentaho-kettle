@@ -107,11 +107,16 @@ public class ConnectionPoolUtil {
   public static String getDataSourceName( DatabaseMeta dbMeta, String partitionId ) {
 
     String name = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getName(), "" ) );
+    String username = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getUsername(), "" ) );
+    String password = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getPassword(), "" ) );
+    String preferredSchema = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getPreferredSchemaName(), "" ) );
     String database = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getDatabaseName(), "" ) );
     String hostname = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getHostname(), "" ) );
     String port = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getDatabasePortNumberString(), "" ) );
+    String initialPoolSize = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getInitialPoolSizeString(), "" ) );
+    String maximumPoolSize = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getMaximumPoolSizeString(), "" ) );
 
-    return name + database + hostname + port + Const.NVL( partitionId, "" );
+    return name + username + password + preferredSchema + database + hostname + port + initialPoolSize + maximumPoolSize + Const.NVL( partitionId, "" );
   }
 
   /**
