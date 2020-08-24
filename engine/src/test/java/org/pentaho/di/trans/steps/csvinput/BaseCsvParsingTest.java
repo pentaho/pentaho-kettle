@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -104,7 +104,7 @@ public abstract class BaseCsvParsingTest extends BaseParsingTest<CsvInputMeta, C
           }
         }
       } else {
-        expected[r] = new Object[ meta.getInputFields().length ];
+        expected[r] = new Object[ data.fieldsMapping.size() ];
         expected[r][0] = StringUtils.EMPTY.getBytes( "UTF-8" );
       }
     }
