@@ -285,7 +285,7 @@ public class Kitchen {
               .customNamedParams( customOptions )
               .build();
 
-      result = getCommandExecutor().execute( jobParams );
+      result = getCommandExecutor().execute( jobParams, args.toArray( new String[ args.size() ] ) );
 
     } catch ( Throwable t ) {
       t.printStackTrace();

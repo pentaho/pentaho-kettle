@@ -25,7 +25,6 @@ package org.pentaho.di.kitchen;
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
-import org.pentaho.di.base.KettleConstants;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -72,7 +71,11 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     setKettleInit( kettleInit );
   }
 
-  public Result execute( Params params ) throws Throwable {
+  public Result execute( final Params params ) throws Throwable {
+    return execute( params, null );
+  }
+
+  public Result execute( Params params, String[] arguments ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Starting" ) );
 
@@ -179,7 +182,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     try {
 
       // Set the command line arguments on the job ...
-      job.setArguments( convert( KettleConstants.toJobMap( params ) ) );
+      job.setArguments( arguments );
       job.initializeVariablesFrom( null );
       job.setLogLevel( getLog().getLogLevel() );
       job.getJobMeta().setInternalKettleVariables( job );

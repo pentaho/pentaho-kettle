@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
-import org.pentaho.di.base.KettleConstants;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -74,6 +73,10 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
   }
 
   public Result execute( final Params params ) throws Throwable {
+    return execute( params, null );
+  }
+
+  public Result execute( final Params params, String[] arguments  ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
 
@@ -189,7 +192,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       // allocate & run the required sub-threads
       try {
-        trans.prepareExecution( convert(  KettleConstants.toTransMap( params ) ) );
+        trans.prepareExecution( arguments );
 
         if ( !StringUtils.isEmpty( params.getResultSetStepName() ) ) {
 
