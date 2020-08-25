@@ -127,7 +127,7 @@ public class KitchenCommandExecutorTest {
     when( BaseMessages.getString( any( Class.class ), anyString(), anyVararg() ) ).thenReturn( "" );
 
     try {
-      Result result = kitchenCommandExecutor.execute( params );
+      Result result = kitchenCommandExecutor.execute( params, null );
       Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
     } catch ( Throwable throwable ) {
       Assert.fail();
