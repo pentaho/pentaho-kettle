@@ -323,7 +323,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           }
           response.flushBuffer();
         } catch ( KettleException e ) {
-          throw new ServletException( "Unable to get the job status in XML format", e );
+          response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+          throw new ServletException( BaseMessages.getString( PKG, "GetJobStatusServlet.Error.UnableToGetJobStatusInXML" ), e );
         }
       } else {
 
@@ -439,6 +440,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.println( "  joblog.scrollTop=joblog.scrollHeight; " );
           out.println( "</script> " );
         } catch ( Exception ex ) {
+          response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
           out.println( "<pre>" );
           out.println( Encode.forHtml( Const.getStackTracker( ex ) ) );
           out.println( "</pre>" );
@@ -451,11 +453,11 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     } else {
       PrintWriter out = response.getWriter();
       response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+      String message = BaseMessages.getString( PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id );
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-          PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id ) ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, message ) );
       } else {
-        out.println( "<H1>Job " + Encode.forHtml( "\'" + jobName + "\'" ) + " could not be found.</H1>" );
+        out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
         out.println( HREF
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
           + BaseMessages.getString( PKG, "JobStatusServlet.BackToStatusPage" ) + "</a><p>" );
@@ -511,7 +513,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       return KettleLogStore.getAppender().getBuffer(
         job.getLogChannel().getLogChannelId(), false, start, lastLineNr ).toString();
     } catch ( OutOfMemoryError error ) {
-      throw new KettleException( "Log string is too long" );
+      throw new KettleException( BaseMessages.getString( PKG, "GetJobStatusServlet.Error.LogStringIsTooLong" ) );
     }
   }
 
