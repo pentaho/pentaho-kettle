@@ -177,6 +177,10 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
     PrintWriter out = response.getWriter();
 
     //jobName is a mandatory parameter
+    String h1End = "</H1>";
+    String h1 = "<H1>";
+    String hrefEnd = "</a><p>";
+    String href = "<a href=\"";
     if ( jobName == null ) {
       response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
       String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobNameIsMandatory" );
@@ -195,10 +199,10 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
-        out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
-        out.println( "<a href=\""
+        out.println( h1 + Encode.forHtml( message ) + h1End );
+        out.println( href
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + hrefEnd );
         out.println( "</BODY>" );
         out.println( "</HTML>" );
       }
@@ -294,11 +298,11 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           out.println( new WebResult( WebResult.STRING_OK, message, id ).getXML() );
         } else {
 
-          out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
-          out.println( "<a href=\""
+          out.println( h1 + Encode.forHtml( message ) + h1End );
+          out.println( href
             + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
             + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-            + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + "</a><p>" );
+            + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + hrefEnd );
         }
       } else {
         String message = BaseMessages.getString( PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName );
@@ -306,10 +310,10 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         if ( useXML ) {
           out.println( new WebResult( WebResult.STRING_ERROR, message ) );
         } else {
-          out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
-          out.println( "<a href=\""
+          out.println( h1 + Encode.forHtml( message ) + h1End );
+          out.println( href
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + hrefEnd );
         }
       }
     } catch ( Exception ex ) {
