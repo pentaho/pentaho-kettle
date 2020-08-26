@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.xmlbeans.impl.piccolo.util.DuplicateKeyException;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
@@ -210,13 +211,29 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       response.setContentType( "text/html;charset=UTF-8" );
     }
 
+    //Name is mandatory
+
+    if ( jobName == null ) {
+      PrintWriter out = response.getWriter();
+      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+      String message = BaseMessages.getString( PKG, "GetJobStatusServlet.Error.JobNameIsMandatory" );
+      printResponse( response, useXML, out, message );
+      return;
+    }
+
     // ID is optional...
     //
     Job job;
     CarteObjectEntry entry;
     if ( Utils.isEmpty( id ) ) {
+      if ( isConflictingName( jobName ) ) {
+        PrintWriter out = response.getWriter();
+        response.setStatus( HttpServletResponse.SC_CONFLICT );
+        String message = BaseMessages.getString( PKG, "GetJobStatusServlet.Error.ConflictingJobName" );
+        printResponse( response, useXML, out, message );
+        return;
+      }
       // get the first job that matches...
-      //
       entry = getJobMap().getFirstCarteObjectEntry( jobName );
       if ( entry == null ) {
         job = null;
@@ -424,6 +441,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       }
     } else {
       PrintWriter out = response.getWriter();
+      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
           PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id ) ) );
@@ -433,6 +451,35 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
           + BaseMessages.getString( PKG, "JobStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
+    }
+  }
+
+  private void printResponse( HttpServletResponse response, boolean useXML, PrintWriter out, String message ) {
+    if ( useXML ) {
+      response.setContentType( "text/xml" );
+      response.setCharacterEncoding( Const.XML_ENCODING );
+      out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
+      out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+    } else {
+      String h1End = "</H1>";
+      String h1 = "<H1>";
+      String hrefEnd = "</a><p>";
+      String href = "<a href=\"";
+      response.setContentType( "text/html;charset=UTF-8" );
+      out.println( "<HTML>" );
+      out.println( "<HEAD>" );
+      out.println( "<TITLE>Start job</TITLE>" );
+      out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
+        + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
+      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+      out.println( "</HEAD>" );
+      out.println( "<BODY>" );
+      out.println( h1 + Encode.forHtml( message ) + h1End );
+      out.println( href
+        + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+        + BaseMessages.getString( PKG, "JobStatusServlet.BackToStatusPage" ) + hrefEnd );
+      out.println( "</BODY>" );
+      out.println( "</HTML>" );
     }
   }
 
@@ -450,10 +497,22 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
   private String getLogText( Job job, int startLineNr, int lastLineNr ) throws KettleException {
     try {
+      int totalLogLinesForJob = KettleLogStore.getLogBufferFromTo( job.getLogChannelId(), false, 0, lastLineNr ).size();
+      int startLineForJob = lastLineNr - totalLogLinesForJob;
+      int start = ( startLineForJob + startLineNr - 1 ) > lastLineNr ? 0 : startLineForJob + startLineNr - 1;
       return KettleLogStore.getAppender().getBuffer(
-        job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
+        job.getLogChannel().getLogChannelId(), false, start, lastLineNr ).toString();
     } catch ( OutOfMemoryError error ) {
       throw new KettleException( "Log string is too long" );
     }
+  }
+
+  private boolean isConflictingName( String jobName ) {
+    try {
+      getJobMap().getUniqueCarteObjectEntry( jobName );
+    } catch ( DuplicateKeyException ex ) {
+      return true;
+    }
+    return false;
   }
 }
