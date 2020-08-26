@@ -9,7 +9,7 @@
         class="org.pentaho.di.plugins.fileopensave.controllers.RepositoryBrowserController">
     <argument ref="RepositoryFileProvider" />
   </bean>
-  
+
   <bean id="fileCache" scope="singleton" class="org.pentaho.di.plugins.fileopensave.cache.FileCache" />
 
   <bean id="fileController" scope="singleton" class="org.pentaho.di.plugins.fileopensave.controllers.FileController">
@@ -57,7 +57,7 @@
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
-  <bean id="TransBeforeSaveExtensionPoint" scope="singleton"
+ <!-- <bean id="TransBeforeSaveExtensionPoint" scope="singleton"
         class="org.pentaho.di.plugins.fileopensave.extension.TransBeforeSaveExtensionPoint">
     <argument ref="metaStoreLocator" />
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
@@ -86,7 +86,7 @@
     <argument ref="metaStoreLocator" />
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
-
+-->
   <bean id="JobFinishExtensionPoint" scope="singleton"
         class="org.pentaho.di.plugins.fileopensave.extension.JobFinishExtensionPoint">
     <argument ref="fileCache"/>
