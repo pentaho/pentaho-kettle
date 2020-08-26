@@ -49,6 +49,8 @@ import org.pentaho.di.www.cache.CarteStatusCache;
 
 
 public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginInterface {
+  private static final String TEXT_XML = "text/xml";
+  private static final String HREF = "<a href=\"";
   private static Class<?> PKG = GetJobStatusServlet.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 3634806745372015720L;
@@ -217,7 +219,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     response.setStatus( HttpServletResponse.SC_OK );
 
     if ( useXML ) {
-      response.setContentType( "text/xml" );
+      response.setContentType( TEXT_XML );
       response.setCharacterEncoding( Const.XML_ENCODING );
     } else {
       response.setContentType( "text/html;charset=UTF-8" );
@@ -287,7 +289,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
             int lastLineNr = KettleLogStore.getLastBufferLineNr();
             String logText = getLogText( job, startLineNr, lastLineNr );
 
-            response.setContentType( "text/xml" );
+            response.setContentType( TEXT_XML );
             response.setCharacterEncoding( Const.XML_ENCODING );
 
             SlaveServerJobStatus jobStatus = new SlaveServerJobStatus( jobName, id, job.getStatus() );
@@ -358,7 +360,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         try {
           out.println( "<div class=\"row\" style=\"padding: 0px 0px 0px 30px\">" );
           out.println( "<div class=\"row\" style=\"padding-top: 30px;\">" );
-          out.print( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
+          out.print( HREF + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
           out.print( "<img src=\"" + prefix + "/images/back.svg\" style=\"margin-right: 5px; width: 16px; height: 16px; vertical-align: middle;\">" );
           out.print( BaseMessages.getString( PKG, "CarteStatusServlet.BackToCarteStatus" ) + "</a>" );
           out.println( "</div>" );
@@ -414,11 +416,6 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
               + "\"></iframe>" );
           out.print( "</div>" );
 
-          // out.print("<a href=\"" + convertContextPath(GetJobImageServlet.CONTEXT_PATH) + "?name=" +
-          // URLEncoder.encode(Const.NVL(jobName, ""), "UTF-8") + "&id="+id+"\">"
-          // + BaseMessages.getString(PKG, "GetJobImageServlet.GetJobImage") + "</a>");
-          // out.print("<p>");
-
           // Put the logging below that.
 
           out.print( "<div class=\"row\" style=\"padding: 0px 0px 30px 0px;\">" );
@@ -459,7 +456,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id ) ) );
       } else {
         out.println( "<H1>Job " + Encode.forHtml( "\'" + jobName + "\'" ) + " could not be found.</H1>" );
-        out.println( "<a href=\""
+        out.println( HREF
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
           + BaseMessages.getString( PKG, "JobStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
@@ -468,7 +465,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
   private void printResponse( HttpServletResponse response, boolean useXML, PrintWriter out, String message ) {
     if ( useXML ) {
-      response.setContentType( "text/xml" );
+      response.setContentType( TEXT_XML );
       response.setCharacterEncoding( Const.XML_ENCODING );
       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
       out.println( new WebResult( WebResult.STRING_ERROR, message ) );
@@ -476,7 +473,6 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       String h1End = "</H1>";
       String h1 = "<H1>";
       String hrefEnd = "</a><p>";
-      String href = "<a href=\"";
       response.setContentType( "text/html;charset=UTF-8" );
       out.println( "<HTML>" );
       out.println( "<HEAD>" );
@@ -487,7 +483,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
       out.println( h1 + Encode.forHtml( message ) + h1End );
-      out.println( href
+      out.println( HREF
         + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
         + BaseMessages.getString( PKG, "JobStatusServlet.BackToStatusPage" ) + hrefEnd );
       out.println( "</BODY>" );
