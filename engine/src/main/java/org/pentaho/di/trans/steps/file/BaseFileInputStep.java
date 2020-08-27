@@ -305,7 +305,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
       RowMetaInterface prevInfoFields = rowSet.getRowMeta();
       if ( idx < 0 ) {
         if ( meta.inputFiles.passingThruFields ) {
-          data.passThruFields = new HashMap<String, Object[]>();
+          data.passThruFields = new HashMap<>();
           infoStep = new RowMetaInterface[] { prevInfoFields };
           data.nrPassThruFields = prevInfoFields.size();
         }
@@ -321,19 +321,34 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
       String fileValue = prevInfoFields.getString( fileRow, idx );
       try {
         FileObject parentFileObject = KettleVFS.getFileObject( environmentSubstitute( fileValue ), getTransMeta() );
-        if ( parentFileObject != null && parentFileObject.getType() == FileType.FOLDER ) { // it's a directory
+        boolean isDir = ( parentFileObject != null && parentFileObject.getType() == FileType.FOLDER );
+        int startingIndex = data.files.nrOfFiles();
+
+        if ( isDir ) { // it's a directory
           addFilesFromFolder( parentFileObject );
         } else {  // it's a file
           data.files.addFile( parentFileObject );
         }
 
         if ( meta.inputFiles.passingThruFields ) {
-          for ( int fileIndex = 0; fileIndex < data.files.nrOfFiles(); fileIndex++ ) {
-            StringBuilder sb = new StringBuilder();
-            FileObject file = data.files.getFile( fileIndex );
-            sb.append( fileIndex ).append( "_" ).append( file != null ? file.toString() : "" );
+          StringBuilder sb = new StringBuilder();
+
+          // PDI-18818 + BACKLOG-34414
+          // For directories, the passThruFields should match the same row's value for each file within the directory,
+          // For a file, the passThruFields should match the current row's value.
+          if ( isDir ) {
+            for ( int fileIndex = startingIndex; fileIndex < data.files.nrOfFiles(); fileIndex++ ) {
+              FileObject file = data.files.getFile( fileIndex );
+              sb.setLength( 0 );
+              sb.append( fileIndex ).append( "_" ).append( file != null ? file.toString() : "" );
+              data.passThruFields.put( sb.toString(), fileRow );
+            }
+          } else {
+            sb.append( startingIndex ).append( "_" ).append(
+                    parentFileObject != null ? parentFileObject.toString() : "" );
             data.passThruFields.put( sb.toString(), fileRow );
           }
+
         }
       } catch ( FileSystemException e ) {
         logError( BaseMessages.getString( PKG, "BaseFileInputStep.Log.Error.UnableToCreateFileObject", fileValue ), e );
