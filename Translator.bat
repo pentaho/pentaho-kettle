@@ -94,7 +94,7 @@ REM ** Change 512m to higher values in case you run out of memory   **
 REM ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
 REM ******************************************************************
 
-set PENTAHO_DI_JAVA_OPTIONS="-Xmx512m" "-XX:MaxPermSize=256m"
+set PENTAHO_DI_JAVA_OPTIONS="-Xmx512m"
 set OPT="-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
 
 REM ***************
