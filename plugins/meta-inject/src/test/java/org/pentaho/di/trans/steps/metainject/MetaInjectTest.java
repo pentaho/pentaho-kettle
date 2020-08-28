@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.injection.Injection;
@@ -532,8 +533,8 @@ public class MetaInjectTest {
     RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
     RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
       new RepositoryDirectory( null, "/" ), "home" ), "admin" ) );
-    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
-    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
+    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.realClone( false ) );
+    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).realClone( false );
 
     PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir, "home/admin" );
     PowerMockito.doReturn( adminDir ).when( data.transMeta ).getRepositoryDirectory();
@@ -553,8 +554,8 @@ public class MetaInjectTest {
     RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
     RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
       new RepositoryDirectory( null, "/" ), "home" ), "admin" ) );
-    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
-    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
+    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.realClone( false ) );
+    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).realClone( false );
 
     PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir,
       "/home/admin" );
