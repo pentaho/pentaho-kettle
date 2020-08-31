@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,6 +87,4 @@ public class TestConnectionWithDomainDetails implements VFSConnectionDetails {
   @Override public String getDomain() {
     return "example.com";
   }
-
-  @Override public void stripCredentials() { }
 }

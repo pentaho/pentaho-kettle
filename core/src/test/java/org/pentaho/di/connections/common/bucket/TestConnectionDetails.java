@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,11 @@
 
 package org.pentaho.di.connections.common.bucket;
 
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.annotations.Encrypted;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElement;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
 @MetaStoreElementType(
@@ -83,6 +85,4 @@ public class TestConnectionDetails implements VFSConnectionDetails {
   public void setPassword1( String password1 ) {
     this.password1 = password1;
   }
-
-  @Override public void stripCredentials() { }
 }
