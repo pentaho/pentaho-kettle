@@ -83,4 +83,6 @@ public class TestConnectionDetails implements VFSConnectionDetails {
   public void setPassword1( String password1 ) {
     this.password1 = password1;
   }
+
+  @Override public void stripCredentials() { }
 }

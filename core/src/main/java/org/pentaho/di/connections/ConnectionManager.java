@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -531,6 +531,7 @@ public class ConnectionManager {
     for ( String sourceName : sourceNames ) {
       if ( !destinationNames.contains( sourceName ) ) {
         ConnectionDetails connectionDetails = getConnectionDetails( sourceMetaStore, sourceName );
+        connectionDetails.stripCredentials();
         save( destinationMetaStore, connectionDetails, false );
       }
     }
