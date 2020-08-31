@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -242,7 +242,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Start" ) );
             }
             CredentialsProvider provider = new BasicCredentialsProvider();
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( username, password );
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( username, decryptedPassword );
             provider.setCredentials( AuthScope.ANY, credentials );
             HttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider( provider ).build();
             HttpGet method = new HttpGet( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" );
@@ -251,7 +251,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             }
             HttpResponse response = client.execute( method );
             if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) ); //$NON-NLS-1$
+              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) );
             }
             return EntityUtils.toString( response.getEntity() );
           } catch ( Exception e ) {
