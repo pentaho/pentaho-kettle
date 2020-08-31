@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -117,11 +117,5 @@ public class OtherConnectionDetails implements VFSConnectionDetails {
 
   public void setDescription( String description ) {
     this.description = description;
-  }
-
-  @Override
-  public void stripCredentials() {
-    this.username = null;
-    this.password = null;
   }
 }
