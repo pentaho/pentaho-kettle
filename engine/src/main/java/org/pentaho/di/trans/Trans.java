@@ -60,7 +60,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
-//import org.pentaho.di.core.util.ConnectionUtil;
+import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ExecutorInterface;
@@ -779,7 +779,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     activateParameters();
     transMeta.activateParameters();
-    //ConnectionUtil.init( transMeta );
+    ConnectionUtil.init( transMeta );
 
     if ( transMeta.getName() == null ) {
       if ( transMeta.getFilename() != null ) {
