@@ -308,37 +308,42 @@ public class TextFileInputUtils {
                                       int fileFormatType, StringBuilder line, String regex, long lineNumberInFile )
     throws KettleFileException {
 
+    boolean lenientEnclosureHandling = ValueMetaBase.convertStringToBoolean( Const.NVL( EnvUtil.getSystemProperty(
+      Const.KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING ), "N" ) );
+
     String sline = getLine( log, reader, encodingType, fileFormatType, line );
 
-    boolean lenientEnclosureHandling = ValueMetaBase.convertStringToBoolean(
-      Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING ), "N" ) );
+    if ( lenientEnclosureHandling || sline == null ) {
+      return new TextFileLine( sline, lineNumberInFile, null );
+    }
 
-    if ( !lenientEnclosureHandling ) {
-
-      while ( sline != null ) {
+    StringBuilder sb = new StringBuilder( sline );
+    String nextLine = sline;
+    do {
       /*
-      Check that the number of enclosures in a line is even.
-      If not even it means that there was an enclosed line break.
-      We need to read the next line(s) to get the remaining data in this row.
-      */
-        if ( checkPattern( sline, regex ) % 2 == 0 ) {
-          return new TextFileLine( sline, lineNumberInFile, null );
-        }
+        Check that the number of enclosures in a line is even.
+        If not even it means that there was an enclosed line break.
+        We need to read the next line(s) to get the remaining data in this row.
+        */
 
-        String nextLine = getLine( log, reader, encodingType, fileFormatType, line );
-
-        if ( nextLine == null ) {
-          break;
-        }
-
-        // Include \n beetween lines ignoring \r to be OS independent
-        sline = sline + "\n" + nextLine;
-        lineNumberInFile++;
+      if ( checkPattern( sb.toString(), regex ) % 2 == 0 ) {
+        return new TextFileLine( sb.toString(), lineNumberInFile, null );
       }
 
-    }
+      nextLine = getLine( log, reader, encodingType, fileFormatType, line );
+
+      if ( nextLine == null ) {
+        return new TextFileLine( sb.toString(), lineNumberInFile, null );
+      }
+
+      // Include \n between lines ignoring \r to be OS independent
+      sb.append( "\n" + nextLine );
+      lineNumberInFile++;
+    } while ( nextLine != null );
+
     return new TextFileLine( sline, lineNumberInFile, null );
   }
+
 
   public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
       int formatNr, StringBuilder line ) throws KettleFileException {

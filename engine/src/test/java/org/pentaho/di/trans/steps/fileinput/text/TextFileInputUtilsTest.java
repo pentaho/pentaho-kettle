@@ -25,8 +25,6 @@ package org.pentaho.di.trans.steps.fileinput.text;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.steps.file.BaseFileField;
@@ -179,7 +177,7 @@ public class TextFileInputUtilsTest {
     InputStream is = new ByteArrayInputStream( text.getBytes() );
     InputStreamReader isr = new InputStreamReader( is );
     TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
-    Assert.assertEquals( "\"firstLine\"\"secondLine\"", line.getLine() );
+    Assert.assertEquals( text, line.getLine() );
   }
 
   @Test
@@ -193,16 +191,5 @@ public class TextFileInputUtilsTest {
     Assert.assertEquals( "\"firstLine", line.getLine() );
     System.clearProperty( "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING" );
   }
-
-  @Test
-  public void testPreserveLineBreak() throws KettleFileException {
-    String text = "\"firstLine\n\"\"secondLine\"";
-    StringBuilder lineBuilder = new StringBuilder( "" );
-    InputStream is = new ByteArrayInputStream( text.getBytes() );
-    InputStreamReader isr = new InputStreamReader( is );
-    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, lineBuilder, "\"", 0 );
-    Assert.assertEquals( text, line.getLine() );
-  }
-
 
 }
