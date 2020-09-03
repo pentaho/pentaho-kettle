@@ -331,7 +331,8 @@ public class TextFileInputUtils {
           break;
         }
 
-        sline = sline + nextLine;
+        // Include \n beetween lines ignoring \r to be OS independent
+        sline = sline + "\n" + nextLine;
         lineNumberInFile++;
       }
 
