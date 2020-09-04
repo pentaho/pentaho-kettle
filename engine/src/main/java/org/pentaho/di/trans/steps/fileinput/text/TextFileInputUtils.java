@@ -308,17 +308,16 @@ public class TextFileInputUtils {
                                       int fileFormatType, StringBuilder line, String regex, long lineNumberInFile )
     throws KettleFileException {
 
+    String sline = getLine( log, reader, encodingType, fileFormatType, line );
+
     boolean lenientEnclosureHandling = ValueMetaBase.convertStringToBoolean( Const.NVL( EnvUtil.getSystemProperty(
       Const.KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING ), "N" ) );
-
-    String sline = getLine( log, reader, encodingType, fileFormatType, line );
 
     if ( lenientEnclosureHandling || sline == null ) {
       return new TextFileLine( sline, lineNumberInFile, null );
     }
 
     StringBuilder sb = new StringBuilder( sline );
-    String nextLine = sline;
     do {
       /*
         Check that the number of enclosures in a line is even.
@@ -330,18 +329,16 @@ public class TextFileInputUtils {
         return new TextFileLine( sb.toString(), lineNumberInFile, null );
       }
 
-      nextLine = getLine( log, reader, encodingType, fileFormatType, line );
+      sline = getLine( log, reader, encodingType, fileFormatType, line );
 
-      if ( nextLine == null ) {
-        return new TextFileLine( sb.toString(), lineNumberInFile, null );
+      if ( sline == null ) {
+        return new TextFileLine( sline, lineNumberInFile, null );
       }
 
       // Include \n between lines ignoring \r to be OS independent
-      sb.append( "\n" + nextLine );
+      sb.append( "\n" + sline );
       lineNumberInFile++;
-    } while ( nextLine != null );
-
-    return new TextFileLine( sline, lineNumberInFile, null );
+    } while ( true );
   }
 
 
