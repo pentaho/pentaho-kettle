@@ -93,7 +93,7 @@ public class MultipleSelectionCombo extends Composite {
 
   private Composite bottomRow;
   private MouseAdapter exitAction;
-  private static final int MARGIN_OFFSET = 1;
+  private static final int MARGIN_OFFSET = 2;
 
   public MultipleSelectionCombo( Composite parent, int style ) {
     super( parent, style );
