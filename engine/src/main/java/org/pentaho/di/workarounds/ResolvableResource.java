@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -28,10 +28,7 @@ package org.pentaho.di.workarounds;
 /**
  * This interface represents a resource that contains data elements with variables, relative paths etc
  * that have to be resolved before this resource could be used.
- *
- * @deprecated this is a temporary solution. it should be removed in 8.1
  */
-@Deprecated
 public interface ResolvableResource {
 
   /**
