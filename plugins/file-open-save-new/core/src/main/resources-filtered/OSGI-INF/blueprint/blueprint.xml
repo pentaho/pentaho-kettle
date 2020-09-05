@@ -85,8 +85,18 @@
         class="org.pentaho.di.plugins.fileopensave.extension.BeforeSaveToRepositoryExtensionPoint">
     <argument ref="metaStoreLocator" />
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>  -->
+
+  <bean id="JobMetaLoadedExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.JobMetaLoadedExtensionPoint">
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
--->
+
+  <bean id="TransMetaLoadedExtensionPoint" scope="singleton"
+        class="org.pentaho.di.plugins.fileopensave.extension.TransMetaLoadedExtensionPoint">
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
   <bean id="JobFinishExtensionPoint" scope="singleton"
         class="org.pentaho.di.plugins.fileopensave.extension.JobFinishExtensionPoint">
     <argument ref="fileCache"/>
