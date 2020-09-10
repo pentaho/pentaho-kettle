@@ -15,20 +15,18 @@ import static java.nio.file.StandardCopyOption.*
 class CliHandler {
   def cliBuilder = new CliBuilder(usage: "sp-initial-staging.groovy [options]")
 
-  String buildResourcesPatchedFolder = null
+  String spPatchedFolder = null
   String buildHostingRootFolder = null
   String releaseVersion = null
   String suiteReleaseVersion = null
   String releaseBuildNumber = null
-  String mondrianVersion = null
 
   CliHandler() {
     cliBuilder.header = "Options:"
     cliBuilder.help("print this message")
-    cliBuilder.buildResourcesPatchedFolder(args: 1, argName: "folder", "Folder to stage the patches eg /build/resources/8.0-patched")
+    cliBuilder.spPatchedFolder(args: 1, argName: "folder", "Folder to stage the patches eg /build2/sps/8.0-patched")
     cliBuilder.buildHostingRootFolder(args: 1, argName: "folder", "Folder under which where the installer artifacts are located")
-    cliBuilder.releaseVersion(args: 1, argName: "version-build", "full product suite version eg. 8.0.0.0-12")
-    cliBuilder.mondrianVersion(args: 1, argName: "version-build", "full mondrian version eg. 3.15.0.0-12")
+    cliBuilder.releaseVersion(args: 1, argName: "version-build", "full product suite version eg. 9.0.0.0-423")
   }
 
   Boolean process(String[] args) {
@@ -41,8 +39,8 @@ class CliHandler {
         return false
       }
 
-      if(options.buildResourcesPatchedFolder) {
-        this.buildResourcesPatchedFolder = options.buildResourcesPatchedFolder
+      if(options.spPatchedFolder) {
+        this.spPatchedFolder = options.spPatchedFolder
       }
 
       if(options.buildHostingRootFolder) {
@@ -63,11 +61,7 @@ class CliHandler {
         this.releaseBuildNumber = version_build.substring(version_length + 1, version_build.length())
       }
 
-      if(options.mondrianVersion) {
-        this.mondrianVersion = options.mondrianVersion
-      }
-
-      if(options.buildResourcesPatchedFolder && options.buildHostingRootFolder && options.releaseVersion && options.mondrianVersion) {
+      if(options.spPatchedFolder && options.buildHostingRootFolder && options.releaseVersion) {
         return true
       }
 
@@ -104,7 +98,6 @@ public static void expandArchive(String archive, String folder) {
   println "Expanding ${archive} to ${folder}..."
   Unzip unzipper = new Unzip()
   unzipper.unzip(archive, folder)
-  //new AntBuilder().unzip(src:archive, dest:folder, overwrite:"false")
 }
 
 def execProcessBlocking(command) {
@@ -146,7 +139,7 @@ public void tarFolder(String folder, String archive) {
 CliHandler cli = new CliHandler()
 assert cli.process(args) : "Unable to parse command-line arguments"
 
-// Product archives
+// Source archives - from hosted
 def buildHostingVersionFolder = "${cli.buildHostingRootFolder}/${cli.suiteReleaseVersion}/${cli.releaseBuildNumber}"
 def aggDesignerArchive = "${buildHostingVersionFolder}/pad-ee-${cli.releaseVersion}.zip"
 def pdiClientArchive = "${buildHostingVersionFolder}/pdi-ee-client-${cli.releaseVersion}.zip"
@@ -154,53 +147,58 @@ def metadataEditorArchive = "${buildHostingVersionFolder}/pme-ee-${cli.releaseVe
 def serverArchive = "${buildHostingVersionFolder}/pentaho-server-ee-${cli.releaseVersion}.zip"
 def reportDesignerArchive = "${buildHostingVersionFolder}/prd-ee-${cli.releaseVersion}.zip"
 def macReportDesignerArchive = "${buildHostingVersionFolder}/prd-ee-mac-${cli.releaseVersion}.zip"
-def schemaWorkbenchArchive = "${buildHostingVersionFolder}/psw-ee-${cli.mondrianVersion}.zip"
+def schemaWorkbenchArchive = "${buildHostingVersionFolder}/psw-ee-${cli.releaseVersion}.zip"
+def bigDataPluginArchive = "${buildHostingVersionFolder}/pentaho-big-data-ee-package-${cli.releaseVersion}.zip"
+def pazPluginArchive = "${buildHostingVersionFolder}/paz-plugin-ee-${cli.releaseVersion}.zip"
+def pddPluginArchive= "${buildHostingVersionFolder}/pdd-plugin-ee-${cli.releaseVersion}.zip"
+def pirPluginArchive = "${buildHostingVersionFolder}/pir-plugin-ee-${cli.releaseVersion}.zip"
 
 // Patch destination folders
-def aggDesignerFolder ="${cli.buildResourcesPatchedFolder}/pad-ee/${cli.releaseVersion}"
-def pdiClientFolder ="${cli.buildResourcesPatchedFolder}/pdi-ee-client/${cli.releaseVersion}"
-def metadataEditorFolder ="${cli.buildResourcesPatchedFolder}/pme-ee/${cli.releaseVersion}"
-def serverFolder = "${cli.buildResourcesPatchedFolder}/pentaho-server-ee/${cli.releaseVersion}"
-def serverManualPatchesFolder = "${cli.buildResourcesPatchedFolder}/pentaho-server-ee/manual_patches"
-def reportDesignerFolder = "${cli.buildResourcesPatchedFolder}/prd-ee/${cli.releaseVersion}"
-def schemaWorkbenchFolder = "${cli.buildResourcesPatchedFolder}/psw-ee/${cli.releaseVersion}"
+def aggDesignerFolder ="${cli.spPatchedFolder}/pad-ee/${cli.releaseVersion}"
+def pdiClientFolder ="${cli.spPatchedFolder}/pdi-ee-client/${cli.releaseVersion}"
+def metadataEditorFolder ="${cli.spPatchedFolder}/pme-ee/${cli.releaseVersion}"
+def serverFolder = "${cli.spPatchedFolder}/pentaho-server-ee/${cli.releaseVersion}"
+def reportDesignerFolder = "${cli.spPatchedFolder}/prd-ee/${cli.releaseVersion}"
+def schemaWorkbenchFolder = "${cli.spPatchedFolder}/psw-ee/${cli.releaseVersion}"
+def manualServerFolder = "${cli.spPatchedFolder}/pentaho-server-ee/manual_patches"
+def manualBigDataPluginFolder = "${cli.spPatchedFolder}/manual/big-data-plugin"
 
 // Patch Extraction folders
-def aggDesignerExtractFolder ="${cli.buildResourcesPatchedFolder}/pad-ee/${cli.releaseVersion}/extract/pad-ee"
-def pdiClientExtractFolder ="${cli.buildResourcesPatchedFolder}/pdi-ee-client/${cli.releaseVersion}/extract/pdi-ee-client"
-def metadataEditorExtractFolder ="${cli.buildResourcesPatchedFolder}/pme-ee/${cli.releaseVersion}/extract/pme-ee"
-def serverExtractFolder = "${cli.buildResourcesPatchedFolder}/pentaho-server-ee/${cli.releaseVersion}/extract/pentaho-server-ee"
-def reportDesignerExtractFolder = "${cli.buildResourcesPatchedFolder}/prd-ee/${cli.releaseVersion}/extract/prd-ee"
-def schemaWorkbenchExtractFolder = "${cli.buildResourcesPatchedFolder}/psw-ee/${cli.releaseVersion}/extract/psw-ee"
+def aggDesignerExtractFolder ="${cli.spPatchedFolder}/pad-ee/${cli.releaseVersion}/extract/pad-ee"
+def pdiClientExtractFolder ="${cli.spPatchedFolder}/pdi-ee-client/${cli.releaseVersion}/extract/pdi-ee-client"
+def metadataEditorExtractFolder ="${cli.spPatchedFolder}/pme-ee/${cli.releaseVersion}/extract/pme-ee"
+def serverExtractFolder = "${cli.spPatchedFolder}/pentaho-server-ee/${cli.releaseVersion}/extract/pentaho-server-ee"
+def reportDesignerExtractFolder = "${cli.spPatchedFolder}/prd-ee/${cli.releaseVersion}/extract/prd-ee"
+def schemaWorkbenchExtractFolder = "${cli.spPatchedFolder}/psw-ee/${cli.releaseVersion}/extract/psw-ee"
 
-// Tar archives
+// Destination archives
 def aggDesignerTarArchive ="${aggDesignerFolder}.tar"
 def pdiClientTarArchive ="${pdiClientFolder}.tar"
 def metadataEditorTarArchive ="${metadataEditorFolder}.tar"
 def serverTarArchive = "${serverFolder}.tar"
-def serverManualPatchesTarArchive = "${serverManualPatchesFolder}/${cli.releaseVersion}.tar"
 def reportDesignerTarArchive = "${reportDesignerFolder}.tar"
 def schemaWorkbenchTarArchive = "${schemaWorkbenchFolder}.tar"
+def manualServerTarArchive = "${manualServerFolder}/${cli.releaseVersion}.tar"
+def manualBigDataPluginZipArchive = "${manualBigDataPluginFolder}/pentaho-big-data-ee-package-${cli.releaseVersion}.zip"
 
-// Plugin paths
+// Server plugin folder
 def pentahoServerPluginFolder = "${serverExtractFolder}/pentaho-server/pentaho-solutions/system"
-def pazPluginArchive = "${buildHostingVersionFolder}/paz-plugin-ee-${cli.releaseVersion}.zip"
-def pddPluginArchive= "${buildHostingVersionFolder}/pdd-plugin-ee-${cli.releaseVersion}.zip"
-//def mobilePluginArchive = "${buildHostingVersionFolder}/pentaho-mobile-plugin-${cli.releaseVersion}.zip"
-def pirPluginArchive = "${buildHostingVersionFolder}/pir-plugin-ee-${cli.releaseVersion}.zip"
+
 
 // Make the initial "patched" root folder
-String buildResourcesPatchedFolder = cli.buildResourcesPatchedFolder
-makeFolder(buildResourcesPatchedFolder)
+String spPatchedFolder = cli.spPatchedFolder
+makeFolder(spPatchedFolder)
 
 // Make all of the patch folders
 makeFolder(aggDesignerExtractFolder)
 makeFolder(pdiClientExtractFolder)
 makeFolder(metadataEditorExtractFolder)
 makeFolder(serverExtractFolder)
-makeFolder(serverManualPatchesFolder)
 makeFolder(reportDesignerExtractFolder)
 makeFolder(schemaWorkbenchExtractFolder)
+// Manual folders
+makeFolder(manualServerFolder)
+makeFolder(manualBigDataPluginFolder)
 
 // Expand the product archives
 expandArchive(aggDesignerArchive, aggDesignerExtractFolder)
@@ -215,7 +213,7 @@ expandArchive(pazPluginArchive, pentahoServerPluginFolder)
 expandArchive(pddPluginArchive, pentahoServerPluginFolder)
 expandArchive(pirPluginArchive, pentahoServerPluginFolder)
 
-// Now tar the folders back up
+// Now tar the extract folders back up
 tarFolder(aggDesignerFolder, aggDesignerTarArchive)
 tarFolder(pdiClientFolder, pdiClientTarArchive)
 tarFolder(metadataEditorFolder, metadataEditorTarArchive)
@@ -223,7 +221,9 @@ tarFolder(serverFolder, serverTarArchive)
 tarFolder(reportDesignerFolder, reportDesignerTarArchive)
 tarFolder(schemaWorkbenchFolder, schemaWorkbenchTarArchive)
 
-// Copy the server tar to the manual_patches folder since it is just a duplicate
-copyFile(serverTarArchive, serverManualPatchesTarArchive)
+// Copy the server tar to the manual_patches folder
+copyFile(serverTarArchive, manualServerTarArchive)
+// Copy the big data plugin zip file since it is just a duplicate
+copyFile(bigDataPluginArchive, manualBigDataPluginZipArchive)
 
 return 0
