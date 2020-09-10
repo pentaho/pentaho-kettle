@@ -50,6 +50,7 @@ ee:
         - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
     upgrade:
         - PentahoServer-UP-${platform.version}-Linux.zip
         - PentahoServer-UP-${platform.version}-Mac.zip
@@ -77,5 +78,3 @@ ce:
 
 # Testable items, but not customer hand-off items
 not-for-release:
-    shims:
-        - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
