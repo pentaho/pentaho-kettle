@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1355,7 +1355,7 @@ public class ValueDataUtil {
       case ValueMetaInterface.TYPE_INTEGER:
         return metaA.getInteger( Math.abs( metaA.getNumber( dataA ).longValue() ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return new BigDecimal( Math.abs( metaA.getNumber( dataA ).doubleValue() ) );
+        return metaA.getBigNumber( dataA ).abs();
 
       default:
         throw new KettleValueException( "The 'abs' function only works on numeric data" );
