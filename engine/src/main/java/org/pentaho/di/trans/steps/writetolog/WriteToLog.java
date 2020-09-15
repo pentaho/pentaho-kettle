@@ -105,15 +105,20 @@ public class WriteToLog extends BaseStep implements StepInterface {
     if ( getLogLevel().getLevel() >= data.loglevel.getLevel() ) {
       StringBuilder out = new StringBuilder();
       out.append( Const.CR ).append( "------------> " )
-        .append( BaseMessages.getString( PKG, "WriteToLog.Log.NLigne", "" ) )
-        .append( getLinesRead() )
+        .append( BaseMessages.getString(
+          PKG, "WriteToLog.Log.NLigne", "" + getLinesRead() ) )
         .append( "------------------------------" )
         .append( Const.CR );
 
       out.append( getRealLogMessage() );
 
-      // Only needed if it's to print the header
-      String[] fieldNames = meta.isDisplayHeader() ? getInputRowMeta().getFieldNames() : null;
+      String[] fieldNames = {};
+
+      // Obtaining the field name list is a heavy operation, as so, it was removed from the loop.
+      // And, as it's only needed if the header is to be printed, I conditioned the calculation to that scenario.
+      if ( meta.isDisplayHeader() ) {
+        fieldNames = getInputRowMeta().getFieldNames();
+      }
 
       // Loop through fields
       for ( int i = 0; i < data.fieldnr; i++ ) {
