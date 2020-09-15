@@ -37,6 +37,7 @@ import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -86,6 +87,8 @@ import static org.pentaho.di.core.row.value.ValueMetaBase.convertStringToBoolean
 public class XMLHandler {
   //TODO Change impl for some standard XML processing (like StAX, for example) because ESAPI has charset processing
   // issues.
+
+  private static Class<?> PKG = XMLHandler.class; // for i18n purposes, needed by Translator2!!
 
   private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
@@ -581,10 +584,12 @@ public class XMLHandler {
         attempts++;
       }
 
-      throw new KettleXMLException( "Unable to read file [" + fileObject.toString() + "].", lastException );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "XMLHandler.errorReadingFile", fileObject.toString() ), lastException );
     }
 
-    throw new KettleXMLException( "File [" + fileObject.toString() + "] does not exists." );
+    throw new KettleXMLException( BaseMessages.getString(
+      PKG, "XMLHandler.FileDoesNotExists", fileObject.toString() ) );
   }
 
   /**
@@ -1235,7 +1240,8 @@ public class XMLHandler {
     try {
       return fileObject.isFile();
     } catch ( FileSystemException e ) {
-      throw new KettleXMLException( "Unable to check if file [" + fileObject.toString() + "] exists", e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "XMLHandler.errorCheckingFileExistence", fileObject.toString() ), e );
     }
   }
 }
