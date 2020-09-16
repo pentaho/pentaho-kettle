@@ -22,10 +22,17 @@
 
 package org.pentaho.di.core.variables;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 
 /**
  * Interface to implement variable sensitive objects.
@@ -191,4 +198,28 @@ public interface VariableSpace {
    *           In case there is a String conversion error
    */
   public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException;
+
+  /**
+   * save modification variable to file, and refresh variable in memory
+   *
+   * @param variableName
+   *          The variable to look up.
+   * @param variableValue
+   *          The default value to return.
+   * @throws KettleException
+   *          In case there is a String conversion error
+   */
+  default void saveVariableToFile(String variableName, String variableValue) throws KettleException {
+    String propFile = Const.getKettleDirectory() + "/" + Const.KETTLE_PROPERTIES;
+    try (FileOutputStream out = new FileOutputStream(propFile)) {
+      Properties prop = EnvUtil.readProperties(propFile);
+      prop.put(variableName, variableValue);
+      setVariable(variableName, variableValue);
+      prop.store(out, Const.getKettlePropertiesFileHeader());
+    } catch (FileNotFoundException e) {
+      throw new KettleException( "Unable to open properties file", e );
+    } catch (IOException e) {
+      throw new KettleException( "Unable to save modification to file", e );
+    }
+  }
 }
