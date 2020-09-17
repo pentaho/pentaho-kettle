@@ -244,4 +244,9 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
   public String getOriginalURIString() {
     return resolvedFileObject.getPublicURIString();
   }
+
+  @Override
+  public String getAELSafeURIString() {
+    return getOriginalURIString().replaceFirst( "s3://", "s3a://" );
+  }
 }
