@@ -242,6 +242,11 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
 
   @Override
   public String getOriginalURIString() {
-    return resolvedFileObject.getPublicURIString();
+    /*
+    * [BACKLOG-34530] AEL is the only thing using this
+    * so converting uris to s3a:// for HDFS 3+ support
+    * */
+    return resolvedFileObject.getPublicURIString()
+            .replaceFirst( "s3://", "s3a://" );
   }
 }
