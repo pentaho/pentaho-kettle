@@ -458,7 +458,7 @@ public class TransMetaConverterTest {
 
     doReturn( transMeta ).when( transMeta ).realClone( false );
     when( KettleVFS.getFileObject( any() ) ).thenReturn( connectionFileObject );
-    when( connectionFileObject.getOriginalURIString() ).thenReturn( FINAL_NAME );
+    when( connectionFileObject.getAELSafeURIString() ).thenReturn( FINAL_NAME );
 
     StepMeta textFileStep = new StepMeta( "resolvableStep", spy( new TextFileInputMeta() ) );
     BaseFileInputFiles inputFiles = new BaseFileInputFiles();
