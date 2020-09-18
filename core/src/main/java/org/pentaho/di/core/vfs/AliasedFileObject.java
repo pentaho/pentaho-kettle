@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,13 @@ public interface AliasedFileObject {
    * @return original URI string
    */
   String getOriginalURIString();
+
+  /**
+   * Returns the original file object URI but swaps s3:// for s3a://
+   * when needed
+   * @return
+   */
+  String getAELSafeURIString();
 
   public static boolean isAliasedFile( FileObject file) {
     return AliasedFileObject.class.isAssignableFrom( file.getClass() );
