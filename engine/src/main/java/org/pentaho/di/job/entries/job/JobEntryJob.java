@@ -743,7 +743,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
         // PDI-18776: Get the result row from rows based on iteration index if rows is not empty otherwise result row is null
         if ( rows != null && execPerRow && !rows.isEmpty() ) {
-    	  // This check is for avoiding OutOfBoundException in next statement as iteration <= rows.size() condition is not leaving while loop
+          // This check is for avoiding OutOfBoundException in next statement as iteration <= rows.size() condition is not leaving while loop
           // after processing the last row. Otherwise if iteration == rows.size() indicates that we processed already the last row and just need to break from the loop
           if ( iteration != rows.size() ) {
             resultRow = rows.get( iteration );
