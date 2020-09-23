@@ -38,7 +38,7 @@ buildProperties:
 
   # Tagging
   RUN_STAGE_TAG: true
-  TAG_NAME: ${RELEASE_VERSION}-RC
+  TAG_NAME: ${RELEASE_VERSION}-${RELEASE_BUILD_NUMBER}
 
   # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
   # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
