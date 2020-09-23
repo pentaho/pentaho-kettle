@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -463,8 +463,8 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public Object[] cloneRow( Object[] objects, Object[] newObjects ) throws KettleValueException {
+    lock.writeLock().lock();
     List<Integer> list = getOrCreateValuesThatNeedRealClone( valueMetaList );
-    lock.readLock().lock();
     try {
       for ( Integer i : list ) {
         ValueMetaInterface valueMeta = valueMetaList.get( i );
@@ -472,7 +472,7 @@ public class RowMeta implements RowMetaInterface {
       }
       return newObjects;
     } finally {
-      lock.readLock().unlock();
+      lock.writeLock().unlock();
     }
   }
 
@@ -535,7 +535,7 @@ public class RowMeta implements RowMetaInterface {
       return -1;
     }
 
-    lock.readLock().lock();
+    lock.writeLock().lock();
     try {
       Integer index = cache.findAndCompare( valueName, valueMetaList );
       for ( int i = 0; ( index == null ) && ( i < valueMetaList.size() ); i++ ) {
@@ -553,7 +553,7 @@ public class RowMeta implements RowMetaInterface {
       }
       return index;
     } finally {
-      lock.readLock().unlock();
+      lock.writeLock().unlock();
     }
   }
 
@@ -565,7 +565,7 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public ValueMetaInterface searchValueMeta( String valueName ) {
-    lock.readLock().lock();
+    lock.writeLock().lock();
     try {
       Integer index = indexOfValue( valueName );
       if ( index < 0 ) {
@@ -573,7 +573,7 @@ public class RowMeta implements RowMetaInterface {
       }
       return valueMetaList.get( index );
     } finally {
-      lock.readLock().unlock();
+      lock.writeLock().unlock();
     }
   }
 
