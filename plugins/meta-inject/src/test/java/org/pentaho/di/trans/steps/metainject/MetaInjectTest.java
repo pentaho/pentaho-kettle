@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.injection.Injection;
@@ -62,6 +61,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -451,7 +451,6 @@ public class MetaInjectTest {
     assertEquals( 1, unavailable.size() );
     assertTrue( unavailable.contains( unavailableTargetAttr ) );
   }
-  
 
   @Test
   public void testStepChangeListener() throws Exception {
@@ -569,5 +568,18 @@ public class MetaInjectTest {
     verify( cloneMeta, times( 1 ) ).setRepositoryDirectory( adminDir );
     verify( cloneMeta, times( 1 ) ).setObjectId( any( ObjectId.class ) );
     verify( repository, times( 1 ) ).save( cloneMeta, null, null, true );
+  }
+
+  @Test
+  public void writeInjectedKtrKeepsDataTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.writeInjectedKtr( filepath );
+    //Make sure realClone( false ) is called and no other, so that the resulting ktr keeps all the info
+    verify( data.transMeta, times( 1 ) ).realClone( false );
+    verify( data.transMeta, times( 0 ) ).realClone( true );
+    verify( data.transMeta, times( 0 ) ).clone();
+
+    //Delete temporary file created by the test
+    new File( filepath ).delete();
   }
 }

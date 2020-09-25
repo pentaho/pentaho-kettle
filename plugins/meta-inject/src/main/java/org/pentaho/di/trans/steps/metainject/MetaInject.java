@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -243,7 +244,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     return new Trans( data.transMeta, this );
   }
 
-  private void writeInjectedKtr( String targetFilPath ) throws KettleException {
+  @VisibleForTesting
+  void writeInjectedKtr( String targetFilPath ) throws KettleException {
 
     if ( getRepository() == null ) {
       writeInjectedKtrToFs( targetFilPath );
