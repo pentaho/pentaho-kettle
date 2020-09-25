@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.metainject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -578,6 +579,42 @@ public class MetaInjectTest {
     verify( data.transMeta, times( 1 ) ).realClone( false );
     verify( data.transMeta, times( 0 ) ).realClone( true );
     verify( data.transMeta, times( 0 ) ).clone();
+
+    //Delete temporary file created by the test
+    new File( filepath ).delete();
+  }
+
+  @Test
+  public void writeInjectedKtrShouldWriteToRepoTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.setRepository( repository );
+    metaInject.writeInjectedKtr( "filepath" );
+
+    verify( metaInject, times( 1 ) ).writeInjectedKtrToRepo( filepath );
+    verify( metaInject, times( 0 ) ).writeInjectedKtrToFs( filepath );
+  }
+
+  @Test
+  public void writeInjectedKtrShouldWriteToFileSystemTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.writeInjectedKtr( "filepath" );
+
+    verify( metaInject, times( 0 ) ).writeInjectedKtrToRepo( filepath );
+    verify( metaInject, times( 1 ) ).writeInjectedKtrToFs( filepath );
+
+    //Delete temporary file created by the test
+    new File( filepath ).delete();
+  }
+
+  @Test
+  public void writeInjectedKtrShouldWriteToFileSystemCompatibilityFlagTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.setRepository( repository );
+    metaInject.setVariable( Const.KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM, "Y" );
+    metaInject.writeInjectedKtr( "filepath" );
+
+    verify( metaInject, times( 0 ) ).writeInjectedKtrToRepo( filepath );
+    verify( metaInject, times( 1 ) ).writeInjectedKtrToFs( filepath );
 
     //Delete temporary file created by the test
     new File( filepath ).delete();
