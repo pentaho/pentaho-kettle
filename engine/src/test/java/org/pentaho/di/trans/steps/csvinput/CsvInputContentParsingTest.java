@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -108,23 +108,22 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     init( file, true );
 
     setFields( new TextFileInputField( "Col 1", -1, -1 ), new TextFileInputField( "Col 2", -1, -1 ),
-      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ),
-      new TextFileInputField( "Col 5", -1, -1 ) );
+      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ) );
 
     process();
 
     check( new Object[][] {
-      { "111", "a\nbc", "あいう", "さしす", null },
-      { "222", "def", "かきく", "たちつ", null},
-      { "333", "", "かきく", "たちつ", null },
-      { "444", "", "", null, null },
-      { "555", "かきく", "", null, null },
-      { "666", "かきく", null, null, null},
+      { "111", "a\nbc", "あいう", "さしす" },
+      { "222", "def", "かきく", "たちつ" },
+      { "333", "", "かきく", "たちつ" },
+      { "444", "", "", null },
+      { "555", "かきく", "", null },
+      { "666", "かきく", null, null },
       { },
-      { "777", "", null, null, null },
-      { "888", "かきく", null, null, null },
+      { "777", "", null, null },
+      { "888", "かきく", null, null },
       { },
-      { "999", "123", "123", "123", "132" } }
+      { "999", "123", "123", "123" } }
     );
   }
 
@@ -149,23 +148,22 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     init( file, true );
 
     setFields( new TextFileInputField( "Col 1", -1, -1 ), new TextFileInputField( "Col 2", -1, -1 ),
-      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ),
-      new TextFileInputField( "Col 5", -1, -1 ) );
+      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ) );
 
     process();
 
     check( new Object[][] {
-      { "111", "a\r\nbc", "あいう", "さしす", null },
-      { "222", "def", "かきく", "たちつ", null},
-      { "333", "", "かきく", "たちつ", null },
-      { "444", "", "", null, null },
-      { "555", "かきく", "", null, null },
-      { "666", "かきく", null, null, null},
+      { "111", "a\r\nbc", "あいう", "さしす" },
+      { "222", "def", "かきく", "たちつ"},
+      { "333", "", "かきく", "たちつ" },
+      { "444", "", "", null },
+      { "555", "かきく", "", null },
+      { "666", "かきく", null, null },
       { },
-      { "777", "", null, null, null },
-      { "888", "かきく", null, null, null },
+      { "777", "", null, null },
+      { "888", "かきく", null, null },
       { },
-      { "999", "123", "123", "123", "132" } }
+      { "999", "123", "123", "123" } }
     );
   }
 
@@ -188,21 +186,20 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     init( file, true );
 
     setFields( new TextFileInputField( "Col 1", -1, -1 ), new TextFileInputField( "Col 2", -1, -1 ),
-      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ),
-      new TextFileInputField( "Col 5", -1, -1 ) );
+      new TextFileInputField( "Col 3", -1, -1 ), new TextFileInputField( "Col 4", -1, -1 ) );
 
     process();
 
     check( new Object[][] {
-      { "111", "a\nbc", "", null, null },
+      { "111", "a\nbc", "", null },
       { },
-      { "444", "", "", null, null },
-      { "555", "かきく", "", null, null },
+      { "444", "", "", null },
+      { "555", "かきく", "", null },
       { },
       { },
-      { "777", "", null, null, null },
-      { "888", "かきく", null, null, null },
-      { "999", "123", "123", "123", "132" } }
+      { "777", "", null, null },
+      { "888", "かきく", null, null },
+      { "999", "123", "123", "123" } }
     );
   }
 
@@ -240,5 +237,26 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     }
 
     return tempFile;
+  }
+
+  @Test
+  public void testSkipColumns() throws Exception {
+    String data = "field1,field2,field3,field4\n"
+      + "aaa,bbb,ccc,ddd\n"
+      + "111,222,333,444\n";
+
+    String file = createTestFile( "UTF-8", data ).getAbsolutePath();
+    meta.setFileFormat( "Unix" );
+    init( file, true );
+
+    setFields( new TextFileInputField( "field1", -1, -1 ), new TextFileInputField( "field2", -1, -1 ),
+      new TextFileInputField( "field4", -1, -1 ) );
+
+    process();
+
+    check( new Object[][] {
+      { "aaa", "bbb", "ddd" },
+      { "111", "222", "444" } }
+    );
   }
 }
