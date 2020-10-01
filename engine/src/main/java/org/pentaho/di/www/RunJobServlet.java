@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
@@ -55,6 +56,9 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
   private static Class<?> PKG = RunJobServlet.class; // i18n
 
   public static final String CONTEXT_PATH = "/kettle/runJob";
+
+  private static final String UNAUTHORIZED_ACCESS_TO_REPOSITORY = "The server sent HTTP status code 401";
+  private static final String UNABLE_TO_LOAD_JOB = "Unable to load job";
 
   public RunJobServlet() {
   }
@@ -136,6 +140,18 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       <td>Request was processed.</td>
     </tr>
     <tr>
+      <td>400</td>
+      <td>Bad Request: Mandatory parameter job missing</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>Unauthorized access to the repository</td>
+    </tr>
+    <tr>
+      <td>404</td>
+      <td>Not found: Job not found</td>
+    </tr>
+    <tr>
       <td>500</td>
       <td>Internal server error occurs during request processing.</td>
     </tr>
@@ -163,14 +179,23 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
     response.setStatus( HttpServletResponse.SC_OK );
 
     PrintWriter out = response.getWriter();
-
+    SlaveServerConfig serverConfig = transformationMap.getSlaveServerConfig();
     try {
-
-      SlaveServerConfig serverConfig = transformationMap.getSlaveServerConfig();
       Repository slaveServerRepository = serverConfig.getRepository();
-      if ( slaveServerRepository == null ) {
-        throw new KettleException( "Unable to connect to repository in Slave Server Config: " + serverConfig.getRepositoryId() );
+      if ( slaveServerRepository == null || !slaveServerRepository.isConnected() ) {
+        response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RunJobServlet.Error.UnableToConnectToRepository", serverConfig.getRepositoryId() ) ) );
+        return;
       }
+
+      if ( transOption == null ) {
+        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RunJobServlet.Error.MissingMandatoryParameterJob" ) ) );
+        return;
+      }
+
       final JobMeta jobMeta = loadJob( slaveServerRepository, transOption );
 
       // Set the servlet parameters as variables in the transformation
@@ -196,6 +221,12 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       }
 
       JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
+      if ( levelOption != null && !isValidLogLevel( levelOption ) ) {
+        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RunJobServlet.Error.InvalidLogLevel" ) ) );
+        return;
+      }
       LogLevel logLevel = LogLevel.getLogLevelForCode( levelOption );
       jobExecutionConfiguration.setLogLevel( logLevel );
 
@@ -261,11 +292,28 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
         out.flush();
 
       } catch ( Exception executionException ) {
+        response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
         String logging = KettleLogStore.getAppender().getBuffer( job.getLogChannelId(), false ).toString();
-        throw new KettleException( "Error executing Job: " + logging, executionException );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RunJobServlet.Error.ErrorExecutingJob", serverConfig.getRepositoryId(), logging ) ) );
       }
+    } catch ( IdNotFoundException idEx ) {
+      response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+        PKG, "RunJobServlet.Error.UnableToRunJob", serverConfig.getRepositoryId() ) ) );
     } catch ( Exception ex ) {
-
+      if ( ex.getMessage().contains( UNAUTHORIZED_ACCESS_TO_REPOSITORY ) ) {
+        response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RunJobServlet.Error.UnableToConnectToRepository", serverConfig.getRepositoryId() ) ) );
+        return;
+      } else if ( ex.getMessage().contains( UNABLE_TO_LOAD_JOB ) ) {
+        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RunJobServlet.Error.UnableToFindJob", serverConfig.getRepositoryId() ) ) );
+        return;
+      }
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
       out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
         PKG, "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
@@ -307,6 +355,15 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
         return transJob;
       }
     }
+  }
+
+  private boolean isValidLogLevel( String levelOption ) {
+    for ( LogLevel level : LogLevel.values() ) {
+      if ( level.getCode().equals( levelOption ) ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public String toString() {
