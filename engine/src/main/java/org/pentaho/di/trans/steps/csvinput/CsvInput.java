@@ -587,7 +587,7 @@ public class CsvInput extends BaseStep implements StepInterface {
       //
       // Let's start by looking where we left off reading.
       //
-      while ( !newLineFound && outputIndex < meta.getInputFields().length ) {
+      while ( !newLineFound && outputIndex < data.fieldsMapping.size() ) {
 
         if ( data.resizeBufferIfNeeded() ) {
           // Last row was being discarded if the last item is null and
@@ -730,7 +730,8 @@ public class CsvInput extends BaseStep implements StepInterface {
           field = data.removeEscapedEnclosures( field, escapedEnclosureFound );
         }
 
-        final int actualFieldIndex = outputIndex++;
+        final int currentFieldIndex = outputIndex++;
+        final int actualFieldIndex = data.fieldsMapping.fieldMetaIndex( currentFieldIndex );
         if ( actualFieldIndex != FieldsMapping.FIELD_DOES_NOT_EXIST ) {
           if ( !skipRow ) {
             if ( meta.isLazyConversionActive() ) {
@@ -767,7 +768,7 @@ public class CsvInput extends BaseStep implements StepInterface {
         // this will prevent the endBuffer from being incremented twice (once by this block and once in the
         // do-while loop below) and possibly skipping a newline character. This can occur if there is an
         // empty column at the end of the row (see the Jira case for details)
-        if ( ( !newLineFound && outputIndex < meta.getInputFields().length ) || ( newLineFound && doubleLineEnd ) ) {
+        if ( ( !newLineFound && outputIndex < data.fieldsMapping.size() ) || ( newLineFound && doubleLineEnd ) ) {
 
           int i = 0;
           while ( ( !data.newLineFound() && ( i < data.delimiter.length ) ) ) {
