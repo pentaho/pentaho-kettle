@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,10 +25,15 @@ package org.pentaho.di.core.database.util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.database.DataSourceNamingException;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
@@ -36,6 +41,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType;
+import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 public class DatabaseUtilTest {
   private Context context;
@@ -140,4 +148,22 @@ public class DatabaseUtilTest {
     assertEquals( dataSource, DatabaseUtil.getDataSourceFromJndi( testName, context ) );
     assertEquals( dataSource, DatabaseUtil.getDataSourceFromJndi( testName, context ) );
   }
+
+  @Test
+  public void testInvalidateNamedDataSource() throws DataSourceNamingException {
+    DatabaseUtil dsp = new DatabaseUtil();
+    String namedDatasource = UUID.randomUUID().toString();
+    DataSource dataSource = mock( DataSource.class );
+
+    Map<String, DataSource> cache = Collections.synchronizedMap( new HashMap<>() );
+    setInternalState( dsp.getClass(), "FoundDS", cache );
+    assertEquals( null, dsp.invalidateNamedDataSource( namedDatasource, DatasourceType.POOLED ) );
+
+
+    cache.put( namedDatasource, dataSource );
+    setInternalState( dsp.getClass(), "FoundDS", cache );
+    assertEquals( dataSource, dsp.invalidateNamedDataSource( namedDatasource, DatasourceType.POOLED ) );
+    assertEquals( 0, ( (Map<String, DataSource>) getInternalState( dsp.getClass(), "FoundDS" ) ).size() );
+  }
+
 }
