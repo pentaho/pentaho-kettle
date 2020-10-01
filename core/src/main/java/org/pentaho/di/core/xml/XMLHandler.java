@@ -26,6 +26,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleAttributeInterface;
@@ -36,6 +37,7 @@ import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -85,6 +87,8 @@ import static org.pentaho.di.core.row.value.ValueMetaBase.convertStringToBoolean
 public class XMLHandler {
   //TODO Change impl for some standard XML processing (like StAX, for example) because ESAPI has charset processing
   // issues.
+
+  private static Class<?> PKG = XMLHandler.class; // for i18n purposes, needed by Translator2!!
 
   private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
@@ -552,31 +556,40 @@ public class XMLHandler {
    */
   public static Document loadXMLFile( FileObject fileObject, String systemID, boolean ignoreEntities,
                                       boolean namespaceAware ) throws KettleXMLException {
-
-    //[PDI-18528] Retry opening the inputstream on first error. Because of the way DefaultFileContent handles open streams,
-    //in multithread executions, the stream could be closed by another stream without notice. The retry is a way to recover the stream.
-    int reties = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_RETRY_OPEN_XML_STREAM ), DEFAULT_RETRY_ATTEMPTS );
-    if ( reties < 0 ) {
-      reties = 0;
-    }
-    int attempts = 0;
     Exception lastException = null;
-    while ( attempts <= reties ) {
-      try {
-        return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
-      } catch ( Exception ex ) {
-        lastException = ex;
-        try {
-          java.lang.Thread.sleep( 1000 );
-        } catch ( InterruptedException e ) {
-          //Sonar squid S2142 requires the handling of the InterruptedException instead of ignoring it
-          Thread.currentThread().interrupt();
-        }
+
+    // Try to read ONLY if the file exists
+    if ( checkFile( fileObject ) ) {
+      // [PDI-18528] Retry opening the inputstream on first error. Because of the way DefaultFileContent handles open
+      // streams, in multithread executions, the stream could be closed by another stream without notice. The retry
+      // is a way to recover the stream.
+      int retries =
+        Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_RETRY_OPEN_XML_STREAM ), DEFAULT_RETRY_ATTEMPTS );
+      if ( retries < 0 ) {
+        retries = 0;
       }
-      attempts++;
+      int attempts = 0;
+      while ( attempts <= retries ) {
+        try {
+          return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
+        } catch ( Exception ex ) {
+          lastException = ex;
+          try {
+            java.lang.Thread.sleep( 1000 );
+          } catch ( InterruptedException e ) {
+            //Sonar squid S2142 requires the handling of the InterruptedException instead of ignoring it
+            Thread.currentThread().interrupt();
+          }
+        }
+        attempts++;
+      }
+
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "XMLHandler.errorReadingFile", fileObject.toString() ), lastException );
     }
 
-    throw new KettleXMLException( "Unable to read file [" + fileObject.toString() + "]", lastException );
+    throw new KettleXMLException( BaseMessages.getString(
+      PKG, "XMLHandler.FileDoesNotExists", fileObject.toString() ) );
   }
 
   /**
@@ -1216,6 +1229,21 @@ public class XMLHandler {
     return sw.toString();
   }
 
+  /**
+   * <p>Checks if a given {@link FileObject} instance corresponds to an existing file.</p>
+   *
+   * @param fileObject the {@link FileObject} instance to check
+   * @return <code>true</code> if the file exists, <code>false</code> otherwise
+   * @throws KettleXMLException if an error occurred while checking
+   */
+  public static boolean checkFile( FileObject fileObject ) throws KettleXMLException {
+    try {
+      return fileObject.isFile();
+    } catch ( FileSystemException e ) {
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "XMLHandler.errorCheckingFileExistence", fileObject.toString() ), e );
+    }
+  }
 }
 
 /**
@@ -1232,5 +1260,4 @@ class DTDIgnoringEntityResolver implements EntityResolver {
     log.info( "System-ID: " + systemID );
     return new InputSource( new ByteArrayInputStream( "<?xml version='1.0' encoding='UTF-8'?>".getBytes() ) );
   }
-
 }
