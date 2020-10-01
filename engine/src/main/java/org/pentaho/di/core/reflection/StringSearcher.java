@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -67,6 +68,16 @@ public class StringSearcher {
 
     Class<? extends Object> baseClass = object.getClass();
     Field[] fields = baseClass.getDeclaredFields();
+    validateFields( object, level, stringList, parentObject, grandParentObject, baseClass, fields );
+    if ( object instanceof TextFileOutputMeta ) {
+      Field[] parentFields = baseClass.getSuperclass().getDeclaredFields();
+      validateFields( object, level, stringList, parentObject, grandParentObject, baseClass, parentFields );
+    }
+  }
+
+  static void validateFields( Object object, int level, List<StringSearchResult> stringList,
+                                      Object parentObject, Object grandParentObject, Class<?> baseClass,
+                                      Field[] fields ) {
     for ( int i = 0; i < fields.length; i++ ) {
       Field field = fields[i];
 
