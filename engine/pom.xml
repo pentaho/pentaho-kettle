@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>8.3.0.0-SNAPSHOT</version>
+  <version>8.3.0.10-C244</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>8.3.0.0-SNAPSHOT</version>
+    <version>8.3.0.10-816</version>
   </parent>
 
   <properties>
@@ -23,10 +23,10 @@
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
 
     <!-- Pentaho dependencies -->
-    <pentaho-reporting.version>8.3.0.0-SNAPSHOT</pentaho-reporting.version>
-    <pentaho-registry.version>8.3.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-connections.version>8.3.0.0-SNAPSHOT</pentaho-connections.version>
-    <mondrian.version>8.3.0.0-SNAPSHOT</mondrian.version>
+    <pentaho-reporting.version>8.3.0.10-816</pentaho-reporting.version>
+    <pentaho-registry.version>8.3.0.10-816</pentaho-registry.version>
+    <pentaho-connections.version>8.3.0.10-816</pentaho-connections.version>
+    <mondrian.version>8.3.0.10-816</mondrian.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
@@ -99,12 +99,12 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>8.3.0.10-816</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pdi-engine-api</artifactId>
-      <version>${project.version}</version>
+      <version>8.3.0.10-816</version>
     </dependency>
 
     <!-- Pentaho dependencies -->
@@ -131,7 +131,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>8.3.0.10-816</version>
     </dependency>
 
     <!-- Reporting dependencies -->
@@ -868,7 +868,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>8.3.0.10-816</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
