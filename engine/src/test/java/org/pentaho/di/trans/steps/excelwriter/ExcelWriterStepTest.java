@@ -87,6 +87,8 @@ public class ExcelWriterStepTest {
   private ExcelWriterStepMeta metaMock;
   private ExcelWriterStepData dataMock;
 
+  private File templateFile;
+
   @Before
   public void setUp() throws Exception {
     String path = TestUtils.createRamFile( getClass().getSimpleName() + "/testXLSProtect.xls" );
@@ -272,7 +274,7 @@ public class ExcelWriterStepTest {
 
     doReturn( path ).when( step ).buildFilename( 0 );
     doReturn( true ).when( metaMock ).isTemplateEnabled();
-    doReturn( false ).when( metaMock ).isStreamingData();
+    doReturn( true ).when( metaMock ).isStreamingData();
     doReturn( false ).when( metaMock ).isHeaderEnabled();
     doReturn( XLSX ).when( metaMock ).getExtension();
     doReturn( new ExcelWriterStepField[] { field } ).when( metaMock ).getOutputFields();
@@ -399,6 +401,18 @@ public class ExcelWriterStepTest {
   }
 
   @Test
+  public void test_Xlsx_Stream_NoTemplate() throws Exception {
+
+    ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
+    Object vObj = new Object();
+    doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
+    doReturn( "value_timestamp" ).when( vmi ).getName();
+    doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
+
+    testBaseXlsx( vmi, vObj, true, false );
+  }
+
+  @Test
   public void test_Xlsx_NoStream_NoTemplate() throws Exception {
 
     ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
@@ -408,6 +422,18 @@ public class ExcelWriterStepTest {
     doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
 
     testBaseXlsx( vmi, vObj, false, false );
+  }
+
+  @Test
+  public void test_Xlsx_Stream_Template() throws Exception {
+
+    ValueMetaInterface vmi = mock( ValueMetaTimestamp.class, new DefaultAnswerThrowsException() );
+    Object vObj = new Object();
+    doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
+    doReturn( "value_timestamp" ).when( vmi ).getName();
+    doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
+
+    testBaseXlsx( vmi, vObj, true, true );
   }
 
   @Test
