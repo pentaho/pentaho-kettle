@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.provider.URLFileName;
 import org.apache.commons.vfs2.util.RandomAccessMode;
+import org.pentaho.di.core.vfs.AliasedFileObject;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,13 +46,14 @@ import java.io.OutputStream;
  * as getChildren, ConnectionFileObject resolves the child FileObjects, but converts them to pvfs FileObjects to
  * maintain named connection information.
  */
-public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSystem> {
+public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSystem> implements AliasedFileObject {
 
   public static final String DELIMITER = "/";
-  private final AbstractFileObject resolvedFileObject;
+  private final AbstractFileObject<ConnectionFileSystem> resolvedFileObject;
   private final String domain;
 
-  public ConnectionFileObject( AbstractFileName name, ConnectionFileSystem fs, AbstractFileObject resolvedFileObject,
+  public ConnectionFileObject( AbstractFileName name, ConnectionFileSystem fs,
+                               AbstractFileObject<ConnectionFileSystem> resolvedFileObject,
                                String domain ) {
     super( name, fs );
     this.resolvedFileObject = resolvedFileObject;
@@ -238,5 +240,13 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
     return resolvedFileObject;
   }
 
+  @Override
+  public String getOriginalURIString() {
+    return resolvedFileObject.getPublicURIString();
+  }
 
+  @Override
+  public String getAELSafeURIString() {
+    return getOriginalURIString().replaceFirst( "s3://", "s3a://" );
+  }
 }
