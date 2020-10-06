@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -243,7 +244,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     return new Trans( data.transMeta, this );
   }
 
-  private void writeInjectedKtr( String targetFilPath ) throws KettleException {
+  @VisibleForTesting
+  void writeInjectedKtr( String targetFilPath ) throws KettleException {
 
     if ( getRepository() == null ) {
       writeInjectedKtrToFs( targetFilPath );
@@ -261,7 +263,8 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     OutputStream os = null;
     try {
-      TransMeta generatedTransMeta = (TransMeta) data.transMeta.clone();
+      //don't clear all of the clone's data before copying from the source object
+      TransMeta generatedTransMeta = (TransMeta) data.transMeta.realClone( false );
       File injectedKtrFile = new File( targetFilePath );
 
       if ( injectedKtrFile == null ) {
@@ -300,7 +303,8 @@ public class MetaInject extends BaseStep implements StepInterface {
       repoSaveLock.lock();
 
       // clone the transMeta associated with the data, this is the generated meta injection transformation
-      final TransMeta generatedTrans = (TransMeta) data.transMeta.clone();
+      // don't clear all of the clone's data before copying from the source object
+      final TransMeta generatedTrans = (TransMeta) data.transMeta.realClone( false );
       // the targetFilePath holds the absolute repo path that is the requested destination of this generated
       // transformation, extract the file name (no extension) and the containing directory and adjust the generated
       // transformation properties accordingly

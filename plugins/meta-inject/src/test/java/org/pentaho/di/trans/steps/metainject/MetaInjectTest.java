@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -450,7 +451,6 @@ public class MetaInjectTest {
     assertEquals( 1, unavailable.size() );
     assertTrue( unavailable.contains( unavailableTargetAttr ) );
   }
-  
 
   @Test
   public void testStepChangeListener() throws Exception {
@@ -532,8 +532,8 @@ public class MetaInjectTest {
     RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
     RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
       new RepositoryDirectory( null, "/" ), "home" ), "admin" ) );
-    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
-    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
+    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.realClone( false ) );
+    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).realClone( false );
 
     PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir, "home/admin" );
     PowerMockito.doReturn( adminDir ).when( data.transMeta ).getRepositoryDirectory();
@@ -553,8 +553,8 @@ public class MetaInjectTest {
     RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
     RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
       new RepositoryDirectory( null, "/" ), "home" ), "admin" ) );
-    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
-    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
+    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.realClone( false ) );
+    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).realClone( false );
 
     PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir,
       "/home/admin" );
@@ -568,5 +568,18 @@ public class MetaInjectTest {
     verify( cloneMeta, times( 1 ) ).setRepositoryDirectory( adminDir );
     verify( cloneMeta, times( 1 ) ).setObjectId( any( ObjectId.class ) );
     verify( repository, times( 1 ) ).save( cloneMeta, null, null, true );
+  }
+
+  @Test
+  public void writeInjectedKtrKeepsDataTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.writeInjectedKtr( filepath );
+    //Make sure realClone( false ) is called and no other, so that the resulting ktr keeps all the info
+    verify( data.transMeta, times( 1 ) ).realClone( false );
+    verify( data.transMeta, times( 0 ) ).realClone( true );
+    verify( data.transMeta, times( 0 ) ).clone();
+
+    //Delete temporary file created by the test
+    new File( filepath ).delete();
   }
 }
