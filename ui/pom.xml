@@ -22,7 +22,7 @@
 
     <!-- Pentaho dependencies -->
     <pentaho-vfs-browser.version>8.3.0.10-816</pentaho-vfs-browser.version>
-    <pentaho-capability-manager.version>${project.version}</pentaho-capability-manager.version>
+    <pentaho-capability-manager.version>${pentaho-osgi-bundles.version}</pentaho-capability-manager.version>
 
     <!-- Third-party dependencies -->
     <common.version>3.3.0-v20070426</common.version>
