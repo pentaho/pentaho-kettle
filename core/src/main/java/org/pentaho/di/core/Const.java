@@ -1249,7 +1249,7 @@ public class Const {
   /**
    * The default value for the variable to configure environment variables to ignore when initializing shell step
    * */
-  public static final String SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE_DEFAULT = "org.osgi.framework.system.packages.extra";
+  public static final String SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE_DEFAULT = "";
 
   /**
    * <p>A variable to configure the minimum allowed ratio between de- and inflated bytes to detect a zipbomb.</p>

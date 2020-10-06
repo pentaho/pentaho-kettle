@@ -37,6 +37,7 @@ import java.util.Map;
 
 public class JobEntryShellTest {
   public static final String TEST_LIST_ENV_VARIABLE_TO_IGNORE = "package.mock,info.mock";
+  public static final String TEST_LIST_ENV_VARIABLE_TO_IGNORE_EMPTY = "";
   public static final String TEST_ENV_VARIABLE = "MOCK.VARIABLE";
   public static final String TEST_ENV_VARIABLE_VALUE = "MOCK VALUE";
 
@@ -89,6 +90,21 @@ public class JobEntryShellTest {
     for ( String envToIgnore : envsToIgnore ) {
       Assert.assertNull( environment.get( envToIgnore ) );
     }
+    Assert.assertEquals( environment.get( TEST_ENV_VARIABLE ), TEST_ENV_VARIABLE_VALUE );
+  }
+
+  @Test
+  public void testPopulateProcessBuilderEnvironmentWithoutEnvsToIgnore() {
+    ProcessBuilder processBuilder = new ProcessBuilder();
+    Map<String, String> environment = processBuilder.environment();
+
+    JobEntryShell spyJobEntryShell = Mockito.spy( jobEntryShell );
+    doReturn( TEST_LIST_ENV_VARIABLE_TO_IGNORE_EMPTY ).when( spyJobEntryShell )
+            .getVariable( Const.SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE );
+
+    spyJobEntryShell.setVariable( TEST_ENV_VARIABLE, TEST_ENV_VARIABLE_VALUE );
+    spyJobEntryShell.populateProcessBuilderEnvironment( processBuilder );
+
     Assert.assertEquals( environment.get( TEST_ENV_VARIABLE ), TEST_ENV_VARIABLE_VALUE );
   }
 
