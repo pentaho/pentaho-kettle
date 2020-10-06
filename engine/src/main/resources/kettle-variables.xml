@@ -566,5 +566,11 @@
     <variable>KETTLE_XLSX_ZIP_BOMB_CHECK</variable>
     <default-value>false</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>A variable to configure a comma separated list of environment variables to ignore when initializing shell step. org.osgi.framework.system.packages.extra is set by default.</description>
+    <variable>SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE</variable>
+    <default-value>org.osgi.framework.system.packages.extra</default-value>
+  </kettle-variable>
 </kettle-variables>
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -78,30 +79,18 @@ import com.google.common.annotations.VisibleForTesting;
  */
 public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryShell.class; // for i18n purposes, needed by Translator2!!
-
-  private String filename;
-
-  private String workDirectory;
-
   public String[] arguments;
-
   public boolean argFromPrevious;
-
   public boolean setLogfile;
-
   public String logfile, logext;
-
   public boolean addDate, addTime;
-
   public LogLevel logFileLevel;
-
   public boolean execPerRow;
-
   public boolean setAppendLogfile;
-
   public boolean insertScript;
-
   public String script;
+  private String filename;
+  private String workDirectory;
 
   public JobEntryShell( String name ) {
     super( name, "" );
@@ -285,32 +274,32 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     filename = n;
   }
 
-  public void setFilename( String n ) {
-    filename = n;
-  }
-
   public String getFilename() {
     return filename;
+  }
+
+  public void setFilename( String n ) {
+    filename = n;
   }
 
   public String getRealFilename() {
     return environmentSubstitute( getFilename() );
   }
 
-  public void setWorkDirectory( String n ) {
-    workDirectory = n;
-  }
-
   public String getWorkDirectory() {
     return workDirectory;
   }
 
-  public void setScript( String scriptin ) {
-    script = scriptin;
+  public void setWorkDirectory( String n ) {
+    workDirectory = n;
   }
 
   public String getScript() {
     return script;
+  }
+
+  public void setScript( String scriptin ) {
+    script = scriptin;
   }
 
   public String getLogFilename() {
@@ -581,11 +570,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
       // Build the environment variable list...
       ProcessBuilder procBuilder = new ProcessBuilder( cmds );
-      Map<String, String> env = procBuilder.environment();
-      String[] variables = listVariables();
-      for ( int i = 0; i < variables.length; i++ ) {
-        env.put( variables[i], getVariable( variables[i] ) );
-      }
+      populateProcessBuilderEnvironment( procBuilder );
 
       if ( getWorkDirectory() != null && !Utils.isEmpty( Const.rtrim( getWorkDirectory() ) ) ) {
         String vfsFilename = environmentSubstitute( getWorkDirectory() );
@@ -706,6 +691,25 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     result = result.replaceAll( "\\r\\n?", "\n" );
 
     return result;
+  }
+
+  @VisibleForTesting
+  void populateProcessBuilderEnvironment( ProcessBuilder processBuilder ) {
+    Map<String, String> env = processBuilder.environment();
+    String[] variables = listVariables();
+    String[] envsToIgnore = Const.NVL( getVariable( Const.SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE ),
+            Const.SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE_DEFAULT )
+            .split( "," );
+
+    for ( String variable : variables ) {
+      if ( envsToIgnore.length > 0 && Arrays.asList( envsToIgnore ).contains( variable ) ) {
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "JobShell.VariableIgnoredFromProcessBuilderEnvironment", variable ) );
+        }
+      } else {
+        env.put( variable, getVariable( variable ) );
+      }
+    }
   }
 
   public boolean evaluates() {
