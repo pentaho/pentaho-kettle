@@ -7,7 +7,7 @@
   <parent>
     <artifactId>pdi-plugins</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>8.3.0.10-816</version>
+    <version>8.3.0.10-816-C244</version>
   </parent>
 
   <artifactId>salesforce</artifactId>

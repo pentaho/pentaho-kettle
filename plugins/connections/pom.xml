@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.3.0.10-816</version>
+    <version>8.3.0.10-816-C244</version>
   </parent>
 
   <artifactId>connections</artifactId>
-  <version>8.3.0.10-816</version>
+  <version>8.3.0.10-816-C244</version>
   <packaging>pom</packaging>
 
   <name>Connections Plugin</name>
@@ -21,7 +21,7 @@
   </modules>
 
   <properties>
-    <pdi.version>8.3.0.10-816</pdi.version>
+    <pdi.version>8.3.0.10-816-C244</pdi.version>
     <dependency.karaf.version>3.0.3</dependency.karaf.version>
     <dependency.osgi.version>4.3.1</dependency.osgi.version>
     <version.for.license>${project.version}</version.for.license>
@@ -30,7 +30,7 @@
     <angular-animate.version>${angular.version}</angular-animate.version>
     <pentaho-osgi-bundles.version>8.3.0.10-816</pentaho-osgi-bundles.version>
     <angular-ui-router.version>0.4.2</angular-ui-router.version>
-    <pdi.version>8.3.0.10-816</pdi.version>
+    <pdi.version>8.3.0.10-816-C244</pdi.version>
     <cxf.karaf.version>3.0.13</cxf.karaf.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
     <require-css.version>0.1.8</require-css.version>

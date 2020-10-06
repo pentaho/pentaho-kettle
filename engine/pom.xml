@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>8.3.0.10-C244</version>
+  <version>8.3.0.10-816-C244</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>8.3.0.10-816</version>
+    <version>8.3.0.10-816-C244</version>
   </parent>
 
   <properties>
@@ -104,7 +104,7 @@
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pdi-engine-api</artifactId>
-      <version>8.3.0.10-816</version>
+      <version>8.3.0.10-816-C244</version>
     </dependency>
 
     <!-- Pentaho dependencies -->

@@ -4,19 +4,19 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pentaho-streaming</artifactId>
-  <version>8.3.0.10-816</version>
+  <version>8.3.0.10-816-C244</version>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.3.0.10-816</version>
+    <version>8.3.0.10-816-C244</version>
   </parent>
 
   <name>Pentaho Streaming Plugins</name>
 
   <properties>
-    <pdi.version>8.3.0.10-816</pdi.version>
+    <pdi.version>8.3.0.10-816-C244</pdi.version>
     <guava.version>19.0</guava.version>
     <pentaho-metaverse.version>8.3.0.10-816</pentaho-metaverse.version>
   </properties>

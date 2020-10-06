@@ -5,19 +5,19 @@
 
   <artifactId>pdi-pur-plugin-core</artifactId>
   <packaging>jar</packaging>
-  <version>8.3.0.10-816</version>
+  <version>8.3.0.10-816-C244</version>
 
   <name>PDI PUR Plugin Core</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur</artifactId>
-    <version>8.3.0.10-816</version>
+    <version>8.3.0.10-816-C244</version>
   </parent>
 
   <properties>
     <!-- Kettle dependencies -->
-    <pdi.version>8.3.0.10-816</pdi.version>
+    <pdi.version>8.3.0.10-816-C244</pdi.version>
 
     <!-- Pentaho dependenceis -->
     <platform.version>8.3.0.10-816</platform.version>

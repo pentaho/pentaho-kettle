@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur</artifactId>
-    <version>8.3.0.10-816</version>
+    <version>8.3.0.10-816-C244</version>
   </parent>
 
   <artifactId>repository-proxy</artifactId>
@@ -18,7 +18,7 @@
 
   <properties>
     <!-- Kettle dependencies -->
-    <pdi.version>8.3.0.10-816</pdi.version>
+    <pdi.version>8.3.0.10-816-C244</pdi.version>
     <metastore.version>8.3.0.10-816</metastore.version>
     <platform.version>8.3.0.10-816</platform.version>
     <pentaho-osgi-bundles.version>8.3.0.10-816</pentaho-osgi-bundles.version>
