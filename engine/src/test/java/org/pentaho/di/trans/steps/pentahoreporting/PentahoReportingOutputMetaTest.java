@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,21 @@ public class PentahoReportingOutputMetaTest extends BaseMetadataInjectionTest<Pe
         return meta.getOutputFileField();
       }
     } );
-
+    check( "INPUT_FILE", new StringGetter() {
+      public String get() {
+        return meta.getInputFile();
+      }
+    } );
+    check( "OUTPUT_FILE", new StringGetter() {
+      public String get() {
+        return meta.getOutputFile();
+      }
+    } );
+    check( "USE_VALUES_FROM_FIELDS", new BooleanGetter() {
+      public boolean get() {
+        return meta.getUseValuesFromFields();
+      }
+    } );
     ValueMetaInterface valueMeta = new ValueMetaString( "f" );
     injector.setProperty( meta, "PARAMETER_NAME", setValue( valueMeta, "f1", "f2" ), "f" );
     injector.setProperty( meta, "FIELDNAME", setValue( valueMeta, "v1", "v2" ), "f" );

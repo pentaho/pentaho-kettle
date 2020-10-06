@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>json</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kettle-json-plugin-core</artifactId>
@@ -15,9 +15,9 @@
   <name>PDI Json Plugin Core</name>
 
   <properties>
-    <pdi.version>9.1.0.0-SNAPSHOT</pdi.version>
-    <pentaho-metaverse.version>9.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <platform.version>9.1.0.0-SNAPSHOT</platform.version>
+    <pdi.version>9.2.0.0-SNAPSHOT</pdi.version>
+    <pentaho-metaverse.version>9.2.0.0-SNAPSHOT</pentaho-metaverse.version>
+    <platform.version>9.2.0.0-SNAPSHOT</platform.version>
     <commons.io.version>1.4</commons.io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
@@ -217,6 +217,17 @@
       <groupId>org.powermock</groupId>
       <artifactId>powermock-core</artifactId>
       <version>${dependency.org.powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- neccessary -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

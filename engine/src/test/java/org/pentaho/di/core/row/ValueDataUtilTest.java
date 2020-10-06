@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1315,6 +1315,23 @@ public class ValueDataUtilTest {
     assertEquals( 2L, returnValue );
     assertEquals( metaA.getStorageType(), ValueMetaInterface.STORAGE_TYPE_NORMAL );
   }
+
+  @Test
+  public void testAbs() throws  Exception {
+    BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal field2 = new BigDecimal( "-123456789012345678901.1234567890123456789" );
+    BigDecimal field3 = new BigDecimal( "1.0" );
+    BigDecimal field4 = new BigDecimal( "-1.0" );
+
+    BigDecimal expResult1 = field1;
+    BigDecimal expResult2 = field3;
+
+    assertEquals( expResult1, ValueDataUtil.abs( new ValueMetaBigNumber( ), field1 ) );
+    assertEquals( expResult1, ValueDataUtil.abs( new ValueMetaBigNumber( ), field2 ) );
+    assertEquals( expResult2, ValueDataUtil.abs( new ValueMetaBigNumber( ), field3 ) );
+    assertEquals( expResult2, ValueDataUtil.abs( new ValueMetaBigNumber( ), field4 ) );
+  }
+
 
   @Test
   public void testJaro() {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,9 +59,9 @@ public class DataGridMetaTest implements InitializerInterface<StepMetaInterface>
     PluginRegistry.init( false );
     List<String> attributes =
         Arrays.asList( "currency", "decimal", "group", "fieldName", "fieldType", "fieldFormat", "fieldLength",
-            "fieldPrecision", "setEmptyString", "dataLines" );
+            "fieldPrecision", "setEmptyString", "dataLines", "fieldNullIf" );
 
-    Map<String, String> getterMap = new HashMap<String, String>();
+    Map<String, String> getterMap = new HashMap<>();
     Map<String, String> setterMap = new HashMap<String, String>() {
       {
         put( "setEmptyString", "setEmptyString" );
@@ -83,7 +83,8 @@ public class DataGridMetaTest implements InitializerInterface<StepMetaInterface>
         new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( 9 ), 3 ) );
     attrValidatorMap.put( "setEmptyString",
          new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 3 ) );
-    attrValidatorMap.put(  "dataLines", new DataGridLinesLoadSaveValidator() );
+    attrValidatorMap.put( "dataLines", new DataGridLinesLoadSaveValidator() );
+    attrValidatorMap.put( "fieldNullIf", stringArrayLoadSaveValidator );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 

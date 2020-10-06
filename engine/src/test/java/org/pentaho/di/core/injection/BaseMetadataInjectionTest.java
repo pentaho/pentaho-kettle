@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,12 +27,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.After;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
@@ -42,6 +44,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
@@ -54,6 +57,7 @@ public abstract class BaseMetadataInjectionTest<T> {
   protected BeanInjector injector;
   protected T meta;
   protected Set<String> nonTestedProperties;
+  protected boolean isDoingChecks;
 
   protected void setup( T meta ) {
     KettleLogStore.init();
@@ -61,11 +65,14 @@ public abstract class BaseMetadataInjectionTest<T> {
     info = new BeanInjectionInfo( meta.getClass() );
     injector = new BeanInjector( info );
     nonTestedProperties = new HashSet<>( info.getProperties().keySet() );
+    isDoingChecks = true;
   }
 
   @After
   public void after() {
-    assertTrue( "Some properties where not tested: " + nonTestedProperties, nonTestedProperties.isEmpty() );
+    if ( isDoingChecks ) {
+      assertTrue( "Some properties where not tested: " + nonTestedProperties, nonTestedProperties.isEmpty() );
+    }
   }
 
   protected List<RowMetaAndData> setValue( ValueMetaInterface valueMeta, Object... values ) {
@@ -216,6 +223,46 @@ public abstract class BaseMetadataInjectionTest<T> {
     skipPropertyTest( propertyName );
   }
 
+  protected void check( String propertyName, ListGetter getter ) throws KettleException {
+    ValueMetaInterface valueMetaString = new ValueMetaString( "f" );
+
+    injector.setProperty( meta, propertyName, setValue( valueMetaString, "foo", "bar" ), "f" );
+    assertEquals( Arrays.asList( "foo", "bar" ), getter.get() );
+
+    injector.setProperty( meta, propertyName, setValue( valueMetaString, "one", "two" ), "f" );
+    assertEquals( Arrays.asList( "one", "two" ), getter.get() );
+
+    skipPropertyTest( propertyName );
+  }
+
+
+  protected void checkStringToEnum( String propertyName, EnumGetter getter, Class enumType )
+    throws KettleException {
+
+    Object[] values = enumType.getEnumConstants();
+    ValueMetaInterface valueMeta = new ValueMetaString( "f" );
+
+    for ( Object v : values ) {
+      injector.setProperty( meta, propertyName, setValue( valueMeta, v ), "f" );
+      assertEquals( v, getter.get() );
+    }
+
+    skipPropertyTest( propertyName );
+  }
+
+  protected void checkPdiTypes( String propertyName, IntGetter getter ) throws KettleException {
+    String[] supportedPdiTypes = ValueMetaFactory.getValueMetaNames();
+
+    ValueMetaInterface valueMetaString = new ValueMetaString( "f" );
+
+    for ( String pdiType : supportedPdiTypes ) {
+      injector.setProperty( meta, propertyName, setValue( valueMetaString, pdiType ), "f" );
+      assertEquals( ValueMetaFactory.getIdForValueMeta( pdiType ), getter.get() );
+    }
+
+    skipPropertyTest( propertyName );
+  }
+
   public static int[] getTypeCodes( String[] typeNames ) {
     int[] typeCodes = new int[typeNames.length];
     for ( int i = 0; i < typeNames.length; i++ ) {
@@ -242,5 +289,19 @@ public abstract class BaseMetadataInjectionTest<T> {
 
   public interface LongGetter {
     long get();
+  }
+
+  public interface ListGetter {
+    List<?> get();
+  }
+
+  @Test
+  public void testMetadataInjectionMessageElements( ) {
+    isDoingChecks = false;
+    String propertyMessageOmissions =
+      ( new BeanInjectionInfo( meta.getClass() ) ).checkMetaDataInjectionBeanAgainstMessages();
+    if ( propertyMessageOmissions != null ) {
+      fail( propertyMessageOmissions );
+    }
   }
 }

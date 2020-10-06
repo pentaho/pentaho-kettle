@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,9 +72,9 @@ public class DataGrid_EmptyStringVsNull_Test {
   public void emptyAndNullsAreNotDifferent() throws Exception {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
     List<Object[]> expected = Arrays.asList(
-      new Object[] { "", "", null },
-      new Object[] { null, "", null },
-      new Object[] { null, "", null }
+      new Object[] { "", "", " ", "", null },
+      new Object[] { null, "", null, "", null },
+      new Object[] { null, "", null, "", null }
     );
     executeAndAssertResults( expected );
   }
@@ -84,9 +84,9 @@ public class DataGrid_EmptyStringVsNull_Test {
   public void emptyAndNullsAreDifferent() throws Exception {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
     List<Object[]> expected = Arrays.asList(
-      new Object[] { "", "", null },
-      new Object[] { "", "", null },
-      new Object[] { "", "", null }
+      new Object[] { "", "", " ", "", null },
+      new Object[] { "", "", "", "", null },
+      new Object[] { "", "", "", "", null }
     );
     executeAndAssertResults( expected );
   }
@@ -96,15 +96,16 @@ public class DataGrid_EmptyStringVsNull_Test {
     final String numberType = ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_NUMBER );
 
     DataGridMeta meta = new DataGridMeta();
-    meta.allocate( 3 );
-    meta.setFieldName( new String[] { "string", "string-setEmpty", "number" } );
-    meta.setFieldType( new String[] { stringType, stringType, numberType } );
-    meta.setEmptyString( new boolean[] { false, true, false } );
+    meta.allocate( 5 );
+    meta.setFieldName( new String[] { "string", "string-setEmpty", "string-NullIf", "string-setEmptyAndNullIf", "number" } );
+    meta.setFieldType( new String[] { stringType, stringType, stringType, stringType, numberType } );
+    meta.setEmptyString( new boolean[] { false, true, false, true, false } );
+    meta.setFieldNullIf( new String[] { "", "", "-", "-", "" } );
 
     List<List<String>> dataRows = Arrays.asList(
-      Arrays.asList( " ", " ", " " ),
-      Arrays.asList( "", "", "" ),
-      Arrays.asList( (String) null, null, null )
+      Arrays.asList( " ", " ", " ", " ", " " ),
+      Arrays.asList( "", "", "", "", "" ),
+      Arrays.asList( (String) null, null, null, null, null )
     );
     meta.setDataLines( dataRows );
 

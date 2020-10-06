@@ -7,17 +7,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>google-analytics</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>pdi-google-analytics-plugin-core</artifactId>
-  <version>9.1.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Google Analytics Plugin Core</name>
 
   <properties>
-    <pdi.version>9.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.2.0.0-SNAPSHOT</pdi.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>

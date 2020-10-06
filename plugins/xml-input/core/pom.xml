@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>xml-input</artifactId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
 
   <artifactId>pdi-xml-input-plugin-core</artifactId>
-  <version>9.1.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI XML Input Plugin Core</name>

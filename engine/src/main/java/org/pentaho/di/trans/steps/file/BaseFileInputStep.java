@@ -187,7 +187,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
   protected boolean handleOpenFileException( Exception e ) {
     String errorMsg =
       "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI();
-    if ( !failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
+    if ( !failAfterBadFile( errorMsg ) ) {
       return true;
     }
     stopAll();
@@ -276,7 +276,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
    * TODO: should we set charset for error files from content meta ? What about case for automatic charset ?
    */
   private void initErrorHandling() {
-    List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<FileErrorHandler>( 2 );
+    List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<>( 2 );
     if ( meta.errorHandling.lineNumberFilesDestinationDirectory != null ) {
       dataErrorLineHandlers.add( new FileErrorHandlerContentLineNumber( getTrans().getCurrentDate(),
           environmentSubstitute( meta.errorHandling.lineNumberFilesDestinationDirectory ),
@@ -305,7 +305,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
       RowMetaInterface prevInfoFields = rowSet.getRowMeta();
       if ( idx < 0 ) {
         if ( meta.inputFiles.passingThruFields ) {
-          data.passThruFields = new HashMap<String, Object[]>();
+          data.passThruFields = new HashMap<>();
           infoStep = new RowMetaInterface[] { prevInfoFields };
           data.nrPassThruFields = prevInfoFields.size();
         }
@@ -321,7 +321,10 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
       String fileValue = prevInfoFields.getString( fileRow, idx );
       try {
         FileObject parentFileObject = KettleVFS.getFileObject( environmentSubstitute( fileValue ), getTransMeta() );
-        if ( parentFileObject != null && parentFileObject.getType() == FileType.FOLDER ) { // it's a directory
+        boolean isDir = ( parentFileObject != null && parentFileObject.getType() == FileType.FOLDER );
+        int startingIndex = data.files.nrOfFiles();
+
+        if ( isDir ) { // it's a directory
           addFilesFromFolder( parentFileObject );
         } else {  // it's a file
           data.files.addFile( parentFileObject );
@@ -329,8 +332,23 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
 
         if ( meta.inputFiles.passingThruFields ) {
           StringBuilder sb = new StringBuilder();
-          sb.append( data.files.nrOfFiles() > 0 ? data.files.nrOfFiles() - 1 : 0 ).append( "_" ).append( parentFileObject != null ? parentFileObject.toString() : "" );
-          data.passThruFields.put( sb.toString(), fileRow );
+
+          // PDI-18818 + BACKLOG-34414
+          // For directories, the passThruFields should match the same row's value for each file within the directory,
+          // For a file, the passThruFields should match the current row's value.
+          if ( isDir ) {
+            for ( int fileIndex = startingIndex; fileIndex < data.files.nrOfFiles(); fileIndex++ ) {
+              FileObject file = data.files.getFile( fileIndex );
+              sb.setLength( 0 );
+              sb.append( fileIndex ).append( "_" ).append( file != null ? file.toString() : "" );
+              data.passThruFields.put( sb.toString(), fileRow );
+            }
+          } else {
+            sb.append( startingIndex ).append( "_" ).append(
+                    parentFileObject != null ? parentFileObject.toString() : "" );
+            data.passThruFields.put( sb.toString(), fileRow );
+          }
+
         }
       } catch ( FileSystemException e ) {
         logError( BaseMessages.getString( PKG, "BaseFileInputStep.Log.Error.UnableToCreateFileObject", fileValue ), e );

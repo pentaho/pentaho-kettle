@@ -12,21 +12,22 @@
     <parent>
         <groupId>org.pentaho.di</groupId>
         <artifactId>pdi-core</artifactId>
-        <version>9.1.0.0-SNAPSHOT</version>
+        <version>9.2.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
         <rxjava.version>2.2.3</rxjava.version>
 
-        <pentaho-json.version>9.1.0.0-SNAPSHOT</pentaho-json.version>
+        <pentaho-json.version>9.2.0.0-SNAPSHOT</pentaho-json.version>
         <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
-        <pdi-osgi-bridge.version>9.1.0.0-SNAPSHOT</pdi-osgi-bridge.version>
-        <commons-database.version>9.1.0.0-SNAPSHOT</commons-database.version>
-        <pentaho-registry.version>9.1.0.0-SNAPSHOT</pentaho-registry.version>
-        <pentaho-metaverse.version>9.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-        <platform.version>9.1.0.0-SNAPSHOT</platform.version>
-        <pentaho-reporting.version>9.1.0.0-SNAPSHOT</pentaho-reporting.version>
+        <pdi-osgi-bridge.version>9.2.0.0-SNAPSHOT</pdi-osgi-bridge.version>
+        <commons-database.version>9.2.0.0-SNAPSHOT</commons-database.version>
+        <pentaho-registry.version>9.2.0.0-SNAPSHOT</pentaho-registry.version>
+        <pentaho-metaverse.version>9.2.0.0-SNAPSHOT</pentaho-metaverse.version>
+        <platform.version>9.2.0.0-SNAPSHOT</platform.version>
+        <pentaho-reporting.version>9.2.0.0-SNAPSHOT</pentaho-reporting.version>
+        <pentaho-hadoop-shims.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
 
         <!-- third party -->
         <derbyclient.version>10.2.1.6</derbyclient.version>
@@ -230,6 +231,17 @@
             <groupId>pentaho</groupId>
             <artifactId>pentaho-platform-core</artifactId>
             <version>${platform.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.pentaho</groupId>
+            <artifactId>shim-api-core</artifactId>
+            <version>${pentaho-hadoop-shims.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

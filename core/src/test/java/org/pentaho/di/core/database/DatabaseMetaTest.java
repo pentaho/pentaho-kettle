@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,25 @@
 
 package org.pentaho.di.core.database;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNone;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,25 +52,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.encryption.Encr;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.plugins.DatabasePluginType;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaNone;
-import org.pentaho.di.core.row.value.ValueMetaPluginType;
-import org.pentaho.di.core.KettleClientEnvironment;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -66,6 +66,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 public class DatabaseMetaTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
@@ -434,5 +436,34 @@ public class DatabaseMetaTest {
     Assert.assertNotNull( DatabaseMeta.findDatabase( databases, " 1" ) );
     Assert.assertNotNull( DatabaseMeta.findDatabase( databases, " 1 " ) );
   }
+
+  @Test
+  public void testIsNeedUpdateTrue() {
+    DatabaseMeta meta = new DatabaseMeta();
+    setInternalState( meta, "needUpdate", true );
+    assertTrue( meta.isNeedUpdate() );
+  }
+
+  @Test
+  public void testIsNeedUpdateFalse() {
+    DatabaseMeta meta = new DatabaseMeta();
+    setInternalState( meta, "needUpdate", false );
+    assertFalse( meta.isNeedUpdate() );
+  }
+
+  @Test
+  public void testSetNeedUpdateTrue() {
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setNeedUpdate( true );
+    assertTrue( getInternalState( meta, "needUpdate" ) );
+  }
+
+  @Test
+  public void testSetNeedUpdateFalse() {
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setNeedUpdate( false );
+    assertFalse( getInternalState( meta, "needUpdate" ) );
+  }
+
 
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,9 @@ import java.util.Map;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.GUIOption;
+import org.pentaho.di.core.util.Utils;
+
+import static java.lang.System.getProperty;
 
 /**
  * Plugins of this type can extend to capabilities of the PluginRegistry
@@ -54,6 +57,11 @@ public class PluginRegistryPluginType extends BasePluginType implements PluginTy
 
   @Override
   protected String getXmlPluginFile() {
+    // This property is set by the import-export.bat/sh command line script to disable this native resource file from
+    // processing.
+    if ( !Utils.isEmpty( getProperty( "pentaho.disable.karaf", "" ) ) ) {
+      return "KettleFileDisabled.xmldisabledxyzabc";  //we return a file that does not exist to suppress exceptions.
+    }
     return Const.XML_FILE_KETTLE_REGISTRY_EXTENSIONS;
   }
 

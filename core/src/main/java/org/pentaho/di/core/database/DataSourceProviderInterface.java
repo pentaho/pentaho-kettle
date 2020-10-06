@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,19 @@ public interface DataSourceProviderInterface {
    * @throws DataSourceNamingException
    */
   DataSource getNamedDataSource( String datasourceName, DatasourceType type ) throws DataSourceNamingException;
+
+
+  /**
+   * Invalidate the named data source of respecting its <code>type</code>
+   *
+   * @param datasourceName name of the desired data source
+   * @param type           data source's type
+   * @return named data source
+   * @throws DataSourceNamingException
+   */
+  default DataSource invalidateNamedDataSource( String datasourceName, DatasourceType type ) throws DataSourceNamingException {
+    throw new UnsupportedOperationException( "The invalidateNamedDataSource method was not implemented yet." );
+  }
 
   enum DatasourceType {
     JNDI, POOLED

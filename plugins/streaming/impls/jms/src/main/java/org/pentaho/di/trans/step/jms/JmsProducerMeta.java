@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -104,10 +104,12 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
   private String fieldToSend = "";
 
   @Injection ( name = PROPERTY_NAMES, group = PROPERTIES )
-  private List<String> propertyNames = new ArrayList<>();
+  @VisibleForTesting
+  List<String> propertyNames = new ArrayList<>();
 
   @Injection ( name = PROPERTY_VALUES, group = PROPERTIES )
-  private List<String> propertyValues = new ArrayList<>();
+  @VisibleForTesting
+  List<String> propertyValues = new ArrayList<>();
 
   @Injection( name = DISABLE_MESSAGE_ID )
   private String disableMessageId;

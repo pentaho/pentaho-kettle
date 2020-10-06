@@ -34,6 +34,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.support.encryption.Encr;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -956,7 +957,7 @@ public class Const {
    * The XML file that contains the list of native Kettle two-way password encoder plugins
    */
   @SuppressWarnings( "squid:S2068" )
-  public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
+  public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = Encr.XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS;
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-valuemeta-plugins.xml
@@ -968,20 +969,20 @@ public class Const {
    * Specifies the password encoding plugin to use by ID (Kettle is the default).
    */
   @SuppressWarnings( "squid:S2068" )
-  public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = Encr.KETTLE_PASSWORD_ENCODER_PLUGIN;
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-password-encoder-plugins.xml
    * file
    */
   @SuppressWarnings( "squid:S2068" )
-  public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = Encr.KETTLE_PASSWORD_ENCODER_PLUGINS_FILE;
 
   /**
    * The name of the Kettle encryption seed environment variable for the KettleTwoWayPasswordEncoder class
    */
   @SuppressWarnings( "squid:S2068" )
-  public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = "KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED";
+  public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = Encr.KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED;
 
   /**
    * The XML file that contains the list of native Kettle logging plugins
@@ -1369,26 +1370,6 @@ public class Const {
       return Paths.get( karafDir ).getParent().getParent().toString() + File.separator + "drivers";
     }
     return driversLocation;
-  }
-
-  /**
-   * <p>This environment variable is used to define the minimum PUC user password length. The default password length is 0.</p>
-   */
-  private static final String PUC_USER_PASSWORD_LENGTH = "PUC_USER_PASSWORD_LENGTH";
-  private static final String DEFAULT_PASSWORD_LENGTH = "0";
-  public static int getPucUserPasswordLength() {
-    String passwordLengthStr = System.getProperty( PUC_USER_PASSWORD_LENGTH, DEFAULT_PASSWORD_LENGTH );
-    return Integer.parseInt( passwordLengthStr );
-  }
-
-  /**
-   * <p>This environment variable is used to require the use of at least one special character in the PUC user password. This is set to false by default.</p>
-   */
-  private static final String PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER = "PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER";
-  private static final String DEFAULT_SPEC_CHARACTER_USE = "false";
-  public static boolean isPassSpecialCharRequired() {
-    String specialCharReqStr = System.getProperty( PUC_USER_PASSWORD_REQUIRE_SPECIAL_CHARACTER, DEFAULT_SPEC_CHARACTER_USE );
-    return Boolean.valueOf( specialCharReqStr );
   }
 
   /**

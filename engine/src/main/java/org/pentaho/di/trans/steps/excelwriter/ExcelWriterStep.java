@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -295,7 +295,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   public void writeNextLine( Object[] r ) throws KettleException {
     try {
       openLine();
-      Row xlsRow = meta.isStreamingData() ? data.xssfWorkbook.getSheet( data.realSheetname ).getRow( data.posY ) : data.sheet.getRow( data.posY );
+      Row xlsRow = data.sheet.getRow( data.posY );
       if ( xlsRow == null ) {
         xlsRow = data.sheet.createRow( data.posY );
       }
@@ -358,9 +358,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     CellReference cellRef = new CellReference( reference );
     String sheetName = cellRef.getSheetName();
 
-    Sheet sheet = meta.isStreamingData() ? data.xssfWorkbook.getSheet( data.realSheetname ) : data.sheet;
+    Sheet sheet = data.sheet;
     if ( !Utils.isEmpty( sheetName ) ) {
-      sheet = meta.isStreamingData() ? data.xssfWorkbook.getSheet( sheetName ) : data.wb.getSheet( sheetName );
+      sheet = data.wb.getSheet( sheetName );
     }
     if ( sheet == null ) {
       return null;
@@ -653,13 +653,13 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
       // file is guaranteed to be in place now
       if ( meta.getExtension().equalsIgnoreCase( "xlsx" ) ) {
-        data.xssfWorkbook = new XSSFWorkbook( KettleVFS.getInputStream( data.file ) );
-        if ( meta.isStreamingData() ) {
-          data.wb = new SXSSFWorkbook( data.xssfWorkbook, 100 );
+        XSSFWorkbook xssfWorkbook = new XSSFWorkbook( KettleVFS.getInputStream( data.file ) );
+        if ( meta.isStreamingData() && !meta.isTemplateEnabled() ) {
+          data.wb = new SXSSFWorkbook( xssfWorkbook, 100 );
         } else {
           //Initialize it later after writing header/template because SXSSFWorkbook can't read/rewrite existing data,
           // only append.
-          data.wb = data.xssfWorkbook;
+          data.wb = xssfWorkbook;
         }
       } else {
         data.wb = new HSSFWorkbook( KettleVFS.getInputStream( data.file ) );
@@ -731,15 +731,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       data.posY = data.startingRow;
 
       // Find last row and append accordingly
-      if ( ( !data.createNewSheet && meta.isAppendLines() && appendingToSheet ) || ( meta.isTemplateEnabled() && meta.isAppendLines() && appendingToSheet ) ) {
-        if ( meta.isStreamingData() ) {
-          Sheet sheet = data.xssfWorkbook == null ? null : data.xssfWorkbook.getSheet( data.realSheetname );
-          if ( sheet != null && sheet.getPhysicalNumberOfRows() > 0 ) {
-            data.posY = sheet.getLastRowNum() + 1;
-          } else {
-            data.posY = 0;
-          }
-        } else if ( data.sheet.getPhysicalNumberOfRows() > 0 ) {
+      if ( !data.createNewSheet && meta.isAppendLines() && appendingToSheet ) {
+        if ( data.sheet.getPhysicalNumberOfRows() > 0 ) {
           data.posY = data.sheet.getLastRowNum() + 1;
         } else {
           data.posY = 0;
@@ -787,7 +780,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   private void writeHeader() throws KettleException {
     try {
       openLine();
-      Row xlsRow = meta.isStreamingData() ? data.xssfWorkbook.getSheet( data.realSheetname ).getRow( data.posY ) : data.sheet.getRow( data.posY );
+      Row xlsRow = data.sheet.getRow( data.posY );
       if ( xlsRow == null ) {
         xlsRow = data.sheet.createRow( data.posY );
       }

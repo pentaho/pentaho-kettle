@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,10 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -42,6 +37,7 @@ import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.AliasedFileObject;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -62,6 +58,10 @@ import org.pentaho.di.trans.steps.file.BaseFileOutputMeta;
 import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Created on 4-apr-2003
@@ -1141,7 +1141,7 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
       try {
         FileObject fileObject = KettleVFS.getFileObject( getParentStepMeta().getParentTransMeta().environmentSubstitute( fileName ) );
         if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-          fileName = ( (AliasedFileObject) fileObject ).getOriginalURIString();
+          fileName = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
         }
       } catch ( KettleFileException e ) {
         throw new RuntimeException( e );

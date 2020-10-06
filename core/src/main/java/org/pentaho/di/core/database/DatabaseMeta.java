@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -129,6 +129,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   private ObjectRevision objectRevision;
 
   private boolean readOnly = false;
+
+  private boolean needUpdate = false;
 
   /**
    * Indicates that the connections doesn't point to a type of database yet.
@@ -913,8 +915,17 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     databaseInterface.setIndexTablespace( index_tablespace );
   }
 
+  boolean isNeedUpdate() {
+    return needUpdate;
+  }
+
+  void setNeedUpdate( boolean needUpdate ) {
+    this.needUpdate = needUpdate;
+  }
+
   public void setChanged() {
     setChanged( true );
+    setNeedUpdate( true );
   }
 
   public void setChanged( boolean ch ) {

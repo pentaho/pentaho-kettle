@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,7 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -74,7 +71,9 @@ import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @SuppressWarnings( "deprecation" )
 @InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
@@ -1372,7 +1371,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
         try {
           FileObject fileObject = KettleVFS.getFileObject( getParentStepMeta().getParentTransMeta().environmentSubstitute( inputFiles.fileName[i] ) );
           if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-            inputFiles.fileName[i] = ( (AliasedFileObject) fileObject ).getOriginalURIString();
+            inputFiles.fileName[i] = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
           }
         } catch ( KettleFileException e ) {
           throw new RuntimeException( e );

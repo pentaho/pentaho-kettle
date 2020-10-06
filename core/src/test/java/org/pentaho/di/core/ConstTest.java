@@ -632,7 +632,7 @@ public class ConstTest {
   private void testSplitStringRemoveEnclosureNested( String e, String d ) {
     //"""a,b,c"""
     String mask = "%s%s%sa" + "%s" + "b" + "%s" + "c%s%s%s";
-    String[] chunks = { e + "a" , "b" , "c" +  e };
+    String[] chunks = { e + "a", "b", "c" +  e };
 
     String stringToSplit = String.format( mask, e, e, e, d, d, e, e, e );
     String[] result = Const.splitString( stringToSplit, d, e, true );

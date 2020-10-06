@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -197,5 +197,10 @@ public class DatabaseUtil implements DataSourceProviderInterface {
       }
     }
     throw new IllegalArgumentException( "Unsupported data source type: " + type );
+  }
+
+  @Override public DataSource invalidateNamedDataSource( String datasourceName, DatasourceType type )
+    throws DataSourceNamingException {
+    return FoundDS.remove( datasourceName );
   }
 }

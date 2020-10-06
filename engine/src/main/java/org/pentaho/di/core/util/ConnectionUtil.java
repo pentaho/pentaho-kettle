@@ -24,7 +24,6 @@ package org.pentaho.di.core.util;
 
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
@@ -46,7 +45,6 @@ public class ConnectionUtil {
   public static void init( AbstractMeta meta ) {
     ConnectionManager connectionManager = ConnectionManager.getInstance();
 
-    EmbeddedMetaStore embeddedMetaStore = meta.getEmbeddedMetaStore();
     IMetaStore metaStore = null;
     try {
       if ( meta.getRepository() != null ) {
@@ -65,9 +63,6 @@ public class ConnectionUtil {
     if ( metaStore != null ) {
       final IMetaStore connectedMetaStore = metaStore;
       connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
-      if ( embeddedMetaStore != null ) {
-        connectionManager.copy( embeddedMetaStore, connectedMetaStore );
-      }
     }
   }
 

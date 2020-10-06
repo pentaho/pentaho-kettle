@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -192,26 +192,27 @@ public class SelectionAdapterFileDialogTest {
     FileDialogOperation fileDialogOperation = createFileDialogOperation();
     fileDialogOperation.setRepositoryObject( repositoryObject );
 
-    assertEquals( "/home/devuser/files/food.txt", testInstance.getRepositoryFilePath( fileDialogOperation  ) );
+    assertEquals( "/home/devuser/files/food.txt",
+      testInstance.getRepositoryFilePath( fileDialogOperation ).replace( '\\', '/' ) );
   }
 
   @Test
   public void testConcat() {
 
     assertEquals( "/home/devuser/files/food.txt",
-      testInstance.concat( "/home/devuser/files", "food.txt" ) );
+      testInstance.concat( "/home/devuser/files", "food.txt" ).replace('\\', '/') );
 
     assertEquals( "/home/devuser/files/food.txt",
-      testInstance.concat( "/home/devuser/files/", "food.txt" ) );
+      testInstance.concat( "/home/devuser/files/", "food.txt" ).replace('\\', '/') );
 
     assertEquals( "/home/devuser/files/food.txt",
-      testInstance.concat( "/", "home/devuser/files/food.txt" ) );
+      testInstance.concat( "/", "home/devuser/files/food.txt" ).replace('\\', '/') );
 
     assertEquals( "/",
-      testInstance.concat( "/", "" ) );
+      testInstance.concat( "/", "" ).replace('\\', '/') );
 
     assertEquals( "/home/devuser/files/",
-      testInstance.concat( "/home/devuser/files", "" ) );
+      testInstance.concat( "/home/devuser/files", "" ).replace('\\', '/') );
   }
 
   @Test

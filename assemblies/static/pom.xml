@@ -11,8 +11,12 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>9.1.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
+
+  <properties>
+    <encryption-support.version>9.2.0.0-SNAPSHOT</encryption-support.version>
+  </properties>
 
   <dependencies>
     <!-- Need a properties file from here -->

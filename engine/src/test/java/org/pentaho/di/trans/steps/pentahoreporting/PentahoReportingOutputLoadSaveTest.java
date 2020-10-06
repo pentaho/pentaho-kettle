@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,7 +42,7 @@ public class PentahoReportingOutputLoadSaveTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Test
   public void testSerialization() throws KettleException {
-    List<String> attributes = Arrays.asList( "InputFileField", "OutputFileField", "ParameterFieldMap", "OutputProcessorType", "CreateParentfolder" );
+    List<String> attributes = Arrays.asList( "InputFileField", "OutputFileField", "InputFile", "OutputFile", "ParameterFieldMap", "OutputProcessorType", "CreateParentfolder", "UseValuesFromFields" );
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
 

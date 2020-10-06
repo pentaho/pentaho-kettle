@@ -7,7 +7,7 @@
     <parent>
         <artifactId>pentaho-googledrive-vfs</artifactId>
         <groupId>org.pentaho.di.plugins</groupId>
-        <version>9.1.0.0-SNAPSHOT</version>
+        <version>9.2.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>pentaho-googledrive-vfs-assemblies</artifactId>
