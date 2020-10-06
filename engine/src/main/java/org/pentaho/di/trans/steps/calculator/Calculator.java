@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -205,7 +205,6 @@ public class Calculator extends BaseStep implements StepInterface {
         ValueMetaInterface targetMeta = data.getCalcRowMeta().getValueMeta( index );
 
         // Get the metadata & the data...
-        // ValueMetaInterface metaTarget = data.calcRowMeta.getValueMeta(i);
 
         ValueMetaInterface metaA = null;
         Object dataA = null;
@@ -213,6 +212,11 @@ public class Calculator extends BaseStep implements StepInterface {
         if ( data.getFieldIndexes()[i].indexA >= 0 ) {
           metaA = data.getCalcRowMeta().getValueMeta( data.getFieldIndexes()[ i ].indexA );
           dataA = metaA.convertToNormalStorageType( calcData[ data.getFieldIndexes()[i].indexA] );
+          // We changed the storage type of the data and, thus, we need meta to have that information
+          // We can't change the original meta as it refers to the original data!
+          // So we clone and change the new one.
+          metaA = metaA.clone();
+          metaA.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         }
 
         ValueMetaInterface metaB = null;
@@ -221,6 +225,11 @@ public class Calculator extends BaseStep implements StepInterface {
         if ( data.getFieldIndexes()[i].indexB >= 0 ) {
           metaB = data.getCalcRowMeta().getValueMeta( data.getFieldIndexes()[ i ].indexB );
           dataB = metaB.convertToNormalStorageType( calcData[ data.getFieldIndexes()[i].indexB] );
+          // We changed the storage type of the data and, thus, we need meta to have that information
+          // We can't change the original meta as it refers to the original data!
+          // So we clone and change the new one.
+          metaB = metaB.clone();
+          metaB.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         }
 
         ValueMetaInterface metaC = null;
