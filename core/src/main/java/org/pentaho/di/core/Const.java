@@ -1176,6 +1176,9 @@ public class Const {
   // See PDI-PDI-18739 for details
   public static final String KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING = "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING";
 
+  // See PDI-18810 for details
+  public static final String KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM = "KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM";
+
   /**
    * The XML file that contains the list of native import rules
    */
