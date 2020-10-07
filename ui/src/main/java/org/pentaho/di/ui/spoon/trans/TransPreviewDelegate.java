@@ -351,7 +351,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
           item.setText( colNr + 1, "<null>" );
           item.setForeground( colNr + 1, GUIResource.getInstance().getColorBlue() );
         } else {
-          item.setText( colNr + 1, Splash.isMacOS() ? string.trim() : string );
+          item.setText( colNr + 1, Splash.isMacOS() ? string.replace( "\n", "" ) : string );
         }
       }
     }
