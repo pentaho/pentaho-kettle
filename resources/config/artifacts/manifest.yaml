@@ -29,9 +29,35 @@ ee:
         - pentaho-operations-mart-${platform.version}-dist.zip
         - pentaho-sdk-${platform.version}-dist.zip
     patches:
-        - SP${SP_RELEASE_VERSION}-${platform.version}-Linux.zip
-        - SP${SP_RELEASE_VERSION}-${platform.version}-Mac.zip
-        - SP${SP_RELEASE_VERSION}-${platform.version}-Windows.zip
+            windows:
+                - AggregationDesigner-SP-${platform.version}.exe
+                - PDIClient-SP-${platform.version}.exe
+                - MetadataEditor-SP-${platform.version}.exe
+                - PentahoServer-SP-${platform.version}.exe
+                - ReportDesigner-SP-${platform.version}.exe
+                - SchemaWorkbench-SP-${platform.version}.exe
+                - BDPlugin-SP-${platform.version}.zip
+                - SP-${platform.version}-Fixes.txt
+                - README-SP-${platform.version}.txt
+            mac:
+                - AggregationDesigner-SP-${platform.version}.zip
+                - PDIClient-SP-${platform.version}.zip
+                - MetadataEditor-SP-${platform.version}.zip
+                - ReportDesigner-SP-${platform.version}.zip
+                - SchemaWorkbench-SP-${platform.version}.zip
+                - BDPlugin-SP-${platform.version}.zip
+                - SP-${platform.version}-Fixes.txt
+                - README-SP-${platform.version}.txt
+            linux:
+                - AggregationDesigner-SP-${platform.version}.bin
+                - PDIClient-SP-${platform.version}.bin
+                - MetadataEditor-SP-${platform.version}.bin
+                - PentahoServer-SP-${platform.version}.bin
+                - ReportDesigner-SP-${platform.version}.bin
+                - SchemaWorkbench-SP-${platform.version}.bin
+                - BDPlugin-SP-${platform.version}.zip
+                - SP-${platform.version}-Fixes.txt
+                - README-SP-${platform.version}.txt
     plugins:
         - paz-plugin-ee-${platform.version}-dist.zip
         - pdd-plugin-ee-${platform.version}-dist.zip
