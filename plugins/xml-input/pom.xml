@@ -33,7 +33,7 @@
 
   <properties>
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
-    <junit.version>4.4</junit.version>
+    <junit.version>4.13.1</junit.version>
     <pdi.version>9.2.0.0-SNAPSHOT</pdi.version>
   </properties>
 
