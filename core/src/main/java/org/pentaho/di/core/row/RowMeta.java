@@ -463,7 +463,7 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public Object[] cloneRow( Object[] objects, Object[] newObjects ) throws KettleValueException {
-	lock.writeLock().lock();  
+    lock.writeLock().lock();  
     List<Integer> list = getOrCreateValuesThatNeedRealClone( valueMetaList );
     try {
       for ( Integer i : list ) {
