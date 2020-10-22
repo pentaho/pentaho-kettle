@@ -310,34 +310,37 @@ public class TextFileInputUtils {
 
     String sline = getLine( log, reader, encodingType, fileFormatType, line );
 
-    boolean lenientEnclosureHandling = ValueMetaBase.convertStringToBoolean(
-      Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING ), "N" ) );
+    boolean lenientEnclosureHandling = ValueMetaBase.convertStringToBoolean( Const.NVL( EnvUtil.getSystemProperty(
+      Const.KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING ), "N" ) );
 
-    if ( !lenientEnclosureHandling ) {
+    if ( lenientEnclosureHandling || sline == null ) {
+      return new TextFileLine( sline, lineNumberInFile, null );
+    }
 
-      while ( sline != null ) {
+    StringBuilder sb = new StringBuilder( sline );
+    do {
       /*
-      Check that the number of enclosures in a line is even.
-      If not even it means that there was an enclosed line break.
-      We need to read the next line(s) to get the remaining data in this row.
-      */
-        if ( checkPattern( sline, regex ) % 2 == 0 ) {
-          return new TextFileLine( sline, lineNumberInFile, null );
-        }
+        Check that the number of enclosures in a line is even.
+        If not even it means that there was an enclosed line break.
+        We need to read the next line(s) to get the remaining data in this row.
+        */
 
-        String nextLine = getLine( log, reader, encodingType, fileFormatType, line );
-
-        if ( nextLine == null ) {
-          break;
-        }
-
-        sline = sline + nextLine;
-        lineNumberInFile++;
+      if ( checkPattern( sb.toString(), regex ) % 2 == 0 ) {
+        return new TextFileLine( sb.toString(), lineNumberInFile, null );
       }
 
-    }
-    return new TextFileLine( sline, lineNumberInFile, null );
+      sline = getLine( log, reader, encodingType, fileFormatType, line );
+
+      if ( sline == null ) {
+        return new TextFileLine( sline, lineNumberInFile, null );
+      }
+
+      // Include \n between lines ignoring \r to be OS independent
+      sb.append( "\n" + sline );
+      lineNumberInFile++;
+    } while ( true );
   }
+
 
   public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
       int formatNr, StringBuilder line ) throws KettleFileException {
