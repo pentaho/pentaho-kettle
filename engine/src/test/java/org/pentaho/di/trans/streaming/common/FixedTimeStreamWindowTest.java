@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,7 +58,8 @@ public class FixedTimeStreamWindowTest {
 
   @Test
   public void emptyResultShouldNotThrowException() throws KettleException {
-    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.empty() );
+    when( subtransExecutor.execute( any() ) ).thenReturn( Optional.empty() );
+    when( subtransExecutor.getPrefetchCount() ).thenReturn( 10 );
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "field" ) );
     FixedTimeStreamWindow<List> window =
@@ -72,7 +73,8 @@ public class FixedTimeStreamWindowTest {
     rowMeta.addValueMeta( new ValueMetaString( "field" ) );
     Result mockResult = new Result();
     mockResult.setRows( Arrays.asList( new RowMetaAndData( rowMeta, "queen" ), new RowMetaAndData( rowMeta, "king" ) ) );
-    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.of( mockResult ) );
+    when( subtransExecutor.execute( any() ) ).thenReturn( Optional.of( mockResult ) );
+    when( subtransExecutor.getPrefetchCount() ).thenReturn( 10 );
     FixedTimeStreamWindow<List> window =
       new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, 1 );
     window.buffer( Flowable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
@@ -83,7 +85,8 @@ public class FixedTimeStreamWindowTest {
   public void abortedSubtransThrowsAnError() throws KettleException {
     Result result1 = new Result();
     result1.setNrErrors( 1 );
-    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.of( result1 ) );
+    when( subtransExecutor.execute( any() ) ).thenReturn( Optional.of( result1 ) );
+    when( subtransExecutor.getPrefetchCount() ).thenReturn( 10 );
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "field" ) );
     FixedTimeStreamWindow<List> window =
@@ -147,6 +150,7 @@ public class FixedTimeStreamWindowTest {
     field.setAccessible( true );
     ThreadPoolExecutor sharedStreamingBatchPool = (ThreadPoolExecutor) field.get( window1 );
 
+    when( subtransExecutor.getPrefetchCount() ).thenReturn( 1000 );
     when( subtransExecutor.execute( any() ) ).thenAnswer( ( InvocationOnMock invocation ) -> {
       //The active count should always be 1.
       if ( sharedStreamingBatchPool.getActiveCount() != 1 ) {
@@ -188,7 +192,8 @@ public class FixedTimeStreamWindowTest {
     rowMeta.addValueMeta( new ValueMetaString( "field" ) );
     Result mockResult = new Result();
     mockResult.setRows( Arrays.asList( new RowMetaAndData( rowMeta, "queen" ), new RowMetaAndData( rowMeta, "king" ) ) );
-    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.of( mockResult ) );
+    when( subtransExecutor.execute( any() ) ).thenReturn( Optional.of( mockResult ) );
+    when( subtransExecutor.getPrefetchCount() ).thenReturn( 10 );
     AtomicInteger count = new AtomicInteger();
     FixedTimeStreamWindow<List> window =
       new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, 1, ( p ) -> count.set( p.getKey().get( 0 ).size() ) );
@@ -203,7 +208,8 @@ public class FixedTimeStreamWindowTest {
     rowMeta.addValueMeta( new ValueMetaString( "field" ) );
     Result mockResult = new Result();
     mockResult.setRows( Arrays.asList( new RowMetaAndData( rowMeta, "queen" ), new RowMetaAndData( rowMeta, "king" ) ) );
-    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.empty() );
+    when( subtransExecutor.execute( any() ) ).thenReturn( Optional.empty() );
+    when( subtransExecutor.getPrefetchCount() ).thenReturn( 10 );
     AtomicInteger count = new AtomicInteger();
     FixedTimeStreamWindow<List> window =
       new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, 1, ( p ) -> count.set( p.getKey().get( 0 ).size() ) );

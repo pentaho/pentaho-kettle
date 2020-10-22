@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.trans.SubtransExecutor;
 
 import javax.jms.Destination;
 import javax.jms.JMSConsumer;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -52,6 +54,7 @@ public class JmsStreamSourceTest {
   @Mock private JmsContext context;
   @Mock private JmsDelegate delegate;
   @Mock private JMSConsumer consumer;
+  @Mock private SubtransExecutor subtransExecutor;
   @Mock private JmsConsumer consumerStep;
   @Mock private Destination destination;
   @Mock private Message message;
@@ -60,6 +63,8 @@ public class JmsStreamSourceTest {
 
   @Before
   public void before() throws JMSException {
+    when( subtransExecutor.getPrefetchCount() ).thenReturn( 1000 );
+    when( consumerStep.getSubtransExecutor() ).thenReturn( subtransExecutor );
     source = new JmsStreamSource( consumerStep, delegate, 0 );
     when( delegate.getJmsContext() ).thenReturn( context );
     when( delegate.getDestination() ).thenReturn( destination );
@@ -89,7 +94,7 @@ public class JmsStreamSourceTest {
 
     List<Object> sentMessage = source.flowable().firstElement().blockingGet( Collections.emptyList() );
 
-    assertThat( sentMessage.size(), equalTo( 2 ) );
+    assertEquals( 2, sentMessage.size() );
     assertThat( sentMessage.get( 0 ), equalTo( "message" ) );
     assertThat( sentMessage.get( 1 ), equalTo( "dest" ) );
     verify( consumer ).close();
