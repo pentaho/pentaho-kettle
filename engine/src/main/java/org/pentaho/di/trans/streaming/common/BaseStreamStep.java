@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,9 +55,13 @@ public class BaseStreamStep extends BaseStep {
   private static final Class<?> PKG = BaseStreamStep.class;
   protected BaseStreamStepMeta variablizedStepMeta;
 
-  protected SubtransExecutor subtransExecutor;
+  private SubtransExecutor subtransExecutor;
   protected StreamWindow<List<Object>, Result> window;
   protected StreamSource<List<Object>> source;
+
+  public static final String PREFETCH_PARAMETER = "PREFETCH_LIMIT";
+  public static final int PREFETCH = 100000;
+  public static final String PREFETCH_DEFAULT = Integer.toString( PREFETCH );
 
   public BaseStreamStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
                          TransMeta transMeta, Trans trans ) {
@@ -84,7 +88,7 @@ public class BaseStreamStep extends BaseStep {
       variablizedStepMeta = (BaseStreamStepMeta) variablizedStepMeta.withVariables( this );
       subtransExecutor = new SubtransExecutor( getStepname(),
         getTrans(), transMeta, true,
-        new TransExecutorParameters(), variablizedStepMeta.getSubStep() );
+        new TransExecutorParameters(), variablizedStepMeta.getSubStep(), getPrefetchCount() );
 
     } catch ( KettleException e ) {
       log.logError( e.getLocalizedMessage(), e );
@@ -189,6 +193,34 @@ public class BaseStreamStep extends BaseStep {
     }
   }
 
+  /**
+   * Get Prefetch Count
+   *
+   * @return the number of messages to prefetch from the broker
+   */
+  protected int getPrefetchCount() throws KettleException {
+    int prefetch;
+
+    try {
+      prefetch = Integer.parseInt( this.getVariable( PREFETCH_PARAMETER, PREFETCH_DEFAULT ) );
+    } catch ( NumberFormatException e ) {
+      throw new KettleException(
+        BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NaN", "Message prefetch limit" ) );
+    }
+
+    if ( prefetch <= 0 ) {
+      throw new KettleException(
+        BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.PrefetchZeroOrLess", prefetch ) );
+    }
+
+    int size = getBatchSize();
+    if ( prefetch < size ) {
+      throw new KettleException(
+        BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.PrefetchLessThanBatch", prefetch, size ) );
+    }
+    return prefetch;
+  }
+
   protected long getDuration() {
     try {
       return Long.parseLong( variablizedStepMeta.getBatchDuration() );
@@ -217,5 +249,9 @@ public class BaseStreamStep extends BaseStep {
   @VisibleForTesting
   public void setSource( StreamSource<List<Object>> source ) {
     this.source = source;
+  }
+
+  public SubtransExecutor getSubtransExecutor() {
+    return subtransExecutor;
   }
 }
