@@ -406,7 +406,7 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"b\nbb\"", "ccc" }, output.get( 0 ) );
     TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
@@ -429,7 +429,7 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"b\nbb\"", "ccc" }, output.get( 0 ) );
     TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
@@ -452,7 +452,7 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 3, false );
-    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"b\nbb\"", "ccc" }, output.get( 0 ) );
     TransTestingUtil.assertResult( new Object[] { null }, output.get( 1 ) );
     TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 2 ) );
 

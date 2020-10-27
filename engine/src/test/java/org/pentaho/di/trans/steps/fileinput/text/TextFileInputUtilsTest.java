@@ -177,7 +177,7 @@ public class TextFileInputUtilsTest {
     InputStream is = new ByteArrayInputStream( text.getBytes() );
     InputStreamReader isr = new InputStreamReader( is );
     TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
-    Assert.assertEquals( "\"firstLine\"\"secondLine\"", line.getLine() );
+    Assert.assertEquals( text, line.getLine() );
   }
 
   @Test
@@ -191,4 +191,5 @@ public class TextFileInputUtilsTest {
     Assert.assertEquals( "\"firstLine", line.getLine() );
     System.clearProperty( "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING" );
   }
+
 }
