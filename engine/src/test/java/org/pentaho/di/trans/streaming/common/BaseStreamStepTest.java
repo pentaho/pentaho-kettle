@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.streaming.common;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -52,6 +53,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -60,10 +62,14 @@ import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.trans.streaming.common.BaseStreamStep.PREFETCH_PARAMETER;
 
-@RunWith ( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.class )
 public class BaseStreamStepTest {
   private BaseStreamStep baseStreamStep;
+
+  @Rule
+  public ExpectedException exceptionRule = ExpectedException.none();
 
   @Mock BaseStreamStepMeta meta;
   @Mock BaseStreamStepMeta metaWithVariables;
@@ -104,8 +110,6 @@ public class BaseStreamStepTest {
 
   @Test
   public void testInitMissingFilename() {
-
-
     when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
     assertFalse( baseStreamStep.init( meta, stepData ) );
     verify( logChannel ).logError( contains( "Unable to load transformation " ), any( KettleException.class ) );
@@ -175,4 +179,54 @@ public class BaseStreamStepTest {
     }
     verify( streamSource ).close();
   }
+
+  @Test
+  public void testPrefetchCount() throws KettleException {
+    baseStreamStep.setVariable( PREFETCH_PARAMETER, "10000" );
+    when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    baseStreamStep.init( meta, stepData );
+    when( meta.getBatchSize() ).thenReturn( "1000" );
+    assertEquals( 10000, baseStreamStep.getPrefetchCount() );
+  }
+
+  @Test
+  public void testPrefetchCountNAN() throws KettleException {
+
+    exceptionRule.expect( KettleException.class );
+    exceptionRule.expectMessage( "non-numeric value" );
+
+    baseStreamStep.setVariable( PREFETCH_PARAMETER, "a" );
+    when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    baseStreamStep.init( meta, stepData );
+    when( meta.getBatchSize() ).thenReturn( "1000" );
+    baseStreamStep.getPrefetchCount();
+  }
+
+  @Test
+  public void testPrefetchCountSmallerThanBatch() throws KettleException {
+
+    exceptionRule.expect( KettleException.class );
+    exceptionRule.expectMessage( "The \"Message prefetch limit\" must be equal to or greater than the \"Number of "
+      + "records\". 999 is not equal to or greater than 1000" );
+
+    baseStreamStep.setVariable( PREFETCH_PARAMETER, "999" );
+    when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    baseStreamStep.init( meta, stepData );
+    when( meta.getBatchSize() ).thenReturn( "1000" );
+    baseStreamStep.getPrefetchCount();
+  }
+
+  @Test
+  public void testPrefetchCountLessThanZero() throws KettleException {
+
+    exceptionRule.expect( KettleException.class );
+    exceptionRule.expectMessage( "The \"Message prefetch limit\" must be greater than 0. 0 is not greater than 0" );
+
+    baseStreamStep.setVariable( PREFETCH_PARAMETER, "0" );
+    when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    baseStreamStep.init( meta, stepData );
+    when( meta.getBatchSize() ).thenReturn( "-20" );
+    baseStreamStep.getPrefetchCount();
+  }
+
 }
