@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
@@ -1009,6 +1010,55 @@ public class CalculatorUnitTest {
     } catch ( KettleException ke ) {
       ke.printStackTrace();
       fail();
+    }
+  }
+
+  @Test
+  public void testDateWorkingDiff() throws KettleException {
+    ValueMeta valMetaDate = new ValueMeta( "DATE1", ValueMetaInterface.TYPE_STRING );
+    RowMeta inputRowMeta = new RowMeta();
+    ValueMetaDate date1Meta = new ValueMetaDate( "Date1" );
+    date1Meta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    date1Meta.setStorageMetadata( valMetaDate );
+    inputRowMeta.addValueMeta( date1Meta );
+    ValueMetaDate date2Meta = new ValueMetaDate( "Date2" );
+    date2Meta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    date2Meta.setStorageMetadata( valMetaDate );
+    inputRowMeta.addValueMeta( date2Meta );
+
+    RowSet inputRowSet = smh.getMockInputRowSet( new Object[][] {
+      { "2020/03/16 00:00:00.000".getBytes(), "2020/03/20 23:59:50.123".getBytes() },
+      { "2020/03/20 23:59:50.123".getBytes(), "2020/03/16 00:00:00.000".getBytes() } } );
+
+    List<Long> collectedResults = new ArrayList<>();
+    Long[] expectedResults = { -5L, 5L };
+
+    inputRowSet.setRowMeta( inputRowMeta );
+
+    Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    calculator.addRowSetToInputRowSets( inputRowSet );
+    calculator.setInputRowMeta( inputRowMeta );
+    calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
+
+    CalculatorMeta meta = new CalculatorMeta();
+    meta.setCalculation( new CalculatorMetaFunction[] {
+      new CalculatorMetaFunction( "new_day", CalculatorMetaFunction.CALC_DATE_WORKING_DIFF, "Date1", "Date2", null,
+        ValueMetaInterface.TYPE_INTEGER, 0, 0, false, "", "", "", "" ) } );
+
+    calculator.addRowListener( new RowAdapter() {
+      @Override
+      public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+        collectedResults.add( (Long) row[ 2 ] );
+      }
+    } );
+
+    calculator.processRow( meta, new CalculatorData() );
+
+    //Verify output
+    int i = 0;
+    for ( Long res : collectedResults ) {
+      assertEquals( expectedResults[ i ], res );
+      ++i;
     }
   }
 }
