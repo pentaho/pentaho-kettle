@@ -34,6 +34,7 @@ import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -244,10 +245,16 @@ public class MetaInject extends BaseStep implements StepInterface {
     return new Trans( data.transMeta, this );
   }
 
+  private boolean shouldWriteToFilesystem() {
+    boolean forceWriteInFilesystem = ValueMetaBase.convertStringToBoolean(
+      Const.NVL( getVariable( Const.KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM ), "N" ) );
+
+    return getRepository() == null || forceWriteInFilesystem;
+  }
+
   @VisibleForTesting
   void writeInjectedKtr( String targetFilPath ) throws KettleException {
-
-    if ( getRepository() == null ) {
+    if ( shouldWriteToFilesystem() ) {
       writeInjectedKtrToFs( targetFilPath );
     } else {
       writeInjectedKtrToRepo( targetFilPath );
@@ -259,7 +266,8 @@ public class MetaInject extends BaseStep implements StepInterface {
    * @param targetFilePath the filesystem path to which to save the generated injection ktr
    * @throws KettleException
    */
-  private void writeInjectedKtrToFs( String targetFilePath ) throws KettleException {
+  @VisibleForTesting
+  void writeInjectedKtrToFs( String targetFilePath ) throws KettleException {
 
     OutputStream os = null;
     try {
@@ -297,7 +305,8 @@ public class MetaInject extends BaseStep implements StepInterface {
    * @param targetFilePath the repo path to which to save the generated injection ktr
    * @throws KettleException
    */
-  private void writeInjectedKtrToRepo( final String targetFilePath ) throws KettleException {
+  @VisibleForTesting
+  void writeInjectedKtrToRepo( final String targetFilePath ) throws KettleException {
 
     try {
       repoSaveLock.lock();
