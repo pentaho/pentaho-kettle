@@ -1227,6 +1227,16 @@ public class Const {
   public static final String VFS_USER_DIR_IS_ROOT = "vfs.sftp.userDirIsRoot";
 
   /**
+   * A variable to configure environment variables to ignore when initializing shell step
+   * */
+  public static final String SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE = "SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE";
+
+  /**
+   * The default value for the variable to configure environment variables to ignore when initializing shell step
+   * */
+  public static final String SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE_DEFAULT = "";
+
+  /**
    * <p>A variable to configure the minimum allowed ratio between de- and inflated bytes to detect a zipbomb.</p>
    * <p>If not set or if the configured value is invalid, it defaults to {@value
    * #KETTLE_ZIP_MIN_INFLATE_RATIO_DEFAULT}</p>
