@@ -86,10 +86,19 @@ public class XMLHandlerTest {
 
     return node;
   }
+  @Test
+  public void checkFile_FileDoesNotExist() throws Exception {
+    FileObject fileObjectMock = mock( FileObject.class );
+    doReturn( false ).when( fileObjectMock ).exists();
+    doReturn( false ).when( fileObjectMock ).isFile();
+
+    assertFalse( XMLHandler.checkFile( fileObjectMock ) );
+  }
 
   @Test
   public void checkFile_IsFile() throws Exception {
     FileObject fileObjectMock = mock( FileObject.class );
+    doReturn( true ).when( fileObjectMock ).exists();
     doReturn( true ).when( fileObjectMock ).isFile();
 
     assertTrue( XMLHandler.checkFile( fileObjectMock ) );
@@ -98,14 +107,17 @@ public class XMLHandlerTest {
   @Test
   public void checkFile_IsNotFile() throws Exception {
     FileObject fileObjectMock = mock( FileObject.class );
+    doReturn( true ).when( fileObjectMock ).exists();
     doReturn( false ).when( fileObjectMock ).isFile();
 
     assertFalse( XMLHandler.checkFile( fileObjectMock ) );
   }
 
+
   @Test( expected = KettleXMLException.class )
   public void checkFile_Exception() throws Exception {
     FileObject fileObjectMock = mock( FileObject.class );
+    doReturn( true ).when( fileObjectMock ).exists();
     doThrow( new FileSystemException( DUMMY ) ).when( fileObjectMock ).isFile();
 
     XMLHandler.checkFile( fileObjectMock );
@@ -114,6 +126,7 @@ public class XMLHandlerTest {
   @Test
   public void loadFile_NoFile() throws Exception {
     FileObject fileObjectMock = mock( FileObject.class );
+    doReturn( true ).when( fileObjectMock ).exists();
     doReturn( false ).when( fileObjectMock ).isFile();
 
     try {
@@ -127,6 +140,7 @@ public class XMLHandlerTest {
   @Test
   public void loadFile_ExceptionCheckingFile() throws Exception {
     FileObject fileObjectMock = mock( FileObject.class );
+    doReturn( true ).when( fileObjectMock ).exists();
     doThrow( new FileSystemException( DUMMY ) ).when( fileObjectMock ).isFile();
 
     try {
