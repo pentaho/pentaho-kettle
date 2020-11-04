@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,7 +84,7 @@ class StatusServletUtils {
       }
 
       // webapps folder will always be one directory closer to default directory, need to update relative path string
-      relativePathSeparator = relativePathSeparator.replaceFirst( "(\\.\\.\\\\)", "" );
+      relativePathSeparator = ".." + File.separator;
 
       // Get mantle theme CSS file
       String mantleThemeDirStr = relativePathSeparator + "webapps" + root + File.separator + "mantle" + File.separator
