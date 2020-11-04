@@ -1234,7 +1234,7 @@ public class XMLHandler {
    */
   public static boolean checkFile( FileObject fileObject ) throws KettleXMLException {
     try {
-      return fileObject.isFile();
+      return fileObject != null && fileObject.exists() && fileObject.isFile();
     } catch ( FileSystemException e ) {
       throw new KettleXMLException( BaseMessages.getString(
         PKG, "XMLHandler.errorCheckingFileExistence", fileObject.toString() ), e );
