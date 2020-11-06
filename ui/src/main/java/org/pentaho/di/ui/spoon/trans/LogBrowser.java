@@ -90,6 +90,7 @@ public class LogBrowser {
     final Color colorBlue = GUIResource.getInstance().getColorBlue();
     final Color colorRed = GUIResource.getInstance().getColorRed();
 
+    final int LOG_LINE_ESTIMATED_SIZE = 150;
     final int MAX_NR_LOG_LINES_CHUNK = 150;
 
     // Refresh the log every second or so
@@ -169,7 +170,7 @@ public class LogBrowser {
 
                 // The maximum size of the log buffer
                 //
-                int maxSize = Props.getInstance().getMaxNrLinesInLog() * 150;
+                int maxSize = Props.getInstance().getMaxNrLinesInLog() * LOG_LINE_ESTIMATED_SIZE;
 
                 // Erase it all in one go
                 // This makes it a bit more efficient
