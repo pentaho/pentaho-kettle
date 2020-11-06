@@ -84,7 +84,7 @@ class StatusServletUtils {
       }
 
       // webapps folder will always be one directory closer to default directory, need to update relative path string
-      relativePathSeparator = ".." + File.separator;
+      relativePathSeparator = relativePathSeparator.replaceFirst( ".." + File.separator, "" );
 
       // Get mantle theme CSS file
       String mantleThemeDirStr = relativePathSeparator + "webapps" + root + File.separator + "mantle" + File.separator
