@@ -22,6 +22,7 @@
 
 package org.pentaho.di.www;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.ui.xul.util.XmlParserFactoryProducer;
 import org.w3c.dom.Document;
@@ -84,7 +85,7 @@ class StatusServletUtils {
       }
 
       // webapps folder will always be one directory closer to default directory, need to update relative path string
-      relativePathSeparator = relativePathSeparator.replaceFirst( ".." + File.separator, "" );
+      relativePathSeparator = StringUtils.replaceOnce( relativePathSeparator, ".." + File.separator, "" );
 
       // Get mantle theme CSS file
       String mantleThemeDirStr = relativePathSeparator + "webapps" + root + File.separator + "mantle" + File.separator
