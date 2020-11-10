@@ -76,5 +76,7 @@ DEPENDENCY_CHECK_SUPPRESSION_PATH: '/home/buildguy/suppress.xml'
 DOCKER_IMAGE_HOST: pntprv-docker-release.repo.orl.eng.hitachivantara.com
 DOCKER_REGISTRY_URL: https://pntprv-docker-release.repo.orl.eng.hitachivantara.com
 
+HELM_REPOSITORY_URL: https://repo.orl.eng.hitachivantara.com/artifactory/lumadadataintegration-helm-dev-orl
+
 # Minions
 MINION_PIPELINE_TEMPLATE: resources/templates/minion-pipeline-default.vm
