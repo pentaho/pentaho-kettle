@@ -157,7 +157,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       if ( repository != null ) {
         repository.disconnect();
       }
-      return exitWithStatus( CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );
+      return exitWithStatus( CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode(), trans );
     }
 
     if ( trans == null ) {
@@ -218,8 +218,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       } catch ( KettleException ke ) {
         logDebug( ke.getLocalizedMessage() );
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.UnablePrepareInitTrans" ) );
-        ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.TransformationFinish.id, trans );
-        return exitWithStatus( CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() );
+        return exitWithStatus( CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode(), trans );
       }
 
       waitUntilFinished( trans, 100 ); // Give the transformation up to 10 seconds to finish execution
@@ -278,6 +277,15 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         System.clearProperty( "pentaho.repository.client.attemptTrust" ); // we set it, now we sanitize it
       }
     }
+  }
+
+  protected Result exitWithStatus( final int exitStatus, Trans trans ) {
+    try {
+      ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.TransformationFinish.id, trans );
+    } catch ( KettleException e ) {
+      getLog().logError( "A KettleException occurred when attempting to call TransformationFinish extension point", e );
+    }
+    return exitWithStatus( exitStatus );
   }
 
   public int printVersion() {
