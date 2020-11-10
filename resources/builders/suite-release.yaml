@@ -13,8 +13,10 @@ buildProperties:
   MAVEN_PUBLIC_RELEASE_REPO_URL  : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-dev-orl/
   MAVEN_PRIVATE_RELEASE_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-dev-orl/
 
-  DOCKER_PUBLIC_PUSH_REPO     : pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com/
-  DOCKER_PRIVATE_PUSH_REPO    : pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com/
+  DOCKER_PUBLIC_PUSH_REPO        : pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com/
+  DOCKER_PRIVATE_PUSH_REPO       : pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com/
+
+  HELM_REPOSITORY_URL            : https://repo.orl.eng.hitachivantara.com/artifactory/lumadadataintegration-helm-dev-orl
 
   ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
 
@@ -692,7 +694,7 @@ jobGroups:
   4500:
      - jobID           :  foundry-workers-ee
        scmUrl          :  https://github.com/pentaho/worker-nodes-ee.git
-       directives      :  clean deploy -Deula-wrap -DscmBranch=${DEFAULT_BRANCH}
+       directives      :  clean deploy -Deula-wrap -DscmBranch=${DEFAULT_BRANCH} -Dhelm.username=${NEXUS_DEPLOY_USER} -Dhelm.password=${NEXUS_DEPLOY_PASSWORD} -Dhelm.repository.url=${HELM_REPOSITORY_URL}
        archivable      :  true
        versionProperty :  worker-nodes.version
 
