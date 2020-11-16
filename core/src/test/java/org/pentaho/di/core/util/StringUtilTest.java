@@ -180,6 +180,17 @@ public class StringUtilTest extends TestCase {
     assertEquals( "abc123", StringUtil.safeToLowerCase( ( new ToString( "ABC123" ) ).toString() ) );
   }
 
+  @Test
+  public void testHasVariable() {
+    assertTrue( StringUtil.hasVariable( "abc${foo}" ) );
+    assertTrue( StringUtil.hasVariable( "abc%%foo%%efg" ) );
+    assertTrue( StringUtil.hasVariable( "$[foo]abc" ) );
+    assertFalse( "Open and close ordered improperly", StringUtil.hasVariable( "a}bc${foo" ) );
+    assertFalse( "Variable is not closed", StringUtil.hasVariable( "abc${foo" ) );
+    assertFalse( "Variable is not opened", StringUtil.hasVariable( "abcfoo}" ) );
+    assertFalse( "no variable present to substitute", StringUtil.hasVariable( "abc${}foo" ) );
+  }
+
   class ToString {
     private String string;
 

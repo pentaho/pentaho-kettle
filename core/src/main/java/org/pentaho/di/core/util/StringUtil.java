@@ -619,6 +619,22 @@ public class StringUtil {
   }
 
   /**
+   * @param variable A String which may have a variable within it, with the $ or % variable specification.
+   * @return true if the input has a variable, false otherwise
+   */
+  public static boolean hasVariable( String variable ) {
+    if ( variable == null ) {
+      return false;
+    }
+    return checkForVariableDelimeters( variable, UNIX_OPEN, UNIX_CLOSE ) || checkForVariableDelimeters( variable,
+      WINDOWS_OPEN, WINDOWS_CLOSE ) || checkForVariableDelimeters( variable, HEX_OPEN, HEX_CLOSE );
+  }
+
+  private static boolean checkForVariableDelimeters( String source, String open, String close ) {
+    return source.contains( open ) && ( source.substring( source.indexOf( open ) + open.length() + 1 ).contains( close ) );
+  }
+
+  /**
    * Calls the {@link String#toLowerCase()} method on the {@link String} returned by a call to {@code obj.toString()},
    * guarding against {@link NullPointerException}s.
    *
