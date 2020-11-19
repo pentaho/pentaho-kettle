@@ -252,6 +252,7 @@
         <module>engine</module>
         <module>dbdialog</module>
         <module>ui</module>
+        <module>utilities</module>
       </modules>
     </profile>
     <profile>
