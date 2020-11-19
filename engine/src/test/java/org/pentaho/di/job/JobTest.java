@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,8 +39,10 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.HasDatabasesInterface;
 
@@ -57,6 +59,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
@@ -64,6 +67,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 import static org.powermock.reflect.Whitebox.setInternalState;
 
 public class JobTest {
@@ -281,4 +285,37 @@ public class JobTest {
     scheduler.schedule( task, 1, TimeUnit.SECONDS );
     scheduler.shutdown();
   }
+
+  /**
+   * Tests the re-execution of a sub-job with a checkpoint and Previous Results (Called by JobExecutor - Job Calling
+   * another Job) The called Job is set to Repeat
+   */
+  @Test
+  public void executeWithPreviousCheckpointTest() {
+
+    setupJobMockExecution();
+    try {
+      when( mockedJob.execute( anyInt(), any( Result.class ) ) ).thenCallRealMethod();
+      JobEntryCopy startJobEntryCopy = mock( JobEntryCopy.class );
+      Result startJobEntryResult = mock( Result.class );
+      JobEntryInterface mockJobEntryInterface =
+        mock( JobEntryInterface.class, withSettings().extraInterfaces( VariableSpace.class ) );
+      when( startJobEntryCopy.getEntry() ).thenReturn( mockJobEntryInterface );
+      when( mockJobEntryInterface.getLogChannel() ).thenReturn( mockedLogChannel );
+      when( mockJobEntryInterface.clone() ).thenReturn( mockJobEntryInterface );
+      when( startJobEntryResult.clone() ).thenReturn( startJobEntryResult );
+      setInternalState( mockedJob, "startJobEntryCopy", startJobEntryCopy );
+      setInternalState( mockedJob, "startJobEntryResult", startJobEntryResult );
+      when( mockJobEntryInterface.execute( startJobEntryResult, 0 ) ).thenReturn( new Result() );
+
+      mockedJob.execute( 0, new Result() );
+
+      //Verify that the execute used the start point supplied with result supplied instead of starting from the start
+      verify( mockJobEntryInterface, times( 1 ) ).execute( eq( startJobEntryResult ), eq( 0 ) );
+      verify( mockedJobEntrySpecial, times(0 ) ).execute( any( Result.class ), anyInt() );
+    } catch ( KettleException e ) {
+      Assert.fail( "Could not execute job" );
+    }
+  }
+
 }
