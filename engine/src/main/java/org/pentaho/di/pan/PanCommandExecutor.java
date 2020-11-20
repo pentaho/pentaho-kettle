@@ -268,7 +268,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     } catch ( KettleException ke ) {
       System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.ErrorOccurred", "" + ke.getMessage() ) );
       getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.UnexpectedErrorOccurred", "" + ke.getMessage() ) );
-      return exitWithStatus( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode() );
+      return exitWithStatus( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode(), trans );
     } finally {
       if ( repository != null ) {
         repository.disconnect();
