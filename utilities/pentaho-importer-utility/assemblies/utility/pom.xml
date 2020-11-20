@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>pentaho-importer-utility-assembly</artifactId>
+    <groupId>org.pentaho.di</groupId>
+    <version>9.2.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pentaho.di</groupId>
+  <artifactId>pentaho-importer-utility</artifactId>
+  <version>9.2.0.0-SNAPSHOT</version>
+
+  <packaging>pom</packaging>
+
+  <properties>
+    <assembly.dir>${project.build.directory}/assembly</assembly.dir>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>importer-utility</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-libs</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${assembly.dir}/lib</outputDirectory>
+              <includeScope>compile</includeScope>
+              <excludeArtifactIds>importer-utility</excludeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>
