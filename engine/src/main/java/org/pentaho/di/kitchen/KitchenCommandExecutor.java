@@ -29,6 +29,8 @@ import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.parameters.UnknownParamException;
@@ -156,7 +158,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
       }
 
-      return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+      return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), job );
     }
 
     if ( !Utils.isEmpty( params.getExportRepo() ) ) {
@@ -252,6 +254,15 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     getResult().setElapsedTimeMillis( stop.getTime() - start.getTime() );
 
     return exitWithStatus( returnCode );
+  }
+
+  protected Result exitWithStatus( final int exitStatus, Job job ) {
+    try {
+      ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.JobFinish.id, job );
+    } catch ( KettleException e ) {
+      getLog().logError( "A KettleException occurred when attempting to call JobFinish extension point", e );
+    }
+    return exitWithStatus( exitStatus );
   }
 
   public int printVersion() {
