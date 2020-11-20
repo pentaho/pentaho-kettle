@@ -2,24 +2,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.pentaho.di</groupId>
-        <artifactId>pentaho-kettle-utilities</artifactId>
-        <version>9.2.0.0-SNAPSHOT</version>
-    </parent>
-
+  <parent>
     <groupId>org.pentaho.di</groupId>
-    <artifactId>importer-utility-parent-pom</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>pentaho-kettle-utilities</artifactId>
+    <version>9.2.0.0-SNAPSHOT</version>
+  </parent>
 
-    <properties>
-        <license.licenseName>vantara</license.licenseName>
-    </properties>
+  <groupId>org.pentaho.di</groupId>
+  <artifactId>importer-utility-parent-pom</artifactId>
+  <packaging>pom</packaging>
 
-    <modules>
-        <module>assembly</module>
-        <module>importer-utility</module>
-    </modules>
+  <properties>
+    <license.licenseName>vantara</license.licenseName>
+  </properties>
+
+  <modules>
+    <module>assemblies</module>
+    <module>importer-utility</module>
+  </modules>
 </project>
