@@ -31,8 +31,15 @@ import org.junit.runner.RunWith;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.extension.ExtensionPointInterface;
+import org.pentaho.di.core.extension.ExtensionPointPluginType;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.powermock.api.mockito.PowerMockito;
@@ -49,7 +56,10 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyVararg;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
@@ -61,6 +71,9 @@ public class KitchenCommandExecutorTest {
   private Result result;
   private LogChannelInterface logChannelInterface;
 
+  interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
+  }
+  
   @Before
   public void setUp() throws Exception {
     KettleLogStore.init();
@@ -132,5 +145,43 @@ public class KitchenCommandExecutorTest {
     } catch ( Throwable throwable ) {
       Assert.fail();
     }
+  }
+
+  @Test
+  public void testJobFailOnInitializationExtensionPointCall() throws Throwable {
+    boolean kettleXMLExceptionThrown = false;
+    Job job = null;
+
+    PluginMockInterface pluginInterface = mock( PluginMockInterface.class );
+    when( pluginInterface.getName() ).thenReturn( KettleExtensionPoint.JobFinish.id );
+    when( pluginInterface.getMainType() ).thenReturn( (Class) ExtensionPointInterface.class );
+    when( pluginInterface.getIds() ).thenReturn( new String[] { "extensionpointId" } );
+
+    ExtensionPointInterface extensionPoint = mock( ExtensionPointInterface.class );
+    when( pluginInterface.loadClass( ExtensionPointInterface.class ) ).thenReturn( extensionPoint );
+
+    PluginRegistry.addPluginType( ExtensionPointPluginType.getInstance() );
+    PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
+
+    String fullPath = getClass().getResource( "brokenjob.kjb" ).getPath();
+    Params params = mock( Params.class );
+
+    when( params.getRepoName() ).thenReturn( "" );
+    when( params.getLocalInitialDir() ).thenReturn( "" );
+    when( params.getLocalFile() ).thenReturn( fullPath );
+    when( params.getLocalJarFile() ).thenReturn( "" );
+    when( params.getBase64Zip() ).thenReturn( "" );
+    try {
+      job = mockedKitchenCommandExecutor.loadJobFromFilesystem( "", fullPath, "" );
+    } catch ( KettleXMLException e ) {
+      kettleXMLExceptionThrown = true;
+    }
+
+    KitchenCommandExecutor kitchenCommandExecutor = new KitchenCommandExecutor( KitchenCommandExecutor.class );
+    Result result = kitchenCommandExecutor.execute( params );
+
+    Assert.assertTrue( kettleXMLExceptionThrown );
+
+    verify( extensionPoint, times( 1 ) ).callExtensionPoint( any( LogChannelInterface.class ), same( job ) );
   }
 }
