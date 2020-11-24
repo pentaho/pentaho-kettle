@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,30 +99,37 @@ public class WriteToLog extends BaseStep implements StepInterface {
       if ( !Utils.isEmpty( data.logmessage ) ) {
         data.logmessage += Const.CR + Const.CR;
       }
-
     } // end if first
 
-    StringBuilder out = new StringBuilder();
-    out.append( Const.CR
-      + "------------> " + BaseMessages.getString( PKG, "WriteToLog.Log.NLigne", "" + getLinesRead() )
-      + "------------------------------" + Const.CR );
+    // We don't need to calculate if step log level is lower than the run log level
+    if ( getLogLevel().getLevel() >= data.loglevel.getLevel() ) {
+      StringBuilder out = new StringBuilder();
+      out.append( Const.CR ).append( "------------> " )
+        .append( BaseMessages.getString( PKG, "WriteToLog.Log.NLigne", "" ) )
+        .append( getLinesRead() )
+        .append( "------------------------------" )
+        .append( Const.CR );
 
-    out.append( getRealLogMessage() );
+      out.append( getRealLogMessage() );
 
-    // Loop through fields
-    for ( int i = 0; i < data.fieldnr; i++ ) {
-      String fieldvalue = getInputRowMeta().getString( r, data.fieldnrs[i] );
+      // Only needed if it's to print the header
+      String[] fieldNames = meta.isDisplayHeader() ? getInputRowMeta().getFieldNames() : null;
 
-      if ( meta.isdisplayHeader() ) {
-        String fieldname = getInputRowMeta().getFieldNames()[data.fieldnrs[i]];
-        out.append( fieldname + " = " + fieldvalue + Const.CR );
-      } else {
-        out.append( fieldvalue + Const.CR );
+      // Loop through fields
+      for ( int i = 0; i < data.fieldnr; i++ ) {
+        String fieldValue = getInputRowMeta().getString( r, data.fieldnrs[ i ] );
+
+        if ( meta.isDisplayHeader() ) {
+          out.append( fieldNames[ data.fieldnrs[ i ] ] ).append( " = " );
+        }
+
+        out.append( fieldValue ).append( Const.CR );
       }
-    }
-    out.append( Const.CR + "====================" );
 
-    setLog( data.loglevel, out );
+      out.append( Const.CR ).append( "====================" );
+
+      setLog( data.loglevel, out );
+    }
 
     // Increment counter
     if ( meta.isLimitRows() && ++rowCounter >= meta.getLimitRowsNumber() ) {
