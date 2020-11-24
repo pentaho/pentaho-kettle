@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -263,6 +263,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     try {
       if ( inputJobMeta == null ) {
         JobEntryJob jej = new JobEntryJob();
+        getSpecificationPath( jej );
         getInfo( jej );
         inputJobMeta = jej.getJobMeta( rep, metaStore, jobMeta );
       }

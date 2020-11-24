@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,25 +32,30 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 /**
  * @author Vadim_Polynkov
  */
 @RunWith( PowerMockRunner.class )
-@PrepareForTest( { PropsUI.class, LoggingRegistry.class } )
+@PrepareForTest( { PropsUI.class, LoggingRegistry.class, JobEntryJobDialog.class, JobEntryJob.class } )
 public class JobEntryJobDialogTest {
 
   private static final String FILE_NAME =  "TestJob.kjb";
@@ -132,5 +137,49 @@ public class JobEntryJobDialogTest {
 
     nc.ok();
     verify( job, times( 1 ) ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+  }
+
+  @Test
+  public void getParametersSetsSpecificationMethodWithRepositoryTest() throws Exception {
+    ObjectLocationSpecificationMethod[] objectLocationSpecificationMethods = getParametersSetsSpecificationMethodTest( true );
+
+    assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, objectLocationSpecificationMethods[0] );
+    assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, objectLocationSpecificationMethods[1] );
+  }
+
+  @Test
+  public void getParametersSetsSpecificationMethodWithoutRepositoryTest() throws Exception {
+    ObjectLocationSpecificationMethod[] objectLocationSpecificationMethods = getParametersSetsSpecificationMethodTest( false );
+
+    assertEquals( ObjectLocationSpecificationMethod.FILENAME, objectLocationSpecificationMethods[0] );
+    assertEquals( ObjectLocationSpecificationMethod.FILENAME, objectLocationSpecificationMethods[1] );
+  }
+
+  private ObjectLocationSpecificationMethod[] getParametersSetsSpecificationMethodTest( boolean withRepo ) throws Exception {
+    Repository rep = mock( Repository.class );
+    JobEntryJob job = PowerMockito.mock( JobEntryJob.class );
+    JobMeta meta = mock( JobMeta.class );
+    JobEntryJobDialog jobEntryJobDialog = mock( JobEntryJobDialog.class );
+    TableView tableView = mock( TableView.class );
+    //Return Values Mock
+    doReturn( "My Job" ).when( jobEntryJobDialog ).getName();
+    doReturn( "/path/job.kjb" ).when( jobEntryJobDialog ).getPath();
+    whenNew( JobEntryJob.class ).withNoArguments().thenReturn( job );
+    doReturn( meta ).when( job ).getJobMeta( anyObject(), anyObject(), anyObject() );
+    doReturn( new String[] {} ).when( meta ).listParameters();
+    doReturn( new String[] {} ).when( tableView ).getItems( 1 );
+    //Real Methods
+    doCallRealMethod().when( jobEntryJobDialog ).getSpecificationPath( anyObject() );
+    doCallRealMethod().when( jobEntryJobDialog ).getParameters( null );
+    doCallRealMethod().when( job ).setSpecificationMethod( anyObject() );
+    //Internal States
+    if ( withRepo ) {
+      Whitebox.setInternalState( jobEntryJobDialog, "rep", rep );
+    }
+    Whitebox.setInternalState( jobEntryJobDialog, "wParameters", tableView );
+    jobEntryJobDialog.getParameters( null );
+    ObjectLocationSpecificationMethod specificationMethod = Whitebox.getInternalState( jobEntryJobDialog, "specificationMethod" );
+    ObjectLocationSpecificationMethod specificationMethodJob = Whitebox.getInternalState( job, "specificationMethod" );
+    return new ObjectLocationSpecificationMethod[] { specificationMethod, specificationMethodJob };
   }
 }
