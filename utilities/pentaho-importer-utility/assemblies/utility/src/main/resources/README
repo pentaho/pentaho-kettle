@@ -1,0 +1,38 @@
+DESCRIPTION
+This utility will prepare jobs (*.kjb) and transformations (*.ktr) for importing into the Data Flow Manager
+by adding the following property to them:
+
+<extended_description>#dataflow</extended_description>
+
+Normally a user would accomplish this by editing the job or transformation in PDI. This utility will update
+those files without the need for editing each one by one.
+
+REQUIREMENTS
+Java Runtime Environment or Java Developers Kit version 1.8.0 or newer installed.
+
+Running the utility:
+To start the utility on Windows execute the "importer-utility.bat" batch file.
+To start the utility on Linux/Mac execute the "importer-utility.sh" script.
+
+USAGE
+**** It is highly suggested to create a back up of the jobs and transformations beforehand.
+
+Only valid ktr and kjb files with valid XML format can be prepared by the utility.
+
+Individual jobs or transformations can be added by clicking the + button in the toolbar and browsing to their
+respective locations, folders can also be selected and all ktr and kjb files contained in them and in their
+sub folders will also be added.
+
+All files can be removed at once by clicking the << button in the tool bar or single/multiple selected files
+can be removed by clicking the < button.
+
+Once the files to be prepared have been added simply click the "process files button" with the "play" icon at
+the bottom. Results will be displayed in the log showing which files were successfully updated and which once
+had errors while getting processed.
+
+
+
+
+
+
+
