@@ -54,7 +54,6 @@ public class XMLProcess {
       transformerFactory.setAttribute( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
       transformerFactory.setAttribute( XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "" );
       transformer = transformerFactory.newTransformer();
-      transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
       transformer.setOutputProperty( OutputKeys.DOCTYPE_PUBLIC, "yes" );
       transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "no" );
       transformer.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
