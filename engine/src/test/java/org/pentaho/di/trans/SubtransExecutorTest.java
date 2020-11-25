@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObject;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -69,6 +70,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -82,6 +84,7 @@ public class SubtransExecutorTest {
   @Before
   public void setUp() throws Exception {
     KettleLogStore.setLogChannelInterfaceFactory( this.logChannelFactory );
+    doReturn( LogLevel.BASIC ).when( logChannel ).getLogLevel();
     Mockito.when( this.logChannelFactory.create( any(), any() ) ).thenReturn( this.logChannel );
   }
 
