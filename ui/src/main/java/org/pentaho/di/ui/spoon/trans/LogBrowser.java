@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -68,7 +69,7 @@ public class LogBrowser {
 
   private StyledText text;
   private LogParentProvidedInterface logProvider;
-  private List<String> childIds = new ArrayList<String>();
+  private List<String> childIds = new ArrayList<>();
   private Date lastLogRegistryChange;
   private AtomicBoolean paused;
 
@@ -86,10 +87,11 @@ public class LogBrowser {
     final AtomicBoolean busy = new AtomicBoolean( false );
     final KettleLogLayout logLayout = new KettleLogLayout( true );
 
-    final StyleRange normalLogLineStyle = new StyleRange();
-    normalLogLineStyle.foreground = GUIResource.getInstance().getColorBlue();
-    final StyleRange errorLogLineStyle = new StyleRange();
-    errorLogLineStyle.foreground = GUIResource.getInstance().getColorRed();
+    final Color colorBlue = GUIResource.getInstance().getColorBlue();
+    final Color colorRed = GUIResource.getInstance().getColorRed();
+
+    final int LOG_LINE_ESTIMATED_SIZE = 150;
+    final int MAX_NR_LOG_LINES_CHUNK = 150;
 
     // Refresh the log every second or so
     //
@@ -122,27 +124,27 @@ public class LogBrowser {
               //
               int lastNr = KettleLogStore.getLastBufferLineNr();
               if ( lastNr > lastLogId.get() ) {
+                // Sometimes there're so many lines to log at one time that the application goes unresponsive
+                // until all log entries are handled...
+                // Let's limit the lines handled, leaving the rest for the next time the timer fires...
+                lastNr = Math.min( lastNr, lastLogId.get() + MAX_NR_LOG_LINES_CHUNK );
+
                 List<KettleLoggingEvent> logLines =
                   KettleLogStore.getLogBufferFromTo( childIds, true, lastLogId.get(), lastNr );
 
-                // The maximum size of the log buffer
-                //
-                int maxSize = Props.getInstance().getMaxNrLinesInLog() * 150;
-
-                // int position = text.getSelection().x;
-                // StringBuilder buffer = new StringBuilder(text.getText());
-
                 synchronized ( text ) {
 
-                  for ( int i = 0; i < logLines.size(); i++ ) {
-                    KettleLoggingEvent event = logLines.get( i );
+                  for ( KettleLoggingEvent event : logLines ) {
                     String line = logLayout.format( event ).trim();
                     int start = text.getText().length();
                     int length = line.length();
 
                     if ( length > 0 ) {
                       Format format = TextFormatter.getInstance().execute( line );
-                      text.append( format.getText() );
+                      String theRealText = format.getText();
+                      // The formatting may have change the original text and its length
+                      length = theRealText.length();
+                      text.append( theRealText );
                       text.append( Const.CR );
 
                       for ( StyleRange styleRange : format.getStyleRanges() ) {
@@ -150,22 +152,25 @@ public class LogBrowser {
                         text.setStyleRange( styleRange );
                       }
 
+                      StyleRange styleRange = new StyleRange();
+                      styleRange.start = start;
+
                       if ( event.getLevel() == LogLevel.ERROR ) {
-                        StyleRange styleRange = new StyleRange();
-                        styleRange.foreground = GUIResource.getInstance().getColorRed();
-                        styleRange.start = start;
+                        styleRange.foreground = colorRed;
                         styleRange.length = length;
-                        text.setStyleRange( styleRange );
                       } else {
-                        StyleRange styleRange = new StyleRange();
-                        styleRange.foreground = GUIResource.getInstance().getColorBlue();
-                        styleRange.start = start;
+                        styleRange.foreground = colorBlue;
                         styleRange.length = Math.min( 20, length );
-                        text.setStyleRange( styleRange );
                       }
+
+                      text.setStyleRange( styleRange );
                     }
                   }
                 }
+
+                // The maximum size of the log buffer
+                //
+                int maxSize = Props.getInstance().getMaxNrLinesInLog() * LOG_LINE_ESTIMATED_SIZE;
 
                 // Erase it all in one go
                 // This makes it a bit more efficient
@@ -222,6 +227,7 @@ public class LogBrowser {
     MenuItem item = new MenuItem( menu, SWT.NONE );
     item.setText( BaseMessages.getString( PKG, "LogBrowser.CopySelectionToClipboard.MenuItem" ) );
     item.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent event ) {
         String selection = text.getSelectionText();
         if ( !Utils.isEmpty( selection ) ) {
@@ -232,6 +238,7 @@ public class LogBrowser {
     text.setMenu( menu );
 
     text.addMouseListener( new MouseAdapter() {
+      @Override
       public void mouseDown( MouseEvent event ) {
         if ( event.button == 3 ) {
           ConstUI.displayMenu( menu, text );
