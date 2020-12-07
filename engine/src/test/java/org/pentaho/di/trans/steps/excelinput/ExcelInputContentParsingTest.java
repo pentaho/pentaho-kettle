@@ -28,9 +28,14 @@ import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
+import java.util.Arrays;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
+  public static final String XLSX_FILE_WITH_SHARED_STRINGS = "file_with_shared_strings.xlsx";
+  public static final String XLSX_FILE_WITH_INLINED_STRINGS = "file_with_inlined_strings.xlsx";
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String[] CNST_3_SHEET_NAME_ARRAY = { "Sheet1", "Sheet2", "Sheet3" };
@@ -328,5 +333,109 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     // Checks
     assertEquals( "Wrong first result", firstResult, rows.get( 0 )[ 0 ] );
     assertEquals( "Wrong last result", lastResult, rows.get( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET - 1 )[ 0 ] );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_Header_InlinedStrings_Streaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( XLSX_FILE_WITH_INLINED_STRINGS );
+
+    testReadBlankAndNullCells( true );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_Header_SharedStrings_Streaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( XLSX_FILE_WITH_SHARED_STRINGS );
+
+    testReadBlankAndNullCells( true );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_Header_InlinedStrings_NoStreaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    init( XLSX_FILE_WITH_INLINED_STRINGS );
+
+    testReadBlankAndNullCells( true );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_Header_SharedStrings_NoStreaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    init( XLSX_FILE_WITH_SHARED_STRINGS );
+
+    testReadBlankAndNullCells( true );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_NoHeader_InlinedStrings_Streaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( XLSX_FILE_WITH_INLINED_STRINGS );
+
+    testReadBlankAndNullCells( false );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_NoHeader_SharedStrings_Streaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( XLSX_FILE_WITH_SHARED_STRINGS );
+
+    testReadBlankAndNullCells( false );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_NoHeader_InlinedStrings_NoStreaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    init( XLSX_FILE_WITH_INLINED_STRINGS );
+
+    testReadBlankAndNullCells( false );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_NoHeader_SharedStrings_NoStreaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    init( XLSX_FILE_WITH_SHARED_STRINGS );
+
+    testReadBlankAndNullCells( false );
+  }
+
+  /**
+   * <p>Common code for the testReadBlankAndNullCells* tests.</p>
+   *
+   * @param startsWithHeader if the file has header row or not
+   * @throws Exception if something went wrong
+   */
+  private void testReadBlankAndNullCells( boolean startsWithHeader ) throws Exception {
+    meta.setStartsWithHeader( startsWithHeader );
+
+    setFields( new ExcelInputField( "f1", -1, -1 ), new ExcelInputField( "f2", -1, -1 ),
+      new ExcelInputField( "f3", -1, -1 ), new ExcelInputField( "f4", -1, -1 ) );
+
+    process();
+
+    // The full content of the file
+    Object[][] allRows = new Object[][] {
+      // Second cell is 'Blank' and third is 'null'
+      { "val11", "", null, "val14" },
+      // All cells have content
+      { "val21", "val22", "val23", "val24" },
+      // Second cell is 'Blank'
+      { "val31", "", "val33", "val34" },
+      // All cells have content
+      { "val41", "val42", "val43", "val44" },
+      // Second cell is 'null'
+      { "val51", null, "val53", "val54" },
+      // All cells have content
+      { "val61", "val62", "val63", "val64" }
+    };
+
+    Object[][] expectedRows = allRows;
+
+    if ( startsWithHeader ) {
+      // When it has an Header, the first row won't show as content
+      expectedRows = Arrays.copyOfRange( allRows, 1, allRows.length );
+    }
+
+    check( expectedRows );
   }
 }
