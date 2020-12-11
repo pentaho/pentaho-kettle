@@ -57,8 +57,17 @@ import org.pentaho.di.core.xml.XMLParserFactoryProducer;
  */
 public class StaxPoiSheet implements KSheet {
 
-  // set to UTC for coherence with PoiSheet;
+  // set to UTC for coherence with PoiSheet
   private static final TimeZone DATE_TZ = TimeZone.getTimeZone( "UTC" );
+
+  private static final String ATTRIBUTE_T = "t";
+
+  private static final String TAG_C = "c";
+  private static final String TAG_IS = "is";
+  private static final String TAG_ROW = "row";
+  private static final String TAG_SHEET_DATA = "sheetData";
+  private static final String TAG_T = "t";
+  private static final String TAG_V = "v";
 
   private final String sheetName;
   private final String sheetId;
@@ -108,25 +117,25 @@ public class StaxPoiSheet implements KSheet {
             numCols = StaxUtil.MAX_COLUMNS;
             numRows = StaxUtil.MAX_ROWS;
           }
-        } else if ( sheetReader.getLocalName().equals( "row" ) ) {
+        } else if ( sheetReader.getLocalName().equals( TAG_ROW ) ) {
           currentRow = Integer.parseInt( sheetReader.getAttributeValue( null, "r" ) );
           firstRow = currentRow;
 
           // calculate the number of columns in the header row
           while ( sheetReader.hasNext() ) {
             event = sheetReader.next();
-            if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
+            if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_ROW ) ) {
               // if the row has ended, break the inner while loop
               break;
             }
-            if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
-              String attributeValue = sheetReader.getAttributeValue( null, "t" );
+            if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_C ) ) {
+              String attributeValue = sheetReader.getAttributeValue( null, ATTRIBUTE_T );
               if ( attributeValue != null ) {
                 if ( attributeValue.equals( "s" ) ) {
                   // if the type of the cell is string, we continue
                   while ( sheetReader.hasNext() ) {
                     event = sheetReader.next();
-                    if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
+                    if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_V ) ) {
                       int idx = Integer.parseInt( sheetReader.getElementText() );
                       String content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
                       headerRow.add( content );
@@ -137,7 +146,7 @@ public class StaxPoiSheet implements KSheet {
                   // if the type of the cell is string, we continue
                   while ( sheetReader.hasNext() ) {
                     event = sheetReader.next();
-                    if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "is" ) ) {
+                    if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_IS ) ) {
                       while ( sheetReader.hasNext() ) {
                         event = sheetReader.next();
                         if ( event == XMLStreamConstants.CHARACTERS ) {
@@ -146,11 +155,11 @@ public class StaxPoiSheet implements KSheet {
                           break;
                         }
                         if ( event == XMLStreamConstants.END_ELEMENT ) {
-                          if ( sheetReader.getLocalName().equals( "t" ) ) {
+                          if ( sheetReader.getLocalName().equals( TAG_T ) ) {
                             // If "t" ended, this is a 'blank' cell
                             headerRow.add( "" );
                             break;
-                          } else if ( sheetReader.getLocalName().equals( "is" ) ) {
+                          } else if ( sheetReader.getLocalName().equals( TAG_IS ) ) {
                             // If "is" ended, this is a 'null' cell
                             headerRow.add( null );
                             break;
@@ -165,7 +174,7 @@ public class StaxPoiSheet implements KSheet {
                 // Most probably a 'null' cell, but let's make sure...
                 if ( sheetReader.hasNext() ) {
                   event = sheetReader.next();
-                  if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
+                  if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_C ) ) {
                     // Yes, it is a 'null' cell!
                     headerRow.add( null );
                     continue;
@@ -215,7 +224,7 @@ public class StaxPoiSheet implements KSheet {
       }
       while ( sheetReader.hasNext() ) {
         int event = sheetReader.next();
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
+        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_ROW ) ) {
           String rowIndicator = sheetReader.getAttributeValue( null, "r" );
           currentRow = Integer.parseInt( rowIndicator );
           if ( currentRow < rownr + 1 ) {
@@ -224,7 +233,7 @@ public class StaxPoiSheet implements KSheet {
           currentRowCells = parseRow();
           return currentRowCells;
         }
-        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "sheetData" ) ) {
+        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_SHEET_DATA ) ) {
           // There're no more columns, no need to continue to read
           break;
         }
@@ -253,10 +262,10 @@ public class StaxPoiSheet implements KSheet {
       // go to the "c" cell tag
       while ( sheetReader.hasNext() ) {
         int event = sheetReader.next();
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
+        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_C ) ) {
           break;
         }
-        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
+        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_ROW ) ) {
           // premature end of row, returning what we have
           return cells.toArray( new StaxPoiCell[cells.size()] );
         }
@@ -265,7 +274,7 @@ public class StaxPoiSheet implements KSheet {
       String cellLocation = sheetReader.getAttributeValue( null, "r" );
       int columnIndex = StaxUtil.extractColumnNumber( cellLocation ) - 1;
 
-      String cellType = sheetReader.getAttributeValue( null, "t" );
+      String cellType = sheetReader.getAttributeValue( null, ATTRIBUTE_T );
       String cellStyle = sheetReader.getAttributeValue( null, "s" );
 
       boolean isFormula = false;
@@ -274,7 +283,7 @@ public class StaxPoiSheet implements KSheet {
       while ( sheetReader.hasNext() ) {
         int event = sheetReader.next();
         if ( event == XMLStreamConstants.START_ELEMENT ) {
-          if ( sheetReader.getLocalName().equals( "v" ) ) {
+          if ( sheetReader.getLocalName().equals( TAG_V ) ) {
             // read content as string
             if ( cellType != null && cellType.equals( "s" ) ) {
               int idx = Integer.parseInt( sheetReader.getElementText() );
@@ -282,7 +291,7 @@ public class StaxPoiSheet implements KSheet {
             } else {
               content = sheetReader.getElementText();
             }
-          } else if ( sheetReader.getLocalName().equals( "is" ) ) {
+          } else if ( sheetReader.getLocalName().equals( TAG_IS ) ) {
             while ( sheetReader.hasNext() ) {
               event = sheetReader.next();
               if ( event == XMLStreamConstants.CHARACTERS ) {
@@ -290,11 +299,11 @@ public class StaxPoiSheet implements KSheet {
                 break;
               }
               if ( event == XMLStreamConstants.END_ELEMENT ) {
-                if ( sheetReader.getLocalName().equals( "t" ) ) {
+                if ( sheetReader.getLocalName().equals( TAG_T ) ) {
                   // If "t" ended, this is a 'blank' cell
                   content = "";
                   break;
-                } else if ( sheetReader.getLocalName().equals( "is" ) ) {
+                } else if ( sheetReader.getLocalName().equals( TAG_IS ) ) {
                   // If "is" ended, this is a 'null' cell
 
                   content = null;
@@ -306,7 +315,7 @@ public class StaxPoiSheet implements KSheet {
             isFormula = true;
           }
         }
-        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
+        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_C ) ) {
           break;
         }
       }
