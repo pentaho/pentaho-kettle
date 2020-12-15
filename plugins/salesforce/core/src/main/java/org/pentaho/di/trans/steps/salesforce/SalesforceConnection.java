@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -447,7 +447,7 @@ public class SalesforceConnection {
               } else {
                 this.sObjects = getBinding().retrieve( this.fieldsList, getModule(), ids );
               }
-              if ( this.sObjects != null ) {
+              if ( this.sObjects != null && this.recordsFilter != SalesforceConnectionUtils.RECORDS_FILTER_DELETED ) {
                 this.queryResultSize = this.sObjects.length;
               }
             }
@@ -467,16 +467,14 @@ public class SalesforceConnection {
           }
 
           if ( deletedRecords != null && deletedRecords.length > 0 ) {
-            getDeletedList = new HashMap<String, Date>();
+            getDeletedList = new HashMap<>();
 
             for ( DeletedRecord dr : deletedRecords ) {
               getDeletedList.put( dr.getId(), dr.getDeletedDate().getTime() );
             }
             this.qr = getBinding().queryAll( getSQL() );
             this.sObjects = getQueryResult().getRecords();
-            if ( this.sObjects != null ) {
-              this.queryResultSize = this.sObjects.length;
-            }
+            this.queryResultSize = getQueryResult().getSize();
           }
           break;
         default:
@@ -488,6 +486,8 @@ public class SalesforceConnection {
       }
       if ( this.sObjects != null ) {
         this.recordsCount = this.sObjects.length;
+      } else {
+        this.recordsCount = 0;
       }
     } catch ( Exception e ) {
       log.logError( Const.getStackTracker( e ) );
