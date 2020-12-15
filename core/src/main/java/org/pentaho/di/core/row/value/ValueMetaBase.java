@@ -4061,13 +4061,13 @@ public class ValueMetaBase implements ValueMetaInterface {
       } else {
 
 
-        Boolean forceStringWithOnlySpaces = convertStringToBoolean(
-          Const.NVL( System.getProperty( Const.KETTLE_FORCE_STRING_WITH_SPACES_ONLY_AS_NOT_EMPTY, "N" ), "N" ) );
+        Boolean normalizeSpacesOnlyString = !convertStringToBoolean(
+          Const.NVL( System.getProperty( Const.KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY, "N" ), "N" ) );
 
         // Verify if there are only spaces in the polled value...
         // We consider that empty as well...
         //
-        if ( Const.onlySpaces( pol ) && !forceStringWithOnlySpaces ) {
+        if ( Const.onlySpaces( pol ) && normalizeSpacesOnlyString ) {
           return emptyValue;
         }
       }

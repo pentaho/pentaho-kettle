@@ -758,7 +758,7 @@ public class Const {
   /**
    * This flag will force to return the original string with only spaces instead of an empty string.
    */
-  public static final String KETTLE_FORCE_STRING_WITH_SPACES_ONLY_AS_NOT_EMPTY = "KETTLE_FORCE_STRING_WITH_SPACES_ONLY_AS_NOT_EMPTY";
+  public static final String KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY = "KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY";
 
   /**
    * This flag will prevent Kettle from yielding {@code null} as the value of an empty XML tag in {@link org.pentaho.di.core.xml.XMLHandler}

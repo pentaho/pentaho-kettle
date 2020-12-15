@@ -397,17 +397,17 @@ public class ValueMetaBaseTest {
     assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y: "
       + "Conversion from null string must return empty string", StringUtils.EMPTY, result );
 
-    // test KETTLE_FORCE_STRING_WITH_SPACES_ONLY_AS_NOT_EMPTY
-    System.setProperty( Const.KETTLE_FORCE_STRING_WITH_SPACES_ONLY_AS_NOT_EMPTY, "Y" );
+    // test KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY
+    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY, "Y" );
     result =
       outValueMetaString.convertDataFromString( inputValueSpacesString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "KETTLE_FORCE_STRING_WITH_SPACES_ONLY_AS_NOT_EMPTY = Y: "
+    assertEquals( "KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY = Y: "
       + "Conversion from string with spaces only to string must return original string", inputValueSpacesString, result );
 
-    System.setProperty( Const.KETTLE_FORCE_STRING_WITH_SPACES_ONLY_AS_NOT_EMPTY, "N" );
+    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY, "N" );
     result =
       outValueMetaString.convertDataFromString( inputValueSpacesString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "KETTLE_FORCE_STRING_WITH_SPACES_ONLY_AS_NOT_EMPTY = Y: "
+    assertEquals( "KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY = Y: "
       + "Conversion from string with spaces only to string must return original string", StringUtils.EMPTY, result );
   }
 
