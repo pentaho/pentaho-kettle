@@ -155,6 +155,12 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Prevents Kettle from converting spaces only strings to empty string.</description>
+    <variable>KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>Prevent Kettle from yielding null as the value of an empty value.</description>
     <variable>KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE</variable>
     <default-value>N</default-value>
