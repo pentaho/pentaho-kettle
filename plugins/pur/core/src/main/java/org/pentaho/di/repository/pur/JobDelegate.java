@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -291,7 +291,12 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       }
 
       // And read the job entry copy group attributes map
-      AttributesMapUtil.loadAttributesMap( copyNode, copy, PROP_ATTRIBUTES_JOB_ENTRY_COPY );
+      DataNode groupsNode = copyNode.getNode( PROP_ATTRIBUTES_JOB_ENTRY_COPY );
+      if ( groupsNode != null ) {
+        AttributesMapUtil.loadAttributesMap( copyNode, copy, PROP_ATTRIBUTES_JOB_ENTRY_COPY );
+      } else {
+        AttributesMapUtil.loadAttributesMap( copyNode, copy );
+      }
 
       jobMeta.addJobEntry( copy );
     }
