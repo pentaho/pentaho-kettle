@@ -1150,6 +1150,11 @@ public class Const {
   public static final String KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT = "KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT";
 
   /**
+   * Property controls the capacity of the transFinishedBlockingQueue in Trans.
+   */
+  public static final String KETTLE_TRANS_FINISHED_BLOCKING_QUEUE_SIZE = "KETTLE_TRANS_FINISHED_BLOCKING_QUEUE_SIZE";
+
+  /**
    * Compatibility settings for {@link org.pentaho.di.core.row.ValueDataUtil#hourOfDay(ValueMetaInterface, Object)}.
    *
    * Switches off the fix for calculation of timezone decomposition.
