@@ -25,15 +25,23 @@ package org.pentaho.di.trans.steps.textfileoutput;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,6 +51,12 @@ import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 
 public class TextFileOutputMetaTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -162,6 +176,32 @@ public class TextFileOutputMetaTest {
     assertEquals( 2, meta.getSplitEvery( varSpace ) );
     fileName = meta.buildFilename( "foo", "txt2", varSpace, 0, null, 5, false, meta );
     assertEquals( "foo_5.txt2", fileName );
+  }
+
+  @Test
+  public void testGetFields() throws KettleStepException {
+    TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
+
+    TextFileField textFileField = mock( TextFileField.class );
+    ValueMetaInterface valueMetaInterface = mock( ValueMetaInterface.class );
+    RowMetaInterface row = mock( RowMetaInterface.class );
+    String name = new String();
+    RowMetaInterface[] info = new RowMetaInterface[] {};
+    StepMeta nextStep = mock( StepMeta.class );
+    VariableSpace space = mock( VariableSpace.class );
+    Repository repository = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+
+    TextFileField[] outputFields = new TextFileField[] { textFileField };
+    setInternalState( textFileOutputMeta, "outputFields", outputFields );
+
+    String textFileFieldFormat = UUID.randomUUID().toString();
+    when( textFileField.getFormat() ).thenReturn( textFileFieldFormat );
+    when( row.searchValueMeta( anyString() ) ).thenReturn( valueMetaInterface );
+
+    textFileOutputMeta.getFields( row, name, info, nextStep, space, repository, metaStore );
+
+    verify( valueMetaInterface, times( 1 ) ).setConversionMask( textFileFieldFormat );
   }
 
   public static class TextFileFieldLoadSaveValidator implements FieldLoadSaveValidator<TextFileField> {
