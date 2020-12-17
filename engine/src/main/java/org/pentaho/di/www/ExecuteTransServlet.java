@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,11 +43,12 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.KettleAuthenticationException;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransAdapter;
@@ -59,6 +61,14 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
   private static Class<?> PKG = ExecuteTransServlet.class; // i18n
 
   private static final long serialVersionUID = -5879219287669847357L;
+
+  private static final String UNABLE_TO_FIND_TRANS = "Unable to find transformation";
+
+  private static final String REP = "rep";
+  private static final String USER = "user";
+  private static final String PASS = "pass";
+  private static final String TRANS = "trans";
+  private static final String LEVEL = "level";
 
   public static final String CONTEXT_PATH = "/kettle/executeTrans";
 
@@ -190,6 +200,18 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       <td>Request was processed.</td>
     </tr>
     <tr>
+      <td>400</td>
+      <td>When missing mandatory params repo and trans</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>When authentication to repository fails</td>
+    </tr>
+    <tr>
+      <td>404</td>
+      <td>When transformation is not found</td>
+    </tr>
+    <tr>
       <td>500</td>
       <td>Internal server error occurs during request processing.</td>
     </tr>
@@ -209,13 +231,13 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
     // Options taken from PAN
     //
-    String[] knownOptions = new String[] { "rep", "user", "pass", "trans", "level", };
+    String[] knownOptions = new String[] { REP, USER, PASS, TRANS, LEVEL };
 
-    String repOption = request.getParameter( "rep" );
-    String userOption = request.getParameter( "user" );
-    String passOption = Encr.decryptPasswordOptionallyEncrypted( request.getParameter( "pass" ) );
-    String transOption = request.getParameter( "trans" );
-    String levelOption = request.getParameter( "level" );
+    String repOption = request.getParameter( REP );
+    String userOption = request.getParameter( USER );
+    String passOption = Encr.decryptPasswordOptionallyEncrypted( request.getParameter( PASS ) );
+    String transOption = request.getParameter( TRANS );
+    String levelOption = request.getParameter( LEVEL );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
@@ -226,6 +248,13 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     }
 
     PrintWriter out = response.getWriter();
+
+    if ( repOption == null || transOption == null ) {
+      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+              PKG, "ExecuteTransServlet.Error.MissingMandatoryParameter", repOption == null ? REP : TRANS ) ) );
+      return;
+    }
 
     try {
 
@@ -295,16 +324,40 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
         // Execute the transformation...
         //
         executeTrans( trans );
+        String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
+        if ( trans.isFinishedOrStopped() && trans.getErrors() > 0 ) {
+          response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+                  PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ) ) );
+        } else {
+          out.println( new WebResult( WebResult.STRING_OK, BaseMessages.getString(
+                  PKG, "ExecuteTransServlet.Log.ExecuteTransFinished", logging ) ) );
+        }
         out.flush();
-
       } catch ( Exception executionException ) {
         String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
-        throw new KettleException( "Error executing transformation: " + logging, executionException );
+        throw new KettleException( BaseMessages.getString( PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ), executionException );
       }
     } catch ( Exception ex ) {
-
-      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-        PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+      // When we get to this point KettleAuthenticationException has already been wrapped in an Execution Exception
+      // and that in a KettleException
+      Throwable kettleExceptionCause = ex.getCause();
+      if ( kettleExceptionCause != null && kettleExceptionCause instanceof ExecutionException ) {
+        Throwable executionExceptionCause = kettleExceptionCause.getCause();
+        if ( executionExceptionCause != null && executionExceptionCause instanceof KettleAuthenticationException ) {
+          response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+                  PKG, "ExecuteTransServlet.Error.Authentication", getContextPath() ) ) );
+        }
+      } else if ( ex.getMessage().contains( UNABLE_TO_FIND_TRANS ) ) {
+        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+                PKG, "ExecuteTransServlet.Error.UnableToFindTransformation", transOption ) ) );
+      } else {
+        response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+      }
     }
   }
 
