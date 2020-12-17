@@ -532,12 +532,6 @@ jobGroups:
        archivable      :  true
 
   4500:
-     - jobID           :  foundry-workers-ee
-       scmUrl          :  https://github.com/pentaho/worker-nodes-ee.git
-       directives      :  += -DscmBranch=${DEFAULT_BRANCH} -Dhelm.username=${NEXUS_DEPLOY_USER} -Dhelm.password=${NEXUS_DEPLOY_PASSWORD} -Dhelm.repository.url=${HELM_REPOSITORY_URL}
-       testable        :  false
-       archivable      :  true
-
      - jobID           :  worker-nodes-custom-resources
        scmUrl          :  https://github.com/pentaho/worker-nodes-custom-resources.git
        testable        :  false
