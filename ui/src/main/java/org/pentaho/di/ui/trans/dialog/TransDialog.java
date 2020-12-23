@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,13 +52,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.ChannelLogTable;
-import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.MetricsLogTable;
@@ -69,7 +66,6 @@ import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
@@ -2460,56 +2456,15 @@ public class TransDialog extends Dialog {
 
       for ( LogTableInterface logTable : new LogTableInterface[] {
         transLogTable, performanceLogTable, channelLogTable, stepLogTable, metricsLogTable, } ) {
-        if ( logTable.getDatabaseMeta() != null && !Utils.isEmpty( logTable.getTableName() ) ) {
-          // OK, we have something to work with!
-          //
-          Database db = null;
-          try {
-            db = new Database( transMeta, logTable.getDatabaseMeta() );
-            db.shareVariablesWith( transMeta );
-            db.connect();
+        StringBuilder ddl = logTable.generateTableSQL( logTable, transMeta );
 
-            StringBuilder ddl = new StringBuilder();
-
-            RowMetaInterface fields = logTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
-            String tableName = db.environmentSubstitute( logTable.getTableName() );
-            String schemaTable =
-              logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
-                db.environmentSubstitute( logTable.getSchemaName() ), tableName );
-            String createTable = db.getDDL( schemaTable, fields );
-
-            if ( !Utils.isEmpty( createTable ) ) {
-              ddl.append( "-- " ).append( logTable.getLogTableType() ).append( Const.CR );
-              ddl.append( "--" ).append( Const.CR ).append( Const.CR );
-              ddl.append( createTable ).append( Const.CR );
-            }
-
-            java.util.List<RowMetaInterface> indexes = logTable.getRecommendedIndexes();
-            for ( int i = 0; i < indexes.size(); i++ ) {
-              RowMetaInterface index = indexes.get( i );
-              if ( !index.isEmpty() ) {
-                String createIndex =
-                  db.getCreateIndexStatement( schemaTable, "IDX_" + tableName + "_" + ( i + 1 ), index
-                    .getFieldNames(), false, false, false, true );
-                if ( !Utils.isEmpty( createIndex ) ) {
-                  ddl.append( createIndex );
-                }
-              }
-            }
-
-            if ( ddl.length() > 0 ) {
-              allOK = false;
-              SQLEditor sqledit =
-                new SQLEditor(
-                  transMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), ddl
-                    .toString() );
-              sqledit.open();
-            }
-          } finally {
-            if ( db != null ) {
-              db.disconnect();
-            }
-          }
+        if ( ddl.length() > 0 ) {
+          allOK = false;
+          SQLEditor sqledit =
+            new SQLEditor(
+              transMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), ddl
+              .toString() );
+          sqledit.open();
         }
       }
 

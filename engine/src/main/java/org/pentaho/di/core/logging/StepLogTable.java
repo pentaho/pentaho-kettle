@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -251,6 +251,9 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 
   public List<RowMetaInterface> getRecommendedIndexes() {
     List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
+
+    // for cleanup
+    indexes.add( addFieldsToIndex( findField( ID.TRANSNAME.id ), findField( ID.LOG_DATE.id ) ) );
     return indexes;
   }
 }
