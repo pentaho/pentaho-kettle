@@ -59,6 +59,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -110,7 +111,7 @@ public class JobTest {
 
     mockedJob.writeJobEntryLogInformation();
 
-    verify( mockedDataBase ).cleanupLogRecords( jobEntryLogTable );
+    verify( mockedDataBase ).cleanupLogRecords( eq(jobEntryLogTable), anyString() );
   }
 
   @Test
@@ -122,7 +123,7 @@ public class JobTest {
 
     mockedJob.writeLogTableInformation( jobLogTable, LogStatus.END );
 
-    verify( mockedDataBase ).cleanupLogRecords( jobLogTable );
+    verify( mockedDataBase ).cleanupLogRecords( eq( jobLogTable ), anyString() );
   }
 
   public void setAllTableParamsDefault( BaseLogTable table ) {

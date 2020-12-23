@@ -3579,7 +3579,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
-  public void cleanupLogRecords( LogTableCoreInterface logTable ) throws KettleDatabaseException {
+  public void cleanupLogRecords( LogTableCoreInterface logTable, String transJobName ) throws KettleDatabaseException {
     double timeout = Const.toDouble( Const.trim( environmentSubstitute( logTable.getTimeoutInDays() ) ), 0.0 );
     if ( timeout < 0.000001 ) {
       // The timeout has to be at least a few seconds, otherwise we don't
@@ -3598,6 +3598,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
 
     LogTableField logField = logTable.getLogDateField();
+    LogTableField nameField = logTable.getNameField();
     if ( logField == null ) {
       //can't stand without logField
       DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
@@ -3610,6 +3611,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     long limit = now - Math.round( timeout * 24 * 60 * 60 * 1000 );
     RowMetaAndData row = new RowMetaAndData();
     row.addValue( logField.getFieldName(), ValueMetaInterface.TYPE_DATE, new Date( limit ) );
+    if ( logTable.getNameField() != null && logTable.getNameField().isEnabled() ) {
+      //If here we are adding the trans or job name to the where clause
+      sql = sql + " AND " + databaseMeta.quoteField( nameField.getFieldName() ) + " = ?";
+      row.addValue( nameField.getFieldName(), ValueMetaInterface.TYPE_STRING, transJobName );
+    }
 
     try {
       //fire database

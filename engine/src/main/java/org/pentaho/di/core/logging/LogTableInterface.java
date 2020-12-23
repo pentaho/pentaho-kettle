@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,13 +24,14 @@ package org.pentaho.di.core.logging;
 
 import java.util.List;
 
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
 public interface LogTableInterface extends LogTableCoreInterface {
-
-  /**
+ /**
    * @return The log table meta-data in XML format.
    */
   public String getXML();
@@ -46,5 +47,19 @@ public interface LogTableInterface extends LogTableCoreInterface {
    *          the steps to reference (or null)
    */
   public void loadXML( Node jobnode, List<DatabaseMeta> databases, List<StepMeta> steps );
+
+  /**
+   * Generate DDL necessary to create the log table or alter the existing table to the present specification
+   *
+   * @param logTable
+   * @param transMeta
+   * @return The ddl that will perform the task
+   * @throws KettleException
+   */
+  default StringBuilder generateTableSQL( LogTableInterface logTable, AbstractMeta transMeta ) throws
+    KettleException {
+    throw new UnsupportedOperationException(
+      "The " + logTable.getLogTableType() + " does not support the generation of table creation DDL" );
+  }
 
 }

@@ -80,6 +80,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -168,9 +170,9 @@ public class TransTest {
     Repository rep = Mockito.mock( Repository.class );
     RepositoryDirectoryInterface repInt = Mockito.mock( RepositoryDirectoryInterface.class );
     Mockito.when(
-      rep.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
-        .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) ).thenReturn( meta );
-    Mockito.when( rep.findDirectory( Mockito.anyString() ) ).thenReturn( repInt );
+      rep.loadTransformation( anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
+        .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), anyString() ) ).thenReturn( meta );
+    Mockito.when( rep.findDirectory( anyString() ) ).thenReturn( repInt );
 
     Trans trans = new Trans( meta, rep, "junit", "junitDir", "fileName" );
 
@@ -252,7 +254,7 @@ public class TransTest {
 
     trans.writeStepLogInformation();
 
-    verify( mockedDataBase ).cleanupLogRecords( stepLogTable );
+    verify( mockedDataBase ).cleanupLogRecords( eq(stepLogTable), anyString() );
   }
 
   @Test

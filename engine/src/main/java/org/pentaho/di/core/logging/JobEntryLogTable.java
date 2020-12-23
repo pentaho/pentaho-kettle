@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -300,14 +300,11 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     LogTableField keyField = getKeyField();
 
     if ( keyField.isEnabled() ) {
-      RowMetaInterface batchIndex = new RowMeta();
-
-      ValueMetaInterface keyMeta = new ValueMetaBase( keyField.getFieldName(), keyField.getDataType() );
-      keyMeta.setLength( keyField.getLength() );
-      batchIndex.addValueMeta( keyMeta );
-
-      indexes.add( batchIndex );
+      indexes.add( addFieldsToIndex( keyField ) );
     }
+
+    // for cleanup
+    indexes.add( addFieldsToIndex( findField( ID.JOBNAME.id ), findField( ID.LOG_DATE.id ) ) );
 
     return indexes;
   }

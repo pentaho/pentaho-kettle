@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1564,65 +1564,23 @@ public class JobDialog extends Dialog {
     }
 
     try {
-
+      boolean allOK = true;
       for ( LogTableInterface logTable : logTables ) {
-        if ( logTable.getDatabaseMeta() != null && !Utils.isEmpty( logTable.getTableName() ) ) {
-          // OK, we have something to work with!
-          //
-          Database db = null;
-          try {
-            db = new Database( jobMeta, logTable.getDatabaseMeta() );
-            db.shareVariablesWith( jobMeta );
-            db.connect();
+        StringBuilder ddl = logTable.generateTableSQL( logTable, jobMeta );
 
-            StringBuilder ddl = new StringBuilder();
-
-            RowMetaInterface fields = logTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
-            String tableName = db.environmentSubstitute( logTable.getTableName() );
-            String schemaTable =
-              logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
-                db.environmentSubstitute( logTable.getSchemaName() ),
-                db.environmentSubstitute( logTable.getTableName() ) );
-            String createTable = db.getDDL( schemaTable, fields );
-
-            if ( !Utils.isEmpty( createTable ) ) {
-              ddl.append( "-- " ).append( logTable.getLogTableType() ).append( Const.CR );
-              ddl.append( "--" ).append( Const.CR ).append( Const.CR );
-              ddl.append( createTable ).append( Const.CR );
-            }
-
-            java.util.List<RowMetaInterface> indexes = logTable.getRecommendedIndexes();
-            for ( int i = 0; i < indexes.size(); i++ ) {
-              RowMetaInterface index = indexes.get( i );
-              if ( !index.isEmpty() ) {
-                String createIndex =
-                  db.getCreateIndexStatement( schemaTable, "IDX_" + tableName + "_" + ( i + 1 ), index
-                    .getFieldNames(), false, false, false, true );
-                if ( !Utils.isEmpty( createIndex ) ) {
-                  ddl.append( createIndex );
-                }
-              }
-            }
-
-            if ( ddl.length() > 0 ) {
-              SQLEditor sqledit =
-                new SQLEditor( jobMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), DBCache.getInstance(), ddl
-                  .toString() );
-              sqledit.open();
-            } else {
-              MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-              mb.setText( BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogTitle" ) );
-              mb.setMessage( logTable.getLogTableType()
-                + Const.CR + Const.CR + BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogMessage" ) );
-              mb.open();
-            }
-
-          } finally {
-            if ( db != null ) {
-              db.disconnect();
-            }
-          }
+        if ( ddl.length() > 0 ) {
+          allOK = false;
+          SQLEditor sqledit =
+            new SQLEditor( jobMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), DBCache.getInstance(), ddl
+              .toString() );
+          sqledit.open();
         }
+      }
+      if ( allOK ) {
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
+        mb.setText( BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogTitle" ) );
+        mb.setMessage( BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogMessage" ) );
+        mb.open();
       }
     } catch ( Exception e ) {
       new ErrorDialog(
