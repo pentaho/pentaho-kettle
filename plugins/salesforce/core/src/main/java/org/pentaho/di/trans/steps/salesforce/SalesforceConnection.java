@@ -447,7 +447,7 @@ public class SalesforceConnection {
               } else {
                 this.sObjects = getBinding().retrieve( this.fieldsList, getModule(), ids );
               }
-              if ( this.sObjects != null && this.recordsFilter != SalesforceConnectionUtils.RECORDS_FILTER_DELETED ) {
+              if ( this.sObjects != null ) {
                 this.queryResultSize = this.sObjects.length;
               }
             }
