@@ -554,6 +554,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   private ExecutorService heartbeat = null; // this transformations's heartbeat scheduled executor
 
+  private static final int TRANS_FINISHED_BLOCKING_QUEUE_SIZE =
+    Integer.parseInt( System.getProperty( Const.KETTLE_TRANS_FINISHED_BLOCKING_QUEUE_SIZE, "200" ) );
+
   /**
    * Instantiates a new transformation.
    */
@@ -1416,7 +1419,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     setPaused( false );
     setStopped( false );
 
-    transFinishedBlockingQueue = new ArrayBlockingQueue<>( 10 );
+    transFinishedBlockingQueue = new ArrayBlockingQueue<>( TRANS_FINISHED_BLOCKING_QUEUE_SIZE );
 
     TransListener transListener = new TransAdapter() {
       @Override
