@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -4059,10 +4059,15 @@ public class ValueMetaBase implements ValueMetaInterface {
           }
         }
       } else {
+
+
+        Boolean normalizeSpacesOnlyString = !convertStringToBoolean(
+          Const.NVL( System.getProperty( Const.KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY, "N" ), "N" ) );
+
         // Verify if there are only spaces in the polled value...
         // We consider that empty as well...
         //
-        if ( Const.onlySpaces( pol ) ) {
+        if ( Const.onlySpaces( pol ) && normalizeSpacesOnlyString ) {
           return emptyValue;
         }
       }
