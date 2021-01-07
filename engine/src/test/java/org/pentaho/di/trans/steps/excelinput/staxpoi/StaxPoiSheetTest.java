@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -166,16 +166,28 @@ public class StaxPoiSheetTest {
     assertNull( "cell must be null", cell );
   }
 
-  @Test
-  public void testEmptySheet() throws Exception {
+  @Test( expected = ArrayIndexOutOfBoundsException.class )
+  public void testEmptySheet_row0() throws Exception {
     XSSFReader reader = mockXSSFReader( "sheet1", SHEET_EMPTY,
       mock( SharedStringsTable.class ),
       mock( StylesTable.class ) );
-    // check no exceptions
+
     StaxPoiSheet sheet = new StaxPoiSheet( reader, "empty", "sheet1" );
-    for ( int j = 0; j < sheet.getRows(); j++ ) {
-      sheet.getRow( j );
-    }
+    sheet.getRow( 0 );
+
+    fail( "An exception should have been thrown!" );
+  }
+
+  @Test( expected = ArrayIndexOutOfBoundsException.class )
+  public void testEmptySheet_row1() throws Exception {
+    XSSFReader reader = mockXSSFReader( "sheet1", SHEET_EMPTY,
+      mock( SharedStringsTable.class ),
+      mock( StylesTable.class ) );
+
+    StaxPoiSheet sheet = new StaxPoiSheet( reader, "empty", "sheet1" );
+    sheet.getRow( 1 );
+
+    fail( "An exception should have been thrown!" );
   }
 
   @Test

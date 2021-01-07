@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,7 @@ public class StaxUtil {
 
   public static int extractRowNumber( String position ) {
     int startIndex = 0;
-    while ( !Character.isDigit( position.charAt( startIndex ) ) && startIndex < position.length() ) {
+    while ( startIndex < position.length() && !Character.isDigit( position.charAt( startIndex ) )  ) {
       startIndex++;
     }
     String rowPart = position.substring( startIndex );
@@ -40,7 +40,7 @@ public class StaxUtil {
 
   public static int extractColumnNumber( String position ) {
     int startIndex = 0;
-    while ( !Character.isDigit( position.charAt( startIndex ) ) && startIndex < position.length() ) {
+    while ( startIndex < position.length() && !Character.isDigit( position.charAt( startIndex ) ) ) {
       startIndex++;
     }
     String colPart = position.substring( 0, startIndex );
