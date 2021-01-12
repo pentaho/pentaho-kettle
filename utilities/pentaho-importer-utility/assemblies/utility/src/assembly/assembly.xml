@@ -19,8 +19,22 @@
     <fileSet>
       <directory>${project.basedir}/src/main/resources</directory>
       <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>*.bat</include>
+        <include>README</include>
+      </includes>
+      <excludes>
+        <exclude>importer-utility.sh</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>${project.basedir}/src/main/resources/importer-utility.sh</source>
+      <outputDirectory>.</outputDirectory>
+      <fileMode>0755</fileMode>
+    </file>
+  </files>
 
   <dependencySets>
     <dependencySet>
