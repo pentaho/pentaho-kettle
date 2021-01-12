@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -272,7 +273,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         Sheet sheet = data.wb.getSheetAt( sheetNum );
         for ( Row r : sheet ) {
           for ( Cell c : r ) {
-            if ( c.getCellType() == Cell.CELL_TYPE_FORMULA ) {
+            if ( c.getCellType() == CellType.FORMULA ) {
               evaluator.evaluateFormulaCell( c );
             }
           }

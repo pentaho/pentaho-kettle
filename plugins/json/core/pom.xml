@@ -28,7 +28,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
-    <poi.version>3.17</poi.version>
+    <poi.version>4.1.1</poi.version>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
     <dependency.org.powermock.version>1.6.0</dependency.org.powermock.version>
   </properties>
