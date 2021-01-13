@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 
 
 /**
@@ -253,6 +254,19 @@ public class StringUtilTest extends TestCase {
   public void environmentSubstituteHexEscapeTest() {
     String result = StringUtil.environmentSubstitute( "$[31,32,33,34,35,36]", createVariables1( "${", "}" ), true );
     assertEquals( "$[31,32,33,34,35,36]", result );
+  }
+
+  @Test
+  public void testToUri() {
+    if ( Const.getOS().startsWith("Windows") ) {
+      assertEquals( "file:/c:/tmp/file", StringUtil.toUri( "c:\\tmp\\file" ).toString() );
+      assertEquals( "file:/D:/tmp/file", StringUtil.toUri( "D:\\tmp\\file" ).toString() );
+      assertEquals( "file:/C:/tmp/file", StringUtil.toUri( "/tmp/file").toString() );
+    } else {
+      assertEquals( "file:/tmp/file", StringUtil.toUri( "/tmp/file").toString() );
+    }
+    assertEquals( "hc://cluster/user/file", StringUtil.toUri( "hc://cluster/user/file" ).toString() );
+    assertEquals( "pvfs://pvfsconn/user/file", StringUtil.toUri( "pvfs://pvfsconn/user/file" ).toString() );
   }
 
 }
