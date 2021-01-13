@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1033,13 +1033,13 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       prunePath = rep.getStepAttributeString( id_step, "prunePath" );
 
       shortFileFieldName = rep.getStepAttributeString( id_step, "shortFileFieldName" );
+      extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       pathFieldName = rep.getStepAttributeString( id_step, "pathFieldName" );
+      sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
       hiddenFieldName = rep.getStepAttributeString( id_step, "hiddenFieldName" );
       lastModificationTimeFieldName = rep.getStepAttributeString( id_step, "lastModificationTimeFieldName" );
       uriNameFieldName = rep.getStepAttributeString( id_step, "uriNameFieldName" );
       rootUriNameFieldName = rep.getStepAttributeString( id_step, "rootUriNameFieldName" );
-      extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
-      sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "GetXMLDataMeta.Exception.ErrorReadingRepository" ), e );
     }
@@ -1097,12 +1097,13 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "XmlField", xmlField );
       rep.saveStepAttribute( id_transformation, id_step, "prunePath", prunePath );
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", sizeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "GetXMLDataMeta.Exception.ErrorSavingToRepository", ""
           + id_step ), e );
