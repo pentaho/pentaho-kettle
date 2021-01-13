@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.TimeZone;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
@@ -40,36 +41,33 @@ public class PoiCell implements KCell {
   }
 
   public KCellType getType() {
-    int type = cell.getCellType();
-    if ( type == Cell.CELL_TYPE_BOOLEAN ) {
+    CellType type = cell.getCellType();
+    if ( type == CellType.BOOLEAN ) {
       return KCellType.BOOLEAN;
-    } else if ( type == Cell.CELL_TYPE_NUMERIC ) {
+    } else if ( type == CellType.NUMERIC ) {
       if ( HSSFDateUtil.isCellDateFormatted( cell ) ) {
         return KCellType.DATE;
       } else {
         return KCellType.NUMBER;
       }
-    } else if ( type == Cell.CELL_TYPE_STRING ) {
+    } else if ( type == CellType.STRING ) {
       return KCellType.LABEL;
-    } else if ( type == Cell.CELL_TYPE_BLANK || type == Cell.CELL_TYPE_ERROR ) {
+    } else if ( type == CellType.BLANK || type == CellType.ERROR ) {
       return KCellType.EMPTY;
-    } else if ( type == Cell.CELL_TYPE_FORMULA ) {
-      switch ( cell.getCachedFormulaResultType() ) {
-        case Cell.CELL_TYPE_BLANK:
-        case Cell.CELL_TYPE_ERROR:
-          return KCellType.EMPTY;
-        case Cell.CELL_TYPE_BOOLEAN:
-          return KCellType.BOOLEAN_FORMULA;
-        case Cell.CELL_TYPE_STRING:
-          return KCellType.STRING_FORMULA;
-        case Cell.CELL_TYPE_NUMERIC:
-          if ( HSSFDateUtil.isCellDateFormatted( cell ) ) {
-            return KCellType.DATE_FORMULA;
-          } else {
-            return KCellType.NUMBER_FORMULA;
-          }
-        default:
-          break;
+    } else if ( type == CellType.FORMULA ) {
+      CellType cachedFormulaResultType = cell.getCachedFormulaResultType();
+      if ( CellType.ERROR.equals( cachedFormulaResultType ) ) {
+        return KCellType.EMPTY;
+      } else if ( CellType.BOOLEAN.equals( cachedFormulaResultType ) ) {
+        return KCellType.BOOLEAN_FORMULA;
+      } else if ( CellType.STRING.equals( cachedFormulaResultType ) ) {
+        return KCellType.STRING_FORMULA;
+      } else if ( CellType.NUMERIC.equals( cachedFormulaResultType ) ) {
+        if ( HSSFDateUtil.isCellDateFormatted( cell ) ) {
+          return KCellType.DATE_FORMULA;
+        } else {
+          return KCellType.NUMBER_FORMULA;
+        }
       }
     }
     return null;
