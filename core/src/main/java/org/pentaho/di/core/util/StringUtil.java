@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.core.util;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -691,5 +694,24 @@ public class StringUtil {
     }
 
     return source.substring( 0, index );
+  }
+
+  /**
+   * Convert a raw path such as c:\tmp\park.parquet and /tmp/file, or, URL such as pvfs://tkSnowflakeStaging/@ORC_FILES
+   * or hc://clusterName/path/to/file to a URI
+   * @param filePathOrUrl
+   * @return
+   */
+  public static URI toUri( String filePathOrUrl ) {
+    URI uri;
+    if ( filePathOrUrl.startsWith( "/" ) ) {
+      return new File( filePathOrUrl ).toURI();
+    }
+    try {
+      uri = new URI( filePathOrUrl );
+    } catch ( URISyntaxException e ) {
+      uri = new File( filePathOrUrl ).toURI();
+    }
+    return uri;
   }
 }
