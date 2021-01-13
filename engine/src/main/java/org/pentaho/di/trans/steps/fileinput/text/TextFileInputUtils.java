@@ -947,7 +947,7 @@ public class TextFileInputUtils {
       return matches;
     }
 
-    Pattern pattern = Pattern.compile( regex );
+    Pattern pattern = Pattern.compile( Pattern.quote( regex ) );
     Matcher matcher = pattern.matcher( text );
 
     while ( matcher.find() ) {

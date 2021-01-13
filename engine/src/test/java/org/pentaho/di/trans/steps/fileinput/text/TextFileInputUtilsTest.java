@@ -32,6 +32,7 @@ import org.pentaho.di.trans.steps.file.BaseFileField;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class TextFileInputUtilsTest {
   @Test
@@ -190,6 +191,17 @@ public class TextFileInputUtilsTest {
     TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
     Assert.assertEquals( "\"firstLine", line.getLine() );
     System.clearProperty( "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING" );
+  }
+
+  @Test
+  public void testCheckPattern() {
+    // Check more information in:
+    // https://docs.oracle.com/javase/tutorial/essential/regex/literals.html
+    String metacharacters = "<([{\\^-=$!|]})?*+.>";
+    for( int i = 0; i < metacharacters.length(); i++ ) {
+      int matches = TextFileInputUtils.checkPattern( metacharacters, String.valueOf( metacharacters.charAt( i ) ) );
+      Assert.assertEquals( 1, matches );
+    }
   }
 
 }
