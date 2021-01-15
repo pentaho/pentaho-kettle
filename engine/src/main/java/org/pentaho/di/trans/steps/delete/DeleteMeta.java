@@ -65,6 +65,9 @@ import org.w3c.dom.Node;
 public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = DeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static final String TAG_4_SPACES = "    ";
+  private static final String TAG_6_SPACES = "      ";
+  private static final String TAG_8_SPACES = "        ";
   private static final String TAG_CONNECTION = "connection";
   private static final String TAG_COMMIT = "commit";
   private static final String TAG_LOOKUP = "lookup";
@@ -333,23 +336,23 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuilder retval = new StringBuilder( 500 );
 
     retval
-      .append( "    " ).append(
+      .append( TAG_4_SPACES ).append(
         XMLHandler.addTagValue( TAG_CONNECTION, databaseMeta == null ? "" : databaseMeta.getName() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( TAG_COMMIT, commitSize ) );
-    retval.append( "    <lookup>" ).append( Const.CR );
-    retval.append( "      " ).append( XMLHandler.addTagValue( TAG_SCHEMA, schemaName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( TAG_TABLE, tableName ) );
+    retval.append( TAG_4_SPACES ).append( XMLHandler.addTagValue( TAG_COMMIT, commitSize ) );
+    retval.append( TAG_4_SPACES + "<lookup>" ).append( Const.CR );
+    retval.append( TAG_6_SPACES ).append( XMLHandler.addTagValue( TAG_SCHEMA, schemaName ) );
+    retval.append( TAG_6_SPACES ).append( XMLHandler.addTagValue( TAG_TABLE, tableName ) );
 
     for ( int i = 0; i < keyStream.length; i++ ) {
-      retval.append( "      <key>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( TAG_NAME, keyStream[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( TAG_FIELD, keyLookup[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( TAG_CONDITION, keyCondition[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( TAG_NAME2, keyStream2[i] ) );
-      retval.append( "      </key>" ).append( Const.CR );
+      retval.append( TAG_6_SPACES + "<key>" ).append( Const.CR );
+      retval.append( TAG_8_SPACES ).append( XMLHandler.addTagValue( TAG_NAME, keyStream[i] ) );
+      retval.append( TAG_8_SPACES ).append( XMLHandler.addTagValue( TAG_FIELD, keyLookup[i] ) );
+      retval.append( TAG_8_SPACES ).append( XMLHandler.addTagValue( TAG_CONDITION, keyCondition[i] ) );
+      retval.append( TAG_8_SPACES ).append( XMLHandler.addTagValue( TAG_NAME2, keyStream2[i] ) );
+      retval.append( TAG_6_SPACES + "</key>" ).append( Const.CR );
     }
 
-    retval.append( "    </lookup>" ).append( Const.CR );
+    retval.append( TAG_4_SPACES + "</lookup>" ).append( Const.CR );
 
     return retval.toString();
   }
