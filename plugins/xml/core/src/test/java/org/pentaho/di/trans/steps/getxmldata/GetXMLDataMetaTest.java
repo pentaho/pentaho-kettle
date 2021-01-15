@@ -28,6 +28,8 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
 
+import java.util.UUID;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -49,24 +51,41 @@ public class GetXMLDataMetaTest {
     ObjectId idTransformation = mock( ObjectId.class );
     ObjectId idStep = mock( ObjectId.class );
 
+    String shortFileFieldName = UUID.randomUUID().toString();
+    setInternalState( getXMLDataMeta, "shortFileFieldName", shortFileFieldName );
+    String extensionFieldName = UUID.randomUUID().toString();
+    setInternalState( getXMLDataMeta, "extensionFieldName", extensionFieldName );
+    String pathFieldName = UUID.randomUUID().toString();
+    setInternalState( getXMLDataMeta, "pathFieldName", pathFieldName );
+    String sizeFieldName = UUID.randomUUID().toString();
+    setInternalState( getXMLDataMeta, "sizeFieldName", sizeFieldName );
+    String hiddenFieldName = UUID.randomUUID().toString();
+    setInternalState( getXMLDataMeta, "hiddenFieldName", hiddenFieldName );
+    String lastModificationTimeFieldName = UUID.randomUUID().toString();
+    setInternalState( getXMLDataMeta, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+    String uriNameFieldName = UUID.randomUUID().toString();
+    setInternalState( getXMLDataMeta, "uriNameFieldName", uriNameFieldName );
+    String rootUriNameFieldName = UUID.randomUUID().toString();
+    setInternalState( getXMLDataMeta, "rootUriNameFieldName", rootUriNameFieldName );
+
     getXMLDataMeta.saveRep( rep, metaStore, idTransformation, idStep );
 
     verify( rep, times( 1 ) ).saveStepAttribute( idTransformation,
-      idStep, "shortFileFieldName", (String) getInternalState( getXMLDataMeta, "shortFileFieldName" ) );
+      idStep, "shortFileFieldName", shortFileFieldName );
     verify( rep, times( 1 ) ).saveStepAttribute( idTransformation,
-      idStep, "extensionFieldName", (String) getInternalState( getXMLDataMeta, "extensionFieldName" ) );
+      idStep, "extensionFieldName", extensionFieldName );
     verify( rep, times( 1 ) ).saveStepAttribute( idTransformation,
-      idStep, "pathFieldName", (String) getInternalState( getXMLDataMeta, "pathFieldName" ) );
+      idStep, "pathFieldName", pathFieldName );
     verify( rep, times( 1 ) ).saveStepAttribute( idTransformation,
-      idStep, "sizeFieldName", (String) getInternalState( getXMLDataMeta, "sizeFieldName" ) );
+      idStep, "sizeFieldName", sizeFieldName );
     verify( rep, times( 1 ) ).saveStepAttribute( idTransformation,
-      idStep, "hiddenFieldName", (String) getInternalState( getXMLDataMeta, "hiddenFieldName" ) );
+      idStep, "hiddenFieldName", hiddenFieldName );
     verify( rep, times( 1 ) ).saveStepAttribute( idTransformation,
-      idStep, "lastModificationTimeFieldName", (String) getInternalState( getXMLDataMeta, "lastModificationTimeFieldName" ) );
+      idStep, "lastModificationTimeFieldName", lastModificationTimeFieldName );
     verify( rep, times( 1 ) ).saveStepAttribute( idTransformation,
-      idStep, "uriNameFieldName", (String) getInternalState( getXMLDataMeta, "uriNameFieldName" ) );
+      idStep, "uriNameFieldName", uriNameFieldName );
     verify( rep, times( 1 ) ).saveStepAttribute( idTransformation,
-      idStep, "rootUriNameFieldName", (String) getInternalState( getXMLDataMeta, "rootUriNameFieldName" ) );
+      idStep, "rootUriNameFieldName", rootUriNameFieldName );
 
   }
 }

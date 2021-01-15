@@ -67,58 +67,58 @@ import org.w3c.dom.Node;
     documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+Data+From+XML" )
 public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
-  private static final String TAG_INCLUDE = "include";
-  private static final String TAG_INCLUDE_FIELD = "include_field";
-  private static final String TAG_ROW_NUM = "rownum";
-  private static final String TAG_ADD_RESULT_FILE = "addresultfile";
-  private static final String TAG_NAME_SPACE_AWARE = "namespaceaware";
-  private static final String TAG_IGNORE_COMMENTS = "ignorecomments";
-  private static final String TAG_READ_URL = "readurl";
-  private static final String TAG_VALIDATING = "validating";
-  private static final String TAG_USE_TOKEN = "usetoken";
-  private static final String TAG_IS_IGNORE_EMPTY_FILE = "IsIgnoreEmptyFile";
-  private static final String TAG_DO_NOT_FAIL_IF_NO_FILE = "doNotFailIfNoFile";
-  private static final String TAG_4_SPACES = "    ";
-  private static final String TAG_ROW_NUM_FIELD = "rownum_field";
-  private static final String TAG_ENCODING = "encoding";
-  private static final String TAG_6_SPACES = "      ";
-  private static final String TAG_NAME = "name";
-  private static final String TAG_FILE_MASK = "filemask";
-  private static final String TAG_EXCLUDE_FILE_MASK = "exclude_filemask";
-  private static final String TAG_FILE_REQUIRED = "file_required";
-  private static final String TAG_INCLUDE_SUBFOLDERS = "include_subfolders";
-  private static final String TAG_LIMIT = "limit";
-  private static final String TAG_LOOPXPATH = "loopxpath";
-  private static final String TAG_IS_IN_FIELDS = "IsInFields";
-  private static final String TAG_IS_A_FILE = "IsAFile";
-  private static final String TAG_XML_FIELD = "XmlField";
-  private static final String TAG_PRUNE_PATH = "prunePath";
-  private static final String TAG_SHORT_FILE_FIELD_NAME = "shortFileFieldName";
-  private static final String TAG_PATH_FIELD_NAME = "pathFieldName";
-  private static final String TAG_HIDDEN_FIELD_NAME = "hiddenFieldName";
-  private static final String TAG_LAST_MODIFICATION_TIME_FIELD_NAME = "lastModificationTimeFieldName";
-  private static final String TAG_URI_NAME_FIELD_NAME = "uriNameFieldName";
-  private static final String TAG_ROOT_URI_NAME_FIELD_NAME = "rootUriNameFieldName";
-  private static final String TAG_EXTENSION_FIELD_NAME = "extensionFieldName";
-  private static final String TAG_SIZE_FIELD_NAME = "sizeFieldName";
-  private static final String TAG_FILE = "file";
-  private static final String TAG_FIELDS = "fields";
-  private static final String TAG_FIELD = "field";
-  private static final String TAG_FILE_NAME = "file_name";
-  private static final String TAG_FIELD_NAME = "field_name";
-  private static final String TAG_FIELD_XPATH = "field_xpath";
-  private static final String TAG_ELEMENT_TYPE = "element_type";
-  private static final String TAG_RESULT_TYPE = "result_type";
-  private static final String TAG_FIELD_TYPE = "field_type";
-  private static final String TAG_FIELD_FORMAT = "field_format";
-  private static final String TAG_FIELD_CURRENCY = "field_currency";
-  private static final String TAG_FIELD_DECIMAL = "field_decimal";
-  private static final String TAG_FIELD_GROUP = "field_group";
-  private static final String TAG_FIELD_LENGTH = "field_length";
-  private static final String TAG_FIELD_PRECISION = "field_precision";
-  private static final String TAG_FIELD_TRIM_TYPE = "field_trim_type";
-  private static final String TAG_FIELD_REPEAT = "field_repeat";
-  private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!
+  public static final String TAG_INCLUDE = "include";
+  public static final String TAG_INCLUDE_FIELD = "include_field";
+  public static final String TAG_ROW_NUM = "rownum";
+  public static final String TAG_ADD_RESULT_FILE = "addresultfile";
+  public static final String TAG_NAME_SPACE_AWARE = "namespaceaware";
+  public static final String TAG_IGNORE_COMMENTS = "ignorecomments";
+  public static final String TAG_READ_URL = "readurl";
+  public static final String TAG_VALIDATING = "validating";
+  public static final String TAG_USE_TOKEN = "usetoken";
+  public static final String TAG_IS_IGNORE_EMPTY_FILE = "IsIgnoreEmptyFile";
+  public static final String TAG_DO_NOT_FAIL_IF_NO_FILE = "doNotFailIfNoFile";
+  public static final String TAG_4_SPACES = "    ";
+  public static final String TAG_ROW_NUM_FIELD = "rownum_field";
+  public static final String TAG_ENCODING = "encoding";
+  public static final String TAG_6_SPACES = "      ";
+  public static final String TAG_NAME = "name";
+  public static final String TAG_FILE_MASK = "filemask";
+  public static final String TAG_EXCLUDE_FILE_MASK = "exclude_filemask";
+  public static final String TAG_FILE_REQUIRED = "file_required";
+  public static final String TAG_INCLUDE_SUBFOLDERS = "include_subfolders";
+  public static final String TAG_LIMIT = "limit";
+  public static final String TAG_LOOPXPATH = "loopxpath";
+  public static final String TAG_IS_IN_FIELDS = "IsInFields";
+  public static final String TAG_IS_A_FILE = "IsAFile";
+  public static final String TAG_XML_FIELD = "XmlField";
+  public static final String TAG_PRUNE_PATH = "prunePath";
+  public static final String TAG_SHORT_FILE_FIELD_NAME = "shortFileFieldName";
+  public static final String TAG_PATH_FIELD_NAME = "pathFieldName";
+  public static final String TAG_HIDDEN_FIELD_NAME = "hiddenFieldName";
+  public static final String TAG_LAST_MODIFICATION_TIME_FIELD_NAME = "lastModificationTimeFieldName";
+  public static final String TAG_URI_NAME_FIELD_NAME = "uriNameFieldName";
+  public static final String TAG_ROOT_URI_NAME_FIELD_NAME = "rootUriNameFieldName";
+  public static final String TAG_EXTENSION_FIELD_NAME = "extensionFieldName";
+  public static final String TAG_SIZE_FIELD_NAME = "sizeFieldName";
+  public static final String TAG_FILE = "file";
+  public static final String TAG_FIELDS = "fields";
+  public static final String TAG_FIELD = "field";
+  public static final String TAG_FILE_NAME = "file_name";
+  public static final String TAG_FIELD_NAME = "field_name";
+  public static final String TAG_FIELD_XPATH = "field_xpath";
+  public static final String TAG_ELEMENT_TYPE = "element_type";
+  public static final String TAG_RESULT_TYPE = "result_type";
+  public static final String TAG_FIELD_TYPE = "field_type";
+  public static final String TAG_FIELD_FORMAT = "field_format";
+  public static final String TAG_FIELD_CURRENCY = "field_currency";
+  public static final String TAG_FIELD_DECIMAL = "field_decimal";
+  public static final String TAG_FIELD_GROUP = "field_group";
+  public static final String TAG_FIELD_LENGTH = "field_length";
+  public static final String TAG_FIELD_PRECISION = "field_precision";
+  public static final String TAG_FIELD_TRIM_TYPE = "field_trim_type";
+  public static final String TAG_FIELD_REPEAT = "field_repeat";
+  public static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String YES = "Y";
 
@@ -1085,13 +1085,13 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       prunePath = rep.getStepAttributeString( id_step, TAG_PRUNE_PATH );
 
       shortFileFieldName = rep.getStepAttributeString( id_step, TAG_SHORT_FILE_FIELD_NAME );
+      extensionFieldName = rep.getStepAttributeString( id_step, TAG_EXTENSION_FIELD_NAME );
       pathFieldName = rep.getStepAttributeString( id_step, TAG_PATH_FIELD_NAME );
+      sizeFieldName = rep.getStepAttributeString( id_step, TAG_SIZE_FIELD_NAME );
       hiddenFieldName = rep.getStepAttributeString( id_step, TAG_HIDDEN_FIELD_NAME );
       lastModificationTimeFieldName = rep.getStepAttributeString( id_step, TAG_LAST_MODIFICATION_TIME_FIELD_NAME );
       uriNameFieldName = rep.getStepAttributeString( id_step, TAG_URI_NAME_FIELD_NAME );
       rootUriNameFieldName = rep.getStepAttributeString( id_step, TAG_ROOT_URI_NAME_FIELD_NAME );
-      extensionFieldName = rep.getStepAttributeString( id_step, TAG_EXTENSION_FIELD_NAME );
-      sizeFieldName = rep.getStepAttributeString( id_step, TAG_SIZE_FIELD_NAME );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "GetXMLDataMeta.Exception.ErrorReadingRepository" ), e );
     }
@@ -1149,12 +1149,13 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, TAG_XML_FIELD, xmlField );
       rep.saveStepAttribute( id_transformation, id_step, TAG_PRUNE_PATH, prunePath );
       rep.saveStepAttribute( id_transformation, id_step, TAG_SHORT_FILE_FIELD_NAME, shortFileFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_EXTENSION_FIELD_NAME, extensionFieldName );
       rep.saveStepAttribute( id_transformation, id_step, TAG_PATH_FIELD_NAME, pathFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_SIZE_FIELD_NAME, sizeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, TAG_HIDDEN_FIELD_NAME, hiddenFieldName );
       rep.saveStepAttribute( id_transformation, id_step, TAG_LAST_MODIFICATION_TIME_FIELD_NAME, lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, TAG_URI_NAME_FIELD_NAME, uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, TAG_ROOT_URI_NAME_FIELD_NAME, rootUriNameFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, TAG_EXTENSION_FIELD_NAME, extensionFieldName );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "GetXMLDataMeta.Exception.ErrorSavingToRepository", ""
           + id_step ), e );
