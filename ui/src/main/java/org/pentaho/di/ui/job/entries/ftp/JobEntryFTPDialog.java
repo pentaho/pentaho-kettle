@@ -1383,6 +1383,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
 
+        // Use the specified encoding
+        ftpclient.setControlEncoding( wControlEncoding.getText() );
+
         if ( !Utils.isEmpty( wProxyHost.getText() ) ) {
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
           ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
