@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,10 @@
 
 package org.pentaho.di.core.fileinput;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,9 +47,9 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 public class FileInputList {
-  private List<FileObject> files = new ArrayList<FileObject>();
-  private List<FileObject> nonExistantFiles = new ArrayList<FileObject>( 1 );
-  private List<FileObject> nonAccessibleFiles = new ArrayList<FileObject>( 1 );
+  private List<FileObject> files = new ArrayList<>();
+  private List<FileObject> nonExistantFiles = new ArrayList<>( 1 );
+  private List<FileObject> nonAccessibleFiles = new ArrayList<>( 1 );
 
   private static LogChannelInterface log = new LogChannel( "FileInputList" );
 
@@ -313,7 +316,18 @@ public class FileInputList {
           FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
             @Override
             public boolean traverseDescendents( FileSelectInfo info ) {
-              return info.getDepth() == 0 || subdirs;
+              return ( info.getDepth() == 0 || subdirs )
+                // Check if one has permission to list this folder
+                && hasAccess( info.getFile() );
+            }
+
+            private boolean hasAccess( FileObject fileObject ) {
+              try {
+                return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
+              } catch ( Exception e ) {
+                // Something went wrong... well, let's assume "no access"!
+                return false;
+              }
             }
 
             @Override
@@ -325,10 +339,11 @@ public class FileInputList {
 
               FileObject fileObject = info.getFile();
               try {
-                if ( fileObject != null && filter.isFileTypeAllowed( fileObject.getType() ) ) {
-                  return true;
-                }
-                return false;
+                return ( fileObject != null
+                  // Is this an allowed type?
+                  && filter.isFileTypeAllowed( fileObject.getType() )
+                  // Check if one has permission to access it
+                  && hasAccess( fileObject ) );
               } catch ( IOException ex ) {
                 // Upon error don't process the file.
                 return false;
@@ -417,12 +432,6 @@ public class FileInputList {
     Collections.sort( nonAccessibleFiles, KettleVFS.getComparator() );
     Collections.sort( nonExistantFiles, KettleVFS.getComparator() );
   }
-
-  /*
-   * private boolean containsComparable(List list) { if (list == null || list.size() == 0) return false;
-   *
-   * return (list.get(0) instanceof Comparable); }
-   */
 
   public FileObject getFile( int i ) {
     return files.get( i );
