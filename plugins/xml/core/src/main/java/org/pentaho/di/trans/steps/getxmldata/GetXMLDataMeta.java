@@ -118,7 +118,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   public static final String TAG_FIELD_PRECISION = "field_precision";
   public static final String TAG_FIELD_TRIM_TYPE = "field_trim_type";
   public static final String TAG_FIELD_REPEAT = "field_repeat";
-  public static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!
+
+  private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String YES = "Y";
 
@@ -1065,7 +1066,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
           TAG_ELEMENT_TYPE ) ) );
         field.setResultType( GetXMLDataField.getResultTypeByCode( rep
             .getStepAttributeString( id_step, i, TAG_RESULT_TYPE ) ) );
-        field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, TAG_FIELD_TYPE ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, TAG_FIELD_TYPE ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, TAG_FIELD_FORMAT ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, TAG_FIELD_CURRENCY ) );
         field.setDecimalSymbol( rep.getStepAttributeString( id_step, i, TAG_FIELD_DECIMAL ) );
