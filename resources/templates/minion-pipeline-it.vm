@@ -3,13 +3,13 @@ library(identifier: '$library', changelog: false)
 #end
 
 Map defaultParams = [
-  SLAVE_NODE_LABEL    : '$properties.getString('SLAVE_NODE_LABEL')',
-  WORKSPACE           : '$properties.getString('WORKSPACE')',
-  BUILD_DATA_ROOT_PATH: '$properties.getString('BUILD_DATA_ROOT_PATH')',
-  BUILD_DATA_FILE     : '$properties.getString('BUILD_DATA_FILE')',
+  SLAVE_NODE_LABEL    : '$properties.SLAVE_NODE_LABEL',
+  WORKSPACE           : '$properties.WORKSPACE',
+  BUILD_DATA_ROOT_PATH: '$properties.BUILD_DATA_ROOT_PATH',
+  BUILD_DATA_FILE     : '$properties.BUILD_DATA_FILE',
 
-  RUN_STAGE_CHECKOUT  : $properties.getBool('RUN_STAGE_CHECKOUT'),
-  RUN_STAGE_TEST     : $properties.getBool('RUN_STAGE_TEST'),
+  RUN_STAGE_CHECKOUT  : $properties.RUN_STAGE_CHECKOUT,
+  RUN_STAGE_TEST     : $properties.RUN_STAGE_TEST,
 
   OVERRIDE_PARAMS     : [:],
   OVERRIDE_JOB_PARAMS : [:]

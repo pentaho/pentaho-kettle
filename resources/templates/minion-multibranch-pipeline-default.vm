@@ -2,15 +2,15 @@
 library(identifier: '$library', changelog: false)
 #end
 
-#set( $runCheckout = $properties.getBool('RUN_STAGE_CHECKOUT') )
-#set( $runBuild = $properties.getBool('RUN_STAGE_BUILD') )
-#set( $runSonar = $properties.getBool('RUN_STAGE_SONAR') && $item.auditable )
+#set( $runCheckout = $properties.RUN_STAGE_CHECKOUT )
+#set( $runBuild = $properties.RUN_STAGE_BUILD )
+#set( $runSonar = $properties.RUN_STAGE_SONAR && $item.auditable )
 ##
 Map defaultParams = [
-  SLAVE_NODE_LABEL    : '$properties.getString('SLAVE_NODE_LABEL')',
-  WORKSPACE           : '$properties.getString('WORKSPACE')',
-  BUILD_DATA_ROOT_PATH: '$properties.getString('BUILD_DATA_ROOT_PATH')',
-  BUILD_DATA_FILE     : '$properties.getString('BUILD_DATA_FILE')',
+  SLAVE_NODE_LABEL    : '$properties.SLAVE_NODE_LABEL',
+  WORKSPACE           : '$properties.WORKSPACE',
+  BUILD_DATA_ROOT_PATH: '$properties.BUILD_DATA_ROOT_PATH',
+  BUILD_DATA_FILE     : '$properties.BUILD_DATA_FILE',
 
   RUN_STAGE_CHECKOUT  : $runCheckout,
   RUN_STAGE_BUILD     : $runBuild,
