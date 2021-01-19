@@ -1170,7 +1170,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       ldb.writeLogRecord( jobLogTable, status, this, null );
 
       if ( cleanLogRecords ) {
-        ldb.cleanupLogRecords( jobLogTable, getName() );
+        ldb.cleanupLogRecords( jobLogTable, getJobname() );
       }
 
     } catch ( KettleDatabaseException dbe ) {
@@ -1217,7 +1217,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       // Also time-out the log records in here...
       //
-      db.cleanupLogRecords( channelLogTable, getName() );
+      db.cleanupLogRecords( channelLogTable, getJobname() );
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG,
