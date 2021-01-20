@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -498,6 +498,15 @@ public class JobMetaTest {
     jobMetaTest.updateCurrentDir();
 
     assertEquals( "Original value defined at run execution", jobMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY )  );
+  }
+
+  @Test
+  public void isGatheringMetricsTest() {
+    JobMeta jobMetaTest = new JobMeta();
+    jobMetaTest.setGatheringMetrics( true );
+    assertTrue( jobMetaTest.isGatheringMetrics() );
+    jobMetaTest.setGatheringMetrics( false );
+    assertFalse( jobMetaTest.isGatheringMetrics() );
   }
 
 }

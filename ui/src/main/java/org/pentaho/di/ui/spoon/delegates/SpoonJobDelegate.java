@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1384,6 +1384,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
       jobMeta.setClearingLog( executionConfiguration.isClearingLog() );
       jobMeta.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
       jobMeta.setExpandingRemoteJob( executionConfiguration.isExpandingRemoteJob() );
+      jobMeta.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,
