@@ -52,7 +52,7 @@ buildProperties:
   PARALLEL_SIZE_ARCHIVE : 10
 
   # Reports
-  BUILD_ORDER_REPORT  : true
+  BUILD_ORDER_REPORT  : false
 
   BUILD_SLACK_CHANNEL : 'buildteam-alerts'
   SLACK_INTEGRATION   : true
