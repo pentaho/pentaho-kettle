@@ -942,9 +942,9 @@ public class TextFileInputUtils {
    */
   public static int checkPattern( String text, String regexChar, String escapeCharacter ) {
 
-    String regex = StringUtils.isEmpty( escapeCharacter )
+    String regex = ( StringUtils.isEmpty( escapeCharacter )
                     ? ""
-                    : "(?<!" + Pattern.quote( escapeCharacter ) + ")"
+                    : "(?<!" + Pattern.quote( escapeCharacter ) + ")" )
       + Pattern.quote( regexChar );
 
     int matches = 0;
