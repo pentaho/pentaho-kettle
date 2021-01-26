@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1382,6 +1382,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         int realPort = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
+
+        // Use the specified encoding
+        ftpclient.setControlEncoding( wControlEncoding.getText() );
 
         if ( !Utils.isEmpty( wProxyHost.getText() ) ) {
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
