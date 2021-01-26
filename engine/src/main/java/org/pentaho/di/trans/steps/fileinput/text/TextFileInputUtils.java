@@ -942,16 +942,16 @@ public class TextFileInputUtils {
    */
   public static int checkPattern( String text, String regexChar, String escapeCharacter ) {
 
+    int matches = 0;
+
+    if ( StringUtils.isBlank( text ) || StringUtils.isBlank( regexChar ) ) {
+      return matches;
+    }
+
     String regex = ( StringUtils.isEmpty( escapeCharacter )
                     ? ""
                     : "(?<!" + Pattern.quote( escapeCharacter ) + ")" )
       + Pattern.quote( regexChar );
-
-    int matches = 0;
-
-    if ( StringUtils.isBlank( text ) || StringUtils.isBlank( regex ) ) {
-      return matches;
-    }
 
     // Remove even number of escaped characters to simplify proceeded escape character detection by regex
     String textSanitized = text.replace( escapeCharacter + escapeCharacter, "" );
