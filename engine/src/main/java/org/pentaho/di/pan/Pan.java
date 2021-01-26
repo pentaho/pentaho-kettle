@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,7 @@ public class Pan {
   private static PanCommandExecutor commandExecutor;
 
   public static void main( String[] a ) throws Exception {
+    try {
     KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.PAN );
     KettleEnvironment.init();
     Locale.setDefault( LanguageChoice.getInstance().getDefaultLocale() );
@@ -228,8 +229,6 @@ public class Pan {
     }
 
     // ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-    try {
 
       if ( getCommandExecutor() == null ) {
         setCommandExecutor( new PanCommandExecutor( PKG, log ) ); // init
