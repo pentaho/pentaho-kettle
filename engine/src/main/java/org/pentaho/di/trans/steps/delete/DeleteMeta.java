@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -342,7 +342,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
       schemaName = rep.getStepAttributeString( id_step, "schema" );
       tableName = rep.getStepAttributeString( id_step, "table" );
 
-      int nrkeys = rep.countNrStepAttributes( id_step, "key_name" );
+      int nrkeys = rep.countNrStepAttributes( id_step, "key_field" );
 
       allocate( nrkeys );
 
