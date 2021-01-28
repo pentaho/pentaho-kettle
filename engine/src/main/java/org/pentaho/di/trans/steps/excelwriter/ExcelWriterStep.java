@@ -73,6 +73,8 @@ import org.pentaho.di.workarounds.BufferedOutputStreamWithCloseDetection;
 public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   public static final String STREAMER_FORCE_RECALC_PROP_NAME = "KETTLE_EXCEL_WRITER_STREAMER_FORCE_RECALCULATE";
+  public static final String XLSX = "xlsx";
+  private static final int STREAMING_WINDOW_SIZE = SXSSFWorkbook.DEFAULT_WINDOW_SIZE;
 
   private ExcelWriterStepData data;
   private ExcelWriterStepMeta meta;
@@ -642,7 +644,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           }
         } else {
           // handle fresh file case, just create a fresh workbook
-          Workbook wb = meta.getExtension().equalsIgnoreCase( "xlsx" ) ? new XSSFWorkbook() : new HSSFWorkbook();
+          Workbook wb = XLSX.equalsIgnoreCase( meta.getExtension() ) ? new XSSFWorkbook() : new HSSFWorkbook();
           BufferedOutputStreamWithCloseDetection out = new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) );
           wb.createSheet( data.realSheetname );
           wb.write( out );
@@ -653,15 +655,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
 
       // file is guaranteed to be in place now
-      if ( meta.getExtension().equalsIgnoreCase( "xlsx" ) ) {
-        XSSFWorkbook xssfWorkbook = new XSSFWorkbook( KettleVFS.getInputStream( data.file ) );
-        if ( meta.isStreamingData() && !meta.isTemplateEnabled() ) {
-          data.wb = new SXSSFWorkbook( xssfWorkbook, 100 );
-        } else {
-          //Initialize it later after writing header/template because SXSSFWorkbook can't read/rewrite existing data,
-          // only append.
-          data.wb = xssfWorkbook;
-        }
+      if ( XLSX.equalsIgnoreCase( meta.getExtension() ) ) {
+        // Ignore, by now, if it's to use streaming!
+        // In that case, one needs to initialize it later, after writing header/template, because
+        // SXSSFWorkbook can't read/rewrite existing data, only append.
+        data.wb = new XSSFWorkbook( KettleVFS.getInputStream( data.file ) );
       } else {
         data.wb = new HSSFWorkbook( KettleVFS.getInputStream( data.file ) );
       }
@@ -760,6 +758,13 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( meta.isHeaderEnabled() && !( !data.createNewSheet && meta.isAppendOmitHeader() && appendingToSheet ) ) {
         writeHeader();
       }
+
+      // If it's to use streaming, initialize it now as we already made all necessary initial calculations.
+      if ( data.wb instanceof XSSFWorkbook && meta.isStreamingData() && !meta.isTemplateEnabled() ) {
+        data.wb = new SXSSFWorkbook( (XSSFWorkbook) data.wb, STREAMING_WINDOW_SIZE );
+        data.sheet = data.wb.getSheet( data.realSheetname );
+      }
+
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "ExcelWriterStep.Log.FileOpened", buildFilename ) );
       }
