@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,6 +42,10 @@ import org.pentaho.reporting.libraries.formula.operators.OperatorFactory;
 import org.pentaho.reporting.libraries.formula.typing.Type;
 import org.pentaho.reporting.libraries.formula.typing.TypeRegistry;
 import org.pentaho.reporting.libraries.formula.typing.coretypes.AnyType;
+import org.pentaho.reporting.libraries.formula.typing.coretypes.DateTimeType;
+import org.pentaho.reporting.libraries.formula.typing.coretypes.LogicalType;
+import org.pentaho.reporting.libraries.formula.typing.coretypes.NumberType;
+import org.pentaho.reporting.libraries.formula.typing.coretypes.TextType;
 
 public class RowForumulaContext implements FormulaContext {
   private RowMetaInterface rowMeta;
@@ -57,6 +61,16 @@ public class RowForumulaContext implements FormulaContext {
   }
 
   public Type resolveReferenceType( Object name ) {
+    if ( name instanceof String ) {
+      ValueMetaInterface valueMeta = this.rowMeta.searchValueMeta( (String) name );
+      if ( valueMeta != null ) {
+        switch ( valueMeta.getType() ) {
+          case ValueMetaInterface.TYPE_STRING:
+            return TextType.TYPE;
+        }
+      }
+    }
+
     return AnyType.TYPE;
   }
 
