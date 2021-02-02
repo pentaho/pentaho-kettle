@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.excelwriter;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.common.usermodel.HyperlinkType;
@@ -655,13 +656,15 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
 
       // file is guaranteed to be in place now
-      if ( XLSX.equalsIgnoreCase( meta.getExtension() ) ) {
-        // Ignore, by now, if it's to use streaming!
-        // In that case, one needs to initialize it later, after writing header/template, because
-        // SXSSFWorkbook can't read/rewrite existing data, only append.
-        data.wb = new XSSFWorkbook( KettleVFS.getInputStream( data.file ) );
-      } else {
-        data.wb = new HSSFWorkbook( KettleVFS.getInputStream( data.file ) );
+      try ( InputStream inputStream = KettleVFS.getInputStream( data.file ) ) {
+        if ( XLSX.equalsIgnoreCase( meta.getExtension() ) ) {
+          // Ignore, by now, if it's to use streaming!
+          // In that case, one needs to initialize it later, after writing header/template, because
+          // SXSSFWorkbook can't read/rewrite existing data, only append.
+          data.wb = new XSSFWorkbook( inputStream );
+        } else {
+          data.wb = new HSSFWorkbook( inputStream );
+        }
       }
 
       int existingActiveSheetIndex = data.wb.getActiveSheetIndex();
