@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.3.0.0-SNAPSHOT</version>
+    <version>8.3.0.20-1153</version>
   </parent>
 
   <artifactId>meta-inject-plugin</artifactId>
-  <version>8.3.0.0-SNAPSHOT</version>
+  <version>8.3.0.20-1153</version>
   <packaging>bundle</packaging>
 
   <name>PDI Metadata Injection Plugin</name>
@@ -18,9 +18,9 @@
   <url>http://www.pentaho.com</url>
 
   <properties>
-    <pdi.version>8.3.0.0-SNAPSHOT</pdi.version>
-    <pentaho-metaverse.version>8.3.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <platform.version>8.3.0.0-SNAPSHOT</platform.version>
+    <pdi.version>8.3.0.20-1153</pdi.version>
+    <pentaho-metaverse.version>8.3.0.20-1153</pentaho-metaverse.version>
+    <platform.version>8.3.0.20-1153</platform.version>
     <servlet-api.version>2.3</servlet-api.version>
     <mockito.version>1.10.19</mockito.version>
     <guava.version>17.0</guava.version>
@@ -35,7 +35,7 @@
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
     <mockito.version>1.10.19</mockito.version>
     <powermock.version>1.6.3</powermock.version>
-    <pentaho-hadoop-shims-api.version>8.3.0.0-SNAPSHOT</pentaho-hadoop-shims-api.version>
+    <pentaho-hadoop-shims-api.version>8.3.2020.11.00-1072</pentaho-hadoop-shims-api.version>
     <commons-configuration.revision>1.9</commons-configuration.revision>
   </properties>
 
