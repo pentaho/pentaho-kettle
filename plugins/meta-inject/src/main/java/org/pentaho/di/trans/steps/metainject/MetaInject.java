@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.RowProducer;
@@ -250,6 +251,13 @@ public class MetaInject extends BaseStep implements StepInterface {
       Const.NVL( getVariable( Const.KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM ), "N" ) );
 
     return getRepository() == null || forceWriteInFilesystem;
+  }
+
+  @Override
+  public Repository getRepository() {
+    //Repository may be null if executing remotely in Pentaho Server
+    Repository repository = super.getRepository();
+    return repository != null ? repository : getTransMeta().getRepository();
   }
 
   @VisibleForTesting
