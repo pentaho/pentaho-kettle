@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,10 @@ import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -365,36 +368,29 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       if ( !Utils.isEmpty( filewildcard ) ) {
         fileWildcard = filewildcard;
       }
+
       parentjob = parentJob;
     }
 
+    @Override
     public boolean includeFile( FileSelectInfo info ) {
       boolean doReturnCode = false;
       try {
-
-        if ( !info.getFile().toString().equals( sourceFolder ) && !parentjob.isStopped() ) {
-          // Pass over the Base folder itself
+        // Only files are to be handled
+        if ( ( info.getFile().getType() == FileType.FILE ) && !parentjob.isStopped() ) {
           String shortFilename = info.getFile().getName().getBaseName();
 
-          if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
-            // Not in the Base Folder..Only if include sub folders
-            if ( includeSubfolders
-              && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( shortFilename, fileWildcard ) ) {
-              if ( log.isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.DeletingFile", info
-                  .getFile().toString() ) );
-              }
-              doReturnCode = true;
+          // Is it to "include sub folders" or it's in Base folder?
+          // AND
+          // Does it matches the regex expression?
+          if ( ( includeSubfolders || info.getFile().getParent().equals( info.getBaseFolder() ) )
+            && getFileWildcard( shortFilename, fileWildcard ) ) {
+            if ( log.isDetailed() ) {
+              logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.DeletingFile", info
+                .getFile().toString() ) );
             }
-          } else {
-            // In the Base Folder...
-            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( shortFilename, fileWildcard ) ) {
-              if ( log.isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.DeletingFile", info
-                  .getFile().toString() ) );
-              }
-              doReturnCode = true;
-            }
+
+            doReturnCode = true;
           }
         }
       } catch ( Exception e ) {
@@ -409,28 +405,42 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       return doReturnCode;
     }
 
+    private boolean hasAccess( FileObject fileObject ) {
+      try {
+        return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
+      } catch ( Exception e ) {
+        // Something went wrong... well, let's assume "no access"!
+        return false;
+      }
+    }
+
+    @Override
     public boolean traverseDescendents( FileSelectInfo info ) {
-      return true;
-    }
-  }
-
-  /**********************************************************
-   *
-   * @param selectedfile
-   * @param wildcard
-   * @return True if the selectedfile matches the wildcard
-   **********************************************************/
-  private boolean GetFileWildcard( String selectedfile, String wildcard ) {
-    boolean getIt = true;
-
-    if ( !Utils.isEmpty( wildcard ) ) {
-      Pattern pattern = Pattern.compile( wildcard );
-      // First see if the file matches the regular expression!
-      Matcher matcher = pattern.matcher( selectedfile );
-      getIt = matcher.matches();
+      return ( info.getDepth() == 0 || includeSubfolders )
+        // Check if one has permission to list this folder
+        && hasAccess( info.getFile() );
     }
 
-    return getIt;
+    /**
+     * <p>Checks if a given filename matches a given regex expression.</p>
+     * <p>If the given regex expression is empty, the result is always <code>true</code>.</p>
+     *
+     * @param selectedfile the filename to check
+     * @param wildcard     the regex expression to use
+     * @return True if the selectedfile matches the wildcard
+     */
+    private boolean getFileWildcard( String selectedfile, String wildcard ) {
+      boolean getIt = true;
+
+      if ( !Utils.isEmpty( wildcard ) ) {
+        Pattern pattern = Pattern.compile( wildcard );
+        // First see if the file matches the regular expression!
+        Matcher matcher = pattern.matcher( selectedfile );
+        getIt = matcher.matches();
+      }
+
+      return getIt;
+    }
   }
 
   public void setIncludeSubfolders( boolean includeSubfolders ) {
