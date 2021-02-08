@@ -66,7 +66,7 @@ public class XMLProcess {
     }
   }
 
-  public String process( Enumeration<File> files ) {
+  public String process( Enumeration<File> files, String content ) {
     count = 0;
     StringBuilder log = new StringBuilder();
     while ( files.hasMoreElements() ) {
@@ -78,7 +78,7 @@ public class XMLProcess {
 
         Node extendedDescriptionNode = doc.getElementsByTagName( "extended_description" ).item( 0 );
         if ( extendedDescriptionNode != null ) {
-          extendedDescriptionNode.setTextContent( "#dataflow" );
+          extendedDescriptionNode.setTextContent( content );
         } else {
           String expression =
             file.getName().toLowerCase().endsWith( ".ktr" ) ? "/transformation/info/name" : "/job/name";
@@ -86,7 +86,7 @@ public class XMLProcess {
           NodeList nodeList = (NodeList) expr.evaluate( doc, XPathConstants.NODESET );
           Node nameNode = nodeList.item( 0 );
           extendedDescriptionNode = doc.createElement( "extended_description" );
-          extendedDescriptionNode.setTextContent( "#dataflow" );
+          extendedDescriptionNode.setTextContent( content );
           nameNode.getParentNode().insertBefore( extendedDescriptionNode, nameNode.getNextSibling() );
         }
         DOMSource source = new DOMSource( doc );
