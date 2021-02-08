@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,178 +58,174 @@ public class Pan {
   private static PanCommandExecutor commandExecutor;
 
   public static void main( String[] a ) throws Exception {
-    KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.PAN );
-    KettleEnvironment.init();
-    Locale.setDefault( LanguageChoice.getInstance().getDefaultLocale() );
-
-    List<String> args = new ArrayList<String>();
-    for ( int i = 0; i < a.length; i++ ) {
-      if ( a[i].length() > 0 ) {
-        args.add( a[i] );
-      }
-    }
-
-    // The options:
-    StringBuilder optionRepname, optionUsername, optionTrustUser,  optionPassword, optionTransname, optionDirname;
-    StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
-    StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
-    StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
-    StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
-    StringBuilder optionBase64Zip, optionUuid;
-
-    NamedParams optionParams = new NamedParamsDefault();
-
-    CommandLineOption maxLogLinesOption =
-      new CommandLineOption(
-        "maxloglines", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogLines" ), new StringBuilder() );
-    CommandLineOption maxLogTimeoutOption =
-      new CommandLineOption(
-        "maxlogtimeout", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogTimeout" ), new StringBuilder() );
-
-    CommandLineOption[] options =
-      new CommandLineOption[]{
-        new CommandLineOption( "rep", BaseMessages.getString( PKG, "Pan.ComdLine.RepName" ), optionRepname =
-          new StringBuilder() ),
-        new CommandLineOption(
-          "user", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionUsername =
-          new StringBuilder() ),
-        new CommandLineOption(
-          "trustuser", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionTrustUser =
-          new StringBuilder() ),
-        new CommandLineOption(
-          "pass", BaseMessages.getString( PKG, "Pan.ComdLine.RepPassword" ), optionPassword =
-          new StringBuilder() ),
-        new CommandLineOption(
-          "trans", BaseMessages.getString( PKG, "Pan.ComdLine.TransName" ), optionTransname =
-          new StringBuilder() ),
-        new CommandLineOption( "dir", BaseMessages.getString( PKG, "Pan.ComdLine.RepDir" ), optionDirname =
-          new StringBuilder() ),
-        new CommandLineOption(
-          "file", BaseMessages.getString( PKG, "Pan.ComdLine.XMLTransFile" ), optionFilename =
-          new StringBuilder() ),
-        new CommandLineOption(
-          "level", BaseMessages.getString( PKG, "Pan.ComdLine.LogLevel" ), optionLoglevel =
-          new StringBuilder() ),
-        new CommandLineOption(
-          "logfile", BaseMessages.getString( PKG, "Pan.ComdLine.LogFile" ), optionLogfile =
-          new StringBuilder() ),
-        new CommandLineOption(
-          "log", BaseMessages.getString( PKG, "Pan.ComdLine.LogOldFile" ), optionLogfileOld =
-          new StringBuilder(), false, true ),
-        new CommandLineOption(
-          "listdir", BaseMessages.getString( PKG, "Pan.ComdLine.ListDirRep" ), optionListdir =
-          new StringBuilder(), true, false ),
-        new CommandLineOption(
-          "listtrans", BaseMessages.getString( PKG, "Pan.ComdLine.ListTransDir" ), optionListtrans =
-          new StringBuilder(), true, false ),
-        new CommandLineOption(
-          "listrep", BaseMessages.getString( PKG, "Pan.ComdLine.ListReps" ), optionListrep =
-          new StringBuilder(), true, false ),
-        new CommandLineOption(
-          "exprep", BaseMessages.getString( PKG, "Pan.ComdLine.ExpObjectsXML" ), optionExprep =
-          new StringBuilder(), true, false ),
-        new CommandLineOption( "norep", BaseMessages.getString( PKG, "Pan.ComdLine.NoRep" ), optionNorep =
-          new StringBuilder(), true, false ),
-        new CommandLineOption(
-          "safemode", BaseMessages.getString( PKG, "Pan.ComdLine.SafeMode" ), optionSafemode =
-          new StringBuilder(), true, false ),
-        new CommandLineOption(
-          "version", BaseMessages.getString( PKG, "Pan.ComdLine.Version" ), optionVersion =
-          new StringBuilder(), true, false ),
-        new CommandLineOption(
-          "jarfile", BaseMessages.getString( PKG, "Pan.ComdLine.JarFile" ), optionJarFilename =
-          new StringBuilder(), false, true ),
-        new CommandLineOption(
-          "param", BaseMessages.getString( PKG, "Pan.ComdLine.Param" ), optionParams, false ),
-        new CommandLineOption(
-          "listparam", BaseMessages.getString( PKG, "Pan.ComdLine.ListParam" ), optionListParam =
-          new StringBuilder(), true, false ),
-        new CommandLineOption(
-          "initialDir", null, initialDir =
-          new StringBuilder(), false, true ),
-        new CommandLineOption(
-          "stepname", "ResultSetStepName", optionResultSetStepName =
-          new StringBuilder(), false, true ),
-        new CommandLineOption(
-          "copynum", "ResultSetCopyNumber", optionResultSetCopyNumber =
-          new StringBuilder(), false, true ),
-        new CommandLineOption(
-          "zip", "Base64Zip", optionBase64Zip =
-          new StringBuilder(), false, true ),
-        new CommandLineOption(
-                "uuid", "UUID", optionUuid =
-                new StringBuilder(), false, true ),
-        new CommandLineOption(
-          "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
-          new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
-
-
-    if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
-      CommandLineOption.printUsage( options );
-      exitJVM( CommandExecutorCodes.Pan.CMD_LINE_PRINT.getCode() );
-    }
-
-
-
-    // Parse the options...
-    if ( !CommandLineOption.parseArguments( args, options, log ) ) {
-      log.logError( BaseMessages.getString( PKG, "Pan.Error.CommandLineError" ) );
-
-      exitJVM( CommandExecutorCodes.Pan.ERROR_LOADING_STEPS_PLUGINS.getCode() );
-    }
-
-    Kitchen.configureLogging( maxLogLinesOption, maxLogTimeoutOption );
-
-    String kettleRepname = Const.getEnvironmentVariable( Const.KETTLE_REPOSITORY, null );
-    String kettleUsername = Const.getEnvironmentVariable( Const.KETTLE_USER, null );
-    String kettlePassword = Const.getEnvironmentVariable(  Const.KETTLE_PASSWORD, null );
-
-    if ( kettleRepname != null && kettleRepname.length() > 0 ) {
-      optionRepname = new StringBuilder( kettleRepname );
-    }
-    if ( kettleUsername != null && kettleUsername.length() > 0 ) {
-      optionUsername = new StringBuilder( kettleUsername );
-    }
-    if ( kettlePassword != null && kettlePassword.length() > 0 ) {
-      optionPassword = new StringBuilder( kettlePassword );
-    }
-
-    if ( Utils.isEmpty( optionLogfile ) && !Utils.isEmpty( optionLogfileOld ) ) {
-      // if the old style of logging name is filled in, and the new one is not
-      // overwrite the new by the old
-      optionLogfile = optionLogfileOld;
-    }
-
-    if ( !Utils.isEmpty( optionLogfile ) ) {
-      fileLoggingEventListener = new FileLoggingEventListener( optionLogfile.toString(), true );
-      KettleLogStore.getAppender().addLoggingEventListener( fileLoggingEventListener );
-    } else {
-      fileLoggingEventListener = null;
-    }
-
-    if ( !Utils.isEmpty( optionLoglevel ) ) {
-      log.setLogLevel( LogLevel.getLogLevelForCode( optionLoglevel.toString() ) );
-      log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.Loglevel", log.getLogLevel().getDescription() ) );
-
-    }
-
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////
-    // This is where the action starts.
-    // Print the options before we start processing when running in Debug or
-    // Rowlevel
-    //
-    if ( log.isDebug() ) {
-      System.out.println( "Arguments:" );
-      for ( int i = 0; i < options.length; i++ ) {
-        /* if (!options[i].isHiddenOption()) */
-        System.out.println( Const.rightPad( options[i].getOption(), 12 ) + " : " + options[i].getArgument() );
-      }
-      System.out.println( "" );
-    }
-
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////
-
     try {
+      KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.PAN );
+      KettleEnvironment.init();
+      Locale.setDefault( LanguageChoice.getInstance().getDefaultLocale() );
+
+      List<String> args = new ArrayList<>();
+      for ( int i = 0; i < a.length; i++ ) {
+        if ( a[ i ].length() > 0 ) {
+          args.add( a[ i ] );
+        }
+      }
+
+      // The options:
+      StringBuilder optionRepname, optionUsername, optionTrustUser, optionPassword, optionTransname, optionDirname;
+      StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
+      StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
+      StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
+      StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
+      StringBuilder optionBase64Zip, optionUuid;
+
+      NamedParams optionParams = new NamedParamsDefault();
+
+      CommandLineOption maxLogLinesOption =
+        new CommandLineOption(
+          "maxloglines", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogLines" ), new StringBuilder() );
+      CommandLineOption maxLogTimeoutOption =
+        new CommandLineOption(
+          "maxlogtimeout", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogTimeout" ), new StringBuilder() );
+
+      CommandLineOption[] options =
+        new CommandLineOption[] {
+          new CommandLineOption( "rep", BaseMessages.getString( PKG, "Pan.ComdLine.RepName" ), optionRepname =
+            new StringBuilder() ),
+          new CommandLineOption(
+            "user", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionUsername =
+            new StringBuilder() ),
+          new CommandLineOption(
+            "trustuser", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionTrustUser =
+            new StringBuilder() ),
+          new CommandLineOption(
+            "pass", BaseMessages.getString( PKG, "Pan.ComdLine.RepPassword" ), optionPassword =
+            new StringBuilder() ),
+          new CommandLineOption(
+            "trans", BaseMessages.getString( PKG, "Pan.ComdLine.TransName" ), optionTransname =
+            new StringBuilder() ),
+          new CommandLineOption( "dir", BaseMessages.getString( PKG, "Pan.ComdLine.RepDir" ), optionDirname =
+            new StringBuilder() ),
+          new CommandLineOption(
+            "file", BaseMessages.getString( PKG, "Pan.ComdLine.XMLTransFile" ), optionFilename =
+            new StringBuilder() ),
+          new CommandLineOption(
+            "level", BaseMessages.getString( PKG, "Pan.ComdLine.LogLevel" ), optionLoglevel =
+            new StringBuilder() ),
+          new CommandLineOption(
+            "logfile", BaseMessages.getString( PKG, "Pan.ComdLine.LogFile" ), optionLogfile =
+            new StringBuilder() ),
+          new CommandLineOption(
+            "log", BaseMessages.getString( PKG, "Pan.ComdLine.LogOldFile" ), optionLogfileOld =
+            new StringBuilder(), false, true ),
+          new CommandLineOption(
+            "listdir", BaseMessages.getString( PKG, "Pan.ComdLine.ListDirRep" ), optionListdir =
+            new StringBuilder(), true, false ),
+          new CommandLineOption(
+            "listtrans", BaseMessages.getString( PKG, "Pan.ComdLine.ListTransDir" ), optionListtrans =
+            new StringBuilder(), true, false ),
+          new CommandLineOption(
+            "listrep", BaseMessages.getString( PKG, "Pan.ComdLine.ListReps" ), optionListrep =
+            new StringBuilder(), true, false ),
+          new CommandLineOption(
+            "exprep", BaseMessages.getString( PKG, "Pan.ComdLine.ExpObjectsXML" ), optionExprep =
+            new StringBuilder(), true, false ),
+          new CommandLineOption( "norep", BaseMessages.getString( PKG, "Pan.ComdLine.NoRep" ), optionNorep =
+            new StringBuilder(), true, false ),
+          new CommandLineOption(
+            "safemode", BaseMessages.getString( PKG, "Pan.ComdLine.SafeMode" ), optionSafemode =
+            new StringBuilder(), true, false ),
+          new CommandLineOption(
+            "version", BaseMessages.getString( PKG, "Pan.ComdLine.Version" ), optionVersion =
+            new StringBuilder(), true, false ),
+          new CommandLineOption(
+            "jarfile", BaseMessages.getString( PKG, "Pan.ComdLine.JarFile" ), optionJarFilename =
+            new StringBuilder(), false, true ),
+          new CommandLineOption(
+            "param", BaseMessages.getString( PKG, "Pan.ComdLine.Param" ), optionParams, false ),
+          new CommandLineOption(
+            "listparam", BaseMessages.getString( PKG, "Pan.ComdLine.ListParam" ), optionListParam =
+            new StringBuilder(), true, false ),
+          new CommandLineOption(
+            "initialDir", null, initialDir =
+            new StringBuilder(), false, true ),
+          new CommandLineOption(
+            "stepname", "ResultSetStepName", optionResultSetStepName =
+            new StringBuilder(), false, true ),
+          new CommandLineOption(
+            "copynum", "ResultSetCopyNumber", optionResultSetCopyNumber =
+            new StringBuilder(), false, true ),
+          new CommandLineOption(
+            "zip", "Base64Zip", optionBase64Zip =
+            new StringBuilder(), false, true ),
+          new CommandLineOption(
+            "uuid", "UUID", optionUuid =
+            new StringBuilder(), false, true ),
+          new CommandLineOption(
+            "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
+            new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
+
+
+      if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
+        CommandLineOption.printUsage( options );
+        exitJVM( CommandExecutorCodes.Pan.CMD_LINE_PRINT.getCode() );
+      }
+
+
+      // Parse the options...
+      if ( !CommandLineOption.parseArguments( args, options, log ) ) {
+        log.logError( BaseMessages.getString( PKG, "Pan.Error.CommandLineError" ) );
+
+        exitJVM( CommandExecutorCodes.Pan.ERROR_LOADING_STEPS_PLUGINS.getCode() );
+      }
+
+      Kitchen.configureLogging( maxLogLinesOption, maxLogTimeoutOption );
+
+      String kettleRepname = Const.getEnvironmentVariable( Const.KETTLE_REPOSITORY, null );
+      String kettleUsername = Const.getEnvironmentVariable( Const.KETTLE_USER, null );
+      String kettlePassword = Const.getEnvironmentVariable( Const.KETTLE_PASSWORD, null );
+
+      if ( kettleRepname != null && kettleRepname.length() > 0 ) {
+        optionRepname = new StringBuilder( kettleRepname );
+      }
+      if ( kettleUsername != null && kettleUsername.length() > 0 ) {
+        optionUsername = new StringBuilder( kettleUsername );
+      }
+      if ( kettlePassword != null && kettlePassword.length() > 0 ) {
+        optionPassword = new StringBuilder( kettlePassword );
+      }
+
+      if ( Utils.isEmpty( optionLogfile ) && !Utils.isEmpty( optionLogfileOld ) ) {
+        // if the old style of logging name is filled in, and the new one is not
+        // overwrite the new by the old
+        optionLogfile = optionLogfileOld;
+      }
+
+      if ( !Utils.isEmpty( optionLogfile ) ) {
+        // PDI-18724: this throws an exception if the given log file is not accessible
+        fileLoggingEventListener = new FileLoggingEventListener( optionLogfile.toString(), true );
+        KettleLogStore.getAppender().addLoggingEventListener( fileLoggingEventListener );
+      } else {
+        fileLoggingEventListener = null;
+      }
+
+      if ( !Utils.isEmpty( optionLoglevel ) ) {
+        log.setLogLevel( LogLevel.getLogLevelForCode( optionLoglevel.toString() ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.Loglevel", log.getLogLevel().getDescription() ) );
+      }
+
+      // ///////////////////////////////////////////////////////////////////////////////////////////////////
+      // This is where the action starts.
+      // Print the options before we start processing when running in Debug or Rowlevel
+      //
+      if ( log.isDebug() ) {
+        System.out.println( "Arguments:" );
+        for ( int i = 0; i < options.length; i++ ) {
+          System.out.println( Const.rightPad( options[ i ].getOption(), 12 ) + " : " + options[ i ].getArgument() );
+        }
+        System.out.println( "" );
+      }
+
+      // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
       if ( getCommandExecutor() == null ) {
         setCommandExecutor( new PanCommandExecutor( PKG, log ) ); // init
@@ -243,7 +239,8 @@ public class Pan {
         }
       }
 
-      Params.Builder builder = optionUuid.length() > 0 ? new Params.Builder( optionUuid.toString() ) : new Params.Builder();
+      Params.Builder builder =
+        optionUuid.length() > 0 ? new Params.Builder( optionUuid.toString() ) : new Params.Builder();
       Params transParams = ( builder )
               .blockRepoConns( optionNorep.toString() )
               .repoName( optionRepname.toString() )
@@ -274,7 +271,7 @@ public class Pan {
               .namedParams( optionParams )
               .build();
 
-      Result result = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] )  );
+      Result result = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] ) );
 
       exitJVM( result.getExitStatus() );
 
