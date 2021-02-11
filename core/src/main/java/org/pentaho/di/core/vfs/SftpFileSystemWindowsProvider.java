@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,11 +23,16 @@
 package org.pentaho.di.core.vfs;
 
 
+import com.jcraft.jsch.Session;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystem;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
+import org.apache.commons.vfs2.UserAuthenticationData;
 import org.apache.commons.vfs2.provider.GenericFileName;
+import org.apache.commons.vfs2.provider.sftp.SftpClientFactory;
 import org.apache.commons.vfs2.provider.sftp.SftpFileProvider;
+import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
 
 /**
  * This class serves two main purposes.
@@ -54,11 +59,41 @@ import org.apache.commons.vfs2.provider.sftp.SftpFileProvider;
  * This provider replaces {@link SftpFileProvider} in FileSystemManager (see overridden providers.xml).
  * And then used to spawn SftpFileSystemWindows and SftpFileObjectWithWindowsSupport.
  */
+
+// suppress the "too many parents" warning; can't be helped here
+@SuppressWarnings( "squid:S110" )
 public class SftpFileSystemWindowsProvider extends SftpFileProvider {
 
+  /**
+   * Creates a new Session.  Note that this method is borrowed from the parent class and should mirror it if the
+   * commons-vfs2 library is updated.
+   *
+   * @return A Session, never null.
+   */
+  static Session createSession( final GenericFileName rootName, final FileSystemOptions fileSystemOptions )
+    throws FileSystemException {
+    UserAuthenticationData authData = null;
+    try {
+      authData = UserAuthenticatorUtils.authenticate( fileSystemOptions, AUTHENTICATOR_TYPES );
+
+      return SftpClientFactory.createConnection( rootName.getHostName(), rootName.getPort(),
+        UserAuthenticatorUtils.getData( authData, UserAuthenticationData.USERNAME,
+          UserAuthenticatorUtils.toChar( rootName.getUserName() ) ),
+        UserAuthenticatorUtils.getData( authData, UserAuthenticationData.PASSWORD,
+          UserAuthenticatorUtils.toChar( rootName.getPassword() ) ),
+        fileSystemOptions );
+    } catch ( final Exception e ) {
+      throw new FileSystemException( "vfs.provider.sftp/connect.error", rootName, e );
+    } finally {
+      UserAuthenticatorUtils.cleanup( authData );
+    }
+  }
+
   @Override
-  protected FileSystem doCreateFileSystem( FileName name, FileSystemOptions fileSystemOptions ) {
-    return new SftpFileSystemWindows( (GenericFileName) name, null, fileSystemOptions );
+  protected FileSystem doCreateFileSystem( FileName name, FileSystemOptions fileSystemOptions )
+    throws FileSystemException {
+    return new SftpFileSystemWindows(
+      (GenericFileName) name, createSession( (GenericFileName) name, fileSystemOptions ), fileSystemOptions );
   }
 
 }

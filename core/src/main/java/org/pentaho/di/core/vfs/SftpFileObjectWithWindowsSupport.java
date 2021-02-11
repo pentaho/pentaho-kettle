@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,9 @@ import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
 import org.apache.commons.vfs2.util.PosixPermissions;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +47,7 @@ class SftpFileObjectWithWindowsSupport extends SftpFileObject {
   private String path;
 
   SftpFileObjectWithWindowsSupport( AbstractFileName name, SftpFileSystemWindows fileSystem )
-          throws FileSystemException {
+    throws FileSystemException {
     super( name, fileSystem );
     this.path = name.getPath();
   }
@@ -62,9 +65,9 @@ class SftpFileObjectWithWindowsSupport extends SftpFileObject {
         String acl = filePermissions.get( group );
         if ( acl != null ) {
           return acl.contains( FULL_ACCESS ) || acl.contains( MODIFY_ACCESS )
-                  || acl.contains( READ_AND_EXECUTE_ACCESS ) || acl.contains( READ_ACCESS )
-                  || acl.contains( WRITE_ACCESS ) || acl.contains( WRITE_DATA_ADD_FILES_ACCESS )
-                  || acl.contains( READ_DATA_ADD_FILES_ACCESS );
+            || acl.contains( READ_AND_EXECUTE_ACCESS ) || acl.contains( READ_ACCESS )
+            || acl.contains( WRITE_ACCESS ) || acl.contains( WRITE_DATA_ADD_FILES_ACCESS )
+            || acl.contains( READ_DATA_ADD_FILES_ACCESS );
         }
       }
       return false;
@@ -84,7 +87,7 @@ class SftpFileObjectWithWindowsSupport extends SftpFileObject {
         String acl = filePermissions.get( group );
         if ( acl != null ) {
           return acl.contains( FULL_ACCESS ) || acl.contains( MODIFY_ACCESS )
-                  || acl.contains( WRITE_ACCESS ) || acl.contains( WRITE_DATA_ADD_FILES_ACCESS );
+            || acl.contains( WRITE_ACCESS ) || acl.contains( WRITE_DATA_ADD_FILES_ACCESS );
         }
       }
       return false;
@@ -117,11 +120,111 @@ class SftpFileObjectWithWindowsSupport extends SftpFileObject {
   public class PretendUserIsOwnerPosixPermissions extends PosixPermissions {
     public PretendUserIsOwnerPosixPermissions() {
       super( PosixPermissions.Type.UserReadable.getMask() + PosixPermissions.Type.UserWritable.getMask()
-        + PosixPermissions.Type.UserExecutable.getMask() + PosixPermissions.Type.GroupReadable.getMask()
-        + PosixPermissions.Type.GroupWritable.getMask() + PosixPermissions.Type.GroupExecutable.getMask()
-        + PosixPermissions.Type.OtherReadable.getMask() + PosixPermissions.Type.OtherWritable.getMask()
-        + PosixPermissions.Type.OtherExecutable.getMask(),
+          + PosixPermissions.Type.UserExecutable.getMask() + PosixPermissions.Type.GroupReadable.getMask()
+          + PosixPermissions.Type.GroupWritable.getMask() + PosixPermissions.Type.GroupExecutable.getMask()
+          + PosixPermissions.Type.OtherReadable.getMask() + PosixPermissions.Type.OtherWritable.getMask()
+          + PosixPermissions.Type.OtherExecutable.getMask(),
         true, true );
+    }
+  }
+
+  @Override protected InputStream doGetInputStream( int bufferSize ) throws Exception {
+    synchronized ( this.getFileSystem() ) {
+      return new CountedDelegatingInputStream( super.doGetInputStream( bufferSize ) );
+    }
+  }
+
+  @Override protected OutputStream doGetOutputStream( boolean bAppend ) throws Exception {
+    synchronized ( this.getFileSystem() ) {
+      return new CountedDelegatingOutputStream( super.doGetOutputStream( bAppend ) );
+    }
+  }
+
+  class CountedDelegatingInputStream extends InputStream {
+
+    InputStream delegate;
+
+    public CountedDelegatingInputStream( InputStream in ) {
+      ( (SftpFileSystemWindows) getAbstractFileSystem() ).sftpBufferOpened();
+      delegate = in;
+    }
+
+    public CountedDelegatingInputStream() {
+      super();
+    }
+
+    @Override public int read( byte[] b ) throws IOException {
+      return delegate.read( b );
+    }
+
+    @Override public int read( byte[] b, int off, int len ) throws IOException {
+      return delegate.read( b, off, len );
+    }
+
+    @Override public long skip( long n ) throws IOException {
+      return delegate.skip( n );
+    }
+
+    @Override public int available() throws IOException {
+      return delegate.available();
+    }
+
+    @Override public void close() throws IOException {
+      delegate.close();
+      ( (SftpFileSystemWindows) getAbstractFileSystem() ).sftpBufferOpened();
+    }
+
+    @Override public synchronized void mark( int readlimit ) {
+      delegate.mark( readlimit );
+    }
+
+    @Override public synchronized void reset() throws IOException {
+      delegate.reset();
+    }
+
+    @Override public boolean markSupported() {
+      return delegate.markSupported();
+    }
+
+    @Override
+    public int read() throws IOException {
+      return delegate.read();
+    }
+  }
+
+  class CountedDelegatingOutputStream extends OutputStream {
+
+    private OutputStream delegate;
+
+    public CountedDelegatingOutputStream() {
+      super();
+    }
+
+    public CountedDelegatingOutputStream( OutputStream out ) {
+      ( (SftpFileSystemWindows) getAbstractFileSystem() ).sftpBufferOpened();
+      delegate = out;
+    }
+
+    @Override
+    public void write( int b ) throws IOException {
+      delegate.write( b );
+    }
+
+    @Override public void write( byte[] b ) throws IOException {
+      delegate.write( b );
+    }
+
+    @Override public void write( byte[] b, int off, int len ) throws IOException {
+      delegate.write( b, off, len );
+    }
+
+    @Override public void flush() throws IOException {
+      delegate.flush();
+    }
+
+    @Override public void close() throws IOException {
+      delegate.close();
+      ( (SftpFileSystemWindows) getAbstractFileSystem() ).sftpBufferOpened();
     }
   }
 }

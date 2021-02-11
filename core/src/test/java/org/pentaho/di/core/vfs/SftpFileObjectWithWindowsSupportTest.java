@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.vfs;
 
+import com.jcraft.jsch.Session;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.GenericFileName;
@@ -84,7 +85,8 @@ public class SftpFileObjectWithWindowsSupportTest {
   private static FileObject getLinuxFileObject( boolean posixReadable, boolean posixWritable ) throws Exception {
     GenericFileName fileName = mock( GenericFileName.class );
     doReturn( PATH ).when( fileName ).getPath();
-    SftpFileSystemWindows sftpFileSystem = spy( new SftpFileSystemWindows( fileName, null, null ) );
+    Session session = mock( Session.class );
+    SftpFileSystemWindows sftpFileSystem = spy( new SftpFileSystemWindows( fileName, session, null ) );
     doReturn( false ).when( sftpFileSystem ).isRemoteHostWindows();
 
     int permissions = 0;
@@ -111,8 +113,9 @@ public class SftpFileObjectWithWindowsSupportTest {
   private static FileObject getWindowsFileObject( boolean windowsReadable, boolean windowsWritable )
       throws Exception {
     GenericFileName fileName = mock( GenericFileName.class );
+    Session session = mock( Session.class );
     doReturn( PATH ).when( fileName ).getPath();
-    SftpFileSystemWindows sftpFileSystem = spy( new SftpFileSystemWindows( fileName, null, null ) );
+    SftpFileSystemWindows sftpFileSystem = spy( new SftpFileSystemWindows( fileName, session, null ) );
     doReturn( true ).when( sftpFileSystem ).isRemoteHostWindows();
 
     List<String> groups = new ArrayList<>();
