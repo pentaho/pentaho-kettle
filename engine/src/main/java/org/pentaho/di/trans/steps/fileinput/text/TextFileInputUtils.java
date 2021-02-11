@@ -291,6 +291,14 @@ public class TextFileInputUtils {
   }
 
   public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                      int fileFormatType, StringBuilder line, String regex )
+    throws KettleFileException {
+
+    return getLine( log, reader, encodingType, fileFormatType, line, regex, 0 ).line;
+
+  }
+
+  public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
                                       int fileFormatType, StringBuilder line, String regex, String escapeChar )
     throws KettleFileException {
 
@@ -304,6 +312,12 @@ public class TextFileInputUtils {
    * on the second position how many lines from file were read to get a full line
    *
    */
+  public static final TextFileLine getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                            int fileFormatType, StringBuilder line, String regex, long lineNumberInFile )
+    throws KettleFileException {
+    return getLine( log, reader, encodingType, fileFormatType, line, regex, "", lineNumberInFile );
+  }
+
   public static final TextFileLine getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
                                       int fileFormatType, StringBuilder line, String regex, String escapeChar, long lineNumberInFile )
     throws KettleFileException {
@@ -937,6 +951,16 @@ public class TextFileInputUtils {
    *
    * @param text String to be evaluated
    * @param regexChar String regexChar
+   * @return pattern occurrences number
+   */
+  public static int checkPattern( String text, String regexChar ) {
+    return checkPattern( text, regexChar, "");
+  }
+  /**
+   * Finds a pattern within a String returning the occurrences number
+   *
+   * @param text String to be evaluated
+   * @param regexChar String regexChar
    * @param escapeCharacter String escapeCharacter, an empty string will be ignored
    * @return pattern occurrences number
    */
@@ -971,6 +995,12 @@ public class TextFileInputUtils {
    * Returns the line number in file
    *
    */
+
+  public static long skipLines( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                int fileFormatType, StringBuilder line, int nrLinesToSkip,
+                                String regex, long lineNumberInFile ) throws KettleFileException {
+    return skipLines( log, reader, encodingType, fileFormatType, line, nrLinesToSkip, regex, "", lineNumberInFile );
+  }
 
   public static long skipLines( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
                                 int fileFormatType, StringBuilder line, int nrLinesToSkip,
