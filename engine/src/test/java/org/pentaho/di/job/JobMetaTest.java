@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
@@ -56,6 +57,7 @@ import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.same;
@@ -90,6 +92,22 @@ public class JobMetaTest {
     jobMeta.setRepositoryDirectory( directoryJob );
     jobMeta.setName( JOB_META_NAME );
     jobMeta.setObjectRevision( objectRevision );
+  }
+
+  /**
+   * PDI-18655 - Variables.initializeVariablesFrom susceptible to NullPointerException
+   *
+   * @throws KettleException
+   */
+  @Test
+  public void testJobMetaInitialization() throws KettleException {
+    KettleEnvironment.init( false );
+    System.getProperties().put( "custom_property_boolean", true );
+    System.getProperties().put( "custom_property_string", "string" );
+
+    JobMeta jobMeta = new JobMeta();
+
+    assertNotNull( jobMeta );
   }
 
   @Test
