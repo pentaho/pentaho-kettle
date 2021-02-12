@@ -49,6 +49,7 @@ public class ImporterUtility {
   private JButton removeAllButton;
   private JButton executeButton;
   private JTextArea log;
+  private JTextArea extendedDescription;
   private XMLProcess xmlProcess;
   private JPanel mainPanel;
   private JFrame mainWindow;
@@ -60,7 +61,7 @@ public class ImporterUtility {
   public ImporterUtility() {
     mainWindow = new JFrame();
     xmlProcess = new XMLProcess();
-    mainWindow.setSize( 750, 500 );
+    mainWindow.setSize( 750, 700 );
     mainWindow.setTitle( "Hitachi Vantara - Update Jobs and Transformations for import into Data Flow Manager" );
     mainWindow.setLocationRelativeTo( null );
     mainWindow.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -95,7 +96,7 @@ public class ImporterUtility {
 
     mainPanel.add( toolBar, BorderLayout.NORTH );
 
-    JPanel centerPanel = new JPanel( new GridLayout( 2, 1 ) );
+    JPanel centerPanel = new JPanel( new GridLayout( 3, 1 ) );
     listModel = new DefaultListModel();
     listModel.addListDataListener( new ListDataListener() {
       public void intervalAdded( ListDataEvent e ) {
@@ -120,6 +121,15 @@ public class ImporterUtility {
     sourcesListPanel.add( new JScrollPane( sourcesList ), BorderLayout.CENTER );
     centerPanel.add( sourcesListPanel );
 
+    extendedDescription = new JTextArea( "#dataflow " );
+    JPanel extendedDescriptionPanel = new JPanel( new BorderLayout() );
+    extendedDescriptionPanel.setBorder( BorderFactory
+      .createTitledBorder( BorderFactory.createEtchedBorder(), "Extended Description (Tags must be separated by a blank space)",
+        TitledBorder.LEFT,
+        TitledBorder.TOP ) );
+    extendedDescriptionPanel.add( new JScrollPane( extendedDescription ), BorderLayout.CENTER );
+    centerPanel.add( extendedDescriptionPanel );
+
     log = new JTextArea();
     DefaultCaret caret = (DefaultCaret) log.getCaret();
     caret.setUpdatePolicy( DefaultCaret.ALWAYS_UPDATE );
@@ -127,8 +137,8 @@ public class ImporterUtility {
     logPanel.setBorder( BorderFactory
       .createTitledBorder( BorderFactory.createEtchedBorder(), "Log", TitledBorder.LEFT, TitledBorder.TOP ) );
     logPanel.add( new JScrollPane( log ), BorderLayout.CENTER );
-
     centerPanel.add( logPanel );
+
     mainPanel.add( centerPanel, BorderLayout.CENTER );
 
     JPanel southPanel = new JPanel( new BorderLayout() );
@@ -137,9 +147,15 @@ public class ImporterUtility {
     executeButton.setToolTipText( "Process Files" );
     executeButton.setEnabled( false );
     executeButton.addActionListener( e -> {
-      log.setText( xmlProcess.process( listModel.elements() ) );
-      JOptionPane
-        .showMessageDialog( mainPanel, xmlProcess.getCount() + " of " + listModel.size() + " files processed." );
+      if ( JOptionPane.showConfirmDialog( mainPanel,
+        "Extended Description content will be overwritten across all files. Do you wish to "
+          + "continue?",
+        "Warning", JOptionPane.YES_NO_OPTION ) == JOptionPane.YES_OPTION ) {
+        log.setText( xmlProcess.process( listModel.elements(), extendedDescription.getText().trim() ) );
+        JOptionPane
+          .showMessageDialog( mainPanel, xmlProcess.getCount() + " of " + listModel.size() + " files processed.",
+            "Files Processed", JOptionPane.INFORMATION_MESSAGE );
+      }
     } );
     southPanel.add( executeButton, BorderLayout.EAST );
     mainPanel.add( southPanel, BorderLayout.SOUTH );
