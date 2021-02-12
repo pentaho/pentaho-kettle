@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -128,7 +128,11 @@ public class Variables implements VariableSpace {
     // and then add all of them to properties variable.
     Set<String> systemPropertiesNames = System.getProperties().stringPropertyNames();
     for ( String key : systemPropertiesNames ) {
-      getProperties().put( key, System.getProperties().getProperty( key ) );
+      String value = System.getProperties().getProperty( key );
+      if ( value != null ) {
+        getProperties().put( key, value );
+      }
+
     }
 
     if ( parent != null ) {
