@@ -954,7 +954,7 @@ public class TextFileInputUtils {
    * @return pattern occurrences number
    */
   public static int checkPattern( String text, String regexChar ) {
-    return checkPattern( text, regexChar, "");
+    return checkPattern( text, regexChar, "" );
   }
   /**
    * Finds a pattern within a String returning the occurrences number
