@@ -42,9 +42,6 @@ import org.pentaho.reporting.libraries.formula.operators.OperatorFactory;
 import org.pentaho.reporting.libraries.formula.typing.Type;
 import org.pentaho.reporting.libraries.formula.typing.TypeRegistry;
 import org.pentaho.reporting.libraries.formula.typing.coretypes.AnyType;
-import org.pentaho.reporting.libraries.formula.typing.coretypes.DateTimeType;
-import org.pentaho.reporting.libraries.formula.typing.coretypes.LogicalType;
-import org.pentaho.reporting.libraries.formula.typing.coretypes.NumberType;
 import org.pentaho.reporting.libraries.formula.typing.coretypes.TextType;
 
 public class RowForumulaContext implements FormulaContext {
@@ -57,20 +54,16 @@ public class RowForumulaContext implements FormulaContext {
     this.formulaContext = new DefaultFormulaContext();
     this.rowMeta = row;
     this.rowData = null;
-    this.valueIndexMap = new Hashtable<String, Integer>();
+    this.valueIndexMap = new Hashtable<>();
   }
 
   public Type resolveReferenceType( Object name ) {
     if ( name instanceof String ) {
       ValueMetaInterface valueMeta = this.rowMeta.searchValueMeta( (String) name );
-      if ( valueMeta != null ) {
-        switch ( valueMeta.getType() ) {
-          case ValueMetaInterface.TYPE_STRING:
-            return TextType.TYPE;
-        }
+      if ( valueMeta != null && valueMeta.getType() == ValueMetaInterface.TYPE_STRING ) {
+        return TextType.TYPE;
       }
     }
-
     return AnyType.TYPE;
   }
 
