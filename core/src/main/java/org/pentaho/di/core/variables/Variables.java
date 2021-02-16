@@ -129,7 +129,7 @@ public class Variables implements VariableSpace {
     Set<String> systemPropertiesNames = System.getProperties().stringPropertyNames();
     for ( String key : systemPropertiesNames ) {
       String value = System.getProperties().getProperty( key );
-      if( value != null ) {
+      if ( value != null ) {
         getProperties().put( key, value );
       }
 
