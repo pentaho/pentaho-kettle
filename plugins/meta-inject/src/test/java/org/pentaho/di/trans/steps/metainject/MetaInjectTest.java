@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -618,5 +618,20 @@ public class MetaInjectTest {
 
     //Delete temporary file created by the test
     new File( filepath ).delete();
+  }
+
+  @Test
+  public void getRepositoryNotNullTest() {
+    metaInject.setRepository( repository );
+    //If repository is set in the base step (Local Execution) TransMeta will not be required to get the repository
+    metaInject.getRepository();
+    verify( metaInject, times( 0 ) ).getTransMeta();
+  }
+
+  @Test
+  public void getRepositoryNullTest() {
+    metaInject.getRepository();
+    //If repository is not set in the base step (Remote Executions/Scheduling) Need to get the repository from TransMeta
+    verify( metaInject, times( 1 ) ).getTransMeta();
   }
 }
