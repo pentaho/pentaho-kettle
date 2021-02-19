@@ -86,8 +86,8 @@ public interface CsvInputAwareStepDialog {
       new StringBuilder( 1000 ), enclosure, escapeCharacter );
     if ( !StringUtils.isBlank( line ) ) {
       if ( meta instanceof TextFileInputMeta ) {
-        fieldNames = TextFileInputUtils.convertLineToStrings( getLogChannel(), line, (TextFileInputMeta) meta,  delimiter, enclosure,
-          meta.getEscapeCharacter() );
+        fieldNames = TextFileInputUtils.guessStringsFromLine( getTransMeta().getParentVariableSpace(), getLogChannel(),
+          line, (TextFileInputMeta) meta,  delimiter, enclosure, meta.getEscapeCharacter() );
       } else {
         fieldNames = CsvInput.guessStringsFromLine( getLogChannel(), line, delimiter, enclosure,
           meta.getEscapeCharacter() );
