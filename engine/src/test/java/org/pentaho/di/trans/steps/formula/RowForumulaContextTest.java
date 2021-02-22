@@ -50,7 +50,49 @@ public class RowForumulaContextTest {
   }
 
   @Test
-  public void testResolveReferenceTypeWithMetaTypeNotString() {
+  public void testResolveReferenceTypeWithMetaTypeInteger() {
+    RowMetaInterface row = mock( RowMetaInterface.class );
+    ValueMetaInterface valueMeta = mock( ValueMetaInterface.class );
+    RowForumulaContext context = new RowForumulaContext( row );
+
+    String name = "name";
+    when( row.searchValueMeta( name ) ).thenReturn( valueMeta );
+    when( valueMeta.getType() ).thenReturn( ValueMetaInterface.TYPE_INTEGER );
+
+    Type type = context.resolveReferenceType( name );
+    assertTrue( type instanceof TextType );
+  }
+
+  @Test
+  public void testResolveReferenceTypeWithMetaTypeNumber() {
+    RowMetaInterface row = mock( RowMetaInterface.class );
+    ValueMetaInterface valueMeta = mock( ValueMetaInterface.class );
+    RowForumulaContext context = new RowForumulaContext( row );
+
+    String name = "name";
+    when( row.searchValueMeta( name ) ).thenReturn( valueMeta );
+    when( valueMeta.getType() ).thenReturn( ValueMetaInterface.TYPE_NUMBER );
+
+    Type type = context.resolveReferenceType( name );
+    assertTrue( type instanceof TextType );
+  }
+
+  @Test
+  public void testResolveReferenceTypeWithMetaTypeBigDecimal() {
+    RowMetaInterface row = mock( RowMetaInterface.class );
+    ValueMetaInterface valueMeta = mock( ValueMetaInterface.class );
+    RowForumulaContext context = new RowForumulaContext( row );
+
+    String name = "name";
+    when( row.searchValueMeta( name ) ).thenReturn( valueMeta );
+    when( valueMeta.getType() ).thenReturn( ValueMetaInterface.TYPE_BIGNUMBER );
+
+    Type type = context.resolveReferenceType( name );
+    assertTrue( type instanceof TextType );
+  }
+
+  @Test
+  public void testResolveReferenceTypeWithMetaTypeNotStringAndNotNumeric() {
     RowMetaInterface row = mock( RowMetaInterface.class );
     ValueMetaInterface valueMeta = mock( ValueMetaInterface.class );
     RowForumulaContext context = new RowForumulaContext( row );
