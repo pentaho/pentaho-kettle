@@ -176,7 +176,6 @@ public class RowForumulaContext implements FormulaContext {
         return valueMeta.getInteger( valueData );
       case ValueMetaInterface.TYPE_NUMBER:
         return valueMeta.getNumber( valueData );
-      // case ValueMetaInterface.TYPE_SERIALIZABLE: return valueMeta.(valueData);
       case ValueMetaInterface.TYPE_STRING:
         return valueMeta.getString( valueData );
       default:
@@ -198,7 +197,6 @@ public class RowForumulaContext implements FormulaContext {
         return Long.class;
       case ValueMetaInterface.TYPE_NUMBER:
         return Double.class;
-      // case Value.VALUE_TYPE_SERIALIZABLE: return Serializable.class;
       case ValueMetaInterface.TYPE_STRING:
         return String.class;
       default:
