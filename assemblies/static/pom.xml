@@ -11,11 +11,11 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <properties>
-    <encryption-support.version>9.1.0.1-360</encryption-support.version>
+    <encryption-support.version>1.0.1</encryption-support.version>
   </properties>
 
   <dependencies>

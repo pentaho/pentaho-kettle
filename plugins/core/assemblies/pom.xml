@@ -5,7 +5,7 @@
   <parent>
     <artifactId>pdi-core</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 

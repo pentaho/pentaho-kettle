@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>ms-access</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>ms-access-plugins-impl</artifactId>

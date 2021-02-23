@@ -5,23 +5,23 @@
 
   <artifactId>pdi-pur-plugin-core</artifactId>
   <packaging>jar</packaging>
-  <version>9.1.0.1-360</version>
+  <version>1.0.1</version>
 
   <name>PDI PUR Plugin Core</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <properties>
     <!-- Kettle dependencies -->
-    <pdi.version>9.1.0.1-360</pdi.version>
+    <pdi.version>1.0.1</pdi.version>
 
     <!-- Pentaho dependenceis -->
-    <platform.version>9.1.0.1-360</platform.version>
-    <pentaho-json.version>9.1.0.1-360</pentaho-json.version>
+    <platform.version>1.0.1</platform.version>
+    <pentaho-json.version>1.0.1</pentaho-json.version>
 
     <!-- Third party dependencies -->
     <webservices-api.version>2.3.1</webservices-api.version>

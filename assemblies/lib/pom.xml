@@ -11,24 +11,24 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <properties>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
 
-    <pentaho-json.version>9.1.0.1-360</pentaho-json.version>
-    <pentaho-hadoop-shims.version>9.1.2020.09.00-324</pentaho-hadoop-shims.version>
+    <pentaho-json.version>1.0.1</pentaho-json.version>
+    <pentaho-hadoop-shims.version>1.0.1</pentaho-hadoop-shims.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
-    <pdi-osgi-bridge.version>9.1.0.1-360</pdi-osgi-bridge.version>
-    <commons-database.version>9.1.0.1-360</commons-database.version>
-    <pentaho-registry.version>9.1.0.1-360</pentaho-registry.version>
-    <pentaho-metaverse.version>9.1.0.1-360</pentaho-metaverse.version>
-    <platform.version>9.1.0.1-360</platform.version>
-    <pentaho-reporting.version>9.1.0.1-360</pentaho-reporting.version>
-    <big-data-plugin.version>9.1.0.1-360</big-data-plugin.version>
-    <pentaho-hadoop-shims.version>9.1.2020.09.00-324</pentaho-hadoop-shims.version>
+    <pdi-osgi-bridge.version>1.0.1</pdi-osgi-bridge.version>
+    <commons-database.version>1.0.1</commons-database.version>
+    <pentaho-registry.version>1.0.1</pentaho-registry.version>
+    <pentaho-metaverse.version>1.0.1</pentaho-metaverse.version>
+    <platform.version>1.0.1</platform.version>
+    <pentaho-reporting.version>1.0.1</pentaho-reporting.version>
+    <big-data-plugin.version>1.0.1</big-data-plugin.version>
+    <pentaho-hadoop-shims.version>1.0.1</pentaho-hadoop-shims.version>
 
     <!-- third party -->
     <derbyclient.version>10.2.1.6</derbyclient.version>

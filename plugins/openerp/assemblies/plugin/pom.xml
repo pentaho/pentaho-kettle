@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>openerp-assemblies</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>kettle-openerp-plugin</artifactId>
-  <version>9.1.0.1-360</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
 
   <name>PDI Openerp Plugin Distribution</name>

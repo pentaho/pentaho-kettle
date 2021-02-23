@@ -7,7 +7,7 @@
     <parent>
         <artifactId>pentaho-repository-vfs-assemblies</artifactId>
         <groupId>org.pentaho.di.plugins</groupId>
-        <version>9.1.0.1-360</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>pentaho-repository-vfs-feature</artifactId>

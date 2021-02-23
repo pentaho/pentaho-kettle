@@ -6,16 +6,16 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>hl7</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>kettle-hl7-plugin-core</artifactId>
-  <version>9.1.0.1-360</version>
+  <version>1.0.1</version>
 
   <name>PDI HL7 Plugin Core</name>
 
   <properties>
-    <pdi.version>9.1.0.1-360</pdi.version>
+    <pdi.version>1.0.1</pdi.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>

@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>palo</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>palo-assemblies</artifactId>
-  <version>9.1.0.1-360</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
 
   <name>PDI Palo Plugin Assemblies</name>

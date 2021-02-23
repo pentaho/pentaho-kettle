@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>json</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>kettle-json-plugin-core</artifactId>
@@ -15,9 +15,9 @@
   <name>PDI Json Plugin Core</name>
 
   <properties>
-    <pdi.version>9.1.0.1-360</pdi.version>
-    <pentaho-metaverse.version>9.1.0.1-360</pentaho-metaverse.version>
-    <platform.version>9.1.0.1-360</platform.version>
+    <pdi.version>1.0.1</pdi.version>
+    <pentaho-metaverse.version>1.0.1</pentaho-metaverse.version>
+    <platform.version>1.0.1</platform.version>
     <commons.io.version>1.4</commons.io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>

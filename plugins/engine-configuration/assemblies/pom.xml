@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>engine-configuration-assemblies</artifactId>
-  <version>9.1.0.1-360</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>engine-configuration</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <name>PDI Engine Configuration Plugin Assemblies</name>

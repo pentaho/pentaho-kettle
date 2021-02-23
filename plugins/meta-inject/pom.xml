@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>meta-inject-plugin</artifactId>
-  <version>9.1.0.1-360</version>
+  <version>1.0.1</version>
   <packaging>bundle</packaging>
 
   <name>PDI Metadata Injection Plugin</name>
@@ -18,9 +18,9 @@
   <url>http://www.pentaho.com</url>
 
   <properties>
-    <pdi.version>9.1.0.1-360</pdi.version>
-    <pentaho-metaverse.version>9.1.0.1-360</pentaho-metaverse.version>
-    <platform.version>9.1.0.1-360</platform.version>
+    <pdi.version>1.0.1</pdi.version>
+    <pentaho-metaverse.version>1.0.1</pentaho-metaverse.version>
+    <platform.version>1.0.1</platform.version>
     <servlet-api.version>2.3</servlet-api.version>
     <mockito.version>1.10.19</mockito.version>
     <guava.version>17.0</guava.version>

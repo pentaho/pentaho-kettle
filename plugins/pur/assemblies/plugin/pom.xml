@@ -5,14 +5,14 @@
 
   <artifactId>pdi-pur-plugin</artifactId>
   <packaging>pom</packaging>
-  <version>9.1.0.1-360</version>
+  <version>1.0.1</version>
 
   <name>PDI PUR Plugin Distribution</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur-assemblies</artifactId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <dependencyManagement>

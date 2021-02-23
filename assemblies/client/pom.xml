@@ -11,16 +11,16 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <properties>
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
-    <ael.version>9.1.0.1-360</ael.version>
+    <ael.version>1.0.1</ael.version>
 
-    <pentaho-karaf.version>9.1.0.1-360</pentaho-karaf.version>
-    <pentaho-launcher.version>9.1.0.1-360</pentaho-launcher.version>
-    <oss-licenses.version>9.1.0.1-360</oss-licenses.version>
+    <pentaho-karaf.version>1.0.1</pentaho-karaf.version>
+    <pentaho-launcher.version>1.0.1</pentaho-launcher.version>
+    <oss-licenses.version>1.0.1</oss-licenses.version>
 
     <!-- swt -->
     <org.eclipse.swt.gtk.linux.x86.version>3.108.0</org.eclipse.swt.gtk.linux.x86.version>
@@ -30,10 +30,10 @@
     <org.eclipse.swt.cocoa.macosx.x86_64.version>4.6</org.eclipse.swt.cocoa.macosx.x86_64.version>
 
     <!-- Pentaho drivers kar file dependencies versions -->
-    <pentaho-hadoop-shims-cdh61.version>9.1.2020.09.00-324</pentaho-hadoop-shims-cdh61.version>
-    <pentaho-hadoop-shims-hdp30.version>9.1.2020.09.00-324</pentaho-hadoop-shims-hdp30.version>
-    <pentaho-hadoop-shims-emr521.version>9.1.2020.09.00-324</pentaho-hadoop-shims-emr521.version>
-    <pentaho-hadoop-shims-dataproc1421.version>9.1.2020.09.00-324</pentaho-hadoop-shims-dataproc1421.version>
+    <pentaho-hadoop-shims-cdh61.version>1.0.1</pentaho-hadoop-shims-cdh61.version>
+    <pentaho-hadoop-shims-hdp30.version>1.0.1</pentaho-hadoop-shims-hdp30.version>
+    <pentaho-hadoop-shims-emr521.version>1.0.1</pentaho-hadoop-shims-emr521.version>
+    <pentaho-hadoop-shims-dataproc1421.version>1.0.1</pentaho-hadoop-shims-dataproc1421.version>
   </properties>
 
   <dependencies>

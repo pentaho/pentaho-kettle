@@ -7,7 +7,7 @@
   <parent>
     <artifactId>drools</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>9.1.0.1-360</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>kettle-drools5-core</artifactId>
@@ -18,7 +18,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
 
-    <pdi.version>9.1.0.1-360</pdi.version>
+    <pdi.version>1.0.1</pdi.version>
     <drools.version>6.4.0.Final</drools.version>
     <mvel2.version>2.2.8.Final</mvel2.version>
     <org.eclipse.jdt>3.4.2.v_883_R34x</org.eclipse.jdt>
