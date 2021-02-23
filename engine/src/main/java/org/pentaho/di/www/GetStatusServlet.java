@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -216,20 +216,23 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
       for ( CarteObjectEntry entry : transEntries ) {
         Trans trans = getTransformationMap().getTransformation( entry );
-        String status = trans.getStatus();
-
-        SlaveServerTransStatus sstatus = new SlaveServerTransStatus( entry.getName(), entry.getId(), status );
-        sstatus.setLogDate( trans.getLogDate() );
-        sstatus.setPaused( trans.isPaused() );
-        serverStatus.getTransStatusList().add( sstatus );
+        if ( trans != null ) {
+          String status = trans.getStatus();
+          SlaveServerTransStatus sstatus = new SlaveServerTransStatus( entry.getName(), entry.getId(), status );
+          sstatus.setLogDate( trans.getLogDate() );
+          sstatus.setPaused( trans.isPaused() );
+          serverStatus.getTransStatusList().add( sstatus );
+        }
       }
 
       for ( CarteObjectEntry entry : jobEntries ) {
         Job job = getJobMap().getJob( entry );
-        String status = job.getStatus();
-        SlaveServerJobStatus jobStatus = new SlaveServerJobStatus( entry.getName(), entry.getId(), status );
-        jobStatus.setLogDate( job.getLogDate() );
-        serverStatus.getJobStatusList().add( jobStatus );
+        if ( job != null ) {
+          String status = job.getStatus();
+          SlaveServerJobStatus jobStatus = new SlaveServerJobStatus( entry.getName(), entry.getId(), status );
+          jobStatus.setLogDate( job.getLogDate() );
+          serverStatus.getJobStatusList().add( jobStatus );
+        }
       }
 
       try {
@@ -312,22 +315,29 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
             + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.LastLogTime" ) + "</th> </tr>" );
 
-        Comparator<CarteObjectEntry> transComparator = new Comparator<CarteObjectEntry>() {
-          @Override
-          public int compare( CarteObjectEntry o1, CarteObjectEntry o2 ) {
-            Trans t1 = getTransformationMap().getTransformation( o1 );
-            Trans t2 = getTransformationMap().getTransformation( o2 );
-            Date d1 = t1.getLogDate();
-            Date d2 = t2.getLogDate();
-            // if both transformations have last log date, desc sort by log date
-            if ( d1 != null && d2 != null ) {
-              int logDateCompare = d2.compareTo( d1 );
-              if ( logDateCompare != 0 ) {
-                return logDateCompare;
-              }
-            }
-            return o1.compareTo( o2 );
+        Comparator<CarteObjectEntry> transComparator = ( o1, o2 ) -> {
+          Trans t1 = getTransformationMap().getTransformation( o1 );
+          Trans t2 = getTransformationMap().getTransformation( o2 );
+          // If transformations are null because they were removed from the map, sort them to end of list
+          if ( t1 == null && t2 == null ) {
+            return 0;
           }
+          if ( t1 == null ) {
+            return 1;
+          }
+          if ( t2 == null ) {
+            return -1;
+          }
+          Date d1 = t1.getLogDate();
+          Date d2 = t2.getLogDate();
+          // if both transformations have last log date, desc sort by log date
+          if ( d1 != null && d2 != null ) {
+            int logDateCompare = d2.compareTo( d1 );
+            if ( logDateCompare != 0 ) {
+              return logDateCompare;
+            }
+          }
+          return o1.compareTo( o2 );
         };
 
         Collections.sort( transEntries, transComparator );
@@ -337,39 +347,44 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           String name = transEntries.get( i ).getName();
           String id = transEntries.get( i ).getId();
           Trans trans = getTransformationMap().getTransformation( transEntries.get( i ) );
-          String status = trans.getStatus();
-          String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
-          String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
-          evenRow = !evenRow; // flip
-          String firstColumn = i == 0 ? "cellTableFirstColumn" : "";
-          String lastColumn = i == transEntries.size() - 1 ? "cellTableLastColumn" : "";
-          out.print( "<tr onMouseEnter=\"mouseEnterFunction( this, '" + trClass + "' )\" "
+          if ( trans != null ) {
+            String status = trans.getStatus();
+            String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
+            String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
+            evenRow = !evenRow; // flip
+            String firstColumn = i == 0 ? "cellTableFirstColumn" : "";
+            String lastColumn = i == transEntries.size() - 1 ? "cellTableLastColumn" : "";
+            out.print( "<tr onMouseEnter=\"mouseEnterFunction( this, '" + trClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + trClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + trClass + "' )\" "
               + "id=\"cellTableRow_" + i + "\" class=\"" + trClass + "\">" );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableFirstCell_" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">" + name + "</td>" );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "id=\"cellTableFirstCell_" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">"
+              + name + "</td>" );
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
               + "id=\"cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">" + id + "</td>" );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
               + "id=\"cellTableCellStatus_" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
-          String dateStr = XMLHandler.date2string( trans.getLogDate() );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+            String dateStr = XMLHandler.date2string( trans.getLogDate() );
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
               + "id=\"cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">"
               + ( trans.getLogDate() == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) ) ) + "</td>" );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
-          out.print( "</tr>" );
+              + "id=\"cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">"
+              + ( trans.getLogDate() == null ? "-" : dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) )
+              + "</td>" );
+            out.print( "</tr>" );
+          }
         }
         out.print( "</table></table>" );
         out.print( "</div>" ); // end div
@@ -393,22 +408,29 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
             + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.LastLogTime" ) + "</th> </tr>" );
 
-        Comparator<CarteObjectEntry> jobComparator = new Comparator<CarteObjectEntry>() {
-          @Override
-          public int compare( CarteObjectEntry o1, CarteObjectEntry o2 ) {
-            Job t1 = getJobMap().getJob( o1 );
-            Job t2 = getJobMap().getJob( o2 );
-            Date d1 = t1.getLogDate();
-            Date d2 = t2.getLogDate();
-            // if both jobs have last log date, desc sort by log date
-            if ( d1 != null && d2 != null ) {
-              int logDateCompare = d2.compareTo( d1 );
-              if ( logDateCompare != 0 ) {
-                return logDateCompare;
-              }
-            }
-            return o1.compareTo( o2 );
+        Comparator<CarteObjectEntry> jobComparator = ( o1, o2 ) -> {
+          Job t1 = getJobMap().getJob( o1 );
+          Job t2 = getJobMap().getJob( o2 );
+          // If jobs are null because they were removed from the map, sort them to end of list
+          if ( t1 == null && t2 == null ) {
+            return 0;
           }
+          if ( t1 == null ) {
+            return 1;
+          }
+          if ( t2 == null ) {
+            return -1;
+          }
+          Date d1 = t1.getLogDate();
+          Date d2 = t2.getLogDate();
+          // if both jobs have last log date, desc sort by log date
+          if ( d1 != null && d2 != null ) {
+            int logDateCompare = d2.compareTo( d1 );
+            if ( logDateCompare != 0 ) {
+              return logDateCompare;
+            }
+          }
+          return o1.compareTo( o2 );
         };
 
         Collections.sort( jobEntries, jobComparator );
@@ -418,37 +440,41 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           String name = jobEntries.get( i ).getName();
           String id = jobEntries.get( i ).getId();
           Job job = getJobMap().getJob( jobEntries.get( i ) );
-          String status = job.getStatus();
-          String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
-          String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
-          evenRow = !evenRow; // flip
-          out.print( "<tr onMouseEnter=\"mouseEnterFunction( this, '" + trClass + "' )\" "
+          if ( job != null ) {
+            String status = job.getStatus();
+            String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
+            String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
+            evenRow = !evenRow; // flip
+            out.print( "<tr onMouseEnter=\"mouseEnterFunction( this, '" + trClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + trClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + trClass + "' )\" "
               + "id=\"j-cellTableRow_" + i + "\" class=\"cellTableCell " + trClass + "\">" );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableFirstCell_" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">" + name + "</a></td>" );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "id=\"j-cellTableFirstCell_" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">"
+              + name + "</a></td>" );
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass +  "\">" + id + "</td>" );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "id=\"j-cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">" + id + "</td>" );
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
               + "id=\"j-cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
-          String dateStr = XMLHandler.date2string( job.getLogDate() );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+            String dateStr = XMLHandler.date2string( job.getLogDate() );
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
               + "id=\"j-cellTableCell_" + i + "\" class=\"cellTableCell " + tdClass + "\">"
               + ( job.getLogDate() == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) ) ) + "</td>" );
-          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+            out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
-          out.print( "</tr>" );
+              + "id=\"j-cellTableLastCell_" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">"
+              + ( job.getLogDate() == null ? "-" : dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) ) + "</td>" );
+            out.print( "</tr>" );
+          }
         }
         out.print( "</table></table>" );
         out.print( "</div>" ); // end div
