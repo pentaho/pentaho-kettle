@@ -24,10 +24,10 @@ package org.pentaho.di.job;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
@@ -41,6 +41,7 @@ import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -71,6 +72,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class JobMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String JOB_META_NAME = "jobName";
 
@@ -101,12 +103,9 @@ public class JobMetaTest {
    */
   @Test
   public void testJobMetaInitialization() throws KettleException {
-    KettleEnvironment.init( false );
     System.getProperties().put( "custom_property_boolean", true );
     System.getProperties().put( "custom_property_string", "string" );
-
     JobMeta jobMeta = new JobMeta();
-
     assertNotNull( jobMeta );
   }
 
