@@ -47,6 +47,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.metastore.api.IMetaStore;
+import org.powermock.reflect.Whitebox;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -503,10 +504,19 @@ public class JobMetaTest {
   @Test
   public void isGatheringMetricsTest() {
     JobMeta jobMetaTest = new JobMeta();
-    jobMetaTest.setGatheringMetrics( true );
+    Whitebox.setInternalState( jobMetaTest, "gatheringMetrics", true );
     assertTrue( jobMetaTest.isGatheringMetrics() );
-    jobMetaTest.setGatheringMetrics( false );
+    Whitebox.setInternalState( jobMetaTest, "gatheringMetrics", false );
     assertFalse( jobMetaTest.isGatheringMetrics() );
+  }
+
+  @Test
+  public void setGatheringMetricsTest() {
+    JobMeta jobMetaTest = new JobMeta();
+    jobMetaTest.setGatheringMetrics( true );
+    assertTrue( Whitebox.getInternalState( jobMetaTest, "gatheringMetrics" ) );
+    jobMetaTest.setGatheringMetrics( false );
+    assertFalse( Whitebox.getInternalState( jobMetaTest, "gatheringMetrics" ) );
   }
 
 }
