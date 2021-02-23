@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TextFileInputUtilsTest {
   @Test
@@ -167,7 +169,7 @@ public class TextFileInputUtilsTest {
     StringBuilder linebuilder = new StringBuilder( "" );
     InputStream is = new ByteArrayInputStream( text.getBytes() );
     InputStreamReader isr = new InputStreamReader( is );
-    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
+    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", "", 0 );
     Assert.assertEquals( "\"firstLine\"", line.getLine() );
   }
 
@@ -177,7 +179,7 @@ public class TextFileInputUtilsTest {
     StringBuilder linebuilder = new StringBuilder( "" );
     InputStream is = new ByteArrayInputStream( text.getBytes() );
     InputStreamReader isr = new InputStreamReader( is );
-    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
+    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", "", 0 );
     Assert.assertEquals( text, line.getLine() );
   }
 
@@ -188,7 +190,7 @@ public class TextFileInputUtilsTest {
     StringBuilder linebuilder = new StringBuilder( "" );
     InputStream is = new ByteArrayInputStream( text.getBytes() );
     InputStreamReader isr = new InputStreamReader( is );
-    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", 0 );
+    TextFileLine line = TextFileInputUtils.getLine( Mockito.mock( LogChannelInterface.class ), isr, EncodingType.SINGLE, 1, linebuilder, "\"", "", 0 );
     Assert.assertEquals( "\"firstLine", line.getLine() );
     System.clearProperty( "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING" );
   }
@@ -199,9 +201,22 @@ public class TextFileInputUtilsTest {
     // https://docs.oracle.com/javase/tutorial/essential/regex/literals.html
     String metacharacters = "<([{\\^-=$!|]})?*+.>";
     for( int i = 0; i < metacharacters.length(); i++ ) {
-      int matches = TextFileInputUtils.checkPattern( metacharacters, String.valueOf( metacharacters.charAt( i ) ) );
+      int matches = TextFileInputUtils.checkPattern( metacharacters, String.valueOf( metacharacters.charAt( i ) ), null );
       Assert.assertEquals( 1, matches );
     }
+  }
+
+  @Test
+  public void testCheckPatternWithEscapeCharacter() {
+    List<String> texts = new ArrayList<>();
+    texts.add( "\"valueA\"|\"valueB\\\\\"|\"valueC\"" );
+    texts.add( "\"valueA\"|\"va\\\"lueB\"|\"valueC\"" );
+
+    for ( String text : texts ) {
+      int matches = TextFileInputUtils.checkPattern( text, "\"", "\\" );
+      Assert.assertEquals( 6, matches );
+    }
+
   }
 
 }

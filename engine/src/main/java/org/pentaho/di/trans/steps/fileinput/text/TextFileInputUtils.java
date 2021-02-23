@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -298,6 +298,14 @@ public class TextFileInputUtils {
 
   }
 
+  public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                      int fileFormatType, StringBuilder line, String regex, String escapeChar )
+    throws KettleFileException {
+
+    return getLine( log, reader, encodingType, fileFormatType, line, regex, escapeChar, 0 ).line;
+
+  }
+
   /**
    *
    * Returns in the first position a line; ;
@@ -305,7 +313,13 @@ public class TextFileInputUtils {
    *
    */
   public static final TextFileLine getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
-                                      int fileFormatType, StringBuilder line, String regex, long lineNumberInFile )
+                                            int fileFormatType, StringBuilder line, String regex, long lineNumberInFile )
+    throws KettleFileException {
+    return getLine( log, reader, encodingType, fileFormatType, line, regex, "", lineNumberInFile );
+  }
+
+  public static final TextFileLine getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                      int fileFormatType, StringBuilder line, String regex, String escapeChar, long lineNumberInFile )
     throws KettleFileException {
 
     String sline = getLine( log, reader, encodingType, fileFormatType, line );
@@ -325,7 +339,7 @@ public class TextFileInputUtils {
         We need to read the next line(s) to get the remaining data in this row.
         */
 
-      if ( checkPattern( sb.toString(), regex ) % 2 == 0 ) {
+      if ( checkPattern( sb.toString(), regex, escapeChar ) % 2 == 0 ) {
         return new TextFileLine( sb.toString(), lineNumberInFile, null );
       }
 
@@ -936,19 +950,38 @@ public class TextFileInputUtils {
    * Finds a pattern within a String returning the occurrences number
    *
    * @param text String to be evaluated
-   * @param regex String pattern
+   * @param regexChar String regexChar
    * @return pattern occurrences number
    */
-  public static int checkPattern( String text, String regex ) {
+  public static int checkPattern( String text, String regexChar ) {
+    return checkPattern( text, regexChar, "" );
+  }
+  /**
+   * Finds a pattern within a String returning the occurrences number
+   *
+   * @param text String to be evaluated
+   * @param regexChar String regexChar
+   * @param escapeCharacter String escapeCharacter, an empty string will be ignored
+   * @return pattern occurrences number
+   */
+  public static int checkPattern( String text, String regexChar, String escapeCharacter ) {
 
     int matches = 0;
 
-    if ( StringUtils.isBlank( text ) || StringUtils.isBlank( regex ) ) {
+    if ( StringUtils.isBlank( text ) || StringUtils.isBlank( regexChar ) ) {
       return matches;
     }
 
-    Pattern pattern = Pattern.compile( Pattern.quote( regex ) );
-    Matcher matcher = pattern.matcher( text );
+    String regex = ( StringUtils.isEmpty( escapeCharacter )
+                    ? ""
+                    : "(?<!" + Pattern.quote( escapeCharacter ) + ")" )
+      + Pattern.quote( regexChar );
+
+    // Remove even number of escaped characters to simplify proceeded escape character detection by regex
+    String textSanitized = text.replace( escapeCharacter + escapeCharacter, "" );
+
+    Pattern pattern = Pattern.compile( regex );
+    Matcher matcher = pattern.matcher( textSanitized );
 
     while ( matcher.find() ) {
       matches++;
@@ -966,12 +999,18 @@ public class TextFileInputUtils {
   public static long skipLines( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
                                 int fileFormatType, StringBuilder line, int nrLinesToSkip,
                                 String regex, long lineNumberInFile ) throws KettleFileException {
+    return skipLines( log, reader, encodingType, fileFormatType, line, nrLinesToSkip, regex, "", lineNumberInFile );
+  }
 
-    TextFileLine textFileLine = getLine( log, reader, encodingType, fileFormatType, line, regex, lineNumberInFile );
+  public static long skipLines( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
+                                int fileFormatType, StringBuilder line, int nrLinesToSkip,
+                                String regex, String escapeChar, long lineNumberInFile ) throws KettleFileException {
+
+    TextFileLine textFileLine = getLine( log, reader, encodingType, fileFormatType, line, regex, escapeChar, lineNumberInFile );
     int skipped = 1;
 
     while ( textFileLine.line != null && skipped < nrLinesToSkip ) {
-      textFileLine = getLine( log, reader, encodingType, fileFormatType, line, regex, textFileLine.lineNumber );
+      textFileLine = getLine( log, reader, encodingType, fileFormatType, line, regex, escapeChar, textFileLine.lineNumber );
       skipped++;
     }
 
