@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.reporting.libraries.formula.typing.Type;
 import org.pentaho.reporting.libraries.formula.typing.coretypes.AnyType;
+import org.pentaho.reporting.libraries.formula.typing.coretypes.NumberType;
 import org.pentaho.reporting.libraries.formula.typing.coretypes.TextType;
 
 import static org.junit.Assert.*;
@@ -60,7 +61,7 @@ public class RowForumulaContextTest {
     when( valueMeta.getType() ).thenReturn( ValueMetaInterface.TYPE_INTEGER );
 
     Type type = context.resolveReferenceType( name );
-    assertTrue( type instanceof TextType );
+    assertTrue( type instanceof NumberType );
   }
 
   @Test
@@ -74,7 +75,7 @@ public class RowForumulaContextTest {
     when( valueMeta.getType() ).thenReturn( ValueMetaInterface.TYPE_NUMBER );
 
     Type type = context.resolveReferenceType( name );
-    assertTrue( type instanceof TextType );
+    assertTrue( type instanceof NumberType );
   }
 
   @Test
@@ -88,7 +89,7 @@ public class RowForumulaContextTest {
     when( valueMeta.getType() ).thenReturn( ValueMetaInterface.TYPE_BIGNUMBER );
 
     Type type = context.resolveReferenceType( name );
-    assertTrue( type instanceof TextType );
+    assertTrue( type instanceof NumberType );
   }
 
   @Test
