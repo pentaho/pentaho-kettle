@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,6 +76,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
     job.injectVariables( jobConfiguration.getJobExecutionConfiguration().getVariables() );
     job.setArguments( jobExecutionConfiguration.getArgumentStrings() );
     job.setSocketRepository( getSocketRepository() );
+    job.setGatheringMetrics( jobExecutionConfiguration.isGatheringMetrics() );
 
     copyJobParameters( job, jobExecutionConfiguration.getParams() );
 

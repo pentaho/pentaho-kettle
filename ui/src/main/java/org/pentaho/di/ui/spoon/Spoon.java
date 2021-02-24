@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -844,6 +844,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     transDebugExecutionConfiguration.setGatheringMetrics( true );
 
     jobExecutionConfiguration = new JobExecutionConfiguration();
+    jobExecutionConfiguration.setGatheringMetrics( true );
 
     // Clean out every time we start, auto-loading etc, is not a good idea
     // If they are needed that often, set them in the kettle.properties file

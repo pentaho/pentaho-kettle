@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1160,6 +1160,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
           // inject the metaStore
           trans.setMetaStore( metaStore );
+
+          // set gathering metrics state
+          trans.setGatheringMetrics( parentJob.isGatheringMetrics() );
 
           // First get the root job
           //
