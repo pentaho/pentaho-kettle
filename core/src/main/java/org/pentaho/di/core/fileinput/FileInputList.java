@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.compressed.CompressedFileFileObject;
 import org.pentaho.di.core.Const;
@@ -323,8 +324,8 @@ public class FileInputList {
 
             private boolean hasAccess( FileObject fileObject ) {
               try {
-                return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
-              } catch ( Exception e ) {
+                return fileObject.isReadable();
+              } catch ( FileSystemException e ) {
                 // Something went wrong... well, let's assume "no access"!
                 return false;
               }
