@@ -24,6 +24,7 @@ package org.pentaho.di.core.database;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.mockito.BDDMockito.doReturn;
@@ -47,6 +48,7 @@ import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class MySQLDatabaseMetaTest {
   MySQLDatabaseMeta nativeMeta, odbcMeta;
@@ -406,5 +408,17 @@ public class MySQLDatabaseMetaTest {
     doReturn( 3 ).when( databaseMetaData ).getDriverMajorVersion();
 
     new MySQLDatabaseMeta().getLegacyColumnName( databaseMetaData, getResultSetMetaDataException(), 1 );
+  }
+
+  @Test
+  public void testGetDefaultOptions() {
+    MySQLDatabaseMeta mySQLDatabaseMeta = new MySQLDatabaseMeta();
+    mySQLDatabaseMeta.setPluginId( "foobar" );
+    Map<String, String> map =mySQLDatabaseMeta.getDefaultOptions();
+    assertNotNull( map );
+    assertEquals( 2, map.size() );
+    for ( String key : map.keySet() ) {
+      assert( key.startsWith( "foobar." ) );
+    }
   }
 }
