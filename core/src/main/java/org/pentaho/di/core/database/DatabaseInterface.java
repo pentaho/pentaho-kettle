@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1221,9 +1221,12 @@ public interface DatabaseInterface extends Cloneable {
    */
   String getCreateTableStatement();
 
-   /**
+  /**
    * Set default options for this database
+   *
+   * @deprecated No longer works with the UI, Use getDefaultOptions, instead
    */
+  @Deprecated
   default void addDefaultOptions() {
     // Default implementation does nothing
   }

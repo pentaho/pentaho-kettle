@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSetMetaData;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -501,8 +503,20 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public void addDefaultOptions() {
+    //These options don't appear to get into the UI since it creates the DatabaseMeta with a hard coded Oracle type.
+    // Since it is called from the constuctor, I'm leaving it in, in case some other placed creates it but this
+    //appears to be implemented code that serves no purpose anymore.  See getDefaultOptions below.
     addExtraOption( getPluginId(), "defaultFetchSize", "500" );
     addExtraOption( getPluginId(), "useCursorFetch", "true" );
+  }
+
+  @Override
+  public Map<String, String> getDefaultOptions() {
+    Map<String, String> defaultOptions = new HashMap<>();
+    defaultOptions.put( getPluginId() + ".defaultFetchSize", "500" );
+    defaultOptions.put( getPluginId() + ".useCursorFetch", "true" );
+
+    return defaultOptions;
   }
 
   @Override
