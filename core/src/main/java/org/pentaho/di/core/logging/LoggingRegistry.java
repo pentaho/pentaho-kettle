@@ -495,7 +495,7 @@ public class LoggingRegistry {
         logDebug( String.format( "LoggingRegistry Stats:%n   CutCount= %d | channelsNotToRemoveSize= %d | MapSize= %d | PurgeQueueSize= %d ",
           cutCount, channelsNotToRemove.size(), map.size(), registerPurgeQueue.size() ) );
 
-        if ( channelsNotToRemove.size() >= cutCount ) {
+        if ( channelsNotToRemove.size() >= (int) ( maxSize * .90 ) ) {
           // No point to attempt purge channels there's more "active" channels that can be safely removed.
           logError( "Logging Registry is unable to purge LogChannels to many active channels. Recommend increasing the LoggingRegistry Size!" );
         } else {
