@@ -979,8 +979,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         if ( path == null ) {
           return null;
         } else {
-          return path + ( path.endsWith( RepositoryFile.SEPARATOR ) ? "" : RepositoryFile.SEPARATOR ) + sanitizedName
-              + ( sanitizedName.endsWith( objectType.getExtension() ) ? "" : objectType.getExtension() );
+          String processedPath = path + ( path.endsWith( RepositoryFile.SEPARATOR ) ? "" : RepositoryFile.SEPARATOR ) + sanitizedName;
+
+          if ( System.getProperty( Const.KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION, "Y" ).equals( "Y" ) ) {
+            processedPath = processedPath + ( sanitizedName.endsWith( objectType.getExtension() ) ? "" : objectType.getExtension() );
+          }
+          else {
+            processedPath = processedPath + objectType.getExtension();
+          }
+
+          return processedPath;
         }
       }
       default: {
