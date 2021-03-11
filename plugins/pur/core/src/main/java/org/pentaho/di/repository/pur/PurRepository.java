@@ -983,8 +983,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
           if ( System.getProperty( Const.KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION, "Y" ).equals( "Y" ) ) {
             processedPath = processedPath + ( sanitizedName.endsWith( objectType.getExtension() ) ? "" : objectType.getExtension() );
-          }
-          else {
+          } else {
             processedPath = processedPath + objectType.getExtension();
           }
 
