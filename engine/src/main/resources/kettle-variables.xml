@@ -578,5 +578,16 @@
     <variable>SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE</variable>
     <default-value>org.osgi.framework.system.packages.extra</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>System wide flag to control behavior of the ExecuteTransformationStep and ExecuteJobStep when a file is specified.
+      This only is used when PDI is connected to repository.
+      Y - It is possible specify a file with the extension or not that is saved in repository
+      N - Should not be specified the extension, in other words, should be specified the name of file saved in repository.
+    </description>
+    <variable>KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION</variable>
+    <default-value>Y</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 
