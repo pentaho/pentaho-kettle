@@ -28,5 +28,5 @@ SET STARTTITLE="Encr"
 SET SPOON_CONSOLE=1
 set JAVA_TOOL_OPTIONS=
 rem 9.1.0.0-SNAPSHOT
-java -cp classes;lib/pentaho-encryption-support-${encryption-support.version}.jar org.pentaho.support.encryption.Encr %*
+java -cp classes;lib/pentaho-encryption-support-${encryption-support.version}.jar;lib/jetty-util-${jetty.version}.jar org.pentaho.support.encryption.Encr %*
 popd

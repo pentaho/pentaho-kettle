@@ -26,5 +26,5 @@ BASEDIR="`dirname $0`"
 cd "$BASEDIR"
 DIR="`pwd`"
 cd - > /dev/null
-java -cp "$DIR"/lib/pentaho-encryption-support-${encryption-support.version}.jar:"$DIR"/classes org.pentaho.support.encryption.Encr "$@"
+java -cp "$DIR"/lib/pentaho-encryption-support-${encryption-support.version}.jar:"$DIR"/lib/jetty-util-${jetty.version}.jar:"$DIR"/classes org.pentaho.support.encryption.Encr "$@"
 
