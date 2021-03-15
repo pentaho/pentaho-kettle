@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -151,7 +151,6 @@ public class KettleEnvironment {
 
         // Update Variables for LoggingRegistry
         LoggingRegistry.getInstance().updateFromProperties();
-        LoggingRegistry.getInstance().reset();
 
         // Initialize the Lifecycle Listeners
         //
@@ -251,6 +250,7 @@ public class KettleEnvironment {
   // Note - this is only called from test cases
   public static void reset() {
     KettleClientEnvironment.reset();
+    LoggingRegistry.getInstance().reset();
     initialized.set( null );
   }
 }
