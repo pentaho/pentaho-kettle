@@ -335,3 +335,6 @@ jobGroups:
 
      - jobID           :  platform-sdk
        scmUrl          :  https://github.com/pentaho/pentaho-sdk.git
+
+     - jobID           :  encryption-support
+       scmUrl          :  https://github.com/pentaho/pentaho-encryption-support.git
