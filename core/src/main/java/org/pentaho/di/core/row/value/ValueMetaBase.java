@@ -1886,7 +1886,11 @@ public class ValueMetaBase implements ValueMetaInterface {
         case TYPE_BINARY:
           switch ( storageType ) {
             case STORAGE_TYPE_NORMAL:
-              string = convertBinaryStringToString( (byte[]) object );
+              if ( object instanceof java.lang.String ) {
+                string = (String) object;
+              } else {
+                string = convertBinaryStringToString( (byte[]) object );
+              }
               break;
             case STORAGE_TYPE_BINARY_STRING:
               string = convertBinaryStringToString( (byte[]) object );
