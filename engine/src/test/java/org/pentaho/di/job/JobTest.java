@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,10 +36,11 @@ import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LoggingObjectLifecycleInterface;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -56,6 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
@@ -69,6 +71,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
+import static org.powermock.reflect.Whitebox.getMethods;
 import static org.powermock.reflect.Whitebox.setInternalState;
 
 public class JobTest {
@@ -111,7 +114,7 @@ public class JobTest {
 
     mockedJob.writeJobEntryLogInformation();
 
-    verify( mockedDataBase ).cleanupLogRecords( eq(jobEntryLogTable), anyString() );
+    verify( mockedDataBase ).cleanupLogRecords( eq( jobEntryLogTable ), anyString() );
   }
 
   @Test
@@ -313,10 +316,38 @@ public class JobTest {
 
       //Verify that the execute used the start point supplied with result supplied instead of starting from the start
       verify( mockJobEntryInterface, times( 1 ) ).execute( eq( startJobEntryResult ), eq( 0 ) );
-      verify( mockedJobEntrySpecial, times(0 ) ).execute( any( Result.class ), anyInt() );
+      verify( mockedJobEntrySpecial, times( 0 ) ).execute( any( Result.class ), anyInt() );
     } catch ( KettleException e ) {
       Assert.fail( "Could not execute job" );
     }
+  }
+
+  @Test
+  public void testJobLoggingObjectLifecycleInterface() {
+    Job job = new Job();
+
+    assertTrue( job instanceof LoggingObjectLifecycleInterface );
+    assertEquals( 2, getMethods( Job.class, "callBeforeLog", "callAfterLog" ).length );
+  }
+
+  @Test
+  public void testJobCallBeforeLog() {
+    Job job = new Job();
+    LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
+    setInternalState( job, "parentLoggingObject", parentLoggingObject );
+
+    job.callBeforeLog();
+    verify( parentLoggingObject, times( 1 ) ).callBeforeLog();
+  }
+
+  @Test
+  public void testJobCallAfterLog() {
+    Job job = new Job();
+    LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
+    setInternalState( job, "parentLoggingObject", parentLoggingObject );
+
+    job.callAfterLog();
+    verify( parentLoggingObject, times( 1 ) ).callAfterLog();
   }
 
 }

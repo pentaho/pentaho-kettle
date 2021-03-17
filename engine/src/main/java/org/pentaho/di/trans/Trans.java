@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -594,7 +594,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *
    * @param transMeta the transformation meta-data to use.
    */
-  public Trans( TransMeta transMeta ) {
+  public
+  Trans( TransMeta transMeta ) {
     this( transMeta, null );
   }
 
@@ -631,6 +632,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     this.log = new LogChannel( this, parent );
     this.logLevel = log.getLogLevel();
+    this.log.setHooks( this );
 
     if ( this.containerObjectId == null ) {
       this.containerObjectId = log.getContainerObjectId();
@@ -725,6 +727,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
 
       this.log = LogChannel.GENERAL;
+      this.log.setHooks( this );
 
       transMeta.initializeVariablesFrom( parent );
       initializeVariablesFrom( parent );
@@ -5770,6 +5773,19 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS;
+  }
+
+  @Override public void callBeforeLog() {
+    if ( parent != null ) {
+      parent.callBeforeLog();
+    }
+  }
+
+  @Override public void callAfterLog() {
+    if ( parent != null ) {
+      parent.callAfterLog();
+    }
+    this.logDate = new Date();
   }
 
 }

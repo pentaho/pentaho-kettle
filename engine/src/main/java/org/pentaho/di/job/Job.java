@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2337,5 +2337,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
 
     return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS;
+  }
+
+  @Override public void callBeforeLog() {
+    if ( parentLoggingObject != null ) {
+      parentLoggingObject.callBeforeLog();
+    }
+  }
+
+  @Override public void callAfterLog() {
+    if ( parentLoggingObject != null ) {
+      parentLoggingObject.callAfterLog();
+    }
+    this.logDate = new Date();
   }
 }
