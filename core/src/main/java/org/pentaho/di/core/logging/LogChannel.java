@@ -35,9 +35,12 @@ import org.pentaho.di.core.metrics.MetricsSnapshotType;
 
 public class LogChannel implements LogChannelInterface {
 
-  public static final LogChannelInterface GENERAL = new LogChannel( "General", false, false );
-  public static final LogChannelInterface METADATA = new LogChannel( "Metadata", false, false );
-  public static final LogChannelInterface UI = new LogChannel( "GUI", false, false );
+  public static final String GENERAL_SUBJECT = "General";
+  public static final String METADATA_SUBJECT = "Metadata";
+  public static final String GUI_SUBJECT = "GUI";
+  public static final LogChannelInterface GENERAL = new LogChannel( GENERAL_SUBJECT, false, false );
+  public static final LogChannelInterface METADATA = new LogChannel( METADATA_SUBJECT, false, false );
+  public static final LogChannelInterface UI = new LogChannel( GUI_SUBJECT, false, false );
 
   private static final String DEFAULT_LOG_SUBJECT = "Kettle";
 
@@ -110,7 +113,6 @@ public class LogChannel implements LogChannelInterface {
   }
 
   public void println( LogMessageInterface logMessage, LogLevel channelLogLevel ) {
-    callBeforeLog();
 
     String subject = logMessage.getSubject();
 
@@ -129,21 +131,19 @@ public class LogChannel implements LogChannelInterface {
       return; // "filter" not found in row: don't show!
     }
 
-    // Let's not keep everything...
-    //
-    if ( channelLogLevel.getLevel() >= logMessage.getLevel().getLevel() ) {
-      KettleLoggingEvent loggingEvent = new KettleLoggingEvent( logMessage, System.currentTimeMillis(),
-        logMessage.getLevel() );
-      KettleLogStore.getAppender().addLogggingEvent( loggingEvent );
+    callBeforeLog();
 
-      if ( this.fileWriter == null ) {
-        this.fileWriter = LoggingRegistry.getInstance().getLogChannelFileWriterBuffer( logChannelId );
-      }
+    KettleLoggingEvent loggingEvent = new KettleLoggingEvent( logMessage, System.currentTimeMillis(),
+      logMessage.getLevel() );
+    KettleLogStore.getAppender().addLogggingEvent( loggingEvent );
 
-      // add to buffer
-      if ( this.fileWriter != null ) {
-        this.fileWriter.addEvent( loggingEvent );
-      }
+    if ( this.fileWriter == null ) {
+      this.fileWriter = LoggingRegistry.getInstance().getLogChannelFileWriterBuffer( logChannelId );
+    }
+
+    // add to buffer
+    if ( this.fileWriter != null ) {
+      this.fileWriter.addEvent( loggingEvent );
     }
 
     callAfterLog();

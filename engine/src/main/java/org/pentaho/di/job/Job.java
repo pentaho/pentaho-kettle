@@ -243,6 +243,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     init();
     this.log = new LogChannel( this );
+    this.log.setHooks( this );
   }
 
   public void init() {
@@ -302,6 +303,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     this.log = new LogChannel( this, parentLogging );
     this.logLevel = log.getLogLevel();
+    this.log.setHooks( this );
 
     if ( this.containerObjectId == null ) {
       this.containerObjectId = log.getContainerObjectId();
@@ -312,6 +314,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     init();
     this.log = new LogChannel( this );
     this.logLevel = log.getLogLevel();
+    this.log.setHooks( this );
   }
 
   /**

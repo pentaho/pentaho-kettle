@@ -130,11 +130,11 @@ public interface LogChannelInterface {
 
 
   default void setHooks( LoggingObjectLifecycleInterface loggingObjectLifecycleInterface ) {
-    logBasic( "This implementation was not override, please implement in your own implementation" );
+    logBasic( "This implementation was not overridden, please implement in your own implementation" );
   }
 
   default LoggingObjectLifecycleInterface getHooks() {
-    logBasic( "This implementation was not override, please implement in your own implementation" );
+    logBasic( "This implementation was not overridden, please implement in your own implementation" );
     return null;
   }
 }
