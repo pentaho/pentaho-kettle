@@ -30,15 +30,6 @@
     <!-- swt -->
     <dependencySet>
       <includes>
-        <include>org.eclipse.swt:*.linux.x86</include>
-      </includes>
-      <outputDirectory>libswt/linux/x86</outputDirectory>
-      <outputFileNameMapping>swt.jar</outputFileNameMapping>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <dependencySet>
-      <includes>
         <include>org.eclipse.swt:*.linux.x86_64</include>
       </includes>
       <outputDirectory>libswt/linux/x86_64</outputDirectory>
@@ -48,16 +39,7 @@
     </dependencySet>
     <dependencySet>
       <includes>
-        <include>org.eclipse.swt:*.win32.x86</include>
-      </includes>
-      <outputDirectory>libswt/win32</outputDirectory>
-      <outputFileNameMapping>swt.jar</outputFileNameMapping>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>org.eclipse.swt:*.win32.x86_64</include>
+        <include>org.eclipse.platform:*.win32.x86_64</include>
       </includes>
       <outputDirectory>libswt/win64</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>
@@ -66,7 +48,7 @@
     </dependencySet>
     <dependencySet>
       <includes>
-        <include>org.eclipse.swt:*.macosx.x86_64</include>
+        <include>org.eclipse.platform:*.macosx.x86_64</include>
       </includes>
       <outputDirectory>libswt/osx64</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>

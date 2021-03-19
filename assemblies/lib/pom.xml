@@ -27,7 +27,7 @@
     <platform.version>8.2.0.5-625</platform.version>
     <pentaho-reporting.version>8.2.0.5-625</pentaho-reporting.version>
     <pentaho-hadoop-shims-api.version>8.2.2019.03.00-600</pentaho-hadoop-shims-api.version>
-
+    
     <!-- third party -->
     <org.apache.karaf.main.version>3.0.3</org.apache.karaf.main.version>
     <org.apache.karaf.util.version>3.0.3</org.apache.karaf.util.version>
@@ -63,6 +63,7 @@
     <databricks.version>4.0.0</databricks.version>
     <paho.version>1.2.0</paho.version>
     <bahir.version>2.1.1</bahir.version>
+    <jface.version>3.22.0</jface.version>
 
     <!-- Spring -->
     <springframework4.version>4.3.2.RELEASE</springframework4.version>
@@ -100,6 +101,10 @@
           <groupId>org.eclipse.swt</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>jface</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -111,7 +116,26 @@
           <groupId>org.eclipse.swt</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.equinox</groupId>
+          <artifactId>common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>jface</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+
+    <!-- Updated Eclipse Dependencies -->
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface</artifactId>
+      <version>${jface.version}</version>
     </dependency>
 
     <dependency>
