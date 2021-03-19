@@ -1896,7 +1896,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           for ( int i = 0; i < referencedObjects.length; i++ ) {
             final int index = i;
             String referencedObject = referencedObjects[i];
-            Action action = new Action( referencedObject, Action.AS_DROP_DOWN_MENU ) {
+            Action action = new Action( referencedObject, Action.AS_PUSH_BUTTON ) {
               public void run() {
                 loadReferencedObject( jobEntry, index );
               }
