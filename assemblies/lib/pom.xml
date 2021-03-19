@@ -27,7 +27,7 @@
     <platform.version>8.2.0.5-625</platform.version>
     <pentaho-reporting.version>8.2.0.5-625</pentaho-reporting.version>
     <pentaho-hadoop-shims-api.version>8.2.2019.03.00-600</pentaho-hadoop-shims-api.version>
-
+    
     <!-- third party -->
     <org.apache.karaf.main.version>3.0.3</org.apache.karaf.main.version>
     <org.apache.karaf.util.version>3.0.3</org.apache.karaf.util.version>
