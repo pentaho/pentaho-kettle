@@ -35,7 +35,7 @@
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
     <mockito.version>1.10.19</mockito.version>
     <powermock.version>1.6.3</powermock.version>
-    <pentaho-hadoop-shims-api.version>8.2.2019.03.00-600</pentaho-hadoop-shims-api.version>
+    <pentaho-hadoop-shims-api.version>8.2.2018.11.00-342</pentaho-hadoop-shims-api.version>
     <commons-configuration.revision>1.9</commons-configuration.revision>
   </properties>
 
