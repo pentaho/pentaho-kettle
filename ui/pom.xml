@@ -6,7 +6,7 @@
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-ui-swt</artifactId>
   <packaging>jar</packaging>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
 
   <name>PDI User Interface</name>
 
@@ -22,7 +22,7 @@
 
     <!-- Pentaho dependencies -->
     <pentaho-vfs-browser.version>8.2.0.5-625</pentaho-vfs-browser.version>
-    <pentaho-capability-manager.version>${project.version}</pentaho-capability-manager.version>
+    <pentaho-capability-manager.version>8.2.0.5-625</pentaho-capability-manager.version>
 
     <!-- Third-party dependencies -->
     <common.version>3.3.0-v20070426</common.version>
@@ -37,17 +37,17 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>8.2.0.5-625</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
+      <version>8.2.0.5-625</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-dbdialog</artifactId>
-      <version>${project.version}</version>
+      <version>8.2.0.5-625</version>
     </dependency>
 
     <!-- Pentaho dependencies -->
@@ -139,14 +139,14 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
+      <version>8.2.0.5-625</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>8.2.0.5-625</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

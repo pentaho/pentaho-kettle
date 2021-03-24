@@ -56,6 +56,7 @@
 
     <!-- Pentaho dependencies -->
     <commons-xul.version>8.2.0.5-625</commons-xul.version>
+    <commons-xul-swt.version>8.2.0.5-C249</commons-xul-swt.version>
     <pentaho-metastore.version>8.2.0.5-625</pentaho-metastore.version>
 
     <!-- Third-party dependencies -->
@@ -94,7 +95,7 @@
       <dependency>
         <groupId>org.pentaho</groupId>
         <artifactId>commons-xul-swt</artifactId>
-        <version>${commons-xul.version}</version>
+        <version>${commons-xul-swt.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.eclipse.swt</groupId>
