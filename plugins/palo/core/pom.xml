@@ -48,6 +48,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-palo-core</artifactId>
+      <version>${pentaho-palo-core.version}</version>
     </dependency>
 
   </dependencies>

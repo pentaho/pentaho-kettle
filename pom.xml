@@ -63,6 +63,7 @@
     <pentaho-vfs-browser.version>8.2.0.5-625</pentaho-vfs-browser.version>
     <pentaho-metaverse.version>8.2.0.5-625</pentaho-metaverse.version>
     <pentaho-versionchecker.version>8.2.0.5-625</pentaho-versionchecker.version>
+    <pentaho-palo-core.version>8.2.0.5-625</pentaho-palo-core.version>
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
