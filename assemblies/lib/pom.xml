@@ -4,15 +4,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-libs</artifactId>
-  <packaging>pom</packaging>
   <version>8.2.0.5-C249</version>
+  <packaging>pom</packaging>
+  
 
   <name>PDI Client Libraries</name>
 
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <properties>
@@ -75,7 +76,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>8.2.0.5-625</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
@@ -85,7 +86,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>8.2.0.5-625</version>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
@@ -96,7 +97,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-dbdialog</artifactId>
-      <version>8.2.0.5-625</version>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
@@ -111,7 +112,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>8.2.0.5-C249</version>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
