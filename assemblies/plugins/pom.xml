@@ -39,7 +39,7 @@
     <pdi-sap-plugin.version>8.2.0.5-625</pdi-sap-plugin.version>
     <big-data-plugin.version>8.2.0.5-625</big-data-plugin.version>
     <pentaho-cassandra-plugin.version>8.2.0.5-625</pentaho-cassandra-plugin.version>
-    <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
+    <pdi-teradata-tpt-plugin-package.version>${pdi-teradata-tpt-plugin.version}</pdi-teradata-tpt-plugin-package.version>
     <pdi-platform-utils-plugin.version>8.2.0.5-625</pdi-platform-utils-plugin.version>
     <vertica-bulkloader-plugin.version>8.2.0.5-625</vertica-bulkloader-plugin.version>
     <pdi-pur-plugin.version>8.2.0.5-625</pdi-pur-plugin.version>
