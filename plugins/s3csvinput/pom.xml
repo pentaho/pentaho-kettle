@@ -65,7 +65,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${pdi.version}</version>
+        <version>${pentaho-metastore.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>

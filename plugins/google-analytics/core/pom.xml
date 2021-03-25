@@ -70,7 +70,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${project.version}</version>
+      <version>${pentaho-metastore.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

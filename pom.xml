@@ -57,7 +57,12 @@
     <!-- Pentaho dependencies -->
     <commons-xul.version>8.2.0.5-625</commons-xul.version>
     <commons-xul-swt.version>8.2.0.5-C249</commons-xul-swt.version>
+    <platform.version>8.2.0.5-625</platform.version>
+    <pentaho-osgi-bundles.version>8.2.0.5-625</pentaho-osgi-bundles.version>
     <pentaho-metastore.version>8.2.0.5-625</pentaho-metastore.version>
+    <pentaho-vfs-browser.version>8.2.0.5-625</pentaho-vfs-browser.version>
+    <pentaho-metaverse.version>8.2.0.5-625</pentaho-metaverse.version>
+    <pentaho-versionchecker.version>8.2.0.5-625</pentaho-versionchecker.version>
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>

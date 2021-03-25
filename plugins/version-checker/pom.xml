@@ -61,7 +61,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-versionchecker</artifactId>
-        <version>${pdi.version}</version>
+        <version>${pentaho-versionchecker.version}</version>
       </dependency>
       <!--test dependency-->
       <dependency>
