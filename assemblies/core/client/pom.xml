@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <pdi-dataservice-client-plugin.version>${8.2.0.5-625}</pdi-dataservice-client-plugin.version>
+        <pdi-dataservice-client-plugin.version>8.2.0.5-625</pdi-dataservice-client-plugin.version>
         <ael.version>8.2.0.5-625</ael.version>
 
         <pentaho-karaf.version>8.2.0.5-625</pentaho-karaf.version>
