@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,7 +56,7 @@ public class InputsReader implements Iterable<InputStream> {
   }
 
   @Override
-  public Iterator<InputStream> iterator() {
+  public CloseableIterator<InputStream> iterator() {
     if ( !meta.isInFields() || meta.getIsAFile() ) {
       Iterator<FileObject> files;
       if ( meta.inputFiles.acceptingFilenames ) {
@@ -71,7 +71,7 @@ public class InputsReader implements Iterable<InputStream> {
       }
       return new FileContentIterator( files, data, errorHandler );
     } else if ( meta.isReadUrl() ) {
-      return  new URLContentIterator( errorHandler, getFieldIterator() );
+      return new URLContentIterator( errorHandler, getFieldIterator() );
     } else {
       // direct content
       return new ChainedIterator<InputStream, String>( getFieldIterator(), errorHandler ) {
@@ -99,10 +99,11 @@ public class InputsReader implements Iterable<InputStream> {
 
   }
 
-  protected abstract class ChainedIterator<T, C> implements Iterator<T> {
+  protected abstract class ChainedIterator<T, C> implements CloseableIterator<T> {
 
     protected Iterator<C> inner;
     protected ErrorHandler handler;
+    protected boolean closed = false;
 
     ChainedIterator( Iterator<C> inner, ErrorHandler handler ) {
       this.inner = inner;
@@ -111,17 +112,19 @@ public class InputsReader implements Iterable<InputStream> {
 
     @Override
     public boolean hasNext() {
-      return inner.hasNext();
+      return !isClosed() && inner.hasNext();
     }
 
     @Override
     public T next() {
-      try {
-        return tryNext();
-      } catch ( Exception e ) {
-        handler.error( e );
-        return null;
+      if ( !isClosed() ) {
+        try {
+          return tryNext();
+        } catch ( Exception e ) {
+          handler.error( e );
+        }
       }
+      return null;
     }
 
     @Override
@@ -130,6 +133,17 @@ public class InputsReader implements Iterable<InputStream> {
     }
 
     protected abstract T tryNext() throws Exception;
+
+    @Override
+    public void close() throws IOException {
+      closed = true;
+      inner = null;
+      handler = null;
+    }
+
+    public boolean isClosed() {
+      return closed || ( null == inner );
+    }
   }
 
   protected class FileContentIterator extends ChainedIterator<InputStream, FileObject> {
@@ -163,6 +177,23 @@ public class InputsReader implements Iterable<InputStream> {
       }
       return null;
     }
+
+    @Override
+    public void close() throws IOException {
+      if ( !isClosed() ) {
+        super.close();
+
+        if ( data.file != null ) {
+          try {
+            data.file.close();
+          } catch ( FileSystemException e ) {
+            handler.fileCloseError( data.file, e );
+          }
+
+          data.file = null;
+        }
+      }
+    }
   }
 
   protected class FileNamesIterator extends ChainedIterator<FileObject, String> {
@@ -187,7 +218,8 @@ public class InputsReader implements Iterable<InputStream> {
       super( urls, handler );
     }
 
-    @Override protected InputStream tryNext() throws Exception {
+    @Override
+    protected InputStream tryNext() throws Exception {
       if ( hasNext() ) {
         URL url = new URL( step.environmentSubstitute( inner.next() ) );
         URLConnection connection = url.openConnection();
@@ -197,7 +229,7 @@ public class InputsReader implements Iterable<InputStream> {
     }
   }
 
-  protected class StringFieldIterator implements Iterator<String> {
+  protected class StringFieldIterator implements CloseableIterator<String> {
 
     private RowIterator rowIter;
     private int idx;
@@ -224,7 +256,7 @@ public class InputsReader implements Iterable<InputStream> {
     }
   }
 
-  protected class RowIterator implements Iterator<Object[]> {
+  protected class RowIterator implements CloseableIterator<Object[]> {
 
     private StepInterface step;
     private ErrorHandler errorHandler;

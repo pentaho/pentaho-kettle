@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,25 +22,24 @@
 
 package org.pentaho.di.trans.steps.jsoninput.reader;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
-import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.SingleRowRowSet;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
-import org.pentaho.di.trans.steps.jsoninput.JsonInputMeta;
-import org.pentaho.di.trans.steps.jsoninput.exception.JsonInputException;
-
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
 import com.jayway.jsonpath.ReadContext;
+import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.SingleRowRowSet;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.jsoninput.JsonInput;
+import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
+import org.pentaho.di.trans.steps.jsoninput.JsonInputMeta;
+import org.pentaho.di.trans.steps.jsoninput.exception.JsonInputException;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Samatar
@@ -55,75 +54,50 @@ public class FastJsonReader implements IJsonReader {
   // see https://tools.ietf.org/html/rfc7159#section-8.1
   private static final String JSON_CHARSET = "UTF-8";
 
+  private static final JsonInputField[] ZERO_INPUT_FIELDS = new JsonInputField[ 0 ];
+
   private ReadContext jsonReadContext;
   private Configuration jsonConfiguration;
 
-  private boolean ignoreMissingPath;
-  private boolean defaultPathLeafToNull;
+  private final boolean defaultPathLeafToNull;
+  private final boolean ignoreMissingPath;
 
-  private JsonInputField[] fields;
-  private JsonPath[] paths = null;
+  private final JsonInput step;
+
+  private JsonInputField[] inputFields;
+  private JsonPath[] compiledJsonPaths = null;
   private LogChannelInterface log;
 
-  private static final Option[] DEFAULT_OPTIONS =
-    { Option.SUPPRESS_EXCEPTIONS, Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL };
+  public FastJsonReader( JsonInput step, JsonInputField[] inputFields, boolean defaultPathLeafToNull,
+                         boolean ignoreMissingPath, LogChannelInterface log ) throws KettleException {
 
-  protected FastJsonReader( LogChannelInterface log ) throws KettleException {
-    this.ignoreMissingPath = false;
-    this.defaultPathLeafToNull = true;
-    this.jsonConfiguration = Configuration.defaultConfiguration().addOptions( DEFAULT_OPTIONS );
+    this.defaultPathLeafToNull = defaultPathLeafToNull;
+    this.ignoreMissingPath = ignoreMissingPath;
+    this.step = step;
     this.log = log;
+
+    setJsonConfiguration( defaultPathLeafToNull );
+    setInputFields( inputFields );
   }
 
-  public FastJsonReader( JsonInputField[] fields, LogChannelInterface log ) throws KettleException {
-    this( log );
-    setFields( fields );
-  }
+  private void setJsonConfiguration( boolean defaultPathLeafToNull ) {
+    List<Option> options = new ArrayList<>();
+    options.add( Option.SUPPRESS_EXCEPTIONS );
+    options.add( Option.ALWAYS_RETURN_LIST );
 
-  public FastJsonReader( JsonInputField[] fields, boolean defaultPathLeafToNull, LogChannelInterface log )
-      throws KettleException {
-    this( fields, log );
-    setDefaultPathLeafToNull( defaultPathLeafToNull );
-  }
-
-  private void setDefaultPathLeafToNull( boolean value ) {
-    if ( value != this.defaultPathLeafToNull ) {
-      this.defaultPathLeafToNull = value;
-      if ( !this.defaultPathLeafToNull ) {
-        this.jsonConfiguration = deleteOptionFromConfiguration( this.jsonConfiguration, Option.DEFAULT_PATH_LEAF_TO_NULL );
-      }
+    if ( defaultPathLeafToNull ) {
+      options.add( Option.DEFAULT_PATH_LEAF_TO_NULL );
     }
+
+    this.jsonConfiguration = Configuration.defaultConfiguration().addOptions( options.toArray( new Option[ 0 ] ) );
   }
 
   public boolean isDefaultPathLeafToNull() {
     return defaultPathLeafToNull;
   }
 
-  private Configuration deleteOptionFromConfiguration( Configuration config, Option option ) {
-    Configuration currentConf = config;
-    if ( currentConf != null ) {
-      EnumSet<Option> currentOptions = EnumSet.noneOf( Option.class );
-      currentOptions.addAll( currentConf.getOptions() );
-      if ( currentOptions.remove( option ) ) {
-        if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "JsonReader.Debug.Configuration.Option.Delete", option ) );
-        }
-        currentConf = Configuration.defaultConfiguration().addOptions( currentOptions.toArray( new Option[currentOptions.size()] ) );
-      }
-    }
-    if ( log.isDebug() ) {
-      log.logDebug( BaseMessages.getString( PKG, "JsonReader.Debug.Configuration.Options", currentConf.getOptions() ) );
-    }
-    return currentConf;
-  }
-
-
   Configuration getJsonConfiguration() {
     return jsonConfiguration;
-  }
-
-  public void setIgnoreMissingPath( boolean value ) {
-    this.ignoreMissingPath = value;
   }
 
   private ParseContext getParseContext() {
@@ -132,15 +106,6 @@ public class FastJsonReader implements IJsonReader {
 
   private ReadContext getReadContext() {
     return jsonReadContext;
-  }
-
-  private static JsonPath[] compilePaths( JsonInputField[] fields ) {
-    JsonPath[] paths = new JsonPath[ fields.length ];
-    int i = 0;
-    for ( JsonInputField field : fields ) {
-      paths[ i++ ] = JsonPath.compile( field.getPath() );
-    }
-    return paths;
   }
 
   protected void readInput( InputStream is ) throws KettleException {
@@ -154,10 +119,18 @@ public class FastJsonReader implements IJsonReader {
     return this.ignoreMissingPath;
   }
 
-  @Override
-  public void setFields( JsonInputField[] fields ) throws KettleException {
-    this.fields = fields;
-    this.paths = compilePaths( fields );
+  public void setInputFields( JsonInputField[] inputFields ) {
+    if ( null != inputFields ) {
+      this.inputFields = inputFields;
+
+      compiledJsonPaths = new JsonPath[ inputFields.length ];
+      int i = 0;
+      for ( JsonInputField inputField : inputFields ) {
+        compiledJsonPaths[ i++ ] = JsonPath.compile( step.environmentSubstitute( inputField.getPath(), true ) );
+      }
+    } else {
+      this.inputFields = ZERO_INPUT_FIELDS;
+    }
   }
 
   @Override
@@ -176,7 +149,7 @@ public class FastJsonReader implements IJsonReader {
 
   private RowSet getEmptyResponse() {
     RowSet nullInputResponse = new SingleRowRowSet();
-    nullInputResponse.putRow( null, new Object[ fields.length ] );
+    nullInputResponse.putRow( null, new Object[ inputFields.length ] );
     nullInputResponse.setDone();
     return nullInputResponse;
   }
@@ -205,14 +178,14 @@ public class FastJsonReader implements IJsonReader {
           results.clear();
           return null;
         }
-        rowData = new Object[results.size()];
+        rowData = new Object[ results.size() ];
         for ( int col = 0; col < results.size(); col++ ) {
-          if ( results.get( col ).size() == 0 ) {
-            rowData[col] = null;
+          if ( results.get( col ).isEmpty() ) {
+            rowData[ col ] = null;
             continue;
           }
           Object val = results.get( col ).get( rowNbr );
-          rowData[col] = val;
+          rowData[ col ] = val;
           allNulls &= val == null;
         }
         rowNbr++;
@@ -240,20 +213,21 @@ public class FastJsonReader implements IJsonReader {
   private List<List<?>> evalCombinedResult() throws JsonInputException {
     int lastSize = -1;
     String prevPath = null;
-    List<List<?>> results = new ArrayList<>( paths.length );
+    List<List<?>> results = new ArrayList<>( compiledJsonPaths.length );
     int i = 0;
-    for ( JsonPath path : paths ) {
+    for ( JsonPath path : compiledJsonPaths ) {
       List<Object> result = getReadContext().read( path );
-      if ( result.size() != lastSize && lastSize > 0 & result.size() != 0 ) {
+      if ( result.size() != lastSize && lastSize > 0 && !result.isEmpty() ) {
         throw new JsonInputException( BaseMessages.getString(
-            PKG, "JsonInput.Error.BadStructure", result.size(), fields[i].getPath(), prevPath, lastSize ) );
+          PKG, "JsonInput.Error.BadStructure", result.size(), inputFields[ i ].getPath(), prevPath, lastSize ) );
       }
-      if ( !isIgnoreMissingPath() && ( isAllNull( result ) || result.size() == 0 ) ) {
-        throw new JsonInputException( BaseMessages.getString( PKG, "JsonReader.Error.CanNotFindPath", fields[i].getPath() ) );
+      if ( !isIgnoreMissingPath() && ( isAllNull( result ) || result.isEmpty() ) ) {
+        throw new JsonInputException(
+          BaseMessages.getString( PKG, "JsonReader.Error.CanNotFindPath", inputFields[ i ].getPath() ) );
       }
       results.add( result );
       lastSize = result.size();
-      prevPath = fields[i].getPath();
+      prevPath = inputFields[ i ].getPath();
       i++;
     }
     return results;
@@ -267,5 +241,4 @@ public class FastJsonReader implements IJsonReader {
     }
     return true;
   }
-
 }

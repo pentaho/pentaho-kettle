@@ -28,7 +28,6 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
-    <poi.version>4.1.1</poi.version>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
     <dependency.org.powermock.version>1.6.0</dependency.org.powermock.version>
   </properties>
@@ -140,19 +139,16 @@
       <artifactId>jackson-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-      <version>${poi.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>2.1.0</version>
     </dependency>
     <dependency>
       <groupId>net.minidev</groupId>
       <artifactId>json-smart</artifactId>
-      <version>2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>net.minidev</groupId>
+      <artifactId>asm</artifactId>
     </dependency>
 
     <!-- SWT is required to compile any version of any architecture will work -->
