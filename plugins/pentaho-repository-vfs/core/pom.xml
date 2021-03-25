@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>pentaho</groupId>
 			<artifactId>pentaho-platform-repository</artifactId>
-			<version>${pdi.version}</version>
+			<version>${platform.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

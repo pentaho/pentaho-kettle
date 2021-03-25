@@ -94,7 +94,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${pdi.version}</version>
+      <version>${pentaho-metastore.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -142,7 +142,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${project.version}</version>
+      <version>${platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -154,7 +154,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-i18n-bundle</artifactId>
-      <version>${project.version}</version>
+      <version>${pentaho-osgi-bundles.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -166,7 +166,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-i18n-webservice-bundle</artifactId>
-      <version>${project.version}</version>
+      <version>${pentaho-osgi-bundles.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -202,7 +202,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-vfs-browser</artifactId>
-      <version>${pdi.version}</version>
+      <version>${pentaho-vfs-browser.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

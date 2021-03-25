@@ -25,7 +25,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-versionchecker</artifactId>
-      <version>${project.version}</version>
+      <version>${pentaho-versionchecker.version}</version>
     </dependency>
   </dependencies>
 </project>

@@ -81,7 +81,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-metaverse-api</artifactId>
-        <version>${pdi.version}</version>
+        <version>${pentaho-metaverse.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
