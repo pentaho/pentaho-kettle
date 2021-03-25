@@ -16,7 +16,7 @@
   </parent>
 
   <properties>
-    <pdi-dataservice-driver-bundle.version>8.2.0.5-625</pdi-dataservice-driver-bundle.version>
+    <pdi-dataservice-client-plugin.version>8.2.0.5-625</pdi-dataservice-client-plugin.version>
     <ael.version>8.2.0.5-625</ael.version>
 
     <pentaho-karaf.version>8.2.0.5-625</pentaho-karaf.version>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pdi-dataservice-driver-bundle</artifactId>
-      <version>${pdi-dataservice-driver-bundle.version}</version>
+      <version>${pdi-dataservice-client-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
