@@ -62,7 +62,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-kettle-repository-locator-api</artifactId>
-      <version>${project.version}</version>
+      <version>${pentaho-osgi-bundles.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
