@@ -594,8 +594,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *
    * @param transMeta the transformation meta-data to use.
    */
-  public
-  Trans( TransMeta transMeta ) {
+  public Trans( TransMeta transMeta ) {
     this( transMeta, null );
   }
 
