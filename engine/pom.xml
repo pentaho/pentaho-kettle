@@ -27,6 +27,7 @@
     <pentaho-registry.version>8.2.0.5-625</pentaho-registry.version>
     <pentaho-connections.version>8.2.0.5-625</pentaho-connections.version>
     <mondrian.version>8.2.0.5-625</mondrian.version>
+    <platform.version>8.2.0.5-625</platform.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
