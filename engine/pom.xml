@@ -132,7 +132,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>${platform.version}</version>
     </dependency>
 
     <!-- Reporting dependencies -->
