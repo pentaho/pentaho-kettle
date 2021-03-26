@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -957,6 +957,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           job.setInternalKettleVariables( this );
           job.copyParametersFrom( jobMeta );
           job.setInteractive( parentJob.isInteractive() );
+          job.setGatheringMetrics( parentJob.isGatheringMetrics() );
           if ( job.isInteractive() ) {
             job.getJobEntryListeners().addAll( parentJob.getJobEntryListeners() );
           }
