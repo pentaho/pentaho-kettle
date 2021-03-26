@@ -32,7 +32,7 @@
       <includes>
         <include>org.eclipse.platform:*.linux.x86_64</include>
       </includes>
-      <outputDirectory>libswt/linux/x86_64</outputDirectory>
+      <outputDirectory>data-integration/libswt/linux/x86_64</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
@@ -41,7 +41,7 @@
       <includes>
         <include>org.eclipse.platform:*.win32.x86_64</include>
       </includes>
-      <outputDirectory>libswt/win64</outputDirectory>
+      <outputDirectory>data-integration/libswt/win64</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
@@ -50,7 +50,7 @@
       <includes>
         <include>org.eclipse.platform:*.macosx.x86_64</include>
       </includes>
-      <outputDirectory>libswt/osx64</outputDirectory>
+      <outputDirectory>data-integration/libswt/osx64</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
