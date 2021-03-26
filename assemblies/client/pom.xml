@@ -46,7 +46,7 @@
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>pdi-plugins</artifactId>
-      <version>${project.version}</version>
+      <version>8.2.0.5-625</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
@@ -58,7 +58,7 @@
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>pdi-static</artifactId>
-      <version>${project.version}</version>
+      <version>8.2.0.5-625</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
@@ -70,7 +70,7 @@
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>pdi-samples</artifactId>
-      <version>${project.version}</version>
+      <version>8.2.0.5-625</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
@@ -82,7 +82,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-karaf-assembly</artifactId>
-      <version>${pentaho-karaf.version}</version>
+      <version>8.2.0.5-625</version>
       <classifier>client</classifier>
       <type>zip</type>
       <exclusions>
