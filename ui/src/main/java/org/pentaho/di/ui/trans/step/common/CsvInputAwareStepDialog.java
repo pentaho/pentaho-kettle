@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 
 import java.io.InputStream;
@@ -76,15 +77,21 @@ public interface CsvInputAwareStepDialog {
     }
     final String delimiter = getTransMeta().environmentSubstitute( meta.getDelimiter() );
     final String enclosure = getTransMeta().environmentSubstitute( meta.getEnclosure() );
+    final String escapeCharacter = getTransMeta().environmentSubstitute( meta.getEscapeCharacter() );
 
     final EncodingType encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
 
     // Read a line of data to determine the number of rows...
     final String line = TextFileInputUtils.getLine( getLogChannel(), reader, encodingType, meta.getFileFormatTypeNr(),
-      new StringBuilder( 1000 ), enclosure );
+      new StringBuilder( 1000 ), enclosure, escapeCharacter );
     if ( !StringUtils.isBlank( line ) ) {
-      fieldNames = CsvInput.guessStringsFromLine( getLogChannel(), line, delimiter, enclosure,
-        meta.getEscapeCharacter() );
+      if ( meta instanceof TextFileInputMeta ) {
+        fieldNames = TextFileInputUtils.guessStringsFromLine( getTransMeta().getParentVariableSpace(), getLogChannel(),
+          line, (TextFileInputMeta) meta,  delimiter, enclosure, meta.getEscapeCharacter() );
+      } else {
+        fieldNames = CsvInput.guessStringsFromLine( getLogChannel(), line, delimiter, enclosure,
+          meta.getEscapeCharacter() );
+      }
     }
     if ( Utils.isEmpty( fieldNames ) ) {
       logError( BaseMessages.getString( "Dialog.ErrorGettingFields.Message" ) );
