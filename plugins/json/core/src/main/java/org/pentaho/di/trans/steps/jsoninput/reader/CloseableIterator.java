@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,16 @@
 
 package org.pentaho.di.trans.steps.jsoninput.reader;
 
-import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.exception.KettleException;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Iterator;
 
-import java.io.InputStream;
-
-public interface IJsonReader {
-
-  /**
-   * Parse compiled Json Paths into a rowset
-   */
-  RowSet parse( InputStream in ) throws KettleException;
+/**
+ * <p>An Iterator that may hold some resources and, as so, should be given the opportunity to release them when it's no
+ * longer needed.</p>
+ */
+public interface CloseableIterator<T> extends Iterator<T>, Closeable {
+  @Override
+  default void close() throws IOException {
+  }
 }
