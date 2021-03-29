@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -242,6 +242,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     init();
     this.log = new LogChannel( this );
+    this.log.setHooks( this );
   }
 
   public void init() {
@@ -301,6 +302,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     this.log = new LogChannel( this, parentLogging );
     this.logLevel = log.getLogLevel();
+    this.log.setHooks( this );
 
     if ( this.containerObjectId == null ) {
       this.containerObjectId = log.getContainerObjectId();
@@ -311,6 +313,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     init();
     this.log = new LogChannel( this );
     this.logLevel = log.getLogLevel();
+    this.log.setHooks( this );
   }
 
   /**
@@ -2327,5 +2330,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
 
     return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS;
+  }
+
+  @Override public void callBeforeLog() {
+    if ( parentLoggingObject != null ) {
+      parentLoggingObject.callBeforeLog();
+    }
+  }
+
+  @Override public void callAfterLog() {
+    if ( parentLoggingObject != null ) {
+      parentLoggingObject.callAfterLog();
+    }
+    this.logDate = new Date();
   }
 }
