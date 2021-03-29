@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.http;
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 
@@ -47,6 +48,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.reflect.Whitebox.setInternalState;
@@ -65,6 +68,9 @@ public class HTTPTest {
   private HTTPMeta meta = mock( HTTPMeta.class );
   private HTTP http = mock( HTTP.class );
 
+  private HttpClientManager manager = mock( HttpClientManager.class );
+  private CloseableHttpClient client = mock( CloseableHttpClient.class );
+
   private final String DATA = "This is the description, there's some HTML here, like &lt;strong&gt;this&lt;/strong&gt;. "
     + "Sometimes this text is another language that might contain these characters:\n"
     + "&lt;p&gt;é, è, ô, ç, à, ê, â.&lt;/p&gt; They can, of course, come in uppercase as well: &lt;p&gt;É, È Ô, Ç, À,"
@@ -74,14 +80,12 @@ public class HTTPTest {
   public void setup() throws Exception {
     HttpClientManager.HttpClientBuilderFacade builder = mock( HttpClientManager.HttpClientBuilderFacade.class );
 
-    HttpClientManager manager = mock( HttpClientManager.class );
     doReturn( builder ).when( manager ).createBuilder();
 
-    CloseableHttpClient client = mock( CloseableHttpClient.class );
     doReturn( client ).when( builder ).build();
 
     CloseableHttpResponse response = mock( CloseableHttpResponse.class );
-    doReturn( response ).when( client ).execute( any( HttpGet.class ) );
+    doReturn( response ).when( client ).execute( any( HttpGet.class ), any( HttpClientContext.class ) );
 
     BasicHttpEntity entity = new BasicHttpEntity();
     entity.setContent( new ByteArrayInputStream( DATA.getBytes() ) );
@@ -116,5 +120,12 @@ public class HTTPTest {
   public void callHttpServiceWithoutEncoding() throws Exception {
     doReturn( null ).when( meta ).getEncoding();
     assertNotEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[0] );
+  }
+
+  @Test
+  public void testCallHttpServiceWasCalledWithContext() throws Exception {
+    doReturn( null ).when( meta ).getEncoding();
+    http.callHttpService( rmi, new Object[] { 0 } );
+    verify( client, times( 1 ) ).execute( any( HttpGet.class ), any( HttpClientContext.class ) );
   }
 }
