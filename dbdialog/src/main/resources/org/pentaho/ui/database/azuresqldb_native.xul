@@ -17,6 +17,7 @@
                 <menuitem label="SQL Server Authentication"/>
                 <menuitem label="Azure Active Directory - Universal With MFA"/>
                 <menuitem label="Azure Active Directory - Password"/>
+                <menuitem label="Azure Active Directory - Integrated"/>
             </menupopup>
         </menulist>
         <label id="username-label" value="${DatabaseDialog.label.Username}" />

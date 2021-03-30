@@ -970,10 +970,14 @@ public class DataHandler extends AbstractXulEventHandler {
     onPoolingCheck();
     onClusterCheck();
     enableAzureSqlDBEncryption();
+    setAzureSqlDBAuthRelatedFieldsVisible();
   }
 
   public void setAzureSqlDBAuthRelatedFieldsVisible() {
-    passwordBox.setDisabled( azureSqlDBJdbcAuthMethod != null && "Azure Active Directory - Universal With MFA".equals( azureSqlDBJdbcAuthMethod.getValue() ) );
+    passwordBox.setDisabled( azureSqlDBJdbcAuthMethod != null &&
+        ( "Azure Active Directory - Universal With MFA".equals( azureSqlDBJdbcAuthMethod.getValue() ) ||
+            "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) ) );
+    userNameBox.setDisabled( azureSqlDBJdbcAuthMethod != null && "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) );
   }
 
   public void enableAzureSqlDBEncryption() {
