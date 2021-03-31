@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+
+import java.io.FileInputStream;
+import java.net.URI;
+import org.apache.commons.io.IOUtils;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -478,9 +482,17 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         }
       } else {
         if ( insertScript ) {
-          tempFile = KettleVFS.createTempFile( "kettle", "shell", System.getProperty( "java.io.tmpdir" ), this );
-          fileObject = createTemporaryShellFile( tempFile, realScript );
+          realScript = environmentSubstitute( script );
+        } else {
+          String realFilename = environmentSubstitute( getFilename() );
+          URI uri = new URI( realFilename );
+          realFilename = uri.getPath();
+          try ( FileInputStream fis = new FileInputStream( realFilename ) ) {
+            realScript = IOUtils.toString( fis, "UTF-8" );
+          }
         }
+        tempFile = KettleVFS.createTempFile( "kettle", "shell", System.getProperty( "java.io.tmpdir" ), this );
+        fileObject = createTemporaryShellFile( tempFile, realScript );
         base = new String[] { KettleVFS.getFilename( fileObject ) };
       }
 
