@@ -41,6 +41,7 @@ public class AzureSqlDataBaseMeta extends MSSQLServerDatabaseMeta {
   public static final String SQL_AUTHENTICATION = "SQL Server Authentication";
   public static final String ACTIVE_DIRECTORY_PASSWORD = "Azure Active Directory - Password";
   public static final String ACTIVE_DIRECTORY_MFA = "Azure Active Directory - Universal With MFA";
+  public static final String ACTIVE_DIRECTORY_INTEGRATED = "Azure Active Directory - Integrated";
 
 
   @Override
@@ -63,6 +64,8 @@ public class AzureSqlDataBaseMeta extends MSSQLServerDatabaseMeta {
       return url + "authentication=ActiveDirectoryPassword;";
     } else if ( ACTIVE_DIRECTORY_MFA.equals( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
       return url + "authentication=ActiveDirectoryInteractive;";
+    } else if ( ACTIVE_DIRECTORY_INTEGRATED.equals( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
+      return url + "Authentication=ActiveDirectoryIntegrated;";
     } else {
       return url;
     }
