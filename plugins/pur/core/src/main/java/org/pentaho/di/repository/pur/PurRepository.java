@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2010-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2010-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -326,15 +326,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       this.jobDelegate = new JobDelegate( this, pur );
     } finally {
       if ( connected ) {
-        if ( log.isBasic() ) {
-          log.logBasic( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
+        if ( log.isDetailed() ) {
+          log.logDetailed( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
         }
         metaStore = new PurRepositoryMetaStore( this );
         // Create the default Pentaho namespace if it does not exist
         try {
           metaStore.createNamespace( PentahoDefaults.NAMESPACE );
-          if ( log.isBasic() ) {
-            log.logBasic( BaseMessages
+          if ( log.isDetailed() ) {
+            log.logDetailed( BaseMessages
               .getString( PKG, "PurRepositoryMetastore.NamespaceCreateSuccess.Message", PentahoDefaults.NAMESPACE ) );
           }
         } catch ( MetaStoreNamespaceExistsException e ) {
@@ -347,8 +347,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             e );
         }
 
-        if ( log.isBasic() ) {
-          log.logBasic( BaseMessages.getString( PKG, "PurRepository.ConnectSuccess.Message" ) );
+        if ( log.isDetailed() ) {
+          log.logDetailed( BaseMessages.getString( PKG, "PurRepository.ConnectSuccess.Message" ) );
         }
       }
     }
