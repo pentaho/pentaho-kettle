@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-core</artifactId>
-  <version>8.3.0.0-SNAPSHOT</version>
+  <version>8.3.0.22-1223</version>
   <packaging>jar</packaging>
 
   <name>PDI Core</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>8.3.0.0-SNAPSHOT</version>
+    <version>8.3.0.22-1223</version>
   </parent>
 
   <properties>

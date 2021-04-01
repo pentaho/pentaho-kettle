@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.3.0.0-SNAPSHOT</version>
+    <version>8.3.0.22-1223</version>
   </parent>
 
   <artifactId>drools</artifactId>
