@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,7 @@ public class RepositoryDialog extends ThinDialog {
   private static final String LOGIN_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Login.Title" );
   private static final String LOGIN_WEB_CLIENT_PATH = "#/connect";
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
+  private static final String LOCALHOST = "127.0.0.1";
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
 
 
@@ -145,6 +146,6 @@ public class RepositoryDialog extends ThinDialog {
   }
 
   private static String getRepoURL( String path ) {
-    return "http://localhost:" + getOsgiServicePort() + getClientPath() + path;
+    return "http://" + LOCALHOST + ":" + getOsgiServicePort() + getClientPath() + path;
   }
 }
