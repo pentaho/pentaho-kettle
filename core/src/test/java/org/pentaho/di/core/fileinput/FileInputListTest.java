@@ -29,9 +29,12 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.variables.VariableSpace;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,6 +73,37 @@ public class FileInputListTest {
     assertEquals( 2, result.length );
     assertEquals( sFileA, result[ 0 ] );
     assertEquals( sFileB, result[ 1 ] );
+  }
+
+  @Test
+  public void testSpecialCharsInFileNames() throws IOException {
+    String fileNameWithSpaces = "file name with spaces";
+    String fileNameWithPercents = "file%name%with%percents";
+    String fileNameWithHash = "file#name#with#hashes";
+    String fileNameWithGt = "file>name>with>greaterthan";
+    String fileNameWithEverything = "file1%23name#with>everything%%";
+    tempFolder.newFile( fileNameWithSpaces );
+    tempFolder.newFile( fileNameWithPercents );
+    tempFolder.newFile( fileNameWithHash );
+    tempFolder.newFile( fileNameWithGt );
+    tempFolder.newFile( fileNameWithEverything );
+
+    VariableSpace spaceMock = mock( VariableSpace.class );
+    when( spaceMock.environmentSubstitute( any( String[].class ) ) ).thenAnswer(
+      (Answer<String[]>) invocationOnMock -> (String[]) invocationOnMock.getArguments()[ 0 ] );
+
+    String[] folderNameList = { tempFolder.getRoot().getPath() };
+    String[] emptyStringArray = { "" };
+
+    boolean[] fileRequiredList = { true };
+    String[] paths = FileInputList.createFilePathList( spaceMock, folderNameList, emptyStringArray, emptyStringArray, emptyStringArray, fileRequiredList );
+    List<String> pathList = Arrays.asList( paths );
+    assertTrue( "File with spaces not found", pathList.stream().anyMatch( p -> p.endsWith( fileNameWithSpaces ) ) );
+    assertTrue( "File with percents not found", pathList.stream().anyMatch( p -> p.endsWith( fileNameWithPercents ) ) );
+    assertTrue( "File with hashes not found", pathList.stream().anyMatch( p -> p.endsWith( fileNameWithHash ) ) );
+    assertTrue( "File with greater than not found", pathList.stream().anyMatch( p -> p.endsWith( fileNameWithGt ) ) );
+    assertTrue( "File with everything not found", pathList.stream().anyMatch( p -> p.endsWith( fileNameWithEverything ) ) );
+    assertEquals( "Path array wrong size",  5, paths.length );
   }
 
   @Test
