@@ -70,7 +70,7 @@ public class AzureSqlDataBaseMetaTest {
     dbMeta.addAttribute( IS_ALWAYS_ENCRYPTION_ENABLED, "true" );
     dbMeta.addAttribute( CLIENT_ID, "dummy" );
     dbMeta.addAttribute( CLIENT_SECRET_KEY, "xxxxx" );
-    String expectedUrl = "jdbc:sqlserver://abc.database.windows.net:1433;database=AzureDB;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;columnEncryptionSetting=Enabled;keyVaultProviderClientId=dummy;keyVaultProviderClientKey=xxxxx;";
+    String expectedUrl = "jdbc:sqlserver://abc.database.windows.net:1433;database=AzureDB;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;columnEncryptionSetting=Enabled;";
     String actualUrl = dbMeta.getURL( "abc.database.windows.net", "1433", "AzureDB" );
     assertEquals( expectedUrl, actualUrl );
   }

@@ -21,11 +21,17 @@
  ******************************************************************************/
 package org.pentaho.di.core.database;
 
+import com.microsoft.sqlserver.jdbc.SQLServerColumnEncryptionAzureKeyVaultProvider;
+import com.microsoft.sqlserver.jdbc.SQLServerColumnEncryptionKeyStoreProvider;
+import com.microsoft.sqlserver.jdbc.SQLServerConnection;
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author patitapaban19
@@ -43,6 +49,27 @@ public class AzureSqlDataBaseMeta extends MSSQLServerDatabaseMeta {
   public static final String ACTIVE_DIRECTORY_MFA = "Azure Active Directory - Universal With MFA";
   public static final String ACTIVE_DIRECTORY_INTEGRATED = "Azure Active Directory - Integrated";
 
+  /**
+   * Registering the ColumnEncryptionKeyStoreProviders once when the instance of the class created,
+   * else will get duplicate registration error.
+   */
+  {
+    if ( getAttribute( IS_ALWAYS_ENCRYPTION_ENABLED, "" ).equals( "true" ) ) {
+      String clientID = getAttribute( CLIENT_ID, "" );
+      String clientKey = getAttribute( CLIENT_SECRET_KEY, "" );
+      SQLServerColumnEncryptionAzureKeyVaultProvider akvProvider = null;
+      try {
+        akvProvider = new SQLServerColumnEncryptionAzureKeyVaultProvider(clientID, clientKey);
+        Map<String, SQLServerColumnEncryptionKeyStoreProvider> keyStoreMap = new HashMap<>();
+        keyStoreMap.put(akvProvider.getName(), akvProvider);
+        SQLServerConnection.registerColumnEncryptionKeyStoreProviders(keyStoreMap);
+      } catch (SQLServerException throwables) {
+        throwables.printStackTrace();
+      }
+    }
+
+  }
+
 
   @Override
   public int[] getAccessTypeList() {
@@ -58,7 +85,7 @@ public class AzureSqlDataBaseMeta extends MSSQLServerDatabaseMeta {
   public String getURL( String hostname, String port, String databaseName ) {
     String url = "jdbc:sqlserver://" + hostname + ":" + port + ";database=" + databaseName + ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
     if ( getAttribute( IS_ALWAYS_ENCRYPTION_ENABLED, "" ).equals( "true" ) ) {
-      url += "columnEncryptionSetting=Enabled;keyVaultProviderClientId=" + getAttribute( CLIENT_ID, "" ) + ";keyVaultProviderClientKey=" + getAttribute( CLIENT_SECRET_KEY, "" ) + ";";
+      url += "columnEncryptionSetting=Enabled;";
     }
     if ( ACTIVE_DIRECTORY_PASSWORD.equals( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
       return url + "authentication=ActiveDirectoryPassword;";
