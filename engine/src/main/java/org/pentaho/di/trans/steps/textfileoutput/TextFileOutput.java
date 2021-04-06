@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -444,7 +444,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     Object[] row = getRow(); // This also waits for a row to be finished.
 
-    if ( row != null  && first ) {
+    if ( row != null && first ) {
       data.inputRowMeta = getInputRowMeta();
       data.outputRowMeta = data.inputRowMeta.clone();
     }
@@ -497,9 +497,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             data.writer.write( data.binarySeparator );
           }
 
-          ValueMetaInterface v = rowMeta.getValueMeta( data.fieldnrs[i] );
-          Object valueData = r[data.fieldnrs[i]];
-          writeField( v, valueData, data.binaryNullValue[i] );
+          ValueMetaInterface v = getMetaWithFieldOptions( rowMeta, i );
+          Object valueData = r[ data.fieldnrs[ i ] ];
+          writeField( v, valueData, data.binaryNullValue[ i ] );
         }
         data.writer.write( data.binaryNewline );
       }
@@ -509,6 +509,33 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     } catch ( Exception e ) {
       throw new KettleStepException( "Error writing line", e );
     }
+  }
+
+  private ValueMetaInterface getMetaWithFieldOptions( RowMetaInterface rowMeta, int fieldNumber ) {
+    ValueMetaInterface v = rowMeta.getValueMeta( data.fieldnrs[ fieldNumber ] );
+
+    if ( v != null ) {
+      v = v.clone();
+      TextFileField field = meta.getOutputFields()[ fieldNumber ];
+      v.setLength( field.getLength() );
+      v.setPrecision( field.getPrecision() );
+      if ( !Utils.isEmpty( field.getFormat() ) ) {
+        v.setConversionMask( field.getFormat() );
+      }
+      v.setDecimalSymbol( field.getDecimalSymbol() );
+      v.setGroupingSymbol( field.getGroupingSymbol() );
+      v.setCurrencySymbol( field.getCurrencySymbol() );
+      v.setTrimType( field.getTrimType() );
+      if ( !Utils.isEmpty( meta.getEncoding() ) ) {
+        v.setStringEncoding( meta.getEncoding() );
+      }
+
+      // enable output padding by default to be compatible with v2.5.x
+      //
+      v.setOutputPaddingEnabled( true );
+    }
+
+    return v;
   }
 
   private byte[] formatField( ValueMetaInterface v, Object valueData ) throws KettleValueException {

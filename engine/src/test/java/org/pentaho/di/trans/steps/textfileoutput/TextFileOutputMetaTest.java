@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -176,32 +176,6 @@ public class TextFileOutputMetaTest {
     assertEquals( 2, meta.getSplitEvery( varSpace ) );
     fileName = meta.buildFilename( "foo", "txt2", varSpace, 0, null, 5, false, meta );
     assertEquals( "foo_5.txt2", fileName );
-  }
-
-  @Test
-  public void testGetFields() throws KettleStepException {
-    TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
-
-    TextFileField textFileField = mock( TextFileField.class );
-    ValueMetaInterface valueMetaInterface = mock( ValueMetaInterface.class );
-    RowMetaInterface row = mock( RowMetaInterface.class );
-    String name = new String();
-    RowMetaInterface[] info = new RowMetaInterface[] {};
-    StepMeta nextStep = mock( StepMeta.class );
-    VariableSpace space = mock( VariableSpace.class );
-    Repository repository = mock( Repository.class );
-    IMetaStore metaStore = mock( IMetaStore.class );
-
-    TextFileField[] outputFields = new TextFileField[] { textFileField };
-    setInternalState( textFileOutputMeta, "outputFields", outputFields );
-
-    String textFileFieldFormat = UUID.randomUUID().toString();
-    when( textFileField.getFormat() ).thenReturn( textFileFieldFormat );
-    when( row.searchValueMeta( anyString() ) ).thenReturn( valueMetaInterface );
-
-    textFileOutputMeta.getFields( row, name, info, nextStep, space, repository, metaStore );
-
-    verify( valueMetaInterface, times( 1 ) ).setConversionMask( textFileFieldFormat );
   }
 
   public static class TextFileFieldLoadSaveValidator implements FieldLoadSaveValidator<TextFileField> {
