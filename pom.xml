@@ -55,7 +55,7 @@
     <license.licenseName>apache_v2</license.licenseName>
 
     <!-- Pentaho dependencies -->
-    <commons-xul.version>8.2.0.5-625</commons-xul.version>
+    <commons-xul.version>8.2.0.5-C249</commons-xul.version>
     <commons-xul-swt.version>8.2.0.5-C249</commons-xul-swt.version>
     <platform.version>8.2.0.5-625</platform.version>
     <pentaho-osgi-bundles.version>8.2.0.5-625</pentaho-osgi-bundles.version>

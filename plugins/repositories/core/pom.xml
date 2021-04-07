@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>repositories-plugin-core</artifactId>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
   <packaging>bundle</packaging>
 
   <name>PDI Repositories Plugin Core</name>
@@ -12,11 +12,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>repositories</artifactId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <properties>
-    <pdi.version>8.2.0.5-625</pdi.version>
+    <pdi.version>8.2.0.5-C249</pdi.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <mockito-all.version>1.9.5</mockito-all.version>
     <karaf.version>3.0.3</karaf.version>

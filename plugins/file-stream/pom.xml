@@ -29,7 +29,7 @@
   </parent>
 
   <artifactId>file-stream</artifactId>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
   <packaging>bundle</packaging>
 
   <name>file-stream Bundle</name>
@@ -53,7 +53,7 @@
   </repositories>
 
   <properties>
-    <pdi.version>8.2.0.5-625</pdi.version>
+    <pdi.version>8.2.0.5-C249</pdi.version>
     <target.jdk.version>1.8</target.jdk.version>
     <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
     <junit.version>4.12</junit.version>

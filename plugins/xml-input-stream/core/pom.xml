@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>xml-input-stream</artifactId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
 
   <artifactId>pdi-xml-input-stream-plugin-core</artifactId>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
   <packaging>jar</packaging>
 
   <name>PDI XML Input Stream Plugin Core</name>

@@ -5,7 +5,7 @@
 
   <groupId>org.pentaho</groupId>
   <artifactId>pdi-engine-api</artifactId>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
   <packaging>bundle</packaging>
 
   <name>PDI Engine API</name>
@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi-engine-ext</artifactId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <properties>
