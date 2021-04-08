@@ -11,7 +11,7 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <properties>
@@ -27,22 +27,22 @@
     <kettle-openerp-plugin.version>${project.version}</kettle-openerp-plugin.version>
     <kettle-palo-plugin.version>${project.version}</kettle-palo-plugin.version>
     <kettle5-log4j-plugin.version>${project.version}</kettle5-log4j-plugin.version>
-    <pdi-google-analytics-plugin.version>8.2.0.5-625</pdi-google-analytics-plugin.version>
-    <pdi-salesforce-plugin.version>8.2.0.5-625</pdi-salesforce-plugin.version>
+    <pdi-google-analytics-plugin.version>8.2.0.5-C249</pdi-google-analytics-plugin.version>
+    <pdi-salesforce-plugin.version>8.2.0.5-C249</pdi-salesforce-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
-    <pdi-xml-plugin.version>8.2.0.5-625</pdi-xml-plugin.version>
-    <pdi-json-plugin.version>8.2.0.5-625</pdi-json-plugin.version>
-    <pdi-sap-plugin.version>8.2.0.5-625</pdi-sap-plugin.version>
-    <big-data-plugin.version>8.2.0.5-625</big-data-plugin.version>
-    <pentaho-cassandra-plugin.version>8.2.0.5-625</pentaho-cassandra-plugin.version>
+    <pdi-xml-plugin.version>8.2.0.5-C249</pdi-xml-plugin.version>
+    <pdi-json-plugin.version>8.2.0.5-C249</pdi-json-plugin.version>
+    <pdi-sap-plugin.version>8.2.0.5-C249</pdi-sap-plugin.version>
+    <big-data-plugin.version>8.2.0.5-C249</big-data-plugin.version>
+    <pentaho-cassandra-plugin.version>8.2.0.5-C249</pentaho-cassandra-plugin.version>
     <pdi-teradata-tpt-plugin-package.version>${pdi-teradata-tpt-plugin.version}</pdi-teradata-tpt-plugin-package.version>
-    <pdi-platform-utils-plugin.version>8.2.0.5-625</pdi-platform-utils-plugin.version>
-    <vertica-bulkloader-plugin.version>8.2.0.5-625</vertica-bulkloader-plugin.version>
-    <pdi-pur-plugin.version>8.2.0.5-625</pdi-pur-plugin.version>
+    <pdi-platform-utils-plugin.version>8.2.0.5-C249</pdi-platform-utils-plugin.version>
+    <vertica-bulkloader-plugin.version>8.2.0.5-C249</vertica-bulkloader-plugin.version>
+    <pdi-pur-plugin.version>8.2.0.5-C249</pdi-pur-plugin.version>
   </properties>
 
   <dependencies>

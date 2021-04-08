@@ -6,17 +6,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>aggregate-rows-assemblies</artifactId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <artifactId>aggregate-rows-plugin</artifactId>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
   <packaging>pom</packaging>
 
   <name>PDI Aggregate Rows Plugin Distribution</name>
 
   <properties>
-    <project.revision>8.2.0.5-625</project.revision>
+    <project.revision>8.2.0.5-C249</project.revision>
   </properties>
 
   <dependencies>

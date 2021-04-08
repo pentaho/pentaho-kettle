@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>sap</artifactId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <artifactId>kettle-sap-plugin-core</artifactId>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
   <packaging>jar</packaging>
 
   <name>PDI SAP Plugin Core</name>

@@ -17,17 +17,17 @@
   </parent>
 
   <properties>
-    <pdi-engine-spark.version>8.2.0.5-625</pdi-engine-spark.version>
+    <pdi-engine-spark.version>8.2.0.5-C249</pdi-engine-spark.version>
     <rxjava.version>2.0.4</rxjava.version>
 
-    <pentaho-json.version>8.2.0.5-625</pentaho-json.version>
-    <pdi-spark-driver.version>8.2.0.5-625</pdi-spark-driver.version>
-    <pdi-osgi-bridge.version>8.2.0.5-625</pdi-osgi-bridge.version>
-    <commons-database.version>8.2.0.5-625</commons-database.version>
-    <pentaho-registry.version>8.2.0.5-625</pentaho-registry.version>
-    <pentaho-metaverse.version>8.2.0.5-625</pentaho-metaverse.version>
-    <platform.version>8.2.0.5-625</platform.version>
-    <pentaho-reporting.version>8.2.0.5-625</pentaho-reporting.version>
+    <pentaho-json.version>8.2.0.5-C249</pentaho-json.version>
+    <pdi-spark-driver.version>8.2.0.5-C249</pdi-spark-driver.version>
+    <pdi-osgi-bridge.version>8.2.0.5-C249</pdi-osgi-bridge.version>
+    <commons-database.version>8.2.0.5-C249</commons-database.version>
+    <pentaho-registry.version>8.2.0.5-C249</pentaho-registry.version>
+    <pentaho-metaverse.version>8.2.0.5-C249</pentaho-metaverse.version>
+    <platform.version>8.2.0.5-C249</platform.version>
+    <pentaho-reporting.version>8.2.0.5-C249</pentaho-reporting.version>
     <pentaho-hadoop-shims-api.version>8.2.2018.11.00-342</pentaho-hadoop-shims-api.version>
     
     <!-- third party -->
@@ -76,7 +76,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>8.2.0.5-625</version>
+      <version>8.2.0.5-C249</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
@@ -86,7 +86,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>8.2.0.5-625</version>
+      <version>8.2.0.5-C249</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
@@ -97,7 +97,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-dbdialog</artifactId>
-      <version>8.2.0.5-625</version>
+      <version>8.2.0.5-C249</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>

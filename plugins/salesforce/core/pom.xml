@@ -7,7 +7,7 @@
   <parent>
     <artifactId>salesforce</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <artifactId>pdi-salesforce-core</artifactId>
@@ -18,7 +18,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
 
-    <pdi.version>8.2.0.5-625</pdi.version>
+    <pdi.version>8.2.0.5-C249</pdi.version>
     <com.force.api.version>41.0.0</com.force.api.version>
   </properties>
 

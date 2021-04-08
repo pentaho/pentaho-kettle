@@ -6,17 +6,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>elasticsearch-bulk-insert</artifactId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <artifactId>elasticsearch-bulk-insert-core</artifactId>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
 
   <name>PDI Elasticsearch Bulk Insert Plugin Core</name>
   <description>Elasticsearch Bulk Insert Plugin</description>
 
   <properties>
-    <pdi.version>8.2.0.5-625</pdi.version>
+    <pdi.version>8.2.0.5-C249</pdi.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>

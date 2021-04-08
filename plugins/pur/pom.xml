@@ -5,14 +5,14 @@
 
   <artifactId>pur</artifactId>
   <packaging>pom</packaging>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
 
   <name>PDI PUR Plugin</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
   <modules>
