@@ -407,7 +407,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
     private boolean hasAccess( FileObject fileObject ) {
       try {
-        return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
+        return fileObject.isReadable();
       } catch ( Exception e ) {
         // Something went wrong... well, let's assume "no access"!
         return false;
