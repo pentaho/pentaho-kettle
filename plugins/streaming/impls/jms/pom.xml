@@ -23,14 +23,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pentaho-streaming-jms-plugin</artifactId>
-  <version>8.2.0.5-625</version>
+  <version>8.2.0.5-C249</version>
   <packaging>bundle</packaging>
 
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-streaming-impls</artifactId>
-    <version>8.2.0.5-625</version>
+    <version>8.2.0.5-C249</version>
   </parent>
 
 
@@ -41,7 +41,7 @@
   <properties>
     <ibmmq.version>9.0.4.0</ibmmq.version>
     <jms.version>2.0.1</jms.version>
-    <pdi.version>8.2.0.5-625</pdi.version>
+    <pdi.version>8.2.0.5-C249</pdi.version>
     <rxjava.version>2.0.4</rxjava.version>
     <artemis.version>2.5.0</artemis.version>
   </properties>

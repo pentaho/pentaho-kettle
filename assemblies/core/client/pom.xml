@@ -12,16 +12,16 @@
     <parent>
         <groupId>org.pentaho.di</groupId>
         <artifactId>pdi-core</artifactId>
-        <version>8.2.0.5-625</version>
+        <version>8.2.0.5-C249</version>
     </parent>
 
     <properties>
-        <pdi-dataservice-client-plugin.version>8.2.0.5-625</pdi-dataservice-client-plugin.version>
-        <ael.version>8.2.0.5-625</ael.version>
+        <pdi-dataservice-client-plugin.version>8.2.0.5-C249</pdi-dataservice-client-plugin.version>
+        <ael.version>8.2.0.5-C249</ael.version>
 
-        <pentaho-karaf.version>8.2.0.5-625</pentaho-karaf.version>
-        <pentaho-launcher.version>8.2.0.5-625</pentaho-launcher.version>
-        <oss-licenses.version>8.2.0.5-625</oss-licenses.version>
+        <pentaho-karaf.version>8.2.0.5-C249</pentaho-karaf.version>
+        <pentaho-launcher.version>8.2.0.5-C249</pentaho-launcher.version>
+        <oss-licenses.version>8.2.0.5-C249</oss-licenses.version>
 
         <!-- swt -->
         <org.eclipse.swt.gtk.linux.x86.version>4.3.2</org.eclipse.swt.gtk.linux.x86.version>

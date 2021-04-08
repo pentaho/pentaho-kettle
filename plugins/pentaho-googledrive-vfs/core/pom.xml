@@ -7,7 +7,7 @@
     <parent>
         <artifactId>pentaho-googledrive-vfs</artifactId>
         <groupId>org.pentaho.di.plugins</groupId>
-        <version>8.2.0.5-625</version>
+        <version>8.2.0.5-C249</version>
     </parent>
 
     <artifactId>pentaho-googledrive-vfs-core</artifactId>
@@ -21,7 +21,7 @@
         <project.commons-vfs2.version>2.2</project.commons-vfs2.version>
         <project.junit.version>4.4</project.junit.version>
         <project.mockito.version>1.8.4</project.mockito.version>
-        <pdi.version>8.2.0.5-625</pdi.version>
+        <pdi.version>8.2.0.5-C249</pdi.version>
     </properties>
 
     <build>
