@@ -29,6 +29,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.provider.compressed.CompressedFileFileObject;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -36,7 +37,10 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -331,6 +335,10 @@ public class FileInputList {
 
             private boolean hasAccess( FileObject fileObject ) {
               try {
+                if ( fileObject instanceof LocalFile ) {
+                  // fileObject.isReadable wrongly returns true in windows file system even if not readable
+                  return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
+                }
                 return fileObject.isReadable();
               } catch ( FileSystemException e ) {
                 // Something went wrong... well, let's assume "no access"!
