@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.job.entries.deletefiles;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
@@ -407,8 +409,12 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
     private boolean hasAccess( FileObject fileObject ) {
       try {
-        return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
-      } catch ( Exception e ) {
+        if ( fileObject instanceof LocalFile ) {
+          // fileObject.isReadable wrongly returns true in windows file system even if not readable
+          return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
+        }
+        return fileObject.isReadable();
+      } catch ( FileSystemException e ) {
         // Something went wrong... well, let's assume "no access"!
         return false;
       }
