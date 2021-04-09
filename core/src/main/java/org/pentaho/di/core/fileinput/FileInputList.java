@@ -48,9 +48,6 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 public class FileInputList {
   private List<FileObject> files = new ArrayList<>();
   private List<FileObject> nonExistantFiles = new ArrayList<>( 1 );
