@@ -24,10 +24,8 @@ package org.pentaho.di.job.entries.deletefiles;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.commons.vfs2.FileNotFolderException;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.local.LocalFile;
-import org.apache.commons.vfs2.provider.local.WindowsFileName;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
