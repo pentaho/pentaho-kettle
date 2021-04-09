@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,13 +43,12 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
   private boolean useOriginalPathInTargetName;
 
   private Map<String, String> directoryMap;
-  private int parameterNr;
+  private static int parameterNr = 0;
 
   public SimpleResourceNaming() {
     super();
 
     directoryMap = new HashMap<String, String>();
-    parameterNr = 0;
   }
 
   public SimpleResourceNaming( String fileSystemPrefix ) {
@@ -155,7 +154,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
     String parameter = directoryMap.get( originalFilePath );
     if ( parameter == null ) {
 
-      parameter = createNewParameterName( originalFilePath );
+      parameter = createNewParameterName();
 
       // Add it to the map...
       //
@@ -168,10 +167,9 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
   /**
    * Create a parameter name from an path TODO: actually use the original path
    *
-   * @param originalFilePath
    * @return the new parameter name
    */
-  private String createNewParameterName( String originalFilePath ) {
+  private static String createNewParameterName() {
     parameterNr++;
     return "DATA_PATH_" + parameterNr;
   }
