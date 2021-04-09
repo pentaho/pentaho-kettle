@@ -37,8 +37,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.compressed.CompressedFileFileObject;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.LogChannel;
@@ -46,6 +48,9 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 public class FileInputList {
   private List<FileObject> files = new ArrayList<>();
   private List<FileObject> nonExistantFiles = new ArrayList<>( 1 );
@@ -323,8 +328,12 @@ public class FileInputList {
 
             private boolean hasAccess( FileObject fileObject ) {
               try {
-                return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
-              } catch ( Exception e ) {
+                if ( fileObject instanceof LocalFile ) {
+                  // fileObject.isReadable wrongly returns true in windows file system even if not readable
+                  return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
+                }
+                return fileObject.isReadable();
+              } catch ( FileSystemException e ) {
                 // Something went wrong... well, let's assume "no access"!
                 return false;
               }
