@@ -20,7 +20,7 @@
     <rxjava.version>2.2.3</rxjava.version>
 
     <pentaho-json.version>9.0.0.0-423</pentaho-json.version>
-    <pentaho-hadoop-shims.version>9.0.2020.02.00-423</pentaho-hadoop-shims.version>
+    <pentaho-hadoop-shims.version>9.0.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
     <pdi-spark-driver.version>${project.parent.version}</pdi-spark-driver.version>
     <pdi-osgi-bridge.version>9.0.0.0-423</pdi-osgi-bridge.version>
     <commons-database.version>9.0.0.0-423</commons-database.version>

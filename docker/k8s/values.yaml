@@ -1,0 +1,22 @@
+# Default values for dataflow-pentaho-importer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: hiromuhota/webspoon
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: latest
+
+components:
+  webspoon:
+    name: webspoon
+    appName: Webspoon POC
+    containerPort: 8081
+    interval: 10000
+    service:
+      type: ClusterIP
+      port: 8084
+    replicaCount: 1

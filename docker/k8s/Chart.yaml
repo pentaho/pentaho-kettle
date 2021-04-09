@@ -1,0 +1,16 @@
+apiVersion: v2
+name: webspoon
+description: Webspoon POC
+
+# Data Flow Importer Helm chart.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+version: 1.0.0 # ${helm.chart.version}
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application.
+appVersion: latest # ${helm.chart.version}
+
+

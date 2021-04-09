@@ -1,0 +1,4 @@
+targetFoundryVersion: 2.0.0
+minimumFoundryVersion: 2.0.0
+images:
+  - hiromuhota/webspoon:latest

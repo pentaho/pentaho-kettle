@@ -24,9 +24,9 @@
     <oss-licenses.version>9.0.0.0-423</oss-licenses.version>
 
     <!-- Pentaho drivers kar file dependencies versions -->
-    <pentaho-hadoop-shims-cdh61.version>9.0.2020.02.00-423</pentaho-hadoop-shims-cdh61.version>
-    <pentaho-hadoop-shims-hdp30.version>9.0.2020.02.00-423</pentaho-hadoop-shims-hdp30.version>
-    <pentaho-hadoop-shims-emr521.version>9.0.2020.02.00-423</pentaho-hadoop-shims-emr521.version>
+    <pentaho-hadoop-shims-cdh61.version>9.0.0.0-SNAPSHOT</pentaho-hadoop-shims-cdh61.version>
+    <pentaho-hadoop-shims-hdp30.version>9.0.0.0-SNAPSHOT</pentaho-hadoop-shims-hdp30.version>
+    <pentaho-hadoop-shims-emr521.version>9.0.0.0-SNAPSHOT</pentaho-hadoop-shims-emr521.version>
   </properties>
 
   <dependencies>

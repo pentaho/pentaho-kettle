@@ -1,23 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
-  labels:
-    run: webspoon
-  name: webspoon
+  name: {{ include "dataflow-pentaho-importer.fullname" . }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.components.importer.replicaCount }}
   selector:
     matchLabels:
-      run: webspoon
-  strategy:
-    type: Recreate
+      {{- include "dataflow-pentaho-importer.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        run: webspoon
+        {{- include "dataflow-pentaho-importer.selectorLabels" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ include "dataflow-pentaho-importer.fullname" . }}
       containers:
       - env:
         - name: JAVA_OPTS
@@ -44,7 +39,6 @@ spec:
         #   name: webspoon-config-cm
         #   subPath: security.xml
       restartPolicy: Always
-      serviceAccountName: ""
       volumes:
       - name: kettle-pvc
         persistentVolumeClaim:
@@ -56,4 +50,3 @@ spec:
       # - name: webspoon-config-cm
       #   configMap:
       #     name: webspoon-config-cm
-status: {}

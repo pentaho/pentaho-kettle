@@ -1,0 +1,12 @@
+apiVersion: hitachivantara.com/v1
+kind: solutionpackage
+metadata:
+  name: "webspoon-latest"
+spec:
+  chartName: "webspoon"
+  chartVersion: "1.0.0"
+  # optional:
+  appVersion: "latest"
+  # optional:
+  images:
+    - "hiromuhota/webspoon:latest"
