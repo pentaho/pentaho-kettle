@@ -1,5 +1,8 @@
 # Run webSpoon on Kubernetes
 
+### These are the old instruction to be used if you are deploying from:
+### https://github.com/HiromuHota/pentaho-kettle/tree/webspoon-9.0/docker/k8s
+
 Clone this repository and run this command to create required resources (`Deployment` and `Service`).
 
 ```sh
