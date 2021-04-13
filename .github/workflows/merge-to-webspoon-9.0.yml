@@ -42,14 +42,22 @@ jobs:
       with:
         version: ${{env.HELM_VERSION}}
 
+      # Do extra steps in https://github.com/HiromuHota/pentaho-kettle (or add the missing projects to this one)
+
+      #Build pentaho-xul-swt dependency
+    - name: Build pentaho-xul-swt
+      uses: actions/checkout@v2
+      with:
+        name: HiromuHota/pentaho-commons-xul
+        ref: webspoon-9.0
+      run: mvn clean install -pl swt
+
     - name: Checkout code
       uses: actions/checkout@v2
 
       # Update version (add build number)
     - name: Update versions
       run: mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.incrementalVersion}-${CURRENT_BRANCH}-${{env.BUILD_NUMBER}} -s ${{ env.MAVEN_SETTINGS }}
-
-      # Do extra steps in https://github.com/HiromuHota/pentaho-kettle (or add the missing projects to this one)
 
       # Build Code
     - name: Install and Verify
