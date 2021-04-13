@@ -46,8 +46,9 @@ jobs:
 
       #Build pentaho-xul-swt dependency
     - name: Build pentaho-xul-swt
-      run: git clone -b webspoon-9.0 https://github.com/HiromuHota/pentaho-commons-xul.git
-    - run: mvn clean install -f ./pentaho-xul-swt/pom.xml
+      run: |
+        git clone -b webspoon-9.0 https://github.com/HiromuHota/pentaho-commons-xul.git
+        mvn clean install -f ./pentaho-xul-swt/pom.xml
 
     - name: Checkout code
       uses: actions/checkout@v2
