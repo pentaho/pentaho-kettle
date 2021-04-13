@@ -51,9 +51,7 @@ jobs:
         name: HiromuHota/pentaho-commons-xul
         ref: webspoon-9.0
         path: pentaho-xul-swt
-    - run: |
-        cd pentaho-commons-xul
-        mvn clean install -pl swt
+    - run: mvn clean install -pl swt
 
     - name: Checkout code
       uses: actions/checkout@v2
