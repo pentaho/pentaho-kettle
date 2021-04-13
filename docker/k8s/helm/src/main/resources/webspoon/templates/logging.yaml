@@ -1,0 +1,9 @@
+apiVersion: logging.hitachivantara.com/v1
+kind: LoggingSolution
+metadata:
+  name: {{ template "dataflow-pentaho-importer.fullname" . }}-ls
+spec:
+  releaseName: {{ .Release.Name }}
+  flows:
+    - selectors:
+        app.kubernetes.io/instance: {{ .Release.Name }}

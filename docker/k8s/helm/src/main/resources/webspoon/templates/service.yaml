@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: null
+  name: {{ include "dataflow-pentaho-importer.fullname" . }}
   labels:
-    run: webspoon
-  name: webspoon
+    {{- include "dataflow-pentaho-importer.labels" . | nindent 4 }}
 spec:
+  type: {{ .Values.components.webspoon.service.type }}
   ports:
-  - name: "8080"
-    port: 8080
-    targetPort: 8080
+    - port: {{ .Values.components.webspoon.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
   selector:
-    run: webspoon
-status:
-  loadBalancer: {}
+    {{- include "dataflow-pentaho-importer.selectorLabels" . | nindent 4 }}

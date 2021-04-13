@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "dataflow-pentaho-importer.fullname" . }}
 spec:
-  replicas: {{ .Values.components.importer.replicaCount }}
+  replicas: {{ .Values.components.webspoon.replicaCount }}
   selector:
     matchLabels:
       {{- include "dataflow-pentaho-importer.selectorLabels" . | nindent 6 }}
@@ -14,39 +14,42 @@ spec:
     spec:
       serviceAccountName: {{ include "dataflow-pentaho-importer.fullname" . }}
       containers:
-      - env:
+      - name: webspoon
+        image: hiromuhota/webspoon
+        securityContext:
+          privileged: false
+        volumeMounts:
+          - mountPath: /home/tomcat/.kettle
+            name: kettle-pvc
+          - mountPath: /home/tomcat/.pentaho
+            name: pentaho-pvc
+          # # When you created your own config file, uncomment each section depending on file.
+          # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/web.xml
+          #   name: webspoon-config-cm
+          #   subPath: web.xml
+          # - mountPath: /usr/local/tomcat/conf/catalina.policy
+          #   name: webspoon-config-cm
+          #   subPath: catalina.policy
+          # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/spring/security.xml
+          #   name: webspoon-config-cm
+          #   subPath: security.xml
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.components.webspoon.containerPort }}
+        env:
         - name: JAVA_OPTS
           value: -Xms1024m -Xmx2048m
-        image: hiromuhota/webspoon
-        imagePullPolicy: ""
-        name: webspoon
-        ports:
-        - containerPort: 8080
         resources: {}
-        volumeMounts:
-        - mountPath: /home/tomcat/.kettle
-          name: kettle-pvc
-        - mountPath: /home/tomcat/.pentaho
-          name: pentaho-pvc
-        # # When you created your own config file, uncomment each section depending on file.
-        # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/web.xml
-        #   name: webspoon-config-cm
-        #   subPath: web.xml
-        # - mountPath: /usr/local/tomcat/conf/catalina.policy
-        #   name: webspoon-config-cm
-        #   subPath: catalina.policy
-        # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/spring/security.xml
-        #   name: webspoon-config-cm
-        #   subPath: security.xml
+        volumes:
+          - name: kettle-pvc
+            persistentVolumeClaim:
+              claimName: kettle-pvc
+          - name: pentaho-pvc
+            persistentVolumeClaim:
+              claimName: pentaho-pvc
+          # # Uncomment to mount ConfigMap if you created ConfigMap
+          # - name: webspoon-config-cm
+          #   configMap:
+          #     name: webspoon-config-cm
       restartPolicy: Always
-      volumes:
-      - name: kettle-pvc
-        persistentVolumeClaim:
-          claimName: kettle-pvc
-      - name: pentaho-pvc
-        persistentVolumeClaim:
-          claimName: pentaho-pvc
-      # # Uncomment to mount ConfigMap if you created ConfigMap
-      # - name: webspoon-config-cm
-      #   configMap:
-      #     name: webspoon-config-cm
+

@@ -20,3 +20,4 @@ components:
       type: ClusterIP
       port: 8084
     replicaCount: 1
+    someText: here
