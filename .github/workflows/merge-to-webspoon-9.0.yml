@@ -24,7 +24,7 @@ env:
 
 jobs:
   build:
-    runs-on: [self-hosted]
+    runs-on: [public]
     steps:
 
     - name: Discover current branch
