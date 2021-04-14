@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "dataflow-pentaho-importer.fullname" . }}
+  name: {{ include "webspoon.fullname" . }}
   labels:
-    {{- include "dataflow-pentaho-importer.labels" . | nindent 4 }}
+    {{- include "webspoon.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.components.webspoon.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "dataflow-pentaho-importer.selectorLabels" . | nindent 4 }}
+    {{- include "webspoon.selectorLabels" . | nindent 4 }}

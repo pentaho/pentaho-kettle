@@ -1,15 +1,27 @@
 apiVersion: "hitachivantara.com/v2"
 kind: App
 metadata:
-  name: {{ template "dataflow-pentaho-importer.fullname" . }}
+  name: {{ template "webspoon.fullname" . }}
   labels:
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   name: {{ .Values.components.webspoon.appName }}
-  description: "Link to access protected {{ .Values.components.webspoon.appName }} application."
+  description: "Link to access {{ .Values.components.webspoon.appName }} application."
   serviceNamespace: {{ .Release.Namespace }}
   generateNetworkRoute: true
-  service: {{ template "dataflow-pentaho-importer.fullname" . }}
-  exposeLink: false
+  service: {{ template "webspoon.fullname" . }}
+  exposeLink: true
   rewritePath: "/"
   protocol: "http"
+{{/*---*/}}
+{{/*apiVersion: "hitachivantara.com/v2"*/}}
+{{/*kind: App*/}}
+{{/*metadata:*/}}
+{{/*  name: webspoon*/}}
+{{/*  labels:*/}}
+{{/*    app.kubernetes.io/instance: {{ .Release.Name }}*/}}
+{{/*spec:*/}}
+{{/*  name: "Webspoon"*/}}
+{{/*  description: "Use this to open a webspoon window"*/}}
+{{/*  url: {{ template "webspoon-path" . }}*/}}
+{{/*---*/}}

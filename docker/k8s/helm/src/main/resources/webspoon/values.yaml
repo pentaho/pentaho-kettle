@@ -1,4 +1,4 @@
-# Default values for dataflow-pentaho-importer.
+# Default values for webspoon.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -20,4 +20,6 @@ components:
       type: ClusterIP
       port: 8084
     replicaCount: 1
-    someText: here
+
+
+
