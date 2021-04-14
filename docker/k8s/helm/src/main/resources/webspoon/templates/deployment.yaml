@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dataflow-pentaho-importer.fullname" . }}
+  name: {{ include "webspoon.fullname" . }}
 spec:
   replicas: {{ .Values.components.webspoon.replicaCount }}
   selector:
     matchLabels:
-      {{- include "dataflow-pentaho-importer.selectorLabels" . | nindent 6 }}
+      {{- include "webspoon.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "dataflow-pentaho-importer.selectorLabels" . | nindent 8 }}
+        {{- include "webspoon.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "dataflow-pentaho-importer.fullname" . }}
+      serviceAccountName: {{ include "webspoon.fullname" . }}
       containers:
       - name: webspoon
         image: hiromuhota/webspoon
@@ -40,16 +40,16 @@ spec:
         - name: JAVA_OPTS
           value: -Xms1024m -Xmx2048m
         resources: {}
-        volumes:
-          - name: kettle-pvc
-            persistentVolumeClaim:
-              claimName: kettle-pvc
-          - name: pentaho-pvc
-            persistentVolumeClaim:
-              claimName: pentaho-pvc
-          # # Uncomment to mount ConfigMap if you created ConfigMap
-          # - name: webspoon-config-cm
-          #   configMap:
-          #     name: webspoon-config-cm
+      volumes:
+        - name: kettle-pvc
+          persistentVolumeClaim:
+            claimName: kettle-pvc
+        - name: pentaho-pvc
+          persistentVolumeClaim:
+            claimName: pentaho-pvc
+        # # Uncomment to mount ConfigMap if you created ConfigMap
+        # - name: webspoon-config-cm
+        #   configMap:
+        #     name: webspoon-config-cm
       restartPolicy: Always
 

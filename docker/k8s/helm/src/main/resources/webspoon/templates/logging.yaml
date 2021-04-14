@@ -1,7 +1,7 @@
 apiVersion: logging.hitachivantara.com/v1
 kind: LoggingSolution
 metadata:
-  name: {{ template "dataflow-pentaho-importer.fullname" . }}-ls
+  name: {{ template "webspoon.fullname" . }}-ls
 spec:
   releaseName: {{ .Release.Name }}
   flows:

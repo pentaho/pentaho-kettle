@@ -1,4 +1,4 @@
-{{- $fullName := include "dataflow-pentaho-importer.fullname" . -}}
+{{- $fullName := include "webspoon.fullname" . -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
