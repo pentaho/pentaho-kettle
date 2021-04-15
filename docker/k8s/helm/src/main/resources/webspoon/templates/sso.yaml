@@ -1,0 +1,13 @@
+apiVersion: hitachivantara.com/v2
+kind: SSO
+metadata:
+  name: {{ template "webspoon.sso" . }}
+  labels:
+{{ include "webspoon.labels" . | indent 4 }}
+spec:
+  client:
+    id: {{ template "webspoon.gatekeeper.clientId" . }}
+  app:
+    name: {{ template "webspoon.fullname" . }}-app
+    scheme: "https"
+    serviceName: {{ template "webspoon.fullname" . }}

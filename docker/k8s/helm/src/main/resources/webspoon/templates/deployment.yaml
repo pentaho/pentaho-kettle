@@ -39,6 +39,13 @@ spec:
         env:
         - name: JAVA_OPTS
           value: -Xms1024m -Xmx2048m
+        - name: KEYCLOAK_CLIENT_ID
+          value: {{ template "webspoon.gatekeeper.clientId" . }}
+        - name: KEYCLOAK_SERVER_URL
+          value: {{ .Values.keycloak.server }}
+        - name: KEYCLOAK_REALM
+          value: {{ .Values.keycloak.realm }}
+
         resources: {}
       volumes:
         - name: kettle-pvc
