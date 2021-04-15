@@ -11,3 +11,16 @@ spec:
     name: {{ template "webspoon.fullname" . }}-app
     scheme: "https"
     serviceName: {{ template "webspoon.fullname" . }}
+  gatekeeperConfig:
+    resources:
+      - uri: /*
+        # the methods that will be protected, if no methods are defined all methods will be protected. In this example POST, PUT, etc will allowed.
+        methods:
+          - GET
+        roles:
+          - {{ template "webspoon.gatekeeper.clientId" . }}:view
+        require-any-role: true
+      - uri: /api/*
+        roles:
+          - {{ template "webspoon.gatekeeper.clientId" . }}:api
+        require-any-role: true

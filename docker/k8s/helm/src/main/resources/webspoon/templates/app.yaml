@@ -1,7 +1,7 @@
 apiVersion: "hitachivantara.com/v2"
 kind: App
 metadata:
-  name: {{ template "webspoon.fullname" . }}
+  name: {{ template "webspoon.fullname" . }}-app
   labels:
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
@@ -12,4 +12,5 @@ spec:
   generateNetworkRoute: true
   exposeLink: true
   rewritePath: "/"
+  fixedPath: "webspoon/"
   protocol: "https"
