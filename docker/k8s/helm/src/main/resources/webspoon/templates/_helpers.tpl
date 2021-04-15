@@ -92,3 +92,18 @@ Helper function for impersonator secret
 {{- define "webspoon-path" -}}
 {{ template "webspoon.basepath" . }}/{{ template "webspoon.fullname" . }}
 {{- end -}}
+
+{{/*
+Helper function for sso name
+*/}}
+{{- define "webspoon.sso" -}}
+{{- template "webspoon.name" . -}}-sso
+{{- end -}}
+
+{{/*
+Helper function for gatekeeper clientId
+*/}}
+{{- define "webspoon.gatekeeper.clientId" -}}
+{{- printf "%s-%s" (include "webspoon.sso" . ) "client" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+

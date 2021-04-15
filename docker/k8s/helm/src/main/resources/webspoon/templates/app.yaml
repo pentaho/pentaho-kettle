@@ -8,20 +8,9 @@ spec:
   name: {{ .Values.components.webspoon.appName }}
   description: "Link to access {{ .Values.components.webspoon.appName }} application."
   serviceNamespace: {{ .Release.Namespace }}
+  sso: {{ template "webspoon.sso" . }}
   generateNetworkRoute: true
-  service: {{ template "webspoon.fullname" . }}
   exposeLink: true
   rewritePath: "/"
-  protocol: "http"
-{{/*---*/}}
-{{/*apiVersion: "hitachivantara.com/v2"*/}}
-{{/*kind: App*/}}
-{{/*metadata:*/}}
-{{/*  name: webspoon*/}}
-{{/*  labels:*/}}
-{{/*    app.kubernetes.io/instance: {{ .Release.Name }}*/}}
-{{/*spec:*/}}
-{{/*  name: "Webspoon"*/}}
-{{/*  description: "Use this to open a webspoon window"*/}}
-{{/*  url: {{ template "webspoon-path" . }}*/}}
-{{/*---*/}}
+  fixedPath: "webspoon/"
+  protocol: "https"

@@ -10,6 +10,13 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
 
+keycloak:
+  server: "http://keycloak-http:8080/auth"
+  realm: "default"
+  testUser:
+    active: true
+    username: dfs-test-user
+
 components:
   webspoon:
     name: webspoon
@@ -20,6 +27,7 @@ components:
       type: ClusterIP
       port: 8084
     replicaCount: 1
+
 
 
 
