@@ -22,10 +22,10 @@ components:
     name: webspoon
     appName: Webspoon POC
     containerPort: 8081
-    interval: 10000
     service:
       type: ClusterIP
       port: 8084
+    logLevel: "INFO"
     replicaCount: 1
 
 
