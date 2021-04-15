@@ -8,7 +8,7 @@ spec:
   type: {{ .Values.components.webspoon.service.type }}
   ports:
     - port: {{ .Values.components.webspoon.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.components.webspoon.containerPort }}
       protocol: TCP
       name: http
   selector:
