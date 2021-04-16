@@ -23,10 +23,8 @@ spec:
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
 {{- end }}
       containers:
-      - name: webspoon
+      - name: {{ template "webspoon.name" . }}
         image: hiromuhota/webspoon
-        securityContext:
-          privileged: false
         volumeMounts:
           - mountPath: /home/tomcat/.kettle
             name: kettle-pvc
