@@ -2,19 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "webspoon.fullname" . }}
+  labels:
+{{ include "webspoon.labels" . | indent 4}}
 spec:
   replicas: {{ .Values.components.webspoon.replicaCount }}
   selector:
     matchLabels:
-      {{- include "webspoon.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "webspoon.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        {{- include "webspoon.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "webspoon.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ include "webspoon.fullname" . }}
+      serviceAccountName: {{ template "webspoon.fullname" . }}
 {{- if .Values.securityContext.enabled }}
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}
