@@ -23,9 +23,11 @@
     <oss-licenses.version>9.2.0.0-SNAPSHOT</oss-licenses.version>
 
     <!-- swt -->
-    <org.eclipse.swt.gtk.linux.x86_64.version>3.115.100</org.eclipse.swt.gtk.linux.x86_64.version>
-    <org.eclipse.swt.win32.win32.x86_64.version>3.115.100</org.eclipse.swt.win32.win32.x86_64.version>
-    <org.eclipse.swt.cocoa.macosx.x86_64.version>3.115.100</org.eclipse.swt.cocoa.macosx.x86_64.version>
+    <org.eclipse.swt.gtk.linux.x86.version>3.108.0</org.eclipse.swt.gtk.linux.x86.version>
+    <org.eclipse.swt.gtk.linux.x86_64.version>3.108.0</org.eclipse.swt.gtk.linux.x86_64.version>
+    <org.eclipse.swt.win32.win32.x86.version>4.6</org.eclipse.swt.win32.win32.x86.version>
+    <org.eclipse.swt.win32.win32.x86_64.version>4.6</org.eclipse.swt.win32.win32.x86_64.version>
+    <org.eclipse.swt.cocoa.macosx.x86_64.version>4.6</org.eclipse.swt.cocoa.macosx.x86_64.version>
 
     <!-- Pentaho drivers kar file dependencies versions -->
     <pentaho-hadoop-shims-cdh61.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-cdh61.version>
@@ -177,6 +179,17 @@
     <!-- swt -->
     <dependency>
       <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86</artifactId>
+      <version>${org.eclipse.swt.gtk.linux.x86.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
       <version>${org.eclipse.swt.gtk.linux.x86_64.version}</version>
       <exclusions>
@@ -187,26 +200,19 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.platform</groupId>
-      <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
-      <version>${org.eclipse.swt.win32.win32.x86_64.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.win32.win32.x86</artifactId>
+      <version>${org.eclipse.swt.win32.win32.x86.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.platform</groupId>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+      <version>${org.eclipse.swt.win32.win32.x86_64.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
       <version>${org.eclipse.swt.cocoa.macosx.x86_64.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 
