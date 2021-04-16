@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -522,7 +522,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
           data.lastModificationDateTime = new Date( data.file.getContent().getLastModifiedTime() );
         }
         if ( meta.getUriField() != null && meta.getUriField().length() > 0 ) {
-          data.uriName = data.file.getName().getURI();
+          data.uriName = Const.optionallyDecodeUriString( data.file.getName().getURI() );
         }
         if ( meta.getRootUriField() != null && meta.getRootUriField().length() > 0 ) {
           data.rootUriName = data.file.getName().getRootURI();

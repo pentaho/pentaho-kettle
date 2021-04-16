@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1391,7 +1391,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
         data.lastModificationDateTime = new Date( data.file.getContent().getLastModifiedTime() );
       }
       if ( data.addUri ) {
-        data.uriName = data.file.getName().getURI();
+        data.uriName = Const.optionallyDecodeUriString( data.file.getName().getURI() );
       }
       if ( data.addRootUri ) {
         data.rootUriName = data.file.getName().getRootURI();

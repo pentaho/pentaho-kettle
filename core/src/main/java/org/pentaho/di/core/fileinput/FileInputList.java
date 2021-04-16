@@ -27,7 +27,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
-import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.provider.compressed.CompressedFileFileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
@@ -102,20 +101,12 @@ public class FileInputList {
     StringBuilder buffer = new StringBuilder();
     for ( Iterator<FileObject> iter = nonExistantFiles.iterator(); iter.hasNext(); ) {
       FileObject file = iter.next();
-      buffer.append( getDecodedUriString( file.getName().getURI() ) );
+      buffer.append( Const.optionallyDecodeUriString( file.getName().getURI() ) );
       buffer.append( Const.CR );
     }
     return buffer.toString();
   }
 
-  private static String getDecodedUriString( String uri ) {
-    try {
-      return UriParser.decode( uri );
-    } catch ( FileSystemException e ) {
-      // return the raw string if the URI is malformed (bad escape sequence)
-      return uri;
-    }
-  }
 
   private static boolean[] includeSubdirsFalse( int iLength ) {
     boolean[] includeSubdirs = new boolean[ iLength ];
@@ -145,7 +136,7 @@ public class FileInputList {
         .getFiles();
     String[] filePaths = new String[ fileList.size() ];
     for ( int i = 0; i < filePaths.length; i++ ) {
-      filePaths[ i ] = getDecodedUriString( fileList.get( i ).getName().getURI() );
+      filePaths[ i ] = Const.optionallyDecodeUriString( fileList.get( i ).getName().getURI() );
     }
     return filePaths;
   }
@@ -418,7 +409,7 @@ public class FileInputList {
   public String[] getUrlStrings() {
     String[] fileStrings = new String[ files.size() ];
     for ( int i = 0; i < fileStrings.length; i++ ) {
-      fileStrings[ i ] = getDecodedUriString( files.get( i ).getPublicURIString() );
+      fileStrings[ i ] = Const.optionallyDecodeUriString( files.get( i ).getPublicURIString() );
     }
     return fileStrings;
   }

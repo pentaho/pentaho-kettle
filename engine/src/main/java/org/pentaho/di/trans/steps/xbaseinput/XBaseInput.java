@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.xbaseinput;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -135,7 +136,7 @@ public class XBaseInput extends BaseStep implements StepInterface {
 
     // Possibly add a filename...
     if ( meta.includeFilename() ) {
-      row[outputIndex++] = data.file_dbf.getName().getURI();
+      row[outputIndex++] = Const.optionallyDecodeUriString( data.file_dbf.getName().getURI() );
     }
 
     // Possibly add a row number...
