@@ -17,11 +17,6 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ template "webspoon.fullname" . }}
-{{- if .Values.securityContext.enabled }}
-      securityContext:
-        runAsUser: {{ .Values.securityContext.runAsUser }}
-        runAsGroup: {{ .Values.securityContext.runAsGroup }}
-{{- end }}
       containers:
       - name: {{ template "webspoon.name" . }}
         image: hiromuhota/webspoon
@@ -46,13 +41,6 @@ spec:
         env:
         - name: JAVA_OPTS
           value: -Xms1024m -Xmx2048m
-        - name: KEYCLOAK_CLIENT_ID
-          value: {{ template "webspoon.gatekeeper.clientId" . }}
-        - name: KEYCLOAK_SERVER_URL
-          value: {{ .Values.keycloak.server }}
-        - name: KEYCLOAK_REALM
-          value: {{ .Values.keycloak.realm }}
-
         resources: {}
       volumes:
         - name: kettle-pvc

@@ -9,7 +9,5 @@ spec:
   ports:
     - port: {{ .Values.components.webspoon.service.port }}
       targetPort: {{ .Values.components.webspoon.containerPort }}
-      protocol: TCP
-      name: http
   selector:
     {{- include "webspoon.selectorLabels" . | nindent 4 }}
