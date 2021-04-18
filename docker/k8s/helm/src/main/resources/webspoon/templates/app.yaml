@@ -8,9 +8,8 @@ spec:
   name: {{ .Values.components.webspoon.appName }}
   description: "Link to access {{ .Values.components.webspoon.appName }} application."
   serviceNamespace: {{ .Release.Namespace }}
-  sso: {{ template "webspoon.sso" . }}
+  service: {{ template "webspoon.fullname" . }}
   generateNetworkRoute: true
   exposeLink: true
   rewritePath: "/"
-  fixedPath: "webspoon/"
-  protocol: "https"
+  protocol: "http"

@@ -10,13 +10,6 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
 
-keycloak:
-  server: "http://keycloak-http:8080/auth"
-  realm: "default"
-  testUser:
-    active: true
-    username: dfs-test-user
-
 components:
   webspoon:
     name: webspoon
@@ -27,13 +20,5 @@ components:
       port: 8084
     logLevel: "INFO"
     replicaCount: 1
-
-## Add stateful containers to have security context, if enabled provider will run as this
-## user and group
-securityContext:
-  enabled: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
 
 
