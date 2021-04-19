@@ -56,6 +56,7 @@
     <bahir.version>2.3.2</bahir.version>
     <snowflake-jdbc.version>3.6.28</snowflake-jdbc.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+    <jface.version>3.22.0</jface.version>
   </properties>
 
   <dependencies>
@@ -85,6 +86,10 @@
           <groupId>org.eclipse.swt</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>jface</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -95,6 +100,18 @@
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
           <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.equinox</groupId>
+          <artifactId>common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>jface</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -108,6 +125,13 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <!-- Updated Eclipse Dependencies -->
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface</artifactId>
+      <version>${jface.version}</version>
     </dependency>
 
     <dependency>
