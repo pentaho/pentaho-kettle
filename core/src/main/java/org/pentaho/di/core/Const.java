@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,8 @@ package org.pentaho.di.core;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -1487,6 +1489,11 @@ public class Const {
   public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT =
     KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY;
 
+  /**
+   * This environment variable will be used to determine whether file URI strings returned from input steps are returned
+   * encoded (spaces and other special characters escaped) or decoded (default legacy behavior).
+   */
+  public static final String KETTLE_RETURN_ESCAPED_URI_STRINGS = "KETTLE_RETURN_ESCAPED_URI_STRINGS";
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
@@ -3794,6 +3801,28 @@ public class Const {
       return content;
     }
     return StringEscapeUtils.escapeXml( content );
+  }
+
+
+  /**
+   * Convert a string containing a URI with escaped special characters and return the decoded version depending on
+   * system property settings.
+   * @param uri
+   * @return decoded URI string
+   */
+  public static String optionallyDecodeUriString( String uri ) {
+    boolean decodeUri = !System.getProperty( KETTLE_RETURN_ESCAPED_URI_STRINGS, "N" )
+      .equalsIgnoreCase( "Y" );
+    if ( decodeUri ) {
+      try {
+        return UriParser.decode( uri );
+      } catch ( FileSystemException e ) {
+        // return the raw string if the URI is malformed (bad escape sequence)
+        return uri;
+      }
+    } else {
+      return uri;
+    }
   }
 
   /**

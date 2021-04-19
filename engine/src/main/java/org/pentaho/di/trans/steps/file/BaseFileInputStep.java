@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -508,7 +508,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
     data.path = KettleVFS.getFilename( file.getParent() );
     data.hidden = file.isHidden();
     data.extension = file.getName().getExtension();
-    data.uriName = file.getName().getURI();
+    data.uriName = Const.optionallyDecodeUriString( file.getName().getURI() );
     data.rootUriName = file.getName().getRootURI();
     if ( file.getType().hasContent() ) {
       data.lastModificationDateTime = new Date( file.getContent().getLastModifiedTime() );
