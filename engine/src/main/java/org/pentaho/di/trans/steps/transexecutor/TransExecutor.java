@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -301,19 +301,37 @@ public class TransExecutor extends BaseStep implements StepInterface {
     // A map where the final parameters and values are stored.
     Map<String, String> resolvingValuesMap = new LinkedHashMap<String, String>();
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
-      resolvingValuesMap.put( parameters.getVariable()[i], null );
+      resolvingValuesMap.put( parameters.getVariable()[i].toLowerCase(), null );
     }
 
     //The names of the "Fields to use".
     List<String> fieldsToUse = new ArrayList<String>();
     if ( parameters.getField() != null ) {
       fieldsToUse = Arrays.asList( parameters.getField() );
+      if ( !fieldsToUse.isEmpty() ) {
+        for ( int i = 0, l = fieldsToUse.size(); i < l; ++i ) {
+          if ( fieldsToUse.get( i ) != null ) {
+            fieldsToUse.set( i, fieldsToUse.get( i ).toLowerCase() );
+          } else {
+            fieldsToUse.set( i, null );
+          }
+        }
+      }
     }
 
     //The names of the incoming fields from the previous step.
     List<String> incomingFields = new ArrayList<String>();
     if ( data.getInputRowMeta() != null ) {
       incomingFields = Arrays.asList( data.getInputRowMeta().getFieldNames() );
+      if ( !incomingFields.isEmpty() ) {
+        for ( int i = 0, l = incomingFields.size(); i < l; ++i ) {
+          if ( incomingFields.get( i ) != null ) {
+            incomingFields.set( i, incomingFields.get( i ).toLowerCase() );
+          } else {
+            incomingFields.set( i, null );
+          }
+        }
+      }
     }
 
     //The values of the "Static input value".
@@ -366,7 +384,6 @@ public class TransExecutor extends BaseStep implements StepInterface {
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
       inputFieldValues[i] = resolvingValuesMap.get( parameters.getVariable()[i] );
     }
-
     Trans trans = getExecutorTrans();
     initializeVariablesFromParent( trans );
 

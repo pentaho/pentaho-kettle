@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -422,10 +422,10 @@ public class TransExecutorUnitTest {
   //PDI-16066
   public void testExecuteTrans() throws KettleException {
 
-    String childParam = "childParam";
-    String childValue = "childValue";
-    String paramOverwrite = "paramOverwrite";
-    String parentValue = "parentValue";
+    String childParam = "childParam".toLowerCase();
+    String childValue = "childValue".toLowerCase();
+    String paramOverwrite = "paramOverwrite".toLowerCase();
+    String parentValue = "parentValue".toLowerCase();
 
     meta.getParameters().setVariable( new String[]{ childParam, paramOverwrite } );
     meta.getParameters().setInput( new String[]{ null, null } );
@@ -458,12 +458,12 @@ public class TransExecutorUnitTest {
   @Test
   //PDI-16066
   public void testExecuteTransWithFieldsAndNoInput() throws KettleException {
-    String childParam = "childParam";
-    String childValue = "childValue";
-    String fieldValue1 = "fieldValue1";
-    String fieldValue2 = "fieldValue2";
-    String paramOverwrite = "paramOverwrite";
-    String parentValue = "parentValue";
+    String childParam = "childParam".toLowerCase();
+    String childValue = "childValue".toLowerCase();
+    String fieldValue1 = "fieldValue1".toLowerCase();
+    String fieldValue2 = "fieldValue2".toLowerCase();
+    String paramOverwrite = "paramOverwrite".toLowerCase();
+    String parentValue = "parentValue".toLowerCase();
 
     meta.getParameters().setVariable( new String[]{ childParam, paramOverwrite } );
     meta.getParameters().setInput( new String[]{ null, null } );
@@ -503,12 +503,12 @@ public class TransExecutorUnitTest {
   //PDI-16066
   public void testExecuteTransWithInputsAndNoFields() throws KettleException {
 
-    String childParam = "childParam";
-    String childValue = "childValue";
-    String inputValue1 = "inputValue1";
-    String inputValue2 = "inputValue2";
-    String paramOverwrite = "paramOverwrite";
-    String parentValue = "parentValue";
+    String childParam = "childParam".toLowerCase();
+    String childValue = "childValue".toLowerCase();
+    String inputValue1 = "inputValue1".toLowerCase();
+    String inputValue2 = "inputValue2".toLowerCase();
+    String paramOverwrite = "paramOverwrite".toLowerCase();
+    String parentValue = "parentValue".toLowerCase();
 
     meta.getParameters().setVariable( new String[]{ childParam, paramOverwrite } );
     meta.getParameters().setInput( new String[]{ inputValue1, inputValue2 } );
@@ -529,6 +529,7 @@ public class TransExecutorUnitTest {
 
     Trans internalTrans = executor.createInternalTrans();
     executor.getData().setExecutorTrans( internalTrans );
+
     executor.passParametersToTrans( Arrays.asList( meta.getParameters().getField() ) );
 
     //When the child parameter does exist in the parent parameters, overwrite the child parameter by the parent parameter.
