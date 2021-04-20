@@ -9,6 +9,7 @@ def allowHubScan = Boolean.parseBoolean(params.ALLOW_HUB_SCAN)
 def suiteReleaseVersion = params.SUITE_RELEASE_VERSION
 def sourceConsolidationJob = params.SOURCE_CONSOLIDATION_JOB
 def distribConsolidationJob = params.DISTRIBUTIONS_CONSOLIDATION_JOB
+def owaspDepCheckJob = params.OWASP_DEP_CHECK_JOB
 def ipScanJob = params.IP_SCAN_JOB
 def hubScanJob = params.HUB_SCAN_JOB
 def buildNumber = params.RELEASE_BUILD_NUMBER
@@ -27,6 +28,7 @@ println "Allow IP scan jobs                    = ${allowIPScan}"
 println "\nIP job paths:"
 println "Source consolidation job              = ${sourceConsolidationJob}"
 println "Distributions consolidation job       = ${distribConsolidationJob}"
+println "OWASP Dep Check job                   = ${owaspDepCheckJob}"
 println "IP scan job                           = ${ipScanJob}"
 
 
@@ -73,6 +75,7 @@ if (allowRunIPJobs) {
       {
         if (allowDistributionsConsolidation) {
           build(parameters, distribConsolidationJob)
+          build(paramaters, owaspDepCheckJob)
         }
       }
     )
