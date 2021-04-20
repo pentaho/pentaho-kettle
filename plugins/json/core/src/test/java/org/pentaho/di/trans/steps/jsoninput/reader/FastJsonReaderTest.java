@@ -31,8 +31,11 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.trans.steps.jsoninput.JsonInput;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -76,6 +79,24 @@ public class FastJsonReaderTest {
   @Test
   public void testFastJsonReaderConstructor_Null() throws KettleException {
     testFastJsonReaderConstructor_Base( mock( JsonInput.class ), new JsonInputField[ 0 ], false, false );
+  }
+
+  @Test
+  public void testFastJsonReaderGetMaxRowSize() throws KettleException {
+    List<List<Integer>> mainList = new ArrayList<>();
+    List<Integer> l1 = new ArrayList<>();
+    List<Integer> l2 = new ArrayList<>();
+    List<Integer> l3 = new ArrayList<>();
+    l1.add( 1 );
+    l2.add( 1 );
+    l2.add( 2 );
+    l3.add( 1 );
+    l3.add( 2 );
+    l3.add( 3 );
+    mainList.add( l1 );
+    mainList.add( l2 );
+    mainList.add( l3 );
+    assertEquals( 3, FastJsonReader.getMaxRowSize( Collections.singletonList( mainList ) ) );
   }
 
   /**

@@ -137,7 +137,7 @@ public class FastJsonReader implements IJsonReader {
   public RowSet parse( InputStream in ) throws KettleException {
     readInput( in );
     List<List<?>> results = evalCombinedResult();
-    int len = results.isEmpty() ? 0 : results.get( 0 ).size();
+    int len = results.isEmpty() ? 0 : getMaxRowSize( results );
     if ( log.isDetailed() ) {
       log.logDetailed( BaseMessages.getString( PKG, "JsonInput.Log.NrRecords", len ) );
     }
@@ -145,6 +145,15 @@ public class FastJsonReader implements IJsonReader {
       return getEmptyResponse();
     }
     return new TransposedRowSet( results );
+  }
+
+  /**
+   * Gets the max size of the result rows.
+   * @param results A list of lists representing the result rows
+   * @return the size of the largest row in the results
+   */
+  protected static int getMaxRowSize( List<List<?>> results ) {
+    return results.stream().mapToInt( List::size ).max().getAsInt();
   }
 
   private RowSet getEmptyResponse() {
@@ -166,7 +175,7 @@ public class FastJsonReader implements IJsonReader {
     public TransposedRowSet( List<List<?>> results ) {
       super();
       this.results = results;
-      this.rowCount = results.isEmpty() ? 0 : results.get( 0 ).size();
+      this.rowCount = results.isEmpty() ? 0 : FastJsonReader.getMaxRowSize( results );
     }
 
     @Override
