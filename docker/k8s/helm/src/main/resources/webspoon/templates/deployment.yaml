@@ -19,7 +19,7 @@ spec:
       serviceAccountName: {{ template "webspoon.fullname" . }}
       containers:
       - name: {{ template "webspoon.name" . }}
-        image: hiromuhota/webspoon
+        image: ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon:CHANGE_ME
         volumeMounts:
           - mountPath: /home/tomcat/.kettle
             name: kettle-pvc

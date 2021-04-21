@@ -5,18 +5,19 @@
 replicaCount: 1
 
 image:
-  repository: hiromuhota/webspoon
+  repository: ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: latest
+  tag: CHANGE_ME
 
 components:
   webspoon:
     name: webspoon
-    appName: Webspoon POC
-    containerPort: 8081
+    appName: Webspoon POC CHANGE_ME
+    containerPort: 8080
     service:
-      type: ClusterIP
+      type: NodePort
+      nodePort: 0
       port: 8084
     logLevel: "INFO"
     replicaCount: 1

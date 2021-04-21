@@ -8,6 +8,11 @@ spec:
   type: {{ .Values.components.webspoon.service.type }}
   ports:
     - port: {{ .Values.components.webspoon.service.port }}
+    {{if and (eq .Values.components.webspoon.service.type "NodePort") .Values.components.webspoon.service.nodePort }}
+      nodePort: {{ .Values.components.webspoon.service.nodePort }}
+    {{end}}
       targetPort: {{ .Values.components.webspoon.containerPort }}
+      protocol: TCP
+      name: http
   selector:
     {{- include "webspoon.selectorLabels" . | nindent 4 }}
