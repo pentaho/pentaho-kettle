@@ -12,5 +12,5 @@ spec:
   generateNetworkRoute: true
   exposeLink: true
   rewritePath: "/"
-  fixedPath: "webspoon/"
   protocol: "https"
+  port: {{ .Values.components.webspoon.service.port }}
