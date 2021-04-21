@@ -48,6 +48,15 @@
     <!-- swt -->
     <dependencySet>
       <includes>
+        <include>org.eclipse.platform:*.linux.x86</include>
+      </includes>
+      <outputDirectory>libswt/linux/x86</outputDirectory>
+      <outputFileNameMapping>swt.jar</outputFileNameMapping>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <dependencySet>
+      <includes>
         <include>org.eclipse.platform:*.linux.x86_64</include>
       </includes>
       <outputDirectory>libswt/linux/x86_64</outputDirectory>
