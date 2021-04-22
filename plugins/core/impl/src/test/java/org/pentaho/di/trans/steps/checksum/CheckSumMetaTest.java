@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -42,6 +43,9 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class CheckSumMetaTest implements InitializerInterface<CheckSumMeta> {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
+  private static final int A_NEGATIVE_NUMBER = -1234;
+  private static final int A_HUGE_POSITIVE_NUMBER = Integer.MAX_VALUE;
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
@@ -62,31 +66,148 @@ public class CheckSumMetaTest implements InitializerInterface<CheckSumMeta> {
     assertEquals( "SHA-256", CheckSumMeta.TYPE_SHA256 );
     assertEquals( "SHA-256", CheckSumMeta.checksumtypeCodes[4] );
     assertEquals( CheckSumMeta.checksumtypeCodes.length, CheckSumMeta.checksumtypeDescs.length );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_CODES.length, CheckSumMeta.EVALUATION_METHOD_DESCS.length );
+    assertEquals( "BYTES",
+      CheckSumMeta.EVALUATION_METHOD_CODES[ CheckSumMeta.EVALUATION_METHOD_BYTES ] );
+    assertEquals( "PENTAHO_STRINGS",
+      CheckSumMeta.EVALUATION_METHOD_CODES[ CheckSumMeta.EVALUATION_METHOD_PENTAHO_STRINGS ] );
+    assertEquals( "NATIVE_STRINGS",
+      CheckSumMeta.EVALUATION_METHOD_CODES[ CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS ] );
   }
 
   @Test
   public void testSerialization() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "FieldName", "ResultFieldName", "CheckSumType", "CompatibilityMode", "ResultType", "oldChecksumBehaviour", "fieldSeparatorString" );
+      Arrays.asList( "FieldName", "ResultFieldName", "CheckSumType", "CompatibilityMode", "ResultType",
+        "oldChecksumBehaviour", "fieldSeparatorString", "evaluationMethod" );
 
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
+    Map<String, String> getterMap = new HashMap<>();
+    Map<String, String> setterMap = new HashMap<>();
     getterMap.put( "CheckSumType", "getTypeByDesc" );
+    getterMap.put( "evaluationMethod", "getEvaluationMethod" );
 
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+      new ArrayLoadSaveValidator<>( new StringLoadSaveValidator(), 5 );
 
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<>();
     attrValidatorMap.put( "FieldName", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "CheckSumType", new IntLoadSaveValidator( CheckSumMeta.checksumtypeCodes.length ) );
     attrValidatorMap.put( "ResultType", new IntLoadSaveValidator( CheckSumMeta.resultTypeCode.length ) );
+    attrValidatorMap.put( "evaluationMethod", new IntLoadSaveValidator( CheckSumMeta.EVALUATION_METHOD_CODES.length ) );
 
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<>();
 
     LoadSaveTester<CheckSumMeta> loadSaveTester =
       new LoadSaveTester<>( CheckSumMeta.class, attributes, getterMap, setterMap,
         attrValidatorMap, typeValidatorMap, this );
 
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testGetEvaluationMethodByDesc() throws Exception {
+    CheckSumMeta checkSumMeta = new CheckSumMeta();
+
+    // Passing 'null'
+    int evaluationMethod = checkSumMeta.getEvaluationMethodByDesc( null );
+    assertEquals( CheckSumMeta.DEFAULT_EVALUATION_METHOD, evaluationMethod );
+
+    // Passing an unknown description
+    evaluationMethod = checkSumMeta.getEvaluationMethodByDesc( "$#%#&$/(%&%#$%($/)" );
+    assertEquals( CheckSumMeta.DEFAULT_EVALUATION_METHOD, evaluationMethod );
+
+    // The descriptions
+    evaluationMethod = checkSumMeta
+      .getEvaluationMethodByDesc( CheckSumMeta.EVALUATION_METHOD_DESCS[ CheckSumMeta.EVALUATION_METHOD_BYTES ] );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_BYTES, evaluationMethod );
+
+    evaluationMethod =
+      checkSumMeta.getEvaluationMethodByDesc( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_PENTAHO_STRINGS, evaluationMethod );
+
+    evaluationMethod = checkSumMeta.getEvaluationMethodByDesc(
+      CheckSumMeta.EVALUATION_METHOD_DESCS[ CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS ] );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS, evaluationMethod );
+
+    // Passing the Code instead of the description
+    evaluationMethod = checkSumMeta.getEvaluationMethodByDesc( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_BYTES, evaluationMethod );
+
+    evaluationMethod =
+      checkSumMeta.getEvaluationMethodByDesc( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_PENTAHO_STRINGS, evaluationMethod );
+
+    evaluationMethod = checkSumMeta.getEvaluationMethodByDesc( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS, evaluationMethod );
+  }
+
+  @Test
+  public void testGetEvaluationMethodByCode() throws Exception {
+    CheckSumMeta checkSumMeta = new CheckSumMeta();
+
+    // Passing 'null'
+    int evaluationMethod = checkSumMeta.getEvaluationMethodByCode( null );
+    assertEquals( CheckSumMeta.DEFAULT_EVALUATION_METHOD, evaluationMethod );
+
+    // Passing an unknown code
+    evaluationMethod = checkSumMeta.getEvaluationMethodByCode( "$#%#&$/(%&%#$%($/)" );
+    assertEquals( CheckSumMeta.DEFAULT_EVALUATION_METHOD, evaluationMethod );
+
+    // The Codes
+    evaluationMethod = checkSumMeta.getEvaluationMethodByCode( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_BYTES, evaluationMethod );
+
+    evaluationMethod =
+      checkSumMeta.getEvaluationMethodByCode( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_PENTAHO_STRINGS, evaluationMethod );
+
+    evaluationMethod = checkSumMeta.getEvaluationMethodByCode( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS, evaluationMethod );
+  }
+
+  @Test
+  public void testGetEvaluationMethodCode() throws Exception {
+    CheckSumMeta checkSumMeta = new CheckSumMeta();
+
+    // Passing a negative number
+    String evaluationMethodCode = CheckSumMeta.getEvaluationMethodCode( A_NEGATIVE_NUMBER );
+    assertEquals( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT, evaluationMethodCode );
+
+    // Passing a huge number
+    evaluationMethodCode = CheckSumMeta.getEvaluationMethodCode( A_HUGE_POSITIVE_NUMBER );
+    assertEquals( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT, evaluationMethodCode );
+
+    // The Codes
+    evaluationMethodCode = CheckSumMeta.getEvaluationMethodCode( CheckSumMeta.EVALUATION_METHOD_BYTES );
+    assertEquals( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES, evaluationMethodCode );
+
+    evaluationMethodCode = CheckSumMeta.getEvaluationMethodCode( CheckSumMeta.EVALUATION_METHOD_PENTAHO_STRINGS );
+    assertEquals( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS, evaluationMethodCode );
+
+    evaluationMethodCode = CheckSumMeta.getEvaluationMethodCode( CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS );
+    assertEquals( Const.KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS, evaluationMethodCode );
+  }
+
+  @Test
+  public void test_setAndGetEvaluationMethod() {
+    CheckSumMeta checkSumMeta = new CheckSumMeta();
+
+    // Passing a negative number
+    checkSumMeta.setEvaluationMethod( A_NEGATIVE_NUMBER );
+    assertEquals( A_NEGATIVE_NUMBER, checkSumMeta.getEvaluationMethod() );
+
+    // Passing a huge number
+    checkSumMeta.setEvaluationMethod( A_HUGE_POSITIVE_NUMBER );
+    assertEquals( A_HUGE_POSITIVE_NUMBER, checkSumMeta.getEvaluationMethod() );
+
+    // Known valid values
+    checkSumMeta.setEvaluationMethod( CheckSumMeta.EVALUATION_METHOD_BYTES );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_BYTES, checkSumMeta.getEvaluationMethod() );
+    checkSumMeta.setEvaluationMethod( CheckSumMeta.EVALUATION_METHOD_PENTAHO_STRINGS );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_PENTAHO_STRINGS, checkSumMeta.getEvaluationMethod() );
+    checkSumMeta.setEvaluationMethod( CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS );
+    assertEquals( CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS, checkSumMeta.getEvaluationMethod() );
+    checkSumMeta.setEvaluationMethod( CheckSumMeta.DEFAULT_EVALUATION_METHOD );
+    assertEquals( CheckSumMeta.DEFAULT_EVALUATION_METHOD, checkSumMeta.getEvaluationMethod() );
   }
 }
