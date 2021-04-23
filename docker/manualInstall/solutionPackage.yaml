@@ -1,12 +1,12 @@
 apiVersion: hitachivantara.com/v1
 kind: solutionpackage
 metadata:
-  name: "webspoon-CHANGE_ME"
+  name: "webspoon-1.36.0"
 spec:
   chartName: "webspoon"
-  chartVersion: "CHANGE_ME"
+  chartVersion: "1.36.0"
   # optional:
-  appVersion: "CHANGE_ME"
+  appVersion: "1.36.0"
   # optional:
   images:
-    - "hiromuhota/webspoon:CHANGE_ME"
+    - "hiromuhota/webspoon:1.36.0"
