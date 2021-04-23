@@ -16,15 +16,12 @@ spec:
         app.kubernetes.io/name: {{ include "webspoon.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ template "webspoon.fullname" . }}
-{{- if .Values.securityContext.enabled }}
       securityContext:
-        runAsUser: {{ .Values.securityContext.runAsUser }}
-        runAsGroup: {{ .Values.securityContext.runAsGroup }}
-{{- end }}
+        runAsUser: 10001
       containers:
-      - name: {{ template "webspoon.name" . }}
-        image: ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon:CHANGE_ME
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
           - mountPath: /home/tomcat/.kettle
             name: kettle-pvc
@@ -40,9 +37,17 @@ spec:
           # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/spring/security.xml
           #   name: webspoon-config-cm
           #   subPath: security.xml
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
           - containerPort: {{ .Values.components.webspoon.containerPort }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+
         env:
         - name: JAVA_OPTS
           value: -Xms1024m -Xmx2048m
@@ -52,8 +57,8 @@ spec:
           value: {{ .Values.keycloak.server }}
         - name: KEYCLOAK_REALM
           value: {{ .Values.keycloak.realm }}
-
         resources: {}
+
       volumes:
         - name: kettle-pvc
           persistentVolumeClaim:

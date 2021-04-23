@@ -101,6 +101,13 @@ Helper function for sso name
 {{- end -}}
 
 {{/*
+Note this is truncated to 63 characters max due to a limitation in the istio virtual service naming limit
+*/}}
+{{- define "webspoon.gatekeeperAppName" -}}
+{{with $x := (include "webspoon.fullname" .) | trunc 52 }}{{printf "%s-%s" $x "gatekeeper"}}{{end}}
+{{- end -}}
+
+{{/*
 Helper function for gatekeeper clientId
 */}}
 {{- define "webspoon.gatekeeper.clientId" -}}

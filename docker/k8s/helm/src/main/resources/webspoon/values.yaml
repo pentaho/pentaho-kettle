@@ -8,7 +8,7 @@ image:
   repository: ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: CHANGE_ME
+  tag: 1.36.0
 
 keycloak:
   server: "http://keycloak-http:8080/auth"
@@ -20,21 +20,14 @@ keycloak:
 components:
   webspoon:
     name: webspoon
-    appName: Webspoon POC CHANGE_ME
+    appName: Webspoon POC 1.36.0
     containerPort: 8080
     service:
-      type: NodePort
+      type: SSO
       nodePort: 0
       port: 8084
     logLevel: "INFO"
     replicaCount: 1
 
-## Add stateful containers to have security context, if enabled provider will run as this
-## user and group
-securityContext:
-  enabled: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
 
 

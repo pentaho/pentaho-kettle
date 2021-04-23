@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "webspoon.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.components.webspoon.service.type }}
+  type: ClusterIP
   ports:
     - port: {{ .Values.components.webspoon.service.port }}
     {{if and (eq .Values.components.webspoon.service.type "NodePort") .Values.components.webspoon.service.nodePort }}

@@ -8,7 +8,7 @@ spec:
   client:
     id: {{ template "webspoon.gatekeeper.clientId" . }}
   app:
-    name: {{ template "webspoon.fullname" . }}-app
+    name: {{ template "webspoon.gatekeeperAppName" . }}-app
     scheme: "https"
     serviceName: {{ template "webspoon.fullname" . }}
   gatekeeperConfig:
@@ -19,6 +19,8 @@ spec:
           - GET
         roles:
           - {{ template "webspoon.gatekeeper.clientId" . }}:view
+          - {{ template "webspoon.gatekeeper.clientId" . }}:edit
+          - {{ template "webspoon.gatekeeper.clientId" . }}:delete
         require-any-role: true
       - uri: /api/*
         roles:
