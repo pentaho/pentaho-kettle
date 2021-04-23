@@ -80,7 +80,6 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.step.RowAdapter;
-import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.jsoninput.reader.FastJsonReader;
@@ -1407,24 +1406,27 @@ public class JsonInputTest {
   @Test
   public void testParsingWithNullFinding() throws Exception {
     JsonInputField a = new JsonInputField( "A" );
-    a.setPath( "$.A.F1" );
+    a.setPath( "$..A.F1" );
     a.setType( ValueMetaInterface.TYPE_STRING );
     JsonInputField b = new JsonInputField( "B" );
-    b.setPath( "$.B.F2" );
+    b.setPath( "$..B.F2" );
     b.setType( ValueMetaInterface.TYPE_STRING );
     //Create two meta inputs with two different orders a,b and b,a
+    List results = new ArrayList<>();
     List<JsonInputMeta> metas = Arrays.asList( createSimpleMeta( "json", a, b ), createSimpleMeta( "json", b, a ) );
     for ( JsonInputMeta meta : metas ) {
       JsonInputMeta metaAB = createSimpleMeta( "json", a, b );
-      JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { "{'B':{'F2': 1}}" } );
+      JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { "{'B':{'F2': one}, 'C':{'B': {'F2': three}}}" } );
       jsonInput.addRowListener( new RowAdapter() {
         @Override public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) {
-          //Regardless of the order the result should contain the finding of "1".
-          Assert.assertTrue( Arrays.asList( row ).contains( "1" ) );
+          results.addAll( Arrays.asList( row ) );
         }
       } );
-      processRows( jsonInput, 2 );
+      processRows( jsonInput, 3 );
       Assert.assertEquals( "error", 0, jsonInput.getErrors() );
+      //Regardless of the order the result should contain the findings "one" and "three".
+      Assert.assertTrue( results.contains( "one" ) );
+      Assert.assertTrue( results.contains( "three" ) );
     }
   }
 }
