@@ -16,12 +16,29 @@ spec:
         app.kubernetes.io/name: {{ include "webspoon.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ template "webspoon.fullname" . }}
+{{- if .Values.securityContext.enabled }}
       securityContext:
-        runAsUser: 10001
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup }}
+{{- end }}
       containers:
-      - name: {{ .Chart.Name }}
+      - name: {{ template "webspoon.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.components.webspoon.containerPort }}
+        env:
+          - name: JAVA_OPTS
+            value: -Xms1024m -Xmx2048m
+          - name: KEYCLOAK_CLIENT_ID
+            value: {{ template "webspoon.gatekeeper.clientId" . }}
+          - name: KEYCLOAK_SERVER_URL
+            value: {{ .Values.keycloak.server }}
+          - name: KEYCLOAK_REALM
+            value: {{ .Values.keycloak.realm }}
+        resources: {}
+
         volumeMounts:
           - mountPath: /home/tomcat/.kettle
             name: kettle-pvc
@@ -37,28 +54,6 @@ spec:
           # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/spring/security.xml
           #   name: webspoon-config-cm
           #   subPath: security.xml
-        ports:
-          - containerPort: {{ .Values.components.webspoon.containerPort }}
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
-
-        env:
-        - name: JAVA_OPTS
-          value: -Xms1024m -Xmx2048m
-        - name: KEYCLOAK_CLIENT_ID
-          value: {{ template "webspoon.gatekeeper.clientId" . }}
-        - name: KEYCLOAK_SERVER_URL
-          value: {{ .Values.keycloak.server }}
-        - name: KEYCLOAK_REALM
-          value: {{ .Values.keycloak.realm }}
-        resources: {}
-
       volumes:
         - name: kettle-pvc
           persistentVolumeClaim:

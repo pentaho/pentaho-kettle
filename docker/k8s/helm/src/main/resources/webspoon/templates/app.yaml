@@ -7,10 +7,9 @@ metadata:
 spec:
   name: {{ .Values.components.webspoon.appName }}
   description: "Link to access {{ .Values.components.webspoon.appName }} application."
+  serviceNamespace: {{ .Release.Namespace }}
   sso: {{ template "webspoon.sso" . }}
   generateNetworkRoute: true
   exposeLink: true
   rewritePath: "/"
   protocol: "https"
-  singleRoute: false
-  port: {{ .Values.components.webspoon.service.port }}
