@@ -26,7 +26,7 @@
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <commons-io.version>2.2</commons-io.version>
+    <commons-io.version>2.7</commons-io.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-pool.version>1.5.7</commons-pool.version>
     <jug-lgpl.version>2.0.0</jug-lgpl.version>
