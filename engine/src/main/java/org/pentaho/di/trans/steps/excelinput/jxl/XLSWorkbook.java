@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,11 @@
 
 package org.pentaho.di.trans.steps.excelinput.jxl;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.core.util.Utils;
@@ -36,9 +38,12 @@ import jxl.WorkbookSettings;
 
 public class XLSWorkbook implements KWorkbook {
 
+  private LogChannelInterface log;
+
   private Workbook workbook;
   private String filename;
   private String encoding;
+  private InputStream inputStream;
 
   public XLSWorkbook( String filename, String encoding ) throws KettleException {
     this.filename = filename;
@@ -49,7 +54,8 @@ public class XLSWorkbook implements KWorkbook {
       ws.setEncoding( encoding );
     }
     try {
-      workbook = Workbook.getWorkbook( KettleVFS.getInputStream( filename ), ws );
+      inputStream = KettleVFS.getInputStream( filename );
+      workbook = Workbook.getWorkbook( inputStream, ws );
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
@@ -72,6 +78,11 @@ public class XLSWorkbook implements KWorkbook {
   public void close() {
     if ( workbook != null ) {
       workbook.close();
+      try {
+        inputStream.close();
+      } catch ( IOException e ) {
+        log.logError( "Could not close workbook", e );
+      }
     }
   }
 
