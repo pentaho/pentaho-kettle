@@ -3,6 +3,8 @@ MAINTAINER Hiromu Hota <hiromu.hota@hal.hitachi.com>
 ENV JAVA_OPTS="-Xms1024m -Xmx2048m"
 RUN apt-get update && apt-get install -y vim
 
+COPY --chown=tomcat:tomcat customFiles/server.xml /usr/local/tomcat/conf/server.xml
+
 RUN rm -rf ${CATALINA_HOME}/webapps/* \
     && mkdir ${CATALINA_HOME}/webapps/ROOT \
     && echo "<% response.sendRedirect(\"spoon/\"); %>" > ${CATALINA_HOME}/webapps/ROOT/index.jsp
