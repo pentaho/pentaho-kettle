@@ -43,12 +43,14 @@ if (qatPattern.matcher(suiteReleaseVersion)) {
 
 def allowRunIPJobs = false
 if (isQAT) {
-  allowRunIPJobs = ((suiteReleaseVersion.equals("9.2-QAT") && Boolean.parseBoolean(params.DO_92_QAT_SCAN))
+  allowRunIPJobs = ((suiteReleaseVersion.equals("9.3-QAT") && Boolean.parseBoolean(params.DO_93_QAT_SCAN))
+    || (suiteReleaseVersion.equals("9.2-QAT") && Boolean.parseBoolean(params.DO_92_QAT_SCAN))
     || (suiteReleaseVersion.equals("9.1-QAT") && Boolean.parseBoolean(params.DO_91_QAT_SCAN))
     || (suiteReleaseVersion.equals("9.0-QAT") && Boolean.parseBoolean(params.DO_90_QAT_SCAN))
     || (suiteReleaseVersion.equals("8.3-QAT") && Boolean.parseBoolean(params.DO_83_QAT_SCAN)))
 } else if (isRelease) {
-  allowRunIPJobs = ((suiteReleaseVersion.startsWith("9.2") && Boolean.parseBoolean(params.DO_92_R_SCAN))
+  allowRunIPJobs = ((suiteReleaseVersion.startsWith("9.3") && Boolean.parseBoolean(params.DO_93_R_SCAN))
+    || (suiteReleaseVersion.startsWith("9.2") && Boolean.parseBoolean(params.DO_92_R_SCAN))
     || (suiteReleaseVersion.startsWith("9.1") && Boolean.parseBoolean(params.DO_91_R_SCAN))
     || (suiteReleaseVersion.startsWith("9.0") && Boolean.parseBoolean(params.DO_90_R_SCAN))
     || (suiteReleaseVersion.startsWith("8.3") && Boolean.parseBoolean(params.DO_83_R_SCAN)))

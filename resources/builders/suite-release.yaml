@@ -23,13 +23,13 @@ buildProperties:
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
-  RELEASE_VERSION                : 9.2.0.0
-  DEPLOYMENT_FOLDER              : 9.2-QAT
+  RELEASE_VERSION                : 9.3.0.0
+  DEPLOYMENT_FOLDER              : 9.3-QAT
   RELEASE_MODE                   : true
   DEFAULT_BRANCH                 : master
-  SUITE_BUILD_RESOURCES_BRANCH   : 9.2.0.0
+  SUITE_BUILD_RESOURCES_BRANCH   : 9.3.0.0
   SERVICEPACK_BRANCH             : master
-  JENKINS_FOLDER_NAME            : '9.2'
+  JENKINS_FOLDER_NAME            : '9.3'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/oracle-jdk/8
