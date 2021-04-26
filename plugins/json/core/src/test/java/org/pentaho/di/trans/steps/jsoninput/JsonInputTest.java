@@ -1398,4 +1398,35 @@ public class JsonInputTest {
     assertEquals( "Meta input fields paths should be the same after processRows", PATH, inputMeta.getInputFields()[0].getPath() );
   }
 
+  /*
+   * see PDI-19132. When parsing, if the first field returned null, the second field would also return null, when in
+   * reality the path existed. This test makes sure that regardless of the order of the fields being searched the result
+   * is the same (the field with a path that exists returns the correct value).
+   */
+  @Test
+  public void testParsingWithNullFinding() throws Exception {
+    JsonInputField a = new JsonInputField( "A" );
+    a.setPath( "$..A.F1" );
+    a.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputField b = new JsonInputField( "B" );
+    b.setPath( "$..B.F2" );
+    b.setType( ValueMetaInterface.TYPE_STRING );
+    //Create two meta inputs with two different orders a,b and b,a
+    List results = new ArrayList<>();
+    List<JsonInputMeta> metas = Arrays.asList( createSimpleMeta( "json", a, b ), createSimpleMeta( "json", b, a ) );
+    for ( JsonInputMeta meta : metas ) {
+      JsonInputMeta metaAB = createSimpleMeta( "json", a, b );
+      JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { "{'B':{'F2': one}, 'C':{'B': {'F2': three}}}" } );
+      jsonInput.addRowListener( new RowAdapter() {
+        @Override public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) {
+          results.addAll( Arrays.asList( row ) );
+        }
+      } );
+      processRows( jsonInput, 3 );
+      Assert.assertEquals( "error", 0, jsonInput.getErrors() );
+      //Regardless of the order the result should contain the findings "one" and "three".
+      Assert.assertTrue( results.contains( "one" ) );
+      Assert.assertTrue( results.contains( "three" ) );
+    }
+  }
 }
