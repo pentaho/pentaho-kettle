@@ -12,5 +12,4 @@ spec:
   generateNetworkRoute: true
   exposeLink: true
   rewritePath: "/"
-  fixedPath: "webspoon/"
   protocol: "https"

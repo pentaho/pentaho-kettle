@@ -17,8 +17,11 @@ spec:
         # the methods that will be protected, if no methods are defined all methods will be protected. In this example POST, PUT, etc will allowed.
         methods:
           - GET
+          - POST
+          - PUT
+          - DELETE
         roles:
-          - {{ template "webspoon.gatekeeper.clientId" . }}:view
+          - {{ template "webspoon.gatekeeper.clientId" . }}:executespoon
         require-any-role: true
       - uri: /api/*
         roles:

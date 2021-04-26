@@ -1,9 +1,12 @@
 FROM tomcat:jdk8
 MAINTAINER Hiromu Hota <hiromu.hota@hal.hitachi.com>
 ENV JAVA_OPTS="-Xms1024m -Xmx2048m"
+RUN apt-get update && apt-get install -y vim
+
 RUN rm -rf ${CATALINA_HOME}/webapps/* \
     && mkdir ${CATALINA_HOME}/webapps/ROOT \
-    && echo "<% response.sendRedirect(\"spoon\"); %>" > ${CATALINA_HOME}/webapps/ROOT/index.jsp
+    && echo "<% response.sendRedirect(\"spoon/\"); %>" > ${CATALINA_HOME}/webapps/ROOT/index.jsp
+
 
 ARG base=9.0
 ARG patch=22
