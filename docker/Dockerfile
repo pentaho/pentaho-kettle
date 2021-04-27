@@ -39,5 +39,6 @@ RUN sh /tmp/install.sh
 ADD --chown=tomcat:tomcat https://github.com/HiromuHota/pentaho-kettle/releases/download/webspoon%2F$version/webspoon-security-$dist-$patch.jar ${CATALINA_HOME}/lib/
 RUN echo "CLASSPATH="$CATALINA_HOME"/lib/webspoon-security-$dist-$patch.jar" | tee ${CATALINA_HOME}/bin/setenv.sh
 COPY --chown=tomcat:tomcat catalina.policy ${CATALINA_HOME}/conf/
+COPY --chown=tomcat:tomcat customFiles/web.xml ${CATALINA_HOME}/webapps/spoon/WEB-INF/web.xml
 RUN mkdir -p $HOME/.kettle/users && mkdir -p $HOME/.pentaho/users
 RUN mkdir -p $HOME/.kettle/data && cp -r ${CATALINA_HOME}/samples $HOME/.kettle/data/samples
