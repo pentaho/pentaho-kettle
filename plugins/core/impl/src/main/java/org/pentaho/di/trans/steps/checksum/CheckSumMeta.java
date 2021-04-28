@@ -165,6 +165,8 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
   public CheckSumMeta() {
     super(); // allocate BaseStepMeta
+
+    allocate( 0 );
   }
 
   //
@@ -649,7 +651,6 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
           remarks.add( cr );
         }
       }
-
     }
 
     // See if we have input streams leading to this step!
@@ -669,12 +670,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
         PKG, "CheckSumMeta.CheckResult.CompatibilityModeWarning" ), stepMeta );
       remarks.add( cr );
-    }
 
-    if ( isCompatibilityMode() && TYPE_SHA256.equals( getCheckSumType() ) ) {
-      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-        PKG, "CheckSumMeta.CheckResult.CompatibilityModeSHA256Error" ), stepMeta );
-      remarks.add( cr );
+      if ( TYPE_SHA256.equals( getCheckSumType() ) ) {
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "CheckSumMeta.CheckResult.CompatibilityModeSHA256Error" ), stepMeta );
+        remarks.add( cr );
+      }
     }
   }
 

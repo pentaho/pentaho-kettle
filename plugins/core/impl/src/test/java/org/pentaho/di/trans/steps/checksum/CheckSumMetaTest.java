@@ -22,13 +22,6 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -41,11 +34,24 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+
 public class CheckSumMetaTest implements InitializerInterface<CheckSumMeta> {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final int A_NEGATIVE_NUMBER = -1234;
   private static final int A_HUGE_POSITIVE_NUMBER = Integer.MAX_VALUE;
+  private static final String SOME_RANDOM_STRING = UUID.randomUUID().toString();
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
@@ -209,5 +215,66 @@ public class CheckSumMetaTest implements InitializerInterface<CheckSumMeta> {
     assertEquals( CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS, checkSumMeta.getEvaluationMethod() );
     checkSumMeta.setEvaluationMethod( CheckSumMeta.DEFAULT_EVALUATION_METHOD );
     assertEquals( CheckSumMeta.DEFAULT_EVALUATION_METHOD, checkSumMeta.getEvaluationMethod() );
+  }
+
+  @Test
+  public void test_setAndGetResultType() {
+    CheckSumMeta checkSumMeta = new CheckSumMeta();
+
+    // Passing a negative number
+    checkSumMeta.setResultType( A_NEGATIVE_NUMBER );
+    assertEquals( A_NEGATIVE_NUMBER, checkSumMeta.getResultType() );
+
+    // Passing a huge number
+    checkSumMeta.setResultType( A_HUGE_POSITIVE_NUMBER );
+    assertEquals( A_HUGE_POSITIVE_NUMBER, checkSumMeta.getResultType() );
+
+    // Known valid values
+    checkSumMeta.setResultType( CheckSumMeta.result_TYPE_STRING );
+    assertEquals( CheckSumMeta.result_TYPE_STRING, checkSumMeta.getResultType() );
+    checkSumMeta.setResultType( CheckSumMeta.result_TYPE_HEXADECIMAL );
+    assertEquals( CheckSumMeta.result_TYPE_HEXADECIMAL, checkSumMeta.getResultType() );
+    checkSumMeta.setResultType( CheckSumMeta.result_TYPE_BINARY );
+    assertEquals( CheckSumMeta.result_TYPE_BINARY, checkSumMeta.getResultType() );
+  }
+
+  @Test
+  public void test_setAndGetFieldSeparatorString() {
+    CheckSumMeta checkSumMeta = new CheckSumMeta();
+
+    // Passing 'null'
+    checkSumMeta.setFieldSeparatorString( null );
+    assertNull( checkSumMeta.getFieldSeparatorString() );
+
+    // Passing a huge number
+    checkSumMeta.setFieldSeparatorString( SOME_RANDOM_STRING );
+    assertEquals( SOME_RANDOM_STRING, checkSumMeta.getFieldSeparatorString() );
+  }
+
+  @Test
+  public void testAllocate() {
+    CheckSumMeta checkSumMeta = new CheckSumMeta();
+    Random random = new Random();
+    int maxAllocation = 50;
+
+    // Initially the array should exist but be empty
+    String[] fieldNames = checkSumMeta.getFieldName();
+    assertNotNull( fieldNames );
+    assertEquals( 0, fieldNames.length );
+
+    // Some random numbers
+    for ( int i = 0; i < 10; ++i ) {
+      int n = random.nextInt( maxAllocation );
+      checkSumMeta.allocate( n );
+      fieldNames = checkSumMeta.getFieldName();
+      assertNotNull( fieldNames );
+      assertEquals( n, fieldNames.length );
+    }
+
+    // Zero
+    checkSumMeta.allocate( 0 );
+    fieldNames = checkSumMeta.getFieldName();
+    assertNotNull( fieldNames );
+    assertEquals( 0, fieldNames.length );
   }
 }
