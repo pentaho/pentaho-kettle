@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -224,21 +224,22 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         // used for calculating the responseTime
         long startTime = System.currentTimeMillis();
 
+        HttpHost target = new HttpHost( uriBuilder.getHost(), uriBuilder.getPort(), uriBuilder.getScheme() );
+        // Create AuthCache instance
+        AuthCache authCache = new BasicAuthCache();
+        // Generate BASIC scheme object and add it to the local
+        // auth cache
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put( target, basicAuth );
+        // Add AuthCache to the execution context
+        HttpClientContext localContext = HttpClientContext.create();
+        localContext.setAuthCache( authCache );
+
         // Execute the POST method
         if ( StringUtils.isNotBlank( data.realProxyHost ) ) {
-          HttpHost target = new HttpHost( uriBuilder.getHost(), uriBuilder.getPort(), uriBuilder.getScheme() );
-          // Create AuthCache instance
-          AuthCache authCache = new BasicAuthCache();
-          // Generate BASIC scheme object and add it to the local
-          // auth cache
-          BasicScheme basicAuth = new BasicScheme();
-          authCache.put( target, basicAuth );
-          // Add AuthCache to the execution context
-          HttpClientContext localContext = HttpClientContext.create();
-          localContext.setAuthCache( authCache );
           httpResponse = httpClient.execute( target, post, localContext );
         } else {
-          httpResponse = httpClient.execute( post );
+          httpResponse = httpClient.execute( post, localContext );
         }
         int statusCode = requestStatusCode( httpResponse );
 
