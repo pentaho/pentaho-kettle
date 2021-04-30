@@ -289,38 +289,6 @@ public class JobTest {
     scheduler.shutdown();
   }
 
-  /**
-   * Tests the re-execution of a sub-job with a checkpoint and Previous Results (Called by JobExecutor - Job Calling
-   * another Job) The called Job is set to Repeat
-   */
-  @Test
-  public void executeWithPreviousCheckpointTest() {
-
-    setupJobMockExecution();
-    try {
-      when( mockedJob.execute( anyInt(), any( Result.class ) ) ).thenCallRealMethod();
-      JobEntryCopy startJobEntryCopy = mock( JobEntryCopy.class );
-      Result startJobEntryResult = mock( Result.class );
-      JobEntryInterface mockJobEntryInterface =
-        mock( JobEntryInterface.class, withSettings().extraInterfaces( VariableSpace.class ) );
-      when( startJobEntryCopy.getEntry() ).thenReturn( mockJobEntryInterface );
-      when( mockJobEntryInterface.getLogChannel() ).thenReturn( mockedLogChannel );
-      when( mockJobEntryInterface.clone() ).thenReturn( mockJobEntryInterface );
-      when( startJobEntryResult.clone() ).thenReturn( startJobEntryResult );
-      setInternalState( mockedJob, "startJobEntryCopy", startJobEntryCopy );
-      setInternalState( mockedJob, "startJobEntryResult", startJobEntryResult );
-      when( mockJobEntryInterface.execute( startJobEntryResult, 0 ) ).thenReturn( new Result() );
-
-      mockedJob.execute( 0, new Result() );
-
-      //Verify that the execute used the start point supplied with result supplied instead of starting from the start
-      verify( mockJobEntryInterface, times( 1 ) ).execute( eq( startJobEntryResult ), eq( 0 ) );
-      verify( mockedJobEntrySpecial, times( 0 ) ).execute( any( Result.class ), anyInt() );
-    } catch ( KettleException e ) {
-      Assert.fail( "Could not execute job" );
-    }
-  }
-
   @Test
   public void testJobLoggingObjectLifecycleInterface() {
     Job job = new Job();
