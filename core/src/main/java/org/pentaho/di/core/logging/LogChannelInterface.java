@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -127,4 +127,14 @@ public interface LogChannelInterface {
    *          the value to store
    */
   void snap( MetricsInterface metric, String subject, long... value );
+
+
+  default void setHooks( LoggingObjectLifecycleInterface loggingObjectLifecycleInterface ) {
+    logBasic( "This implementation was not overridden, please implement in your own implementation" );
+  }
+
+  default LoggingObjectLifecycleInterface getHooks() {
+    logBasic( "This implementation was not overridden, please implement in your own implementation" );
+    return null;
+  }
 }
