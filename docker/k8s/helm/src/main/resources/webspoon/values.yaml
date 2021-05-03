@@ -9,6 +9,13 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: CHANGE_ME
 
+dataFlowStudio:
+  volume:
+    pdi:
+      host: ""
+      path: ""
+      mountPath: "/home/di_user/.kettle"
+
 keycloak:
   server: "http://keycloak-http:8080/auth"
   realm: "default"

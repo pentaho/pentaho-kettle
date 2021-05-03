@@ -4,8 +4,8 @@ metadata:
   name: pentaho-pvc
 spec:
   accessModes:
-  # - ReadWriteMany
-  - ReadWriteOnce
+    # - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 100Mi

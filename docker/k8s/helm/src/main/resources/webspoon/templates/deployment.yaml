@@ -26,6 +26,26 @@ spec:
       - name: {{ template "webspoon.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          privileged: false
+        volumeMounts:
+          - name: target-nfs-volume
+            mountPath: {{ .Values.dataFlowStudio.volume.pdi.mountPath }}
+          - name: pentaho-pvc
+            mountPath: /home/tomcat/.pentaho
+
+
+          # # When you created your own config file, uncomment each section depending on file.
+          # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/web.xml
+          #   name: webspoon-config-cm
+          #   subPath: web.xml
+          # - mountPath: /usr/local/tomcat/conf/catalina.policy
+          #   name: webspoon-config-cm
+          #   subPath: catalina.policy
+          # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/spring/security.xml
+          #   name: webspoon-config-cm
+          #   subPath: security.xml
+
         ports:
           - containerPort: {{ .Values.components.webspoon.containerPort }}
         env:
@@ -39,31 +59,18 @@ spec:
             value: {{ .Values.keycloak.realm }}
         resources: {}
 
-        volumeMounts:
-          - mountPath: /home/tomcat/.kettle
-            name: kettle-pvc
-          - mountPath: /home/tomcat/.pentaho
-            name: pentaho-pvc
-          # # When you created your own config file, uncomment each section depending on file.
-          # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/web.xml
-          #   name: webspoon-config-cm
-          #   subPath: web.xml
-          # - mountPath: /usr/local/tomcat/conf/catalina.policy
-          #   name: webspoon-config-cm
-          #   subPath: catalina.policy
-          # - mountPath: /usr/local/tomcat/webapps/spoon/WEB-INF/spring/security.xml
-          #   name: webspoon-config-cm
-          #   subPath: security.xml
       volumes:
-        - name: kettle-pvc
-          persistentVolumeClaim:
-            claimName: kettle-pvc
+        - name: target-nfs-volume
+          {{ if eq .Values.dataFlowStudio.volume.pdi.host "" }}
+          emptyDir: {}
+          {{ else }}
+          nfs:
+            server: {{ .Values.dataFlowStudio.volume.pdi.host }}
+            path: {{ .Values.dataFlowStudio.volume.pdi.path }}
+          {{ end }}
         - name: pentaho-pvc
           persistentVolumeClaim:
             claimName: pentaho-pvc
-        # # Uncomment to mount ConfigMap if you created ConfigMap
-        # - name: webspoon-config-cm
-        #   configMap:
-        #     name: webspoon-config-cm
+
       restartPolicy: Always
 
