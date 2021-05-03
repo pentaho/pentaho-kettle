@@ -820,6 +820,15 @@ public class Const {
     "KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE";
 
   /**
+   * System wide flag to control behavior of the ExecuteTransformationStep and ExecuteJobStep when a file is specified.
+   * This only is used when PDI is connected to repository
+   * 'Y' It is possible specify a file with the extension or not that is saved in repository
+   * 'N' Should not be specified the extension, in other words, should be specified the name of file saved in repository.
+   */
+  public static final String KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION =
+    "KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION";
+
+  /**
    * You can use this variable to speed up hostname lookup.
    * Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
    */
