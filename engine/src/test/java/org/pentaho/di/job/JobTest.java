@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,11 +36,14 @@ import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LoggingObjectLifecycleInterface;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.HasDatabasesInterface;
 
@@ -54,9 +57,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
@@ -64,6 +69,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
+import static org.powermock.reflect.Whitebox.getMethods;
 import static org.powermock.reflect.Whitebox.setInternalState;
 
 public class JobTest {
@@ -281,4 +288,33 @@ public class JobTest {
     scheduler.schedule( task, 1, TimeUnit.SECONDS );
     scheduler.shutdown();
   }
+
+  @Test
+  public void testJobLoggingObjectLifecycleInterface() {
+    Job job = new Job();
+
+    assertTrue( job instanceof LoggingObjectLifecycleInterface );
+    assertEquals( 2, getMethods( Job.class, "callBeforeLog", "callAfterLog" ).length );
+  }
+
+  @Test
+  public void testJobCallBeforeLog() {
+    Job job = new Job();
+    LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
+    setInternalState( job, "parentLoggingObject", parentLoggingObject );
+
+    job.callBeforeLog();
+    verify( parentLoggingObject, times( 1 ) ).callBeforeLog();
+  }
+
+  @Test
+  public void testJobCallAfterLog() {
+    Job job = new Job();
+    LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
+    setInternalState( job, "parentLoggingObject", parentLoggingObject );
+
+    job.callAfterLog();
+    verify( parentLoggingObject, times( 1 ) ).callAfterLog();
+  }
+
 }
