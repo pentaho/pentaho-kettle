@@ -53,7 +53,7 @@ public class TextFileInputReader implements IBaseFileInputReader {
 
   private final CompressionInputStream in;
 
-  private final InputStreamReader isr;
+  private final BufferedInputStreamReader isr;
 
   protected long lineInFile;
 
@@ -84,11 +84,11 @@ public class TextFileInputReader implements IBaseFileInputReader {
 
     if ( bom.bomExist() ) {
       // if BOM exist, use it instead defined charset
-      isr = new InputStreamReader( inStream, bom.getCharset() );
+      isr = new BufferedInputStreamReader( new InputStreamReader( inStream, bom.getCharset() ) );
     } else if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
-      isr = new InputStreamReader( inStream, meta.getEncoding() );
+      isr = new BufferedInputStreamReader( new InputStreamReader( inStream, meta.getEncoding() ) );
     } else {
-      isr = new InputStreamReader( inStream );
+      isr = new BufferedInputStreamReader( new InputStreamReader( inStream ) );
     }
 
     String encoding = isr.getEncoding();
