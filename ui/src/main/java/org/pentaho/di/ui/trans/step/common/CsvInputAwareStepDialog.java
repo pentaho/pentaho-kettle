@@ -31,6 +31,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.csvinput.CsvInput;
+import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
@@ -52,7 +53,7 @@ public interface CsvInputAwareStepDialog {
   default String[] getFieldNames( final CsvInputAwareMeta meta ) {
     String[] fieldNames = new String[] {};
     final InputStream inputStream = getInputStream( meta );
-    final InputStreamReader reader = getReader( meta, inputStream );
+    final BufferedInputStreamReader reader = getBufferedReader( meta, inputStream );
     try {
       fieldNames = getFieldNamesImpl( reader, meta );
     } catch ( final KettleException e ) {
@@ -67,7 +68,7 @@ public interface CsvInputAwareStepDialog {
     return fieldNames;
   }
 
-  default String[] getFieldNamesImpl( final InputStreamReader reader, final CsvInputAwareMeta meta )
+  default String[] getFieldNamesImpl( final BufferedInputStreamReader reader, final CsvInputAwareMeta meta )
     throws KettleException {
 
     String[] fieldNames = new String[] {};
@@ -147,6 +148,10 @@ public interface CsvInputAwareStepDialog {
       logError( BaseMessages.getString( "Dialog.ErrorGettingFileDesc.DialogMessage" ), e );
     }
     return reader;
+  }
+
+  default BufferedInputStreamReader getBufferedReader( final CsvInputAwareMeta meta, final InputStream inputStream ) {
+    return new BufferedInputStreamReader( getReader( meta, inputStream ) );
   }
 
   /**

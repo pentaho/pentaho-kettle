@@ -90,6 +90,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.file.BaseFileField;
+import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileFilter;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
@@ -2758,11 +2759,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.content.fileCompression );
         f = provider.createInputStream( fi );
 
-        InputStreamReader reader;
+        BufferedInputStreamReader reader;
         if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
-          reader = new InputStreamReader( f, meta.getEncoding() );
+          reader = new BufferedInputStreamReader( new InputStreamReader( f, meta.getEncoding() ) );
         } else {
-          reader = new InputStreamReader( f );
+          reader = new BufferedInputStreamReader( new InputStreamReader( f ) );
         }
         EncodingType encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
 
