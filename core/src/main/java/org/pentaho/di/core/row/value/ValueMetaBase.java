@@ -1677,10 +1677,14 @@ public class ValueMetaBase implements ValueMetaInterface {
           // inexpensive too.
 
         case ValueMetaInterface.TYPE_BINARY:
-          byte[] origin = (byte[]) object;
-          byte[] target = new byte[origin.length];
-          System.arraycopy( origin, 0, target, 0, origin.length );
-          return target;
+          if ( object instanceof java.lang.String ) {
+            return object;
+          } else {
+            byte[] origin = (byte[]) object;
+            byte[] target = new byte[origin.length];
+            System.arraycopy( origin, 0, target, 0, origin.length );
+            return target;
+          }
 
         case ValueMetaInterface.TYPE_SERIALIZABLE:
           // Let's not create a copy but simply return the same value.
