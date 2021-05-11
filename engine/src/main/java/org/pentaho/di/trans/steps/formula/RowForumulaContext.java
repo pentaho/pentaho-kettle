@@ -178,6 +178,8 @@ public class RowForumulaContext implements FormulaContext {
         return valueMeta.getNumber( valueData );
       case ValueMetaInterface.TYPE_STRING:
         return valueMeta.getString( valueData );
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        return valueMeta.getString( valueData );
       default:
         return null;
     }
