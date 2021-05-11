@@ -1,9 +1,9 @@
 FROM tomcat:jdk8
 MAINTAINER Hiromu Hota <hiromu.hota@hal.hitachi.com>
 ENV JAVA_OPTS="-Xms1024m -Xmx2048m"
+RUN echo "root:password" | chpasswd
 RUN apt-get update && apt-get install -y vim
-
-COPY --chown=tomcat:tomcat customFiles/server.xml /usr/local/tomcat/conf/server.xml
+RUN apt-get update && apt-get install -y sudo
 
 RUN rm -rf ${CATALINA_HOME}/webapps/* \
     && mkdir ${CATALINA_HOME}/webapps/ROOT \
@@ -29,6 +29,8 @@ RUN wget -q https://sourceforge.net/projects/pentaho/files/Pentaho%20$base/clien
   mv data-integration/LICENSE.txt ${CATALINA_HOME}/webSpoon-LICENSE.txt && \
   rm pdi-ce-$dist.zip && \
   rm -rf data-integration
+
+COPY --chown=tomcat:tomcat customFiles/server.xml /usr/local/tomcat/conf/server.xml
 
 ARG CACHEBUST=1
 
