@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,26 +22,20 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.AliasedFileObject;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -62,6 +56,10 @@ import org.pentaho.di.trans.steps.file.BaseFileOutputMeta;
 import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Created on 4-apr-2003
@@ -755,45 +753,6 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    // No values are added to the row in this type of step
-    // However, in case of Fixed length records,
-    // the field precisions and lengths are altered!
-
-    for ( int i = 0; i < outputFields.length; i++ ) {
-      TextFileField field = outputFields[i];
-      ValueMetaInterface v = row.searchValueMeta( field.getName() );
-      if ( v != null ) {
-        v.setLength( field.getLength() );
-        v.setPrecision( field.getPrecision() );
-        if ( field.getFormat() != null ) {
-          v.setConversionMask( field.getFormat() );
-        }
-        v.setDecimalSymbol( field.getDecimalSymbol() );
-        v.setGroupingSymbol( field.getGroupingSymbol() );
-        v.setCurrencySymbol( field.getCurrencySymbol() );
-        v.setOutputPaddingEnabled( isPadded() );
-        v.setTrimType( field.getTrimType() );
-        if ( !Utils.isEmpty( getEncoding() ) ) {
-          v.setStringEncoding( getEncoding() );
-        }
-
-        // enable output padding by default to be compatible with v2.5.x
-        //
-        v.setOutputPaddingEnabled( true );
-      }
-    }
-  }
-
-  @Override
-  @Deprecated
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space ) throws KettleStepException {
-    getFields( inputRowMeta, name, info, nextStep, space, null, null );
-  }
-
-  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 800 );
 
@@ -1141,7 +1100,7 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
       try {
         FileObject fileObject = KettleVFS.getFileObject( getParentStepMeta().getParentTransMeta().environmentSubstitute( fileName ) );
         if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-          fileName = ( (AliasedFileObject) fileObject ).getOriginalURIString();
+          fileName = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
         }
       } catch ( KettleFileException e ) {
         throw new RuntimeException( e );

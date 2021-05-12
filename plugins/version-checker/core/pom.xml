@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>version-checker</artifactId>
-    <version>9.0.0.0-423</version>
+    <version>9.3.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kettle-version-checker-core</artifactId>
-  <version>9.0.0.0-423</version>
+  <version>9.3.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Version Checker Plugin Core</name>
@@ -37,11 +37,6 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-versionchecker</artifactId>
       <version>${pdi.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.3</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>

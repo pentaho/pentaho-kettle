@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2018-2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ define([
   'use strict';
 
   var options = {
-    bindings: {
-      connection: "<"
-    },
+    bindings: {},
     controllerAs: "vm",
     template: template,
     controller: pentahoController

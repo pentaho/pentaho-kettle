@@ -6,7 +6,7 @@
 
   <groupId>org.pentaho.di</groupId>
   <artifactId>pdi</artifactId>
-  <version>9.0.0.0-423</version>
+  <version>9.3.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Pentaho Data Integration</name>
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>9.0.0.0-423</version>
+    <version>9.3.0.0-SNAPSHOT</version>
   </parent>
 
   <scm>
@@ -55,13 +55,12 @@
     <license.licenseName>apache_v2</license.licenseName>
 
     <!-- Pentaho dependencies -->
-    <commons-xul.version>9.0.0.0-423</commons-xul.version>
-    <pentaho-metastore.version>9.0.0.0-423</pentaho-metastore.version>
+    <commons-xul.version>9.3.0.0-SNAPSHOT</commons-xul.version>
+    <pentaho-metastore.version>9.3.0.0-SNAPSHOT</pentaho-metastore.version>
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <js.version>1.7R3</js.version>
-    <commons-codec.version>1.10</commons-codec.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
     <guava.version>17.0</guava.version>
     <encoder.version>1.2</encoder.version>
@@ -74,13 +73,6 @@
     <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
     <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
-
-    <!-- Helm -->
-    <com.kiwigrid.helm-maven-plugin.version>5.6</com.kiwigrid.helm-maven-plugin.version>
-    <helm.repository.url>https://repo.orl.eng.hitachivantara.com/artifactory/dataflowstudio-helm-dev-orl</helm.repository.url>
-    <helm.repository.type>ARTIFACTORY</helm.repository.type>
-    <helm.username></helm.username>
-    <helm.password></helm.password>
   </properties>
 
   <dependencyManagement>
@@ -125,6 +117,26 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.jface</artifactId>
+        <version>3.22.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.core.commands</artifactId>
+        <version>3.9.800</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.equinox.common</artifactId>
+        <version>3.14.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.equinox.bidi</artifactId>
+        <version>1.3.0</version>
+      </dependency>
+      <dependency>
         <groupId>rhino</groupId>
         <artifactId>js</artifactId>
         <version>${js.version}</version>
@@ -139,17 +151,6 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>${commons-beanutils.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
         <exclusions>
           <exclusion>
             <groupId>*</groupId>
@@ -238,56 +239,6 @@
   </dependencyManagement>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>build-helper-maven-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>helm-chart-version-property-variable</id>
-              <phase>initialize</phase>
-              <goals>
-                <goal>regex-property</goal>
-              </goals>
-              <configuration>
-                <name>helm.chart.version</name>
-                <value>${project.version}</value>
-                <regex>${project.version}</regex>
-                <replacement>${project.version}</replacement>
-                <toLowerCase>true</toLowerCase>
-                <failIfNoMatch>false</failIfNoMatch>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>io.fabric8</groupId>
-          <artifactId>docker-maven-plugin</artifactId>
-          <version>${fabric8.docker.maven.plugin.version}</version>
-          <configuration>
-            <skip>true</skip>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>com.kiwigrid</groupId>
-          <artifactId>helm-maven-plugin</artifactId>
-          <version>${com.kiwigrid.helm-maven-plugin.version}</version>
-          <configuration>
-            <skip>true</skip>
-            <chartDirectory>${project.basedir}/target</chartDirectory>
-            <useLocalHelmBinary>true</useLocalHelmBinary>
-            <uploadRepoStable>
-              <name>stable-repo</name>
-              <url>${helm.repository.url}</url>
-              <type>${helm.repository.type}</type>
-              <username>${helm.username}</username>
-              <password>${helm.password}</password>
-            </uploadRepoStable>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -320,6 +271,7 @@
         <module>engine</module>
         <module>ui</module>
         <module>security</module>
+        <module>utilities</module>
       </modules>
     </profile>
     <profile>

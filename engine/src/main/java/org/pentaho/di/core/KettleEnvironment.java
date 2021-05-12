@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
 import org.pentaho.di.core.logging.LogTablePluginType;
+import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
@@ -148,6 +149,9 @@ public class KettleEnvironment {
         //
         KettleVariablesList.init();
 
+        // Update Variables for LoggingRegistry
+        LoggingRegistry.getInstance().updateFromProperties();
+
         // Initialize the Lifecycle Listeners
         //
         initLifecycleListeners();
@@ -246,6 +250,7 @@ public class KettleEnvironment {
   // Note - this is only called from test cases
   public static void reset() {
     KettleClientEnvironment.reset();
+    LoggingRegistry.getInstance().reset();
     initialized.set( null );
   }
 }

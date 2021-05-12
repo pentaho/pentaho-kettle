@@ -7,17 +7,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>google-analytics-assemblies</artifactId>
-    <version>9.0.0.0-423</version>
+    <version>9.3.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>pdi-google-analytics-plugin</artifactId>
-  <version>9.0.0.0-423</version>
+  <version>9.3.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Google Analytics Plugin Distribution</name>
 
   <properties>
-    <project.revision>9.0.0.0-423</project.revision>
+    <project.revision>9.3.0.0-SNAPSHOT</project.revision>
   </properties>
 
   <dependencies>
@@ -26,12 +26,6 @@
       <artifactId>pdi-google-analytics-plugin-core</artifactId>
       <version>${project.revision}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.9</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>

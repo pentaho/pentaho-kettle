@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,10 @@ package org.pentaho.di.core.osgi.api;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by tkafalas on 7/6/2017.
@@ -138,5 +142,25 @@ public interface NamedClusterOsgi extends VariableSpace {
   void setUseGateway( boolean selection );
 
   boolean isUseGateway();
+
+  String decodePassword( String password );
+
+  String encodePassword( String password );
+
+  default List<NamedClusterSiteFile> getSiteFiles() {
+    return Collections.emptyList();
+  }
+
+  default void setSiteFiles( List<NamedClusterSiteFile> siteFiles ) {
+    //default here just for compile purposes
+  }
+
+  default void addSiteFile( String fileName, String content ) {
+    //default here just for compile purposes
+  }
+
+  default InputStream getSiteFileInputStream( String siteFileName ) {
+    return null;
+  }
 
 }

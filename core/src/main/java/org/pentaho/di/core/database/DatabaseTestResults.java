@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ package org.pentaho.di.core.database;
 public class DatabaseTestResults {
   private String message;
   private boolean success;
+  private Exception exception;
 
   public String getMessage() {
     return message;
@@ -43,5 +44,13 @@ public class DatabaseTestResults {
 
   public void setSuccess( boolean success ) {
     this.success = success;
+  }
+
+  public Exception getException() {
+    return exception;
+  }
+
+  public void setException( Exception exception ) {
+    this.exception = exception;
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,33 +19,28 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.core;
 
+package org.pentaho.di.core.database.util;
+
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
 
-import java.util.Date;
+import javax.sql.DataSource;
 
 import static org.junit.Assert.*;
 
-public class TimedRowTest {
-  @Test
-  public void testClass() {
-    final long time = 1447691729119L;
-    final Date date = new Date( time );
-    final Object[] data = new Object[] { "value1", "value2", null };
-    TimedRow row = new TimedRow( date, data );
-    assertSame( data, row.getRow() );
-    assertSame( date, row.getLogDate() );
-    assertEquals( time, row.getLogtime() );
-    assertEquals( "value1, value2, null", row.toString() );
-    row.setRow( null );
-    assertNull( row.getRow() );
-    row.setLogDate( null );
-    assertNull( row.getLogDate() );
-    assertEquals( 0L, row.getLogtime() );
+public class DecryptingDataSourceTest {
 
-    row = new TimedRow( data );
-    assertSame( data, row.getRow() );
-    assertNotSame( date, row.getLogDate() );
+  @Test
+  public void setPassword() {
+    assertEquals( "password", tryAPassword( "password" ) );
+    assertEquals( "password", tryAPassword( "Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde" ) );
+    assertEquals( "", tryAPassword( "Encrypted somethingCorrupt" ) );
+  }
+
+  private String tryAPassword( String password ) {
+    BasicDataSource dataSource = new DecryptingDataSource();
+    dataSource.setPassword( password );
+    return dataSource.getPassword();
   }
 }

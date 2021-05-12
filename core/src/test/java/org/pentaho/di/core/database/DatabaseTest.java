@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -709,6 +709,70 @@ public class DatabaseTest {
     //we will check only it not null since it will be wrapped by pool and its not eqal with conn from driver
     assertNotNull( db.getConnection() );
 
+    DriverManager.deregisterDriver( driver );
+  }
+
+  @Test
+  public void testNormalConnectWhenDatasourceNeedsUpdate() throws Exception {
+    Driver driver = mock( Driver.class );
+    when( driver.acceptsURL( anyString() ) ).thenReturn( true );
+    when( driver.connect( anyString(), any( Properties.class ) ) ).thenReturn( conn );
+    DriverManager.registerDriver( driver );
+
+    when( meta.isUsingConnectionPool() ).thenReturn( true );
+    when( meta.getDriverClass() ).thenReturn( driver.getClass().getName() );
+    when( meta.getURL( anyString() ) ).thenReturn( "mockUrl" );
+    when( meta.getInitialPoolSize() ).thenReturn( 1 );
+    when( meta.getMaximumPoolSize() ).thenReturn( 1 );
+    when( meta.isNeedUpdate() ).thenReturn( true );
+
+    DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
+    DataSource dataSource = mock( DataSource.class );
+    Connection connection = mock( Connection.class );
+    when( provider.getNamedDataSource( any(), any() ) ).thenReturn( dataSource );
+    when( dataSource.getConnection() ).thenReturn( connection );
+    Database db = new Database( log, meta );
+    final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
+    try {
+      DataSourceProviderFactory.setDataSourceProviderInterface( provider );
+      db.normalConnect( "ConnectThatDoesNotExistInProvider" );
+      verify( meta, times( 1 ) ).setNeedUpdate( false );
+      verify( provider, times( 1 ) ).invalidateNamedDataSource( any(), any() );
+    } finally {
+      DataSourceProviderFactory.setDataSourceProviderInterface( existing );
+    }
+    //we will check only it not null since it will be wrapped by pool and its not equal with conn from driver
+    assertNotNull( db.getConnection() );
+    DriverManager.deregisterDriver( driver );
+  }
+
+  @Test
+  public void testNormalConnectWhenDatasourceDontNeedsUpdate() throws Exception {
+    Driver driver = mock( Driver.class );
+    when( driver.acceptsURL( anyString() ) ).thenReturn( true );
+    when( driver.connect( anyString(), any( Properties.class ) ) ).thenReturn( conn );
+    DriverManager.registerDriver( driver );
+
+    when( meta.isUsingConnectionPool() ).thenReturn( true );
+    when( meta.getDriverClass() ).thenReturn( driver.getClass().getName() );
+    when( meta.getURL( anyString() ) ).thenReturn( "mockUrl" );
+    when( meta.getInitialPoolSize() ).thenReturn( 1 );
+    when( meta.getMaximumPoolSize() ).thenReturn( 1 );
+    when( meta.isNeedUpdate() ).thenReturn( false );
+
+    DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
+    Database db = new Database( log, meta );
+    final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
+    try {
+      DataSourceProviderFactory.setDataSourceProviderInterface( provider );
+      db.normalConnect( null );
+      verify( meta, times( 0 ) ).setNeedUpdate( false );
+      verify( provider, times( 0 ) ).invalidateNamedDataSource( any(), any() );
+    } finally {
+      DataSourceProviderFactory.setDataSourceProviderInterface( existing );
+    }
+    //we will check only it not null since it will be wrapped by pool and its not equal with conn from driver
+    assertNotNull( db.getConnection() );
     DriverManager.deregisterDriver( driver );
   }
 

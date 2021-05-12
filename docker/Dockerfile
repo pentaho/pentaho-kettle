@@ -13,7 +13,7 @@ RUN rm -rf ${CATALINA_HOME}/webapps/* \
 ARG base=9.0
 ARG patch=22
 ARG version=0.$base.$patch
-ARG dist=9.0.0.0-423
+ARG dist=9.3.0.0-SNAPSHOT
 
 RUN groupadd -r tomcat \
     && useradd -r --create-home -g tomcat tomcat \

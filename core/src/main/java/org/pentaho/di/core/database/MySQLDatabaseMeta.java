@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSetMetaData;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -47,9 +49,17 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   private static final int VARCHAR_LIMIT = 65_535;
 
+  private static String driverClass = "";
+
   private static final Set<String>
-    SHORT_MESSAGE_EXCEPTIONS =
-    Sets.newHashSet( "com.mysql.jdbc.PacketTooBigException", "com.mysql.jdbc.MysqlDataTruncation" );
+    shortMessageExceptions =
+    Sets.newHashSet( "com.mysql.jdbc.PacketTooBigException", "com.mysql.jdbc.MysqlDataTruncation",
+      "com.mysql.cj.jdbc.exceptions.PacketTooBigException",
+      "com.mysql.cj.jdbc.exceptions.MysqlDataTruncation" );
+
+  public MySQLDatabaseMeta() {
+    determineDriverClass();
+  }
 
   @Override public int[] getAccessTypeList() {
     return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -99,12 +109,31 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     return super.getNotFoundTK( useAutoinc );
   }
 
+  /*
+  * Fix for BACKLOG-33475 Upgrade bulkload support to include MySQL 8.0
+  * Change necessary since the jdbc driver for MySQL 5.7 and 8.0 package name changed from
+  * org.gjt.mm.mysql.Driver to com.mysql.cj.jdbc.Driver
+  * */
   @Override public String getDriverClass() {
+    String driver = null;
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
+      driver = "sun.jdbc.odbc.JdbcOdbcDriver";
     } else {
-      return "org.gjt.mm.mysql.Driver";
+      driver = determineDriverClass();
     }
+    return driver;
+  }
+
+  private static String determineDriverClass() {
+    if ( driverClass.isEmpty() ) {
+      try {
+        driverClass = "com.mysql.cj.jdbc.Driver";
+        Class.forName( driverClass );
+      } catch ( ClassNotFoundException e ) {
+        driverClass = "org.gjt.mm.mysql.Driver";
+      }
+    }
+    return driverClass;
   }
 
   @Override public String getURL( String hostname, String port, String databaseName ) {
@@ -469,13 +498,25 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override public boolean fullExceptionLog( Exception e ) {
     Throwable cause = ( e == null ? null : e.getCause() );
-    return !( cause != null && SHORT_MESSAGE_EXCEPTIONS.contains( cause.getClass().getName() ) );
+    return !( cause != null && shortMessageExceptions.contains( cause.getClass().getName() ) );
   }
 
   @Override
   public void addDefaultOptions() {
+    //These options don't appear to get into the UI since it creates the DatabaseMeta with a hard coded Oracle type.
+    // Since it is called from the constuctor, I'm leaving it in, in case some other placed creates it but this
+    //appears to be implemented code that serves no purpose anymore.  See getDefaultOptions below.
     addExtraOption( getPluginId(), "defaultFetchSize", "500" );
     addExtraOption( getPluginId(), "useCursorFetch", "true" );
+  }
+
+  @Override
+  public Map<String, String> getDefaultOptions() {
+    Map<String, String> defaultOptions = new HashMap<>();
+    defaultOptions.put( getPluginId() + ".defaultFetchSize", "500" );
+    defaultOptions.put( getPluginId() + ".useCursorFetch", "true" );
+
+    return defaultOptions;
   }
 
   @Override

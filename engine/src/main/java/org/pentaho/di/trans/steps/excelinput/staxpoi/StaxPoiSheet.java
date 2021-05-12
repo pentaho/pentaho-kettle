@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,8 +57,17 @@ import org.pentaho.di.core.xml.XMLParserFactoryProducer;
  */
 public class StaxPoiSheet implements KSheet {
 
-  // set to UTC for coherence with PoiSheet;
+  // set to UTC for coherence with PoiSheet
   private static final TimeZone DATE_TZ = TimeZone.getTimeZone( "UTC" );
+
+  private static final String ATTRIBUTE_T = "t";
+
+  private static final String TAG_C = "c";
+  private static final String TAG_IS = "is";
+  private static final String TAG_ROW = "row";
+  private static final String TAG_SHEET_DATA = "sheetData";
+  private static final String TAG_T = "t";
+  private static final String TAG_V = "v";
 
   private final String sheetName;
   private final String sheetId;
@@ -95,68 +104,89 @@ public class StaxPoiSheet implements KSheet {
     headerRow = new ArrayList<>();
     while ( sheetReader.hasNext() ) {
       int event = sheetReader.next();
-      if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "dimension" ) ) {
-        String dim = sheetReader.getAttributeValue( null, "ref" );
-        // empty sheets have dimension with no range
-        if ( StringUtils.contains( dim, ':' ) ) {
-          dim = dim.split( ":" )[1];
-          numRows = StaxUtil.extractRowNumber( dim );
-          numCols = StaxUtil.extractColumnNumber( dim );
-        } else {
-          maxColsNumberDefined = false;
-          numCols = StaxUtil.MAX_COLUMNS;
-          numRows = StaxUtil.MAX_ROWS;
-        }
-      }
-      if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
-        currentRow = Integer.parseInt( sheetReader.getAttributeValue( null, "r" ) );
-        firstRow = currentRow;
-
-        // calculate the number of columns in the header row
-        while ( sheetReader.hasNext() ) {
-          event = sheetReader.next();
-          if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
-            // if the row has ended, break the inner while loop
-            break;
+      if ( event == XMLStreamConstants.START_ELEMENT ) {
+        if ( sheetReader.getLocalName().equals( "dimension" ) ) {
+          String dim = sheetReader.getAttributeValue( null, "ref" );
+          // empty sheets have dimension with no range
+          if ( StringUtils.contains( dim, ':' ) ) {
+            dim = dim.split( ":" )[ 1 ];
+            numRows = StaxUtil.extractRowNumber( dim );
+            numCols = StaxUtil.extractColumnNumber( dim );
+          } else {
+            maxColsNumberDefined = false;
+            numCols = StaxUtil.MAX_COLUMNS;
+            numRows = StaxUtil.MAX_ROWS;
           }
-          if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
-            String attributeValue = sheetReader.getAttributeValue( null, "t" );
-            if ( attributeValue != null ) {
-              if ( attributeValue.equals( "s" ) ) {
-                // if the type of the cell is string, we continue
-                while ( sheetReader.hasNext() ) {
-                  event = sheetReader.next();
-                  if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
-                    int idx = Integer.parseInt( sheetReader.getElementText() );
-                    String content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
-                    headerRow.add( content );
-                    break;
-                  }
-                }
-              } else if ( attributeValue.equals( "inlineStr" ) ) {
-                // if the type of the cell is string, we continue
-                while ( sheetReader.hasNext() ) {
-                  event = sheetReader.next();
-                  if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "is" ) ) {
-                    while ( sheetReader.hasNext() ) {
-                      event = sheetReader.next();
-                      if ( event == XMLStreamConstants.CHARACTERS ) {
-                        String content = new XSSFRichTextString( sheetReader.getText() ).toString();
-                        headerRow.add( content );
-                        break;
-                      }
-                    }
-                    break;
-                  }
-                }
-              }
-            } else {
+        } else if ( sheetReader.getLocalName().equals( TAG_ROW ) ) {
+          currentRow = Integer.parseInt( sheetReader.getAttributeValue( null, "r" ) );
+          firstRow = currentRow;
+
+          // calculate the number of columns in the header row
+          while ( sheetReader.hasNext() ) {
+            event = sheetReader.next();
+            if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_ROW ) ) {
+              // if the row has ended, break the inner while loop
               break;
             }
+            if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_C ) ) {
+              String attributeValue = sheetReader.getAttributeValue( null, ATTRIBUTE_T );
+              if ( attributeValue != null ) {
+                if ( attributeValue.equals( "s" ) ) {
+                  // if the type of the cell is string, we continue
+                  while ( sheetReader.hasNext() ) {
+                    event = sheetReader.next();
+                    if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_V ) ) {
+                      int idx = Integer.parseInt( sheetReader.getElementText() );
+                      String content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
+                      headerRow.add( content );
+                      break;
+                    }
+                  }
+                } else if ( attributeValue.equals( "inlineStr" ) ) {
+                  // if the type of the cell is string, we continue
+                  while ( sheetReader.hasNext() ) {
+                    event = sheetReader.next();
+                    if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_IS ) ) {
+                      while ( sheetReader.hasNext() ) {
+                        event = sheetReader.next();
+                        if ( event == XMLStreamConstants.CHARACTERS ) {
+                          String content = new XSSFRichTextString( sheetReader.getText() ).toString();
+                          headerRow.add( content );
+                          break;
+                        }
+                        if ( event == XMLStreamConstants.END_ELEMENT ) {
+                          if ( sheetReader.getLocalName().equals( TAG_T ) ) {
+                            // If "t" ended, this is a 'blank' cell
+                            headerRow.add( "" );
+                            break;
+                          } else if ( sheetReader.getLocalName().equals( TAG_IS ) ) {
+                            // If "is" ended, this is a 'null' cell
+                            headerRow.add( null );
+                            break;
+                          }
+                        }
+                      }
+                      break;
+                    }
+                  }
+                }
+              } else {
+                // Most probably a 'null' cell, but let's make sure...
+                if ( sheetReader.hasNext() ) {
+                  event = sheetReader.next();
+                  if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_C ) ) {
+                    // Yes, it is a 'null' cell!
+                    headerRow.add( null );
+                    continue;
+                  }
+                }
+                break;
+              }
+            }
           }
+          // we have parsed the header row
+          break;
         }
-        // we have parsed the header row
-        break;
       }
     }
   }
@@ -169,7 +199,9 @@ public class StaxPoiSheet implements KSheet {
   public KCell[] getRow( int rownr ) {
     // xlsx raw row numbers are 1-based index, KSheet is 0-based
 
-    if ( rownr < 0 || rownr >= numRows ) {
+    // Don't check the upper limit as not all rows may have been read!
+    // If it's found that the row does not exist, the exception will be thrown at the end of this method.
+    if ( rownr < 0 ) {
       // KSheet requires out of bounds here
       throw new ArrayIndexOutOfBoundsException( rownr );
     }
@@ -192,7 +224,7 @@ public class StaxPoiSheet implements KSheet {
       }
       while ( sheetReader.hasNext() ) {
         int event = sheetReader.next();
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
+        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_ROW ) ) {
           String rowIndicator = sheetReader.getAttributeValue( null, "r" );
           currentRow = Integer.parseInt( rowIndicator );
           if ( currentRow < rownr + 1 ) {
@@ -201,20 +233,28 @@ public class StaxPoiSheet implements KSheet {
           currentRowCells = parseRow();
           return currentRowCells;
         }
+        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_SHEET_DATA ) ) {
+          // There're no more columns, no need to continue to read
+          break;
+        }
       }
     } catch ( Exception e ) {
       throw new RuntimeException( e );
     }
+
+    // We've read all document rows, let's update the final count.
     numRows = currentRow;
-    return new KCell[] {};
+
+    // And, as this was an invalid row to ask for, throw the proper exception!
+    throw new ArrayIndexOutOfBoundsException( rownr );
   }
 
   private KCell[] parseRow() throws XMLStreamException {
     List<StaxPoiCell> cells;
     if ( isMaxColsNumberDefined() ) {
-      cells = new ArrayList<StaxPoiCell>( numCols );
+      cells = new ArrayList<>( numCols );
     } else {
-      cells = new ArrayList<StaxPoiCell>();
+      cells = new ArrayList<>();
     }
 
     int undefinedColIndex = 0;
@@ -222,18 +262,19 @@ public class StaxPoiSheet implements KSheet {
       // go to the "c" cell tag
       while ( sheetReader.hasNext() ) {
         int event = sheetReader.next();
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
+        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_C ) ) {
           break;
         }
-        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
+        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_ROW ) ) {
           // premature end of row, returning what we have
           return cells.toArray( new StaxPoiCell[cells.size()] );
         }
       }
+      // We're on the "c" cell tag
       String cellLocation = sheetReader.getAttributeValue( null, "r" );
       int columnIndex = StaxUtil.extractColumnNumber( cellLocation ) - 1;
 
-      String cellType = sheetReader.getAttributeValue( null, "t" );
+      String cellType = sheetReader.getAttributeValue( null, ATTRIBUTE_T );
       String cellStyle = sheetReader.getAttributeValue( null, "s" );
 
       boolean isFormula = false;
@@ -241,28 +282,40 @@ public class StaxPoiSheet implements KSheet {
       // get value tag
       while ( sheetReader.hasNext() ) {
         int event = sheetReader.next();
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
-          // read content as string
-          if ( cellType != null && cellType.equals( "s" ) ) {
-            int idx = Integer.parseInt( sheetReader.getElementText() );
-            content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
-          } else {
-            content = sheetReader.getElementText();
-          }
-        }
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "is" ) ) {
-          while ( sheetReader.hasNext() ) {
-            event = sheetReader.next();
-            if ( event == XMLStreamConstants.CHARACTERS ) {
-              content = new XSSFRichTextString( sheetReader.getText() ).toString();
-              break;
+        if ( event == XMLStreamConstants.START_ELEMENT ) {
+          if ( sheetReader.getLocalName().equals( TAG_V ) ) {
+            // read content as string
+            if ( cellType != null && cellType.equals( "s" ) ) {
+              int idx = Integer.parseInt( sheetReader.getElementText() );
+              content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
+            } else {
+              content = sheetReader.getElementText();
             }
+          } else if ( sheetReader.getLocalName().equals( TAG_IS ) ) {
+            while ( sheetReader.hasNext() ) {
+              event = sheetReader.next();
+              if ( event == XMLStreamConstants.CHARACTERS ) {
+                content = new XSSFRichTextString( sheetReader.getText() ).toString();
+                break;
+              }
+              if ( event == XMLStreamConstants.END_ELEMENT ) {
+                if ( sheetReader.getLocalName().equals( TAG_T ) ) {
+                  // If "t" ended, this is a 'blank' cell
+                  content = "";
+                  break;
+                } else if ( sheetReader.getLocalName().equals( TAG_IS ) ) {
+                  // If "is" ended, this is a 'null' cell
+
+                  content = null;
+                  break;
+                }
+              }
+            }
+          } else if ( sheetReader.getLocalName().equals( "f" ) ) {
+            isFormula = true;
           }
         }
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "f" ) ) {
-          isFormula = true;
-        }
-        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
+        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( TAG_C ) ) {
           break;
         }
       }

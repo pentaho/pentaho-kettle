@@ -225,4 +225,9 @@
     <classname>org.pentaho.di.core.database.SnowflakeHVDatabaseMeta</classname>
   </database-type>
 
- </database-types>
+  <database-type id="AZURESQLDB">
+    <description>Azure SQL DB</description>
+    <classname>org.pentaho.di.core.database.AzureSqlDataBaseMeta</classname>
+  </database-type>
+
+</database-types>

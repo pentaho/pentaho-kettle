@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -30,6 +30,7 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.impl.EmbeddedRunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
@@ -68,7 +69,7 @@ public class RunConfigurationSaveExtensionPoint implements ExtensionPointInterfa
       if ( jobEntryCopy.getEntry() instanceof JobEntryRunConfigurableInterface ) {
         String usedConfiguration = ( (JobEntryRunConfigurableInterface) jobEntryCopy.getEntry() ).getRunConfiguration();
         embedAll = embedAll || StringUtil.isVariable( usedConfiguration );
-        if ( !runConfigurationNames.contains( usedConfiguration ) ) {
+        if ( !Utils.isEmpty( usedConfiguration ) && !runConfigurationNames.contains( usedConfiguration ) ) {
           runConfigurationNames.add( usedConfiguration );
         }
       }

@@ -64,7 +64,7 @@ public class GetFieldsDialog extends ThinDialog {
   public void open() {
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
-    clientPath.append( "#?path=" );
+    clientPath.append( "#!?path=" );
     clientPath.append( file );
     clientPath.append( "&type=" );
     clientPath.append( type );

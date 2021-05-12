@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -33,15 +33,16 @@ import java.util.regex.Pattern;
 public abstract class FormatRule {
 
   protected String pattern;
+  protected Pattern compiledPattern;
 
   abstract Format execute( String value );
 
   public FormatRule( String pattern ) {
     this.pattern = pattern;
+    this.compiledPattern = Pattern.compile( pattern );
   }
 
   protected Matcher parse( String value ) {
-    Pattern p = Pattern.compile( pattern );
-    return p.matcher( value );
+    return compiledPattern.matcher( value );
   }
 }

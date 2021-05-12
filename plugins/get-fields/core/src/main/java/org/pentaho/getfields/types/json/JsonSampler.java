@@ -198,7 +198,7 @@ public class JsonSampler {
         case VALUE_NUMBER_FLOAT:
           return new ValueNode<>( key, jsonParser.getValueAsDouble() );
         case VALUE_NUMBER_INT:
-          return new ValueNode<>( key, jsonParser.getValueAsInt() );
+          return new ValueNode<>( key, jsonParser.getBigIntegerValue() );
       }
     } catch ( IOException ioe ) {
       return null;

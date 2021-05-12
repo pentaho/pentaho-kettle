@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -40,6 +41,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
@@ -65,6 +67,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -76,8 +79,9 @@ public class TextFileInputTest {
     KettleEnvironment.init();
   }
 
-  private static InputStreamReader getInputStreamReader( String data ) throws UnsupportedEncodingException {
-    return new InputStreamReader( new ByteArrayInputStream( data.getBytes( ( "UTF-8" ) ) ) );
+  private static BufferedInputStreamReader getInputStreamReader( String data ) throws UnsupportedEncodingException {
+    return new BufferedInputStreamReader(
+      new InputStreamReader( new ByteArrayInputStream( data.getBytes( ( "UTF-8" ) ) ) ) );
   }
 
   @Test
@@ -117,6 +121,16 @@ public class TextFileInputTest {
     String output =
         TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_MIXED,
             new StringBuilder( 1000 ) );
+    assertEquals( expected, output );
+  }
+
+  @Test
+  public void testGetLineMixedOS9() throws KettleFileException, UnsupportedEncodingException {
+    String input = "col1\tcol2\tcol3\rdata1\tdata2\tdata3\r";
+    String expected = "col1\tcol2\tcol3";
+    String output =
+      TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_MIXED,
+        new StringBuilder( 1000 ) );
     assertEquals( expected, output );
   }
 
@@ -303,6 +317,65 @@ public class TextFileInputTest {
     deleteVfsFile( virtualFile );
   }
 
+  /**
+   * This test handles the case where a folder is given for the target of the previous step. Note, that it uses
+   * 2 ram files and sets the mock to return "ram://." to trigger the directory logic.
+   * @throws Exception - Test exception
+   */
+  @Test
+  public void testFolderFromPreviousStep() throws Exception {
+    final String virtualFile = createVirtualFile( "test-file1.txt", "1,\n" );
+    final String virtualFile2 = createVirtualFile( "test-file2.txt", "1,\n" );
+
+    BaseFileField col2 = field( "col2" );
+    col2.setIfNullValue( "DEFAULT" );
+
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), col2 );
+
+    VariableSpace space = new Variables();
+    space.initializeVariablesFrom( null );
+
+    meta.inputFiles.passingThruFields = true;
+    meta.inputFiles.acceptingFilenames = true;
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
+    data.files.addFile( KettleVFS.getFileObject( virtualFile2 ) );
+
+    TextFileInput input = Mockito.spy( StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" ) );
+
+
+    RowSet rowset = Mockito.mock( RowSet.class );
+    RowMetaInterface rwi = Mockito.mock( RowMetaInterface.class );
+    Object[] obj1 = new Object[2];
+    Object[] obj2 = new Object[2];
+    Mockito.doReturn( rowset ).when( input ).findInputRowSet( null );
+    Mockito.doReturn( null ).when( input ).getRowFrom( rowset );
+    Mockito.when( input.getRowFrom( rowset ) ).thenReturn( obj1, null );
+    Mockito.when( input.getTransMeta().listVariables() ).thenReturn( space.listVariables() );
+    Mockito.when( input.getTransMeta().getVariable( anyString() ) ).thenAnswer( (Answer<String>)
+      invocation -> space.getVariable( (String) invocation.getArguments()[0] ) );
+
+    Mockito.doReturn( rwi ).when( rowset ).getRowMeta();
+    Mockito.when( rwi.getString( obj2, 0 ) ).thenReturn( "ram:///." );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 0, false );
+
+    List<String> passThroughKeys = new ArrayList<>( data.passThruFields.keySet() );
+    Assert.assertNotNull( passThroughKeys );
+    // set order is not guaranteed - order alphabetically
+    passThroughKeys.sort( String.CASE_INSENSITIVE_ORDER );
+    assertEquals( 2, passThroughKeys.size() );
+
+    Assert.assertNotNull( passThroughKeys.get( 0 ) );
+    Assert.assertTrue( passThroughKeys.get( 0 ).startsWith( "0_ram" ) );
+    Assert.assertTrue( passThroughKeys.get( 0 ).endsWith( "test-file1.txt" ) );
+
+    Assert.assertNotNull( passThroughKeys.get( 1 ) );
+    Assert.assertTrue( passThroughKeys.get( 1 ).startsWith( "1_ram" ) );
+    Assert.assertTrue( passThroughKeys.get( 1 ).endsWith( "test-file2.txt" ) );
+
+    deleteVfsFile( virtualFile );
+    deleteVfsFile( virtualFile2 );
+  }
+
   @Test
   public void testClose() throws Exception {
 
@@ -344,7 +417,7 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"b\nbb\"", "ccc" }, output.get( 0 ) );
     TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
@@ -367,7 +440,7 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"b\nbb\"", "ccc" }, output.get( 0 ) );
     TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
@@ -390,7 +463,7 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 3, false );
-    TransTestingUtil.assertResult( new Object[] { "aaa", "\"bbb\"", "ccc" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "aaa", "\"b\nbb\"", "ccc" }, output.get( 0 ) );
     TransTestingUtil.assertResult( new Object[] { null }, output.get( 1 ) );
     TransTestingUtil.assertResult( new Object[] { "zzz", "yyy", "xxx" }, output.get( 2 ) );
 
@@ -453,7 +526,9 @@ public class TextFileInputTest {
   }
 
   private static void deleteVfsFile( String path ) throws Exception {
-    TestUtils.getFileObject( path ).delete();
+    FileObject fileObject = TestUtils.getFileObject( path );
+    fileObject.close();
+    fileObject.delete();
   }
 
   private static BaseFileField field( String name ) {

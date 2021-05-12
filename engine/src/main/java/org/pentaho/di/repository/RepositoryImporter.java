@@ -800,6 +800,8 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
       updateDisplay();
     }
 
+    jobMeta.clearCurrentDirectoryChangedListeners();
+
     if ( existintId == null || overwrite ) {
       replaceSharedObjects( jobMeta );
       jobMeta.setRepositoryDirectory( targetDirectory );
@@ -835,7 +837,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   private DocumentBuilder documentBuilder;
 
   JobMeta createJobMetaForNode( Node jobnode ) throws KettleXMLException {
-    return new JobMeta( jobnode, null, false, SpoonFactory.getInstance() );
+    return new JobMeta( jobnode, getRep(), false, SpoonFactory.getInstance() );
   }
 
   private DocumentBuilder getOrCreateDb() throws KettleXMLException {
@@ -1056,6 +1058,10 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
           .getString( PKG, "RepositoryImporter.LookupRepoRefsError.Log.Cause", e.objectTypePairsToString() ) );
     }
     rep.save( jobMeta, "import object reference specification", null );
+  }
+
+  private Repository getRep() {
+    return this.rep;
   }
 
 }

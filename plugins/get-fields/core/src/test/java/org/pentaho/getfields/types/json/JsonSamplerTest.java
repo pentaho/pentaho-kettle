@@ -143,4 +143,25 @@ public class JsonSamplerTest {
             "},\n" +
             "],\n", node.toString() );
   }
+
+  @Test
+  public void testBigIntegerNode() throws Exception {
+    Configuration configuration = new Configuration();
+    JsonSampler jsonSampler = new JsonSampler( configuration );
+    InputStream inputStream = this.getClass().getResourceAsStream( "/org/pentaho/getfields/types/json/bigint-test.json" );
+    Node node = jsonSampler.sample( inputStream );
+    Assert.assertEquals( "[\n" +
+            "{\n" +
+            "itemarr: [\n" +
+              "{\n" +
+                "itemId: 373208832580648960\n" +
+              "},\n" +
+              "],\n" +
+              "item1: 12345\n" +
+              "item3: {\n" +
+                "item4: value4\n" +
+              "},\n" +
+            "},\n" +
+            "],\n", node.toString() );
+  }
 }

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,9 @@ package org.pentaho.di.core;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.provider.UriParser;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -33,6 +36,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.support.encryption.Encr;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -65,6 +69,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -376,6 +381,11 @@ public class Const {
    * An array of date conversion formats
    */
   private static String[] dateFormats;
+
+  /**
+   * An array of date (timeless) conversion formats
+   */
+  private static String[] dateTimelessFormats;
 
   /**
    * An array of number conversion formats
@@ -741,6 +751,30 @@ public class Const {
   public static final String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
 
   /**
+   * This flag will prevent Kettle from converting {@code null} strings to empty strings in {@link org.pentaho.di.core.row.value.ValueMetaBase}
+   * The default value is {@code false}.
+   */
+  public static final String KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY = "KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY";
+
+
+  /**
+   * This flag will force to return the original string with only spaces instead of an empty string.
+   */
+  public static final String KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY = "KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY";
+
+  /**
+   * This flag will prevent Kettle from yielding {@code null} as the value of an empty XML tag in {@link org.pentaho.di.core.xml.XMLHandler}
+   * The default value is {@code false} and an empty XML tag will produce a {@code null} value.
+   */
+  public static final String KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE = "KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE";
+
+  /**
+   * This flag will cause the "Get XML data" step to yield null values on missing elements and empty values on empty elements when set to "Y".
+   * By default, both empty elements and missing elements will yield empty values.
+   */
+  public static final String KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE = "KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE";
+
+  /**
    * System wide flag to allow non-strict string to number conversion for backward compatibility. If this setting is set
    * to "Y", an string starting with digits will be converted successfully into a number. (example: 192.168.1.1 will be
    * converted into 192 or 192.168 depending on the decimal symbol). The default (N) will be to throw an error if
@@ -786,6 +820,15 @@ public class Const {
    */
   public static final String KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE =
     "KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE";
+
+  /**
+   * System wide flag to control behavior of the ExecuteTransformationStep and ExecuteJobStep when a file is specified.
+   * This only is used when PDI is connected to repository
+   * 'Y' It is possible specify a file with the extension or not that is saved in repository
+   * 'N' Should not be specified the extension, in other words, should be specified the name of file saved in repository.
+   */
+  public static final String KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION =
+    "KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION";
 
   /**
    * You can use this variable to speed up hostname lookup.
@@ -843,6 +886,11 @@ public class Const {
    * A variable to configure the maximum number of logging registry entries kept in memory for logging purposes.
    */
   public static final String KETTLE_MAX_LOGGING_REGISTRY_SIZE = "KETTLE_MAX_LOGGING_REGISTRY_SIZE";
+
+  /**
+   * A variable to configure the logging registry's purge timer which will trigger the registry to cleanup entries.
+   */
+  public static final String KETTLE_LOGGING_REGISTRY_PURGE_TIMEOUT = "KETTLE_LOGGING_REGISTRY_PURGE_TIMEOUT";
 
   /**
    * A variable to configure the kettle log tab refresh delay.
@@ -926,7 +974,7 @@ public class Const {
    * The XML file that contains the list of native Kettle two-way password encoder plugins
    */
   @SuppressWarnings( "squid:S2068" )
-  public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
+  public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = Encr.XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS;
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-valuemeta-plugins.xml
@@ -938,20 +986,20 @@ public class Const {
    * Specifies the password encoding plugin to use by ID (Kettle is the default).
    */
   @SuppressWarnings( "squid:S2068" )
-  public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = Encr.KETTLE_PASSWORD_ENCODER_PLUGIN;
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-password-encoder-plugins.xml
    * file
    */
   @SuppressWarnings( "squid:S2068" )
-  public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = Encr.KETTLE_PASSWORD_ENCODER_PLUGINS_FILE;
 
   /**
    * The name of the Kettle encryption seed environment variable for the KettleTwoWayPasswordEncoder class
    */
   @SuppressWarnings( "squid:S2068" )
-  public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = "KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED";
+  public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = Encr.KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED;
 
   /**
    * The XML file that contains the list of native Kettle logging plugins
@@ -1113,6 +1161,11 @@ public class Const {
   public static final String KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT = "KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT";
 
   /**
+   * Property controls the capacity of the transFinishedBlockingQueue in Trans.
+   */
+  public static final String KETTLE_TRANS_FINISHED_BLOCKING_QUEUE_SIZE = "KETTLE_TRANS_FINISHED_BLOCKING_QUEUE_SIZE";
+
+  /**
    * Compatibility settings for {@link org.pentaho.di.core.row.ValueDataUtil#hourOfDay(ValueMetaInterface, Object)}.
    *
    * Switches off the fix for calculation of timezone decomposition.
@@ -1138,6 +1191,15 @@ public class Const {
 
   // See PDI-17980 for details
   public static final String KETTLE_COMPATIBILITY_USE_JDBC_METADATA = "KETTLE_COMPATIBILITY_USE_JDBC_METADATA";
+
+  // See PDI-18470 for details
+  public static final String KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI = "KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI";
+
+  // See PDI-PDI-18739 for details
+  public static final String KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING = "KETTLE_COMPATIBILITY_TEXT_FILE_INPUT_USE_LENIENT_ENCLOSURE_HANDLING";
+
+  // See PDI-18810 for details
+  public static final String KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM = "KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM";
 
   /**
    * The XML file that contains the list of native import rules
@@ -1203,6 +1265,16 @@ public class Const {
    * {@linkplain org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder#USER_DIR_IS_ROOT}
    */
   public static final String VFS_USER_DIR_IS_ROOT = "vfs.sftp.userDirIsRoot";
+
+  /**
+   * A variable to configure environment variables to ignore when initializing shell step
+   * */
+  public static final String SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE = "SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE";
+
+  /**
+   * The default value for the variable to configure environment variables to ignore when initializing shell step
+   * */
+  public static final String SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE_DEFAULT = "";
 
   /**
    * <p>A variable to configure the minimum allowed ratio between de- and inflated bytes to detect a zipbomb.</p>
@@ -1294,6 +1366,22 @@ public class Const {
     String.valueOf( KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT );
 
   /**
+   * <p>The default value for the {@link #KETTLE_ZIP_NEGATIVE_MIN_INFLATE} as a Double.</p>
+   * <p>Check PDI-18489 for more details.</p>
+   */
+  public static final Double KETTLE_ZIP_NEGATIVE_MIN_INFLATE = -1.0d;
+
+  /**
+   * <p>This environment variable is used to define whether the check of xlsx zip bomb is performed. This is set to false by default.</p>
+   */
+  public static final String KETTLE_XLSX_ZIP_BOMB_CHECK = "KETTLE_XLSX_ZIP_BOMB_CHECK";
+  private static final String KETTLE_XLSX_ZIP_BOMB_CHECK_DEFAULT = "false";
+  public static boolean checkXlsxZipBomb() {
+    String checkZipBomb = System.getProperty( KETTLE_XLSX_ZIP_BOMB_CHECK, KETTLE_XLSX_ZIP_BOMB_CHECK_DEFAULT );
+    return Boolean.valueOf( checkZipBomb );
+  }
+
+  /**
    * <p>A variable to configure if the S3 input / output steps should use the Amazon Default Credentials Provider Chain
    * even if access credentials are specified within the transformation.</p>
    */
@@ -1320,6 +1408,12 @@ public class Const {
   }
 
   /**
+   * <p>This environment is used to specify how many attempts before failing to read an XML from within a Zip file
+   * while multy-thread execution and using XMLHandler.</p>
+   */
+  public static final String KETTLE_RETRY_OPEN_XML_STREAM = "KETTLE_RETRY_OPEN_XML_STREAM";
+
+  /**
    * <p>This environment variable is used by XSD validation steps to enable or disable external entities.</p>
    * <p>By default external entities are allowed.</p>
    */
@@ -1340,6 +1434,66 @@ public class Const {
   public static final String KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE = "KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE";
   public static final String KETTLE_BIGDECIMAL_DIVISION_ROUNDING_MODE_DEFAULT = "HALF_EVEN";
 
+  /**
+   * <p>This environment variable is used to define how Timestamp should be converted to a number and vice-versa.</p>
+   * <p>Three options exist:</p>
+   * <ul>
+   *   <li>{@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY}: converting a Timestamp to a number uses
+   *   milliseconds but converting a number to Timestamp assumes the value is in nanoseconds</li>
+   *   <li>{@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS}: both Timestamp to number and number to
+   *   Timestamp use milliseconds</li>
+   *   <li>{@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS}: both Timestamp to number and number to
+   *   Timestamp use nanoseconds</li>
+   * </ul>
+   * <p>The default is {@value #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT}.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE = "KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE";
+
+  /**
+   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE} as it behaved on former
+   * versions.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY = "LEGACY";
+
+  /**
+   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE} to use milliseconds.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS = "MILLISECONDS";
+
+  /**
+   * <p>The value to use for setting the {@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE} to use nanoseconds.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS = "NANOSECONDS";
+
+  /**
+   * <p>The default value for the {@link #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE}.</p>
+   *
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_MILLISECONDS
+   * @see #KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS
+   */
+  public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT =
+    KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY;
+
+  /**
+   * This environment variable will be used to determine whether file URI strings returned from input steps are returned
+   * encoded (spaces and other special characters escaped) or decoded (default legacy behavior).
+   */
+  public static final String KETTLE_RETURN_ESCAPED_URI_STRINGS = "KETTLE_RETURN_ESCAPED_URI_STRINGS";
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
@@ -1873,12 +2027,11 @@ public class Const {
 
         while ( ip.hasMoreElements() ) {
           InetAddress in = ip.nextElement();
-          lastHostname = in.getHostName();
-          // System.out.println("  ip address bound : "+in.getHostAddress());
-          // System.out.println("  hostname         : "+in.getHostName());
-          // System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
-          // System.out.println("  ip string        : "+in.toString());
-          if ( !lastHostname.equalsIgnoreCase( "localhost" ) && !( lastHostname.indexOf( ':' ) >= 0 ) ) {
+          boolean hasNewHostName = !lastHostname.equalsIgnoreCase( "localhost" );
+          if ( InetAddressUtils.isIPv4Address( in.getHostAddress() ) || !hasNewHostName  ) {
+            lastHostname = in.getHostName();
+          }
+          if ( hasNewHostName && lastHostname.indexOf( ':' ) < 0 )  {
             break;
           }
         }
@@ -2187,6 +2340,15 @@ public class Const {
    */
   public static String getKettleUserRepositoriesFile() {
     return getKettleUserDirectory() + FILE_SEPARATOR + getKettleLocalRepositoriesFile();
+  }
+
+  /**
+   * Returns the full path to the Kettle properties XML file.
+   *
+   * @return The Kettle properties file.
+   */
+  public static String getKettlePropertiesFilename() {
+    return Const.getKettleDirectory() + FILE_SEPARATOR + Const.KETTLE_PROPERTIES;
   }
 
   /**
@@ -2755,7 +2917,8 @@ public class Const {
             // and reset the "concatSplit" buffer. Otherwise continue
             addSplit = oddNumberOfEnclosures;
           }
-          if ( addSplit ) {
+          // Check if enclosure is also using inside data
+          if ( addSplit || numEnclosures > 2 ) {
             String splitResult = concatSplit.toString();
             //remove enclosure from resulting split
             if ( removeEnclosure ) {
@@ -3117,6 +3280,22 @@ public class Const {
   }
 
   /**
+   * Returning the localized date conversion formats without time. They get created once on first request.
+   *
+   * @return
+   */
+  public static String[] getTimelessDateFormats() {
+    if ( dateTimelessFormats == null ) {
+      List<String> dateFormats = Arrays.asList( Const.getDateFormats() );
+      dateFormats = dateFormats.stream()
+        .filter( date -> !date.toLowerCase().contains( "hh" ) )
+        .collect( Collectors.toList() );
+      dateTimelessFormats = dateFormats.toArray( new String[dateFormats.size()] );
+    }
+    return dateTimelessFormats;
+  }
+
+  /**
    * Returning the localized number conversion formats. They get created once on first request.
    *
    * @return
@@ -3217,6 +3396,21 @@ public class Const {
       default:
         return string;
     }
+  }
+
+  /**
+   * Trims a Date by resetting the time part to zero
+   * @param date a Date object to trim (reset time to zero)
+   * @return a Date object with time part reset to zero
+   */
+  public static Date trimDate( Date date ) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( date );
+    calendar.set( Calendar.MILLISECOND, 0 );
+    calendar.set( Calendar.SECOND, 0 );
+    calendar.set( Calendar.MINUTE, 0 );
+    calendar.set( Calendar.HOUR_OF_DAY, 0 );
+    return calendar.getTime();
   }
 
   /**
@@ -3639,6 +3833,28 @@ public class Const {
       return content;
     }
     return StringEscapeUtils.escapeXml( content );
+  }
+
+
+  /**
+   * Convert a string containing a URI with escaped special characters and return the decoded version depending on
+   * system property settings.
+   * @param uri
+   * @return decoded URI string
+   */
+  public static String optionallyDecodeUriString( String uri ) {
+    boolean decodeUri = !System.getProperty( KETTLE_RETURN_ESCAPED_URI_STRINGS, "N" )
+      .equalsIgnoreCase( "Y" );
+    if ( decodeUri ) {
+      try {
+        return UriParser.decode( uri );
+      } catch ( FileSystemException e ) {
+        // return the raw string if the URI is malformed (bad escape sequence)
+        return uri;
+      }
+    } else {
+      return uri;
+    }
   }
 
   /**

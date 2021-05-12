@@ -247,7 +247,9 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
         dm.getQuotedSchemaTableCombination(
           environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) ) )
       .append( Const.CR ).append( loadAction ).append( Const.CR ).append(
-        "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'" ).append( Const.CR ).append( "(" );
+        "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'" )
+      .append( Const.CR ).append( "TRAILING NULLCOLS" )
+      .append( Const.CR ).append( '(' );
 
     String[] streamFields = meta.getFieldStream();
     String[] tableFields = meta.getFieldTable();

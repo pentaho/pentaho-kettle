@@ -24,12 +24,12 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-streaming-impls</artifactId>
-    <version>9.0.0.0-423</version>
+    <version>9.3.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>pentaho-streaming-mqtt-plugin</artifactId>
 
-  <version>9.0.0.0-423</version>
+  <version>9.3.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>MQTT Streaming Step Plugin Bundle</name>
@@ -53,12 +53,11 @@
   </repositories>
 
   <properties>
-    <pdi.version>9.0.0.0-423</pdi.version>
+    <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
     <target.jdk.version>1.8</target.jdk.version>
     <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
     <junit.version>4.12</junit.version>
     <guava.version>17.0</guava.version>
-    <paho.version>1.2.0</paho.version>
     <powermock.version>1.6.6</powermock.version>
   </properties>
 
@@ -97,7 +96,6 @@
     <dependency>
       <groupId>org.eclipse.paho</groupId>
       <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-      <version>${paho.version}</version>
     </dependency>
 
     <dependency>
@@ -130,6 +128,19 @@
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-mqtt</artifactId>
       <version>${activemq.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pentaho-encryption-support</artifactId>
+      <version>${pdi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
 

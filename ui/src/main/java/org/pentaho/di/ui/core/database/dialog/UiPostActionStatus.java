@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,5 +23,5 @@
 package org.pentaho.di.ui.core.database.dialog;
 
 public enum UiPostActionStatus {
-  OK, ERROR_DIALOG_SHOWN, ERROR, NONE;
+  OK, ERROR_DIALOG_SHOWN, ERROR, NONE, CANCEL;
 }

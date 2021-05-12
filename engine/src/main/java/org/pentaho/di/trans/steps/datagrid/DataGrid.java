@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -96,7 +96,7 @@ public class DataGrid extends BaseStep implements StepInterface {
         if ( valueData != null && valueMeta.isNull( valueData ) ) {
           valueData = null;
         }
-        outputRowData[ i ] = valueMeta.convertDataFromString( valueData, convertMeta, null, null, 0 );
+        outputRowData[ i ] = valueMeta.convertDataFromString( valueData, convertMeta, meta.getFieldNullIf( valueMeta.getName() ), null, 0 );
       }
     }
 
@@ -108,10 +108,8 @@ public class DataGrid extends BaseStep implements StepInterface {
         .toString( getLinesWritten() ), data.outputRowMeta.getString( outputRowData ) ) );
     }
 
-    if ( checkFeedback( getLinesWritten() ) ) {
-      if ( log.isBasic() ) {
-        logBasic( BaseMessages.getString( PKG, "DataGrid.Log.LineNr", Long.toString( getLinesWritten() ) ) );
-      }
+    if ( checkFeedback( getLinesWritten() ) && log.isBasic() ) {
+      logBasic( BaseMessages.getString( PKG, "DataGrid.Log.LineNr", Long.toString( getLinesWritten() ) ) );
     }
 
     return true;

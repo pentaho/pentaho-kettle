@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.pentaho.di</groupId>
         <artifactId>pentaho-kettle-k8s</artifactId>
-        <version>9.0.0.0-423</version>
+        <version>9.3.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>pentaho-kettle-helm</artifactId>

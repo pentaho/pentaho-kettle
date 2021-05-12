@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,13 +30,14 @@ import org.pentaho.di.core.compress.CompressionInputStream;
 import org.pentaho.di.core.compress.CompressionProvider;
 
 public class ZIPCompressionInputStream extends CompressionInputStream {
+  private static final String INVALID_INPUT_MSG = "Not a valid input stream!";
 
-  public ZIPCompressionInputStream( InputStream in, CompressionProvider provider ) throws IOException {
+  public ZIPCompressionInputStream( InputStream in, CompressionProvider provider ) {
     super( getDelegate( in ), provider );
   }
 
-  protected static ZipInputStream getDelegate( InputStream in ) throws IOException {
-    ZipInputStream delegate = null;
+  protected static ZipInputStream getDelegate( InputStream in ) {
+    ZipInputStream delegate;
     if ( in instanceof ZipInputStream ) {
       delegate = (ZipInputStream) in;
     } else {
@@ -49,7 +50,7 @@ public class ZIPCompressionInputStream extends CompressionInputStream {
   public void close() throws IOException {
     ZipInputStream zis = (ZipInputStream) delegate;
     if ( zis == null ) {
-      throw new IOException( "Not a valid input stream!" );
+      throw new IOException( INVALID_INPUT_MSG );
     }
     zis.close();
   }
@@ -58,7 +59,7 @@ public class ZIPCompressionInputStream extends CompressionInputStream {
   public int read() throws IOException {
     ZipInputStream zis = (ZipInputStream) delegate;
     if ( zis == null ) {
-      throw new IOException( "Not a valid input stream!" );
+      throw new IOException( INVALID_INPUT_MSG );
     }
     return zis.read();
   }
@@ -67,7 +68,7 @@ public class ZIPCompressionInputStream extends CompressionInputStream {
   public Object nextEntry() throws IOException {
     ZipInputStream zis = (ZipInputStream) delegate;
     if ( zis == null ) {
-      throw new IOException( "Not a valid input stream!" );
+      throw new IOException( INVALID_INPUT_MSG );
     }
     return zis.getNextEntry();
   }

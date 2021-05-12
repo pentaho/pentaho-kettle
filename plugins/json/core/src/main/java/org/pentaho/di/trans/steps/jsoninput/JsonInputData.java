@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,12 +24,12 @@ package org.pentaho.di.trans.steps.jsoninput;
 
 import java.io.InputStream;
 import java.util.BitSet;
-import java.util.Iterator;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.file.BaseFileInputStepData;
+import org.pentaho.di.trans.steps.jsoninput.reader.CloseableIterator;
 import org.pentaho.di.trans.steps.jsoninput.reader.IJsonReader;
 
 /**
@@ -58,7 +58,7 @@ public class JsonInputData extends BaseFileInputStepData implements StepDataInte
   public long rownr;
   public int indexSourceField;
 
-  public Iterator<InputStream> inputs;
+  public CloseableIterator<InputStream> inputs;
   public IJsonReader reader;
   public RowSet readerRowSet;
   public BitSet repeatedFields;

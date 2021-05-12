@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -25,13 +25,13 @@
 package org.pentaho.di.engine.configuration.impl.spark;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.engine.configuration.api.RunConfigurationDialog;
@@ -111,11 +111,12 @@ public class SparkRunConfigurationUI implements RunConfigurationUI {
     GridData urlData = new GridData( SWT.FILL, SWT.FILL, true, false );
     urlText.setLayoutData( urlData );
 
-    urlText.addModifyListener( new ModifyListener() {
-      @Override public void modifyText( ModifyEvent modifyEvent ) {
+    urlText.addModifyListener(
+      modifyEvent -> {
         sparkRunConfiguration.setUrl( urlText.getText() );
-      }
-    } );
+        Button okButton = runConfigurationDialog.getOKButton();
+        okButton.setEnabled( !Utils.isEmpty( sparkRunConfiguration.getUrl() ) );
+      } );
   }
 
 }

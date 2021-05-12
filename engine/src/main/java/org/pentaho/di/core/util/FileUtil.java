@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,52 +31,47 @@ import org.pentaho.di.i18n.BaseMessages;
 import java.io.File;
 
 public class FileUtil {
-  public static boolean createParentFolder( Class<?> PKG, String filename, boolean createParentFolder,
+
+  private FileUtil() {
+  }
+
+  public static boolean createParentFolder( Class<?> pkg, String filename, boolean createParentFolder,
     LogChannelInterface log, VariableSpace vs ) {
     // Check for parent folder
-    FileObject parentfolder = null;
-    boolean resultat = true;
-    try {
+    boolean isParentFolderCreated = true;
+    String parentFolderName = null;
+    try ( FileObject parentFolder =  KettleVFS.getFileObject( filename, vs ).getParent() ) {
+      parentFolderName = parentFolder.getName().toString();
       // Get parent folder
-      parentfolder = KettleVFS.getFileObject( filename, vs ).getParent();
-      if ( !parentfolder.exists() ) {
+      if ( !parentFolder.exists() ) {
         if ( createParentFolder ) {
           if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder
+            log.logDebug( BaseMessages.getString( pkg, "JobTrans.Log.ParentLogFolderNotExist", parentFolder
               .getName().toString() ) );
           }
-          parentfolder.createFolder();
+          parentFolder.createFolder();
           if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderCreated", parentfolder
+            log.logDebug( BaseMessages.getString( pkg, "JobTrans.Log.ParentLogFolderCreated", parentFolder
               .getName().toString() ) );
           }
         } else {
-          log.logError( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder
+          log.logError( BaseMessages.getString( pkg, "JobTrans.Log.ParentLogFolderNotExist", parentFolder
             .getName().toString() ) );
-          resultat = false;
+          isParentFolderCreated = false;
         }
       } else {
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderExists", parentfolder
+          log.logDebug( BaseMessages.getString( pkg, "JobTrans.Log.ParentLogFolderExists", parentFolder
             .getName().toString() ) );
         }
       }
     } catch ( Exception e ) {
-      resultat = false;
-      log.logError( BaseMessages.getString( PKG, "JobTrans.Error.ChekingParentLogFolderTitle" ), BaseMessages
-        .getString( PKG, "JobTrans.Error.ChekingParentLogFolder", parentfolder.getName().toString() ), e );
-    } finally {
-      if ( parentfolder != null ) {
-        try {
-          parentfolder.close();
-          parentfolder = null;
-        } catch ( Exception ex ) {
-          // Ignore
-        }
-      }
+      isParentFolderCreated = false;
+      log.logError( BaseMessages.getString( pkg, "JobTrans.Error.ChekingParentLogFolderTitle" ), BaseMessages
+        .getString( pkg, "JobTrans.Error.ChekingParentLogFolder", parentFolderName ), e );
     }
 
-    return resultat;
+    return isParentFolderCreated;
   }
 
   /**

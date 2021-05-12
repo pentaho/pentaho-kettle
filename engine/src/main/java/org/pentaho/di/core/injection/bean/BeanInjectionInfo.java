@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -159,6 +159,35 @@ public class BeanInjectionInfo {
       throw new RuntimeException( "Group shouldn't be declared with prefix in " + clazz );
     }
     return name;
+  }
+
+  /**
+   * @return A human friendly message listing any metadata injection properties for the target class that
+   * do not have localized values.  Returns null if everything is ok
+   */
+  public String checkMetaDataInjectionBeanAgainstMessages() {
+    String desc;
+    List<String> propertiesWithNoLocalizedValues = new ArrayList<>();
+    for ( String property : getProperties().keySet() ) {
+      desc = getDescription( property );
+      if ( desc.startsWith( "!" ) && desc.endsWith( "!" ) ) {
+        propertiesWithNoLocalizedValues.add( property );
+      }
+    }
+    if ( !propertiesWithNoLocalizedValues.isEmpty() ) {
+      StringBuilder sb = new StringBuilder();
+      for ( String property : propertiesWithNoLocalizedValues ) {
+        if ( sb.length() > 0 ) {
+          sb.append( ", " );
+        }
+        sb.append( "\"" ).append( this.clazzAnnotation.localizationPrefix() );
+        sb.append( property ).append( "\"" );
+      }
+      sb.insert( 0, "The following Metadata Injection properties have no localized values set: " );
+      sb.append( ".  Add entries in the appropriate localized message properties file." );
+      return sb.toString();
+    }
+    return null;
   }
 
   public class Property {

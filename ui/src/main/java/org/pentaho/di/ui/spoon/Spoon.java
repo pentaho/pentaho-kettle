@@ -3,8 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
- * Copyright (C) 2016-2019 by Hitachi America, Ltd., R&D : http://www.hitachi-america.us/rd/
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -911,6 +910,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     transDebugExecutionConfiguration.setGatheringMetrics( true );
 
     jobExecutionConfiguration = new JobExecutionConfiguration();
+    jobExecutionConfiguration.setGatheringMetrics( true );
 
     // Clean out every time we start, auto-loading etc, is not a good idea
     // If they are needed that often, set them in the kettle.properties file
@@ -1253,6 +1253,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } else {
       // Cancel - don't close tabs and don't disconnect from repo
       return false;
+    }
+  }
+
+  /*
+   Fix for PDI-18593 Hadoop cluster items not refreshed when switching from local<->repo.
+   Updates the tree on repository connection or disconnection without closing active Jobs or Transformations.
+   */
+  public void updateTreeForActiveAbstractMetas() {
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      Object managedObject = entry.getObject().getManagedObject();
+      if ( managedObject instanceof AbstractMeta ) {
+        if ( managedObject instanceof TransMeta ) {
+          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_TRANSFORMATIONS, props.isOnlyActiveFileShownInTree() );
+        }
+        if ( managedObject instanceof JobMeta ) {
+          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_JOBS, props.isOnlyActiveFileShownInTree() );
+        }
+        selectionTreeManager.show( (AbstractMeta) managedObject );
+        refreshTree( (AbstractMeta) managedObject );
+      }
     }
   }
 
@@ -4342,6 +4362,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         setShellText();
         SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
         enableMenus();
+        updateTreeForActiveAbstractMetas();
       }
     }
   }

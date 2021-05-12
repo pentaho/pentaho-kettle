@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,10 +28,14 @@ import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
+  public static final String XLSX_FILE_WITH_SHARED_STRINGS = "file_with_shared_strings.xlsx";
+  public static final String XLSX_FILE_WITH_INLINED_STRINGS = "file_with_inlined_strings.xlsx";
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String[] CNST_3_SHEET_NAME_ARRAY = { "Sheet1", "Sheet2", "Sheet3" };
@@ -130,12 +134,31 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
 
     // Initializing the ExcelInput step should make the new values to be set
     meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    System.setProperty( Const.KETTLE_XLSX_ZIP_BOMB_CHECK, Boolean.TRUE.toString() );
     init( "Balance_Type_Codes.xlsx" );
 
     // Verify that the default values were used
     assertEquals( Const.KETTLE_ZIP_MAX_ENTRY_SIZE_DEFAULT, (Long) ZipSecureFile.getMaxEntrySize() );
     assertEquals( Const.KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT, (Long) ZipSecureFile.getMaxTextSize() );
     assertEquals( Const.KETTLE_ZIP_MIN_INFLATE_RATIO_DEFAULT, (Double) ZipSecureFile.getMinInflateRatio() );
+  }
+
+  @Test
+  public void testZipBombConfiguration_CheckDisabled() throws Exception {
+
+    Double bogusMinInflateRatio = 0.5d;
+    ZipSecureFile.setMinInflateRatio( bogusMinInflateRatio );
+
+    // Verify the Min Inflate Ratio was set
+    assertEquals( bogusMinInflateRatio, (Double) ZipSecureFile.getMinInflateRatio() );
+
+    // Initializing the ExcelInput step should make the new values to be set
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    // Disabling the zip bomb checking property
+    System.setProperty( Const.KETTLE_XLSX_ZIP_BOMB_CHECK, Boolean.FALSE.toString() );
+    init( "Balance_Type_Codes.xlsx" );
+
+    assertEquals( Const.KETTLE_ZIP_NEGATIVE_MIN_INFLATE, (Double) ZipSecureFile.getMinInflateRatio() );
   }
 
   @Test
@@ -148,6 +171,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     System.setProperty( Const.KETTLE_ZIP_MAX_ENTRY_SIZE, maxEntrySizeVal.toString() );
     System.setProperty( Const.KETTLE_ZIP_MAX_TEXT_SIZE, maxTextSizeVal.toString() );
     System.setProperty( Const.KETTLE_ZIP_MIN_INFLATE_RATIO, minInflateRatioVal.toString() );
+    System.setProperty( Const.KETTLE_XLSX_ZIP_BOMB_CHECK, Boolean.TRUE.toString() );
     //ExcelInput excelInput = new ExcelInput( null, null, 0, null, null );
 
     // Initializing the ExcelInput step should make the new values to be set
@@ -167,6 +191,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     // For this zip to be correctly handed, we need to allow a lower inflate ratio
     Double minInflateRatio = 0.007d;
     System.setProperty( Const.KETTLE_ZIP_MIN_INFLATE_RATIO, minInflateRatio.toString() );
+    System.setProperty( Const.KETTLE_XLSX_ZIP_BOMB_CHECK, Boolean.TRUE.toString() );
 
     meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
     init( "Balance_Type_Codes.xlsx" );
@@ -308,5 +333,109 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     // Checks
     assertEquals( "Wrong first result", firstResult, rows.get( 0 )[ 0 ] );
     assertEquals( "Wrong last result", lastResult, rows.get( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET - 1 )[ 0 ] );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_Header_InlinedStrings_Streaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( XLSX_FILE_WITH_INLINED_STRINGS );
+
+    testReadBlankAndNullCells( true );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_Header_SharedStrings_Streaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( XLSX_FILE_WITH_SHARED_STRINGS );
+
+    testReadBlankAndNullCells( true );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_Header_InlinedStrings_NoStreaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    init( XLSX_FILE_WITH_INLINED_STRINGS );
+
+    testReadBlankAndNullCells( true );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_Header_SharedStrings_NoStreaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    init( XLSX_FILE_WITH_SHARED_STRINGS );
+
+    testReadBlankAndNullCells( true );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_NoHeader_InlinedStrings_Streaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( XLSX_FILE_WITH_INLINED_STRINGS );
+
+    testReadBlankAndNullCells( false );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_NoHeader_SharedStrings_Streaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( XLSX_FILE_WITH_SHARED_STRINGS );
+
+    testReadBlankAndNullCells( false );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_NoHeader_InlinedStrings_NoStreaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    init( XLSX_FILE_WITH_INLINED_STRINGS );
+
+    testReadBlankAndNullCells( false );
+  }
+
+  @Test
+  public void testReadBlankAndNullCells_XSLSX_NoHeader_SharedStrings_NoStreaming() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    init( XLSX_FILE_WITH_SHARED_STRINGS );
+
+    testReadBlankAndNullCells( false );
+  }
+
+  /**
+   * <p>Common code for the testReadBlankAndNullCells* tests.</p>
+   *
+   * @param startsWithHeader if the file has header row or not
+   * @throws Exception if something went wrong
+   */
+  private void testReadBlankAndNullCells( boolean startsWithHeader ) throws Exception {
+    meta.setStartsWithHeader( startsWithHeader );
+
+    setFields( new ExcelInputField( "f1", -1, -1 ), new ExcelInputField( "f2", -1, -1 ),
+      new ExcelInputField( "f3", -1, -1 ), new ExcelInputField( "f4", -1, -1 ) );
+
+    process();
+
+    // The full content of the file
+    Object[][] allRows = new Object[][] {
+      // Second cell is 'Blank' and third is 'null'
+      { "val11", "", null, "val14" },
+      // All cells have content
+      { "val21", "val22", "val23", "val24" },
+      // Second cell is 'Blank'
+      { "val31", "", "val33", "val34" },
+      // All cells have content
+      { "val41", "val42", "val43", "val44" },
+      // Second cell is 'null'
+      { "val51", null, "val53", "val54" },
+      // All cells have content
+      { "val61", "val62", "val63", "val64" }
+    };
+
+    Object[][] expectedRows = allRows;
+
+    if ( startsWithHeader ) {
+      // When it has an Header, the first row won't show as content
+      expectedRows = Arrays.copyOfRange( allRows, 1, allRows.length );
+    }
+
+    check( expectedRows );
   }
 }

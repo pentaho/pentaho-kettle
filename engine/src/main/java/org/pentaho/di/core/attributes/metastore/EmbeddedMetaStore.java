@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStoreElementOwner;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -66,6 +67,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   public EmbeddedMetaStore( AttributesInterface attributesInterface ) {
     this.attributesInterface = attributesInterface;
     this.lock = new ReentrantReadWriteLock();
+    this.name = UUID.randomUUID().toString(); // default, unique name
   }
 
   @Override public void createNamespace( final String namespace ) throws MetaStoreException {

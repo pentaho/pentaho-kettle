@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -223,6 +223,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.nonProxyHosts = nonProxyHosts;
 
     this.master = master;
+    this.sslMode = ssl;
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
   }

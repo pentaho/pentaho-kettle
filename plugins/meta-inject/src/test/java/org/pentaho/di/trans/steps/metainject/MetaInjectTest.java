@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.metainject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -61,6 +62,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -450,7 +452,6 @@ public class MetaInjectTest {
     assertEquals( 1, unavailable.size() );
     assertTrue( unavailable.contains( unavailableTargetAttr ) );
   }
-  
 
   @Test
   public void testStepChangeListener() throws Exception {
@@ -532,8 +533,8 @@ public class MetaInjectTest {
     RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
     RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
       new RepositoryDirectory( null, "/" ), "home" ), "admin" ) );
-    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
-    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
+    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.realClone( false ) );
+    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).realClone( false );
 
     PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir, "home/admin" );
     PowerMockito.doReturn( adminDir ).when( data.transMeta ).getRepositoryDirectory();
@@ -553,8 +554,8 @@ public class MetaInjectTest {
     RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
     RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
       new RepositoryDirectory( null, "/" ), "home" ), "admin" ) );
-    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
-    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
+    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.realClone( false ) );
+    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).realClone( false );
 
     PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir,
       "/home/admin" );
@@ -568,5 +569,69 @@ public class MetaInjectTest {
     verify( cloneMeta, times( 1 ) ).setRepositoryDirectory( adminDir );
     verify( cloneMeta, times( 1 ) ).setObjectId( any( ObjectId.class ) );
     verify( repository, times( 1 ) ).save( cloneMeta, null, null, true );
+  }
+
+  @Test
+  public void writeInjectedKtrKeepsDataTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.writeInjectedKtr( filepath );
+    //Make sure realClone( false ) is called and no other, so that the resulting ktr keeps all the info
+    verify( data.transMeta, times( 1 ) ).realClone( false );
+    verify( data.transMeta, times( 0 ) ).realClone( true );
+    verify( data.transMeta, times( 0 ) ).clone();
+
+    //Delete temporary file created by the test
+    new File( filepath ).delete();
+  }
+
+  @Test
+  public void writeInjectedKtrShouldWriteToRepoTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.setRepository( repository );
+    metaInject.writeInjectedKtr( "filepath" );
+
+    verify( metaInject, times( 1 ) ).writeInjectedKtrToRepo( filepath );
+    verify( metaInject, times( 0 ) ).writeInjectedKtrToFs( filepath );
+  }
+
+  @Test
+  public void writeInjectedKtrShouldWriteToFileSystemTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.writeInjectedKtr( "filepath" );
+
+    verify( metaInject, times( 0 ) ).writeInjectedKtrToRepo( filepath );
+    verify( metaInject, times( 1 ) ).writeInjectedKtrToFs( filepath );
+
+    //Delete temporary file created by the test
+    new File( filepath ).delete();
+  }
+
+  @Test
+  public void writeInjectedKtrShouldWriteToFileSystemCompatibilityFlagTest() throws Exception {
+    String filepath = "filepath";
+    metaInject.setRepository( repository );
+    metaInject.setVariable( Const.KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM, "Y" );
+    metaInject.writeInjectedKtr( "filepath" );
+
+    verify( metaInject, times( 0 ) ).writeInjectedKtrToRepo( filepath );
+    verify( metaInject, times( 1 ) ).writeInjectedKtrToFs( filepath );
+
+    //Delete temporary file created by the test
+    new File( filepath ).delete();
+  }
+
+  @Test
+  public void getRepositoryNotNullTest() {
+    metaInject.setRepository( repository );
+    //If repository is set in the base step (Local Execution) TransMeta will not be required to get the repository
+    metaInject.getRepository();
+    verify( metaInject, times( 0 ) ).getTransMeta();
+  }
+
+  @Test
+  public void getRepositoryNullTest() {
+    metaInject.getRepository();
+    //If repository is not set in the base step (Remote Executions/Scheduling) Need to get the repository from TransMeta
+    verify( metaInject, times( 1 ) ).getTransMeta();
   }
 }

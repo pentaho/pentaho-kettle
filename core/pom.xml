@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-core</artifactId>
-  <version>9.0.0.0-423-22</version>
+  <version>9.3.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Core</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>9.0.0.0-423</version>
+    <version>9.3.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -29,7 +29,6 @@
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <commons-vfs2.version>2.2</commons-vfs2.version>
     <commons-io.version>2.2</commons-io.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-pool.version>1.5.7</commons-pool.version>
@@ -41,10 +40,11 @@
     <com.wcohen.secondstring.version>0.1</com.wcohen.secondstring.version>
     <javassist.version>3.20.0-GA</javassist.version>
     <jcifs.version>1.3.3</jcifs.version>
-    <simple-jndi.version>1.0.2</simple-jndi.version>
+    <simple-jndi.version>1.0.3</simple-jndi.version>
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
     <xmlunit.version>1.5</xmlunit.version>
     <joda.version>2.10.2</joda.version>
+    <encryption-support.version>9.3.0.0-SNAPSHOT</encryption-support.version>
   </properties>
 
   <dependencies>
@@ -299,7 +299,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
-      <version>${commons-vfs2.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -507,6 +506,17 @@
       <version>${xmlunit.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-jdbc</artifactId>
+      <version>8.5.27</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pentaho-encryption-support</artifactId>
+      <version>${encryption-support.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -522,6 +532,7 @@
               <includes>
                 <include>org/pentaho/di/junit/**</include>
                 <include>org/pentaho/di/concurrency/**</include>
+                <include>*.xml</include>
               </includes>
             </configuration>
           </execution>

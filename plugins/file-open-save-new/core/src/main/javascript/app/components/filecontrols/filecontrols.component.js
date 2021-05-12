@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ define([
     bindings: {
       folder: '<',
       files: '<',
+      selectedFiles: '<',
       onAddFolder: '&',
       onDeleteFiles: '&',
       onUpDirectory: '&',
@@ -63,6 +64,8 @@ define([
     function onInit() {
       vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
       vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
+      vm.refreshText = i18n.get("file-open-save-plugin.app.refresh.button");
+      vm.upDirectoryText = i18n.get("file-open-save-plugin.app.up-directory.button");
     }
 
     /**
@@ -84,18 +87,26 @@ define([
       vm.addDisabled = vm.folder && !vm.folder.canAddChildren;
       vm.refreshDisabled = vm.folder && !vm.folder.loaded;
       vm.upDisabled = (vm.folder && !vm.folder.loaded) || (!vm.folder.root && vm.folder.path.replace(/^[\w]+:\/\//, "").indexOf("/") === -1);
-      if (vm.files && vm.files.length > 0) {
-        for (var i = 0; i < vm.files.length; i++) {
-          if (!vm.files[i].canEdit) {
-            vm.deleteDisabled = true;
+
+      vm.deleteDisabled = _setDeleteDisabled();
+    }
+
+    /**
+     * Helper method to determine if the delete filecontrol should be disabled.
+     * @returns {boolean}
+     * @private
+     */
+    function _setDeleteDisabled() {
+      if (vm.selectedFiles && vm.selectedFiles.length > 0) {
+        for (var i = 0; i < vm.selectedFiles.length; i++) {
+          if (!vm.selectedFiles[i].canEdit) {
+            return true;
           }
         }
-        vm.deleteDisabled = false;
       } else if (vm.folder) {
-        vm.deleteDisabled = !vm.folder.canEdit;
-      } else {
-        vm.deleteDisabled = false;
+        return !vm.folder.canEdit;
       }
+      return false;
     }
   }
 

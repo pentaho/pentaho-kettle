@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,6 +42,8 @@ import org.pentaho.reporting.libraries.formula.operators.OperatorFactory;
 import org.pentaho.reporting.libraries.formula.typing.Type;
 import org.pentaho.reporting.libraries.formula.typing.TypeRegistry;
 import org.pentaho.reporting.libraries.formula.typing.coretypes.AnyType;
+import org.pentaho.reporting.libraries.formula.typing.coretypes.NumberType;
+import org.pentaho.reporting.libraries.formula.typing.coretypes.TextType;
 
 public class RowForumulaContext implements FormulaContext {
   private RowMetaInterface rowMeta;
@@ -53,10 +55,25 @@ public class RowForumulaContext implements FormulaContext {
     this.formulaContext = new DefaultFormulaContext();
     this.rowMeta = row;
     this.rowData = null;
-    this.valueIndexMap = new Hashtable<String, Integer>();
+    this.valueIndexMap = new Hashtable<>();
   }
 
   public Type resolveReferenceType( Object name ) {
+    if ( name instanceof String ) {
+      ValueMetaInterface valueMeta = this.rowMeta.searchValueMeta( (String) name );
+      if ( valueMeta != null ) {
+        switch ( valueMeta.getType() ) {
+          case ValueMetaInterface.TYPE_STRING:
+            return TextType.TYPE;
+          case ValueMetaInterface.TYPE_INTEGER:
+          case ValueMetaInterface.TYPE_BIGNUMBER:
+          case ValueMetaInterface.TYPE_NUMBER:
+            return NumberType.GENERIC_NUMBER;
+          default:
+            return AnyType.TYPE;
+        }
+      }
+    }
     return AnyType.TYPE;
   }
 
@@ -159,7 +176,6 @@ public class RowForumulaContext implements FormulaContext {
         return valueMeta.getInteger( valueData );
       case ValueMetaInterface.TYPE_NUMBER:
         return valueMeta.getNumber( valueData );
-        // case ValueMetaInterface.TYPE_SERIALIZABLE: return valueMeta.(valueData);
       case ValueMetaInterface.TYPE_STRING:
         return valueMeta.getString( valueData );
       default:
@@ -181,7 +197,6 @@ public class RowForumulaContext implements FormulaContext {
         return Long.class;
       case ValueMetaInterface.TYPE_NUMBER:
         return Double.class;
-        // case Value.VALUE_TYPE_SERIALIZABLE: return Serializable.class;
       case ValueMetaInterface.TYPE_STRING:
         return String.class;
       default:

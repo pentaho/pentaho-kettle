@@ -8,7 +8,7 @@ pipeline {
         GITHUB_TOKEN = credentials('9e494763-394a-4837-a25f-c1e9e61a7289')
         repo         = GetScmProjectName()
         version      = 'nightly'
-        dist         = '9.0.0.0-423'
+        dist         = '9.3.0.0-SNAPSHOT'
         username     = 'HiromuHota'
     }
     stages {

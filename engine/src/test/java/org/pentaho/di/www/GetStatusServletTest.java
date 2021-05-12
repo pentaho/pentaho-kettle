@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ import org.junit.Test;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
@@ -69,7 +71,8 @@ public class GetStatusServletTest {
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
     getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "TITLE", out.toString() ) ) ); // title will more reliably be plain text
+    assertFalse( ServletTestUtils.hasBadText(
+      ServletTestUtils.getInsideOfTag( "TITLE", out.toString() ) ) ); // title will more reliably be plain text
   }
 
   @Test
@@ -93,5 +96,104 @@ public class GetStatusServletTest {
 
     getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( out.toString().contains( ServletTestUtils.BAD_STRING_TO_TEST ) );
+  }
+
+  @Test
+  public void testGetStatusServletAsXmlWhenJobDroppedFromList() throws ServletException, IOException {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    StringWriter out = new StringWriter();
+    setupForJobDroppedFromMap( mockHttpServletRequest, mockHttpServletResponse, out );
+
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "Y" );
+    getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    assertFalse( out.toString().contains( "testJobId1" ) );
+    assert ( out.toString().contains( "testJobId2" ) );
+  }
+
+  @Test
+  public void testGetStatusServletAsHtmlWhenJobDroppedFromList() throws ServletException, IOException {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    StringWriter out = new StringWriter();
+    setupForJobDroppedFromMap( mockHttpServletRequest, mockHttpServletResponse, out );
+
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "N" );
+    getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    assertFalse( out.toString().contains( "java.lang.NullPointerException" ) );
+    assertFalse( out.toString().contains( "testJobId1" ) );
+    assert ( out.toString().contains( "testJobId2" ) );
+  }
+
+  @Test
+  public void testGetStatusServletAsXmlWhenTransDroppedFromList() throws ServletException, IOException {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    StringWriter out = new StringWriter();
+    setupForTransDroppedFromMap( mockHttpServletRequest, mockHttpServletResponse, out );
+
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "Y" );
+    getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    assertFalse( out.toString().contains( "testTranId1" ) );
+    assert ( out.toString().contains( "testTranId2" ) );
+  }
+
+  @Test
+  public void testGetStatusServletAsHtmlWhenTransDroppedFromList() throws ServletException, IOException {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    StringWriter out = new StringWriter();
+    setupForTransDroppedFromMap( mockHttpServletRequest, mockHttpServletResponse, out );
+
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "N" );
+    getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    assertFalse( out.toString().contains( "java.lang.NullPointerException" ) );
+    assertFalse( out.toString().contains( "testTranId1" ) );
+    assert ( out.toString().contains( "testTranId2" ) );
+  }
+
+
+  private void setupForJobDroppedFromMap( HttpServletRequest mockHttpServletRequest,
+                                          HttpServletResponse mockHttpServletResponse, StringWriter out )
+    throws IOException {
+    KettleLogStore.init();
+
+    Trans mockTrans = mock( Trans.class );
+    TransMeta mockTransMeta = mock( TransMeta.class );
+    LogChannelInterface mockChannelInterface = mock( LogChannelInterface.class );
+    PrintWriter printWriter = new PrintWriter( out );
+    CarteObjectEntry carteObjectEntry1 = new CarteObjectEntry( "name1", "testJobId1" );
+    CarteObjectEntry carteObjectEntry2 = new CarteObjectEntry( "name2", "testJobId2" );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( GetStatusServlet.CONTEXT_PATH );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+
+    Job mockJob = mock( Job.class );
+    when( mockJobMap.getJobObjects() ).thenReturn( Arrays.asList( carteObjectEntry1, carteObjectEntry2 ) );
+    when( mockJobMap.getJob( carteObjectEntry1 ) )
+      .thenReturn( null );  //Would have done this anyways but this line is to show it is required
+    when( mockJobMap.getJob( carteObjectEntry2 ) ).thenReturn( mockJob );
+  }
+
+  private void setupForTransDroppedFromMap( HttpServletRequest mockHttpServletRequest,
+                                          HttpServletResponse mockHttpServletResponse, StringWriter out )
+    throws IOException {
+    KettleLogStore.init();
+
+    Trans mockTrans = mock( Trans.class );
+    TransMeta mockTransMeta = mock( TransMeta.class );
+    LogChannelInterface mockChannelInterface = mock( LogChannelInterface.class );
+    PrintWriter printWriter = new PrintWriter( out );
+    CarteObjectEntry carteObjectEntry1 = new CarteObjectEntry( "name1", "testTranId1" );
+    CarteObjectEntry carteObjectEntry2 = new CarteObjectEntry( "name2", "testTranId2" );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( GetStatusServlet.CONTEXT_PATH );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+
+    Job mockJob = mock( Job.class );
+    when( mockTransformationMap.getTransformationObjects() ).thenReturn( Arrays.asList( carteObjectEntry1, carteObjectEntry2 ) );
+    when( mockTransformationMap.getTransformation( carteObjectEntry1 ) )
+      .thenReturn( null );  //Would have done this anyways but this line is to show it is required
+    when( mockTransformationMap.getTransformation( carteObjectEntry2 ) ).thenReturn( mockTrans );
   }
 }

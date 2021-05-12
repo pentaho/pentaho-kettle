@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,17 @@
 
 package org.pentaho.di.trans.steps.pentahoreporting;
 
-import java.awt.GraphicsEnvironment;
-import java.io.OutputStream;
-import java.math.BigDecimal;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Date;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -78,7 +76,20 @@ import org.pentaho.reporting.libraries.repository.ContentLocation;
 import org.pentaho.reporting.libraries.repository.DefaultNameGenerator;
 import org.pentaho.reporting.libraries.resourceloader.LibLoaderBoot;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
+import org.pentaho.reporting.libraries.resourceloader.ResourceCreationException;
+import org.pentaho.reporting.libraries.resourceloader.ResourceException;
+import org.pentaho.reporting.libraries.resourceloader.ResourceKeyCreationException;
+import org.pentaho.reporting.libraries.resourceloader.ResourceLoadingException;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+
+import java.awt.GraphicsEnvironment;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 
 /**
  * Outputs a stream/series of rows to a file, effectively building a sort of (compressed) microcube.
@@ -120,26 +131,29 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       setOutputDone();
       return false;
     }
-
     if ( first ) {
       first = false;
 
-      data.inputFieldIndex = getInputRowMeta().indexOfValue( meta.getInputFileField() );
-      if ( data.inputFieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getInputFileField() ) );
-      }
-      data.outputFieldIndex = getInputRowMeta().indexOfValue( meta.getOutputFileField() );
-      if ( data.inputFieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getOutputFileField() ) );
+      if ( meta.getUseValuesFromFields() ) {
+        data.inputFieldIndex = getInputRowMeta().indexOfValue( meta.getInputFileField() );
+        if ( data.inputFieldIndex < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getInputFileField() ) );
+        }
+        data.outputFieldIndex = getInputRowMeta().indexOfValue( meta.getOutputFileField() );
+        if ( data.inputFieldIndex < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getOutputFileField() ) );
+        }
       }
 
-      performPentahoReportingBoot( log, getClass() );
     }
+    performPentahoReportingBoot( log, getClass() );
 
-    String sourceFilename = getInputRowMeta().getString( r, data.inputFieldIndex );
-    String targetFilename = getInputRowMeta().getString( r, data.outputFieldIndex );
+    String sourceFilename = meta.getUseValuesFromFields()
+      ? getInputRowMeta().getString( r, data.inputFieldIndex ) : meta.getInputFile();
+    String targetFilename =  meta.getUseValuesFromFields()
+      ? getInputRowMeta().getString( r, data.outputFieldIndex ) : meta.getOutputFile();
     processReport( r, sourceFilename, targetFilename, meta.getOutputProcessorType(), meta.getCreateParentfolder() );
 
     // in case we want the input data to go to more steps.
@@ -173,23 +187,48 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
     }
   }
 
-  public static MasterReport loadMasterReport( String sourceFilename ) throws Exception {
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
-    FileObject fileObject = KettleVFS.getFileObject( sourceFilename );
-    Resource resource = manager.createDirectly( fileObject, MasterReport.class );
-    MasterReport report = (MasterReport) resource.getResource();
-
-    return report;
+  public static MasterReport loadMasterReport( String sourceFilename, VariableSpace space )
+    throws KettleFileException, MalformedURLException, ResourceException {
+    Resource resource = getResource( sourceFilename, space );
+    return (MasterReport) resource.getResource();
   }
 
-  private void processReport( Object[] r, String sourceFilename, String targetFilename,
+  public static MasterReport loadMasterReport( String sourceFilename )
+    throws KettleFileException, MalformedURLException, ResourceException {
+    return loadMasterReport( sourceFilename, null );
+  }
+
+  protected static Resource getResource( String sourceFilename, VariableSpace space )
+    throws KettleFileException, MalformedURLException, ResourceLoadingException, ResourceCreationException,
+    ResourceKeyCreationException {
+    ResourceManager manager = new ResourceManager();
+    manager.registerDefaults();
+
+    FileObject fileObject = getFileObject( sourceFilename, space );
+    return manager.createDirectly( getKeyValue( fileObject ), MasterReport.class );
+  }
+
+  protected static FileObject getFileObject( String sourceFilename, VariableSpace space )
+    throws KettleFileException {
+    if ( space == null ) {
+      space = new Variables();
+      space.initializeVariablesFrom( null );
+    }
+    return KettleVFS.getFileObject( sourceFilename, space );
+  }
+
+  protected static Object getKeyValue( FileObject fileObject ) throws MalformedURLException {
+    return fileObject instanceof LocalFile ? new URL( fileObject.getName().getURI() ) : fileObject;
+  }
+
+  @VisibleForTesting
+  public void processReport( Object[] r, String sourceFilename, String targetFilename,
     ProcessorType outputProcessorType, Boolean createParentFolder ) throws KettleException {
     try {
 
       // Load the master report from the PRPT
       //
-      MasterReport report = loadMasterReport( sourceFilename );
+      MasterReport report = loadMasterReport( sourceFilename, getTrans() );
 
       // Set the parameters values that are present in the various fields...
       //

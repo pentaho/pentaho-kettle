@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -254,7 +254,7 @@ public class ResultFile implements Cloneable {
     row.addValue( new ValueMetaString( "filename" ), file.getName().getBaseName() );
 
     // The path
-    row.addValue( new ValueMetaString( "path" ), file.getName().getURI() );
+    row.addValue( new ValueMetaString( "path" ), Const.optionallyDecodeUriString( file.getName().getURI() ) );
 
     // The origin parent
     row.addValue( new ValueMetaString( "parentorigin" ), originParent );

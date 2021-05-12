@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -368,6 +368,7 @@ public class ValueMetaBaseTest {
     ValueMetaBase inValueMetaString = new ValueMetaString();
     ValueMetaBase outValueMetaString = new ValueMetaString();
     String inputValueEmptyString = StringUtils.EMPTY;
+    String inputValueSpacesString = "   ";
     String inputValueNullString = null;
     String nullIf = null;
     String ifNull = null;
@@ -395,6 +396,19 @@ public class ValueMetaBaseTest {
       outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
     assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y: "
       + "Conversion from null string must return empty string", StringUtils.EMPTY, result );
+
+    // test KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY
+    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY, "Y" );
+    result =
+      outValueMetaString.convertDataFromString( inputValueSpacesString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY = Y: "
+      + "Conversion from string with spaces only to string must return original string", inputValueSpacesString, result );
+
+    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY, "N" );
+    result =
+      outValueMetaString.convertDataFromString( inputValueSpacesString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY = Y: "
+      + "Conversion from string with spaces only to string must return original string", StringUtils.EMPTY, result );
   }
 
   @Test

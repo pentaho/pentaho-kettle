@@ -6,17 +6,18 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>connections</artifactId>
-    <version>9.0.0.0-423</version>
+    <version>9.3.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>connections-ui</artifactId>
-  <version>9.0.0.0-423</version>
+  <version>9.3.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Connections Plugin UI</name>
 
   <properties>
     <maven-replacer-plugin.version>1.5.2</maven-replacer-plugin.version>
+    <mockito.version>1.9.5</mockito.version>
   </properties>
 
   <dependencies>
@@ -82,7 +83,7 @@
       <artifactId>angular</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>angular-i18n</artifactId>
     </dependency>
     <dependency>
@@ -97,6 +98,19 @@
       <groupId>org.webjars.npm</groupId>
       <artifactId>jquery</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>

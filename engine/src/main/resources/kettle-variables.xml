@@ -149,6 +149,30 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Prevents Kettle from converting null strings to empty strings when KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL is set to "Y".</description>
+    <variable>KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Prevents Kettle from converting spaces only strings to empty string.</description>
+    <variable>KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Prevent Kettle from yielding null as the value of an empty value.</description>
+    <variable>KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Cause the "Get XML data" step to yield null values on missing elements and empty values on empty elements when set to "Y".</description>
+    <variable>KETTLE_XML_MISSING_TAG_YIELDS_NULL_VALUE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>The maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all rows
       (default)
     </description>
@@ -180,6 +204,12 @@
     <description>The maximum number of logging registry entries kept in memory for logging purposes.</description>
     <variable>KETTLE_MAX_LOGGING_REGISTRY_SIZE</variable>
     <default-value>10000</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>The timeout interval for the logging registry purge timer which cleanups of registry entries (in msecs).</description>
+    <variable>KETTLE_LOGGING_REGISTRY_PURGE_TIMEOUT</variable>
+    <default-value>60000</default-value>
   </kettle-variable>
 
   <kettle-variable>
@@ -440,6 +470,12 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Set this variable to a storage file size to configure the s3 multi part upload part size.</description>
+    <variable>s3.vfs.partSize</variable>
+    <default-value>5MB</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>Set this variable to restore the directory loading behavior of the repository as it was before 6.1. Changing this to false will make repository loading more expensive</description>
     <variable>KETTLE_LAZY_REPOSITORY</variable>
     <default-value>true</default-value>
@@ -517,5 +553,41 @@
     <variable>SHIM_DRIVER_DEPLOYMENT_LOCATION</variable>
     <default-value>DEFAULT</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to specify how many attempts before failing to read an XML from within a Zip file while multy-thread execution and using XMLHandler.</description>
+    <variable>KETTLE_RETRY_OPEN_XML_STREAM</variable>
+    <default-value>2</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to define how Timestamp should be converted to a number and vice-versa.
+      Possible values: "LEGACY" (default), "MILLISECONDS", "NANOSECONDS".</description>
+    <variable>KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE</variable>
+    <default-value>LEGACY</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used to enable the checking of zip bomb. This is set to false by default.</description>
+    <variable>KETTLE_XLSX_ZIP_BOMB_CHECK</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>A variable to configure a comma separated list of environment variables to ignore when initializing shell step. org.osgi.framework.system.packages.extra is set by default.</description>
+    <variable>SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE</variable>
+    <default-value>org.osgi.framework.system.packages.extra</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>System wide flag to control behavior of the ExecuteTransformationStep and ExecuteJobStep when a file is specified.
+      This only is used when PDI is connected to repository.
+      Y - It is possible specify a file with the extension or not that is saved in repository
+      N - Should not be specified the extension, in other words, should be specified the name of file saved in repository.
+    </description>
+    <variable>KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION</variable>
+    <default-value>Y</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 

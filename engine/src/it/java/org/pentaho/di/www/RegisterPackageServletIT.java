@@ -102,8 +102,7 @@ public class RegisterPackageServletIT {
     // check bytes are the same
     long delta = 10000; // a small difference
     long diff = Math.abs( fileZip.getTotalSpace() - fileArchiveUrl.getTotalSpace() );
-    assertTrue( diff < delta );
-
+    assertTrue( String.format( "diff: %d expected delta: %d", diff, delta ), diff < delta );
   }
 
   @Test
