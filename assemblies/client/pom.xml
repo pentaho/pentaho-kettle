@@ -95,6 +95,18 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-plugins</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
       <artifactId>pdi-static</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
