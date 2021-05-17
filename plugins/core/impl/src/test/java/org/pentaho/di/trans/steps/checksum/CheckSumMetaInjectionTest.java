@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,6 +72,12 @@ public class CheckSumMetaInjectionTest extends BaseMetadataInjectionTest<CheckSu
     check( "FIELD_SEPARATOR_STRING", new StringGetter() {
       public String get() {
         return meta.getFieldSeparatorString();
+      }
+    } );
+
+    check( "EVALUATION_METHOD", new IntGetter() {
+      public int get() {
+        return meta.getEvaluationMethod();
       }
     } );
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,27 +73,23 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
   private static Class<?> PKG = CheckSumDialog.class; // for i18n purposes, needed by Translator2!!
 
   private CheckSumMeta input;
-  private Label wlType;
 
+  private Label wlType;
   private CCombo wType;
-  private FormData fdlType, fdType;
 
   private Label wlFields;
   private TableView wFields;
-  private FormData fdlFields, fdFields;
 
   private Label wlResult;
   private Text wResult;
-  private FormData fdlResult, fdResult;
 
   private Label wlCompatibility;
   private Button wCompatibility;
-  private FormData fdlCompatibility, fdCompatibility;
 
-  private Label wlOldChecksumBehaviour;
-  private Button wOldChecksumBehaviour;
-  private FormData fdlOldChecksumBehaviour, fdOldChecksumBehaviour;
+  private Label wlEvaluationMethod;
+  private CCombo wEvaluationMethod;
 
+  private Label wlFieldSeparatorString;
   private Text wFieldSeparatorString;
 
   private ColumnInfo[] colinf;
@@ -102,12 +98,11 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 
   private Label wlResultType;
   private CCombo wResultType;
-  private FormData fdlResultType, fdResultType;
 
   public CheckSumDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
     input = (CheckSumMeta) in;
-    inputFields = new HashMap<String, Integer>();
+    inputFields = new HashMap<>();
   }
 
   @Override
@@ -152,15 +147,15 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     wStepname.addModifyListener( lsMod );
     fdStepname = new FormData();
     fdStepname.left = new FormAttachment( middle, 0 );
-    fdStepname.top = new FormAttachment( 0, margin );
     fdStepname.right = new FormAttachment( 100, 0 );
+    fdStepname.top = new FormAttachment( 0, margin );
     wStepname.setLayoutData( fdStepname );
 
     // Type
     wlType = new Label( shell, SWT.RIGHT );
     wlType.setText( BaseMessages.getString( PKG, "CheckSumDialog.Type.Label" ) );
     props.setLook( wlType );
-    fdlType = new FormData();
+    FormData fdlType = new FormData();
     fdlType.left = new FormAttachment( 0, 0 );
     fdlType.right = new FormAttachment( middle, -margin );
     fdlType.top = new FormAttachment( wStepname, margin );
@@ -171,10 +166,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     }
     wType.select( 0 );
     props.setLook( wType );
-    fdType = new FormData();
+    FormData fdType = new FormData();
     fdType.left = new FormAttachment( middle, 0 );
-    fdType.top = new FormAttachment( wStepname, margin );
     fdType.right = new FormAttachment( 100, 0 );
+    fdType.top = new FormAttachment( wStepname, margin );
     wType.setLayoutData( fdType );
     wType.addSelectionListener( new SelectionAdapter() {
       @Override
@@ -188,7 +183,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     wlResultType = new Label( shell, SWT.RIGHT );
     wlResultType.setText( BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Label" ) );
     props.setLook( wlResultType );
-    fdlResultType = new FormData();
+    FormData fdlResultType = new FormData();
     fdlResultType.left = new FormAttachment( 0, 0 );
     fdlResultType.right = new FormAttachment( middle, -margin );
     fdlResultType.top = new FormAttachment( wType, 2 * margin );
@@ -197,10 +192,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     wResultType.setItems( input.getResultTypeDescs() );
     wResultType.select( 0 );
     props.setLook( wResultType );
-    fdResultType = new FormData();
+    FormData fdResultType = new FormData();
     fdResultType.left = new FormAttachment( middle, 0 );
-    fdResultType.top = new FormAttachment( wType, 2 * margin );
     fdResultType.right = new FormAttachment( 100, 0 );
+    fdResultType.top = new FormAttachment( wType, 2 * margin );
     wResultType.setLayoutData( fdResultType );
     wResultType.addSelectionListener( new SelectionAdapter() {
 
@@ -215,29 +210,30 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     wlResult = new Label( shell, SWT.RIGHT );
     wlResult.setText( BaseMessages.getString( PKG, "CheckSumDialog.Result.Label" ) );
     props.setLook( wlResult );
-    fdlResult = new FormData();
+    FormData fdlResult = new FormData();
     fdlResult.left = new FormAttachment( 0, 0 );
     fdlResult.right = new FormAttachment( middle, -margin );
-    fdlResult.top = new FormAttachment( wResultType, margin * 2 );
+    fdlResult.top = new FormAttachment( wResultType, 2 * margin );
     wlResult.setLayoutData( fdlResult );
     wResult = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wResult );
     wResult.addModifyListener( lsMod );
-    fdResult = new FormData();
+    FormData fdResult = new FormData();
     fdResult.left = new FormAttachment( middle, 0 );
-    fdResult.top = new FormAttachment( wResultType, margin * 2 );
     fdResult.right = new FormAttachment( 100, 0 );
+    fdResult.top = new FormAttachment( wResultType, 2 * margin );
     wResult.setLayoutData( fdResult );
 
-    Label lFieldSeparator = new Label( shell, SWT.RIGHT );
-    lFieldSeparator.setText( BaseMessages.getString( PKG, "CheckSumDialog.FieldSeparatorString.Label" ) );
-    props.setLook( lFieldSeparator );
-    lFieldSeparator.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( middle, -margin ).top( wResult, margin * 2 ).result() );
+    wlFieldSeparatorString = new Label( shell, SWT.RIGHT );
+    wlFieldSeparatorString.setText( BaseMessages.getString( PKG, "CheckSumDialog.FieldSeparatorString.Label" ) );
+    props.setLook( wlFieldSeparatorString );
+    wlFieldSeparatorString.setLayoutData(
+      new FormDataBuilder().left( 0, 0 ).right( middle, -margin ).top( wResult, 2 * margin ).result() );
     wFieldSeparatorString = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wFieldSeparatorString );
     wFieldSeparatorString.addModifyListener( lsMod );
-    wFieldSeparatorString.setLayoutData( new FormDataBuilder().left( middle, 0 ).top( wResult, margin * 2 ).right( 100, 0 ).result() );
-
+    wFieldSeparatorString.setLayoutData(
+      new FormDataBuilder().left( middle, 0 ).right( 100, 0 ).top( wResult, 2 * margin ).result() );
 
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
@@ -252,18 +248,18 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     wlCompatibility = new Label( shell, SWT.RIGHT );
     wlCompatibility.setText( BaseMessages.getString( PKG, "CheckSumDialog.CompatibilityMode.Label" ) );
     props.setLook( wlCompatibility );
-    fdlCompatibility = new FormData();
+    FormData fdlCompatibility = new FormData();
     fdlCompatibility.left = new FormAttachment( 0, 0 );
-    fdlCompatibility.top = new FormAttachment( wFieldSeparatorString, margin );
     fdlCompatibility.right = new FormAttachment( middle, -margin );
+    fdlCompatibility.top = new FormAttachment( wFieldSeparatorString, margin );
     wlCompatibility.setLayoutData( fdlCompatibility );
     wCompatibility = new Button( shell, SWT.CHECK );
     wCompatibility.setToolTipText( BaseMessages.getString( PKG, "CheckSumDialog.CompatibilityMode.Tooltip" ) );
     props.setLook( wCompatibility );
-    fdCompatibility = new FormData();
+    FormData fdCompatibility = new FormData();
     fdCompatibility.left = new FormAttachment( middle, 0 );
-    fdCompatibility.top = new FormAttachment( wFieldSeparatorString, margin );
     fdCompatibility.right = new FormAttachment( 100, 0 );
+    fdCompatibility.top = new FormAttachment( wFieldSeparatorString, margin );
     wCompatibility.setLayoutData( fdCompatibility );
     SelectionAdapter lsSelR = new SelectionAdapter() {
       @Override
@@ -273,24 +269,28 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     };
     wCompatibility.addSelectionListener( lsSelR );
 
-    wlOldChecksumBehaviour = new Label( shell, SWT.RIGHT );
-    wlOldChecksumBehaviour.setText( BaseMessages.getString( PKG, "CheckSumDialog.OldChecksumBehaviourMode.Label" ) );
-    props.setLook( wlOldChecksumBehaviour );
-    fdlOldChecksumBehaviour = new FormData();
-    fdlOldChecksumBehaviour.left = new FormAttachment( 0, 0 );
-    fdlOldChecksumBehaviour.top = new FormAttachment( wCompatibility, margin );
-    fdlOldChecksumBehaviour.right = new FormAttachment( middle, -margin );
-    wlOldChecksumBehaviour.setLayoutData( fdlOldChecksumBehaviour );
-    wOldChecksumBehaviour = new Button( shell, SWT.CHECK );
-    wOldChecksumBehaviour.setToolTipText( BaseMessages.getString( PKG, "CheckSumDialog.OldChecksumBehaviourMode.Tooltip" ) );
-    props.setLook( wOldChecksumBehaviour );
-    fdOldChecksumBehaviour = new FormData();
-    fdOldChecksumBehaviour.left = new FormAttachment( middle, 0 );
-    fdOldChecksumBehaviour.top = new FormAttachment( wCompatibility, margin );
-    fdOldChecksumBehaviour.right = new FormAttachment( 100, 0 );
-    wOldChecksumBehaviour.setLayoutData( fdOldChecksumBehaviour );
-    wOldChecksumBehaviour.addSelectionListener( new SelectionAdapter() {
-
+    // EvaluationMethod
+    // The label
+    wlEvaluationMethod = new Label( shell, SWT.RIGHT );
+    wlEvaluationMethod.setText( BaseMessages.getString( PKG, "CheckSumDialog.EvaluationMethod.Label" ) );
+    props.setLook( wlEvaluationMethod );
+    FormData wlEvaluationMethodFD = new FormData();
+    wlEvaluationMethodFD.left = new FormAttachment( 0, 0 );
+    wlEvaluationMethodFD.right = new FormAttachment( middle, -margin );
+    wlEvaluationMethodFD.top = new FormAttachment( wCompatibility, margin );
+    wlEvaluationMethod.setLayoutData( wlEvaluationMethodFD );
+    // The control
+    wEvaluationMethod = new CCombo( shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
+    wEvaluationMethod.setToolTipText( BaseMessages.getString( PKG, "CheckSumDialog.EvaluationMethod.Tooltip" ) );
+    wEvaluationMethod.setItems( CheckSumMeta.getEvaluationMethodDescs() );
+    wEvaluationMethod.select( 0 );
+    props.setLook( wEvaluationMethod );
+    FormData wEvaluationMethodFD = new FormData();
+    wEvaluationMethodFD.left = new FormAttachment( middle, 0 );
+    wEvaluationMethodFD.right = new FormAttachment( 100, 0 );
+    wEvaluationMethodFD.top = new FormAttachment( wCompatibility, margin );
+    wEvaluationMethod.setLayoutData( wEvaluationMethodFD );
+    wEvaluationMethod.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
@@ -301,9 +301,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     wlFields = new Label( shell, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "CheckSumDialog.Fields.Label" ) );
     props.setLook( wlFields );
-    fdlFields = new FormData();
+    FormData fdlFields = new FormData();
     fdlFields.left = new FormAttachment( 0, 0 );
-    fdlFields.top = new FormAttachment( wCompatibility, margin );
+    fdlFields.right = new FormAttachment( middle, -margin );
+    fdlFields.top = new FormAttachment( wEvaluationMethod, 2 * margin );
     wlFields.setLayoutData( fdlFields );
 
     final int FieldsCols = 1;
@@ -318,10 +319,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
       new TableView(
         transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
-    fdFields = new FormData();
+    FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
-    fdFields.top = new FormAttachment( wlFields, margin );
     fdFields.right = new FormAttachment( 100, 0 );
+    fdFields.top = new FormAttachment( wlFields, margin );
     fdFields.bottom = new FormAttachment( wOK, -2 * margin );
     wFields.setLayoutData( fdFields );
 
@@ -418,13 +419,13 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
   protected void setComboBoxes() {
     // Something was changed in the row.
     //
-    final Map<String, Integer> fields = new HashMap<String, Integer>();
+    final Map<String, Integer> fields = new HashMap<>();
 
     // Add the currentMeta fields...
     fields.putAll( inputFields );
 
     Set<String> keySet = fields.keySet();
-    List<String> entries = new ArrayList<String>( keySet );
+    List<String> entries = new ArrayList<>( keySet );
 
     String[] fieldNames = entries.toArray( new String[entries.size()] );
 
@@ -465,7 +466,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     }
     wResultType.setText( input.getResultTypeDesc( input.getResultType() ) );
     wCompatibility.setSelection( input.isCompatibilityMode() );
-    wOldChecksumBehaviour.setSelection( input.isOldChecksumBehaviour() );
+    wEvaluationMethod.select( input.getEvaluationMethod() );
 
     Table table = wFields.table;
     if ( input.getFieldName().length > 0 ) {
@@ -507,21 +508,20 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     input.setResultType( input.getResultTypeByDesc( wResultType.getText() ) );
 
     input.setCompatibilityMode( wCompatibility.getSelection() );
-    input.setOldChecksumBehaviour( wOldChecksumBehaviour.getSelection() );
+    input.setEvaluationMethod( wEvaluationMethod.getSelectionIndex() );
 
     int nrfields = wFields.nrNonEmpty();
     input.allocate( nrfields );
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
-      //CHECKSTYLE:Indentation:OFF
-      input.getFieldName()[i] = ti.getText( 1 );
+      input.getFieldName()[ i ] = ti.getText( 1 );
     }
     dispose();
   }
 
   private void activeHexa() {
     boolean activate =
-      ( input.getResultTypeByDesc( wResultType.getText() ) == input.getResultTypeByDesc( "hexadecimal" ) );
+      ( input.getResultTypeByDesc( wResultType.getText() ) == CheckSumMeta.result_TYPE_HEXADECIMAL );
     wlCompatibility.setEnabled( activate );
     wCompatibility.setEnabled( activate );
   }

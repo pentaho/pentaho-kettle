@@ -1494,6 +1494,72 @@ public class Const {
    * encoded (spaces and other special characters escaped) or decoded (default legacy behavior).
    */
   public static final String KETTLE_RETURN_ESCAPED_URI_STRINGS = "KETTLE_RETURN_ESCAPED_URI_STRINGS";
+
+  /**
+   * <p>This environment variable is used to define how which calculation method is to be used by the 'Add a Checksum'
+   * step.</p>
+   * <p>Three options exist:</p>
+   * <ul>
+   *   <li>{@link #KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES}: calculate Checksum based on Byte representation of
+   *   fields; as in versions since 8.1</li>
+   *   <li>{@link #KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS}: calculate Checksum based on Pentaho String
+   *   representation of fields (applying format masks); as in versions until 7.1</li>
+   *   <li>{@link #KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS}: calculate Checksum based on Native String
+   *   representation of fields; as in version 8.0</li>
+   * </ul>
+   * <p>The default is {@value #KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT}.</p>
+   *
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT
+   */
+  public static final String KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD = "KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD";
+
+  /**
+   * <p>The value to use for setting the {@link #KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD}, so that Checksum is
+   * calculated based on Byte representation of fields. Calculation method used by version 8.1 and after.</p>
+   *
+   * @see #KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT
+   */
+  public static final String KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES = "BYTES";
+
+  /**
+   * <p>The value to use for setting the {@link #KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD}, so that Checksum is
+   * calculated based on Pentaho String representation of fields (applying format masks). Calculation method used by
+   * version 7.1 and prior versions.</p>
+   *
+   * @see #KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT
+   */
+  public static final String KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS = "PENTAHO_STRINGS";
+
+  /**
+   * <p>The value to use for setting the {@link #KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD}, so that Checksum is
+   * calculated based on Native String representation of fields. Calculation method used by version 8.0.</p>
+   *
+   * @see #KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT
+   */
+  public static final String KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS = "NATIVE_STRINGS";
+
+  /**
+   * <p>The default value for the {@link #KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD}.</p>
+   *
+   * @see #KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_PENTAHO_STRINGS
+   * @see #KETTLE_CHECKSUM_EVALUATION_METHOD_NATIVE_STRINGS
+   */
+  public static final String KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT = KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES;
+
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
