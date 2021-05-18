@@ -26,6 +26,7 @@
     <dependencySet>
       <includes>
         <include>org.pentaho.di:pdi-static:zip</include>
+        <include>org.pentaho.di:pdi-plugins:zip</include>
       </includes>
       <unpack>true</unpack>
       <outputDirectory>.</outputDirectory>

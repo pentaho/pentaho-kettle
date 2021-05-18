@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>pdi-ce</artifactId>
+  <artifactId>webspoon</artifactId>
   <version>9.3.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -95,6 +95,18 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-plugins</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
       <artifactId>pdi-static</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
@@ -119,7 +131,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
-          <finalName>spoon</finalName>
           <appendAssemblyId>false</appendAssemblyId>
         </configuration>
       </plugin>
