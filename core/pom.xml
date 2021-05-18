@@ -37,7 +37,6 @@
     <com.wcohen.secondstring.version>0.1</com.wcohen.secondstring.version>
     <javassist.version>3.20.0-GA</javassist.version>
     <jcifs.version>1.3.3</jcifs.version>
-    <simple-jndi.version>1.0.3</simple-jndi.version>
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
     <xmlunit.version>1.5</xmlunit.version>
     <joda.version>2.10.2</joda.version>
