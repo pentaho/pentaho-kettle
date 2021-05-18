@@ -294,7 +294,7 @@
       </activation>
       <modules>
         <module>assemblies</module>
-        <module>docker</module>
+        <module>docker_assemblies</module>
       </modules>
     </profile>
   </profiles>

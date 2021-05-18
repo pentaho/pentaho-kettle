@@ -26,14 +26,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.pentaho.di</groupId>
-        <artifactId>pdi</artifactId>
+        <artifactId>pentaho-kettle-docker-assemblies</artifactId>
         <version>9.3.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pentaho-kettle-docker</artifactId>
+    <artifactId>pentaho-kettle-k8s</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>k8s</module>
+        <module>helm</module>
     </modules>
 </project>
