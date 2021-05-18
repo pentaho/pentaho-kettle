@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.jsoninput.reader;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +32,14 @@ import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
 import com.jayway.jsonpath.Option;
 
 import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 public class FastJsonReaderTest {
   private static final Option[] DEFAULT_OPTIONS = { Option.SUPPRESS_EXCEPTIONS, Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL };
@@ -94,5 +97,23 @@ public class FastJsonReaderTest {
     assertEquals( false, fJsonReader.isIgnoreMissingPath() );
     assertEquals( true, fJsonReader.isDefaultPathLeafToNull() );
     assertEquals( expectedOptions, fJsonReader.getJsonConfiguration().getOptions() );
+  }
+
+  @Test
+  public void testFastJsonReaderGetMaxRowSize() throws KettleException {
+    List<List<Integer>> mainList = new ArrayList<>();
+    List<Integer> l1 = new ArrayList<>();
+    List<Integer> l2 = new ArrayList<>();
+    List<Integer> l3 = new ArrayList<>();
+    l1.add( 1 );
+    l2.add( 1 );
+    l2.add( 2 );
+    l3.add( 1 );
+    l3.add( 2 );
+    l3.add( 3 );
+    mainList.add( l1 );
+    mainList.add( l2 );
+    mainList.add( l3 );
+    assertEquals( 3, FastJsonReader.getMaxRowSize( Collections.singletonList( mainList ) ) );
   }
 }
