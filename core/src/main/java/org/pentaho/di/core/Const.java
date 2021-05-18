@@ -1561,6 +1561,28 @@ public class Const {
   public static final String KETTLE_CHECKSUM_EVALUATION_METHOD_DEFAULT = KETTLE_CHECKSUM_EVALUATION_METHOD_BYTES;
 
   /**
+   * <p>While one assumes that a day has 24 hours, due to daylight savings time settings, it may have 23 hours (the day
+   * Summer time goes into effect) or 25 hours (Winter time).</p>
+   * <p>Imagine Summer time: when clocks reach 1:00, it goes forward 1 hour to 2:00</p>
+   * <p>This means that, when adding 2 hours to 0:30, one gets 3:30</p>
+   * <p>By setting this environment variable to {@code "N"}, DateDiff performs calculations based on local time; as so,
+   * the difference between these two values (3:30 and 0:30) will be 3 hours difference.</p>
+   * <p>Setting this environment variable to {@code "Y"}, DateDiff performs calculations based on UTC time; as so, the
+   * difference between these two values (3:30 and 0:30) will be 2 hours difference.</p>
+   * <p>The default is {@value #KETTLE_DATEDIFF_DST_AWARE_DEFAULT}.</p>
+   *
+   * @see #KETTLE_DATEDIFF_DST_AWARE_DEFAULT
+   */
+  public static final String KETTLE_DATEDIFF_DST_AWARE = "KETTLE_DATEDIFF_DST_AWARE";
+
+  /**
+   * <p>The default value for the {@link #KETTLE_DATEDIFF_DST_AWARE}.</p>
+   *
+   * @see #KETTLE_DATEDIFF_DST_AWARE
+   */
+  public static final String KETTLE_DATEDIFF_DST_AWARE_DEFAULT = "N";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *
