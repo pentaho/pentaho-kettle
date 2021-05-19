@@ -34,6 +34,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>webspoon_webapp</module>
         <module>docker</module>
         <module>k8s</module>
     </modules>
