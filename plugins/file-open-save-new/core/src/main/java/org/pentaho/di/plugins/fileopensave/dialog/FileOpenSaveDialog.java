@@ -124,7 +124,7 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
     String cmd = fileDialogOperation.getCommand();
 
     clientPath.append( getClientPath() );
-    clientPath.append( !Utils.isEmpty( cmd ) ? "#/" + cmd : "" );
+    clientPath.append( !Utils.isEmpty( cmd ) ? "#!/" + cmd : "" );
 
     List<NameValuePair> parameters = new ArrayList<>();
     addParameter( parameters, PATH_PARAM, dialogPath );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -143,6 +143,14 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         <td>Request was processed.</td>
       </tr>
       <tr>
+        <td>400</td>
+        <td>Bad Request: Mandatory parameter name missing</td>
+      </tr>
+      <tr>
+        <td>404</td>
+        <td>Not found: Job not found</td>
+      </tr>
+      <tr>
         <td>500</td>
         <td>Internal server error occurs during request processing.</td>
       </tr>
@@ -167,6 +175,40 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
     response.setStatus( HttpServletResponse.SC_OK );
 
     PrintWriter out = response.getWriter();
+
+    //jobName is a mandatory parameter
+    String h1End = "</H1>";
+    String h1 = "<H1>";
+    String hrefEnd = "</a><p>";
+    String href = "<a href=\"";
+    if ( jobName == null ) {
+      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+      String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobNameIsMandatory" );
+      if ( useXML ) {
+        response.setContentType( "text/xml" );
+        response.setCharacterEncoding( Const.XML_ENCODING );
+        out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, message ) );
+      } else {
+        response.setContentType( "text/html;charset=UTF-8" );
+        out.println( "<HTML>" );
+        out.println( "<HEAD>" );
+        out.println( "<TITLE>Start job</TITLE>" );
+        out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+        out.println( "</HEAD>" );
+        out.println( "<BODY>" );
+        out.println( h1 + Encode.forHtml( message ) + h1End );
+        out.println( href
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + hrefEnd );
+        out.println( "</BODY>" );
+        out.println( "</HTML>" );
+      }
+      return;
+    }
+
     if ( useXML ) {
       response.setContentType( "text/xml" );
       response.setCharacterEncoding( Const.XML_ENCODING );
@@ -256,25 +298,26 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           out.println( new WebResult( WebResult.STRING_OK, message, id ).getXML() );
         } else {
 
-          out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
-          out.println( "<a href=\""
+          out.println( h1 + Encode.forHtml( message ) + h1End );
+          out.println( href
             + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
             + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-            + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + "</a><p>" );
+            + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + hrefEnd );
         }
       } else {
         String message = BaseMessages.getString( PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName );
+        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
         if ( useXML ) {
           out.println( new WebResult( WebResult.STRING_ERROR, message ) );
         } else {
-          out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
-          out.println( "<a href=\""
+          out.println( h1 + Encode.forHtml( message ) + h1End );
+          out.println( href
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
-          response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + hrefEnd );
         }
       }
     } catch ( Exception ex ) {
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
           PKG, "StartJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
@@ -283,7 +326,6 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         out.println( "<pre>" );
         out.println( Encode.forHtml( Const.getStackTracker( ex ) ) );
         out.println( "</pre>" );
-        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
       }
     }
 

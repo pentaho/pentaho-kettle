@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,25 +22,18 @@
 
 package org.pentaho.di.trans.steps.delete;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -51,6 +44,21 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.util.reflection.Whitebox.getInternalState;
 
 
 public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
@@ -150,5 +158,36 @@ public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
       fail();
     } catch ( Exception ex ) {
     }
+  }
+
+  @Test
+  public void testReadRepToLoadKeys() throws KettleException {
+    DeleteMeta deleteMeta = new DeleteMeta();
+    Repository rep = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    ObjectId idStep = mock( ObjectId.class );
+    List<DatabaseMeta> databases = new ArrayList<>();
+
+    String keyNameValue = UUID.randomUUID().toString();
+    String keyFieldValue = UUID.randomUUID().toString();
+    String keyConditionValue = UUID.randomUUID().toString();
+    String keyName2Value = UUID.randomUUID().toString();
+
+    when( rep.countNrStepAttributes( idStep, "key_field" ) ).thenReturn( 1 );
+    when( rep.getStepAttributeString( idStep, 0, "key_name" ) ).thenReturn( keyNameValue );
+    when( rep.getStepAttributeString( idStep, 0, "key_field" ) ).thenReturn( keyFieldValue );
+    when( rep.getStepAttributeString( idStep, 0, "key_condition" ) ).thenReturn( keyConditionValue );
+    when( rep.getStepAttributeString( idStep, 0, "key_name2" ) ).thenReturn( keyName2Value );
+
+    deleteMeta.readRep( rep, metaStore, idStep, databases );
+
+    assertEquals( 1, ( (String[]) getInternalState( deleteMeta, "keyStream" ) ).length );
+    assertEquals( keyNameValue, ( (String[]) getInternalState( deleteMeta, "keyStream" ) )[0] );
+    assertEquals( 1, ( (String[]) getInternalState( deleteMeta, "keyLookup" ) ).length );
+    assertEquals( keyFieldValue, ( (String[]) getInternalState( deleteMeta, "keyLookup" ) )[0] );
+    assertEquals( 1, ( (String[]) getInternalState( deleteMeta, "keyCondition" ) ).length );
+    assertEquals( keyConditionValue, ( (String[]) getInternalState( deleteMeta, "keyCondition" ) )[0] );
+    assertEquals( 1, ( (String[]) getInternalState( deleteMeta, "keyStream2" ) ).length );
+    assertEquals( keyName2Value, ( (String[]) getInternalState( deleteMeta, "keyStream2" ) )[0] );
   }
 }

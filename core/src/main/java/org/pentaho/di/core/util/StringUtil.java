@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.core.util;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -141,6 +144,9 @@ public class StringUtil {
         Object value = variablesValues.get( varName );
         if ( value == null ) {
           value = open + varName + close;
+        } else if ( aString.equals( value ) ) {
+          //Needed to avoid an endless loop if left to continue to next else statement
+          return (String) value;
         } else {
           // check for another variable inside this value
           int another = ( (String) value ).indexOf( open ); // check
@@ -193,6 +199,7 @@ public class StringUtil {
     int i = rest.indexOf( HEX_OPEN );
     while ( i > -1 ) {
       int j = rest.indexOf( HEX_CLOSE, i + HEX_OPEN.length() );
+      if ( i + HEX_OPEN.length() == j ) break; // invalid Hex Expression empty array
       // search for closing string
       if ( j > -1 ) {
         buffer.append( rest.substring( 0, i ) );
@@ -233,13 +240,29 @@ public class StringUtil {
    */
   public static final synchronized String environmentSubstitute( String aString,
     Map<String, String> systemProperties ) {
+    return environmentSubstitute( aString, systemProperties, false );
+  }
+
+  /**
+   * Substitutes variables in <code>aString</code> with the environment values in the system properties
+   *
+   * @param aString
+   *          the string on which to apply the substitution.
+   * @param systemProperties
+   *          the system properties to use
+   * @return the string with the substitution applied.
+   */
+  public static final synchronized String environmentSubstitute( String aString,
+                                                                 Map<String, String> systemProperties, boolean escapeHexDelimiter ) {
     Map<String, String> sysMap = new HashMap<String, String>();
     synchronized ( sysMap ) {
       sysMap.putAll( Collections.synchronizedMap( systemProperties ) );
 
       aString = substituteWindows( aString, sysMap );
       aString = substituteUnix( aString, sysMap );
-      aString = substituteHex( aString );
+      if ( !escapeHexDelimiter ) {
+        aString = substituteHex( aString );
+      }
       return aString;
     }
   }
@@ -599,6 +622,22 @@ public class StringUtil {
   }
 
   /**
+   * @param variable A String which may have a variable within it, with the $ or % variable specification.
+   * @return true if the input has a variable, false otherwise
+   */
+  public static boolean hasVariable( String variable ) {
+    if ( variable == null ) {
+      return false;
+    }
+    return checkForVariableDelimeters( variable, UNIX_OPEN, UNIX_CLOSE ) || checkForVariableDelimeters( variable,
+      WINDOWS_OPEN, WINDOWS_CLOSE ) || checkForVariableDelimeters( variable, HEX_OPEN, HEX_CLOSE );
+  }
+
+  private static boolean checkForVariableDelimeters( String source, String open, String close ) {
+    return source.contains( open ) && ( source.substring( source.indexOf( open ) + open.length() + 1 ).contains( close ) );
+  }
+
+  /**
    * Calls the {@link String#toLowerCase()} method on the {@link String} returned by a call to {@code obj.toString()},
    * guarding against {@link NullPointerException}s.
    *
@@ -655,5 +694,24 @@ public class StringUtil {
     }
 
     return source.substring( 0, index );
+  }
+
+  /**
+   * Convert a raw path such as c:\tmp\park.parquet and /tmp/file, or, URL such as pvfs://tkSnowflakeStaging/@ORC_FILES
+   * or hc://clusterName/path/to/file to a URI
+   * @param filePathOrUrl
+   * @return
+   */
+  public static URI toUri( String filePathOrUrl ) {
+    URI uri;
+    if ( filePathOrUrl.startsWith( "/" ) ) {
+      return new File( filePathOrUrl ).toURI();
+    }
+    try {
+      uri = new URI( filePathOrUrl );
+    } catch ( URISyntaxException e ) {
+      uri = new File( filePathOrUrl ).toURI();
+    }
+    return uri;
   }
 }

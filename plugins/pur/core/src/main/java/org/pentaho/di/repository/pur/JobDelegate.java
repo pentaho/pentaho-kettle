@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.util.Utils;
@@ -290,8 +291,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
         AttributesMapUtil.loadAttributesMap( copyNode, (JobEntryBase) jobEntry );
       }
 
-      // And read the job entry copy group attributes map
-      AttributesMapUtil.loadAttributesMap( copyNode, copy, PROP_ATTRIBUTES_JOB_ENTRY_COPY );
+      loadAttributesMap( copyNode, copy );
 
       jobMeta.addJobEntry( copy );
     }
@@ -368,6 +368,17 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       String def = getString( paramNode, PARAM_DEFAULT );
       String desc = getString( paramNode, PARAM_DESC );
       jobMeta.addParameterDefinition( key, def, desc );
+    }
+  }
+
+  @VisibleForTesting
+  static void loadAttributesMap( DataNode copyNode, JobEntryCopy copy ) throws KettleException {
+    // And read the job entry copy group attributes map
+    DataNode groupsNode = copyNode.getNode( PROP_ATTRIBUTES_JOB_ENTRY_COPY );
+    if ( groupsNode != null ) {
+      AttributesMapUtil.loadAttributesMap( copyNode, copy, PROP_ATTRIBUTES_JOB_ENTRY_COPY );
+    } else {
+      AttributesMapUtil.loadAttributesMap( copyNode, copy );
     }
   }
 

@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -32,9 +32,11 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.KettleLoggingEventListener;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -48,17 +50,23 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class AsyncDatabaseActionTest {
 
   private DatabaseMeta dbMeta;
   private CompletableFuture<String[]> completion = new CompletableFuture<>();
   private LogListener errorLogListener = new LogListener();
-  private static final int COMPLETION_TIMEOUT = 1000;
+  private static final int COMPLETION_TIMEOUT = 2000;
 
   @BeforeClass
-  public static void beforeClass() throws SQLException, IOException, KettleException {
+  public static void beforeClass() throws SQLException, KettleException {
     KettleEnvironment.init( false );
+    PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
+    PluginRegistry.init( false );
+    if ( ValueMetaFactory.getValueMetaPluginClasses().size() < 10 ) {
+      fail( "ValueMetaPluginClasses not present in plugin registry." );
+    }
     // create an in memory db that will be available for 15 seconds.
     try ( Connection connection = DriverManager.getConnection( "jdbc:h2:mem:TEST;DB_CLOSE_DELAY=15" ) ) {
       Statement statement = connection.createStatement();

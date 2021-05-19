@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -188,7 +188,7 @@ public class GetSubFolders extends BaseStep implements StepInterface {
         }
 
         // uri
-        extraData[outputIndex++] = data.file.getName().getURI();
+        extraData[outputIndex++] = Const.optionallyDecodeUriString( data.file.getName().getURI() );
 
         // rooturi
         extraData[outputIndex++] = data.file.getName().getRootURI();

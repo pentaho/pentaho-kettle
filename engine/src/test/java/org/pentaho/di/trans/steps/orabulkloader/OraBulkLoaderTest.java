@@ -64,7 +64,8 @@ public class OraBulkLoaderTest {
   private static final String expectedDataContents1 = "OPTIONS(" + Const.CR + "  ERRORS='null'" + Const.CR + "  , "
     + "ROWS='null'" + Const.CR + ")" + Const.CR + "LOAD DATA" + Const.CR + "INFILE '";
   private static final String expectedDataContents2 = "'" + Const.CR + "INTO TABLE null" + Const.CR + "null"
-    + Const.CR + "FIELDS TERMINATED BY ',' " + "ENCLOSED BY '\"'" + Const.CR + "(null, " + Const.CR + "null CHAR)";
+    + Const.CR + "FIELDS TERMINATED BY ',' " + "ENCLOSED BY '\"'" + Const.CR + "TRAILING NULLCOLS"
+    + Const.CR + "(null, " + Const.CR + "null CHAR)";
   private StepMockHelper<OraBulkLoaderMeta, OraBulkLoaderData> stepMockHelper;
   private OraBulkLoader oraBulkLoader;
   private File tempControlFile;

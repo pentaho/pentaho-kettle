@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,6 +85,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       localDirectory.setPath( path.toString() );
       localDirectory.setName( path.toString() );
       localDirectory.setRoot( NAME );
+      localDirectory.setHasChildren( true );
       rootFiles.add( localDirectory );
     } );
     localTree.setFiles( rootFiles );

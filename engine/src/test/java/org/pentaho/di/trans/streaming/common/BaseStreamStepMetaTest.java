@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -172,14 +172,65 @@ public class BaseStreamStepMetaTest {
     List<CheckResultInterface> remarks = new ArrayList<>();
     meta.setBatchDuration( "blah" );
     meta.setBatchSize( "blah" );
+    meta.setPrefetchCount( "blahblah" );
     meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
-    assertEquals( 2, remarks.size() );
+    assertEquals( 3, remarks.size() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
     assertEquals( "The \"Duration\" field is using a non-numeric value. Please set a numeric value.",
       remarks.get( 0 ).getText() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 1 ).getType() );
     assertEquals( "The \"Number of records\" field is using a non-numeric value. Please set a numeric value.",
       remarks.get( 1 ).getText() );
+    assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 2 ).getType() );
+    assertEquals( "The \"Message prefetch limit\" field is using a non-numeric value. Please set a numeric value.",
+      remarks.get( 2 ).getText() );
+  }
+
+  @Test
+  public void testCheckLessThanBatch() {
+    List<CheckResultInterface> remarks = new ArrayList<>();
+    meta.setBatchSize( "2" );
+    meta.setPrefetchCount( "1" );
+    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    assertEquals( 1, remarks.size() );
+    assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
+    assertEquals( "The \"Message prefetch limit\" must be equal to or greater than the \"Number of records\". 1 is not equal to or greater than 2",
+      remarks.get( 0 ).getText() );
+  }
+
+  @Test
+  public void testCheckEqualToBatch() {
+    List<CheckResultInterface> remarks = new ArrayList<>();
+    meta.setBatchSize( "1" );
+    meta.setPrefetchCount( "1" );
+    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    assertEquals( 0, remarks.size() );
+  }
+
+  @Test
+  public void testCheckPrefetchZero() {
+    List<CheckResultInterface> remarks = new ArrayList<>();
+    meta.setPrefetchCount( "0" );
+    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    assertEquals( 2, remarks.size() );
+    assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
+    assertEquals( "The \"Message prefetch limit\" must be greater than 0. 0 is not greater than 0",
+      remarks.get( 0 ).getText() );
+    assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 1 ).getType() );
+    assertEquals( "The \"Message prefetch limit\" must be equal to or greater than the \"Number of records\". 0 is not equal to or greater "
+        + "than 1000",
+      remarks.get( 1 ).getText() );
+  }
+
+  @Test
+  public void testCheckPrefetchNull() {
+    List<CheckResultInterface> remarks = new ArrayList<>();
+    meta.setPrefetchCount( null );
+    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    assertEquals( 1, remarks.size() );
+    assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
+    assertEquals( "The \"Message prefetch limit\" field is using a non-numeric value. Please set a numeric value.",
+      remarks.get( 0 ).getText() );
   }
 
   @Test

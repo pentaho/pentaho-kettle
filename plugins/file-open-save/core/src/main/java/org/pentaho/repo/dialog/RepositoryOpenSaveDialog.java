@@ -73,7 +73,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
     RepositoryBrowserController.repository = repository;
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
-    clientPath.append( !Utils.isEmpty( state ) ? "#/" + state : "" );
+    clientPath.append( !Utils.isEmpty( state ) ? "#!/" + state : "" );
     clientPath.append( !Utils.isEmpty( directory ) ? "?path=" + directory : "?" );
     clientPath.append( !Utils.isEmpty( directory ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( filter ) ? "filter=" + filter : "" );

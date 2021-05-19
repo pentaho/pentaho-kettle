@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,7 +63,7 @@ public class LocalTree implements Tree<LocalFile> {
   }
 
   @Override public boolean isCanAddChildren() {
-    return true;
+    return false;
   }
 
   @Override public int getOrder() {

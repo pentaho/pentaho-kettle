@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,11 @@ define(
       "./provider.service",
       "./file.service",
       "./message.service",
+      "./providers/fileutil",
       "../components/utils",
       "pentaho/i18n-osgi!file-open-save-new.messages"
     ],
-    function (providerService, fileService, messageService, utils, i18n) {
+    function (providerService, fileService, messageService, fileUtils, utils, i18n) {
       "use strict";
 
       var factoryArray = [providerService.name, fileService.name, messageService.name, "$q", factory];
@@ -105,8 +106,14 @@ define(
             self.findFolderByPath(path).then(function (folder) {
               self.selectFolder(folder).then(resolve);
             }, function (folderFile) {
-              fileService.files = [folderFile.file];
-              self.selectFolder(folderFile.folder).then(resolve);
+              if (!_isErrorMessage(folderFile)) {
+                fileService.files = [folderFile.file];
+                self.selectFolder(folderFile.folder).then(reject());
+              }
+              else {
+                var message = folderFile;
+                reject(message);
+              }
             });
           });
         }
@@ -142,12 +149,14 @@ define(
           messageService.set("file", null);
           var self = this;
           return $q(function (resolve, reject) {
-            path = utils.cleanPath(path);
+            path = fileUtils.cleanPath(path);
             var serviceResolve = self.resolvePath(path, props);
             if (serviceResolve !== null) {
               serviceResolve.then(function (path) {
                 self.selectFolderByPath(path).then(function () {
                   resolve();
+                }, function(error) {
+                  reject(error);
                 });
               }, function (path) {
                 self.loadFile(path, props, resolve, reject);
@@ -171,8 +180,8 @@ define(
           fileService.get({path: path}).then(function (file) {
             var filename = null;
             if (file.type === "file") {
-              filename = utils.getFilename(path);
-              path = utils.getParentPath(path);
+              filename = fileUtils.getFilename(path);
+              path = fileUtils.getParentPath(path);
               self.folder = {path: path};
             } else {
               self.folder = file;
@@ -279,6 +288,8 @@ define(
                   resolve(file);
                 }
               }
+            }, function(error) {
+                reject(error);
             });
           });
         }
@@ -307,7 +318,7 @@ define(
               if (node.children.length > 0) {
                 resolve(node);
               } else {
-                _populateFolder(node, name, resolve);
+                _populateFolder(node, name, resolve, reject);
               }
             }
           });
@@ -321,7 +332,7 @@ define(
          * @param resolve
          * @private
          */
-        function _populateFolder(node, name, resolve) {
+        function _populateFolder(node, name, resolve, reject) {
           node.loading = true;
           providerService.get(node.provider).createFolder(node, name).then(function (children) {
             if (children.length === 0) {
@@ -331,8 +342,9 @@ define(
               node.loading = false;
               resolve(_doFind(node, name));
             }
-          }, function () {
-            resolve(null);
+          }, function (error) {
+            node.loading = false;
+            reject(error);
           });
         }
 
@@ -365,7 +377,7 @@ define(
             return;
           }
           var path = getPath(this.folder);
-          path = utils.getParentPath(path);
+          path = fileUtils.getParentPath(path);
           fileService.files = [];
           var self = this;
           return $q(function (resolve) {
@@ -417,7 +429,7 @@ define(
          * @returns {*} - Object representing path
          */
         function getBreadcrumbPath(file) {
-          var service = file.provider ? providerService.get(file.provider) : null;
+          var service = (file && file.provider) ? providerService.get(file.provider) : null;
           if (!service) {
             service = providerService.getByPath(file.path);
           }
@@ -471,6 +483,7 @@ define(
                 folder.loading = false;
                 resolve();
               }, function (err) {
+                folder.loading = false;
                 reject(err);
               });
             } else {
@@ -506,7 +519,7 @@ define(
           var folder = {};
           var name = _getFolderName(parentFolder);
           folder.parent = parentFolder.path;
-          folder.path = parentFolder.path + (parentFolder.path.charAt(parentFolder.path.length - 1) === "/" ? "" : "/") + name;
+          folder.path = fileUtils.concatPath(fileUtils.cleanPath(parentFolder.path), name);
           folder.name = name;
           folder.new = true;
           folder.autoEdit = true;
@@ -619,6 +632,16 @@ define(
             }
           }
           return null;
+        }
+
+        /**
+         * Determine if reason returned from a promise is an error message object.
+         * @param message reason from promise
+         * @returns {boolean} true if error message object, false otherwise
+         * @private
+         */
+        function _isErrorMessage(reason) {
+           return reason && reason.hasOwnProperty("title") && reason.hasOwnProperty("message");
         }
       }
     });

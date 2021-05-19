@@ -1,0 +1,16 @@
+.DS_Store
+node
+node_modules/
+*.iml
+target
+.idea
+.vscode/*
+.project
+.settings
+.classpath
+override.properties
+bin/
+*.class
+*.jar
+*.war
+*.ear

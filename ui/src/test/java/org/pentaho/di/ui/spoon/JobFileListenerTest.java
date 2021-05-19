@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -196,4 +198,19 @@ public class JobFileListenerTest {
     assertEquals( resultExecMeta.getDirectory(), "/path/to" );
     assertEquals( resultExecMeta.getJobName(), "Job1" );
   }
+
+  @Test
+  public void testClearCurrentDirectoryChangedListenersWhenImporting() {
+    JobMeta jm = mock( JobMeta.class );
+    jobFileListener.clearCurrentDirectoryChangedListenersWhenImporting( true, jm );
+    verify( jm, times( 1 ) ).clearCurrentDirectoryChangedListeners();
+  }
+
+  @Test
+  public void testClearCurrentDirectoryChangedListenersWhenNotImporting() {
+    JobMeta jm = mock( JobMeta.class );
+    jobFileListener.clearCurrentDirectoryChangedListenersWhenImporting( false, jm );
+    verify( jm, times( 0 ) ).clearCurrentDirectoryChangedListeners();
+  }
+
 }

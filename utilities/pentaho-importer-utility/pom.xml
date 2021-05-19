@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho.di</groupId>
+    <artifactId>pentaho-kettle-utilities</artifactId>
+    <version>9.3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pentaho.di</groupId>
+  <artifactId>importer-utility-parent-pom</artifactId>
+  <packaging>pom</packaging>
+
+  <properties>
+    <license.licenseName>vantara</license.licenseName>
+  </properties>
+
+  <modules>
+    <module>assemblies</module>
+    <module>importer-utility</module>
+  </modules>
+</project>

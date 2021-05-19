@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,13 +114,8 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
       // We need to have the application context and the session available in order for us to skip authentication
       if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null
-        && PentahoSessionHolder.getSession().isAuthenticated() ) {
-        String sessionUserName = PentahoSessionHolder.getSession().getName();
-        // The anonymous user is authenticated, however it's not authenticated as we need it to be at this point!
-        if (
-          !PentahoSystem.getSystemSetting( "anonymous-authentication/anonymous-user", "anonymous" )
-            .equals( sessionUserName )
-            && inProcess() ) {
+          && PentahoSessionHolder.getSession().isAuthenticated() ) {
+        if ( inProcess() ) {
           // connect to the IUnifiedRepository through PentahoSystem
           // this assumes we're running in a BI Platform
           result.setUnifiedRepository( PentahoSystem.get( IUnifiedRepository.class ) );
@@ -128,9 +123,10 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             if ( log.isDebug() ) {
               log.logDebug( BaseMessages.getString( PKG, "PurRepositoryConnector.ConnectInProgress.Begin" ) );
             }
+            String name = PentahoSessionHolder.getSession().getName();
             user1 = new EEUserInfo();
-            user1.setLogin( sessionUserName );
-            user1.setName( sessionUserName );
+            user1.setLogin( name );
+            user1.setName( name );
             user1.setPassword( decryptedPassword );
             result.setUser( user1 );
             result.setSuccess( true );
@@ -141,7 +137,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
             if ( log.isDebug() ) {
               log.logDebug( BaseMessages.getString(
-                      PKG, "PurRepositoryConnector.ConnectInProgress", sessionUserName, result.getUnifiedRepository() ) );
+                      PKG, "PurRepositoryConnector.ConnectInProgress", name, result.getUnifiedRepository() ) );
             }
 
             // for now, there is no need to support the security manager
@@ -246,7 +242,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Start" ) );
             }
             CredentialsProvider provider = new BasicCredentialsProvider();
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( username, password );
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( username, decryptedPassword );
             provider.setCredentials( AuthScope.ANY, credentials );
             HttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider( provider ).build();
             HttpGet method = new HttpGet( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" );
@@ -255,7 +251,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             }
             HttpResponse response = client.execute( method );
             if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) ); //$NON-NLS-1$
+              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) );
             }
             return EntityUtils.toString( response.getEntity() );
           } catch ( Exception e ) {

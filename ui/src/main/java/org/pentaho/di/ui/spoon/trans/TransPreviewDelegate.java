@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -352,7 +353,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
           item.setText( colNr + 1, "<null>" );
           item.setForeground( colNr + 1, GUIResource.getInstance().getColorBlue() );
         } else {
-          item.setText( colNr + 1, string );
+          item.setText( colNr + 1, Splash.isMacOS() ? string.replace( "\n", "" ) : string );
         }
       }
     }
@@ -465,11 +466,11 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     previewMetaMap.clear();
     previewDataMap.clear();
 
-    try {
-      final TransMeta transMeta = trans.getTransMeta();
 
-      for ( final StepMeta stepMeta : stepMetas ) {
+    final TransMeta transMeta = trans.getTransMeta();
 
+    for ( final StepMeta stepMeta : stepMetas ) {
+      try {
         final RowMetaInterface rowMeta = transMeta.getStepFields( stepMeta ).clone();
         previewMetaMap.put( stepMeta, rowMeta );
         final List<RowMetaAndData> rowsData;
@@ -519,10 +520,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
               break;
           }
         }
-
+      } catch ( Exception e ) {
+        loggingText.append( Const.getStackTracker( e ) );
       }
-    } catch ( Exception e ) {
-      loggingText.append( Const.getStackTracker( e ) );
     }
 
     // In case there were errors during preview...

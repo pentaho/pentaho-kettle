@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.Point;
@@ -33,6 +33,9 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,9 +45,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith ( MockitoJUnitRunner.class )
+@PrepareForTest( AttributesMapUtil.class )
+@RunWith( PowerMockRunner.class )
 public class JobDelegateTest {
 
 
@@ -119,6 +124,28 @@ public class JobDelegateTest {
 
     assertTrue( "Job Entry should have link back to parent job meta.",
       jobMeta.getJobEntry( 0 ).getParentJobMeta() == jobMeta );
+  }
+
+  @Test
+  public void loadAttributesMapWithAttributesJobEntryCopyTest() throws Exception {
+    DataNode dataNode = mock( DataNode.class );
+    JobEntryCopy jobEntryCopy = mock( JobEntryCopy.class );
+    when( dataNode.getNode( JobDelegate.PROP_ATTRIBUTES_JOB_ENTRY_COPY ) ).thenReturn( null );
+    PowerMockito.mockStatic( AttributesMapUtil.class );
+    JobDelegate.loadAttributesMap( dataNode, jobEntryCopy );
+    PowerMockito.verifyStatic( AttributesMapUtil.class, VerificationModeFactory.times( 1 ) );
+    AttributesMapUtil.loadAttributesMap( dataNode, jobEntryCopy );
+  }
+
+  @Test
+  public void loadAttributesMapWithoutAttributesJobEntryCopyTest() throws Exception {
+    DataNode dataNode = mock( DataNode.class );
+    JobEntryCopy jobEntryCopy = mock( JobEntryCopy.class );
+    when( dataNode.getNode( JobDelegate.PROP_ATTRIBUTES_JOB_ENTRY_COPY ) ).thenReturn( dataNode );
+    PowerMockito.mockStatic( AttributesMapUtil.class );
+    JobDelegate.loadAttributesMap( dataNode, jobEntryCopy );
+    PowerMockito.verifyStatic( AttributesMapUtil.class, VerificationModeFactory.times( 1 ) );
+    AttributesMapUtil.loadAttributesMap( dataNode, jobEntryCopy, JobDelegate.PROP_ATTRIBUTES_JOB_ENTRY_COPY );
   }
 
   private void setIds( DataNode node ) {

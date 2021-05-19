@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,20 +50,28 @@ import java.util.List;
 
 public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements StepMetaInterface, ISubTransAwareMeta {
 
-
   private static final Class<?> PKG = BaseStreamStep.class;  // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  public static final String NOT_A_NUMBER = "BaseStreamStepMeta.CheckResult.NaN";
+
   public static final String TRANSFORMATION_PATH = "TRANSFORMATION_PATH";
   public static final String NUM_MESSAGES = "NUM_MESSAGES";
+  public static final String PREFETCH_COUNT = "PREFETCH_COUNT";
   public static final String DURATION = "DURATION";
   public static final String SUB_STEP = "SUB_STEP";
   public static final String PARALLELISM = "PARALLELISM";
   public static final String MESSAGE_DATA_TYPE = "MESSAGE_DATA_TYPE";
+
+  public static final int PREFETCH = 100000;
+  public static final String PREFETCH_DEFAULT = Integer.toString( PREFETCH );
 
   @Injection ( name = TRANSFORMATION_PATH )
   protected String transformationPath = "";
 
   @Injection ( name = NUM_MESSAGES )
   protected String batchSize = "1000";
+
+  @Injection( name = PREFETCH_COUNT )
+  protected String prefetchCount = PREFETCH_DEFAULT;
 
   @Injection ( name = DURATION )
   protected String batchDuration = "1000";
@@ -97,6 +105,10 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     this.batchSize = batchSize;
   }
 
+  public void setPrefetchCount( String prefetchCount ) {
+    this.prefetchCount = prefetchCount;
+  }
+
   public void setBatchDuration( String batchDuration ) {
     this.batchDuration = batchDuration;
   }
@@ -108,6 +120,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     batchSize = "1000";
     batchDuration = "1000";
     parallelism = "1";
+    prefetchCount = PREFETCH_DEFAULT;
   }
 
   public String getTransformationPath() {
@@ -116,6 +129,10 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
 
   public String getBatchSize() {
     return batchSize;
+  }
+
+  public String getPrefetchCount() {
+    return prefetchCount;
   }
 
   public String getBatchDuration() {
@@ -145,7 +162,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     } catch ( NumberFormatException e ) {
       remarks.add( new CheckResult(
         CheckResultInterface.TYPE_RESULT_ERROR,
-        BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NaN", "Duration" ),
+        BaseMessages.getString( PKG, NOT_A_NUMBER, "Duration" ),
         stepMeta ) );
     }
 
@@ -155,7 +172,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     } catch ( NumberFormatException e ) {
       remarks.add( new CheckResult(
         CheckResultInterface.TYPE_RESULT_ERROR,
-        BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NaN", "Number of records" ),
+        BaseMessages.getString( PKG, NOT_A_NUMBER, "Number of records" ),
         stepMeta ) );
     }
 
@@ -163,6 +180,27 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
       remarks.add( new CheckResult(
         CheckResultInterface.TYPE_RESULT_ERROR,
         BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NoBatchDefined" ),
+        stepMeta ) );
+    }
+
+    try {
+      int prefetch = Integer.parseInt( space.environmentSubstitute( getPrefetchCount() ) );
+
+      if ( prefetch <= 0 ) {
+        remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
+          BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.PrefetchZeroOrLess", prefetch, size ),
+          stepMeta ) );
+      }
+
+      if ( prefetch < size ) {
+        remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
+          BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.PrefetchLessThanBatch", prefetch, size ),
+          stepMeta ) );
+      }
+    } catch ( NumberFormatException e ) {
+      remarks.add( new CheckResult(
+        CheckResultInterface.TYPE_RESULT_ERROR,
+        BaseMessages.getString( PKG, NOT_A_NUMBER, "Message prefetch limit" ),
         stepMeta ) );
     }
 

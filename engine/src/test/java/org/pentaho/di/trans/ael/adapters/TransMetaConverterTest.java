@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -30,10 +30,11 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileObject;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
@@ -43,6 +44,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
@@ -61,9 +63,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -81,6 +88,8 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -90,11 +99,15 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith ( MockitoJUnitRunner.class )
+@RunWith ( PowerMockRunner.class )
+@PrepareForTest( KettleVFS.class )
 public class TransMetaConverterTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Spy StepMetaInterface stepMetaInterface = new DummyTransMeta();
+
+  @Mock
+  ConnectionFileObject connectionFileObject;
 
   final String XML = "<xml></xml>";
 
@@ -367,7 +380,7 @@ public class TransMetaConverterTest {
     TransMeta parentTransMeta = new TransMeta( getClass().getResource( "trans-meta-converter-parent.ktr" ).getPath() );
     Repository repository = mock( Repository.class );
     TransMeta transMeta = new TransMeta( );
-    RepositoryDirectoryInterface repositoryDirectory = new RepositoryDirectory( null, "public");
+    RepositoryDirectoryInterface repositoryDirectory = new RepositoryDirectory( null, "public" );
     String directory = getClass().getResource( "" ).toString().replace( File.separator, "/" );
     when( repository.findDirectory( "public" ) ).thenReturn( repositoryDirectory );
     when( repository.loadTransformation( "trans-meta-converter-sub.ktr", repositoryDirectory, null, true, null ) ).thenReturn( transMeta );
@@ -436,6 +449,30 @@ public class TransMetaConverterTest {
     verify( testMetaResolvableResource ).resolve();
     verify( testMetaResolvableResourceTwo ).resolve();
   }
+
+  @Test
+  public void testConvertConnectionFileObjectPVFS() throws KettleException {
+    final String FINAL_NAME = "realURI";
+    TransMeta transMeta = spy( new TransMeta() );
+    PowerMockito.mockStatic( KettleVFS.class );
+
+    doReturn( transMeta ).when( transMeta ).realClone( false );
+    when( KettleVFS.getFileObject( any() ) ).thenReturn( connectionFileObject );
+    when( connectionFileObject.getAELSafeURIString() ).thenReturn( FINAL_NAME );
+
+    StepMeta textFileStep = new StepMeta( "resolvableStep", spy( new TextFileInputMeta() ) );
+    BaseFileInputFiles inputFiles = new BaseFileInputFiles();
+    inputFiles.fileName = new String[] { "pvfs://somefile" };
+    ( (TextFileInputMeta) textFileStep.getStepMetaInterface() ).inputFiles = inputFiles;
+
+    transMeta.addStep( textFileStep );
+
+    TransMetaConverter.convert( transMeta );
+
+    assertTrue( ( (TextFileInputMeta) transMeta.getStep( 0 ).getStepMetaInterface() )
+            .inputFiles.fileName[0].equalsIgnoreCase( FINAL_NAME ) );
+  }
+
   private static class TestMetaResolvableResource extends BaseStepMeta
     implements StepMetaInterface, ResolvableResource {
 

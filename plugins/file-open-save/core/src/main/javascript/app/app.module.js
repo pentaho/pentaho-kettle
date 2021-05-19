@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2020 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -43,7 +43,7 @@ define([
   "./components/breadcrumb/breadcrumb.directive",
   "./services/data.service",
   "./shared/directives/resize/resize.module",
-  "angular-ui-router"
+  "@uirouter/angularjs"
 ], function(angular, appConfig, appComponent, cardComponent, folderComponent, errorComponent,
             loadingComponent, breadcrumbComponent, filesComponent, searchComponent, editDirective, keyDirective,
             focusDirective, scrollToFolderDirective, breadcrumbDirective, dataService, resizeModule) {

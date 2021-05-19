@@ -1,0 +1,38 @@
+<groupbox id="database-options-box" orient="vertical" flex="1"
+          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:pen="http://www.pentaho.org/2008/xul">
+    <caption label="${DatabaseDialog.USER_SETTINGS}"/>
+    <vbox style="overflow:auto;">
+        <label id="server-host-name-label" value="${DatabaseDialog.label.ServerHostname}" />
+        <textbox pen:customclass="variabletextbox" id="server-host-name-text"  />
+        <label id="database-name-label" value="${DatabaseDialog.label.DatabaseName}" />
+        <textbox pen:customclass="variabletextbox" id="database-name-text"/>
+        <label id="port-number-label" value="${DatabaseDialog.label.PortNumber}" />
+        <textbox pen:customclass="variabletextbox" id="port-number-text" />
+        <spacer height="7"/>
+        <separator/>
+        <label id="auth-method-label" value="${DatabaseDialog.label.AuthenticationMethod}" />
+        <menulist id="azure-sql-db-auth-method-list" editable="true" value = "SQL Server Authentication" oncommand="dataHandler.setAzureSqlDBAuthRelatedFieldsVisible()">
+            <menupopup>
+                <menuitem label="SQL Server Authentication"/>
+                <menuitem label="Azure Active Directory - Universal With MFA"/>
+                <menuitem label="Azure Active Directory - Password"/>
+                <menuitem label="Azure Active Directory - Integrated"/>
+            </menupopup>
+        </menulist>
+        <label id="username-label" value="${DatabaseDialog.label.Username}" />
+        <textbox pen:customclass="variabletextbox" id="username-text" />
+        <vbox id="auth-controls">
+            <label id="password-label" value="${DatabaseDialog.label.Password}" />
+            <textbox pen:customclass="variabletextbox" id="password-text" type="password"/>
+        </vbox>
+        <spacer height="7"/>
+        <separator/>
+        <checkbox id="azure-sql-db-enable-always-encryption-on" label="${DatabaseDialog.label.AlwaysEncryptionEnable}" checked="false"
+                  command = "dataHandler.enableAzureSqlDBEncryption()" />
+        <label id="client-id-label" value="${DatabaseDialog.label.ClientId}" />
+        <textbox pen:customclass="variabletextbox" id="azure-sql-db-client-id" disabled="true" />
+        <label id="client-secret-key-label" value="${DatabaseDialog.label.ClientSecretKey}" />
+        <textbox pen:customclass="variabletextbox" id="azure-sql-db-client-secret-key" disabled="true" />
+    </vbox>
+</groupbox>

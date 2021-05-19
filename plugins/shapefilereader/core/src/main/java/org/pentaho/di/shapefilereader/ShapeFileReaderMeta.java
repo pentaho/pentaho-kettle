@@ -210,11 +210,18 @@ public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterfa
     m.setOrigin( name );
     row.addValueMeta( m );
 
-    if ( getDbfFilename() != null ) {
+    String dbFilename = getDbfFilename();
+    if ( dbFilename != null ) {
+      if ( space != null ) {
+        dbFilename = space.environmentSubstitute( dbFilename );
+        if ( dbFilename.startsWith( "file:" ) ) {
+          dbFilename = dbFilename.substring( 5 );
+        }
+      }
 
-      XBase xbase = new XBase( getLog(), getDbfFilename() );
+      XBase xbase = new XBase( getLog(), dbFilename );
       try {
-        xbase.setDbfFile( getDbfFilename() );
+        xbase.setDbfFile( dbFilename );
         xbase.open();
 
         //Set encoding

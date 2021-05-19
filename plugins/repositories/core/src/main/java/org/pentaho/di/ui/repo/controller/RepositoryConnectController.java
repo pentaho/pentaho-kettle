@@ -378,6 +378,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
       spoon.setRepository( repository );
       setConnectedRepository( repositoryMeta );
       fireListeners();
+      spoon.updateTreeForActiveAbstractMetas();
     };
     if ( spoon.getShell() != null ) {
       spoon.getShell().getDisplay().asyncExec( execute );

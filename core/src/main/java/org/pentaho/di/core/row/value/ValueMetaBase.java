@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1677,10 +1677,14 @@ public class ValueMetaBase implements ValueMetaInterface {
           // inexpensive too.
 
         case ValueMetaInterface.TYPE_BINARY:
-          byte[] origin = (byte[]) object;
-          byte[] target = new byte[origin.length];
-          System.arraycopy( origin, 0, target, 0, origin.length );
-          return target;
+          if ( object instanceof java.lang.String ) {
+            return object;
+          } else {
+            byte[] origin = (byte[]) object;
+            byte[] target = new byte[origin.length];
+            System.arraycopy( origin, 0, target, 0, origin.length );
+            return target;
+          }
 
         case ValueMetaInterface.TYPE_SERIALIZABLE:
           // Let's not create a copy but simply return the same value.
@@ -1886,7 +1890,11 @@ public class ValueMetaBase implements ValueMetaInterface {
         case TYPE_BINARY:
           switch ( storageType ) {
             case STORAGE_TYPE_NORMAL:
-              string = convertBinaryStringToString( (byte[]) object );
+              if ( object instanceof java.lang.String ) {
+                string = (String) object;
+              } else {
+                string = convertBinaryStringToString( (byte[]) object );
+              }
               break;
             case STORAGE_TYPE_BINARY_STRING:
               string = convertBinaryStringToString( (byte[]) object );
@@ -4033,8 +4041,13 @@ public class ValueMetaBase implements ValueMetaInterface {
     Boolean isEmptyAndNullDiffer = convertStringToBoolean(
         Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
 
-    if ( pol == null && isStringValue && isEmptyAndNullDiffer ) {
-      pol = Const.NULL_STRING;
+    Boolean normalizeNullStringToEmpty = !convertStringToBoolean(
+      Const.NVL( System.getProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "N" ), "N" ) );
+
+    if ( normalizeNullStringToEmpty ) {
+      if ( pol == null && isStringValue && isEmptyAndNullDiffer ) {
+        pol = Const.NULL_STRING;
+      }
     }
 
     if ( pol == null ) {
@@ -4054,10 +4067,15 @@ public class ValueMetaBase implements ValueMetaInterface {
           }
         }
       } else {
+
+
+        Boolean normalizeSpacesOnlyString = !convertStringToBoolean(
+          Const.NVL( System.getProperty( Const.KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY, "N" ), "N" ) );
+
         // Verify if there are only spaces in the polled value...
         // We consider that empty as well...
         //
-        if ( Const.onlySpaces( pol ) ) {
+        if ( Const.onlySpaces( pol ) && normalizeSpacesOnlyString ) {
           return emptyValue;
         }
       }

@@ -61,10 +61,10 @@ public class ConnectionDialog extends ThinDialog {
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
     if ( connectionName != null ) {
-      clientPath.append( "#/summary" );
+      clientPath.append( "#!/summary" );
       clientPath.append( "?connection=" ).append( connectionName );
     } else {
-      clientPath.append( "#/intro" );
+      clientPath.append( "#!/intro" );
     }
     super.createDialog( title, getRepoURL( clientPath.toString() ),
       OPTIONS, GUIResource.getInstance().getImageLogoSmall() );

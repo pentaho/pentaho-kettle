@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,10 @@ import static junit.framework.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith( PowerMockRunner.class )
@@ -110,5 +113,128 @@ public class StartJobServletTest {
 
     PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
+  }
+
+  @Test
+  public void doGetMissingNameMandatoryParameterHTMLTest() throws Exception {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+
+    KettleLogStore.init();
+    StringWriter out = new StringWriter();
+    PrintWriter printWriter = new PrintWriter( out );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StartJobServlet.CONTEXT_PATH );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( null );
+
+    startJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_BAD_REQUEST );
+  }
+
+  @Test
+  public void doGetMissingNameMandatoryParameterXMLTest() throws Exception {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+
+    KettleLogStore.init();
+    StringWriter out = new StringWriter();
+    PrintWriter printWriter = new PrintWriter( out );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StartJobServlet.CONTEXT_PATH );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "Y" );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( null );
+
+    startJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_BAD_REQUEST );
+  }
+
+  @Test
+  public void doGetNameDoesNotExistHTMLTest() throws Exception {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+
+    KettleLogStore.init();
+    StringWriter out = new StringWriter();
+    PrintWriter printWriter = new PrintWriter( out );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StartJobServlet.CONTEXT_PATH );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( "theJobName" );
+
+    startJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_NOT_FOUND );
+  }
+
+  @Test
+  public void doGetNameDoesNotExistXMLTest() throws Exception {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+
+    KettleLogStore.init();
+    StringWriter out = new StringWriter();
+    PrintWriter printWriter = new PrintWriter( out );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StartJobServlet.CONTEXT_PATH );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "Y" );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( "theJobName" );
+
+    startJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_NOT_FOUND );
+  }
+
+  @Test
+  public void doGetExceptionInternalErrorHTMLTest() throws Exception {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+
+    StartJobServlet startJobServletSpy = spy( startJobServlet );
+
+    KettleLogStore.init();
+    StringWriter out = new StringWriter();
+    PrintWriter printWriter = new PrintWriter( out );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StartJobServlet.CONTEXT_PATH );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( "theJobName" );
+    doThrow( new RuntimeException() ).when( startJobServletSpy ).getJobMap();
+
+    startJobServletSpy.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+  }
+
+  @Test
+  public void doGetExceptionInternalErrorXMLTest() throws Exception {
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+
+    StartJobServlet startJobServletSpy = spy( startJobServlet );
+
+    KettleLogStore.init();
+    StringWriter out = new StringWriter();
+    PrintWriter printWriter = new PrintWriter( out );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StartJobServlet.CONTEXT_PATH );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "Y" );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( "theJobName" );
+    doThrow( new RuntimeException() ).when( startJobServletSpy ).getJobMap();
+
+    startJobServletSpy.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
+    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
   }
 }

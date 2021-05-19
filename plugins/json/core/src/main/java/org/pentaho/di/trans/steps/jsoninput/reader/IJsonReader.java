@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,29 +22,15 @@
 
 package org.pentaho.di.trans.steps.jsoninput.reader;
 
-import java.io.InputStream;
-
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
+
+import java.io.InputStream;
 
 public interface IJsonReader {
 
   /**
-   * Store and compile fields.
-   * 
-   * @param fields
-   * @throws UnsupportedJsonPathException
+   * Parse compiled Json Paths into a rowset
    */
-  void setFields( JsonInputField[] fields ) throws KettleException;
-
-  boolean isIgnoreMissingPath();
-
-  void setIgnoreMissingPath( boolean value );
-
-  /**
-   * parse compiled fields into a rowset
-   */
-  public RowSet parse( InputStream in ) throws KettleException;
-
+  RowSet parse( InputStream in ) throws KettleException;
 }

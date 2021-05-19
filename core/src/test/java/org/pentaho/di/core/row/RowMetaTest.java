@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,11 +23,11 @@
 package org.pentaho.di.core.row;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -42,7 +42,10 @@ import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.w3c.dom.Document;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -69,10 +72,6 @@ public class RowMetaTest {
     KettleClientEnvironment.init();
   }
 
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
-
   @Before
   public void setUp() throws Exception {
     string = ValueMetaFactory.createValueMeta( "string", ValueMetaInterface.TYPE_STRING );
@@ -85,13 +84,13 @@ public class RowMetaTest {
     charly = ValueMetaFactory.createValueMeta( "charly", ValueMetaInterface.TYPE_SERIALIZABLE );
 
     dup = ValueMetaFactory.createValueMeta( "dup", ValueMetaInterface.TYPE_SERIALIZABLE );
-    bin = ValueMetaFactory.createValueMeta(  "bin", ValueMetaInterface.TYPE_BINARY );
+    bin = ValueMetaFactory.createValueMeta( "bin", ValueMetaInterface.TYPE_BINARY );
   }
 
   private List<ValueMetaInterface> generateVList( String[] names, int[] types ) throws KettlePluginException {
-    List<ValueMetaInterface> list = new ArrayList<ValueMetaInterface>();
+    List<ValueMetaInterface> list = new ArrayList<>();
     for ( int i = 0; i < names.length; i++ ) {
-      ValueMetaInterface vm = ValueMetaFactory.createValueMeta( names[i], types[i] );
+      ValueMetaInterface vm = ValueMetaFactory.createValueMeta( names[ i ], types[ i ] );
       vm.setOrigin( "originStep" );
       list.add( vm );
     }
@@ -100,11 +99,12 @@ public class RowMetaTest {
 
   @Test
   public void testRowMetaInitializingFromXmlNode() throws Exception {
-    String testXmlNode = null;
+    String testXmlNode;
     try ( InputStream in = RowMetaTest.class.getResourceAsStream( "rowMetaNode.xml" ) ) {
       testXmlNode = IOUtils.toString( in );
     }
     Document xmlDoc = XMLHandler.loadXMLString( testXmlNode );
+    System.setProperty( Const.KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE, "N" );
     RowMeta rowMeta = spy( new RowMeta( xmlDoc.getFirstChild() ) );
     assertEquals( 2, rowMeta.getValueMetaList().size() );
     ValueMetaInterface valueMeta = rowMeta.getValueMeta( 0 );
@@ -127,7 +127,7 @@ public class RowMetaTest {
 
   @Test
   public void testSetValueMetaList() throws KettlePluginException {
-    List<ValueMetaInterface> setList = this.generateVList( new String[]{ "alpha", "bravo" }, new int[]{ 2, 2 } );
+    List<ValueMetaInterface> setList = this.generateVList( new String[] { "alpha", "bravo" }, new int[] { 2, 2 } );
     rowMeta.setValueMetaList( setList );
     assertTrue( setList.contains( rowMeta.searchValueMeta( "alpha" ) ) );
     assertTrue( setList.contains( rowMeta.searchValueMeta( "bravo" ) ) );
@@ -139,7 +139,7 @@ public class RowMetaTest {
 
   @Test
   public void testSetValueMetaListNullName() throws KettlePluginException {
-    List<ValueMetaInterface> setList = this.generateVList( new String[]{ "alpha", null }, new int[]{ 2, 2 } );
+    List<ValueMetaInterface> setList = this.generateVList( new String[] { "alpha", null }, new int[] { 2, 2 } );
     rowMeta.setValueMetaList( setList );
     assertTrue( setList.contains( rowMeta.searchValueMeta( "alpha" ) ) );
     assertFalse( setList.contains( rowMeta.searchValueMeta( null ) ) );
@@ -166,32 +166,32 @@ public class RowMetaTest {
   }
 
   @Test
-  public void testAddValueMetaValueMetaInterface() throws KettlePluginException {
+  public void testAddValueMetaValueMetaInterface() {
     rowMeta.addValueMeta( charly );
     assertTrue( rowMeta.getValueMetaList().contains( charly ) );
   }
 
   @Test
-  public void testAddValueMetaNullName() throws KettlePluginException {
+  public void testAddValueMetaNullName() {
     ValueMetaInterface vmi = new ValueMetaBase();
     rowMeta.addValueMeta( vmi );
     assertTrue( rowMeta.getValueMetaList().contains( vmi ) );
   }
 
   @Test
-  public void testAddValueMetaIntValueMetaInterface() throws KettlePluginException {
+  public void testAddValueMetaIntValueMetaInterface() {
     rowMeta.addValueMeta( 1, charly );
-    assertTrue( rowMeta.getValueMetaList().indexOf( charly ) == 1 );
+    assertEquals( 1, rowMeta.getValueMetaList().indexOf( charly ) );
   }
 
   @Test
   public void testGetValueMeta() {
     // see before method insertion order.
-    assertTrue( rowMeta.getValueMeta( 1 ).equals( integer ) );
+    assertEquals( rowMeta.getValueMeta( 1 ), integer );
   }
 
   @Test
-  public void testSetValueMeta() throws KettlePluginException {
+  public void testSetValueMeta() {
     rowMeta.setValueMeta( 1, charly );
     assertEquals( 1, rowMeta.getValueMetaList().indexOf( charly ) );
     assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
@@ -199,7 +199,7 @@ public class RowMetaTest {
   }
 
   @Test
-  public void testSetValueMetaDup() throws KettlePluginException {
+  public void testSetValueMetaDup() {
     rowMeta.setValueMeta( 1, dup );
     assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
     assertEquals( -1, rowMeta.indexOfValue( "integer" ) );
@@ -214,9 +214,9 @@ public class RowMetaTest {
     assertEquals( "Original is still the same (name)", 1, rowMeta.indexOfValue( "dup" ) );
     assertEquals( "Renaming happened", 2, rowMeta.indexOfValue( "dup_1" ) );
   }
-  
+
   @Test
-  public void testInsertValueMetaDup() throws Exception {
+  public void testInsertValueMetaDup() {
     rowMeta.addValueMeta( 1, new ValueMetaInteger( integer.getName() ) );
     assertEquals( "inserted", 4, rowMeta.size() );
     assertEquals( "rename new", "integer_1", rowMeta.getValueMeta( 1 ).getName() );
@@ -233,7 +233,7 @@ public class RowMetaTest {
   }
 
   @Test
-  public void testSetValueMetaNullName() throws KettlePluginException {
+  public void testSetValueMetaNullName() {
     ValueMetaInterface vmi = new ValueMetaBase();
     rowMeta.setValueMeta( 1, vmi );
     assertEquals( 1, rowMeta.getValueMetaList().indexOf( vmi ) );
@@ -266,7 +266,7 @@ public class RowMetaTest {
   @Test
   public void testAddRowMeta() throws KettlePluginException {
     List<ValueMetaInterface> list =
-      this.generateVList( new String[]{ "alfa", "bravo", "charly", "delta" }, new int[]{ 2, 2, 3, 4 } );
+      this.generateVList( new String[] { "alfa", "bravo", "charly", "delta" }, new int[] { 2, 2, 3, 4 } );
     RowMeta added = new RowMeta();
     added.setValueMetaList( list );
     rowMeta.addRowMeta( added );
@@ -278,7 +278,7 @@ public class RowMetaTest {
   @Test
   public void testMergeRowMeta() throws KettlePluginException {
     List<ValueMetaInterface> list =
-      this.generateVList( new String[]{ "phobos", "demos", "mars" }, new int[]{ 6, 6, 6 } );
+      this.generateVList( new String[] { "phobos", "demos", "mars" }, new int[] { 6, 6, 6 } );
     list.add( 1, integer );
     RowMeta toMerge = new RowMeta();
     toMerge.setValueMetaList( list );
@@ -303,7 +303,7 @@ public class RowMetaTest {
     rowMeta.removeValueMeta( "string" );
     assertEquals( 2, rowMeta.size() );
     assertNotNull( rowMeta.searchValueMeta( "integer" ) );
-    assertTrue( rowMeta.searchValueMeta( "integer" ).getName().equals( "integer" ) );
+    assertEquals( "integer", rowMeta.searchValueMeta( "integer" ).getName() );
     assertNull( rowMeta.searchValueMeta( "string" ) );
   }
 
@@ -314,7 +314,7 @@ public class RowMetaTest {
     assertNotNull( rowMeta.searchValueMeta( "date" ) );
     assertNotNull( rowMeta.searchValueMeta( "string" ) );
     assertNull( rowMeta.searchValueMeta( "notExists" ) );
-    assertTrue( rowMeta.searchValueMeta( "date" ).getName().equals( "date" ) );
+    assertEquals( "date", rowMeta.searchValueMeta( "date" ).getName() );
     assertNull( rowMeta.searchValueMeta( "integer" ) );
   }
 
@@ -330,7 +330,7 @@ public class RowMetaTest {
       rowMeta.addValueMeta( integer );
     }
     String resultName = "integer_13";
-    assertTrue( rowMeta.searchValueMeta( resultName ).getName().equals( resultName ) );
+    assertEquals( rowMeta.searchValueMeta( resultName ).getName(), resultName );
   }
 
   @Test
@@ -393,86 +393,15 @@ public class RowMetaTest {
     assertNull( newRowMeta.needRealClone ); // null because of the new add
     list = newRowMeta.getOrCreateValuesThatNeedRealClone( newRowMeta.valueMetaList );
     assertNotNull( newRowMeta.needRealClone );
-    assertEquals( 5, list.size() ); // Should still only be charly, dup and bin, charly_1, bin_1 - adding a string doesn't change of result
-  }
-
-  // @Test
-  public void hasedRowMetaListFasterWhenSearchByName() throws KettlePluginException {
-    rowMeta.clear();
-
-    ValueMetaInterface searchFor = null;
-    for ( int i = 0; i < 100000; i++ ) {
-      ValueMetaInterface vm =
-        ValueMetaFactory.createValueMeta( UUID.randomUUID().toString(), ValueMetaInterface.TYPE_STRING );
-      rowMeta.addValueMeta( vm );
-      if ( i == 50000 ) {
-        searchFor = vm;
-      }
-    }
-    List<ValueMetaInterface> vmList = rowMeta.getValueMetaList();
-
-    // now see how fast we are.
-    long start, stop, time1, time2;
-    start = System.nanoTime();
-    vmList.indexOf( searchFor );
-    stop = System.nanoTime();
-    time1 = stop - start;
-
-    start = System.nanoTime();
-    ValueMetaInterface found = rowMeta.searchValueMeta( searchFor.getName() );
-    stop = System.nanoTime();
-    assertEquals( searchFor, found );
-    time2 = stop - start;
-
-    // System.out.println( time1 + ", " + time2 );
-
-    assertTrue( "array search is slower then current implementation : " + "for array list: " + time1
-      + ", for hashed rowMeta: " + time2, time1 > time2 );
-  }
-
-  // @Test
-  public void hashedRowMetaListNotMuchSlowerThenIndexedAccess() throws KettlePluginException {
-    rowMeta = new RowMeta();
-
-    // create pre-existed rom meta list
-    List<ValueMetaInterface> pre = new ArrayList<ValueMetaInterface>( 100000 );
-    for ( int i = 0; i < 100000; i++ ) {
-      ValueMetaInterface vm =
-        ValueMetaFactory.createValueMeta( UUID.randomUUID().toString(), ValueMetaInterface.TYPE_STRING );
-      pre.add( vm );
-    }
-
-    // now see how fast we are.
-
-    long start, stop, time1, time2;
-    start = System.nanoTime();
-    // this is when filling regular array like in prev implementation
-    List<ValueMetaInterface> prev = new ArrayList<ValueMetaInterface>();
-    for ( ValueMetaInterface item : pre ) {
-      prev.add( item );
-    }
-    stop = System.nanoTime();
-    time1 = stop - start;
-
-    start = System.nanoTime();
-    for ( ValueMetaInterface item : pre ) {
-      rowMeta.addValueMeta( item );
-    }
-    stop = System.nanoTime();
-    time2 = stop - start;
-
-    // ~6 time slower that for original implementation
-    System.out.println( time1 + ", " + time2 );
-
-    // let say finally it is not 10 times slower :(
-    assertTrue( "it is not 10 times slower than for original arrayList", time1 * 10 > time2 );
+    assertEquals( 5, list
+      .size() ); // Should still only be charly, dup and bin, charly_1, bin_1 - adding a string doesn't change of result
   }
 
   @Test
   public void testMergeRowMetaWithOriginStep() throws Exception {
 
     List<ValueMetaInterface> list =
-      this.generateVList( new String[]{ "phobos", "demos", "mars" }, new int[]{ 6, 6, 6 } );
+      this.generateVList( new String[] { "phobos", "demos", "mars" }, new int[] { 6, 6, 6 } );
     list.add( 1, integer );
     RowMeta toMerge = new RowMeta();
     toMerge.setValueMetaList( list );
@@ -493,9 +422,9 @@ public class RowMetaTest {
       }
     }
     assertNotNull( found );
-    assertEquals( found.getOrigin(), "newOriginStep" );
+    assertEquals( "newOriginStep", found.getOrigin() );
     assertNotNull( other );
-    assertEquals( other.getOrigin(), "originStep" );
+    assertEquals( "originStep", other.getOrigin() );
 
   }
 
@@ -505,20 +434,20 @@ public class RowMetaTest {
     fillRowMeta();
     String[] names = rowMeta.getFieldNames();
     assertEquals( 10, names.length );
-    assertEquals( "sample", names[0] );
+    assertEquals( "sample", names[ 0 ] );
     for ( int i = 1; i < names.length; i++ ) {
-      assertEquals( "", names[i] );
+      assertEquals( "", names[ i ] );
     }
   }
 
   @Test
   public void testHashCode() {
     rowMeta.clear();
-    byte[] byteArray = new byte[]{ 49, 50, 51 };
-    Object[] objArray = new Object[]{ byteArray };
+    byte[] byteArray = new byte[] { 49, 50, 51 };
+    Object[] objArray = new Object[] { byteArray };
     try {
       assertEquals( 78512, rowMeta.hashCode( objArray ) );
-    } catch (KettleValueException e) {
+    } catch ( KettleValueException e ) {
       e.printStackTrace();
     }
   }

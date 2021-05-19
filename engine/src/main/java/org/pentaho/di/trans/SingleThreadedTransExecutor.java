@@ -268,6 +268,7 @@ public class SingleThreadedTransExecutor {
 
     // See if the steps support the SingleThreaded transformation type...
     //
+    log.logBasic( "Single Threaded Executor initializing Trans: [" + trans.getName( ) + "]" );
     for ( StepMetaDataCombi combi : steps ) {
       TransformationType[] types = combi.stepMeta.getStepMetaInterface().getSupportedTransformationTypes();
       boolean ok = false;
@@ -402,6 +403,7 @@ public class SingleThreadedTransExecutor {
 
   public void dispose() throws KettleException {
 
+    log.logBasic( "Single Threaded Executor Disposing Trans: [" + trans.getName( ) + "]" );
     // Call output done.
     //
     for ( StepMetaDataCombi combi : trans.getSteps() ) {

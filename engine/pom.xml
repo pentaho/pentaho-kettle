@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>9.0.0.0-423-22</version>
+  <version>9.3.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
@@ -14,19 +14,20 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>9.0.0.0-423</version>
+    <version>9.3.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
     <!-- Test running configuration -->
     <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
+    <maven-surefire-plugin.argLine>-noverify</maven-surefire-plugin.argLine>
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
 
     <!-- Pentaho dependencies -->
-    <pentaho-reporting.version>9.0.0.0-423</pentaho-reporting.version>
-    <pentaho-registry.version>9.0.0.0-423</pentaho-registry.version>
-    <pentaho-connections.version>9.0.0.0-423</pentaho-connections.version>
-    <mondrian.version>9.0.0.0-423</mondrian.version>
+    <pentaho-reporting.version>9.3.0.0-SNAPSHOT</pentaho-reporting.version>
+    <pentaho-registry.version>9.3.0.0-SNAPSHOT</pentaho-registry.version>
+    <pentaho-connections.version>9.3.0.0-SNAPSHOT</pentaho-connections.version>
+    <mondrian.version>9.3.0.0-SNAPSHOT</mondrian.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
@@ -52,9 +53,12 @@
     <ldapjdk.version>20000524</ldapjdk.version>
     <monetdb-jdbc.version>2.8</monetdb-jdbc.version>
     <odfdom-java.version>0.8.6</odfdom-java.version>
-    <poi.version>3.17</poi.version>
-    <commons-collections4.version>4.1</commons-collections4.version>
-    <xmlbeans.version>2.6.0</xmlbeans.version>
+    <poi.version>4.1.1</poi.version>
+    <commons-collections4.version>4.4</commons-collections4.version>
+    <commons-math3.version>3.6.1</commons-math3.version>
+    <xmlbeans.version>3.1.0</xmlbeans.version>
+    <curvesapi.version>1.06</curvesapi.version>
+    <commons-compress.version>1.19</commons-compress.version>
     <rome.version>1.0</rome.version>
     <SassyReader.version>0.5</SassyReader.version>
     <saxon.version>9.1.0.8</saxon.version>
@@ -484,6 +488,39 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
       <version>${commons-collections4.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math3</artifactId>
+      <version>${commons-math3.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.github.virtuald</groupId>
+      <artifactId>curvesapi</artifactId>
+      <version>${curvesapi.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>${commons-compress.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

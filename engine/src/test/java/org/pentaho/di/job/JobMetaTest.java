@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.job;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
@@ -40,6 +41,7 @@ import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -47,6 +49,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.metastore.api.IMetaStore;
+import org.powermock.reflect.Whitebox;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -56,6 +59,7 @@ import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.same;
@@ -69,6 +73,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class JobMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String JOB_META_NAME = "jobName";
 
@@ -90,6 +95,19 @@ public class JobMetaTest {
     jobMeta.setRepositoryDirectory( directoryJob );
     jobMeta.setName( JOB_META_NAME );
     jobMeta.setObjectRevision( objectRevision );
+  }
+
+  /**
+   * PDI-18655 - Variables.initializeVariablesFrom susceptible to NullPointerException
+   *
+   * @throws KettleException
+   */
+  @Test
+  public void testJobMetaInitialization() throws KettleException {
+    System.getProperties().put( "custom_property_boolean", true );
+    System.getProperties().put( "custom_property_string", "string" );
+    JobMeta jobMeta = new JobMeta();
+    assertNotNull( jobMeta );
   }
 
   @Test
@@ -498,6 +516,24 @@ public class JobMetaTest {
     jobMetaTest.updateCurrentDir();
 
     assertEquals( "Original value defined at run execution", jobMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY )  );
+  }
+
+  @Test
+  public void isGatheringMetricsTest() {
+    JobMeta jobMetaTest = new JobMeta();
+    Whitebox.setInternalState( jobMetaTest, "gatheringMetrics", true );
+    assertTrue( jobMetaTest.isGatheringMetrics() );
+    Whitebox.setInternalState( jobMetaTest, "gatheringMetrics", false );
+    assertFalse( jobMetaTest.isGatheringMetrics() );
+  }
+
+  @Test
+  public void setGatheringMetricsTest() {
+    JobMeta jobMetaTest = new JobMeta();
+    jobMetaTest.setGatheringMetrics( true );
+    assertTrue( Whitebox.getInternalState( jobMetaTest, "gatheringMetrics" ) );
+    jobMetaTest.setGatheringMetrics( false );
+    assertFalse( Whitebox.getInternalState( jobMetaTest, "gatheringMetrics" ) );
   }
 
 }

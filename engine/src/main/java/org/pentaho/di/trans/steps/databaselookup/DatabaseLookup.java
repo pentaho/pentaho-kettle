@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,9 +23,11 @@
 package org.pentaho.di.trans.steps.databaselookup;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -93,6 +95,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           lookupRow[ lookupIndex ] = value.convertData( input, lookupRow[ lookupIndex ] );
           value.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         }
+
+        //If input is of type date and its mask does not contain time then we should trim the time part from the date
+        //otherwise we will clog the database lookup cache with to many entries
+        if ( input.getType() == ValueMetaInterface.TYPE_DATE && isTimelessMask( input.getConversionMask() ) ) {
+          lookupRow[lookupIndex] = Const.trimDate( (Date) lookupRow[lookupIndex] );
+        }
+
         lookupIndex++;
       }
       if ( data.keynrs2[ i ] >= 0 ) {
@@ -208,13 +217,21 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
   }
 
   @VisibleForTesting
+  boolean isTimelessMask( String dateMask ) {
+    if ( dateMask == null ) {
+      return false;
+    }
+    return Arrays.asList( Const.getTimelessDateFormats() ).contains( dateMask );
+  }
+
+  @VisibleForTesting
   void incrementLines() {
     if ( !getStepMeta().isClustered() || ( getStepMeta().isClustered() && !getTrans().isExecutingClustered() ) ) {
       incrementLinesInput();
     }
   }
 
-  // visible for testing purposes
+  @VisibleForTesting
   void determineFieldsTypesQueryingDb() throws KettleException {
     final String[] keyFields = meta.getTableKeyField();
     data.keytypes = new int[ keyFields.length ];
@@ -238,23 +255,46 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         }
       }
 
-      final String[] returnFields = meta.getReturnValueField();
-      final int returnFieldsOffset = getInputRowMeta().size();
-      for ( int i = 0; i < returnFields.length; i++ ) {
-        ValueMetaInterface returnValueMeta = fields.searchValueMeta( returnFields[ i ] );
-        if ( returnValueMeta != null ) {
-          ValueMetaInterface v = data.outputRowMeta.getValueMeta( returnFieldsOffset + i );
-          if ( v.getType() != returnValueMeta.getType() ) {
-            ValueMetaInterface clone = returnValueMeta.clone();
-            clone.setName( v.getName() );
-            data.outputRowMeta.setValueMeta( returnFieldsOffset + i, clone );
-          }
-        }
+      if ( shouldDatabaseReturnValueTypeBeUsed() ) {
+        useReturnValueTypeFromDatabase( fields );
       }
+
     } else {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
         + schemaTable + "]" );
+    }
+  }
+
+  /*
+   * Checks whether the return value type of fields should use the ones configured in the database instead
+   * of the ones chosen in the step UI
+   * If KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI kettle property is set to "Y"
+   * the return type of the fields is the one chosen in the step UI.
+   * If the kettle property is not set or set to "N" then the return type of the fields is the one configured in the database
+   */
+  private boolean shouldDatabaseReturnValueTypeBeUsed() {
+    String skipLookupReturnFields = getVariable( Const.KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI, "N" );
+    return !ValueMetaBase.convertStringToBoolean( Const.NVL( skipLookupReturnFields, "N" ) );
+  }
+
+  /*
+   * Forces the use of the return value type of fields as they are configured in the database
+   * regardless of what is configured in the step UI
+   */
+  private void useReturnValueTypeFromDatabase( RowMetaInterface fields ) {
+    final String[] returnFields = meta.getReturnValueField();
+    final int returnFieldsOffset = getInputRowMeta().size();
+    for ( int i = 0; i < returnFields.length; i++ ) {
+      ValueMetaInterface returnValueMeta = fields.searchValueMeta( returnFields[ i ] );
+      if ( returnValueMeta != null ) {
+        ValueMetaInterface v = data.outputRowMeta.getValueMeta( returnFieldsOffset + i );
+        if ( v.getType() != returnValueMeta.getType() ) {
+          ValueMetaInterface clone = returnValueMeta.clone();
+          clone.setName( v.getName() );
+          data.outputRowMeta.setValueMeta( returnFieldsOffset + i, clone );
+        }
+      }
     }
   }
 

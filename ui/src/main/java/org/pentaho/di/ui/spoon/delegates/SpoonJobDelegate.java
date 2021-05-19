@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -568,129 +568,49 @@ public class SpoonJobDelegate extends SpoonDelegate {
         for ( int i = 0; i < tables.length && !monitor.isCanceled(); i++ ) {
           monitor.setTaskName( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ProcessingTable" )
             + tables[i] + "]..." );
-          //
-          // Create the new transformation...
-          //
-          String transname =
-            BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname1" )
-              + sourceDbInfo + "].[" + tables[i]
-              + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname2" ) + targetDbInfo + "]";
 
-          TransMeta transMeta = new TransMeta();
-          if ( repdir != null ) {
-            transMeta.setRepositoryDirectory( repdir );
-          } else {
-            transMeta.setFilename( Const.createFilename( directory, transname, "."
-              + Const.STRING_TRANS_DEFAULT_EXT ) );
-          }
 
-          // Add the source & target db
-          transMeta.addDatabase( sourceDbInfo );
-          transMeta.addDatabase( targetDbInfo );
-
-          //
-          // Add a note
-          //
-          String note =
-            BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note1" )
-              + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note2" ) + sourceDbInfo + "]"
-              + Const.CR;
-          note +=
-            BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note3" )
-              + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note4" ) + targetDbInfo + "]";
-          NotePadMeta ni = new NotePadMeta( note, 150, 10, -1, -1 );
-          transMeta.addNote( ni );
-
-          //
-          // Add the TableInputMeta step...
-          //
-          String fromstepname =
-            BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Name" ) + tables[i] + "]";
           TableInputMeta tii = new TableInputMeta();
           tii.setDefault();
           tii.setDatabaseMeta( sourceDbInfo );
           tii.setSQL( "SELECT * FROM " + tables[i] ); // It's already quoted!
 
-          String fromstepid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, tii );
-          StepMeta fromstep = new StepMeta( fromstepid, fromstepname, tii );
-          fromstep.setLocation( 150, 100 );
-          fromstep.setDraw( true );
-          fromstep
-            .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Description" )
-              + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Description2" )
-              + sourceDbInfo + "]" );
+          // Create the new transformation
+          TransMeta transMeta = new TransMeta();
+          setTransMetaFileNaming( repdir, directory, sourceDbInfo, targetDbInfo, tables, i, transMeta );
+
+          // Add the source & target db
+          setTransMetaDatabase( sourceDbInfo, targetDbInfo, transMeta );
+
+          // Add a note
+          setTransMetaNote( sourceDbInfo, targetDbInfo, tables, i, transMeta );
+
+          // Add the TableInputMeta step
+          StepMeta fromstep = getFromStep( sourceDbInfo, tables, i, tii );
           transMeta.addStep( fromstep );
 
-          //
-          // Add the TableOutputMeta step...
-          //
-          String tostepname = BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Name" ) + tables[i] + "]";
-          TableOutputMeta toi = new TableOutputMeta();
-          toi.setDatabaseMeta( targetDbInfo );
-          toi.setTableName( tables[i] );
-          toi.setCommitSize( 100 );
-          toi.setTruncateTable( true );
-
-          String tostepid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, toi );
-          StepMeta tostep = new StepMeta( tostepid, tostepname, toi );
-          tostep.setLocation( 500, 100 );
-          tostep.setDraw( true );
-          tostep
-            .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Description1" )
-              + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Description2" )
-              + targetDbInfo + "]" );
+          // Add the TableOutputMeta step
+          StepMeta tostep = getToStep( targetDbInfo, tables[ i ] );
           transMeta.addStep( tostep );
 
-          //
-          // Add a hop between the two steps...
-          //
+          // Add a hop between the two steps
           TransHopMeta hi = new TransHopMeta( fromstep, tostep );
           transMeta.addTransHop( hi );
 
-          //
-          // Now we generate the SQL needed to run for this
-          // transformation.
-          //
-          // First set the limit to 1 to speed things up!
-          String tmpSql = tii.getSQL();
-          tii.setSQL( tii.getSQL() + sourceDbInfo.getLimitClause( 1 ) );
-          String sql;
-          try {
-            sql = transMeta.getSQLStatementsString();
-          } catch ( KettleStepException kse ) {
-            throw new InvocationTargetException( kse, BaseMessages.getString(
-              PKG, "Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation" )
-              + transMeta + "] : " + kse.getMessage() );
-          }
-          // remove the limit
-          tii.setSQL( tmpSql );
+          // Now we generate the SQL needed to run for this transformation.
+          String sql = getSQLString( sourceDbInfo, tii, transMeta );
 
-          //
-          // Now, save the transformation...
-          //
-          boolean ok;
-          if ( spoon.getRepository() != null ) {
-            ok = spoon.saveToRepository( transMeta, false );
-          } else {
-            ok = spoon.saveToFile( transMeta );
-          }
-          if ( !ok ) {
-            throw new InvocationTargetException( new Exception(
-              BaseMessages.getString( PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) ),
-              BaseMessages.getString( PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) );
-          }
+          // Now, save the transformation
+          saveTransformation( transMeta );
 
-          // We can now continue with the population of the job...
-          // //////////////////////////////////////////////////////////////////////
-
+          // We can now continue with the population of the job
           location.x = 250;
           if ( i > 0 ) {
             location.y += 100;
           }
 
-          //
           // We can continue defining the job.
-          //
+
           // First the SQL, but only if needed!
           // If the table exists & has the correct format, nothing is
           // done
@@ -773,6 +693,109 @@ public class SpoonJobDelegate extends SpoonDelegate {
     }
 
     return jobMeta;
+  }
+
+  private void saveTransformation( TransMeta transMeta ) throws KettleException, InvocationTargetException {
+    boolean ok;
+    if ( spoon.getRepository() != null ) {
+      ok = spoon.saveToRepository( transMeta, false );
+    } else {
+      ok = spoon.saveToFile( transMeta );
+    }
+    if ( !ok ) {
+      throw new InvocationTargetException( new Exception(
+        BaseMessages.getString( PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) ),
+        BaseMessages.getString( PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) );
+    }
+  }
+
+  private String getSQLString( DatabaseMeta sourceDbInfo, TableInputMeta tii, TransMeta transMeta )
+    throws InvocationTargetException {
+    // First set the limit to 1 to speed things up!
+    String tmpSql = tii.getSQL();
+    tii.setSQL( tii.getSQL() + sourceDbInfo.getLimitClause( 1 ) );
+    String sql;
+    try {
+      sql = transMeta.getSQLStatementsString();
+    } catch ( KettleStepException kse ) {
+      throw new InvocationTargetException( kse, BaseMessages.getString(
+        PKG, "Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation" )
+        + transMeta + "] : " + kse.getMessage() );
+    }
+    // remove the limit
+    tii.setSQL( tmpSql );
+    return sql;
+  }
+
+  private StepMeta getToStep( DatabaseMeta targetDbInfo, String table ) {
+    String tostepname = BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Name" ) + table + "]";
+    TableOutputMeta toi = new TableOutputMeta();
+    toi.setDatabaseMeta( targetDbInfo );
+    toi.setTableName( table );
+    toi.setCommitSize( 100 );
+    toi.setTruncateTable( true );
+
+    String tostepid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, toi );
+    StepMeta tostep = new StepMeta( tostepid, tostepname, toi );
+    tostep.setLocation( 500, 100 );
+    tostep.setDraw( true );
+    tostep
+      .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Description1" )
+        + table + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Description2" )
+        + targetDbInfo + "]" );
+    return tostep;
+  }
+
+  private StepMeta getFromStep( DatabaseMeta sourceDbInfo, String[] tables, int i, TableInputMeta tii ) {
+    String fromstepname =
+      BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Name" ) + tables[i] + "]";
+
+
+    String fromstepid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, tii );
+    StepMeta fromstep = new StepMeta( fromstepid, fromstepname, tii );
+    fromstep.setLocation( 150, 100 );
+    fromstep.setDraw( true );
+    fromstep
+      .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Description" )
+        + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Description2" )
+        + sourceDbInfo + "]" );
+    return fromstep;
+  }
+
+  private void setTransMetaNote( DatabaseMeta sourceDbInfo, DatabaseMeta targetDbInfo, String[] tables, int i,
+                                 TransMeta transMeta ) {
+    String note =
+      BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note1" )
+        + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note2" ) + sourceDbInfo + "]"
+        + Const.CR;
+    note +=
+      BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note3" )
+        + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note4" ) + targetDbInfo + "]";
+    NotePadMeta ni = new NotePadMeta( note, 150, 10, -1, -1 );
+    transMeta.addNote( ni );
+  }
+
+  private void setTransMetaDatabase( DatabaseMeta sourceDbInfo, DatabaseMeta targetDbInfo, TransMeta transMeta ) {
+    transMeta.addDatabase( sourceDbInfo );
+    transMeta.addDatabase( targetDbInfo );
+  }
+
+  @VisibleForTesting
+  void setTransMetaFileNaming( RepositoryDirectoryInterface repdir, String directory,
+                                       DatabaseMeta sourceDbInfo, DatabaseMeta targetDbInfo, String[] tables, int i,
+                                       TransMeta transMeta ) {
+    String transname =
+      BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname1" )
+        + sourceDbInfo + "].[" + tables[i]
+        + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname2" ) + targetDbInfo + "]";
+
+    if ( repdir != null ) {
+      transMeta.setRepositoryDirectory( repdir );
+      transMeta.setName( transname );
+    } else {
+      transMeta.setFilename( Const.createFilename( directory, transname, "."
+        + Const.STRING_TRANS_DEFAULT_EXT ) );
+    }
   }
 
   public boolean isDefaultJobName( String name ) {
@@ -1361,6 +1384,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
       jobMeta.setClearingLog( executionConfiguration.isClearingLog() );
       jobMeta.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
       jobMeta.setExpandingRemoteJob( executionConfiguration.isExpandingRemoteJob() );
+      jobMeta.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,

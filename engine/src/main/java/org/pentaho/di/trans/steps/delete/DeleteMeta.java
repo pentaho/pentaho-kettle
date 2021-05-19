@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,25 @@ import org.w3c.dom.Node;
 @InjectionSupported( localizationPrefix = "Delete.Injection.", groups = "FIELDS" )
 public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = DeleteMeta.class; // for i18n purposes, needed by Translator2!!
+
+  private static final String TAG_4_SPACES = "    ";
+  private static final String TAG_6_SPACES = "      ";
+  private static final String TAG_8_SPACES = "        ";
+  private static final String TAG_CONNECTION = "connection";
+  private static final String TAG_COMMIT = "commit";
+  private static final String TAG_LOOKUP = "lookup";
+  private static final String TAG_SCHEMA = "schema";
+  private static final String TAG_TABLE = "table";
+  private static final String TAG_KEY = "key";
+  private static final String TAG_FIELD = "field";
+  private static final String TAG_NAME = "name";
+  private static final String TAG_NAME2 = "name2";
+  private static final String TAG_CONDITION = "condition";
+  private static final String TAG_KEY_FIELD = "key_field";
+  private static final String TAG_KEY_NAME = "key_name";
+  private static final String TAG_KEY_NAME2 = "key_name2";
+  private static final String TAG_KEY_CONDITION = "key_condition";
+  private static final String TAG_ID_CONNECTION = "id_connection";
 
   private DatabaseMeta databaseMeta;
 
@@ -271,28 +290,28 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
       String csize;
       int nrkeys;
 
-      String con = XMLHandler.getTagValue( stepnode, "connection" );
+      String con = XMLHandler.getTagValue( stepnode, TAG_CONNECTION );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
-      csize = XMLHandler.getTagValue( stepnode, "commit" );
+      csize = XMLHandler.getTagValue( stepnode, TAG_COMMIT );
       commitSize = ( csize != null ) ? csize : "0";
-      schemaName = XMLHandler.getTagValue( stepnode, "lookup", "schema" );
-      tableName = XMLHandler.getTagValue( stepnode, "lookup", "table" );
+      schemaName = XMLHandler.getTagValue( stepnode, TAG_LOOKUP, TAG_SCHEMA );
+      tableName = XMLHandler.getTagValue( stepnode, TAG_LOOKUP, TAG_TABLE );
 
-      Node lookup = XMLHandler.getSubNode( stepnode, "lookup" );
-      nrkeys = XMLHandler.countNodes( lookup, "key" );
+      Node lookup = XMLHandler.getSubNode( stepnode, TAG_LOOKUP );
+      nrkeys = XMLHandler.countNodes( lookup, TAG_KEY );
 
       allocate( nrkeys );
 
       for ( int i = 0; i < nrkeys; i++ ) {
-        Node knode = XMLHandler.getSubNodeByNr( lookup, "key", i );
+        Node knode = XMLHandler.getSubNodeByNr( lookup, TAG_KEY, i );
 
-        keyStream[i] = XMLHandler.getTagValue( knode, "name" );
-        keyLookup[i] = XMLHandler.getTagValue( knode, "field" );
-        keyCondition[i] = XMLHandler.getTagValue( knode, "condition" );
+        keyStream[i] = XMLHandler.getTagValue( knode, TAG_NAME );
+        keyLookup[i] = XMLHandler.getTagValue( knode, TAG_FIELD );
+        keyCondition[i] = XMLHandler.getTagValue( knode, TAG_CONDITION );
         if ( keyCondition[i] == null ) {
           keyCondition[i] = "=";
         }
-        keyStream2[i] = XMLHandler.getTagValue( knode, "name2" );
+        keyStream2[i] = XMLHandler.getTagValue( knode, TAG_NAME2 );
       }
 
     } catch ( Exception e ) {
@@ -317,36 +336,36 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuilder retval = new StringBuilder( 500 );
 
     retval
-      .append( "    " ).append(
-        XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "commit", commitSize ) );
-    retval.append( "    <lookup>" ).append( Const.CR );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "table", tableName ) );
+      .append( TAG_4_SPACES ).append(
+        XMLHandler.addTagValue( TAG_CONNECTION, databaseMeta == null ? "" : databaseMeta.getName() ) );
+    retval.append( TAG_4_SPACES ).append( XMLHandler.addTagValue( TAG_COMMIT, commitSize ) );
+    retval.append( TAG_4_SPACES + "<lookup>" ).append( Const.CR );
+    retval.append( TAG_6_SPACES ).append( XMLHandler.addTagValue( TAG_SCHEMA, schemaName ) );
+    retval.append( TAG_6_SPACES ).append( XMLHandler.addTagValue( TAG_TABLE, tableName ) );
 
     for ( int i = 0; i < keyStream.length; i++ ) {
-      retval.append( "      <key>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", keyStream[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "field", keyLookup[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "condition", keyCondition[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name2", keyStream2[i] ) );
-      retval.append( "      </key>" ).append( Const.CR );
+      retval.append( TAG_6_SPACES + "<key>" ).append( Const.CR );
+      retval.append( TAG_8_SPACES ).append( XMLHandler.addTagValue( TAG_NAME, keyStream[i] ) );
+      retval.append( TAG_8_SPACES ).append( XMLHandler.addTagValue( TAG_FIELD, keyLookup[i] ) );
+      retval.append( TAG_8_SPACES ).append( XMLHandler.addTagValue( TAG_CONDITION, keyCondition[i] ) );
+      retval.append( TAG_8_SPACES ).append( XMLHandler.addTagValue( TAG_NAME2, keyStream2[i] ) );
+      retval.append( TAG_6_SPACES + "</key>" ).append( Const.CR );
     }
 
-    retval.append( "    </lookup>" ).append( Const.CR );
+    retval.append( TAG_4_SPACES + "</lookup>" ).append( Const.CR );
 
     return retval.toString();
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
-      databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
+      databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, TAG_ID_CONNECTION, databases );
 
-      commitSize = rep.getStepAttributeString( id_step, "commit" );
+      commitSize = rep.getStepAttributeString( id_step, TAG_COMMIT );
       if ( commitSize == null ) {
         long comSz = -1;
         try {
-          comSz = rep.getStepAttributeInteger( id_step, "commit" );
+          comSz = rep.getStepAttributeInteger( id_step, TAG_COMMIT );
         } catch ( Exception ex ) {
           commitSize = "100";
         }
@@ -354,18 +373,18 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
           commitSize = Long.toString( comSz );
         }
       }
-      schemaName = rep.getStepAttributeString( id_step, "schema" );
-      tableName = rep.getStepAttributeString( id_step, "table" );
+      schemaName = rep.getStepAttributeString( id_step, TAG_SCHEMA );
+      tableName = rep.getStepAttributeString( id_step, TAG_TABLE );
 
-      int nrkeys = rep.countNrStepAttributes( id_step, "key_name" );
+      int nrkeys = rep.countNrStepAttributes( id_step, TAG_KEY_FIELD );
 
       allocate( nrkeys );
 
       for ( int i = 0; i < nrkeys; i++ ) {
-        keyStream[i] = rep.getStepAttributeString( id_step, i, "key_name" );
-        keyLookup[i] = rep.getStepAttributeString( id_step, i, "key_field" );
-        keyCondition[i] = rep.getStepAttributeString( id_step, i, "key_condition" );
-        keyStream2[i] = rep.getStepAttributeString( id_step, i, "key_name2" );
+        keyStream[i] = rep.getStepAttributeString( id_step, i, TAG_KEY_NAME );
+        keyLookup[i] = rep.getStepAttributeString( id_step, i, TAG_KEY_FIELD );
+        keyCondition[i] = rep.getStepAttributeString( id_step, i, TAG_KEY_CONDITION );
+        keyStream2[i] = rep.getStepAttributeString( id_step, i, TAG_KEY_NAME2 );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -375,16 +394,16 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
-      rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
-      rep.saveStepAttribute( id_transformation, id_step, "commit", commitSize );
-      rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
-      rep.saveStepAttribute( id_transformation, id_step, "table", tableName );
+      rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, TAG_ID_CONNECTION, databaseMeta );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_COMMIT, commitSize );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_SCHEMA, schemaName );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_TABLE, tableName );
 
       for ( int i = 0; i < keyStream.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "key_name", keyStream[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "key_field", keyLookup[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "key_condition", keyCondition[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "key_name2", keyStream2[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, TAG_KEY_NAME, keyStream[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, TAG_KEY_FIELD, keyLookup[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, TAG_KEY_CONDITION, keyCondition[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, TAG_KEY_NAME2, keyStream2[i] );
       }
 
       // Also, save the step-database relationship!

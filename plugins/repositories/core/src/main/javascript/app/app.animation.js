@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2018-2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ define(
     function () {
       'use strict';
 
-      var factoryArray = ["$rootScope", "$state", factory];
+      var factoryArray = ["$rootScope", "$state", "$transitions", factory];
       var module = {
         class: ".transition",
         factory: factoryArray
@@ -37,7 +37,7 @@ define(
        * @param {Object} $rootScope
        * @returns {Object} The callbacks for animation
        */
-      function factory($rootScope, $state) {
+      function factory($rootScope, $state, $transitions) {
         var transition = $state.current.name === "connecting" ? "fade" : "slideLeft";
         var transitions = {
           "add->other": "fade",
@@ -61,8 +61,9 @@ define(
           "connect->connecting": "fade",
           "connecting->connect": "fade"
         };
-        $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams) {
-          var next = transitions[fromState.name + "->" + toState.name];
+
+        $transitions.onStart({ }, function(trans) {
+          var next = transitions[trans.from().name + "->" + trans.to().name];
           if (next) {
             transition = next;
           } else {
@@ -72,7 +73,7 @@ define(
 
         return {
           enter: enter,
-          leave: leave,
+          leave: leave
         };
 
         function enter(element, done) {

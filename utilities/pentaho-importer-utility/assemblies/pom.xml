@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>importer-utility-parent-pom</artifactId>
+    <groupId>org.pentaho.di</groupId>
+    <version>9.3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pentaho.di</groupId>
+  <artifactId>pentaho-importer-utility-assembly</artifactId>
+  <version>9.3.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Pentaho Importer Utility Assembly</name>
+
+  <modules>
+    <module>utility</module>
+  </modules>
+</project>

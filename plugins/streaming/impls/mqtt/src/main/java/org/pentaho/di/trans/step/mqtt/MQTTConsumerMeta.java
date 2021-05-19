@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,7 @@ import static org.pentaho.di.trans.step.mqtt.MQTTClientBuilder.DEFAULT_SSL_OPTS;
 import static org.pentaho.di.trans.step.mqtt.MQTTClientBuilder.checkVersion;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.AUTOMATIC_RECONNECT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CLEAN_SESSION;
+import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CLIENT_ID;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CONNECTION_TIMEOUT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.KEEP_ALIVE_INTERVAL;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MAX_INFLIGHT;
@@ -111,6 +112,10 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
   @Metaverse.Node ( name = MQTT_SERVER_METAVERSE, type = MQTT_SERVER_METAVERSE )
   @Metaverse.Property ( name = MQTT_SERVER_METAVERSE, parentNodeName = MQTT_SERVER_METAVERSE )
   @Injection ( name = MQTT_SERVER ) public String mqttServer = "";
+
+  @Metaverse.Node ( name = MQTT_SERVER_METAVERSE, type = MQTT_SERVER_METAVERSE )
+  @Metaverse.Property ( name = CLIENT_ID, parentNodeName = MQTT_SERVER_METAVERSE )
+  @Injection ( name = CLIENT_ID ) String clientId = "";
 
   @Metaverse.Node ( name = MQTT_TOPIC_METAVERSE, type = MQTT_TOPIC_METAVERSE, link = LINK_READBY )
   @Metaverse.Property ( name = TOPIC, parentNodeName = MQTT_TOPIC_METAVERSE )
@@ -247,6 +252,14 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
 
   public void setTopics( List<String> topics ) {
     this.topics = topics;
+  }
+
+  public void setClientId( String clientId ) {
+    this.clientId = clientId;
+  }
+
+  public String getClientId() {
+    return clientId;
   }
 
   public String getMsgOutputName() {

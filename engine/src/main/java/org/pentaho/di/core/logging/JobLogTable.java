@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -408,42 +408,14 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
   public List<RowMetaInterface> getRecommendedIndexes() {
     List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
 
-    // First index : ID_JOB if any is used.
-    //
+    // First index : ID_BATCH if any is used.
     if ( isBatchIdUsed() ) {
-      RowMetaInterface batchIndex = new RowMeta();
-      LogTableField keyField = getKeyField();
-
-      ValueMetaInterface keyMeta = new ValueMetaBase( keyField.getFieldName(), keyField.getDataType() );
-      keyMeta.setLength( keyField.getLength() );
-      batchIndex.addValueMeta( keyMeta );
-
-      indexes.add( batchIndex );
+      indexes.add( addFieldsToIndex( getKeyField() ) );
     }
-
-    // The next index includes : ERRORS, STATUS, JOBNAME:
-
-    RowMetaInterface lookupIndex = new RowMeta();
-    LogTableField errorsField = findField( ID.ERRORS );
-    if ( errorsField != null ) {
-      ValueMetaInterface valueMeta = new ValueMetaBase( errorsField.getFieldName(), errorsField.getDataType() );
-      valueMeta.setLength( errorsField.getLength() );
-      lookupIndex.addValueMeta( valueMeta );
-    }
-    LogTableField statusField = findField( ID.STATUS );
-    if ( statusField != null ) {
-      ValueMetaInterface valueMeta = new ValueMetaBase( statusField.getFieldName(), statusField.getDataType() );
-      valueMeta.setLength( statusField.getLength() );
-      lookupIndex.addValueMeta( valueMeta );
-    }
-    LogTableField transNameField = findField( ID.JOBNAME );
-    if ( transNameField != null ) {
-      ValueMetaInterface valueMeta = new ValueMetaBase( transNameField.getFieldName(), transNameField.getDataType() );
-      valueMeta.setLength( transNameField.getLength() );
-      lookupIndex.addValueMeta( valueMeta );
-    }
-
-    indexes.add( lookupIndex );
+    // The next index includes : ERRORS, STATUS, TRANSNAME:
+    indexes.add( addFieldsToIndex( findField( ID.ERRORS ), findField( ID.STATUS ), findField( ID.JOBNAME ) ) );
+    // Index used for deleting rows during cleanup
+    indexes.add( addFieldsToIndex( findField( ID.JOBNAME ), findField( ID.LOGDATE ) ) );
 
     return indexes;
   }

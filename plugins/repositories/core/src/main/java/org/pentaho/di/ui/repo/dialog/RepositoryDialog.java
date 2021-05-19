@@ -52,10 +52,10 @@ public class RepositoryDialog extends ThinDialog {
   private static final int HEIGHT = 630;
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM;
   private static final String CREATION_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NewRepo.Title" );
-  private static final String CREATION_WEB_CLIENT_PATH = "#/add";
+  private static final String CREATION_WEB_CLIENT_PATH = "#!/add";
   private static final String MANAGER_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Manager.Title" );
   private static final String LOGIN_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Login.Title" );
-  private static final String LOGIN_WEB_CLIENT_PATH = "#/connect";
+  private static final String LOGIN_WEB_CLIENT_PATH = "#!/connect";
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";

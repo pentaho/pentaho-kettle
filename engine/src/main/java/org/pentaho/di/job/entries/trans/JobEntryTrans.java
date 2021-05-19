@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -136,6 +136,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   public boolean setLogfile;
 
   public boolean setAppendLogfile;
+
+  public boolean suppressResultData;
 
   public String logfile, logext;
 
@@ -334,6 +336,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append( "      " ).append( XMLHandler.addTagValue( "create_parent_folder", createParentFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "logging_remote_work", loggingRemoteWork ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "run_configuration", runConfiguration ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "suppress_result_data", isSuppressResultData() ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length; i++ ) {
@@ -420,6 +423,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_parent_folder" ) );
       loggingRemoteWork = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "logging_remote_work" ) );
       runConfiguration = XMLHandler.getTagValue( entrynode, "run_configuration" );
+      setSuppressResultData( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "suppress_result_data" ) ) );
 
       remoteSlaveServerName = XMLHandler.getTagValue( entrynode, "slave_server_name" );
 
@@ -503,6 +507,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       followingAbortRemotely = rep.getJobEntryAttributeBoolean( id_jobentry, "follow_abort_remote" );
       loggingRemoteWork = rep.getJobEntryAttributeBoolean( id_jobentry, "logging_remote_work" );
       runConfiguration = rep.getJobEntryAttributeString( id_jobentry, "run_configuration" );
+      setSuppressResultData( rep.getJobEntryAttributeBoolean( id_jobentry, "suppress_result_data", false ) );
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
@@ -564,6 +569,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "create_parent_folder", createParentFolder );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logging_remote_work", loggingRemoteWork );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "run_configuration", runConfiguration );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "suppress_result_data", isSuppressResultData() );
 
       // Save the arguments...
       if ( arguments != null ) {
@@ -614,6 +620,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     waitingToFinish = true;
     followingAbortRemotely = false; // backward compatibility reasons
     createParentFolder = false;
+    setSuppressResultData( false );
     logFileLevel = LogLevel.BASIC;
   }
 
@@ -1067,7 +1074,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 // The transformation is finished, get the result...
                 //
                 //get the status with the result ( we don't do it above because of changing PDI-15781)
-                transStatus = remoteSlaveServer.getTransStatus( transMeta.getName(), carteObjectId, 0, true );
+                transStatus = remoteSlaveServer.getTransStatus( transMeta.getName(), carteObjectId, 0,
+                  !isSuppressResultData() );
                 Result remoteResult = transStatus.getResult();
                 result.clear();
                 result.add( remoteResult );
@@ -1152,6 +1160,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
           // inject the metaStore
           trans.setMetaStore( metaStore );
+
+          // set gathering metrics state
+          trans.setGatheringMetrics( parentJob.isGatheringMetrics() );
 
           // First get the root job
           //
@@ -1723,4 +1734,32 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
   }
 
+  /*
+   * Users may define a named parameter with a name matching SUPPRESS_TRANS_RESULT_DATA_* with a value matching the name
+   * of a JobEntryTrans step.  If such a parameter is found and its value matches this step's name, then do not request
+   * the result row data of the transformation when it finishes running.  Only applies to remote slave servers.
+   */
+  public boolean isSuppressResultData() {
+    boolean returnVal = suppressResultData;
+    if ( !suppressResultData && parentJobMeta != null ) {
+      String[] params = parentJobMeta.listParameters();
+      for ( String param : params ) {
+        if ( param.startsWith( "SUPPRESS_TRANS_RESULT_DATA_" ) ) {
+          try {
+            String paramVal = parentJobMeta.getParameterValue( param );
+            if ( paramVal != null ) {
+              returnVal |= paramVal.equals( this.getName() );
+            }
+          } catch ( UnknownParamException e ) {
+            logError( BaseMessages.getString( PKG, "JobTrans.Exception.SuppressResultParam" ), e );
+          }
+        }
+      }
+    }
+    return returnVal;
+  }
+
+  public void setSuppressResultData( boolean suppressResultData ) {
+    this.suppressResultData = suppressResultData;
+  }
 }

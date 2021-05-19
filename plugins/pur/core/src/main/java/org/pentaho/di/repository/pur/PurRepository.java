@@ -26,6 +26,7 @@ package org.pentaho.di.repository.pur;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -44,6 +45,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.Import;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.AbstractRepository;
 import org.pentaho.di.repository.IRepositoryExporter;
@@ -216,6 +218,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   protected PurRepositoryMetaStore metaStore;
 
+  private ConnectionManager connectionManager = ConnectionManager.getInstance();
+
   // The servers (DI Server, BA Server) that a user can authenticate to
   protected enum RepositoryServers {
     DIS, POBS
@@ -329,15 +333,21 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       this.jobDelegate = new JobDelegate( this, pur );
     } finally {
       if ( connected ) {
-        if ( log.isBasic() ) {
-          log.logBasic( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
+        if ( log.isDetailed() ) {
+          log.logDetailed( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
         }
         metaStore = new PurRepositoryMetaStore( this );
+        IMetaStore activeMetaStore = metaStore;
+        if ( activeMetaStore != null ) {
+          final IMetaStore connectedMetaStore = activeMetaStore;
+          connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
+        }
+
         // Create the default Pentaho namespace if it does not exist
         try {
           metaStore.createNamespace( PentahoDefaults.NAMESPACE );
-          if ( log.isBasic() ) {
-            log.logBasic( BaseMessages
+          if ( log.isDetailed() ) {
+            log.logDetailed( BaseMessages
               .getString( PKG, "PurRepositoryMetastore.NamespaceCreateSuccess.Message", PentahoDefaults.NAMESPACE ) );
           }
         } catch ( MetaStoreNamespaceExistsException e ) {
@@ -350,8 +360,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             e );
         }
 
-        if ( log.isBasic() ) {
-          log.logBasic( BaseMessages.getString( PKG, "PurRepository.ConnectSuccess.Message" ) );
+        if ( log.isDetailed() ) {
+          log.logDetailed( BaseMessages.getString( PKG, "PurRepository.ConnectSuccess.Message" ) );
         }
       }
     }
@@ -364,6 +374,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override public void disconnect() {
     connected = false;
     metaStore = null;
+    IMetaStore activeMetaStore = null;
+    try {
+      activeMetaStore = MetaStoreConst.openLocalPentahoMetaStore();
+    } catch ( MetaStoreException e ) {
+      activeMetaStore = null;
+    }
+    if ( activeMetaStore != null ) {
+      final IMetaStore connectedMetaStore = activeMetaStore;
+      connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
+    }
+
     purRepositoryConnector.disconnect();
   }
 
@@ -958,8 +979,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         if ( path == null ) {
           return null;
         } else {
-          return path + ( path.endsWith( RepositoryFile.SEPARATOR ) ? "" : RepositoryFile.SEPARATOR ) + sanitizedName
-              + ( sanitizedName.endsWith( objectType.getExtension() ) ? "" : objectType.getExtension() );
+          String processedPath = path + ( path.endsWith( RepositoryFile.SEPARATOR ) ? "" : RepositoryFile.SEPARATOR ) + sanitizedName;
+
+          if ( System.getProperty( Const.KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION, "Y" ).equals( "Y" ) ) {
+            processedPath = processedPath + ( sanitizedName.endsWith( objectType.getExtension() ) ? "" : objectType.getExtension() );
+          } else {
+            processedPath = processedPath + objectType.getExtension();
+          }
+
+          return processedPath;
         }
       }
       default: {

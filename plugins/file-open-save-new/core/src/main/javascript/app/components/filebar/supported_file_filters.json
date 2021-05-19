@@ -1620,6 +1620,11 @@
     "label": "*.sh"
   },
   {
+    "id": "SHP",
+    "value": "\\.shp$",
+    "label": "*.shp"
+  },
+  {
     "id": "SIT",
     "value": "\\.sit$",
     "label": "*.sit"

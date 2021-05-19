@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,7 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MAX_INFLIGHT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MQTT_VERSION;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.SERVER_URIS;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.STORAGE_LEVEL;
+import static org.pentaho.di.ui.core.WidgetUtils.formDataBelow;
 
 @SuppressWarnings( "unused" )
 public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialogInterface {
@@ -69,6 +70,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
 
   private MQTTConsumerMeta mqttMeta;
   private TextVar wConnection;
+  private TextVar wClientId;
   private TableView topicsTable;
   private ComboVar wQOS;
 
@@ -86,6 +88,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
   @Override protected void getData() {
     super.getData();
     wConnection.setText( mqttMeta.getMqttServer() );
+    wClientId.setText( mqttMeta.getClientId() );
     populateTopicsData();
     wQOS.setText( mqttMeta.getQos() );
 
@@ -136,19 +139,25 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     wConnection = new TextVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wConnection );
     wConnection.addModifyListener( lsMod );
-    FormData fdConnection = new FormData();
-    fdConnection.left = new FormAttachment( 0, 0 );
-    fdConnection.right = new FormAttachment( 0, 363 );
-    fdConnection.top = new FormAttachment( wlConnection, 5 );
+    FormData fdConnection = formDataBelow( wlConnection, INPUT_WIDTH, 5 );
     wConnection.setLayoutData( fdConnection );
+
+    Label wlClientId = new Label( wSetupComp, SWT.LEFT );
+    props.setLook( wlClientId );
+    wlClientId.setText( BaseMessages.getString( PKG, "MQTTConsumerDialog.ClientId" ) );
+    FormData fdlClientId = formDataBelow( wConnection, INPUT_WIDTH, 5 );
+    wlClientId.setLayoutData( fdlClientId );
+
+    wClientId = new TextVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wClientId );
+    wClientId.addModifyListener( lsMod );
+    FormData fdClientId = formDataBelow( wlClientId, INPUT_WIDTH, 5 );
+    wClientId.setLayoutData( fdClientId );
 
     Label wlTopics = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlTopics );
     wlTopics.setText( BaseMessages.getString( PKG, "MQTTConsumerDialog.Topics" ) );
-    FormData fdlTopics = new FormData();
-    fdlTopics.left = new FormAttachment( 0, 0 );
-    fdlTopics.top = new FormAttachment( wConnection, 10 );
-    fdlTopics.right = new FormAttachment( 50, 0 );
+    FormData fdlTopics = formDataBelow( wClientId, INPUT_WIDTH, 5 );
     wlTopics.setLayoutData( fdlTopics );
 
     wQOS = new ComboVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -333,6 +342,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
 
   @Override protected void additionalOks( BaseStreamStepMeta meta ) {
     mqttMeta.setMqttServer( wConnection.getText() );
+    mqttMeta.setClientId( wClientId.getText() );
     mqttMeta.setTopics( stream( topicsTable.getTable().getItems() )
       .map( item -> item.getText( 1 ) )
       .filter( t -> !"".equals( t ) )

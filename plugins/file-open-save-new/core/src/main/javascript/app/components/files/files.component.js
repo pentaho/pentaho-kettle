@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,12 @@
  **/
 define([
   "../../services/clipboard.service",
+  "../../services/providers/fileutil",
   "../utils",
   "text!./files.html",
   "pentaho/i18n-osgi!file-open-save-new.messages",
   "css!./files.css"
-], function (clipboardService, utils, filesTemplate, i18n) {
+], function (clipboardService, fileUtils, utils, filesTemplate, i18n) {
   "use strict";
 
   var options = {
@@ -83,6 +84,8 @@ define([
     vm.onRenameClick = onRenameClick;
     vm.onClick = onClick;
     vm.onRightClick = onRightClick;
+    vm.showFileContext = showFileContext;
+    vm.showFolderContext = showFolderContext;
     vm.isSelected = isSelected;
     vm.isHighlighted = isHighlighted;
     vm.onCopyStart = onCopyStart;
@@ -281,7 +284,8 @@ define([
      */
     function _createFolder(folder, current) {
       folder.name = current;
-      folder.path = _getNewPath(folder.path, current);
+      folder.path = fileUtils.replaceFilename(folder.path, current);
+
       vm.onCreateFolder({
         folder: folder
       }).then(function () {
@@ -307,7 +311,7 @@ define([
      * @private
      */
     function _renameFile(file, current, previous) {
-      var newPath = _getNewPath(file.path, current);
+      var newPath = fileUtils.replaceFilename(file.path, current);
       file.name = current;
       vm.onRename({
         file: file,
@@ -317,10 +321,6 @@ define([
       }, function () {
         file.name = previous;
       });
-    }
-
-    function _getNewPath(path, newName) {
-      return path.substr(0, path.lastIndexOf("/")) + "/" + newName;
     }
 
     /**
@@ -477,6 +477,32 @@ define([
         }
       }
       vm.highlighted = targetFiles;
+    }
+
+    /**
+     * Determines if the context menu should be shown for File/Folder.
+     * @returns {boolean}
+     */
+    function showFileContext() {
+      if (vm.highlighted && vm.highlighted.length > 0) {
+        for (var i = 0; i < vm.highlighted.length; i++) {
+          if (!vm.highlighted[i].canEdit) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    /**
+     * Determines if the context menu should be shown for "Add Folder" context.
+     * @returns {boolean}
+     */
+    function showFolderContext() {
+      if (vm.folder) {
+        return vm.folder.canEdit || vm.folder.canAddChildren;
+      }
+      return false;
     }
 
     /**

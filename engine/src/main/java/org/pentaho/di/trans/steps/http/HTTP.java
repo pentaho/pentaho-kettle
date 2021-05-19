@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -147,21 +147,23 @@ public class HTTP extends BaseStep implements StepInterface {
         // used for calculating the responseTime
         long startTime = System.currentTimeMillis();
 
+
+        HttpHost target = new HttpHost( uri.getHost(), uri.getPort(), uri.getScheme() );
+        // Create AuthCache instance
+        AuthCache authCache = new BasicAuthCache();
+        // Generate BASIC scheme object and add it to the local
+        // auth cache
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put( target, basicAuth );
+        // Add AuthCache to the execution context
+        HttpClientContext localContext = HttpClientContext.create();
+        localContext.setAuthCache( authCache );
+
         // Preemptive authentication
         if ( StringUtils.isNotBlank( data.realProxyHost ) ) {
-          HttpHost target = new HttpHost( data.realProxyHost, data.realProxyPort, "http" );
-          // Create AuthCache instance
-          AuthCache authCache = new BasicAuthCache();
-          // Generate BASIC scheme object and add it to the local
-          // auth cache
-          BasicScheme basicAuth = new BasicScheme();
-          authCache.put( target, basicAuth );
-          // Add AuthCache to the execution context
-          HttpClientContext localContext = HttpClientContext.create();
-          localContext.setAuthCache( authCache );
           httpResponse = httpClient.execute( target, method, localContext );
         } else {
-          httpResponse = httpClient.execute( method );
+          httpResponse = httpClient.execute( method, localContext );
         }
         // calculate the responseTime
         long responseTime = System.currentTimeMillis() - startTime;

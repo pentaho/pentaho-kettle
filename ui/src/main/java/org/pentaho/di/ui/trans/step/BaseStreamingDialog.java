@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -106,6 +106,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected ModifyListener lsMod;
   protected Label wlBatchSize;
   protected TextVar wBatchSize;
+  protected TextVar wPrefetchCount;
   protected Label wlBatchDuration;
   protected TextVar wBatchDuration;
   protected TextVar wParallelism;
@@ -491,6 +492,16 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     wParallelism.addModifyListener( lsMod );
     wParallelism.setLayoutData( new FormDataBuilder().left().top( wlParallelism, 5 ).width( 75 ).result() );
 
+    Label wlPrefetchCount = new Label( wBatchComp, SWT.LEFT );
+    props.setLook( wlPrefetchCount );
+    wlPrefetchCount.setText( BaseMessages.getString( PKG, "BaseStreamingDialog.PrefetchCount" ) );
+    wlPrefetchCount.setLayoutData( new FormDataBuilder().left().top( wParallelism, 10 ).right( 50, 0 ).result() );
+
+    wPrefetchCount = new TextVar( transMeta, wBatchComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wPrefetchCount );
+    wPrefetchCount.addModifyListener( lsMod );
+    wPrefetchCount.setLayoutData( new FormDataBuilder().left().top( wlPrefetchCount, 5 ).width( 125 ).result() );
+
     wBatchComp.layout();
     wBatchTab.setControl( wBatchComp );
   }
@@ -547,6 +558,9 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     }
     if ( this.meta.getParallelism() != null ) {
       wParallelism.setText( meta.getParallelism() );
+    }
+    if ( meta.getPrefetchCount() != null ) {
+      wPrefetchCount.setText( meta.getPrefetchCount() );
     }
     if ( this.meta.getSubStep() != null ) {
       wSubStep.setText( this.meta.getSubStep() );
@@ -614,6 +628,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     streamMeta.setBatchSize( wBatchSize.getText() );
     streamMeta.setBatchDuration( wBatchDuration.getText() );
     streamMeta.setParallelism( wParallelism.getText() );
+    streamMeta.setPrefetchCount( wPrefetchCount.getText() );
     streamMeta.setSpecificationMethod( specificationMethod );
     streamMeta.setSubStep( wSubStep.getText() );
     switch ( specificationMethod ) {

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2019-2020 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ define(
     function () {
       'use strict';
 
-      var factoryArray = ["$rootScope", "$state", factory];
+      var factoryArray = ["$rootScope", "$state", "$transitions", factory];
       var module = {
         class: ".transition",
         factory: factoryArray
@@ -36,11 +36,12 @@ define(
        * @param {Object} $rootScope
        * @returns {Object} The callbacks for animation
        */
-      function factory($rootScope, $state) {
+      function factory($rootScope, $state, $transitions) {
         var transition = $state.params.transition;
-        $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams) {
-          if (toParams.transition) {
-            transition = toParams.transition;
+
+        $transitions.onStart({ }, function(trans) {
+          if (trans.targetState().params().transition) {
+            transition = trans.targetState().params().transition;
           }
         });
 

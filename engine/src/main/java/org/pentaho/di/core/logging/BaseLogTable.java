@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -560,5 +567,73 @@ public abstract class BaseLogTable {
     }
 
     return false;
+  }
+
+  protected RowMetaInterface addFieldsToIndex( LogTableField... logTableFields ) {
+    RowMetaInterface index = new RowMeta();
+    for ( LogTableField logTableField : logTableFields ) {
+      addFieldToIndex( logTableField, index );
+    }
+    return index;
+  }
+
+  protected void addFieldToIndex( LogTableField field, RowMetaInterface index ) {
+    // Only add the field if it is present in the table
+    if ( field != null && field.isEnabled() ) {
+      index.addValueMeta( computeValueMeta( field ) );
+    }
+  }
+
+  protected ValueMetaInterface computeValueMeta( LogTableField field ) {
+    ValueMetaInterface valueMeta = new ValueMetaBase( field.getFieldName(), field.getDataType() );
+    valueMeta.setLength( field.getLength() );
+    return valueMeta;
+  }
+
+  public StringBuilder generateTableSQL( LogTableInterface logTable, AbstractMeta meta ) throws KettleException {
+    StringBuilder ddl = new StringBuilder();
+    if ( logTable.getDatabaseMeta() != null && !Utils.isEmpty( logTable.getTableName() ) ) {
+      // OK, we have something to work with!
+      try ( Database db = new Database( meta, logTable.getDatabaseMeta() ) ) {
+        db.shareVariablesWith( meta );
+        db.connect();
+
+        RowMetaInterface columns = logTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
+        String logTableName = db.environmentSubstitute( logTable.getTableName() );
+        String schemaTable =
+          logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
+            db.environmentSubstitute( logTable.getSchemaName() ), logTableName );
+        String createTable = db.getDDL( schemaTable, columns );
+
+        if ( !Utils.isEmpty( createTable ) ) {
+          ddl.append( "-- " ).append( logTable.getLogTableType() ).append( Const.CR );
+          ddl.append( "--" ).append( Const.CR ).append( Const.CR );
+          ddl.append( createTable ).append( Const.CR );
+        }
+        ddl.append( addIndicesToTable( logTable, schemaTable, db ) );
+      }
+    }
+    return ddl;
+  }
+
+  private StringBuilder addIndicesToTable( LogTableInterface logTable, String schemaTable, Database db )
+    throws KettleDatabaseException {
+    StringBuilder ddl = new StringBuilder();
+    java.util.List<RowMetaInterface> indexes = logTable.getRecommendedIndexes();
+    for ( int i = 0; i < indexes.size(); i++ ) {
+      RowMetaInterface index = indexes.get( i );
+      if ( !index.isEmpty() ) {
+        String[] fieldNames = index.getFieldNames();
+        if ( !db.checkIndexExists( schemaTable, fieldNames ) ) {
+          String indexName = "IDX_" + tableName + "_" + ( i + 1 );
+          String createIndex =
+            db.getCreateIndexStatement( schemaTable, indexName, fieldNames, false, false, false, true );
+          if ( !Utils.isEmpty( createIndex ) ) {
+            ddl.append( createIndex );
+          }
+        }
+      }
+    }
+    return ddl;
   }
 }

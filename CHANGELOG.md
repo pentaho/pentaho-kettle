@@ -13,7 +13,7 @@
 ## 0.9.0.21 - 2020-02-07
 ### Changed
 - Remove Notify.js (and jQuery) and notify only at console
-- Rebased to 9.0.0.0-423
+- Rebased to 9.3.0.0-SNAPSHOT
 
 ### Removed
 - Do not show "Add Driver" menuitem of HadoopClusterPopupMenuExtension (see README how to add Hadoop drivers)

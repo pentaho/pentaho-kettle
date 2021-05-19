@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -33,10 +34,12 @@ import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.RowProducer;
@@ -243,9 +246,23 @@ public class MetaInject extends BaseStep implements StepInterface {
     return new Trans( data.transMeta, this );
   }
 
-  private void writeInjectedKtr( String targetFilPath ) throws KettleException {
+  private boolean shouldWriteToFilesystem() {
+    boolean forceWriteInFilesystem = ValueMetaBase.convertStringToBoolean(
+      Const.NVL( getVariable( Const.KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM ), "N" ) );
 
-    if ( getRepository() == null ) {
+    return getRepository() == null || forceWriteInFilesystem;
+  }
+
+  @Override
+  public Repository getRepository() {
+    //Repository may be null if executing remotely in Pentaho Server
+    Repository repository = super.getRepository();
+    return repository != null ? repository : getTransMeta().getRepository();
+  }
+
+  @VisibleForTesting
+  void writeInjectedKtr( String targetFilPath ) throws KettleException {
+    if ( shouldWriteToFilesystem() ) {
       writeInjectedKtrToFs( targetFilPath );
     } else {
       writeInjectedKtrToRepo( targetFilPath );
@@ -257,11 +274,13 @@ public class MetaInject extends BaseStep implements StepInterface {
    * @param targetFilePath the filesystem path to which to save the generated injection ktr
    * @throws KettleException
    */
-  private void writeInjectedKtrToFs( String targetFilePath ) throws KettleException {
+  @VisibleForTesting
+  void writeInjectedKtrToFs( String targetFilePath ) throws KettleException {
 
     OutputStream os = null;
     try {
-      TransMeta generatedTransMeta = (TransMeta) data.transMeta.clone();
+      //don't clear all of the clone's data before copying from the source object
+      TransMeta generatedTransMeta = (TransMeta) data.transMeta.realClone( false );
       File injectedKtrFile = new File( targetFilePath );
 
       if ( injectedKtrFile == null ) {
@@ -294,13 +313,15 @@ public class MetaInject extends BaseStep implements StepInterface {
    * @param targetFilePath the repo path to which to save the generated injection ktr
    * @throws KettleException
    */
-  private void writeInjectedKtrToRepo( final String targetFilePath ) throws KettleException {
+  @VisibleForTesting
+  void writeInjectedKtrToRepo( final String targetFilePath ) throws KettleException {
 
     try {
       repoSaveLock.lock();
 
       // clone the transMeta associated with the data, this is the generated meta injection transformation
-      final TransMeta generatedTrans = (TransMeta) data.transMeta.clone();
+      // don't clear all of the clone's data before copying from the source object
+      final TransMeta generatedTrans = (TransMeta) data.transMeta.realClone( false );
       // the targetFilePath holds the absolute repo path that is the requested destination of this generated
       // transformation, extract the file name (no extension) and the containing directory and adjust the generated
       // transformation properties accordingly

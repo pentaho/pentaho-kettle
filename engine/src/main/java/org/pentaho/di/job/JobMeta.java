@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -150,6 +150,8 @@ public class JobMeta extends AbstractMeta
   protected String startCopyName;
 
   protected boolean expandingRemoteJob;
+
+  protected boolean gatheringMetrics;
 
   /** The log channel interface. */
   protected LogChannelInterface log;
@@ -2335,6 +2337,14 @@ public class JobMeta extends AbstractMeta
     return null;
   }
 
+  @Override
+  public void initializeVariablesFrom( VariableSpace parent ) {
+    super.initializeVariablesFrom( parent );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, null );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, null );
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, null );
+  }
+
   /**
    * This method sets various internal kettle variables that can be used by the transformation.
    */
@@ -2768,20 +2778,23 @@ public class JobMeta extends AbstractMeta
   }
 
   /**
-   * Returns whether or not the job is gathering metrics. For a JobMeta this is always false.
+   * Returns whether or not the job is gathering metrics.
+   * The job will not gather metrics per se, but can pass this information into
+   * executable transformations.
    *
-   * @return is gathering metrics = false;
+   * @return the gatheringMetrics state
    */
   @Override
   public boolean isGatheringMetrics() {
-    return false;
+    return gatheringMetrics;
   }
 
   /**
-   * Sets whether or not the job is gathering metrics. This is a stub with not executable code.
+   * Sets whether or not the job is gathering metrics.
    */
   @Override
   public void setGatheringMetrics( boolean gatheringMetrics ) {
+    this.gatheringMetrics = gatheringMetrics;
   }
 
   @Override

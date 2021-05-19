@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -292,6 +292,8 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 
   public List<RowMetaInterface> getRecommendedIndexes() {
     List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
+    // for cleanup
+    indexes.add( addFieldsToIndex( findField( ID.TRANSNAME.id ), findField( ID.LOGDATE.id ) ) );
     return indexes;
   }
 

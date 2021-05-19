@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,12 +27,15 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
+
 
 /**
  * Test class for the basic functionality of StringUtil.
  *
  * @author Sven Boden
  */
+
 public class StringUtilTest extends TestCase {
   /**
    * Test initCap for JIRA PDI-619.
@@ -178,6 +181,17 @@ public class StringUtilTest extends TestCase {
     assertEquals( "abc123", StringUtil.safeToLowerCase( ( new ToString( "ABC123" ) ).toString() ) );
   }
 
+  @Test
+  public void testHasVariable() {
+    assertTrue( StringUtil.hasVariable( "abc${foo}" ) );
+    assertTrue( StringUtil.hasVariable( "abc%%foo%%efg" ) );
+    assertTrue( StringUtil.hasVariable( "$[foo]abc" ) );
+    assertFalse( "Open and close ordered improperly", StringUtil.hasVariable( "a}bc${foo" ) );
+    assertFalse( "Variable is not closed", StringUtil.hasVariable( "abc${foo" ) );
+    assertFalse( "Variable is not opened", StringUtil.hasVariable( "abcfoo}" ) );
+    assertFalse( "no variable present to substitute", StringUtil.hasVariable( "abc${}foo" ) );
+  }
+
   class ToString {
     private String string;
 
@@ -223,4 +237,36 @@ public class StringUtilTest extends TestCase {
   public void testTrimEnd_None() {
     assertEquals( "/file/path", StringUtil.trimEnd( "/file/path", '/' ) );
   }
+
+  @Test
+  public void testSubstituteHex_ignoreEmptyArrayDefinition() throws Exception {
+    String text = "holdings.$[].as_of_dt";
+    assertEquals( text, StringUtil.substituteHex( text ) );
+  }
+
+  @Test
+  public void environmentSubstituteHexTest() {
+    String result = StringUtil.environmentSubstitute( "$[31,32,33,34,35,36]", createVariables1( "${", "}" ) );
+    assertEquals( "123456", result );
+  }
+
+  @Test
+  public void environmentSubstituteHexEscapeTest() {
+    String result = StringUtil.environmentSubstitute( "$[31,32,33,34,35,36]", createVariables1( "${", "}" ), true );
+    assertEquals( "$[31,32,33,34,35,36]", result );
+  }
+
+  @Test
+  public void testToUri() {
+    if ( Const.getOS().startsWith("Windows") ) {
+      assertEquals( "file:/c:/tmp/file", StringUtil.toUri( "c:\\tmp\\file" ).toString() );
+      assertEquals( "file:/D:/tmp/file", StringUtil.toUri( "D:\\tmp\\file" ).toString() );
+      assertEquals( "file:/C:/tmp/file", StringUtil.toUri( "/tmp/file").toString() );
+    } else {
+      assertEquals( "file:/tmp/file", StringUtil.toUri( "/tmp/file").toString() );
+    }
+    assertEquals( "hc://cluster/user/file", StringUtil.toUri( "hc://cluster/user/file" ).toString() );
+    assertEquals( "pvfs://pvfsconn/user/file", StringUtil.toUri( "pvfs://pvfsconn/user/file" ).toString() );
+  }
+
 }
