@@ -37,7 +37,7 @@ $ docker run -d -p 8080:8080 hiromuhota/webspoon
 
 Please refer to the [wiki](https://github.com/HiromuHota/pentaho-kettle/wiki/System-Requirements) for system requirements.
 
-1. Unzip `pdi-ce-9.3.0.0-SNAPSHOT.zip`, then copy `system` and `plugins` folders to `$CATALINA_HOME`.
+1. Unzip `pdi-ce-9.2.0.0-SNAPSHOT.zip`, then copy `system` and `plugins` folders to `$CATALINA_HOME`.
 2. Run install.sh at `$CATALINA_HOME`.
 3. Allow encoded slash (`org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true`).
 3. (Re)start the Tomcat.
@@ -46,7 +46,7 @@ The actual commands look like below:
 
 ```bash
 $ export version=0.9.0.22
-$ export dist=9.3.0.0-SNAPSHOT
+$ export dist=9.2.0.0-SNAPSHOT
 $ export CATALINA_HOME=/home/vagrant/apache-tomcat-8.5.23
 
 $ cd ~/

@@ -6,14 +6,14 @@
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-ui-swt</artifactId>
   <packaging>jar</packaging>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
 
   <name>PDI User Interface</name>
 
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -24,7 +24,7 @@
     <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
 
     <!-- Pentaho dependencies -->
-    <kettle.version>9.3.0.0-SNAPSHOT</kettle.version>
+    <kettle.version>9.2.0.0-SNAPSHOT</kettle.version>
     <pentaho-vfs-browser.version>${project.version}</pentaho-vfs-browser.version>
     <pentaho-capability-manager.version>${kettle.version}</pentaho-capability-manager.version>
 
