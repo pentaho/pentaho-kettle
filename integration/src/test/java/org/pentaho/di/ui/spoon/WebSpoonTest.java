@@ -147,7 +147,7 @@ public class WebSpoonTest {
     clickElement( "//div[text() = 'File']" );
     assertFalse( isMenuItemDisabled( "//div[text() = 'Open URL...']" ) );
     clickElement( "//div[text() = 'Open URL...']" ); // Open the new dialog
-    driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[starts-with(@src, '/spoon/osgi/@pentaho/di-plugin-file-open-save-new@9.3.0.0-SNAPSHOT/index.html')]") ) );
+    driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[starts-with(@src, '/spoon/osgi/@pentaho/di-plugin-file-open-save-new@9.2.0.0-SNAPSHOT/index.html')]") ) );
     wait.until( ExpectedConditions.presenceOfElementLocated( By.xpath( "//div[contains(text(),'Local')]" ) ) );
     assertEquals( 1, driver.findElements( By.xpath( "//div[contains(text(),'Local')]" ) ).size() );
   }
@@ -206,9 +206,9 @@ public class WebSpoonTest {
     // if any repository is already registered
     if ( driver.findElements( By.xpath( "//div[text() = 'Repository Manager...']" ) ).size() == 1 ) {
       clickElement( "//div[text() = 'Repository Manager...']" );
-      driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='/spoon/osgi/@pentaho/di-plugin-repositories@9.3.0.0-SNAPSHOT/index.html']") ) );
+      driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='/spoon/osgi/@pentaho/di-plugin-repositories@9.2.0.0-SNAPSHOT/index.html']") ) );
     } else {
-      driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='/spoon/osgi/@pentaho/di-plugin-repositories@9.3.0.0-SNAPSHOT/index.html#/add']") ) );
+      driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='/spoon/osgi/@pentaho/di-plugin-repositories@9.2.0.0-SNAPSHOT/index.html#/add']") ) );
     }
     assertEquals( 1, driver.findElements( By.xpath( "//button[@id = 'btnClose']" ) ).size() );
   }
@@ -220,7 +220,7 @@ public class WebSpoonTest {
   public void testMarketplace() {
     clickElement( "//div[text() = 'Tools']" );
     clickElement( "//div[text() = 'Marketplace']" );
-    driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='osgi/@pentaho/marketplace@9.3.0.0-SNAPSHOT/main.html']") ) );
+    driver.switchTo().frame( driver.findElement( By.xpath(".//iframe[@src='osgi/@pentaho/marketplace@9.2.0.0-SNAPSHOT/main.html']") ) );
     assertEquals( 1, driver.findElements( By.xpath( "//div[text() = ' Available ']" ) ).size() );
     assertEquals( 0, driver.findElements( By.xpath( "//div[contains(text(), 'Error getting plugins from server')]" ) ).size() );
   }

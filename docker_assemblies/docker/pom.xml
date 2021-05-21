@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.pentaho.di</groupId>
         <artifactId>pentaho-kettle-docker-assemblies</artifactId>
-        <version>9.3.0.0-SNAPSHOT</version>
+        <version>9.2.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>pentaho-kettle-docker</artifactId>
@@ -38,137 +38,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.pentaho.di</groupId>
-                                    <artifactId>pdi-ce</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                    <destFileName>pdi-ce.zip</destFileName>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>pentaho-kettle</groupId>
-                                    <artifactId>webspoon-security</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.pentaho.di</groupId>
-                                    <artifactId>webspoon</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>war</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>pentaho</groupId>
-                                    <artifactId>pdi-platform-utils-plugin-core</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>pentaho</groupId>
-                                    <artifactId>hadoop-cluster-ui</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.pentaho.di.plugins</groupId>
-                                    <artifactId>repositories-plugin-core</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.pentaho.di.plugins</groupId>
-                                    <artifactId>pdi-engine-configuration-ui</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.pentaho.di.plugins</groupId>
-                                    <artifactId>file-open-save-core</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.pentaho.di.plugins</groupId>
-                                    <artifactId>file-open-save-new-core</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.pentaho.di.plugins</groupId>
-                                    <artifactId>get-fields-core</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.pentaho.di.plugins</groupId>
-                                    <artifactId>connections-ui</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>pentaho</groupId>
-                                    <artifactId>pdi-dataservice-server-plugin</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.pentaho</groupId>
-                                    <artifactId>pentaho-marketplace-di</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>pentaho</groupId>
-                                    <artifactId>pentaho-i18n-webservice-bundle</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>pentaho</groupId>
-                                    <artifactId>pentaho-kettle-repository-locator-impl-spoon</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>pentaho</groupId>
-                                    <artifactId>pentaho-pdi-platform</artifactId>
-                                    <version>${project.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- extract specific files from dependency jars -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -183,12 +52,12 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.hitachivantara.karaf.assemblies</groupId>
-                                    <artifactId>common-resources</artifactId>
+                                    <groupId>org.pentaho.di</groupId>
+                                    <artifactId>webspoon_webapp</artifactId>
                                     <version>${project.version}</version>
+                                    <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>target/dependency</outputDirectory>
-                                    <includes>**\/custom.properties</includes>
+                                    <outputDirectory>target</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -216,8 +85,6 @@
                                 <argument>${project.groupId}/${project.artifactId}:${project.version}</argument>
                                 <argument>--build-arg</argument>
                                 <argument>dist=${project.version}</argument>
-                                <argument>--build-arg</argument>
-                                <argument>DEPENDENCIES_DIR=target/dependency</argument>
                             </arguments>
                         </configuration>
                     </execution>

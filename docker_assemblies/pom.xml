@@ -27,13 +27,14 @@
     <parent>
         <groupId>org.pentaho.di</groupId>
         <artifactId>pdi</artifactId>
-        <version>9.3.0.0-SNAPSHOT</version>
+        <version>9.2.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>pentaho-kettle-docker-assemblies</artifactId>
     <packaging>pom</packaging>
 
     <modules>
+        <module>webspoon_webapp</module>
         <module>docker</module>
         <module>k8s</module>
     </modules>

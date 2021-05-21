@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>webspoon</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Client Community Edition</name>
@@ -12,22 +12,22 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
-    <ael.version>9.3.0.0-SNAPSHOT</ael.version>
+    <ael.version>9.2.0.0-SNAPSHOT</ael.version>
 
-    <pentaho-karaf.version>9.3.0.0-SNAPSHOT</pentaho-karaf.version>
-    <pentaho-launcher.version>9.3.0.0-SNAPSHOT</pentaho-launcher.version>
-    <oss-licenses.version>9.3.0.0-SNAPSHOT</oss-licenses.version>
+    <pentaho-karaf.version>9.2.0.0-SNAPSHOT</pentaho-karaf.version>
+    <pentaho-launcher.version>9.2.0.0-SNAPSHOT</pentaho-launcher.version>
+    <oss-licenses.version>9.2.0.0-SNAPSHOT</oss-licenses.version>
 
     <!-- Pentaho drivers kar file dependencies versions -->
-    <pentaho-hadoop-shims-cdh61.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-cdh61.version>
-    <pentaho-hadoop-shims-hdp30.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-hdp30.version>
-    <pentaho-hadoop-shims-emr521.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-emr521.version>
-    <pentaho-hadoop-shims-dataproc1421.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-dataproc1421.version>
+    <pentaho-hadoop-shims-cdh61.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-cdh61.version>
+    <pentaho-hadoop-shims-hdp30.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-hdp30.version>
+    <pentaho-hadoop-shims-emr521.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-emr521.version>
+    <pentaho-hadoop-shims-dataproc1421.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-dataproc1421.version>
   </properties>
 
   <dependencies>
