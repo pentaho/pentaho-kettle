@@ -162,6 +162,8 @@ public class RowForumulaContext implements FormulaContext {
         // case ValueMetaInterface.TYPE_SERIALIZABLE: return valueMeta.(valueData);
       case ValueMetaInterface.TYPE_STRING:
         return valueMeta.getString( valueData );
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        return valueMeta.getString( valueData );
       default:
         return null;
     }
