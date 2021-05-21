@@ -22,9 +22,9 @@
 
 package org.pentaho.di.core;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.pentaho.di.core.util.HttpClientManager;
@@ -76,15 +76,19 @@ public class HTTPProtocol {
     throws IOException, AuthenticationException {
 
     HttpGet getMethod = new HttpGet( urlAsString );
-    try ( CloseableHttpClient httpClient = openHttpClient( username, password ) ) {
-      HttpResponse httpResponse = httpClient.execute( getMethod );
+    CloseableHttpClient httpClient = null;
+    CloseableHttpResponse httpResponse = null;
+    InputStreamReader inputStreamReader = null;
+    try {
+      httpClient = openHttpClient( username, password );
+      httpResponse = httpClient.execute( getMethod );
       int statusCode = httpResponse.getStatusLine().getStatusCode();
       StringBuilder bodyBuffer = new StringBuilder();
 
       if ( statusCode != -1 ) {
         if ( statusCode != HttpStatus.SC_UNAUTHORIZED ) {
           // the response
-          InputStreamReader inputStreamReader = new InputStreamReader( httpResponse.getEntity().getContent() );
+          inputStreamReader = new InputStreamReader( httpResponse.getEntity().getContent() );
 
           int c;
           while ( ( c = inputStreamReader.read() ) != -1 ) {
@@ -99,6 +103,16 @@ public class HTTPProtocol {
 
       // Display response
       return bodyBuffer.toString();
+    } finally {
+      if ( httpResponse != null ) {
+        httpResponse.close();
+      }
+      if ( inputStreamReader != null ) {
+        inputStreamReader.close();
+      }
+      if ( httpClient != null ) {
+        httpClient.close();
+      }
     }
   }
 
