@@ -4,10 +4,10 @@
 enabled: true
 
 image:
-  repository: ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon
+  repository: ldl-dev-r2d2-35-registry.dogfood.trylumada.com/webspoon
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: CHANGE_ME
+  tag: 1.0.0
 
 dataFlowStudio:
   volume:

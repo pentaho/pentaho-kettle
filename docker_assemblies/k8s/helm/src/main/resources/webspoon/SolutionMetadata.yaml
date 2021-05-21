@@ -1,4 +1,4 @@
 targetFoundryVersion: 2.0.0
 minimumFoundryVersion: 2.0.0
 images:
-  - ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon:CHANGE_ME
+  - ldl-dev-r2d2-35-registry.dogfood.trylumada.com/webspoon:1.0.0
