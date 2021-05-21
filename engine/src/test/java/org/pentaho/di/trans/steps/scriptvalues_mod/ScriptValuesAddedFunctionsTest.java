@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,12 +23,22 @@
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.ScriptableObject;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ScriptValuesAddedFunctionsTest {
+
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Test
   public void testTruncDate() {
@@ -71,4 +81,107 @@ public class ScriptValuesAddedFunctionsTest {
     }
   }
 
+  @Test
+  public void testDateDiff_DefaultDST_Forward() {
+    System.setProperty( Const.KETTLE_DATEDIFF_DST_AWARE, Const.KETTLE_DATEDIFF_DST_AWARE_DEFAULT );
+
+    doDateDiff_Forward( 3.0 );
+  }
+
+  @Test
+  public void testDateDiff_AwareDST_Forward() {
+    System.setProperty( Const.KETTLE_DATEDIFF_DST_AWARE, "Y" );
+
+    doDateDiff_Forward( 2.0 );
+  }
+
+  @Test
+  public void testDateDiff_IgnoreDST_Forward() {
+    System.setProperty( Const.KETTLE_DATEDIFF_DST_AWARE, Const.KETTLE_DATEDIFF_DST_AWARE_DEFAULT );
+
+    doDateDiff_Forward( 3.0 );
+  }
+
+  @Test
+  public void testDateDiff_DefaultDST_Backward() {
+    System.setProperty( Const.KETTLE_DATEDIFF_DST_AWARE, Const.KETTLE_DATEDIFF_DST_AWARE_DEFAULT );
+
+    doDateDiff_Backward( 3.0 );
+  }
+
+  @Test
+  public void testDateDiff_AwareDST_Backward() {
+    System.setProperty( Const.KETTLE_DATEDIFF_DST_AWARE, "Y" );
+
+    doDateDiff_Backward( 4.0 );
+  }
+
+  @Test
+  public void testDateDiff_IgnoreDST_Backward() {
+    System.setProperty( Const.KETTLE_DATEDIFF_DST_AWARE, Const.KETTLE_DATEDIFF_DST_AWARE_DEFAULT );
+
+    doDateDiff_Backward( 3.0 );
+  }
+
+  private void doDateDiff_Forward( Double expectedResult ) {
+    // Specify the Timezone to be used: for London, Summer time will come into effect in the 28th of March, 2021
+    // At 1:00:00, clocks move forward 1 hour.
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+
+    ScriptableObject jsScope = ContextFactory.getGlobal().enterContext().initStandardObjects();
+
+    // The dates
+    Calendar cal = Calendar.getInstance( TimeZone.getDefault(), Locale.UK );
+    cal.set( 2021, Calendar.MARCH, 28, 0, 30, 0 );
+    Object d1 = Context.javaToJS( cal.getTime(), jsScope );
+    cal.set( 2021, Calendar.MARCH, 28, 3, 30, 0 );
+    Object d2 = Context.javaToJS( cal.getTime(), jsScope );
+
+    // First, try "d1 - d2"
+    Object[] jsArgs = { d1, d2, "hh" };
+
+    Object diff = ScriptValuesAddedFunctions.dateDiff( null, null, jsArgs, null );
+
+    Assert.assertNotNull( diff );
+    Assert.assertEquals( expectedResult, diff );
+
+    // And, then, try "d2 - d1"
+    jsArgs = new Object[] { d2, d1, "hh" };
+
+    diff = ScriptValuesAddedFunctions.dateDiff( null, null, jsArgs, null );
+
+    Assert.assertNotNull( diff );
+    Assert.assertEquals( -expectedResult, diff );
+  }
+
+  private void doDateDiff_Backward( Double expectedResult ) {
+    // Specify the Timezone to be used: for London, Winter time will come into effect in the 31st of October, 2021
+    // At 2:00:00, clocks move backward 1 hour.
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/London" ) );
+
+    ScriptableObject jsScope = ContextFactory.getGlobal().enterContext().initStandardObjects();
+
+    // The dates
+    Calendar cal = Calendar.getInstance( TimeZone.getDefault(), Locale.UK );
+    cal.set( 2021, Calendar.OCTOBER, 31, 0, 30, 0 );
+    Object d1 = Context.javaToJS( cal.getTime(), jsScope );
+    cal.set( 2021, Calendar.OCTOBER, 31, 3, 30, 0 );
+    Object d2 = Context.javaToJS( cal.getTime(), jsScope );
+
+    // First, try "d1 - d2"
+    Object[] jsArgs = { d1, d2, "hh" };
+
+    Object diff = ScriptValuesAddedFunctions.dateDiff( null, null, jsArgs, null );
+
+    Assert.assertNotNull( diff );
+    Assert.assertEquals( expectedResult, diff );
+
+    // And, then, try "d2 - d1"
+    jsArgs = new Object[] { d2, d1, "hh" };
+
+    diff = ScriptValuesAddedFunctions.dateDiff( null, null, jsArgs, null );
+
+    Assert.assertNotNull( diff );
+    Assert.assertEquals( -expectedResult, diff );
+  }
 }

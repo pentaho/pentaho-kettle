@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -575,18 +575,13 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
           startDate.setTime( dIn1 );
           endDate.setTime( dIn2 );
 
-          /*
-           * Changed by: Ingo Klose, SHS VIVEON AG, Date: 27.04.2007
-           *
-           * Calculating time differences using getTimeInMillis() leads to false results when crossing Daylight
-           * Savingstime borders. In order to get correct results the time zone offsets have to be added.
-           *
-           * Fix: 1. calculate correct milli seconds for start and end date 2. replace endDate.getTimeInMillis() with
-           * endL and startDate.getTimeInMillis() with startL
-           */
-          long endL = endDate.getTimeInMillis() + endDate.getTimeZone().getOffset( endDate.getTimeInMillis() );
-          long startL =
-            startDate.getTimeInMillis() + startDate.getTimeZone().getOffset( startDate.getTimeInMillis() );
+          long endL = endDate.getTimeInMillis();
+          long startL = startDate.getTimeInMillis();
+
+          if ( compensateForLocalTime() ) {
+            endL += endDate.getTimeZone().getOffset( endL );
+            startL += startDate.getTimeZone().getOffset( startL );
+          }
 
           if ( strType.equals( "y" ) ) {
             return new Double( endDate.get( Calendar.YEAR ) - startDate.get( Calendar.YEAR ) );
@@ -631,6 +626,23 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     } else {
       throw Context.reportRuntimeError( "The function call dateDiff requires 3 arguments." );
     }
+  }
+
+  /**
+   * <p>Check if DateDiff should compensate for Local time based on the value of a Kettle property ({@link
+   * Const#KETTLE_DATEDIFF_DST_AWARE}).</p>
+   * <p>This influences calculations where the period between the given dates includes a DST change.</p>
+   * <p>Returning {@code true} means that the difference should be done using the dates as local time; returning {@code
+   * false}, means that dates should be used as UTC.</p>
+   *
+   * @return {@code true} if it is to compensate and {@code false} otherwise
+   * @see Const#KETTLE_DATEDIFF_DST_AWARE
+   */
+  protected static boolean compensateForLocalTime() {
+    String dstAware =
+      Const.NVL( System.getProperty( Const.KETTLE_DATEDIFF_DST_AWARE ), Const.KETTLE_DATEDIFF_DST_AWARE_DEFAULT );
+
+    return Const.KETTLE_DATEDIFF_DST_AWARE_DEFAULT.equals( dstAware );
   }
 
   public static Object getNextWorkingDay( Context actualContext, Scriptable actualObject, Object[] ArgList,

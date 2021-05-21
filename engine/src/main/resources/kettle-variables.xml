@@ -598,4 +598,12 @@
     <default-value>BYTE</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>This environment variable is used to define how DateDiff ('Modified JavaScript value' step) performs regarding DST (Daylight Savings Time):
+      "N" (default) - uses local time, meaning it assumes a continuum between the two given dates ignoring any time-hop that may had occurred between them
+      "Y" - uses UTC, meaning it will take into acount any time-hop that may had occurred between the two given dates</description>
+    <variable>KETTLE_DATEDIFF_DST_AWARE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
 </kettle-variables>
