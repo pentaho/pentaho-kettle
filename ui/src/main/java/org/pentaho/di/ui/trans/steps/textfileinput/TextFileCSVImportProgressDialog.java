@@ -49,7 +49,6 @@ import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileLine;
@@ -85,7 +84,7 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
 
   private long rownumber;
 
-  private BufferedInputStreamReader reader;
+  private InputStreamReader reader;
 
   private TransMeta transMeta;
 
@@ -94,20 +93,11 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
   private EncodingType encodingType;
 
   /**
-   * @deprecated construct with BufferedInputStreamReader
-   */
-  @Deprecated
-  public TextFileCSVImportProgressDialog( Shell shell, InputFileMetaInterface meta, TransMeta transMeta,
-                                          InputStreamReader reader, int samples, boolean replaceMeta ) {
-    this( shell, meta, transMeta, new BufferedInputStreamReader( reader ), samples, replaceMeta );
-  }
-
-  /**
    * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
    * database.
    */
   public TextFileCSVImportProgressDialog( Shell shell, InputFileMetaInterface meta, TransMeta transMeta,
-    BufferedInputStreamReader reader, int samples, boolean replaceMeta ) {
+    InputStreamReader reader, int samples, boolean replaceMeta ) {
     this.shell = shell;
     this.meta = meta;
     this.reader = reader;

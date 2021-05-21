@@ -6,7 +6,7 @@ rm webspoon-*.tgz
 
 cd ../..
 mvn clean install -DskipTests
-docker tag org.pentaho.di/pentaho-kettle-docker:9.3.0.0-SNAPSHOT ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon:CHANGE_ME
+docker tag org.pentaho.di/pentaho-kettle-docker:9.2.0.0-SNAPSHOT ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon:CHANGE_ME
 docker push ldl-dev-r2d2-c7-registry.dogfood.trylumada.com/webspoon:CHANGE_ME
 cd docker/manualInstall
 
