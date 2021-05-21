@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -161,6 +161,8 @@ public class RowForumulaContext implements FormulaContext {
         return valueMeta.getNumber( valueData );
         // case ValueMetaInterface.TYPE_SERIALIZABLE: return valueMeta.(valueData);
       case ValueMetaInterface.TYPE_STRING:
+        return valueMeta.getString( valueData );
+      case ValueMetaInterface.TYPE_TIMESTAMP:
         return valueMeta.getString( valueData );
       default:
         return null;
