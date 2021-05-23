@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -259,6 +259,13 @@ public class Formula extends BaseStep implements StepInterface {
         break;
       case FormulaData.RETURN_TYPE_BOOLEAN:
         value = formulaResult;
+        break;
+      case FormulaData.RETURN_TYPE_TIMESTAMP:
+        if ( fn.isNeedDataConversion() ) {
+          value = convertDataToTargetValueMeta( realIndex, formulaResult );
+        } else {
+          value = formulaResult;
+        }
         break;
     } //if none case is caught - null is returned.
     return value;
