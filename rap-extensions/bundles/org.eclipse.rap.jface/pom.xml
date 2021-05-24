@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2011, 2020 EclipseSource and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+
+  Contributors:
+     EclipseSource - initial implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.eclipse.rap</groupId>
+    <artifactId>org.eclipse.rap.runtime-parent</artifactId>
+    <version>3.12.0-SNAPSHOT</version>
+    <relativePath>../../releng/org.eclipse.rap.build/pom.xml</relativePath>
+  </parent>
+
+  <artifactId>org.eclipse.rap.jface</artifactId>
+  <packaging>eclipse-plugin</packaging>
+  <version>3.12.0-SNAPSHOT</version>
+
+</project>

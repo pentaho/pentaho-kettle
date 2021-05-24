@@ -1,0 +1,1 @@
+Based on code from dev.eclipse.org:/cvsroot/eclipse/org.eclipse.rap.jface, 3.7M5 v20110204

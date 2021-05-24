@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.rap.filedialog
+Bundle-Version: 3.12.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Require-Bundle: org.eclipse.rap.rwt;bundle-version="[3.12.0,4.0.0)",
+ org.eclipse.rap.fileupload;bundle-version="[3.12.0,4.0.0)"
+Export-Package: org.eclipse.swt.internal.widgets;version="3.12.0";x-friends:="org.eclipse.rap.filedialog.test",
+ org.eclipse.swt.widgets;version="3.12.0"
+Import-Package: javax.servlet;version="[2.3.0,5.0.0)",
+ javax.servlet.http;version="[2.3.0,5.0.0)"
+Bundle-Localization: plugin

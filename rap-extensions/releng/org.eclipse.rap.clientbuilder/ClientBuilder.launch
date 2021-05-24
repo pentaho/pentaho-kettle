@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/org.eclipse.rap.clientbuilder/src/org/eclipse/rap/clientbuilder/ClientBuilder.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.eclipse.rap.clientbuilder.ClientBuilder"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--input-list &quot;${project_loc:/org.eclipse.rap.rwt}/resources/client.files&quot;&#10;--input-path &quot;${project_loc:/org.eclipse.rap.rwt}/js/&quot;&#10;--output-file &quot;${project_loc:/org.eclipse.rap.rwt}/resources/client.js&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.rap.clientbuilder"/>
+</launchConfiguration>
