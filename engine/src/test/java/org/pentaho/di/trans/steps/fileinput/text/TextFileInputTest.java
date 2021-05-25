@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -79,8 +79,9 @@ public class TextFileInputTest {
     KettleEnvironment.init();
   }
 
-  private static InputStreamReader getInputStreamReader( String data ) throws UnsupportedEncodingException {
-    return new InputStreamReader( new ByteArrayInputStream( data.getBytes( ( "UTF-8" ) ) ) );
+  private static BufferedInputStreamReader getInputStreamReader( String data ) throws UnsupportedEncodingException {
+    return new BufferedInputStreamReader(
+      new InputStreamReader( new ByteArrayInputStream( data.getBytes( ( "UTF-8" ) ) ) ) );
   }
 
   @Test
@@ -120,6 +121,16 @@ public class TextFileInputTest {
     String output =
         TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_MIXED,
             new StringBuilder( 1000 ) );
+    assertEquals( expected, output );
+  }
+
+  @Test
+  public void testGetLineMixedOS9() throws KettleFileException, UnsupportedEncodingException {
+    String input = "col1\tcol2\tcol3\rdata1\tdata2\tdata3\r";
+    String expected = "col1\tcol2\tcol3";
+    String output =
+      TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_MIXED,
+        new StringBuilder( 1000 ) );
     assertEquals( expected, output );
   }
 
