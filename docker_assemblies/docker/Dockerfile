@@ -31,3 +31,8 @@ RUN sh /tmp/install.sh
 RUN echo "CLASSPATH="$CATALINA_HOME"/lib/webspoon-security-$dist.jar" | tee ${CATALINA_HOME}/bin/setenv.sh
 RUN mkdir -p $HOME/.kettle/users && mkdir -p $HOME/.pentaho/users
 RUN mkdir -p $HOME/.kettle/data && cp -r ${CATALINA_HOME}/samples $HOME/.kettle/data/samples
+
+WORKDIR ${CATALINA_HOME}/bin
+COPY --chown=tomcat:tomcat customScripts/* .
+
+ENTRYPOINT ["/bin/sh","./start.sh"]
