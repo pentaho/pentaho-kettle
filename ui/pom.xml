@@ -132,7 +132,7 @@
     <dependency>
       <groupId>org.eclipse.rap</groupId>
       <artifactId>org.eclipse.rap.fileupload</artifactId>
-      <version>${rap.version}</version>
+      <version>${rap.version}-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
