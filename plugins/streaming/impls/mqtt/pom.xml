@@ -48,9 +48,24 @@
     <repository>
       <id>pentaho-nexus</id>
       <name>PentahoNexus</name>
-      <url>http://nexus.pentaho.org/content/groups/omni</url>
+      <url>https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/</url>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>pentaho-public-plugins</id>
+      <name>Pentaho Public Plugins</name>
+      <url>https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
 
   <properties>
     <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
