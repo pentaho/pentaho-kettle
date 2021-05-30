@@ -22,7 +22,7 @@
 #
 echo "Executing apply-content.sh now.  "
 
-./apply-content.sh
+./bin/apply-content.sh
 ##
 # if there is a content-config.sh in the kettle dir, execute it, otherwise do nothing
 ##
@@ -53,6 +53,6 @@ CONTENT_CONFIG_SCRIPT="${KETTLE_HOME_DIR}/ws-content-config.sh"
 # Execute the script to unpack any plugins configuration zip files mounted in volume
 ##
 echo "Executing content-unpack.sh now.  "
-./content-unpack.sh
+./bin/content-unpack.sh
 echo "Running tomcat..."
-./catalina.sh run
+./bin/catalina.sh run
