@@ -33,7 +33,7 @@ CONFIG_FILE="${KETTLE_HOME_DIR}/${CONTENT_CONFIG_FILE}"
 if [[ ! -f ${CONFIG_FILE} ]]; then
   # fallback to default-content-config.properties
   echo "[PDI-CONTENT] Could not find a ${CONTENT_CONFIG_FILE} on '.kettle' volume, using default configuration."
-  CONFIG_FILE="${WORK_DIR}/${DEFAULT_CONTENT_CONFIG_FILE}"
+  CONFIG_FILE="${WORK_DIR}/bin/${DEFAULT_CONTENT_CONFIG_FILE}"
 fi
 
 
