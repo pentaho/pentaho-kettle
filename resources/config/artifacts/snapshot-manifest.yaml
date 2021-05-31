@@ -51,6 +51,7 @@ ee:
         - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}-dist.zip
     upgrade:
         - pentaho-upgrade-utility-${platform.version}-ba.zip
         - pentaho-upgrade-utility-${platform.version}-pdi.zip

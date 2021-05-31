@@ -90,6 +90,7 @@ pentaho-hadoop-shims-hdp26.version=9.3.2021.05.00-BUILDTAG
 pentaho-hadoop-shims-hdp30.version=9.3.2021.05.00-BUILDTAG
 pentaho-hadoop-shims-mapr520.version=9.3.2021.05.00-BUILDTAG
 pentaho-hadoop-shims-mapr60.version=9.3.2021.05.00-BUILDTAG
+pentaho-hadoop-shims-hdi40.version=9.3.2021.05.00-BUILDTAG
 pentaho-hdfs-vfs.version=9.3.0.0-BUILDTAG
 pentaho-jpivot-plugin.version=9.3.0.0-BUILDTAG
 pentaho-json.version=9.3.0.0-BUILDTAG
