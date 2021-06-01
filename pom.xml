@@ -317,7 +317,7 @@
 
   <profiles>
     <profile>
-      <id>base</id>
+      <id>core</id>
       <activation>
         <property>
           <name>!skipDefault</name>
@@ -325,6 +325,16 @@
       </activation>
       <modules>
         <module>core</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>base</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
         <module>engine</module>
         <module>ui</module>
         <module>security</module>
