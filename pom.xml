@@ -351,6 +351,16 @@
       </activation>
       <modules>
         <module>assemblies</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>docker_assemblies</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
         <module>docker_assemblies</module>
       </modules>
     </profile>
