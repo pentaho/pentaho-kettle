@@ -1532,29 +1532,27 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( params != null ) {
         PreparedStatement prep_stmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
         setValues( params, data, prep_stmt ); // set the parameters!
-		try {
-			resultSet = prep_stmt.execute();             
-			count = prep_stmt.getUpdateCount();      
-		}catch(Exception e) {
-			throw new KettleDatabaseException("Couldn't execute SQL: "+sql+Const.CR, e);    
-		}finally {
-			prep_stmt.close();     
-		}
-//        resultSet = prep_stmt.execute();
-//        count = prep_stmt.getUpdateCount();
-//        prep_stmt.close();
+        try {
+        	resultSet = prep_stmt.execute();
+        	count = prep_stmt.getUpdateCount();
+        }catch(Exception e) {
+        	throw new KettleDatabaseException("Couldn't execute SQL: "+sql+Const.CR, e);
+        }finally {
+        	prep_stmt.close();
+        }
       } else {
         String sqlStripped = databaseMeta.stripCR( sql );
         // log.logDetailed("Executing SQL Statement: ["+sqlStripped+"]");
         Statement stmt = connection.createStatement();
-		try {
-			resultSet = stmt.execute( sqlStripped );
-            count = stmt.getUpdateCount();      
-		}catch(Exception e) {
-			throw new KettleDatabaseException("Couldn't execute SQL: "+sqlStripped+Const.CR, e);    
-		}finally {
-			stmt.close();     
-		}
+        
+        try {
+        	resultSet = stmt.execute( sqlStripped );
+        	count = stmt.getUpdateCount();
+        }catch(Exception e) {
+        	throw new KettleDatabaseException("Couldn't execute SQL: "+sql+Const.CR, e);
+        }finally {
+        	stmt.close();
+        }
       }
       String upperSql = sql.toUpperCase();
       if ( !resultSet ) {
