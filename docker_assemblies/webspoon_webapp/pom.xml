@@ -114,7 +114,7 @@
                                     <type>war</type>
                                     <outputDirectory>target/tomcat/webapps/spoon</outputDirectory>
                                     <excludes>
-                                        **/WEB-INF/web.xml
+                                        **/WEB-INF/web.xml, **/WEB-INF/lib/org.eclipse.jface*
                                     </excludes>
                                 </artifactItem>
                             </artifactItems>
