@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -106,6 +106,9 @@ public abstract class ReportExportTask implements Runnable {
 
       if ( createParentFolder ) {
         targetFile.getParent().createFolder();
+      } else if ( !targetFile.getParent().exists() ) {
+        throw new ReportProcessingException( messages.getString(
+          "ReportExportTask.PARENT_FOLDER_DOES_NOT_EXIST", targetFile.getParent().getName().getPath() ) );
       }
 
       execute();
