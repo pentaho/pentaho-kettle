@@ -1574,10 +1574,16 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Unexpected error executing SQL: " + Const.CR, e );
     } finally{
-		if ( prepStmt != null )
-			prepStmt.close();
-		if ( stmt != null )
-			stmt.close();
+		if ( prepStmt != null ){
+			try{
+				prepStmt.close();
+			}catch( Exception e ){}
+		}	
+		if ( stmt != null ){
+			try{
+				stmt.close();
+			}catch( Exception e ){}
+		}	
 	}
 
     return result;
