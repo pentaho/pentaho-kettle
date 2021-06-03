@@ -1524,7 +1524,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public Result execStatement( String rawsql, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
-
+    PreparedStatement prepStmt = null;
+    Statement stmt = null;
     // Replace existing code with a class that removes comments from the raw
     // SQL.
     // The SqlCommentScrubber respects single-quoted strings, so if a
@@ -1536,14 +1537,14 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       boolean resultSet;
       int count;
       if ( params != null ) {
-        try ( PreparedStatement prepStmt = connection.prepareStatement( databaseMeta.stripCR( sql ) ) ) {
+        try ( prepStmt = connection.prepareStatement( databaseMeta.stripCR( sql ) ) ) {
           setValues( params, data, prepStmt ); // set the parameters!
           resultSet = prepStmt.execute();
           count = prepStmt.getUpdateCount();
         }
       } else {
         String sqlStripped = databaseMeta.stripCR( sql );
-        try ( Statement stmt = connection.createStatement() ) {
+        try ( stmt = connection.createStatement() ) {
           resultSet = stmt.execute( sqlStripped );
           count = stmt.getUpdateCount();
         }
@@ -1572,7 +1573,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       throw new KettleDatabaseException( "Couldn't execute SQL: " + sql + Const.CR, ex );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Unexpected error executing SQL: " + Const.CR, e );
-    }
+    } finally{
+		if ( prepStmt != null )
+			prepStmt.close();
+		if ( stmt != null )
+			stmt.close();
+	}
 
     return result;
   }
