@@ -222,9 +222,9 @@ class SftpFileSystemWindows extends SftpFileSystem {
    * {@link  org.apache.commons.vfs2.provider.sftp.SftpFileSystem#getChannel() }
    */
   private void ensureSession() throws FileSystemException {
-    if ( !this.subclassSession.isConnected() ) {
+    if ( this.subclassSession == null || !this.subclassSession.isConnected() ) {
       synchronized ( this ) {
-        if ( !this.subclassSession.isConnected() ) {
+        if ( this.subclassSession == null || !this.subclassSession.isConnected() ) {
           closeSubclassSession();
           this.subclassSession = SftpFileSystemWindowsProvider.createSession( (GenericFileName) getRootName(),
             getFileSystemOptions() );
