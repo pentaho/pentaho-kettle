@@ -1,0 +1,20 @@
+# Debugging options for the org.eclipse.jface plugin.
+
+# Turn on debugging for the org.eclipse.ui plugin.
+org.eclipse.jface/debug=false
+
+# Log a message if a dialog is opened without a parent
+org.eclipse.jface/debug/dialog/noparent=false
+
+# Always log reentrant calls to viewers (if set to false, it just logs the first reentrant call)
+org.eclipse.jface/debug/viewers/reentrantViewerCalls=false
+
+# Show the jface new look for the preferences dialog
+org.eclipse.jface/newlook/preferences/showNewLook=false
+
+# Report when a tool bar contribution item is asked its visibility after being
+# disposed.  TODO Remove this option?  Bug 51000
+org.eclipse.jface/trace/toolbarDisposal=false
+
+# Reports the time to run an action
+org.eclipse.jface/trace/actions=false

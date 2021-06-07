@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2014, 2020 EclipseSource and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+
+  Contributors:
+     EclipseSource - initial implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>RAP Extensions</name>
+
+  <groupId>org.eclipse.rap</groupId>
+  <artifactId>org.eclipse.rap.runtime-parent</artifactId>
+  <packaging>pom</packaging>
+  <version>3.12.0-SNAPSHOT</version>
+
+  <parent>
+    <groupId>org.pentaho.di</groupId>
+    <artifactId>pdi</artifactId>
+    <version>9.2.0.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <rap.version>3.12.0</rap.version>
+  </properties>
+
+  <!--
+  Necessary only to compile sources inside IntelliJ
+  /src/org.eclipse.rap.filedialog
+  /src/org.eclipse.rap.jface
+  /src/org.eclipse.rap.rwt
+  -->
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.rwt</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.filedialog</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.jface</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.fileupload</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!--
+      STEP 1
+
+      Cleans all source code leftovers from previous builds
+      /bundles/org.eclipse.rap.filedialog/src
+      /bundles/org.eclipse.rap.fileupload/src
+      /bundles/org.eclipse.rap.jface/src
+      /bundles/org.eclipse.rap.rwt/src
+      /bundles/org.eclipse.rap.rwt/widgetkits
+      /bundles/org.eclipse.rap.rwt/resources
+      /bundles/org.eclipse.rap.rwt/js
+      /bundles/org.eclipse.rap.rwt/css
+      /tests/org.eclipse.rap.rwt.testfixture/src
+      -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/bundles/org.eclipse.rap.filedialog/src</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/bundles/org.eclipse.rap.fileupload/src</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/bundles/org.eclipse.rap.jface/src</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/bundles/org.eclipse.rap.jface/icons</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/bundles/org.eclipse.rap.rwt</directory>
+              <includes>
+                <include>css/**</include>
+                <include>js/**</include>
+                <include>resources/**</include>
+                <include>src/**</include>
+                <include>widgetkits/**</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/tests/org.eclipse.rap.rwt.testfixture/src</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <!--
+      STEP 2
+      https://maven.apache.org/plugins/maven-dependency-plugin/examples/unpacking-artifacts.html
+
+      Downloads source code dependencies and copies them to the /target directory
+      /target/org.eclipse.rap.filedialog
+      /target/org.eclipse.rap.fileupload
+      /target/org.eclipse.rap.filejface
+      /target/org.eclipse.rap.rwt
+      /target/org.eclipse.rap.rwt.testfixture
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.eclipse.rap</groupId>
+                  <artifactId>org.eclipse.rap.rwt</artifactId>
+                  <version>${rap.version}</version>
+                  <classifier>sources</classifier>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/org.eclipse.rap.rwt</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse.rap</groupId>
+                  <artifactId>org.eclipse.rap.filedialog</artifactId>
+                  <version>${rap.version}</version>
+                  <classifier>sources</classifier>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/org.eclipse.rap.filedialog</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse.rap</groupId>
+                  <artifactId>org.eclipse.rap.jface</artifactId>
+                  <version>${rap.version}</version>
+                  <classifier>sources</classifier>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/org.eclipse.rap.jface</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse.rap</groupId>
+                  <artifactId>org.eclipse.rap.fileupload</artifactId>
+                  <version>${rap.version}</version>
+                  <classifier>sources</classifier>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/org.eclipse.rap.fileupload</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse.rap</groupId>
+                  <artifactId>org.eclipse.rap.rwt.testfixture</artifactId>
+                  <version>${rap.version}</version>
+                  <classifier>sources</classifier>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/org.eclipse.rap.rwt.testfixture</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <!--
+          STEP 3
+
+          Copies the source code for the org.eclipse.rap.filedialog from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.filedialog/src
+          -->
+          <execution>
+            <id>org.eclipse.rap.filedialog</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.filedialog/src/org</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.filedialog/org</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 4
+
+          Copies the source code for the org.eclipse.rap.fileupload from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.fileupload/src
+          -->
+          <execution>
+            <id>org.eclipse.rap.fileupload</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.fileupload/src/org</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.fileupload/org</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 5
+
+          Copies the source code for the org.eclipse.rap.rwt.testfixture from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.rwt.testfixture/src
+          -->
+          <execution>
+            <id>org.eclipse.rap.rwt.testfixture/src</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/tests/org.eclipse.rap.rwt.testfixture/src/org</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.rwt.testfixture/org</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+         STEP 6
+
+         Copies the source code for the org.eclipse.rap.rwt.testfixture from the source code dependencies
+         downloaded previously
+         /bundles/org.eclipse.rap.rwt.testfixture/src/resources
+         -->
+          <execution>
+            <id>org.eclipse.rap.rwt.testfixture/resources</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/tests/org.eclipse.rap.rwt.testfixture/src/resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.rwt.testfixture/resources</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 7
+
+          Copies the source code for the org.eclipse.rap.jface from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.jface/src
+          -->
+          <execution>
+            <id>org.eclipse.rap.jface</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.jface/src/org</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.jface/org</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>org.eclipse.rap.jface/icons/full</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.jface/icons/full</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.jface/org/eclipse/jface/dialogs/images</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 8
+
+          Copies the source code for the org.eclipse.rap.rwt/js from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.rwt/js
+          -->
+          <execution>
+            <id>org.eclipse.rap.rwt/js</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.rwt/js</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.rwt</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>debug-settings.js</include>
+                    <include>rap.js</include>
+                    <include>rwt.js</include>
+                    <include>SWT.js</include>
+                    <include>rwt/**</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 9
+
+          Copies the source code for the org.eclipse.rap.rwt/resources from the source code dependencies
+          downloaded previously
+          /bundles/rg.eclipse.rap.rwt/resources
+          -->
+          <execution>
+            <id>org.eclipse.rap.rwt/resources</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.rwt/resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.rwt</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>client.files</include>
+                    <include>resource/**</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 10
+
+          Copies the source code for the org.eclipse.rap.rwt/css/org/w3c/css/sac from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.rwt/css/org/w3c/css/sac
+          -->
+          <execution>
+            <id>org.eclipse.rap.rwt/css/org/w3c/css/sac</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.rwt/css/org/w3c/css/sac</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.rwt/org/w3c/css/sac</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 11
+
+          Copies the source code for the org.eclipse.rap.rwt/src/org/eclipse from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.rwt/src/org/eclipse
+          -->
+          <execution>
+            <id>org.eclipse.rap.rwt/src/org/eclipse</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.rwt/src/org/eclipse</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.rwt/org/eclipse</directory>
+                  <filtering>true</filtering>
+                  <excludes>
+                    <exclude>**/*batik/**</exclude>
+                    <exclude>**/*kit/**</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 12
+
+          Copies the source code for the org.eclipse.rap.rwt/css/org/eclipse/rap/rwt/apache/batik from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.rwt/css/org/eclipse/rap/rwt/apache/batik
+          -->
+          <execution>
+            <id>org.eclipse.rap.rwt/css/org/eclipse/rap/rwt/apache/batik</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.rwt/css/org/eclipse/rap/rwt/apache/batik</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.rwt/org/eclipse/rap/rwt/apache/batik</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 13
+
+          Copies the source code for the org.eclipse.rap.rwt/css/org/eclipse/rap/rwt/apache/batik from the source code dependencies
+          downloaded previously
+          /bundles/org.eclipse.rap.rwt/widgetkits/org/eclipse
+          -->
+          <execution>
+            <id>org.eclipse.rap.rwt/widgetkits</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.rwt/widgetkits/org/eclipse</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/org.eclipse.rap.rwt/org/eclipse</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>**/*kit/**</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+          STEP 14
+
+          Overrides the source code for the org.eclipse.rap.rwt/widgetkits/org/eclipse/ src and js
+          with the source code fixes.
+          /bundles/org.eclipse.rap.rwt/widgetkits/org/eclipse/src
+          /bundles/org.eclipse.rap.rwt/widgetkits/org/eclipse/js
+          -->
+          <execution>
+            <id>org.eclipse.rap.rwt/src_js</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.rwt</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/org.eclipse.rap.rwt</directory>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+          <!--
+          STEP 15
+
+          Overrides the source code for the org.eclipse.rap.filedialog/src
+          with the source code fixes.
+          /bundles/org.eclipse.rap.filedialog/src
+          -->
+          <execution>
+            <id>org.eclipse.rap.filedialog/src</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.filedialog</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/org.eclipse.rap.filedialog</directory>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+          <!--
+          STEP 16
+
+          Overrides the source code for the org.eclipse.rap.jface/src
+          with the source code fixes.
+          /bundles/org.eclipse.rap.jface/src
+          -->
+          <execution>
+            <id>org.eclipse.rap.jface/src</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/bundles/org.eclipse.rap.jface</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/org.eclipse.rap.jface</directory>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <modules>
+    <!--
+    STEP 17 build the modules
+    -->
+    <!-- Runtime projects -->
+    <module>bundles/org.eclipse.rap.filedialog</module>
+    <module>bundles/org.eclipse.rap.fileupload</module>
+    <module>bundles/org.eclipse.rap.jface</module>
+    <module>bundles/org.eclipse.rap.rwt</module>
+    <module>tests/org.eclipse.rap.rwt.testfixture</module>
+    <!-- Builder projects -->
+    <module>releng/org.eclipse.rap.clientbuilder</module>
+  </modules>
+
+</project>

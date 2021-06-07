@@ -1,0 +1,28 @@
+<project name="Export JFace" default="export" basedir="..">
+  <target name="init">
+    <tstamp/>
+    <property name="destdir" value="../../plugin-export" />
+    <property name="plugin"  value="org.eclipse.jface" />
+    <property name="version"  value="_2.3.0" />
+    <property name="dest"  value="${destdir}/${plugin}${version}" />
+  </target>
+
+  <target name="build" depends="init">
+      <eclipse.incrementalBuild project="${plugin}" kind="incr"/>
+  </target>
+
+  <target name="export" depends="build">
+    <mkdir dir="${destdir}" />
+    <delete dir="${dest}" />
+    <mkdir dir="${dest}" />
+    <jar
+      jarfile="${dest}/jface.jar"
+      basedir="bin"
+    />
+    <copy file="plugin.xml" todir="${dest}"/>
+    <copy file="plugin.properties" todir="${dest}"/>
+    <zip zipfile="${dest}/jfacesrc.zip">
+        <fileset dir="src" />
+      </zip>
+  </target>
+</project>

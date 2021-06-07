@@ -1,0 +1,8 @@
+{
+  "name": "org.eclipse.rap",
+  "version": "3.5.0",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0"
+  }
+}
