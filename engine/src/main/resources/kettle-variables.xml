@@ -591,11 +591,11 @@
 
   <kettle-variable>
     <description>This environment variable is used to define which calculation method is to be used by the 'Add a Checksum' step:
-      "BYTE" (default) - based on Byte representation of fields; as in versions since 8.1
-      "PENTAHO_STRING" - based on Pentaho String representation of fields (applying format masks); as in versions until 7.1
-      "NATIVE_STRING" - based on Native String representation of fields; as in version 8.0</description>
-    <variable>KETTLE_DEFAULT_CHECKSUM_EVALUATION_BEHAVIOR</variable>
-    <default-value>BYTE</default-value>
+      "BYTES" (default) - based on Byte representation of fields; as in versions since 8.1
+      "PENTAHO_STRINGS" - based on Pentaho String representation of fields (applying format masks); as in versions until 7.1
+      "NATIVE_STRINGS" - based on Native String representation of fields; as in version 8.0</description>
+    <variable>KETTLE_DEFAULT_CHECKSUM_EVALUATION_METHOD</variable>
+    <default-value>BYTES</default-value>
   </kettle-variable>
 
   <kettle-variable>
