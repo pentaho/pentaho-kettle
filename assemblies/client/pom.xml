@@ -33,6 +33,9 @@
     <pentaho-hadoop-shims-hdp30.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-hdp30.version>
     <pentaho-hadoop-shims-emr521.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-emr521.version>
     <pentaho-hadoop-shims-dataproc1421.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-dataproc1421.version>
+    <pentaho-hadoop-shims-cdpdc71.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-cdpdc71.version>
+    <pentaho-hadoop-shims-mapr61.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-mapr61.version>
+    <pentaho-hadoop-shims-hdi40.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims-hdi40.version>
   </properties>
 
   <dependencies>
@@ -77,6 +80,42 @@
       <groupId>org.pentaho.hadoop.shims</groupId>
       <artifactId>pentaho-hadoop-shims-dataproc1421-kar</artifactId>
       <version>${pentaho-hadoop-shims-dataproc1421.version}</version>
+      <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.hadoop.shims</groupId>
+      <artifactId>pentaho-hadoop-shims-cdpdc71-kar</artifactId>
+      <version>${pentaho-hadoop-shims-cdpdc71.version}</version>
+      <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.hadoop.shims</groupId>
+      <artifactId>pentaho-hadoop-shims-mapr61-kar</artifactId>
+      <version>${pentaho-hadoop-shims-mapr61.version}</version>
+      <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.hadoop.shims</groupId>
+      <artifactId>pentaho-hadoop-shims-hdi40-kar</artifactId>
+      <version>${pentaho-hadoop-shims-hdi40.version}</version>
       <type>kar</type>
       <exclusions>
         <exclusion>
