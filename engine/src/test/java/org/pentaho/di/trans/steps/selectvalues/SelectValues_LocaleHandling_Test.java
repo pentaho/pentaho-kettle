@@ -125,7 +125,7 @@ public class SelectValues_LocaleHandling_Test {
     stepMeta.getSelectFields()[0].setName( "field" );
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, "field", null, ValueMetaInterface.TYPE_STRING, -2, -2,
-        ValueMetaInterface.STORAGE_TYPE_NORMAL, "ww", false, locale, null, false, null, null, null );
+        ValueMetaInterface.STORAGE_TYPE_NORMAL, "ww", false, null, locale, null, false, null, null, null );
 
     SelectValuesData stepData = new SelectValuesData();
     stepData.select = true;

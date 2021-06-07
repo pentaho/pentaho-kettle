@@ -650,6 +650,22 @@ public interface ValueMetaInterface extends Cloneable {
   void setDateFormatLenient( boolean dateFormatLenient );
 
   /**
+   * Returns the change date of the gregorian calendar.
+   *
+   * @return the change date of the gregorian calendar, or null for Java's default.
+   *
+   */
+  String getDateGregorianChange();
+
+  /**
+   * Sets the change date of the gregorian calendar.
+   *
+   * @param dateGregorianChange
+   *          the change date of the gregorian calendar, or null for Java's default.
+   */
+  void setDateGregorianChange( String dateGregorianChange );
+
+  /**
    * Returns the locale from the date format.
    *
    * @return the date format locale

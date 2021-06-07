@@ -449,6 +449,9 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
           }
 
           v.setDateFormatLenient( metaChange.isDateFormatLenient() );
+          if ( !Utils.isEmpty( metaChange.getDateGregorianChange() ) ) {
+            v.setDateGregorianChange(metaChange.getDateGregorianChange());
+          }
           v.setDateFormatLocale( EnvUtil.createLocale( metaChange.getDateFormatLocale() ) );
           v.setDateFormatTimeZone( EnvUtil.createTimeZone( metaChange.getDateFormatTimeZone() ) );
           v.setLenientStringToNumber( metaChange.isLenientStringToNumber() );
@@ -563,6 +566,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
         meta[i].setConversionMask( rep.getStepAttributeString( id_step, i, getRepCode( "META_CONVERSION_MASK" ) ) );
         meta[i].setDateFormatLenient( Boolean.parseBoolean( rep.getStepAttributeString( id_step, i, getRepCode(
             "META_DATE_FORMAT_LENIENT" ) ) ) );
+        meta[i].setDateGregorianChange( rep.getStepAttributeString( id_step, i, getRepCode(
+                "META_DATE_GREGORIAN_CHANGE" ) ) );
         meta[i].setDateFormatLocale( rep.getStepAttributeString( id_step, i, getRepCode(
             "META_DATE_FORMAT_LOCALE" ) ) );
         meta[i].setDateFormatTimeZone( rep.getStepAttributeString( id_step, i, getRepCode(
@@ -612,6 +617,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
             .getConversionMask() );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_DATE_FORMAT_LENIENT" ), Boolean
             .toString( meta[i].isDateFormatLenient() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_DATE_GREGORIAN_CHANGE" ), meta[i]
+                .getDateGregorianChange() == null ? null : meta[i].getDateGregorianChange() );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_DATE_FORMAT_LOCALE" ), meta[i]
             .getDateFormatLocale() == null ? null : meta[i].getDateFormatLocale().toString() );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_DATE_FORMAT_TIMEZONE" ), meta[i]

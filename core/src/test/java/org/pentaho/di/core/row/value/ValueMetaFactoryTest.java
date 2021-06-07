@@ -81,6 +81,7 @@ public class ValueMetaFactoryTest {
     assertEquals( expected.getStringEncoding(), actual.getStringEncoding() );
     assertEquals( expected.getTrimType(), actual.getTrimType() );
     assertEquals( expected.isDateFormatLenient(), actual.isDateFormatLenient() );
+    assertEquals( expected.getDateGregorianChange(), actual.getDateGregorianChange() );
     assertEquals( expected.getDateFormatLocale(), actual.getDateFormatLocale() );
     assertEquals( expected.getDateFormatTimeZone(), actual.getDateFormatTimeZone() );
     assertEquals( expected.isLenientStringToNumber(), actual.isLenientStringToNumber() );

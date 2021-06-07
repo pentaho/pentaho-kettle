@@ -81,6 +81,7 @@ public class ValueMetaBaseSerializationTest {
     vmb.setSortedDescending( true );
     vmb.setOutputPaddingEnabled( true );
     vmb.setDateFormatLenient( true );
+    vmb.setDateGregorianChange( "17520914" );
     vmb.setLenientStringToNumber( true );
     vmb.setDateFormatLocale( Locale.JAPAN );
     vmb.setCollatorDisabled( false );
@@ -139,6 +140,7 @@ public class ValueMetaBaseSerializationTest {
     assertEquals( "sortedDescending", expected.isSortedDescending(), actual.isSortedDescending() );
     assertEquals( "outputPaddingEnabled", expected.isOutputPaddingEnabled(), actual.isOutputPaddingEnabled() );
     assertEquals( "dateFormatLenient", expected.isDateFormatLenient(), actual.isDateFormatLenient() );
+    assertEquals( "dateGregorianChange", expected.getDateGregorianChange(), actual.getDateGregorianChange() );
     assertEquals( "dateFormatLocale", expected.getDateFormatLocale(), actual.getDateFormatLocale() );
     assertEquals( "dateFormatTimeZone", expected.getDateFormatTimeZone(), actual.getDateFormatTimeZone() );
     assertEquals( "lenientStringToNumber", expected.isLenientStringToNumber(), actual.isLenientStringToNumber() );
