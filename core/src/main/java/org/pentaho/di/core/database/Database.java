@@ -1518,7 +1518,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public Result execStatement( String rawsql, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
-
+    PreparedStatement prep_stmt = null;
+    Statement stmt = null;
     // Replace existing code with a class that removes comments from the raw
     // SQL.
     // The SqlCommentScrubber respects single-quoted strings, so if a
@@ -1530,29 +1531,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       boolean resultSet;
       int count;
       if ( params != null ) {
-        PreparedStatement prep_stmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
+        prep_stmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
         setValues( params, data, prep_stmt ); // set the parameters!
-        try {
-        	resultSet = prep_stmt.execute();
-        	count = prep_stmt.getUpdateCount();
-        }catch(Exception e) {
-        	throw new KettleDatabaseException("Couldn't execute SQL: "+sql+Const.CR, e);
-        }finally {
-        	prep_stmt.close();
-        }
+        resultSet = prep_stmt.execute();
+        count = prep_stmt.getUpdateCount();
       } else {
         String sqlStripped = databaseMeta.stripCR( sql );
         // log.logDetailed("Executing SQL Statement: ["+sqlStripped+"]");
-        Statement stmt = connection.createStatement();
-        
-        try {
-        	resultSet = stmt.execute( sqlStripped );
-        	count = stmt.getUpdateCount();
-        }catch(Exception e) {
-        	throw new KettleDatabaseException("Couldn't execute SQL: "+sql+Const.CR, e);
-        }finally {
-        	stmt.close();
-        }
+        stmt = connection.createStatement();
+        resultSet = stmt.execute( sqlStripped );
+        count = stmt.getUpdateCount();
       }
       String upperSql = sql.toUpperCase();
       if ( !resultSet ) {
@@ -1579,11 +1567,24 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       throw new KettleDatabaseException( "Couldn't execute SQL: " + sql + Const.CR, ex );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Unexpected error executing SQL: " + Const.CR, e );
+    } finally{
+    	this.closePreparedStatement(prep_stmt);
+    	this.closeStatementWithException(stmt);
     }
 
     return result;
   }
-
+  
+  private void closeStatementWithException(Statement stmt) throws KettleDatabaseException{
+	  if(stmt != null){
+		  try{
+			  stmt.close();
+		  }catch(Exception e){
+			  throw new KettleDatabaseException( "Error closing statement", e );
+		  }
+	  }
+  }
+ 
   /**
    * Execute a series of SQL statements, separated by ;
    * <p/>
