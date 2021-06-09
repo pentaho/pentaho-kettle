@@ -590,7 +590,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
-    } catch ( Throwable e ) {
+    } catch ( Exception e ) {
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
     }
   }
@@ -1875,6 +1875,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @return true if the table exists, false if it doesn't.
    * @deprecated Deprecated in favor of {@link #checkTableExists(String, String)}
    */
+  @Deprecated
   public boolean checkTableExists( String tablename ) throws KettleDatabaseException {
     try {
       if ( log.isDebug() ) {
@@ -2430,24 +2431,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public RowMetaInterface getQueryFieldsFromPreparedStatement( String sql ) throws Exception {
-    PreparedStatement preparedStatement = null;
-    try {
-      preparedStatement =
+    try (PreparedStatement preparedStatement =
         connection.prepareStatement( databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY,
-          ResultSet.CONCUR_READ_ONLY );
+          ResultSet.CONCUR_READ_ONLY )){
       preparedStatement.setMaxRows( 1 );
       ResultSetMetaData rsmd = preparedStatement.getMetaData();
       return getRowInfo( rsmd, false, false );
     } catch ( Exception e ) {
       throw new Exception( e );
-    } finally {
-      if ( preparedStatement != null ) {
-        try {
-          preparedStatement.close();
-        } catch ( SQLException e ) {
-          throw new KettleDatabaseException( "Unable to close prepared statement after determining SQL layout", e );
-        }
-      }
     }
   }
 
