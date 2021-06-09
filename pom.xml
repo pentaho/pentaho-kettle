@@ -324,7 +324,6 @@
         </property>
       </activation>
       <modules>
-        <module>rap-extensions</module>
         <module>core</module>
       </modules>
     </profile>
