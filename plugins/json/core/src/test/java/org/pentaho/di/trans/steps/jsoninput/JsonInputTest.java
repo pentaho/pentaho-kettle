@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -409,12 +409,14 @@ public class JsonInputTest {
     meta.setIgnoreMissingPath( true );
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
     RowComparatorListener rowComparator = new RowComparatorListener(
+      new Object[] { null },
+      new Object[] { null },
       new Object[] { "0-553-21311-3" },
       new Object[] { "0-395-19395-8" } );
     jsonInput.addRowListener( rowComparator );
     processRows( jsonInput, 4 );
     Assert.assertEquals( "errors", 0, jsonInput.getErrors() );
-    Assert.assertEquals( "lines written", 2, jsonInput.getLinesWritten() );
+    Assert.assertEquals( "lines written", 4, jsonInput.getLinesWritten() );
   }
 
   @Test
@@ -478,7 +480,7 @@ public class JsonInputTest {
     processRows( jsonInput, 8 );
     disposeJsonInput( jsonInput );
 
-    Assert.assertEquals( 5, jsonInput.getLinesWritten() );
+    Assert.assertEquals( 8, jsonInput.getLinesWritten() );
   }
 
   // There are tests for PDI-17060 below
