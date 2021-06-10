@@ -59,7 +59,8 @@
                                         data-integration/plugins/**,
                                         data-integration/simple-jndi/**,
                                         data-integration/samples/**,
-                                        data-integration/LICENSE.txt
+                                        data-integration/LICENSE.txt,
+                                        data-integration/ADDITIONAL-FILES/**
                                     </includes>
                                     <excludes>
                                         data-integration/plugins/platform-utils-plugin/*.jar,
@@ -81,6 +82,10 @@
                                         <org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
                                             <pattern>^\Qdata-integration/LICENSE.txt\E</pattern>
                                             <replacement>./webSpoon-LICENSE.txt</replacement>
+                                        </org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
+                                        <org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
+                                            <pattern>^\Qdata-integration/ADDITIONAL-FILES/\E</pattern>
+                                            <replacement>./</replacement>
                                         </org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
                                         <org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
                                             <pattern>^\Qdata-integration/\E</pattern>
