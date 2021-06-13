@@ -66,7 +66,7 @@ public class RowKeyTest {
     uniqueRowsObj.fieldnrs = new int[0];
     uniqueRowsObj.storeValues = false;
     RowKey rowKey1 = new RowKey( arr1, uniqueRowsObj );
-    assertEquals( rowKey1.hashCode(),  -227281350 );
+    assertEquals( 1780192570, rowKey1.hashCode() );
     assertTrue( rowKey1.equals( new Object() ) );
 
     uniqueRowsObj.storeValues = true;
