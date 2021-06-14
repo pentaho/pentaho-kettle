@@ -54,7 +54,7 @@ public class WebSpoon implements ApplicationConfiguration {
       } );
     });
     Map<String, String> properties = new HashMap<String, String>();
-    properties.put( WebClient.PAGE_TITLE, "Spoon" );
+    properties.put( WebClient.PAGE_TITLE, "Data Transformation Editor" );
     properties.put( WebClient.FAVICON, "ui/images/spoon.ico" );
     application.addEntryPoint( "/spoon", WebSpoonEntryPoint.class, properties );
     application.setOperationMode( Application.OperationMode.SWT_COMPATIBILITY );

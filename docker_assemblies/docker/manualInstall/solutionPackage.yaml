@@ -1,9 +1,9 @@
 apiVersion: hitachivantara.com/v1
 kind: solutionpackage
 metadata:
-  name: "webspoon-CHANGE_ME"
+  name: "data-transformation-editor-CHANGE_ME"
 spec:
-  chartName: "webspoon"
+  chartName: "data-transformation-editor"
   chartVersion: "CHANGE_ME"
   # optional:
   appVersion: "CHANGE_ME"
