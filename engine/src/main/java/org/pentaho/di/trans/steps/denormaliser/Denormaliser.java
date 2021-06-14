@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -352,6 +352,19 @@ public class Denormaliser extends BaseStep implements StepInterface {
       //
       ValueMetaInterface sourceMeta = rowMeta.getValueMeta( data.fieldNameIndex[idx] );
       Object sourceData = rowData[data.fieldNameIndex[idx]];
+      if ( field.getTargetNullString() != null && field.getTargetNullString().length() > 0 && sourceData != null ) {
+        //We have a "null if" value to check against.  To check for equality we must convert the sourceData value to a
+        // string
+        ValueMetaInterface stringMeta = new ValueMetaBase( "stringSource", ValueMetaInterface.TYPE_STRING );
+        if ( sourceMeta.getConversionMask() != null ) {
+          stringMeta.setConversionMask( sourceMeta.getConversionMask() );
+        }
+        Object stringValue = stringMeta.convertData( sourceMeta, sourceData );
+        if ( field.getTargetNullString().equalsIgnoreCase( stringValue.toString() ) ) {
+          sourceData = null;
+        }
+      }
+
       Object targetData;
       // What is the target value metadata??
       //
