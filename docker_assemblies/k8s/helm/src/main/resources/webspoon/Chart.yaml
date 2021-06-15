@@ -1,6 +1,6 @@
 apiVersion: v2
-name: webspoon
-description: Webspoon POC
+name: data-transformation-editor
+description: Data Transformation Editor
 
 # Webspoon Helm chart.
 type: application
