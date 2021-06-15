@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Scale"
+      description="Scale controls">
+
+    <property name="background-color"
+        description="Background color for scale" />
+
+    <property name="background-image">
+        <description>
+          Background image or gradient for scales.
+        </description>
+    </property>
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around scales." />
+
+    <property name="border-top"
+        description="The top side border for scales." />
+
+    <property name="border-right"
+        description="The right side border for scales." />
+
+    <property name="border-bottom"
+        description="The bottom side border for scales." />
+
+    <property name="border-left"
+        description="The left side border for scales." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <style name="BORDER"
+        description="Style constant for bordered behavior." />
+
+    <style name="HORIZONTAL"
+        description="Indicates that the scale horizontal." />
+
+    <style name="VERTICAL"
+        description="Indicates that the scale vertical." />
+
+    <state name="disabled"
+        description="Applies to disabled Scale controls." />
+
+    <state name="focused"
+        description="On focus" />
+
+    <element name="Scale-Thumb"
+        description="The movable knob on a Scale control.">
+
+      <property name="background-color"
+          description="Background color for scale thumb." />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around scale thumb." />
+
+      <property name="border-top"
+          description="The top side border for scale thumb." />
+
+      <property name="border-right"
+          description="The right side border for scale thumb." />
+
+      <property name="border-bottom"
+          description="The bottom side border for scale thumb." />
+
+      <property name="border-left"
+          description="The left side border for scale thumb." />
+
+      <property name="border-radius"
+          description="Thumb border radius" />
+
+      <property name="background-image">
+          <description>
+            Background image or gradient for scale movable thumb.
+          </description>
+      </property>
+
+      <style name="HORIZONTAL"
+          description="Indicates that the scale horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the scale vertical." />
+
+      <state name="hover"
+          description="On thumb roll over" />
+
+      <state name="disabled"
+          description="Applies to the thumb of a disabled Scale control." />
+
+      <state name="focused"
+          description="On scale-focus" />
+
+    </element>
+
+  </element>
+
+</theme>

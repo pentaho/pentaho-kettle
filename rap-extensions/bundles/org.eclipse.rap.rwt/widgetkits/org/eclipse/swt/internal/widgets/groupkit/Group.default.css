@@ -1,0 +1,40 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Group property defaults */
+
+Group {
+  font: 10px Arial, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  border: none;
+}
+
+Group-Frame {
+  margin: 20px 10px 10px 10px;
+  padding: 15px 8px 8px 8px;
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+}
+
+Group-Label {
+  padding: 2px 10px 2px 10px;
+  background-color: #ffffff;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+  color: #4a4a4a;
+  margin: 10px 10px 10px 20px;
+  text-shadow: none;
+}

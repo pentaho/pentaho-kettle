@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+<p>Provides support for bindings between commands and keys.</p>
+
+<h2>Package Specification</h2>
+<p>
+This just a key-specific implementation of the generic bindings and trigger
+support.  This package provides an abstraction layer between the SWT key events
+and key bindings within JFace.
+</p>
+<p>
+<code>KeySequence</code> is a <code>TriggerSequence</code> that has
+<code>KeyStroke</code> instances as triggers.  A <code>KeyStroke</code> is
+composed of one or more keys held down at the same time.  A key stroke ends
+when the keys are released.  A key stroke can contain zero or more modifiers
+keys, but it always contains exactly one natural key.  A modifier key is one of
+Ctrl, Shift, Alt, or Command.  A natural key is anything else.</p>
+<p>
+Natural keys are further subdivided into special keys and character keys.
+Character keys are keys that have an ASCII representation (e.g., Space, 'A' and
+Backspace).  Special keys are ones that do not (e.g., Arrow Up, F11, and
+NumLock).
+</p>
+<p>
+<code>SWTKeySupport</code> is a static class that provides the link between SWT
+and these internal representations.  It has methods for converting between SWT
+key events and the internal representation, and vice versa.  It also provides
+access to the native-style key formatting facilities.
+</p>
+</body>
+</html>

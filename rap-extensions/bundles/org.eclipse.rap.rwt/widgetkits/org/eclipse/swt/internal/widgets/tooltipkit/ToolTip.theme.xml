@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2011, 2017 Rüdiger Herrmann and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Rüdiger Herrmann - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="ToolTip">
+    <description>
+      ToolTip widgets represent popup windows that are used to inform or warn
+      the user
+    </description>
+
+    <style name="BALLOON"
+        description="Style constant for balloon behavior." />
+
+    <style name="ICON_ERROR"
+        description="The image used for ToolTips with style SWT#ICON_ERROR." />
+
+    <style name="ICON_INFORMATION"
+        description="The image used for ToolTips with style SWT#ICON_INFORMATION." />
+
+    <style name="ICON_WARNING"
+        description="The image used for ToolTips with style SWT#ICON_WARNING." />
+
+    <property name="font"
+        description="Text font for tooltips." />
+
+    <property name="color"
+        description="Text color" />
+
+    <property name="background-color"
+        description="Background color" />
+
+    <property name="cursor"
+        description="The cursor for the tooltip" />
+
+    <property name="background-image">
+      <description>
+        Background image or gradient for tooltip widget.
+      </description>
+    </property>
+
+    <property name="opacity"
+        description="The opacity of the tooltip widget. A value between 0 and 1." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around tooltip widget." />
+
+    <property name="border-top"
+        description="The top side border for tooltip widgets." />
+
+    <property name="border-right"
+        description="The right side border for tooltip widgets." />
+
+    <property name="border-bottom"
+        description="The bottom side border for tooltip widgets." />
+
+    <property name="border-left"
+        description="The left side border for tooltip widgets." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="padding"
+        description="Padding for tooltip widget." />
+
+    <property name="animation">
+      <description>
+        Supports animations-types "fadeIn" and "fadeOut". Others are ignored.
+      </description>
+    </property>
+
+    <property name="box-shadow" description="The shadow behind the tooltip." />
+
+    <property name="width">
+      <description>
+        Fixed width for the tooltip. If set to auto the tooltip width will be calculated
+        automatically.
+      </description>
+    </property>
+
+    <property name="height">
+      <description>
+        Fixed height for the tooltip. If set auto the tooltip height will be calculated
+        automatically.
+      </description>
+    </property>
+
+    <element name="ToolTip-Image"
+        description="The image area.">
+
+      <style name="ICON_ERROR"
+          description="The image used for ToolTips with style SWT#ICON_ERROR." />
+
+      <style name="ICON_INFORMATION"
+          description="The image used for ToolTips with style SWT#ICON_INFORMATION." />
+
+      <style name="ICON_WARNING"
+          description="The image used for ToolTips with style SWT#ICON_WARNING." />
+
+      <property name="background-image"
+          description="The image URL" />
+
+    </element>
+
+    <element name="ToolTip-Text"
+        description="The title text area.">
+
+      <property name="color"
+          description="Text message color" />
+
+      <property name="font"
+          description="Text font" />
+
+      <property name="text-shadow"
+          description="Shadow for text." />
+
+    </element>
+
+    <element name="ToolTip-Message"
+        description="The message area.">
+
+      <property name="color"
+          description="Text message color" />
+
+      <property name="font"
+          description="Text font" />
+
+      <property name="text-shadow"
+          description="Shadow for text." />
+
+    </element>
+
+  </element>
+</theme>

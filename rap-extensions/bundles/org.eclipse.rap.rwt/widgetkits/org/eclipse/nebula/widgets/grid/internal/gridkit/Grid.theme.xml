@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2015 EclipseSource and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    EclipseSource - initial API and implementation
+ -->
+
+<theme>
+
+  <element name="Grid">
+
+    <property name="font"
+        description="Font for grids." />
+
+    <property name="color"
+        description="Text color for grids." />
+
+    <property name="background-color"
+        description="Background color for grids." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around the grid including header." />
+
+    <property name="border-top"
+        description="The top side border for grids." />
+
+    <property name="border-right"
+        description="The right side border for grids." />
+
+    <property name="border-bottom"
+        description="The bottom side border for grids." />
+
+    <property name="border-left"
+        description="The left side border for grids." />
+
+    <style name="BORDER"
+        description="Indicates that the grid should have a border." />
+
+    <state name="disabled"
+        description="Applies to disabled grids." />
+
+    <state name="linesvisible"
+        description="Applies to grids with gridlines." />
+
+    <state name="rowtemplate"
+        description="Applies to a grid with a row template." />
+
+    <element name="GridItem"
+        description="Item elements of grid controls">
+
+      <property name="color"
+          description="Grid item text color" />
+
+      <property name="background-color"
+          description="Grid item background color" />
+
+      <property name="background-image"
+          description="Grid item background image/gradient" />
+
+      <property name="text-decoration"
+          description="Decoration for item text." />
+
+      <property name="text-shadow"
+          description="Shadow for item text." />
+
+      <property name="text-overflow"
+          description="Specifies what should happen when text overflows the containing element." />
+
+      <state name="selected"
+          description="When the grid item is selected" />
+
+      <state name="unfocused"
+          description="When the focus is not on the grid" />
+
+      <state name="even"
+          description="Applies when the grid item has an even visible index" />
+
+      <state name="disabled"
+          description="Applies to the items of a disabled grid." />
+
+      <state name="linesvisible"
+          description="Applies to items of a grid with gridlines." />
+
+      <state name="rowtemplate"
+          description="Applies to the items of a grid with a row template." />
+
+      <state name="hover"
+          description="Mouse over state." />
+
+    </element>
+
+    <element name="Grid-RowOverlay"
+        description="Item overlay that can be used to overwrite the items own colors">
+
+      <property name="color"
+          description="Grid item text color" />
+
+      <property name="background-color"
+          description="Grid item background color. Supports rgba values" />
+
+      <property name="background-image"
+          description="Grid item background image/gradient" />
+
+      <state name="selected"
+          description="Applies when grid item is selected." />
+
+      <state name="unfocused"
+          description="Applies to items on unfocused grid." />
+
+      <state name="even"
+          description="Applies when the grid item has an even index" />
+
+      <state name="disabled"
+          description="Applies to the items of a disabled grid." />
+
+      <state name="linesvisible"
+          description="Applies to the items of a grid with gridlines." />
+
+      <state name="rowtemplate"
+          description="Applies to the items of a grid with a row template." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the grid item." />
+
+    </element>
+
+    <element name="GridColumn"
+        description="Column header of Grid controls">
+
+      <property name="color"
+          description="Text color for grid column headers" />
+
+      <property name="font"
+          description="Font for grid column headers" />
+
+      <property name="background-color"
+          description="Background color for grid column headers" />
+
+      <property name="background-image"
+          description="Background image or gradient for grid column headers." />
+
+      <property name="border-bottom"
+          description="Border for the bottom line of grid columns headers." />
+
+      <property name="padding"
+          description="Padding for the content of grid columns headers." />
+
+      <property name="text-shadow"
+          description="Shadow for item text." />
+
+      <property name="text-overflow"
+          description="Specifies what should happen when text overflows the containing element." />
+
+      <state name="hover"
+          description="Mouse over state" />
+
+      <state name="disabled"
+          description="Applies to column headers of a disabled grid." />
+
+      <element name="GridColumn-SortIndicator"
+          description="Sort indicators in Grid column headers">
+
+        <property name="background-image"
+            description="Indicator image for grid sorting (up/down)" />
+
+        <state name="up"
+            description="On sorting up" />
+
+        <state name="down"
+            description="On sorting down" />
+
+        <state name="disabled"
+            description="Applies when the grid is disabled." />
+
+      </element>
+
+    </element>
+
+    <element name="Grid-Cell"
+        description="A single cell in a multi-column Grid">
+
+      <property name="padding"
+          description="Defines the padding (i.e. the inner distance between border and content) for a grid cell." />
+
+      <property name="spacing"
+          description="Defines the spacing between image and text within a grid cell." />
+
+    </element>
+
+    <element name="Grid-GridLine"
+        description="Grid lines in Grid controls">
+
+      <property name="color"
+          description="Grid line color when linesVisible is true" />
+
+      <state name="vertical"
+          description="Applies for vertical grid lines." />
+
+      <state name="horizontal"
+          description="Applies for horizontal grid lines." />
+
+      <state name="header"
+          description="Applies for grid lines in header." />
+
+      <state name="rowtemplate"
+          description="Applies for grid lines in a grid with a row template" />
+
+    </element>
+
+    <element name="Grid-Checkbox"
+        description="Checkboxes in Grid controls">
+
+      <property name="margin"
+          description="Space around the check boxes" />
+
+      <property name="background-image">
+        <description>
+          Background image for the grid checkbox.
+          The size of the image should be 13 x 13 pixels.
+        </description>
+      </property>
+
+      <state name="grayed"
+        description="When grid checkbox is grayed" />
+
+      <state name="checked"
+        description="When grid checkbox is checked" />
+
+      <state name="disabled"
+        description="When grid checkbox is not checkable (used by Nebula Grid)." />
+
+      <state name="hover"
+        description="Applies while the user hovers over a grid check box." />
+
+    </element>
+
+    <element name="Grid-Indent"
+        description="The area freed by indenting an item for one level." >
+
+      <property name="width">
+        <description>
+           The indention-width of one level. This property can not be
+           influenced by the states of the element.
+        </description>
+      </property>
+
+      <property name="background-image">
+        <description>
+          Background image for the indention. It is centered within
+          the available area, defined by the "width"-property and the height
+          of the item. The overflow is not visible.
+        </description>
+      </property>
+
+      <style name="RIGHT_TO_LEFT"
+        description="Indicates that the grid is oriented right to left." />
+
+      <state name="line">
+        <description>
+          Indicates that the level continues after this item. Never used for
+          the final level and therefore never combined with the other states.
+        </description>
+      </state>
+
+      <state name="first"
+        description="Used for the final level if the item has no previous sibling." />
+
+      <state name="last"
+        description="Used for the final level if the item has no next sibling." />
+
+      <state name="collapsed"
+        description="Used for the final level if the item has children." />
+
+      <state name="expanded"
+        description="Used for the final level if the item is expanded" />
+
+      <state name="hover"
+          description="Mouse over state. Can not be used together with line." />
+
+    </element>
+
+  </element>
+
+</theme>

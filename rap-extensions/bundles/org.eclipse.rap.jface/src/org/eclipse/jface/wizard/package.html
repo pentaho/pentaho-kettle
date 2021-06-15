@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+Provides a framework for wizards.
+<h2>
+Package Specification</h2>
+A wizard dialog is a specialized window for walking the end user through
+a sequence of steps; each step is presented on a separate page.
+<p>At the most abstract level, the protocol is given by 3 interfaces:
+<ul>
+<li>
+<tt>IWizard</tt> - a wizard consisting of several wizard pages</li>
+
+<li>
+<tt>IWizardPage</tt> - an individual wizard page</li>
+
+<li>
+<tt>IWizardContainer</tt> - the outside world from the point of view of
+a wizard</li>
+</ul>
+A wizard is any object implementing <tt>IWizard</tt>. The abstract base
+class <tt>Wizard</tt> is provided as a starting point; it is simpler to
+subclass <tt>Wizard</tt> than to implement <tt>IWizard</tt> from scratch.
+The main responsibility of a <tt>Wizard</tt> subclass is doing the real
+work when the wizard finishes.
+<p>Similarly, a wizard page is any object implementing <tt>IWizardPage</tt>.
+The abstract base class <tt>WizardPage</tt> is provided as a starting point.
+The main responsibility of a <tt>WizardPage</tt> subclass is providing
+the SWT controls and the backing logic for a single wizard page.
+<p><tt>WizardDialog</tt> is a ready-to-use JFace dialog that is instantiated
+with a wizard and acts as the wizard's container. This dialog has a standard
+layout: an area at the top containing the wizard's title, description,
+and image; the actual wizard page appears in the middle; below it is a
+progress indicator; and at the bottom is an area with a message line and
+a button bar containing Next, Back, Finish, Cancel, and Help buttons.
+<p><tt>WizardSelectionPage</tt>, a special abstract subclass of <tt>WizardPage</tt>,
+allows whole other wizards to be connected to a root page.
+<p>Note: None of the classes in this package maintain global state.
+<br>&nbsp;
+</body>
+</html>

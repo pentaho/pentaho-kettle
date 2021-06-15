@@ -1,0 +1,149 @@
+/*******************************************************************************
+ * Copyright (c) 2015 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    EclipseSource - initial API and implementation
+ ******************************************************************************/
+
+/* Grid property defaults */
+
+Grid {
+  font: 14px Arial, sans-serif;
+  background-color: #ffffff;
+  border: none;
+  color: #4a4a4a;
+}
+
+Grid[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+GridItem {
+  background-color: transparent;
+  color: #4a4a4a;
+  text-decoration: none;
+  text-shadow: none;
+  text-overflow: clip;
+  background-image: none;
+}
+
+GridItem:hover {
+  background-color: #b5b5b5;
+}
+
+GridItem:selected {
+  color: #ffffff;
+  background-color: #5882b5;
+}
+
+Grid-RowOverlay {
+  background-color: transparent;
+  color: inherit;
+  background-image: none;
+}
+
+GridColumn {
+  font: 14px Arial, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  padding: 8px 10px 8px 6px;
+  border-bottom: 1px solid #aaaaaa;
+  text-shadow: none;
+  text-overflow: clip;
+}
+
+GridColumn-SortIndicator {
+  background-image: none;
+}
+
+GridColumn-SortIndicator:up {
+  background-image: url( resource/widget/rap/column/sort-indicator-up.png );
+}
+
+GridColumn-SortIndicator:down {
+  background-image: url( resource/widget/rap/column/sort-indicator-down.png );
+}
+
+Grid-Cell {
+  spacing: 0;
+  padding: 6px;
+}
+
+Grid-GridLine {
+  color: #dedede;
+}
+
+Grid-GridLine:horizontal {
+  color: transparent;
+}
+
+Grid-Checkbox {
+  margin: 0px 2px 0px 0px;
+  background-image: url( resource/widget/rap/button/check-unselected.png );
+}
+
+Grid-Checkbox:checked {
+  background-image: url( resource/widget/rap/button/check-selected.png );
+}
+
+Grid-Checkbox:checked:grayed {
+  background-image: url( resource/widget/rap/button/check-grayed.png );
+}
+
+Grid-Indent {
+  width: 16px;
+  background-image: none;
+}
+
+Grid-Indent:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Grid-Indent:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Grid-Indent:line {
+  background-image: none;
+}
+
+Grid-Indent:first {
+  background-image: none;
+}
+
+Grid-Indent:first:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Grid-Indent:first:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Grid-Indent:last {
+  background-image: none;
+}
+
+Grid-Indent:last:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Grid-Indent:last:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Grid-Indent:first:last {
+  background-image: none;
+}
+
+Grid-Indent:first:last:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Grid-Indent:first:last:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}

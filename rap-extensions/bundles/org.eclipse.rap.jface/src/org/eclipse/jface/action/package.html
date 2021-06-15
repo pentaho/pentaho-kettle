@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+Provides support for shared UI resources such as menus,
+tool bars, and status lines.
+<h2>
+Package Specification</h2>
+Contribution managers coordinate contributions to shared UI resources such
+as menus, menu bars, tool bars, and status lines. <tt>ContributionManager</tt>
+maintains the contributions as a dynamic list of contribution items (<tt>IContributionItems</tt>).
+Separators (<tt>Separator</tt>) can be included in contribution lists to
+break up the list's visual representation. Internally, contribution lists
+can be organized into named groups via special group markers (<tt>GroupMarker</tt>)
+to facilitate programatic insertion at specific positions within the list.
+<p>Three specific contribution managers are provided: a status line manager
+(<tt>StatusLineManager</tt>), a tool bar manager (<tt>ToolBarManager</tt>),
+and a hierarchical menu manager (<tt>MenuManager</tt>).
+<p>Actions (<tt>IAction</tt>) are commands which can be triggered from
+the UI, like the ones found in menus, toolbars, and buttons. Menus and
+tools bars are typically populated with contribution items that delegate
+to actions (<tt>ActionContributionItem</tt>).
+<p>Note: None of the classes in this package maintain global state.
+<br>&nbsp;
+</body>
+</html>

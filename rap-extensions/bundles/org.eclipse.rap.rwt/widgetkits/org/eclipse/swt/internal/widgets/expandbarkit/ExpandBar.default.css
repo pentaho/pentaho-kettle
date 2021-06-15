@@ -1,0 +1,44 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2012 Innoopract Informationssysteme GmbH.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* ExpandBar property defaults */
+
+ExpandBar {
+  color: #4a4a4a;
+  background-color: #ffffff;
+  border-radius: 0;
+}
+
+ExpandBar[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+ExpandItem {
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+}
+
+ExpandItem-Header {
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  background-image: none;
+  text-shadow: none;
+}
+
+ExpandItem-Button {
+  background-image: url( resource/widget/rap/expanditem/expanditem-expand.png );
+}
+
+ExpandItem-Button:expanded {
+  background-image: url( resource/widget/rap/expanditem/expanditem-collapse.png );
+}

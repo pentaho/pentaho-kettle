@@ -1,0 +1,12 @@
+
+* {
+  font: bold 12px Arial, Helvetica, sans-serif;
+  color: white;
+  padding: 2px;
+}
+
+Button[PUSH], Button[TOGGLE] {
+  font: 11 'Segoe UI', Corbel, Calibri, Tahoma, 'Lucida Sans Unicode', sans-serif;
+  color: darkslategray;
+  padding: 2;
+}

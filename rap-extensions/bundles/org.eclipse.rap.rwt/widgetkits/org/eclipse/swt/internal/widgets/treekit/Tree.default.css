@@ -1,0 +1,150 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Tree property defaults */
+
+Tree {
+  font: 14px Arial, sans-serif;
+  background-color: #ffffff;
+  border: none;
+  color: #4a4a4a;
+}
+
+Tree[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+TreeItem {
+  background-color: transparent;
+  color: #4a4a4a;
+  text-decoration: none;
+  text-shadow: none;
+  text-overflow: clip;
+  background-image: none;
+}
+
+TreeItem:hover {
+  background-color: #b5b5b5;
+}
+
+TreeItem:selected {
+  color: #ffffff;
+  background-color: #5882b5;
+}
+
+Tree-RowOverlay {
+  background-color: transparent;
+  color: inherit;
+  background-image: none;
+}
+
+TreeColumn {
+  font: 14px Arial, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  padding: 8px 10px 8px 6px;
+  border-bottom: 1px solid #aaaaaa;
+  text-shadow: none;
+  text-overflow: clip;
+}
+
+TreeColumn-SortIndicator {
+  background-image: none;
+}
+
+TreeColumn-SortIndicator:up {
+  background-image: url( resource/widget/rap/column/sort-indicator-up.png );
+}
+
+TreeColumn-SortIndicator:down {
+  background-image: url( resource/widget/rap/column/sort-indicator-down.png );
+}
+
+Tree-Cell {
+  spacing: 0;
+  padding: 6px;
+}
+
+Tree-GridLine {
+  color: #dedede;
+}
+
+Tree-GridLine:horizontal {
+  color: transparent;
+}
+
+Tree-Checkbox {
+  margin: 0px 2px 0px 0px;
+  background-image: url( resource/widget/rap/button/check-unselected.png );
+}
+
+Tree-Checkbox:checked {
+  background-image: url( resource/widget/rap/button/check-selected.png );
+}
+
+Tree-Checkbox:checked:grayed {
+  background-image: url( resource/widget/rap/button/check-grayed.png );
+}
+
+Tree-Indent {
+  width: 16px;
+  background-image: none;
+}
+
+Tree-Indent:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Tree-Indent:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Tree-Indent:line {
+  background-image: none;
+}
+
+Tree-Indent:first {
+  background-image: none;
+}
+
+Tree-Indent:first:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Tree-Indent:first:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Tree-Indent:last {
+  background-image: none;
+}
+
+Tree-Indent:last:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Tree-Indent:last:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Tree-Indent:first:last {
+  background-image: none;
+}
+
+Tree-Indent:first:last:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Tree-Indent:first:last:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}

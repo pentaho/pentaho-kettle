@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="ExpandBar">
+    <description>
+      RWT ExpandBar controls.
+      It can be used to represent a category or group of elements.
+    </description>
+
+    <property name="color">
+      <description>
+        Text color for expand item boxes.
+        Applied to the expand item header label.
+      </description>
+    </property>
+
+    <property name="font">
+      <description>
+        Font for expand item boxes.
+        Applied to the expand item header label.
+      </description>
+    </property>
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around an ExpandBar." />
+
+    <property name="border-top"
+        description="The top side border for ExpandBar." />
+
+    <property name="border-right"
+        description="The right side border for ExpandBar." />
+
+    <property name="border-bottom"
+        description="The bottom side border for ExpandBar." />
+
+    <property name="border-left"
+        description="The left side border for ExpandBar." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <state name="disabled"
+        description="Applies to disbled ExpandBar controls." />
+
+    <style name="BORDER"
+        description="Style constant for bordered behavior." />
+
+    <element name="ExpandItem">
+      <description>
+        The ExpandItem.
+      </description>
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around an ExpandItem" />
+
+      <property name="border-top"
+          description="The top side border for ExpandItem." />
+
+      <property name="border-right"
+          description="The right side border for ExpandItem." />
+
+      <property name="border-bottom"
+          description="The bottom side border for ExpandItem." />
+
+      <property name="border-left"
+          description="The left side border for ExpandItem." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <state name="expanded"
+          description="Applies while the ExpandItem is expanded." />
+
+    </element>
+
+    <element name="ExpandItem-Header">
+      <description>
+        The ExpandItem titlebar.
+      </description>
+
+      <property name="background-color">
+        <description>
+          Background color for the expand item header.
+        </description>
+      </property>
+
+      <property name="background-image">
+        <description>
+          Background image or gradient for the expand item header.
+        </description>
+      </property>
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around ExpandItem header." />
+
+      <property name="border-top"
+          description="The top side border for ExpandItem header." />
+
+      <property name="border-right"
+          description="The right side border for ExpandItem header." />
+
+      <property name="border-bottom"
+          description="The bottom side border for ExpandItem header." />
+
+      <property name="border-left"
+          description="The left side border for ExpandItem header." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="cursor"
+          description="Expand item header cursor." />
+
+      <property name="text-shadow"
+          description="Shadow for text." />
+
+      <state name="expanded"
+          description="Applies while the ExpandItem is expanded." />
+
+      <state name="disabled"
+          description="Applies for disabled ExpandBars." />
+
+    </element>
+
+    <element name="ExpandItem-Button">
+      <description>
+        The ExpandItem collapse/expand button.
+      </description>
+
+      <property name="background-image">
+        <description>
+          Background image for the ExpandItem collapse/expand button.
+          The size of the image should be 16 x 16 pixels.
+        </description>
+      </property>
+
+      <state name="hover"
+          description="Applies while the user hovers over a button." />
+
+      <state name="expanded"
+          description="Applies while the ExpandItem is expanded." />
+
+    </element>
+
+  </element>
+
+</theme>

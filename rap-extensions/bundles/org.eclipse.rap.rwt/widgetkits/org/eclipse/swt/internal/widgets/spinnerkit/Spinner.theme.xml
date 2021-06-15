@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2015 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Spinner">
+
+    <property name="color"
+        description="Spinner foreground color" />
+
+    <property name="background-color"
+        description="Spinner background color" />
+
+    <property name="background-image">
+      <description>
+        Background gradient for spinner.
+      </description>
+    </property>
+
+    <property name="font"
+        description="Text font" />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around spinners." />
+
+    <property name="border-top"
+        description="The top side border for spinners." />
+
+    <property name="border-right"
+        description="The right side border for spinners." />
+
+    <property name="border-bottom"
+        description="The bottom side border for spinners." />
+
+    <property name="border-left"
+        description="The left side border for spinners." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="padding"
+        description="Padding for spinner." />
+
+    <property name="text-shadow"
+        description="Shadow for text." />
+
+    <property name="box-shadow"
+        description="A shadow effect for spinner text field." />
+
+    <style name="BORDER"
+        description="Style constant for bordered behavior." />
+
+    <state name="disabled"
+        description="Applies to disabled Spinner controls." />
+
+    <state name="focused"
+        description="Applies to focused Spinners" />
+
+    <element name="Spinner-Field"
+        description="The spinner text field">
+
+      <property name="padding"
+        description="Padding for spinner text fields." />
+
+    </element>
+
+    <element name="Spinner-UpButton"
+        description="The spinner up button">
+
+      <property name="background-image">
+        <description>
+          Background image or gradient for spinner up button.
+        </description>
+      </property>
+
+      <property name="background-color"
+          description="Background color of spinner up button." />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around up button." />
+
+      <property name="border-top"
+          description="The top side border for up button." />
+
+      <property name="border-right"
+          description="The right side border for up button." />
+
+      <property name="border-bottom"
+          description="The bottom side border for up button." />
+
+      <property name="border-left"
+          description="The left side border for up button." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="cursor"
+          description="Spinner up button cursor." />
+
+      <property name="width"
+          description="Width of the spinner up button." />
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the spinner is oriented right to left." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the button." />
+
+      <state name="pressed"
+          description="Applies while a button is pressed." />
+
+      <state name="disabled"
+          description="Applies to disabled spinner up button." />
+
+    </element>
+
+    <element name="Spinner-UpButton-Icon"
+        description="The spinner up button icon">
+
+      <property name="background-image"
+          description="The icon for spinner up button." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the button." />
+
+      <state name="pressed"
+          description="Applies while a button is pressed." />
+
+      <state name="disabled"
+          description="Applies to disabled spinner up button." />
+
+    </element>
+
+    <element name="Spinner-DownButton"
+        description="The spinner down button">
+
+      <property name="background-image">
+        <description>
+          Background image or gradient for spinner down button.
+        </description>
+      </property>
+
+      <property name="background-color"
+          description="Background color of spinner down button." />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around down button." />
+
+      <property name="border-top"
+          description="The top side border for down button." />
+
+      <property name="border-right"
+          description="The right side border for down button." />
+
+      <property name="border-bottom"
+          description="The bottom side border for down button." />
+
+      <property name="border-left"
+          description="The left side border for down button." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="cursor"
+          description="Spinner down button cursor." />
+
+      <property name="width"
+          description="Width of the spinner down button." />
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the spinner is oriented right to left." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the button." />
+
+      <state name="pressed"
+          description="Applies while a button is pressed." />
+
+      <state name="disabled"
+          description="Applies to disabled spinner down button." />
+
+    </element>
+
+    <element name="Spinner-DownButton-Icon"
+        description="The spinner down button icon">
+
+      <property name="background-image"
+          description="The icon for spinner down button." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the button." />
+
+      <state name="pressed"
+          description="Applies while a button is pressed." />
+
+      <state name="disabled"
+          description="Applies to disabled spinner down button." />
+
+    </element>
+
+  </element>
+
+</theme>

@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+Provides a framework for viewers, which are model-based
+content adapters for SWT widgets.
+<h2>
+Package Specification</h2>
+A viewer is a model-based adapter on an SWT widget.&nbsp; Each viewer has
+four parts:
+<blockquote>
+<li>
+an <b>input</b> - the object that serves as the viewer's model</li>
+
+<li>
+a <b>widget</b> - the SWT control through which the viewer's model is displayed</li>
+
+<li>
+a <b>content provider</b> - mediates between the model and viewer</li>
+
+<li>
+a <b>label provider</b> - maps model objects to displayable labels containing
+text and/or an image</li>
+</blockquote>
+This package contains the viewer framework. The viewer framework is an
+independent JFace module. Using it requires a knowledge of SWT, but does
+not require familiarity with any of the other JFace modules. The framework
+consists of abstract base classes for viewers (<tt>Viewer</tt>, <tt>StructuredViewer</tt>,
+<tt>AbstractTreeViewer</tt>) together with concrete viewer classes (<tt>ListViewer</tt>,
+<tt>TreeViewer</tt>,
+<tt>TableViewer</tt>,
+<tt>TableTreeViewer</tt>, <tt>CheckboxTreeViewer</tt>,
+and <tt>CheckboxTableViewer</tt>),
+and various lesser support classes. The concrete structured viewer classes
+are ready-to-use and have built-in support for drag-and-drop, filtering
+(<tt>IViewerFilter</tt> and <tt>ViewerFilter</tt>), and sorting (<tt>IViewerSorter</tt>
+and <tt>ViewerSorter</tt>); these classes may also be subclassed further
+if required.
+<p>In general terms, creating a viewer involves the following steps:
+<ul>
+<li>
+instantiating a viewer on some pre-existing SWT widget,</li>
+
+<li>
+setting the viewer's content provider (an object implementing <tt>IContentProvider</tt>),</li>
+
+<li>
+setting the viewer's label provider (an object implementing
+<tt>ILabelProvider</tt>),</li>
+
+<li>
+and, finally, setting the viewer's input.</li>
+</ul>
+Once a viewer's input is set, the viewer becomes active. As the model changes,
+it is the content provider's responsibility to respond to changes to the
+model by telling the viewer what to change (done by calling add and remove
+methods on the viewer). An existing viewer may be retargeted by giving
+it a different object as input; the viewer is responsible for informing
+the content provider of these kinds of wholesale changes (<tt>IContentProvider.inputChanged</tt>).
+Also, each viewer registers with its label provider for notification of
+changes that would affect what the viewer displays (see <tt>ILabelProviderListener.stateChanged</tt>).
+<p>Note: None of the classes in this package maintain global state.
+<br>&nbsp;
+</body>
+</html>

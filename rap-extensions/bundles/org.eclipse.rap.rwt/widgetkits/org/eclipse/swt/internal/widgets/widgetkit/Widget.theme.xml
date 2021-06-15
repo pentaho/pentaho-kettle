@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2016 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <!-- Note [rst] The elements "Display" and "ToolTip" reside here because
+                  neither Display nor ToolTip are themeable widgets. Thus,
+                  a "Display.theme.xml" would not be found.
+    -->
+
+  <element name="Display">
+
+    <description>
+      This element holds system-wide settings for colors, fonts, etc.
+    </description>
+
+    <property name="rwt-shadow-color">
+      <description>
+        Color used to draw (outer) shadow line in 3d borders.
+        Defines the value of SWT#COLOR_WIDGET_NORMAL_SHADOW.
+      </description>
+    </property>
+
+    <property name="rwt-highlight-color">
+      <description>
+        Color used to draw (outer) highlight line in 3d borders.
+        Defines the value of SWT#COLOR_WIDGET_HIGHLIGHT_SHADOW.
+      </description>
+    </property>
+
+    <property name="rwt-darkshadow-color">
+      <description>
+        Color used to draw (inner) shadow line in 3d borders.
+        Defines the value of SWT#COLOR_WIDGET_DARK_SHADOW.
+      </description>
+    </property>
+
+    <property name="rwt-lightshadow-color">
+      <description>
+        Color used to draw (inner) highlight line in 3d borders.
+        Defines the value of SWT#COLOR_WIDGET_LIGHT_SHADOW.
+      </description>
+    </property>
+
+    <property name="rwt-thinborder-color">
+      <description>
+        Color for thin lines as shown by Group, TabFolder headers, Table headers,
+        etc.
+        Defines the value of SWT#COLOR_WIDGET_BORDER.
+      </description>
+    </property>
+
+    <property name="rwt-selectionmarker-color">
+      <description>
+        Color used to mark selected items like TreeColumns and TabViews.
+      </description>
+    </property>
+
+    <property name="rwt-infobackground-color">
+      <description>
+        Color used by PopupDialog for its background.
+        Defines the value of SWT#COLOR_INFO_BACKGROUND.
+      </description>
+    </property>
+
+    <property name="rwt-error-image">
+      <description>
+        The image used for MessageBoxes with style SWT#ICON_ERROR.
+        Also returned by Display#getSystemImage().
+      </description>
+    </property>
+
+    <property name="rwt-information-image">
+      <description>
+        The image used for MessageBoxes with style SWT#ICON_INFORMATION.
+        Also returned by Display#getSystemImage().
+      </description>
+    </property>
+
+    <property name="rwt-working-image">
+      <description>
+        The image used for MessageBoxes with style SWT#ICON_WORKING.
+        Also returned by Display#getSystemImage().
+      </description>
+    </property>
+
+    <property name="rwt-question-image">
+      <description>
+        The image used for MessageBoxes with style SWT#ICON_QUESTION.
+        Also returned by Display#getSystemImage().
+      </description>
+    </property>
+
+    <property name="rwt-warning-image">
+      <description>
+        The image used for MessageBoxes with style SWT#ICON_WARNING.
+        Also returned by Display#getSystemImage().
+      </description>
+    </property>
+
+    <property name="rwt-fontlist">
+      <description>
+        The font list returned by Display#getFontList().
+      </description>
+    </property>
+
+    <property name="background-image">
+      <description>
+        Background image for the display (client area of the browser window).
+      </description>
+    </property>
+
+    <property name="font">
+      <description>
+        The default system font. Returned by Display#getSystemFont().
+      </description>
+    </property>
+
+  </element>
+
+  <element name="Widget-Badge">
+    <description>
+      Badges on SWT widgets, as set using setData( RWT.BADGE, ... ).
+    </description>
+
+    <property name="color"
+        description="Text color for badges." />
+
+    <property name="background-color"
+        description="Background color for badges." />
+
+    <property name="border" shorthand="true"
+        description="The outer border that is drawn around badges." />
+
+    <property name="border-top"
+        description="The top side border for badges." />
+
+    <property name="border-right"
+        description="The right side border for badges." />
+
+    <property name="border-bottom"
+        description="The bottom side border for badges." />
+
+    <property name="border-left"
+        description="The left side border for badges." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="font"
+        description="Text font for badges." />
+
+  </element>
+
+  <element name="Widget-ToolTip">
+    <description>
+      Tooltips on SWT widgets, as set using setTooltipText().
+    </description>
+
+    <property name="color"
+        description="Text color for tooltips." />
+
+    <property name="background-color"
+        description="Background color for tooltips." />
+
+    <property name="border" shorthand="true"
+        description="The outer border that is drawn around tooltips." />
+
+    <property name="border-top"
+        description="The top side border for tooltips." />
+
+    <property name="border-right"
+        description="The right side border for tooltips." />
+
+    <property name="border-bottom"
+        description="The bottom side border for tooltips." />
+
+    <property name="border-left"
+        description="The left side border for tooltips." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="background-image"
+        description="Background image or gradient for tooltips." />
+
+    <property name="padding"
+        description="Padding around the tooltips text." />
+
+    <property name="font"
+        description="Text font for tooltips." />
+
+    <property name="opacity"
+        description="The opacity of the tooltip. A value between 0 and 1." />
+
+    <property name="animation">
+      <description>
+        Supports animations-types "fadeIn" and "fadeOut". Others are ignored.
+      </description>
+    </property>
+
+    <property name="box-shadow" description="The shadow behind the tooltip." />
+
+    <property name="text-align" description="The tooltip text alignment." />
+
+    <element name="Widget-ToolTip-Pointer">
+      <description>
+        A pointer attached outside a tooltip to point towards the widget it belongs to.
+        Not supported in Internet Explorer 8 or lower.
+      </description>
+
+      <property name="background-image"
+                description="Background image used to display the pointer." />
+
+      <state name="up" description="On pointing up" />
+
+      <state name="down" description="On pointing down" />
+
+      <state name="left" description="On pointing left" />
+
+      <state name="right" description="On pointing right" />
+
+    </element>
+
+  </element>
+
+  <!-- TODO [rst] Eliminate when property support is gone. -->
+  <element name="*" description="All elements">
+
+    <property name="color"/>
+
+    <property name="background-color"/>
+
+    <property name="background-image"/>
+
+    <property name="font"/>
+
+    <property name="border" shorthand="true"/>
+
+    <property name="border-top"/>
+
+    <property name="border-right"/>
+
+    <property name="border-bottom"/>
+
+    <property name="border-left"/>
+
+    <property name="padding"/>
+
+  </element>
+
+  <element name="SystemMessage-DisplayOverlay">
+
+    <property name="background-image">
+      <description>
+        Background image positioned in the center of the overlay
+      </description>
+    </property>
+
+    <property name="background-color">
+      <description>
+        Background color of the overlay. Supports rgba values.
+      </description>
+    </property>
+
+  </element>
+
+  <element name="ErrorBox-Titlebar">
+
+    <property name="font">
+      <description>
+        Text font of the title.
+      </description>
+    </property>
+
+    <property name="color">
+      <description>
+        Text color of the title.
+      </description>
+    </property>
+
+    <property name="background-color">
+      <description>
+        Background color of the title bar.
+      </description>
+    </property>
+
+  </element>
+
+  <element name="ErrorBox">
+
+    <property name="border" shorthand="true">
+      <description>
+        The border of the ErrorBox.
+       </description>
+    </property>
+
+    <property name="border-top">
+      <description>
+        The top side border of the ErrorBox.
+      </description>
+    </property>
+
+    <property name="border-right">
+      <description>
+        The right side border of the ErrorBox.
+      </description>
+    </property>
+
+    <property name="border-bottom">
+      <description>
+        The bottom side border of the ErrorBox.
+      </description>
+    </property>
+
+    <property name="border-left">
+      <description>
+        The left side border of the ErrorBox.
+      </description>
+    </property>
+
+    <property name="border-radius">
+      <description>
+         Border radius of the ErrorBox.
+      </description>
+    </property>
+
+    <property name="font">
+      <description>
+        Text font of the description area.
+      </description>
+    </property>
+
+    <property name="color">
+      <description>
+        Text color of the description area.
+      </description>
+    </property>
+
+    <property name="background-color">
+      <description>
+        Background color of the description area.
+      </description>
+    </property>
+
+  </element>
+
+</theme>

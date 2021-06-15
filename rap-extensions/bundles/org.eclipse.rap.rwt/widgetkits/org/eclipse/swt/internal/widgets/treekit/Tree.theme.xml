@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2015 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Tree">
+
+    <property name="font"
+        description="Font for trees." />
+
+    <property name="color"
+        description="Text color for trees." />
+
+    <property name="background-color"
+        description="Background color for trees." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around the tree including header." />
+
+    <property name="border-top"
+        description="The top side border for trees." />
+
+    <property name="border-right"
+        description="The right side border for trees." />
+
+    <property name="border-bottom"
+        description="The bottom side border for trees." />
+
+    <property name="border-left"
+        description="The left side border for trees." />
+
+    <style name="BORDER"
+        description="Indicates that the tree should have a border." />
+
+    <state name="disabled"
+        description="Applies to disabled trees." />
+
+    <state name="linesvisible"
+        description="Applies to trees with gridlines." />
+
+    <state name="rowtemplate"
+        description="Applies to a tree with a row template." />
+
+    <element name="TreeItem"
+        description="Item elements of tree controls">
+
+      <property name="color"
+          description="Tree item text color" />
+
+      <property name="background-color"
+          description="Tree item background color" />
+
+      <property name="background-image"
+          description="Tree item background image/gradient" />
+
+      <property name="text-decoration"
+          description="Decoration for item text." />
+
+      <property name="text-shadow"
+          description="Shadow for item text." />
+
+      <property name="text-overflow"
+          description="Specifies what should happen when text overflows the containing element." />
+
+      <state name="selected"
+          description="When the tree item is selected" />
+
+      <state name="unfocused"
+          description="When the focus is not on the tree" />
+
+      <state name="even"
+          description="Applies when the tree item has an even visible index" />
+
+      <state name="disabled"
+          description="Applies to the items of a disabled tree." />
+
+      <state name="linesvisible"
+          description="Applies to items of a tree with gridlines." />
+
+      <state name="rowtemplate"
+          description="Applies to the items of a tree with a row template." />
+
+      <state name="hover"
+          description="Mouse over state." />
+
+    </element>
+
+    <element name="Tree-RowOverlay"
+        description="Item overlay that can be used to overwrite the items own colors">
+
+      <property name="color"
+          description="Tree item text color" />
+
+      <property name="background-color"
+          description="Tree item background color. Supports rgba values" />
+
+      <property name="background-image"
+          description="Tree item background image/gradient" />
+
+      <state name="selected"
+          description="Applies when tree item is selected." />
+
+      <state name="unfocused"
+          description="Applies to items on unfocused tree." />
+
+      <state name="even"
+          description="Applies when the tree item has an even index" />
+
+      <state name="disabled"
+          description="Applies to the items of a disabled tree." />
+
+      <state name="linesvisible"
+          description="Applies to the items of a tree with gridlines." />
+
+      <state name="rowtemplate"
+          description="Applies to the items of a tree with a row template." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the tree item." />
+
+    </element>
+
+    <element name="TreeColumn"
+        description="Column header of Tree controls">
+
+      <property name="color"
+          description="Text color for tree column headers" />
+
+      <property name="font"
+          description="Font for tree column headers" />
+
+      <property name="background-color"
+          description="Background color for tree column headers" />
+
+      <property name="background-image"
+          description="Background image or gradient for tree column headers." />
+
+      <property name="border-bottom"
+          description="Border for the bottom line of tree columns headers." />
+
+      <property name="padding"
+          description="Padding for the content of tree columns headers." />
+
+      <property name="text-shadow"
+          description="Shadow for item text." />
+
+      <property name="text-overflow"
+          description="Specifies what should happen when text overflows the containing element." />
+
+      <state name="hover"
+          description="Mouse over state" />
+
+      <state name="disabled"
+          description="Applies to column headers of a disabled tree." />
+
+      <element name="TreeColumn-SortIndicator"
+          description="Sort indicators in Tree column headers">
+
+        <property name="background-image"
+            description="Indicator image for tree sorting (up/down)" />
+
+        <state name="up"
+            description="On sorting up" />
+
+        <state name="down"
+            description="On sorting down" />
+
+        <state name="disabled"
+            description="Applies when the tree is disabled." />
+
+      </element>
+
+    </element>
+
+    <element name="Tree-Cell"
+        description="A single cell in a multi-column Tree">
+
+      <property name="padding"
+          description="Defines the padding (i.e. the inner distance between border and content) for a tree cell." />
+
+      <property name="spacing"
+          description="Defines the spacing between image and text within a tree cell." />
+
+    </element>
+
+    <element name="Tree-GridLine"
+        description="Grid lines in Tree controls">
+
+      <property name="color"
+          description="Grid line color when linesVisible is true" />
+
+      <state name="vertical"
+          description="Applies for vertical grid lines." />
+
+      <state name="horizontal"
+          description="Applies for horizontal grid lines." />
+
+      <state name="header"
+          description="Applies for grid lines in header." />
+
+      <state name="rowtemplate"
+          description="Applies for grid lines in a tree with a row template" />
+
+    </element>
+
+    <element name="Tree-Checkbox"
+        description="Checkboxes in Tree controls">
+
+      <property name="margin"
+          description="Space around the check boxes" />
+
+      <property name="background-image">
+        <description>
+          Background image for the tree checkbox.
+          The size of the image should be 13 x 13 pixels.
+        </description>
+      </property>
+
+      <state name="grayed"
+        description="When tree checkbox is grayed" />
+
+      <state name="checked"
+        description="When tree checkbox is checked" />
+
+      <state name="disabled"
+        description="When tree checkbox is not checkable (used by Nebula Grid)." />
+
+      <state name="hover"
+        description="Applies while the user hovers over a tree check box." />
+
+    </element>
+
+    <element name="Tree-Indent"
+        description="The area freed by indenting an item for one level." >
+
+      <property name="width">
+        <description>
+           The indention-width of one level. This property can not be
+           influenced by the states of the element.
+        </description>
+      </property>
+
+      <property name="background-image">
+        <description>
+          Background image for the indention. It is centered within
+          the available area, defined by the "width"-property and the height
+          of the item. The overflow is not visible.
+        </description>
+      </property>
+
+      <style name="RIGHT_TO_LEFT"
+        description="Indicates that the tree is oriented right to left." />
+
+      <state name="line">
+        <description>
+          Indicates that the level continues after this item. Never used for
+          the final level and therefore never combined with the other states.
+        </description>
+      </state>
+
+      <state name="first"
+        description="Used for the final level if the item has no previous sibling." />
+
+      <state name="last"
+        description="Used for the final level if the item has no next sibling." />
+
+      <state name="collapsed"
+        description="Used for the final level if the item has children." />
+
+      <state name="expanded"
+        description="Used for the final level if the item is expanded" />
+
+      <state name="hover"
+          description="Mouse over state. Can not be used together with line." />
+
+    </element>
+
+  </element>
+
+</theme>

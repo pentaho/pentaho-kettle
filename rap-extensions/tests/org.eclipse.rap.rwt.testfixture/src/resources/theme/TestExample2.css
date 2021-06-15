@@ -1,0 +1,9 @@
+/* CSS file for tests */
+
+
+/* Selector list rule */
+
+Button.special, List:selected, Text[SIMPLE] {
+  border : 2px solid red;
+  border-top-color : blue;
+}

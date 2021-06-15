@@ -1,0 +1,113 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2012 Innoopract Informationssysteme GmbH.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Shell property defaults */
+
+Shell {
+  border: none;
+  border-radius: 0;
+  background-color: #ffffff;
+  background-image: none;
+  padding: 0;
+  opacity: 1;
+  box-shadow: none;
+  animation: none;
+}
+
+Shell[TITLE], Shell[BORDER] {
+  border: 1px solid #aaaaaa;
+  padding: 15px;
+}
+
+Shell[BORDER]:maximized {
+  border: none;
+}
+
+Shell[BORDER]:inactive, Shell[TITLE]:inactive {
+  border: 1px solid #aaaaaa;
+}
+
+Shell-DisplayOverlay {
+  animation: none;
+  background-image: none;
+  background-color: #808080;
+  opacity: 0.2;
+}
+
+/* Shell titlebar */
+
+Shell-Titlebar {
+  font: 14px Arial, sans-serif;
+  background-color: #0080c0;
+  background-gradient-color: #0080c0;
+  color: #ffffff;
+  background-image: none;
+  padding: 0 10px 0 10px;
+  margin: 0px;
+  height: 38px;
+  border: none;
+  border-radius: 0;
+  text-shadow: none;
+}
+
+Shell-Titlebar:inactive {
+  background-color: #7996a5;
+  background-gradient-color: #7996a5;
+}
+
+/* Shell buttons */
+
+/* Minimize button */
+
+Shell-MinButton {
+  background-image: url( resource/widget/rap/window/shell-min.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-MinButton:inactive {
+  background-image: url( resource/widget/rap/window/shell-min.png );
+  margin: 0 -2px 0 0;
+}
+
+/* Maximize button */
+
+Shell-MaxButton {
+  background-image: url( resource/widget/rap/window/shell-max.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-MaxButton:inactive {
+  background-image: url( resource/widget/rap/window/shell-max.png );
+  margin: 0 -2px 0 0;
+}
+
+/* Restore button */
+
+Shell-MaxButton:maximized {
+  background-image: url( resource/widget/rap/window/shell-restore.png );
+}
+
+Shell-MaxButton:maximized:inactive {
+  background-image: url( resource/widget/rap/window/shell-restore.png );
+}
+
+/* Close button */
+
+Shell-CloseButton {
+  background-image: url( resource/widget/rap/window/shell-close.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-CloseButton:inactive {
+  background-image: url( resource/widget/rap/window/shell-close.png );
+  margin: 0 -2px 0 0;
+}

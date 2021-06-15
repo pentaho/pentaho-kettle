@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+Provides a general framework for creating and managing
+windows.
+<h2>
+Package Specification</h2>
+A JFace window is an object that has no visual representation (no widgets)
+until it is told to open. All JFace windows, including dialogs, are instances
+of the abstract class <tt>Window</tt> or a subclass. This package contains
+the base window classes:
+<tt>Window</tt> itself, which provides support
+for a basic windows; and <tt>ApplicationWindow</tt>, which provides ready-to-use
+support for a high-level "main window" with standard menus, tool bar, and
+status line. Both of these classes may be subclassed to define additional
+types of window as required.
+<p>This package also contains <tt>WindowManager</tt>, instance of which
+are used for managing a group of windows. Window managers are useful in
+applications which create many different windows (dialogs, wizards, etc.)
+in addition to a main window. Window managers are not required for simple
+applications.
+<p>The only global state maintained by classes in this package is a default
+image for window title bars (<tt>Window.setDefaultImage</tt>).
+</body>
+</html>

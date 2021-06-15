@@ -1,0 +1,67 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* TabFolder property defaults */
+
+TabFolder {
+  font: 14px Arial, sans-serif;
+  border: none;
+}
+
+TabFolder[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+TabFolder-ContentContainer {
+  border: 1px solid #aaaaaa;
+}
+
+TabItem {
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  border-top-color: #aaaaaa;
+  border-bottom-color: #aaaaaa;
+  text-shadow: none;
+  padding: 6px;
+  margin: 3px 1px 1px 0px;
+  border: 1px solid #bdbdbd;
+  border-bottom: none;
+}
+
+TabItem:bottom {
+  margin: 1px 1px 3px 0px;
+  border: 1px solid #bdbdbd;
+  border-top: none;
+}
+
+TabItem:selected {
+  background-color: #d6d6d6;
+  padding: 6px 6px 7px 6px;
+  margin: 0px -1px 0px -2px;
+  border: 1px solid #bdbdbd;
+  border-top: 3px solid #5882b5;
+  border-bottom: none;
+}
+
+TabItem:bottom:selected {
+  margin: 0px -1px 0px -2px;
+  border: 1px solid #bdbdbd;
+  border-top: none;
+  border-bottom: 3px solid #5882b5;
+}
+
+TabItem:selected:first, TabItem:bottom:selected:first {
+  margin: 0px -1px 0px 0px;
+}

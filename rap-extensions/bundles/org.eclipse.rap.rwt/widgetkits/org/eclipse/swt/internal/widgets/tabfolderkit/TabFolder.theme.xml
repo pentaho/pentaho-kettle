@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2015 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="TabFolder"
+      description="SWT TabFolder controls (don't mix up with CTabFolder).">
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around a TabFolder." />
+
+      <property name="border-top"
+          description="The top side border for TabFolder." />
+
+      <property name="border-right"
+          description="The right side border for TabFolder." />
+
+      <property name="border-bottom"
+          description="The bottom side border for TabFolder." />
+
+      <property name="border-left"
+          description="The left side border for TabFolder." />
+
+      <property name="font"
+          description="Font for tab items text." />
+
+      <style name="BORDER"
+          description="Indicates that the TabFolder should have a border." />
+
+    <element name="TabItem"
+        description="Items of TabFolder controls.">
+
+      <property name="color"
+          description="Tab item text color" />
+
+      <property name="background-color"
+          description="Background color for tab folder headers." />
+
+      <property name="background-image"
+          description="Background image or gradient for tab folder headers." />
+
+      <property name="background-position"
+          description="Background image position for tab folder headers." />
+
+      <property name="background-repeat"
+          description="Background image repetition for tab folder headers." />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around a TabFolder." />
+
+      <property name="border-top"
+          description="The top side border for tab folder headers." />
+
+      <property name="border-right"
+          description="The right side border for tab folder headers." />
+
+      <property name="border-bottom"
+          description="The bottom side border for tab folder headers." />
+
+      <property name="border-left"
+          description="The left side border for tab folder headers." />
+
+      <property name="text-shadow"
+          description="Shadow for text." />
+
+      <property name="padding"
+          description="Padding (inner distance) for tab items." />
+
+      <property name="margin"
+          description="Margin (outer distance) for tab items." />
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the tab folder is oriented right to left." />
+
+      <state name="selected"
+          description="On tab item selection" />
+
+      <state name="first"
+          description="Applies to the first tab item." />
+
+      <state name="last"
+          description="Applies to the last tab item." />
+
+      <state name="hover"
+          description="On mouse over" />
+
+      <state name="bottom"
+          description="Applies when TabFolder style flag SWT.BOTTOM is set." />
+
+      <state name="disabled"
+          description="Applies to tab items in a disabled tab folder." />
+
+    </element>
+
+    <element name="TabFolder-ContentContainer"
+        description="Applies to the area where the content is placed.">
+
+      <property name="border" shorthand="true"
+          description="Border for the content container." />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around TabFolder content container." />
+
+      <property name="border-top"
+          description="The top side border for content container." />
+
+      <property name="border-right"
+          description="The right side border for content container." />
+
+      <property name="border-bottom"
+          description="The bottom side border for content container." />
+
+      <property name="border-left"
+          description="The left side border for content container." />
+
+    </element>
+
+  </element>
+
+</theme>

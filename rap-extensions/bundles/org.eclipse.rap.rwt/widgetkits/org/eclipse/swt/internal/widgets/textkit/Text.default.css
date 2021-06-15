@@ -1,0 +1,54 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2013 Innoopract Informationssysteme GmbH and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Text property defaults */
+
+Text {
+  font: 14px Arial, sans-serif;
+  border: none;
+  border-radius: 0;
+  padding: 5px 10px 5px 10px;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+Text[MULTI] {
+/*
+ * padding currently has no effect because of bug 253644
+ * [TODO] remove comment if bug fixed
+ */
+  padding: 5px 10px 5px 10px;
+}
+
+Text[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+Text-Message {
+  color: #4a4a4a;
+  text-shadow: none;
+}
+
+Text-Search-Icon {
+  background-image: url( resource/widget/rap/text/find.png );
+  spacing: 3px;
+}
+
+Text-Cancel-Icon {
+  background-image: url( resource/widget/rap/text/clear.gif );
+  spacing: 3px;
+}

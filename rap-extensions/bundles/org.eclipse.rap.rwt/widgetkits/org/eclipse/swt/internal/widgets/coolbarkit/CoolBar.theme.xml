@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="CoolBar">
+
+    <property name="background-image"
+        description="Background image for cool bar" />
+
+    <element name="CoolItem-Handle">
+      <description>
+        This is the place at the beginning of the cool item, which is used for
+        draging the cool item.
+      </description>
+
+      <property name="border" shorthand="true"
+          description="The border of cool item handle." />
+
+      <property name="border-top"
+          description="The top side border of cool item handle." />
+
+      <property name="border-right"
+          description="The right side border of cool item handle." />
+
+      <property name="border-bottom"
+          description="The bottom side border of cool item handle." />
+
+      <property name="border-left"
+          description="The left side border of cool item handle." />
+
+      <property name="width"
+          description="Width of cool item handle." />
+
+    </element>
+
+  </element>
+
+</theme>

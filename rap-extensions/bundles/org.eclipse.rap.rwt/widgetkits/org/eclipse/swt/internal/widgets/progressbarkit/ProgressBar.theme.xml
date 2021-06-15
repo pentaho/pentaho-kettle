@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="ProgressBar"
+      description="Progress bar controls">
+
+    <property name="background-color"
+        description="Background color for progress bars" />
+
+    <property name="background-image"
+        description="Background image for progress bars. Gradient supported." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around progress bars." />
+
+    <property name="border-top"
+        description="The top side border for progress bars." />
+
+    <property name="border-right"
+        description="The right side border for progress bars." />
+
+    <property name="border-bottom"
+        description="The bottom side border for progress bars." />
+
+    <property name="border-left"
+        description="The left side border for progress bars." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="width">
+      <description>
+        Represents the width of the progress bar if it's vertical or the
+        height, if it's horizontal.
+      </description>
+    </property>
+
+    <state name="disabled"
+        description="Applies to disabled progress bars." />
+
+    <style name="VERTICAL"
+        description="The indicator grows from bottom to top." />
+
+    <style name="UNDETERMINED"
+        description="Indicates that the state of progress is unkown." />
+
+    <element name="ProgressBar-Indicator"
+        description="The movable bar that indicates the progress">
+
+      <property name="background-color"
+          description="Background color for progress indicator" />
+
+      <property name="background-image"
+          description="Background image for progress indicator. Gradient supported." />
+
+      <property name="opacity"
+          description="The opacity of the indicator. A value between 0 and 1." />
+
+      <style name="VERTICAL"
+       description="The indicator grows from bottom to top." />
+
+      <style name="UNDETERMINED"
+         description="Indicates that the state of progress is unkown." />
+
+      <state name="disabled"
+          description="Applies to the progress indicator of a disabled progress bar." />
+
+      <state name="error"
+          description="Applies to the progress indicator of a progress bar in ERROR state." />
+
+      <state name="paused"
+          description="Applies to the progress indicator of a progress bar in PAUSED state." />
+
+    </element>
+
+  </element>
+
+</theme>

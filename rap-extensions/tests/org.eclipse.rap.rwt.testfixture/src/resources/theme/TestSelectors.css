@@ -1,0 +1,63 @@
+/* CSS file for tests */
+
+/* All rule */
+
+* {
+  color1: white;
+  color2: black;
+  color3: yellow;
+  color4: rgb( 23, 34, 45 );
+  color5: rgb( 23%, 34%, 45% );
+  color6: #fb0;
+  color7: #ffbb00;
+}
+
+/* Element rule */
+
+Label {
+  background: rgb( 23, 34, 45 );
+}
+
+/* Class rule */
+
+Button.special {
+  background: yellow;
+}
+
+/* Pseudo class rule */
+
+List:selected {
+  background: blue;
+}
+
+/* Attribute rule */
+
+Text[SIMPLE] {
+  background: silver;
+}
+
+/* Attribute value rule */
+
+Text[style=SIMPLE] {
+  background: silver;
+}
+
+/* One-of attribute rule */
+
+Text[style~=BORDER] {
+  background: gold;
+}
+
+/* Combined attributes rule */
+
+Text[SIMPLE][BORDER].special {
+  background: gold;
+}
+
+/* Selector list rule */
+
+Label, Button.special, List:selected, Text[SIMPLE] {
+  font-family : sans-serif;
+  border : 2px solid red;
+  border-top-color : blue;
+}

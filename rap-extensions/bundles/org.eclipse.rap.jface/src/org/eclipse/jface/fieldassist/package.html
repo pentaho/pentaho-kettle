@@ -1,0 +1,51 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+Provides classes that help communicate proper content for fields in dialogs and wizards.
+<h2>
+Package Specification</h2>
+<p>
+This package provides classes that can be used to guide a dialog user through choosing
+appropriate content for fields in a dialog or wizard.
+<p>
+A <tt>ContentProposalAdapter</tt> can be attached to an arbitrary control to provide 
+a popup showing content proposals.  These proposals appear when the defined
+assist keystroke is invoked.  The <tt>ContentProposalAdapter</tt> manages the creation, 
+hiding, and showing of the proposal popup, as well as the proper handling of key events
+between the adapted control and its popup.  Implementors of <tt>IControlContentAdapter</tt>
+allow the adapter to set and retrieve the contents of the supplied control.
+</p>
+<p>
+An <tt>AutoCompleteField</tt> configures a <tt>ContentProposalAdapter</tt> in a manner
+that supports automatic field completion popups that filter based on the control's
+contents.
+</p>
+<p>
+<tt>ControlDecoration</tt> can be used to decorate an arbitrary control with 
+an image that communicates information about the control's content.  Decorations can be
+used to show additional information about a field, such as its status, or a cue
+that shows availability of content proposals.  Decorations are defined in pre-defined
+locations relative to the control, and can be set up to show at all times, or only
+when the control has focus.  It is up to the client to ensure there is enough
+space allocated to render the control decoration.  Decorations can optionally show 
+descriptive text when the user hovers over them.  
+</p>
+<p>
+<tt>DecoratedField</tt> can also be used to decorate a control.  The main difference
+is that decorated fields reserve space for multiple decorations in particular
+locations around the control.  To do this, the field manages the creation of the 
+field's control, using a specialized layout to ensure there is adequate space 
+reserved for decorations around the control. Other than using the field to manage 
+the decorations themselves, clients are expected to interact 
+directly with the control.  
+</p>
+
+<p>Note: None of the classes in this package maintain global state.
+</body>
+</html>

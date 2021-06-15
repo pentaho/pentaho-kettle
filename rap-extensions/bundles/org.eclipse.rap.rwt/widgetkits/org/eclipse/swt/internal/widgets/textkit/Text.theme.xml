@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Text"
+      description="Single-line and multi-line text widgets">
+
+    <property name="color"
+        description="Text color" />
+
+    <property name="background-color"
+        description="Background color" />
+
+    <property name="font"
+        description="Text font" />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around text fields." />
+
+    <property name="border-top"
+        description="The top side border for text fields." />
+
+    <property name="border-right"
+        description="The right side border for text fields." />
+
+    <property name="border-bottom"
+        description="The bottom side border for text fields." />
+
+    <property name="border-left"
+        description="The left side border for text fields." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="background-image">
+      <description>
+        Background image or gradient for text widget.
+      </description>
+    </property>
+
+    <property name="background-position"
+        description="Background image position for text fields." />
+
+    <property name="background-repeat"
+        description="Background image repetition for text fields." />
+
+    <property name="padding"
+        description="Padding for single-line text fields. Also used for spinner." />
+
+    <property name="text-shadow"
+        description="Shadow for text." />
+
+    <property name="box-shadow"
+        description="Inner or outer shadow around the bounds of a Text widget." />
+
+    <style name="BORDER"
+        description="Style constant for bordered behavior." />
+
+    <style name="SINGLE"
+        description="Style constant for single line text field behavior." />
+
+    <style name="MULTI"
+        description="Style constant for multy line text area behavior." />
+
+    <state name="disabled"
+        description="Applies to disabled Texts." />
+
+    <state name="focused"
+        description="Applies to focused Texts." />
+
+    <state name="read-only"
+        description="Applies to text fields in read-only mode." />
+
+    <element name="Text-Message">
+      <description>
+        The Text message. The message text is displayed as a hint for the user,
+        indicating the purpose of the field.
+      </description>
+
+      <property name="color"
+        description="Text message color" />
+
+      <property name="text-shadow"
+        description="Shadow for message text." />
+
+    </element>
+
+    <element name="Text-Search-Icon">
+      <description>
+        The single Text field search icon.
+      </description>
+
+      <property name="background-image"
+        description="The image for the search icon." />
+
+      <property name="spacing"
+        description="Defines the spacing between search icon and text field." />
+
+    </element>
+
+    <element name="Text-Cancel-Icon">
+      <description>
+        The single Text field cancel icon.
+      </description>
+
+      <property name="background-image"
+        description="The image for the cancel icon." />
+
+      <property name="spacing"
+        description="Defines the spacing between cancel icon and text field." />
+
+    </element>
+
+  </element>
+
+</theme>

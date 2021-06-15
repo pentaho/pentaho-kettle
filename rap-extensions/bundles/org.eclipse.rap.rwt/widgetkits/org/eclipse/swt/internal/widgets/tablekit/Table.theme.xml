@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Table">
+
+    <property name="font"
+        description="Font for tables." />
+
+    <property name="color"
+        description="Text color for tables." />
+
+    <property name="background-color"
+        description="Background color for tables." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around the table including header." />
+
+    <property name="border-top"
+        description="The top side border for tables." />
+
+    <property name="border-right"
+        description="The right side border for tables." />
+
+    <property name="border-bottom"
+        description="The bottom side border for tables." />
+
+    <property name="border-left"
+        description="The left side border for tables." />
+
+    <style name="BORDER"
+        description="Indicates that the table should have a border." />
+
+    <property name="background-image"
+        description="Background image or gradient for table client area." />
+
+    <state name="disabled"
+        description="Applies to disabled tables." />
+
+    <state name="linesvisible"
+        description="Applies to a table with gridlines." />
+
+    <state name="rowtemplate"
+        description="Applies to a table with a row template." />
+
+    <element name="TableItem"
+        description="Item elements of table controls">
+
+      <property name="color"
+          description="Table item text color" />
+
+      <property name="background-color"
+          description="Table item background color" />
+
+      <property name="background-image"
+          description="Tree item background image/gradient" />
+
+      <property name="text-decoration"
+          description="Decoration for item text." />
+
+      <property name="text-shadow"
+          description="Shadow for item text." />
+
+      <property name="text-overflow"
+          description="Specifies what should happen when text overflows the containing element." />
+
+      <state name="selected"
+          description="Applies when table item is selected." />
+
+      <state name="unfocused"
+          description="Applies to items on unfocused table." />
+
+      <state name="even"
+          description="Applies when the table item has an even index" />
+
+      <state name="disabled"
+          description="Applies to the items of a disabled table." />
+
+      <state name="linesvisible"
+          description="Applies to the items of a table with gridlines." />
+
+      <state name="rowtemplate"
+          description="Applies to the items of a table with a row template." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the table item." />
+
+    </element>
+
+    <element name="Table-RowOverlay"
+        description="Item overlay that can be used to overwrite the items own colors">
+
+      <property name="color"
+          description="Table item text color" />
+
+      <property name="background-color"
+          description="Table item background color. Supports rgba values" />
+
+      <property name="background-image"
+          description="Tree item background image/gradient" />
+
+      <state name="selected"
+          description="Applies when table item is selected." />
+
+      <state name="unfocused"
+          description="Applies to items on unfocused table." />
+
+      <state name="even"
+          description="Applies when the table item has an even index" />
+
+      <state name="disabled"
+          description="Applies to the items of a disabled table." />
+
+      <state name="linesvisible"
+          description="Applies to the items of a table with gridlines." />
+
+      <state name="rowtemplate"
+          description="Applies to the items of a table with a row template." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the table item." />
+
+    </element>
+
+    <element name="TableColumn"
+        description="Column header of Table controls">
+
+      <property name="color"
+          description="Text color for table column headers" />
+
+      <property name="font"
+          description="Font for table column headers" />
+
+      <property name="background-color"
+          description="Background color for table column headers" />
+
+      <property name="background-image"
+          description="Background image or gradient for TableColumn." />
+
+      <property name="border-bottom"
+          description="Border for TableColumn bottom line." />
+
+      <property name="padding"
+          description="Padding for table columns." />
+
+      <property name="text-shadow"
+          description="Shadow for table columns." />
+
+      <property name="text-overflow"
+          description="Specifies what should happen when text overflows the containing element." />
+
+      <state name="hover"
+          description="On mouse over" />
+
+      <state name="disabled"
+          description="Reflects Table#setEnabled()" />
+
+      <element name="TableColumn-SortIndicator"
+          description="Sort indicators in Table column headers">
+
+        <property name="background-image"
+            description="Indicator image for table sorting (up/down)" />
+
+        <state name="up"
+            description="On sorting up" />
+
+        <state name="down"
+            description="On sorting down" />
+
+      </element>
+
+    </element>
+
+    <element name="Table-Cell"
+        description="A single cell in a multi-column Table.">
+
+      <property name="padding"
+          description="Defines the padding (i.e. the inner distance between border and content) for a table cell." />
+
+      <property name="spacing"
+          description="Defines the spacing between image and text within a table cell." />
+
+    </element>
+
+    <element name="Table-GridLine"
+        description="Grid lines in Table controls">
+
+      <property name="color"
+          description="Grid line color when linesVisible is true" />
+
+      <state name="vertical"
+          description="Applies for vertical grid lines." />
+
+      <state name="horizontal"
+          description="Applies for horizontal grid lines." />
+
+      <state name="header"
+          description="Applies for grid lines in header." />
+
+      <state name="rowtemplate"
+          description="Applies for grild lines in a table with a row template" />
+
+    </element>
+
+    <element name="Table-Checkbox"
+        description="Checkboxes in Table controls">
+
+      <property name="width" deprecated="true"
+          description="Width of check boxes (deprecated, use margin instead)" />
+
+      <property name="margin"
+          description="Space around the check boxes" />
+
+      <property name="background-image">
+        <description>
+          Background image for the table checkbox.
+          The size of the image should be 13 x 13 pixels.
+        </description>
+      </property>
+
+      <state name="grayed"
+        description="When table checkbox is grayed" />
+
+      <state name="checked"
+        description="When table checkbox is checked" />
+
+      <state name="hover"
+        description="Applies while the user hovers over a table check box." />
+
+      <state name="disabled"
+          description="Applies to the items of a disabled table." />
+
+    </element>
+
+  </element>
+</theme>

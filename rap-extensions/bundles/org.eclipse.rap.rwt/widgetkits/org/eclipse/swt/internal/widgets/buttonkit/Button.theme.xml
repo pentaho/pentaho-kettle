@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2015 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Button">
+    <description>
+      RWT Buttons, including push-buttons, toggle-buttons, radio-buttons and check-boxes.
+    </description>
+
+    <property name="color"
+        description="Text color for buttons." />
+
+    <property name="background-color"
+        description="Background color for buttons." />
+
+    <property name="background-image"
+        description="Background image for buttons." />
+
+    <property name="background-position"
+        description="Background image position for buttons." />
+
+    <property name="background-repeat"
+        description="Background image repetition for buttons." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around buttons." />
+
+    <property name="border-top"
+        description="The top side border for buttons." />
+
+    <property name="border-right"
+        description="The right side border for buttons." />
+
+    <property name="border-bottom"
+        description="The bottom side border for buttons." />
+
+    <property name="border-left"
+        description="The left side border for buttons." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="opacity"
+        description="The opacity of the button. A value between 0 and 1." />
+
+    <property name="text-decoration"
+        description="Decoration for button text." />
+
+    <property name="animation">
+      <description>
+        Supports animations-types "hoverIn" and "hoverOut". Others are ignored.
+      </description>
+    </property>
+
+    <property name="cursor"
+        description="Control's cursor." />
+
+    <property name="padding"
+        description="Padding (inner distance) for buttons." />
+
+    <property name="spacing"
+        description="Space between text and image." />
+
+    <property name="font"
+        description="Font for button text." />
+
+    <property name="text-shadow"
+        description="Shadow for text." />
+
+    <property name="box-shadow"
+        description="A shadow effect for button." />
+
+    <style name="PUSH"
+        description="Indicates that the button is a push button." />
+
+    <style name="TOGGLE"
+        description="Indicates that the button is a toggle button." />
+
+    <style name="CHECK"
+        description="Indicates that the button is a check box." />
+
+    <style name="RADIO"
+        description="Indicates that the button is a radio button." />
+
+    <style name="ARROW"
+        description="Indicates that the button is a arrow button." />
+
+    <style name="FLAT"
+        description="Indicates that the button should have a flat appearance." />
+
+    <style name="BORDER"
+        description="Indicates that the button should have a border." />
+
+    <style name="RIGHT_TO_LEFT"
+        description="Indicates that the button is oriented right to left." />
+
+    <state name="hover"
+        description="Applies while the user hovers over a button." />
+
+    <state name="pressed"
+        description="Applies while a button is pressed." />
+
+    <state name="selected"
+        description="Applies for selected TOGGLE, CHECK and RADIO buttons." />
+
+    <state name="disabled"
+        description="Applies for disabled buttons." />
+
+    <state name="default"
+        description="Applies for shell default button." />
+
+    <state name="focused"
+        description="Applies to focused buttons." />
+
+    <element name="Button-CheckIcon"
+        description="The icon to indicate the check and/or grayed state of a Button with style CHECK" >
+
+      <property name="background-image"
+          description="Icon image of the check box." />
+
+      <state name="selected"
+          description="Applies for checked check boxes." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the check box." />
+
+      <state name="grayed"
+          description="Applies when the check box is grayed." />
+
+      <state name="disabled"
+          description="Applies when the button is disabled." />
+
+      <state name="focused"
+          description="Applies when the button is focused." />
+
+    </element>
+
+    <element name="Button-RadioIcon"
+        description="The icon to indicate the selected state of a Button with style RADIO" >
+
+      <property name="background-image"
+          description="Icon image of the radio button." />
+
+      <state name="selected"
+          description="Applies for selected radio buttons." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the radio button." />
+
+      <state name="disabled"
+          description="Applies when the button is disabled." />
+
+      <state name="focused"
+          description="Applies when the button is focused." />
+
+    </element>
+
+    <element name="Button-ArrowIcon"
+        description="The icon of a Button with style ARROW" >
+
+      <property name="background-image"
+          description="Icon image of the arrow button." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the arrow button." />
+
+      <state name="disabled"
+          description="Applies when the button is disabled." />
+
+      <style name="UP"
+          description="Indicates that the arrow button points upwards." />
+
+      <style name="DOWN"
+          description="Indicates that the arrow button points downwards." />
+
+      <style name="LEFT"
+          description="Indicates that the arrow button points leftwards." />
+
+      <style name="RIGHT"
+          description="Indicates that the arrow button points rightwards." />
+
+    </element>
+
+    <element name="Button-FocusIndicator"
+          description="The frame that is drawn when the button is focused." >
+
+      <property name="background-color"
+          description="The fill-color of the frame." />
+
+      <property name="border" shorthand="true"
+          description="The border of the frame. 3D-styles inset, outset, etc are not supported." />
+
+      <property name="border-top"
+          description="The top side border of the frame." />
+
+      <property name="border-right"
+          description="The right side border of the frame." />
+
+      <property name="border-bottom"
+          description="The bottom side border of the frame." />
+
+      <property name="border-left"
+          description="The left side border of the frame." />
+
+      <property name="padding">
+        <description>
+          The padding between the frame and the buttons text.
+          If this is set to "0px", margin will be used to layout the FocusIndicator.
+        </description>
+      </property>
+
+      <property name="margin">
+        <description>
+          The margin between the buttons border and the frame.
+          Only used if padding is set to "0px".
+        </description>
+      </property>
+
+      <property name="opacity"
+          description="The opacity of the indicator. A value between 0 and 1." />
+
+      <style name="ARROW"
+          description="Indicates that the button is a arrow button." />
+
+      <style name="PUSH"
+          description="Indicates that the button is a push button." />
+
+      <style name="TOGGLE"
+          description="Indicates that the button is a toggle button." />
+
+      <style name="CHECK"
+          description="Indicates that the button is a check box." />
+
+      <style name="RADIO"
+          description="Indicates that the button is a radio button." />
+
+      <style name="FLAT"
+          description="Indicates that the button should have a flat appearance." />
+
+      <style name="BORDER"
+          description="Indicates that the button should have a border." />
+
+    </element>
+
+  </element>
+
+</theme>

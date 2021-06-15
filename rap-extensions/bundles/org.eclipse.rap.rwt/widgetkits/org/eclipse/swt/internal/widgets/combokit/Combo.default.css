@@ -1,0 +1,74 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Combo property defaults */
+
+Combo,
+Combo[BORDER] {
+  font: 14px Arial, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+  background-image: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+Combo-Button {
+  cursor: default;
+  background-color: #ffffff;
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-radius: 0;
+  background-image: none;
+  width: 30px;
+}
+
+Combo-Button-Icon {
+  background-image: url( resource/widget/rap/combo/down.png );
+}
+
+Combo-List {
+  border: 1px solid #aaaaaa;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+Combo-List-Item {
+  color: #4a4a4a;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+  text-shadow: none;
+  padding: 6px 10px 6px 10px;
+}
+
+Combo-List-Item:hover {
+  background-color: #b5b5b5;
+}
+
+Combo-List-Item:selected {
+  color: #ffffff;
+  background-color: #5882b5;
+}
+
+Combo-Field {
+  padding: 5px 10px 5px 10px;
+}
+
+Combo-FocusIndicator {
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  opacity: 0;
+}

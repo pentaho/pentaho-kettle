@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Sash"
+      description="Sash control">
+
+    <property name="background-color"
+        description="Background color for sash." />
+
+    <property name="background-image"
+        description="Background image for sash." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around sash." />
+
+    <property name="border-top"
+        description="The top side border for sash." />
+
+    <property name="border-right"
+        description="The right side border for sash." />
+
+    <property name="border-bottom"
+        description="The bottom side border for sash." />
+
+    <property name="border-left"
+        description="The left side border for sash." />
+
+    <style name="BORDER"
+        description="Indicates that the sash should have a border." />
+
+    <state name="hover"
+        description="Applies while the user hovers over a sash." />
+
+    <element name="Sash-Handle">
+      <description>
+        The place in the middle of the sash.
+      </description>
+
+      <property name="background-image"
+          description="Background image for sash handle" />
+
+      <state name="horizontal">
+        <description>
+          Applies while a sash is in horizontal state. This state responds to
+          sash SWT.HORIZONTAL style flag.
+        </description>
+      </state>
+
+      <state name="vertical">
+        <description>
+          Applies while a sash is in vertical state. This state responds to
+          sash SWT.VERTICAL style flag.
+        </description>
+      </state>
+
+    </element>
+
+  </element>
+
+</theme>

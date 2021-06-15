@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2015 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Group">
+    <description>
+      RWT Group controls.
+      Groups are labeled boxes used to group sets of controls.
+    </description>
+
+    <property name="background-color"
+        description="Background color for group boxes." />
+
+    <property name="color"
+        description="Text color for group boxes." />
+
+    <property name="font"
+        description="Font for group boxes. Applied to the group box label." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around group boxes." />
+
+    <property name="border-top"
+        description="The top side border for group boxes." />
+
+    <property name="border-right"
+        description="The right side border for group boxes." />
+
+    <property name="border-bottom"
+        description="The bottom side border for group boxes." />
+
+    <property name="border-left"
+        description="The left side border for group boxes." />
+
+    <style name="BORDER"
+        description="Indicates that the group box should have a border." />
+
+    <style name="RIGHT_TO_LEFT"
+        description="Indicates that the group is oriented right to left." />
+
+    <state name="disabled"
+        description="Applies to disabled group boxes." />
+
+    <element name="Group-Frame"
+        description="The frame that contains the child controls.">
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn for group box frames." />
+
+      <property name="border-top"
+          description="The top side border for group box frames." />
+
+      <property name="border-right"
+          description="The right side border for group box frames." />
+
+      <property name="border-bottom"
+          description="The bottom side border for group box frames." />
+
+      <property name="border-left"
+          description="The left side border for group box frames." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="margin"
+          description="Margin for group box frames (outer space around the frame)." />
+
+      <property name="padding"
+          description="Padding for group box frames (inner distance between frame border and content)." />
+
+      <state name="hover"
+          description="Applies while the cursor hovers over the group box frame." />
+
+      <state name="disabled"
+          description="Applies to the frame of a disabled group box." />
+
+    </element>
+
+    <element name="Group-Label"
+        description="The label of a group box.">
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around group box label." />
+
+      <property name="border-top"
+          description="The top side border for group box label." />
+
+      <property name="border-right"
+          description="The right side border for group box label." />
+
+      <property name="border-bottom"
+          description="The bottom side border for group box label." />
+
+      <property name="border-left"
+          description="The left side border for group box label." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="padding"
+          description="Padding for group box labels (space around the label text)." />
+
+      <property name="margin"
+          description="Margin for group box labels (offset of the group box label)." />
+
+      <property name="background-image"
+          description="Background image for group box label." />
+
+      <property name="background-position"
+          description="Background image position for group box label." />
+
+      <property name="background-repeat"
+          description="Background image repetition for group box label." />
+
+      <property name="background-color"
+          description="Background color for group box label (override the color set by Group#setBackgroundColor())." />
+
+      <property name="color"
+          description="Text color for group box label (override the color set by Group#setForegroundColor())." />
+
+      <property name="text-shadow"
+          description="Shadow for text." />
+
+      <state name="hover"
+          description="Applies while the cursor hovers over the group box label." />
+
+    </element>
+
+  </element>
+
+</theme>

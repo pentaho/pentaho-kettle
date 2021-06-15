@@ -1,0 +1,96 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* DateTime property defaults */
+
+DateTime {
+  font: 14px Arial, sans-serif;
+  border: none;
+  border-radius: 0;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+DateTime[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+DateTime-Field {
+  padding: 5px 3px 6px 3px;
+  text-shadow: none;
+}
+
+DateTime-Calendar-Day {
+  border: none;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  text-shadow: none;
+}
+
+DateTime-Calendar-Navbar {
+  font: 14px Arial, sans-serif;
+  border: none;
+  border-radius: 0;
+  background-color: #ffffff;
+  background-image: none;
+  color: #4a4a4a;
+  text-shadow: none;
+}
+
+DateTime-Calendar-PreviousMonthButton {
+  background-image: url( resource/widget/rap/calendar/lastMonth.png );
+  cursor: default;
+}
+
+DateTime-Calendar-NextMonthButton {
+  background-image: url( resource/widget/rap/calendar/nextMonth.png );
+  cursor: default;
+}
+
+DateTime-Calendar-PreviousYearButton {
+  background-image: url( resource/widget/rap/calendar/lastYear.png );
+  cursor: default;
+}
+
+DateTime-Calendar-NextYearButton {
+  background-image: url( resource/widget/rap/calendar/nextYear.png );
+  cursor: default;
+}
+
+DateTime-UpButton, DateTime-DownButton, DateTime-DropDownButton {
+  background-color: #ffffff;
+  background-image: none;
+  width: 30px;
+  border: none;
+  border-left: 1px solid #aaaaaa;
+  border-radius: 0;
+  cursor: default;
+}
+
+DateTime-UpButton-Icon {
+  background-image: url( resource/widget/rap/datetime/up.png );
+}
+
+DateTime-DownButton-Icon {
+  background-image: url( resource/widget/rap/datetime/down.png );
+}
+
+DateTime-DropDownButton-Icon {
+  background-image: url( resource/widget/rap/spinner/down.png );
+}
+
+DateTime-DropDownCalendar {
+  border: 1px #aaaaaa;
+}

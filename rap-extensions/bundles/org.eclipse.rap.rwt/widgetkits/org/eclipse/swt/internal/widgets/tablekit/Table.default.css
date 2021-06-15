@@ -1,0 +1,103 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Table property defaults */
+
+Table {
+  font: 14px Arial, sans-serif;
+  background-color: #ffffff;
+  background-image: none;
+  color: #4a4a4a;
+  border: none;
+}
+
+Table[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+TableColumn {
+  font: 14px Arial, sans-serif;
+  background-color: #ffffff;
+  padding: 8px 3px 8px 3px;
+  background-image: none;
+  color: #4a4a4a;
+  border-bottom: 1px solid #aaaaaa;
+  text-shadow: none;
+  text-overflow: clip;
+}
+
+TableItem {
+  background-color: transparent;
+  color: #4a4a4a;
+  text-decoration: none;
+  text-shadow: none;
+  background-image: none;
+  text-overflow: clip;
+}
+
+TableItem:hover {
+  background-color: #b5b5b5;
+}
+
+TableItem:selected {
+  color: #ffffff;
+  background-color: #5882b5;
+}
+
+Table-RowOverlay {
+  background-color: transparent;
+  color: inherit;
+  background-image: none;
+}
+
+TableColumn-SortIndicator {
+  background-image: none;
+}
+
+TableColumn-SortIndicator:up {
+  background-image: url( resource/widget/rap/column/sort-indicator-up.png );
+}
+
+TableColumn-SortIndicator:down {
+  background-image: url( resource/widget/rap/column/sort-indicator-down.png );
+}
+
+Table-Cell {
+  spacing: 3px;
+  padding: 6px 3px 6px 3px;
+}
+
+Table-GridLine {
+  color: #dedede;
+}
+
+Table-GridLine:horizontal {
+  color: transparent;
+}
+
+Table-Checkbox {
+  /*
+  For backward compatibility we have to keep the width property.
+  Deprecated, use "margin" instead.
+  */
+  width: 21px;
+  margin: 0 0 0 4px;
+  background-image: url( resource/widget/rap/button/check-unselected.png );
+}
+
+Table-Checkbox:checked {
+  background-image: url( resource/widget/rap/button/check-selected.png );
+}
+
+Table-Checkbox:checked:grayed {
+  background-image: url( resource/widget/rap/button/check-grayed.png );
+}

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Combo">
+    <description>
+      The theming of RWT Combo.
+    </description>
+
+    <property name="color">
+      <description>
+        The text color used for the text field and the drop-down list of
+        a Combo.
+      </description>
+    </property>
+
+    <property name="background-color">
+      <description>
+        The background color used for the text field and the drop-down list of
+        a Combo.
+      </description>
+    </property>
+
+    <property name="background-image">
+      <description>
+        Background gradient for combo text field.
+      </description>
+    </property>
+
+    <property name="font">
+      <description>
+        The font used for the text field and the drop-down list of a Combo.
+      </description>
+    </property>
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around a Combo." />
+
+    <property name="border-top"
+        description="The top side border for Combo." />
+
+    <property name="border-right"
+        description="The right side border for Combo." />
+
+    <property name="border-bottom"
+        description="The bottom side border for Combo." />
+
+    <property name="border-left"
+        description="The left side border for Combo." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="text-shadow">
+      <description>
+        Shadow for text.
+      </description>
+    </property>
+
+    <property name="box-shadow"
+        description="A shadow effect for combo text field." />
+
+    <state name="disabled"
+        description="Applies to disabled Combos." />
+
+    <state name="focused"
+        description="Applies to focused Combos." />
+
+    <element name="Combo-Button">
+      <description>
+        The drop-down button of RWT Combo.
+      </description>
+
+      <property name="background-image">
+        <description>
+          Background image or gradient for combo drop-down button.
+        </description>
+      </property>
+
+      <property name="background-color">
+        <description>
+          The background color of the drop-down button of the Combo.
+        </description>
+      </property>
+
+      <property name="border" shorthand="true"
+          description="The border of the drop-down button of the Combo." />
+
+      <property name="border-top"
+          description="The top side border of the Combo drop-down button." />
+
+      <property name="border-right"
+          description="The right side border of the Combo drop-down button." />
+
+      <property name="border-bottom"
+          description="The bottom side border of the Combo drop-down button." />
+
+      <property name="border-left"
+          description="The left side border of the Combo drop-down button." />
+
+      <property name="border-left">
+        <description>
+          The left side border of the Combo drop-down button.
+        </description>
+      </property>
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="cursor"
+        description="Combo button cursor." />
+
+      <property name="width">
+        <description>
+          The width of the drop-down button of the Combo.
+        </description>
+      </property>
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the combo is oriented right to left." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the combo button." />
+
+      <state name="disabled"
+          description="Applies when the button is disabled." />
+
+      <state name="pressed"
+          description="Applies while a button is pressed." />
+
+    </element>
+
+    <element name="Combo-Button-Icon">
+      <description>
+        The drop-down button icon.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon for the Combo drop-down button.
+        </description>
+      </property>
+
+      <state name="hover"
+          description="Applies while the user hovers over the combo button." />
+
+      <state name="disabled"
+          description="Applies when the button is disabled." />
+
+    </element>
+
+    <element name="Combo-Field">
+      <description>
+        The text field of RWT Combo.
+      </description>
+
+      <property name="padding">
+        <description>
+          Padding (inner distance) for combo text field.
+        </description>
+      </property>
+
+    </element>
+
+    <element name="Combo-List">
+      <description>
+        The list of RWT Combo.
+      </description>
+
+      <property name="border" shorthand="true"
+          description="The border of the Combo list." />
+
+      <property name="border-top"
+          description="The top side border for Combo list." />
+
+      <property name="border-right"
+          description="The right side border for Combo list." />
+
+      <property name="border-bottom"
+          description="The bottom side border for Combo list." />
+
+      <property name="border-left"
+          description="The left side border for Combo list." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="box-shadow" description="The shadow behind the combos list." />
+
+    </element>
+
+    <element name="Combo-List-Item">
+      <description>
+        Items of Combo list.
+      </description>
+
+      <property name="color"
+          description="Item text color" />
+
+      <property name="background-color"
+          description="Item background color" />
+
+      <property name="background-image"
+          description="Item background image/gradient" />
+
+      <property name="text-decoration"
+          description="Decoration for item text." />
+
+      <property name="text-shadow"
+          description="Shadow for item text." />
+
+      <property name="padding"
+          description="Defines the padding (i.e. the inner distance between border and content) for a DropDown item." />
+
+      <state name="selected"
+          description="Applies when Combo list item is selected." />
+
+      <state name="even"
+          description="Applies to Combo list items with an even index." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the Combo list item." />
+
+    </element>
+
+    <element name="Combo-FocusIndicator"
+          description="The frame that is drawn when the combo is focused." >
+
+      <property name="background-color"
+          description="The fill-color of the frame." />
+
+      <property name="border" shorthand="true"
+          description="The border of the frame. 3D-styles inset, outset, etc are not supported." />
+
+      <property name="border-top"
+          description="The top side border of the frame." />
+
+      <property name="border-right"
+          description="The right side border of the frame." />
+
+      <property name="border-bottom"
+          description="The bottom side border of the frame." />
+
+      <property name="border-left"
+          description="The left side border of the frame." />
+
+      <property name="margin">
+        <description>
+          The margin between the combos border and the frame.
+        </description>
+      </property>
+
+      <property name="opacity"
+          description="The opacity of the indicator. A value between 0 and 1." />
+
+    </element>
+
+  </element>
+
+</theme>

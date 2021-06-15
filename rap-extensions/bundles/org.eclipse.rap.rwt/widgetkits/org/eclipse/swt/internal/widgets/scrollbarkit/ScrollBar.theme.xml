@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2011, 2014 EclipseSource and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     EclipseSource - initial API and implementation
+ -->
+
+<theme>
+
+  <element name="ScrollBar"
+      description="ScrollBar widget">
+
+    <property name="background-color"
+        description="Background color for scrollbars." />
+
+    <property name="background-image">
+        <description>
+          Background image or gradient for scrollbars.
+        </description>
+    </property>
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around scrollbars." />
+
+    <property name="border-top"
+        description="The top side border for scrollbars." />
+
+    <property name="border-right"
+        description="The right side border for scrollbars." />
+
+    <property name="border-bottom"
+        description="The bottom side border for scrollbars." />
+
+    <property name="border-left"
+        description="The left side border for scrollbars." />
+
+    <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+    </property>
+
+    <property name="width">
+        <description>
+          Represents the width of the scrollbar if it's vertical or the
+          height, if it's horizontal.
+        </description>
+    </property>
+
+    <property name="opacity"
+        description="The opacity of the scrollbar. A value between 0 and 1." />
+
+    <style name="HORIZONTAL"
+        description="Indicates that the scrollbar horizontal." />
+
+    <style name="VERTICAL"
+        description="Indicates that the scrollbar vertical." />
+
+    <state name="disabled"
+        description="Applies to disabled scrollbars." />
+
+    <state name="active"
+        description="Applies when hovering or scrolling the client area." />
+
+    <element name="ScrollBar-Thumb"
+        description="The movable thumb">
+
+      <property name="background-color"
+          description="Background color for scrollbar thumb" />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around scrollbar thumb." />
+
+      <property name="border-top"
+          description="The top side border for scrollbar thumb." />
+
+      <property name="border-right"
+          description="The right side border for scrollbar thumb." />
+
+      <property name="border-bottom"
+          description="The bottom side border for scrollbar thumb." />
+
+      <property name="border-left"
+          description="The left side border for scrollbar thumb." />
+
+      <property name="border-radius"
+          description="Thumb border radius" />
+
+      <property name="background-image">
+          <description>
+            Background image or gradient for scrollbar movable thumb.
+          </description>
+      </property>
+
+      <property name="min-height"
+          description="Thumb minimun height" />
+
+      <style name="HORIZONTAL"
+          description="Indicates that the scrollbar horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the scrollbar vertical." />
+
+      <state name="hover"
+          description="On thumb roll over" />
+
+      <state name="pressed"
+          description="On thumb pressed" />
+
+    </element>
+
+     <element name="ScrollBar-Thumb-Icon">
+
+       <property name="background-image">
+         <description>
+           The icon for the scrollbar down button.
+         </description>
+       </property>
+
+       <style name="HORIZONTAL"
+           description="Indicates that the scrollbar horizontal." />
+
+       <style name="VERTICAL"
+           description="Indicates that the scrollbar vertical." />
+
+     </element>
+
+    <element name="ScrollBar-DownButton"
+        description="The button for decreasing selection value">
+
+      <property name="background-color"
+          description="Background color for min button" />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around down button." />
+
+      <property name="border-top"
+          description="The top side border for down button." />
+
+      <property name="border-right"
+          description="The right side border for down button." />
+
+      <property name="border-bottom"
+          description="The bottom side border for down button." />
+
+      <property name="border-left"
+          description="The left side border for down button." />
+
+      <property name="border-radius"
+          description="Down button border radius" />
+
+      <property name="background-image">
+          <description>
+            Background image or gradient for scrollbar down button.
+          </description>
+      </property>
+
+      <property name="cursor"
+          description="Scrollbar down button cursor." />
+
+      <state name="hover"
+          description="On button roll over" />
+
+      <state name="pressed"
+          description="On button pressed" />
+
+      <style name="HORIZONTAL"
+         description="Indicates that the scrollbar horizontal." />
+
+      <style name="VERTICAL"
+         description="Indicates that the scrollbar vertical." />
+
+      <state name="disabled"
+          description="Applies to disabled scrollbar down button." />
+
+    </element>
+
+    <element name="ScrollBar-DownButton-Icon">
+      <description>
+        The scrollbar down button icon.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon for the scrollbar down button.
+        </description>
+      </property>
+
+      <style name="HORIZONTAL"
+          description="Indicates that the scrollbar horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the scrollbar vertical." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the button." />
+
+    </element>
+
+    <element name="ScrollBar-UpButton"
+        description="The button for increasing selection value">
+
+      <property name="background-color"
+          description="Background color for up button" />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around up button." />
+
+      <property name="border-top"
+          description="The top side border for up button." />
+
+      <property name="border-right"
+          description="The right side border for up button." />
+
+      <property name="border-bottom"
+          description="The bottom side border for up button." />
+
+      <property name="border-left"
+          description="The left side border for up button." />
+
+      <property name="border-radius"
+          description="Up button border radius" />
+
+      <property name="background-image">
+          <description>
+            Background image or gradient for scrollbar up button.
+          </description>
+      </property>
+
+      <property name="cursor"
+          description="Scrollbar up button cursor." />
+
+      <style name="HORIZONTAL"
+          description="Indicates that the scrollbar horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the scrollbar vertical." />
+
+      <state name="hover"
+          description="On button roll over" />
+
+      <state name="pressed"
+          description="On button pressed" />
+
+      <state name="disabled"
+          description="Applies to disabled scrollbar up button." />
+
+    </element>
+
+    <element name="ScrollBar-UpButton-Icon">
+      <description>
+        The scrollbar up button icon.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon for the scrollbar up button.
+        </description>
+      </property>
+
+      <style name="HORIZONTAL"
+          description="Indicates that the scrollbar horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the scrollbar vertical." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the button." />
+
+    </element>
+
+  </element>
+
+</theme>

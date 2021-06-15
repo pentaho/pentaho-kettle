@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2009, 2014 EclipseSource and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    EclipseSource - initial API and implementation
+ -->
+
+<theme>
+
+  <element name="CLabel">
+
+    <description>
+      RWT CLabel widgets.
+    </description>
+
+    <property name="color"
+        description="Text color for clabels." />
+
+    <property name="background-color"
+        description="Background color for clabels." />
+
+    <property name="font"
+        description="Text font for clabels." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around clabels." />
+
+    <property name="border-top"
+        description="The top side border for clabels." />
+
+    <property name="border-right"
+        description="The right side border for clabels." />
+
+    <property name="border-bottom"
+        description="The bottom side border for clabels." />
+
+    <property name="border-left"
+        description="The left side border for clabels." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="cursor"
+        description="Control's cursor." />
+
+    <property name="background-image"
+        description="Background image or gradient for clabels." />
+
+    <property name="background-position"
+        description="Background image position for clabels." />
+
+    <property name="background-repeat"
+        description="Background image repetition for clabels." />
+
+    <property name="padding"
+        description="Padding for clabels." />
+
+    <property name="spacing"
+        description="Space between text and image." />
+
+    <property name="opacity"
+        description="The opacity of the CLabel. A value between 0 and 1." />
+
+    <property name="text-shadow"
+        description="Shadow for text." />
+
+    <style name="BORDER"
+        description="Indicates that the widget should have a border." />
+
+    <state name="hover"
+        description="Applies to widgets while the cursor hovers over them." />
+
+    <state name="disabled"
+        description="Applies to disabled clabels." />
+
+  </element>
+
+</theme>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+Provides a framework for preferences.
+<h2>
+Package Specification</h2>
+A <b>preference manager</b> (class <tt>PreferenceManager</tt>) maintains
+a tree of <b>preference nodes</b>. Preferences are presented to the end
+user in a <b>preference dialog</b> consisting of <b>preference pages</b>.
+A preference page consists of multiple preference fields, which can be
+displayed and modified though <b>field editors</b>. The framework contains
+an abstract base class for preference dialogs (<tt>PreferenceDialog</tt>),
+and an abstract preference page class (<tt>FieldEditorPreferencePage</tt>)
+for hosting these field editors.
+<p>The individual preference values are maintained in a <b>preference store</b>
+(<tt>IPreferenceStore</tt>). Each preference has a current value and a
+default value use to (re-)initialize it. The framework provides a concrete
+preference store implementation (<tt>PreferenceStore</tt>) based on an
+internal <tt>java.util.Properties</tt> object, with support for persisting
+the non-default preference values to files or streams.
+<p>A field editor presents the value of a single preference to the end
+user. The value is loaded from the preference store; if modified by the
+end user, the value is validated and eventually stored back to the preference
+store.
+<p>This package contains ready-to-use field editors for various types of
+preferences:
+<ul>
+<li>
+<tt>BooleanFieldEditor</tt> - booleans</li>
+
+<li>
+<tt>IntegerFieldEditor</tt> - integers</li>
+
+<li>
+<tt>StringFieldEditor</tt> - text strings</li>
+
+<li>
+<tt>RadioGroupFieldEditor</tt> - enumerations</li>
+
+<li>
+<tt>ColorFieldEditor</tt> - RGB colors</li>
+
+<li>
+<tt>FontFieldEditor</tt> - fonts</li>
+
+<li>
+<tt>DirectoryFieldEditor</tt> - directories</li>
+
+<li>
+<tt>FileFieldEditor</tt> - files</li>
+
+<li>
+<tt>PathEditor</tt> - paths</li>
+</ul>
+All field editors are subclasses of the abstract base class <tt>FieldEditor</tt>;
+the framework allows new kinds of field editors to be defined by subclassing
+this class or one of its subclasses.
+<p>Note: None of the classes in this package maintain global state.
+<br>&nbsp;
+</body>
+</html>

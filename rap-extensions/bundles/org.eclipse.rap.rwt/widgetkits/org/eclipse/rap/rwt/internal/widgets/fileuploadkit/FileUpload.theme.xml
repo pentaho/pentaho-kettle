@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2012, 2014 EclipseSource and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    EclipseSource - initial API and implementation
+ -->
+
+<theme>
+
+  <element name="FileUpload">
+    <description>
+      RWT FileUpload control.
+    </description>
+
+    <property name="color"
+        description="Text color for FileUpload controls." />
+
+    <property name="background-color"
+        description="Background color for FileUpload controls." />
+
+    <property name="background-image"
+        description="Background image for FileUpload controls." />
+
+    <property name="background-position"
+        description="Background image position for FileUpload controls." />
+
+    <property name="background-repeat"
+        description="Background image repetition for FileUpload controls." />
+
+    <property name="border" shorthand="true"
+        description="Border for FileUpload controls." />
+
+    <property name="border-top"
+        description="The top side border for FileUpload controls." />
+
+    <property name="border-right"
+        description="The right side border for FileUpload controls." />
+
+    <property name="border-bottom"
+        description="The bottom side border for FileUpload controls." />
+
+    <property name="border-left"
+        description="The left side border for FileUpload controls." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="opacity"
+        description="The opacity of the FileUpload controls. A value between 0 and 1." />
+
+    <property name="animation">
+      <description>
+        Supports animations-types "hoverIn" and "hoverOut". Others are ignored.
+      </description>
+    </property>
+
+    <property name="cursor"
+        description="Control's cursor." />
+
+    <property name="padding"
+        description="Padding (inner distance) for FileUpload controls." />
+
+    <property name="spacing"
+        description="Space between text and image." />
+
+    <property name="font"
+        description="Font for FileUpload controls text." />
+
+    <property name="text-shadow"
+        description="Shadow for text." />
+
+    <style name="BORDER"
+        description="Indicates that the FileUpload controls should have a border." />
+
+    <state name="hover"
+        description="Applies while the user hovers over a FileUpload control." />
+
+    <state name="pressed"
+        description="Applies while a FileUpload control is pressed." />
+
+    <state name="disabled"
+        description="Applies for disabled FileUpload controls." />
+
+    <element name="FileUpload-FocusIndicator"
+          description="The frame that is drawn when the FileUpload control is focused." >
+
+      <property name="background-color"
+          description="The fill-color of the frame." />
+
+      <property name="border" shorthand="true"
+          description="The border of the frame. 3D-styles inset, outset, etc are not supported." />
+
+      <property name="border-top"
+          description="The top side border of the frame." />
+
+      <property name="border-right"
+          description="The right side border of the frame." />
+
+      <property name="border-bottom"
+          description="The bottom side border of the frame." />
+
+      <property name="border-left"
+          description="The left side border of the frame." />
+
+      <property name="padding">
+        <description>
+          The padding between the frame and the FileUpload control text.
+          If this is set to "0px", margin will be used to layout the FocusIndicator.
+        </description>
+      </property>
+
+      <property name="margin">
+        <description>
+          The margin between the FileUpload control border and the frame.
+          Only used if padding is set to "0px".
+        </description>
+      </property>
+
+      <property name="opacity"
+          description="The opacity of the indicator. A value between 0 and 1." />
+
+    </element>
+
+  </element>
+
+</theme>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Composite">
+    <description>
+      The theming of RWT Composite.
+    </description>
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around the composite." />
+
+    <property name="border-top"
+        description="The top side border for composites." />
+
+    <property name="border-right"
+        description="The right side border for composites." />
+
+    <property name="border-bottom"
+        description="The bottom side border for composites." />
+
+    <property name="border-left"
+        description="The left side border for composites." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="background-color">
+      <description>
+        The background color for composites.
+      </description>
+    </property>
+
+    <property name="background-image">
+      <description>
+        Background image or gradient for composites.
+      </description>
+    </property>
+
+    <property name="background-position"
+        description="Background image position for composites." />
+
+    <property name="background-repeat"
+        description="Background image repetition for composites." />
+
+    <property name="padding">
+      <description>
+        Padding (inner distance) for composites.
+      </description>
+    </property>
+
+    <property name="opacity"
+        description="The opacity of the composite. A value between 0 and 1." />
+
+    <property name="box-shadow"
+        description="The shadow behind the composite." />
+
+    <property name="animation">
+      <description>
+        Animation that is triggered on emergence and disappearance of a Composite.
+        Supported animation types are "slideIn", "slideOut", "fadeIn", "fadeOut",
+        "flyInTop", "flyInBottom", "flyInRight", "flyInLeft", "flyOutTop", "flyOutBottom",
+        "flyOutRight, "flyOutLeft".
+      </description>
+    </property>
+
+    <style name="BORDER"
+        description="Style constant for bordered behavior." />
+
+    <state name="hover"
+        description="Applies while the user hovers over a composite." />
+
+  </element>
+
+</theme>

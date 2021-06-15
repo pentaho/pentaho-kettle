@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2015 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Slider"
+      description="Slider controls">
+
+    <property name="background-color"
+        description="Background color for slider" />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around sliders." />
+
+    <property name="border-top"
+        description="The top side border for sliders." />
+
+    <property name="border-right"
+        description="The right side border for sliders." />
+
+    <property name="border-bottom"
+        description="The bottom side border for sliders." />
+
+    <property name="border-left"
+        description="The left side border for sliders." />
+
+    <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+    </property>
+
+    <style name="HORIZONTAL"
+        description="Indicates that the slider horizontal." />
+
+    <style name="VERTICAL"
+        description="Indicates that the slider vertical." />
+
+    <state name="disabled"
+        description="Applies to disabled sliders." />
+
+    <state name="focused"
+        description="On focus" />
+
+    <element name="Slider-Thumb"
+        description="The movable thumb">
+
+      <property name="background-color"
+          description="Background color for slider thumb" />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around slider thumb." />
+
+      <property name="border-top"
+          description="The top side border for slider thumb." />
+
+      <property name="border-right"
+          description="The right side border for slider thumb." />
+
+      <property name="border-bottom"
+          description="The bottom side border for slider thumb." />
+
+      <property name="border-left"
+          description="The left side border for slider thumb." />
+
+      <property name="border-radius"
+          description="Thumb border radius" />
+
+      <property name="background-image">
+          <description>
+            Background image or gradient for slider movable thumb.
+          </description>
+      </property>
+
+      <style name="HORIZONTAL"
+          description="Indicates that the slider horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the slider vertical." />
+
+      <state name="hover"
+          description="On thumb roll over" />
+
+      <state name="pressed"
+          description="On thumb pressed" />
+
+      <state name="focused"
+          description="On slider-focus" />
+
+    </element>
+
+    <element name="Slider-DownButton"
+        description="The button for decreasing selection value">
+
+      <property name="background-color"
+          description="Background color for min button" />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around down button." />
+
+      <property name="border-top"
+          description="The top side border for down button." />
+
+      <property name="border-right"
+          description="The right side border for down button." />
+
+      <property name="border-bottom"
+          description="The bottom side border for down button." />
+
+      <property name="border-left"
+          description="The left side border for down button." />
+
+      <property name="border-radius"
+          description="Down button border radius" />
+
+      <property name="background-image">
+          <description>
+            Background image, gradient or icon if not specified in
+            Slider-DownButton-Icon for slider down button.
+          </description>
+      </property>
+
+      <property name="cursor"
+          description="Slider down button cursor." />
+
+      <property name="padding"
+          description="Padding (inner distance) for Slider down button." />
+
+      <state name="hover"
+          description="On button roll over" />
+
+      <state name="pressed"
+          description="On button pressed" />
+
+      <style name="HORIZONTAL"
+         description="Indicates that the slider horizontal." />
+
+      <style name="VERTICAL"
+         description="Indicates that the slider vertical." />
+
+      <state name="horizontal" deprecated="true">
+        <description>
+          Corresponds to SWT.HORIZONTAL state of the slider.
+          (deprecated, use HORIZONTAL instead)
+        </description>
+      </state>
+
+      <state name="vertical" deprecated="true">
+        <description>
+          Corresponds to SWT.VERTICAL state of the slider.
+          (deprecated, use VERTICAL instead)
+        </description>
+      </state>
+
+      <state name="disabled"
+          description="Applies to disabled Slider down button." />
+
+    </element>
+
+    <element name="Slider-DownButton-Icon">
+      <description>
+        The slider down button icon.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon for the Slider down button.
+        </description>
+      </property>
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the slider is oriented right to left." />
+
+      <style name="HORIZONTAL"
+          description="Indicates that the slider horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the slider vertical." />
+
+      <state name="horizontal" deprecated="true">
+        <description>
+          Corresponds to SWT.HORIZONTAL state of the slider.
+          (deprecated, use HORIZONTAL instead)
+        </description>
+      </state>
+
+      <state name="vertical" deprecated="true">
+        <description>
+          Corresponds to SWT.VERTICAL state of the slider.
+          (deprecated, use VERTICAL instead)
+        </description>
+      </state>
+
+      <state name="hover"
+          description="Applies while the user hovers over the button." />
+
+    </element>
+
+    <element name="Slider-UpButton"
+        description="The button for increasing selection value">
+
+      <property name="background-color"
+          description="Background color for up button" />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around up button." />
+
+      <property name="border-top"
+          description="The top side border for up button." />
+
+      <property name="border-right"
+          description="The right side border for up button." />
+
+      <property name="border-bottom"
+          description="The bottom side border for up button." />
+
+      <property name="border-left"
+          description="The left side border for up button." />
+
+      <property name="border-radius"
+          description="Up button border radius" />
+
+      <property name="background-image">
+          <description>
+            Background image, gradient or icon if not specified in
+            Slider-UpButton-Icon for slider up button.
+          </description>
+      </property>
+
+      <property name="cursor"
+          description="Slider up button cursor." />
+
+      <property name="padding"
+          description="Padding (inner distance) for Slider up button." />
+
+      <style name="HORIZONTAL"
+          description="Indicates that the slider horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the slider vertical." />
+
+      <state name="hover"
+          description="On button roll over" />
+
+      <state name="pressed"
+          description="On button pressed" />
+
+      <state name="horizontal" deprecated="true">
+        <description>
+          Corresponds to SWT.HORIZONTAL state of the slider.
+          (deprecated, use HORIZONTAL instead)
+        </description>
+      </state>
+
+      <state name="vertical" deprecated="true">
+        <description>
+          Corresponds to SWT.VERTICAL state of the slider.
+          (deprecated, use VERTICAL instead)
+        </description>
+      </state>
+
+      <state name="disabled"
+          description="Applies to disabled Slider up button." />
+
+    </element>
+
+    <element name="Slider-UpButton-Icon">
+      <description>
+        The slider up button icon.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon for the Slider up button.
+        </description>
+      </property>
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the slider is oriented right to left." />
+
+      <style name="HORIZONTAL"
+          description="Indicates that the slider horizontal." />
+
+      <style name="VERTICAL"
+          description="Indicates that the slider vertical." />
+
+      <state name="horizontal" deprecated="true">
+        <description>
+          Corresponds to SWT.HORIZONTAL state of the slider.
+          (deprecated, use HORIZONTAL instead)
+        </description>
+      </state>
+
+      <state name="vertical" deprecated="true">
+        <description>
+          Corresponds to SWT.VERTICAL state of the slider.
+          (deprecated, use VERTICAL instead)
+        </description>
+      </state>
+
+      <state name="hover"
+          description="Applies while the user hovers over the button." />
+
+    </element>
+
+  </element>
+
+</theme>

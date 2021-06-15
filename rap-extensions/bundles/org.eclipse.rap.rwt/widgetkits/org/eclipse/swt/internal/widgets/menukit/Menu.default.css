@@ -1,0 +1,54 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2015 Innoopract Informationssysteme GmbH and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Menu property defaults */
+
+Menu {
+  padding: 0;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 1;
+  animation: none;
+}
+
+MenuItem {
+  color: #4a4a4a;
+  background-color: transparent;
+  background-image: none;
+  opacity: 1;
+  text-shadow: none;
+  padding: 4px 10px 4px 10px;
+}
+
+MenuItem[SEPARATOR] {
+  padding: 0px 10px;
+}
+
+MenuItem:onMenuBar {
+  padding: 4px 6px;
+}
+
+MenuItem-CheckIcon {
+  background-image: url( resource/widget/rap/menu/checkbox.gif );
+}
+
+MenuItem-RadioIcon {
+  background-image: url( resource/widget/rap/menu/radiobutton.gif );
+}
+
+MenuItem-CascadeIcon {
+  background-image: url( resource/widget/rap/menu/arrow-right.gif );
+}

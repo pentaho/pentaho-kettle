@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+<p>Provides support for formatting key sequences.</p>
+
+<h2>Package Specification</h2>
+<p>
+This is a collection fo various formatters for key sequences.  The formatters
+are accessible through the <code>KeyFormatterFactory</code>.  To change how
+keys are formatted in the user interface, call
+<code>KeyFormatterFactory.setDefault(IKeyFormatter)</code>.  They provided
+formatters are:
+</p>
+<dl>
+<dt>FormalKeyFormatter</dt>
+<dd>Provides a formal grammar for reading and writing key sequences.</dd>
+<dt>NativeKeyFormatter</dt>
+<dd>Provide a native-looking, human-readable format for keys.</dd>
+<dt>CompactKeyFormatter</dt>
+<dd>A variation of the native formatter that provides a more compact representation.</dd>
+<dt>EmacsKeyFormatter</dt>
+<dd>An Xemacs-style formatter (e.g., C^x C^x).</dd>
+</dl>
+</body>
+</html>

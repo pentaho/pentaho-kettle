@@ -1,0 +1,50 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2012 Innoopract Informationssysteme GmbH and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Spinner property defaults */
+
+Spinner {
+  font: 14px Arial, sans-serif;
+  border: none;
+  border-radius: 0;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+Spinner[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+Spinner-Field {
+  padding: 6px 10px 6px 10px;
+}
+
+Spinner-UpButton, Spinner-DownButton {
+  background-color: #ffffff;
+  background-image: none;
+  width: 30px;
+  border: none;
+  border-left: 1px solid #aaaaaa;
+  border-radius: 0;
+  cursor: default;
+}
+
+Spinner-UpButton-Icon {
+  background-image: url( resource/widget/rap/spinner/up.png );
+}
+
+Spinner-DownButton-Icon {
+  background-image: url( resource/widget/rap/spinner/down.png );
+}

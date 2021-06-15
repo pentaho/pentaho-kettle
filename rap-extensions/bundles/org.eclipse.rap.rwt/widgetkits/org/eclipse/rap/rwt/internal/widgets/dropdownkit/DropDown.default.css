@@ -1,0 +1,34 @@
+/*******************************************************************************
+ * Copyright (c) 2013, 2014 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    EclipseSource - initial API and implementation
+ ******************************************************************************/
+
+DropDown {
+  border: 1px solid #000000;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+DropDown-Item {
+  color: #4a4a4a;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+  text-shadow: none;
+  padding: 6px 10px 6px 10px;
+}
+
+DropDown-Item:hover {
+  background-color: #b5b5b5;
+}
+
+DropDown-Item:selected {
+  color: #ffffff;
+  background-color: #5882b5;
+}

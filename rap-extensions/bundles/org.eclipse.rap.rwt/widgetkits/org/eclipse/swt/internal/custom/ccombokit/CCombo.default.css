@@ -1,0 +1,76 @@
+/*******************************************************************************
+ * Copyright (c) 2009, 2014 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    EclipseSource - initial API and implementation
+ ******************************************************************************/
+
+/* CCombo property defaults */
+
+CCombo {
+  font: 14px Arial, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+CCombo[BORDER] {
+  border: 1px solid #aaaaaa;
+}
+
+CCombo-Button {
+  cursor: default;
+  background-color: #ffffff;
+  background-image: none;
+  border: none;
+  border-left: 1px solid #aaaaaa;
+  border-radius: 0;
+  width: 30px;
+}
+
+CCombo-Button-Icon {
+  background-image: url( resource/widget/rap/ccombo/down.png );
+}
+
+CCombo-List {
+  border: 1px solid #aaaaaa;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+CCombo-List-Item {
+  color: #4a4a4a;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+  text-shadow: none;
+  padding: 6px 10px 6px 10px;
+}
+
+CCombo-List-Item:hover {
+  background-color: #b5b5b5;
+}
+
+CCombo-List-Item:selected {
+  color: #ffffff;
+  background-color: #5882b5;
+}
+
+CCombo-Field {
+  padding: 5px 10px 5px 10px;
+}
+
+CCombo-FocusIndicator {
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  opacity: 0;
+}

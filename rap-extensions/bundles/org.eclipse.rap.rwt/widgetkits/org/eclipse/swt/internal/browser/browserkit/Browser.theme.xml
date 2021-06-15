@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2010, 2014 EclipseSource and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     EclipseSource - initial API and implementation
+ -->
+
+<theme>
+
+  <element name="Browser">
+    <description>
+      The theming of RWT Browser.
+    </description>
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around a Browser." />
+
+    <property name="border-top"
+        description="The top side border for Browser." />
+
+    <property name="border-right"
+        description="The right side border for Browser." />
+
+    <property name="border-bottom"
+        description="The bottom side border for Browser." />
+
+    <property name="border-left"
+        description="The left side border for Browser." />
+
+    <style name="BORDER"
+        description="Style constant for bordered behavior." />
+
+  </element>
+
+</theme>

@@ -1,0 +1,16 @@
+@charset "utf-8";
+
+@import "mystyle.css";
+@import url("mystyle.css");
+@import url("fineprint.css") print;
+@import url("bluish.css") projection, tv;
+
+@page {
+  margin : 10%;
+}
+
+Label, Text[SIMPLE], List:selected {
+  font-family : sans-serif;
+  border : 2px solid red;
+  border-top-color : blue;
+}

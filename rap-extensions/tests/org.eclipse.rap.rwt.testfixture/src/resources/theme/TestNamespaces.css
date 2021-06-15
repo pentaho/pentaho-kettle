@@ -1,0 +1,12 @@
+/* CSS file for namespace tests */
+
+@namespace "org.eclipse.swt.widgets";
+@namespace my "my";
+
+Label {
+  color: blue;
+}
+
+my|Label {
+  color: green;
+}

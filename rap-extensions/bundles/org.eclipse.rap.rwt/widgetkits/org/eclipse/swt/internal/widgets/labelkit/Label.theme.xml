@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2016 Innoopract Informationssysteme GmbH and other.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Label">
+    <description>
+      SWT Labels.
+      Labels are simple widgets that can contain either text or an image.
+    </description>
+
+    <property name="color"
+        description="Text color for labels." />
+
+    <property name="background-color"
+        description="Background color for labels." />
+
+    <property name="font"
+        description="Text font for labels." />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around a Label." />
+
+    <property name="border-top"
+        description="The top side border for labels." />
+
+    <property name="border-right"
+        description="The right side border for labels." />
+
+    <property name="border-bottom"
+        description="The bottom side border for labels." />
+
+    <property name="border-left"
+        description="The left side border for labels." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="cursor"
+        description="Control's cursor." />
+
+    <property name="background-image"
+        description="Background image or gradient for labels." />
+
+    <property name="background-position"
+        description="Background image position for labels." />
+
+    <property name="background-repeat"
+        description="Background image repetition for labels." />
+
+    <property name="text-decoration"
+        description="Decoration for label text." />
+
+    <property name="opacity"
+        description="The opacity of the label. A value between 0 and 1." />
+
+    <property name="text-shadow"
+        description="Shadow for text." />
+
+    <property name="padding"
+        description="Padding (inner distance) for labels." />
+
+    <style name="BORDER"
+        description="Indicates that the widget should have a border." />
+
+    <style name="SEPARATOR"
+        description="Represents SWT Labels with style SWT.SEPARATOR." />
+
+    <state name="hover"
+        description="Applies to widgets while the cursor hovers over them." />
+
+    <state name="disabled"
+        description="Applies to disabled labels." />
+
+    <element name="Label-SeparatorLine"
+        description="The separator line.">
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn for separator line." />
+
+      <property name="border-top"
+          description="The top side border for for separator line." />
+
+      <property name="border-right"
+          description="The right side border for for separator line." />
+
+      <property name="border-bottom"
+          description="The bottom side border for for separator line." />
+
+      <property name="border-left"
+          description="The left side border for for separator line." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="background-color"
+        description="Background color for the separator line." />
+
+      <property name="background-image"
+        description="Background image or gradient for the separator line." />
+
+      <property name="width">
+        <description>
+          Represents the width of the separator line if it's vertical or the
+          height, if it's horizontal.
+        </description>
+      </property>
+
+      <style name="SHADOW_IN">
+        <description>
+          Indicates that the separator should have a shadow-in border.
+        </description>
+      </style>
+
+      <style name="SHADOW_OUT">
+        <description>
+          Indicates that the separator should have a shadow-in border.
+        </description>
+      </style>
+
+      <style name="SHADOW_NONE">
+        <description>
+          Indicates that the separator should have a plain border.
+        </description>
+      </style>
+
+    </element>
+
+  </element>
+
+</theme>

@@ -1,0 +1,57 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2012 Innoopract Informationssysteme GmbH and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Innoopract Informationssysteme GmbH - initial API and implementation
+ *    EclipseSource - ongoing development
+ ******************************************************************************/
+
+/* Slider property defaults */
+
+Slider {
+  border: none;
+  background-color: #ffffff;
+  border-radius: 0;
+}
+
+/* Thumb */
+
+Slider-Thumb {
+  background-color: #ffffff;
+  background-image: url( resource/widget/rap/slider/slider-background.png );
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+}
+
+/* Buttons */
+
+Slider-UpButton, Slider-DownButton {
+  background-color: #ffffff;
+  background-image: none;
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+  cursor: default;
+  padding: 0;
+}
+
+/* Button Icons */
+
+Slider-UpButton-Icon[HORIZONTAL] {
+  background-image: url( resource/widget/rap/slider/right.png );
+}
+
+Slider-UpButton-Icon[VERTICAL] {
+  background-image: url( resource/widget/rap/slider/down.png );
+}
+
+Slider-DownButton-Icon[HORIZONTAL] {
+  background-image: url( resource/widget/rap/slider/left.png );
+}
+
+Slider-DownButton-Icon[VERTICAL] {
+  background-image: url( resource/widget/rap/slider/up.png );
+}

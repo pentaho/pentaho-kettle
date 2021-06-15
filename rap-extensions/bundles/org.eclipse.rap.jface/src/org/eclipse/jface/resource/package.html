@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+Provides support for managing resources such as SWT
+fonts and images.
+<h2>
+Package Specification</h2>
+This package contains support for managing resources, including:
+<ul>
+<li>
+font registries (<tt>FontRegistry</tt>) - for hanging on to the SWT font
+objects needed by an application</li>
+
+<li>
+color registries (<tt>ColorRegistry</tt>) - for hanging on to the SWT color 
+objects needed by an application</li>
+
+<li>
+image registries (<tt>ImageRegistry</tt>) - for hanging on to the SWT image
+objects needed by an application</li>
+
+<li>
+image descriptors (<tt>ImageDescriptor</tt>) - surrogate object for creating
+SWT images</li>
+
+<li>
+string conversion (<tt>StringConverter</tt>) - for parsing property files</li>
+</ul>
+The JFace resources module is an independent JFace module requiring a basic
+knowledge of SWT and the JFace property change event mechanism. Familiarity
+with other JFace modules is not required.
+<p>Image descriptors are objects that knows how to create an image on demand.
+They serve as a lightweight representation of images in situations where
+no SWT display exists yet, and are used mainly in conjunction with image
+registries. This package contains the image descriptor framework, which
+is a simple hierarchy rooted at the abstract class <tt>ImageDescriptor</tt>.
+The framework includes abstract subclasses for composing images (<tt>CompositeImageDescriptor</tt>)
+as well as a ready-made concrete subclass for loading images from files
+(<tt>FileImageDescriptor</tt>).
+<p>The class <tt>JFaceResources</tt> maintains global state on behalf of
+JFace itself consisting of JFace's own image registry, font registry, resource
+bundle, and preference store.
+<br>&nbsp;
+</body>
+</html>

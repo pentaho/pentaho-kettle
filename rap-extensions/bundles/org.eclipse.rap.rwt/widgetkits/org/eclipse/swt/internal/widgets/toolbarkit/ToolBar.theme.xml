@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2015 Innoopract Informationssysteme GmbH.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     Innoopract Informationssysteme GmbH - initial API and implementation
+     EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="ToolBar"
+      description="Tool bar controls">
+
+    <property name="font"
+        description="Font for tool bar" />
+
+    <property name="color"
+        description="Text color for tool bar" />
+
+    <property name="background-color"
+        description="Background color for tool bar" />
+
+    <property name="background-image"
+        description="Background image for tool bar" />
+
+    <property name="padding"
+        description="Padding (inner distance) for tool bar" />
+
+    <property name="spacing"
+        description="Spacing between the tool items" />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around tool bars." />
+
+    <property name="border-top"
+        description="The top side border for tool bars." />
+
+    <property name="border-right"
+        description="The right side border for tool bars." />
+
+    <property name="border-bottom"
+        description="The bottom side border for tool bars." />
+
+    <property name="border-left"
+        description="The left side border for tool bars." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="opacity"
+        description="The opacity of the tool bar. A value between 0 and 1." />
+
+    <state name="disabled"
+        description="Applies to disabled tool bars" />
+
+    <style name="BORDER"
+        description="Applies when style BORDER is set" />
+
+    <style name="FLAT"
+        description="Applies when style FLAT is set" />
+
+    <style name="VERTICAL"
+        description="Applies when style VERTICAL is set" />
+
+    <element name="ToolItem"
+        description="Items of ToolBar controls">
+
+      <property name="color"
+          description="Text color for tool bar items" />
+
+      <property name="background-color"
+          description="Background color for tool bar items" />
+
+      <property name="background-image"
+          description="Background image for tool bar items" />
+
+      <property name="border" shorthand="true"
+          description="The border that is drawn around tool bar items." />
+
+      <property name="border-top"
+          description="The top side border for tool items." />
+
+      <property name="border-right"
+          description="The right side border for tool items." />
+
+      <property name="border-bottom"
+          description="The bottom side border for tool items." />
+
+      <property name="border-left"
+          description="The left side border for tool items." />
+
+      <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+      </property>
+
+      <property name="animation">
+        <description>
+          Supports animations-types "hoverIn" and "hoverOut". Others are ignored.
+        </description>
+      </property>
+
+      <property name="spacing"
+          description="Spacing between the text and icon" />
+
+      <property name="padding"
+          description="Padding (inner distance) for tool bar items." />
+
+      <property name="opacity"
+          description="The opacity of the item. A value between 0 and 1." />
+
+      <property name="text-shadow"
+          description="Shadow for text." />
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the tool bar is oriented right to left." />
+
+      <style name="FLAT"
+          description="Applies when style FLAT is set on the parent ToolBar." />
+
+      <style name="VERTICAL"
+          description="Applies when style VERTICAL is set on the parent ToolBar." />
+
+      <state name="first"
+          description="Applies to the first tool item." />
+
+      <state name="last"
+          description="Applies to the last tool item." />
+
+      <state name="hover"
+          description="Applies on mouse over." />
+
+      <state name="pressed"
+          description="Applies while the ToolItem is pressed." />
+
+      <state name="selected"
+          description="Applies while the ToolItem is selected (CHECK of RADIO style)." />
+
+      <state name="disabled"
+          description="Applies to disabled tool items." />
+
+    </element>
+
+    <element name="ToolItem-Separator"
+        description="ToolItems with SEPARATOR style">
+
+      <property name="width"
+          description="The width of the Separator" />
+
+    </element>
+
+    <element name="ToolItem-DropDownIcon"
+        description="The icon displayed on ToolItem with DROPDOWN style">
+
+      <property name="background-image"
+          description="The icon" />
+
+      <property name="border" shorthand="true"
+          description="Border for the line separating the dropDown-icon." />
+
+      <property name="border-top"
+          description="The top side border for separating line." />
+
+      <property name="border-right"
+          description="The right side border for separating line." />
+
+      <property name="border-bottom"
+          description="The bottom side border for separating line." />
+
+      <property name="border-left"
+          description="The left side border for separating line." />
+
+      <state name="hover"
+          description="Applies on mouse over." />
+
+      <state name="pressed"
+          description="Applies while the ToolItem is pressed." />
+
+      <state name="selected"
+          description="Applies while the ToolItem is selected (CHECK of RADIO style)." />
+
+      <state name="disabled"
+          description="Applies to disabled tool items." />
+
+    </element>
+
+  </element>
+
+</theme>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>${title}</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" >
+    <!-- IE9 render in standard mode, all older versions in quirksmode -->
+    <meta http-equiv="X-UA-Compatible" content="IE=9,10,11;" >
+    ${headers}
+    <!-- Default presentation for supported markup elements -->
+    <style type="text/css">
+      big {
+        font-size: 1.2em;
+      }
+      small, sup, sub {
+        font-size: 0.8em;
+      }
+      q:before, q:after {
+        content: "";
+      }
+      b, strong {
+        font-weight: 700;
+      }
+      i, em, var, cite, dfn {
+        font-style: italic;
+      }
+      ins {
+        text-decoration: underline;
+      }
+      del {
+        text-decoration: line-through;
+      }
+      code, samp, kbd {
+        font-family: "Courier New", Courier, "Nimbus Mono L", monospace;
+      }
+      abbr {
+        border-bottom: 1px dotted;
+      }
+      .rwt-cell-selectable {
+        cursor: pointer;
+      }
+      /* does (currently) not work in IE7/8: */
+      .rwt-cell-selectable:hover {
+        text-decoration: underline;
+      }
+    </style>
+    <!-- IE 10 specific styles -->
+    <style type="text/css">
+      input::-ms-clear, input::-ms-reveal {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body style="background: url( '${backgroundImage}' );">
+    <noscript>
+      <p style="z-index:100000;background-color:white">
+        ${noScriptMessage}
+      </p>
+    </noscript>
+
+    <!-- BODY_HTML -->
+${body}
+    <!-- /BODY_HTML -->
+
+${libraries}
+
+    <script type="text/javascript">
+      if( rwt.runtime.System.getInstance().isSupported() ) {
+        ${appScript}
+      } else {
+        var msg='<p style="z-index:100000;background-color:white">' + "${noScriptMessage}" + '</p>';
+        document.write( msg );
+      }
+    </script>
+  </body>
+</html>

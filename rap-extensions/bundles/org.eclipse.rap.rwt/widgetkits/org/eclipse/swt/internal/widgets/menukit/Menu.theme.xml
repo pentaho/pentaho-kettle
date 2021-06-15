@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2008, 2014 Innoopract Informationssysteme GmbH and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    Innoopract Informationssysteme GmbH - initial API and implementation
+    EclipseSource - ongoing development
+ -->
+
+<theme>
+
+  <element name="Menu"
+      description="Menus">
+
+    <property name="color"
+        description="Menu text color" />
+
+    <property name="background-color"
+        description="Background color" />
+
+    <property name="background-image"
+        description="Background image or gradient" />
+
+    <property name="font"
+        description="Menu font" />
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around menus." />
+
+    <property name="border-top"
+        description="The top side border for menus." />
+
+    <property name="border-right"
+        description="The right side border for menus." />
+
+    <property name="border-bottom"
+        description="The bottom side border for menus." />
+
+    <property name="border-left"
+        description="The left side border for menus." />
+
+    <property name="border-radius">
+      <description>
+        Border radius. The border radius has no effect if an enhanced border,
+        like "inset" or "outset" is used.
+      </description>
+    </property>
+
+    <property name="opacity"
+        description="The opacity of the menu. A value between 0 and 1." />
+
+    <property name="padding"
+        description="Space between border and text / image" />
+
+    <property name="animation">
+      <description>
+        Supports animations-types "slideIn" and "slideOut". Others are ignored.
+      </description>
+    </property>
+
+    <property name="box-shadow"
+        description="The shadow behind the menu." />
+
+    <state name="disabled"
+        description="Applies to disabled menus." />
+
+    <element name="MenuItem"
+        description="Menu items">
+
+      <property name="color"
+          description="Menu item text color" />
+
+      <property name="background-color"
+          description="Background color" />
+
+      <property name="background-image"
+          description="Background image" />
+
+      <property name="opacity"
+          description="The opacity of the item. A value between 0 and 1." />
+
+      <property name="text-shadow"
+          description="Shadow for text." />
+
+      <property name="padding"
+          description="Padding (inner distance) for menu items." />
+
+      <style name="PUSH"
+          description="Style constant for push menu item behavior." />
+
+      <style name="CHECK"
+          description="Style constant for check box menu item behavior." />
+
+      <style name="RADIO"
+          description="Style constant for radio button menu item behavior." />
+
+      <style name="SEPARATOR"
+          description="Style constant for separator menu item behavior." />
+
+      <style name="CASCADE"
+          description="Style constant for cascade menu item behavior." />
+
+      <state name="hover"
+          description="On mouse over" />
+
+      <state name="pressed"
+          description="On mouse down and open submenu. Only for menu-bars." />
+
+      <state name="disabled"
+          description="Applies to disabled menu items." />
+
+      <state name="onMenuBar"
+          description="Applies to menu items in the menu bar." />
+
+    </element>
+
+    <element name="MenuItem-CheckIcon">
+      <description>
+        Icon of the checkbox.
+        Applies when the MenuItem has a SWT.CHECK style flag.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon image.
+          The maximum size of the image should be 16 x 16 pixels.
+        </description>
+      </property>
+
+      <state name="disabled"
+          description="Applies when the menu is disabled." />
+
+    </element>
+
+    <element name="MenuItem-RadioIcon">
+      <description>
+        Icon of the radio-button.
+        Applies when the MenuItem has a SWT.RADIO style flag.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon image.
+          The maximum size of the image should be 16 x 16 pixels.
+        </description>
+      </property>
+
+      <state name="disabled"
+          description="Applies when the menu is disabled." />
+
+    </element>
+
+    <element name="MenuItem-CascadeIcon">
+      <description>
+        The cascade icon.
+        Applies when the MenuItem has a SWT.CASCADE style flag.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon image.
+          The maximum size of the image should be 16 x 16 pixels.
+        </description>
+      </property>
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the menu is oriented right to left." />
+
+      <state name="disabled"
+          description="Applies when the menu is disabled." />
+
+    </element>
+
+  </element>
+
+</theme>

@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="IBM">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <title>Package-level Javadoc</title>
+</head>
+<body>
+Provides JFace support for long-running operations.
+<h2>
+Package Specification</h2>
+Long-running operations must be dealt with specially in order to keep the
+UI helpful and responsive. Typically this involves temporarily disabling
+most controls and displaying a busy cursor and progress indicator; while
+the operation is in progress, the only requests that will be accepted will
+be ones to cancel the operation.
+<p>The <tt>IRunnableWithProgress</tt> interface should be implemented by
+any class whose instances are intended to be executed as long-running operations.
+These objects can then be run in any runnable context (<tt>IRunnableContext</tt>),
+including such standard JFace UI components as application windows (<tt>ApplicationWindow</tt>),
+wizard dialogs (<tt>WizardDialog</tt>), and progress monitor dialogs (<tt>ProgressMonitorDialog</tt>).
+The utility class <tt>ModalContext</tt> defines the basic mechanism and
+UI event loop for modal operations.
+</body>
+</html>

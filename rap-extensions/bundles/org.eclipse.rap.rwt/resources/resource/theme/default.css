@@ -1,0 +1,2517 @@
+/*******************************************************************************
+ * Copyright (c) 2012, 2017 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    EclipseSource - initial API and implementation
+ ******************************************************************************/
+
+/* Default theme for all widgets */
+
+* {
+  color: #4a4a4a;
+  background-color: #fff;
+  background-image: none;
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+}
+
+*:disabled {
+  color: #CFCFCF;
+}
+
+Widget-Badge {
+  background-color: #dd0000;
+  border: none;
+  border-radius: 10px;
+  font: 10px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #ffffff;
+}
+
+Widget-ToolTip {
+  padding: 10px;
+  background-color: rgb(32, 31, 27);
+  background-image: none;
+  border: none;
+  border-radius: 1px;
+  font: 12px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #e0e0e0;
+  opacity: 0.9;
+  animation: fadeIn 150ms ease-in, fadeOut 150ms ease-in;
+  box-shadow: none;
+  text-align: center;
+}
+
+Widget-ToolTip-Pointer {
+  background-image: none;
+}
+
+Widget-ToolTip-Pointer:up {
+  background-image : url( resource/widget/rap/arrows/tooltip-up.png );
+}
+
+Widget-ToolTip-Pointer:down {
+  background-image : url( resource/widget/rap/arrows/tooltip-down.png );
+}
+
+Widget-ToolTip-Pointer:left {
+  background-image : url( resource/widget/rap/arrows/tooltip-left.png );
+}
+
+Widget-ToolTip-Pointer:right {
+  background-image : url( resource/widget/rap/arrows/tooltip-right.png );
+}
+
+Display {
+  rwt-shadow-color: #a7a6aa;
+  rwt-highlight-color: #ffffff;
+  rwt-darkshadow-color: #85878c;
+  rwt-lightshadow-color: #dcdfe4;
+  rwt-thinborder-color: #aca899;
+  rwt-selectionmarker-color: #fec83c;
+  rwt-infobackground-color: #ffffff;
+
+  rwt-error-image: url( resource/widget/rap/dialog/error.png );
+  rwt-information-image: url( resource/widget/rap/dialog/information.png );
+  rwt-question-image: url( resource/widget/rap/dialog/question.png );
+  rwt-warning-image: url( resource/widget/rap/dialog/warning.png );
+  rwt-working-image: url( resource/widget/rap/dialog/information.png );
+
+  rwt-fontlist: 14px 'Segoe UI', Corbel, Calibri, Tahoma, 'Lucida Sans Unicode';
+
+  background-image: url( resource/widget/rap/display/browser_bg.png );
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+}
+
+SystemMessage-DisplayOverlay {
+  background-color: rgba( 128, 128, 128, 0.2 );
+  background-image: url( resource/widget/rap/display/loading.gif );
+}
+
+ErrorBox-Titlebar {
+  font: bold 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: white;
+  background-color: #406796;
+}
+
+ErrorBox {
+  border: 1px solid #3B5998;
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  background-color: white;
+}
+
+/* Default theme for all controls */
+
+* {
+  border: none;
+  padding: 0px;
+}
+
+*[BORDER] {
+  border: 1px solid #a4a4a4;
+}
+
+/* Default theme for all composites */
+
+Composite {
+  padding: 0;
+  opacity: 1;
+  background-color: #ffffff;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  border: none;
+  box-shadow: none;
+  animation: none;
+}
+
+Composite[BORDER] {
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+/* Button default theme */
+
+Button {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  border: none;
+  border-radius: 2px;
+  padding: 6px 15px;
+  spacing: 2px;
+  cursor: default;
+  animation: none;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  opacity: 1;
+  text-shadow: none;
+  box-shadow: none;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+Button[PUSH],
+Button[TOGGLE],
+Button[PUSH][BORDER],
+Button[TOGGLE][BORDER],
+Button[PUSH][FLAT],
+Button[TOGGLE][FLAT] {
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+  padding: 6px 15px;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  animation: none;
+  cursor: pointer;
+  text-shadow: 0 1px 0 #ffffff;
+}
+
+Button[ARROW],
+Button[ARROW][BORDER],
+Button[ARROW][FLAT] {
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+  padding: 10px;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  cursor: pointer;
+}
+
+Button[ARROW]:default,
+Button[PUSH]:default,
+Button[TOGGLE]:default {
+  background-color: #416693;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #e2eefc ),
+    to( #d4d4d4 )
+  );
+  border: 1px solid #a0b3ca;
+}
+
+Button[ARROW]:disabled,
+Button[PUSH]:disabled,
+Button[TOGGLE]:disabled,
+Button[TOGGLE]:selected:disabled {
+  cursor: default;
+  color: #d2d2d2;
+  background-image: none;
+  background-color: #fafafa;
+  border: 1px solid #d2d2d2;
+}
+
+Button[ARROW]:hover,
+Button[PUSH]:hover,
+Button[TOGGLE]:hover {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #eaeaea ),
+    to( #d5d5d5 )
+  );
+}
+
+Button[ARROW]:pressed,
+Button[PUSH]:pressed,
+Button[TOGGLE]:pressed {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #d5d5d5 ),
+    to( #eaeaea )
+  );
+}
+
+Button[TOGGLE]:selected {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #d5d5d5 ),
+    to( #eaeaea )
+  );
+}
+
+Button[TOGGLE]:selected:hover {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #d5d5d5 ),
+    to( #eaeaea )
+  );
+}
+
+Button[CHECK],
+Button[RADIO] {
+  padding: 3px 3px 3px 0;
+  spacing: 7px;
+}
+
+Button[CHECK][BORDER],
+Button[RADIO][BORDER] {
+  cursor: default;
+  background-image: none;
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+Button-CheckIcon {
+  background-image: url( resource/widget/rap/button/check-unselected.png );
+}
+
+Button-CheckIcon:hover {
+  background-image: url( resource/widget/rap/button/check-unselected-hover.png );
+}
+
+Button-CheckIcon:selected {
+  background-image: url( resource/widget/rap/button/check-selected.png );
+}
+
+Button-CheckIcon:selected:hover {
+  background-image: url( resource/widget/rap/button/check-selected-hover.png );
+}
+
+Button-CheckIcon:selected:grayed {
+  background-image: url( resource/widget/rap/button/check-grayed.png );
+}
+
+Button-CheckIcon:selected:grayed:hover {
+  background-image: url( resource/widget/rap/button/check-grayed-hover.png );
+}
+
+Button-RadioIcon {
+  background-image: url( resource/widget/rap/button/radio-unselected.png );
+}
+
+Button-RadioIcon:hover {
+  background-image: url( resource/widget/rap/button/radio-unselected-hover.png );
+}
+
+Button-RadioIcon:selected {
+  background-image: url( resource/widget/rap/button/radio-selected.png );
+}
+
+Button-RadioIcon:selected:hover {
+  background-image: url( resource/widget/rap/button/radio-selected-hover.png );
+}
+
+Button-ArrowIcon[UP] {
+  background-image: url( resource/widget/rap/button/arrow-up.png );
+}
+
+Button-ArrowIcon[DOWN] {
+  background-image: url( resource/widget/rap/button/arrow-down.png );
+}
+
+Button-ArrowIcon[LEFT] {
+  background-image: url( resource/widget/rap/button/arrow-left.png );
+}
+
+Button-ArrowIcon[RIGHT] {
+  background-image: url( resource/widget/rap/button/arrow-right.png );
+}
+
+Button-FocusIndicator[ARROW], Button-FocusIndicator[PUSH], Button-FocusIndicator[TOGGLE] {
+  background-color: transparent;
+  border: 1px dotted #b8b8b8;
+  margin: 2px;
+  padding: 0px;
+  opacity: 1;
+}
+
+Button-FocusIndicator[CHECK], Button-FocusIndicator[RADIO] {
+  background-color: transparent;
+  border: 1px dotted #b8b8b8;
+  padding: 2px 2px 2px 1px;
+  margin: 0px;
+  opacity: 1;
+}
+
+/* Combo default theme */
+
+Combo,
+Combo[BORDER] {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  border: 1px solid #aaaaaa;
+  border-radius: 0 2px 2px 0;
+  background-image: none;
+  text-shadow: none;
+  box-shadow: inset 0 0 3px #bdbdbd;
+}
+
+Combo:focused,
+Combo[BORDER]:focused {
+  border: 1px solid #4f7cb1;
+  box-shadow: 0 0 5px #4f7cb1;
+}
+
+Combo:disabled,
+Combo[BORDER]:disabled {
+  box-shadow: none;
+}
+
+Combo-Button {
+  cursor: default;
+  background-color: #efefef;
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-radius: 0px 2px 2px 0px;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  width: 30px;
+}
+
+Combo-Button[RIGHT_TO_LEFT] {
+  border: none;
+  border-right: 1px solid #bdbdbd;
+}
+
+Combo-Button:disabled {
+  background-image: none;
+  background-color: transparent;
+}
+
+Combo-Button-Icon {
+  background-image: url( resource/widget/rap/combo/down.png );
+}
+
+Combo-Button-Icon:hover {
+  background-image: url( resource/widget/rap/combo/down-hover.png );
+}
+
+Combo-List {
+  border: 1px solid #4f7cb1;
+  box-shadow: 0 0 5px #4f7cb1;
+  border-radius: 2px;
+}
+
+Combo-List-Item {
+  color: inherit;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+  text-shadow: none;
+  padding: 6px 10px 6px 10px;
+}
+
+Combo-List-Item:hover, Combo-List-Item:even:hover  {
+  background-color: #f0f0f0;
+}
+
+Combo-List-Item:selected, Combo-List-Item:even:selected {
+  background-color: #c5dbef;
+}
+
+Combo-Field {
+  padding: 5px 10px 5px 10px;
+}
+
+Combo-FocusIndicator {
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  opacity: 0;
+}
+
+/* DropDown default theme */
+
+DropDown {
+  border: 1px solid #4f7cb1;
+  border-radius: 0;
+  box-shadow: 0 0 5px #4f7cb1;
+}
+
+DropDown-Item {
+  color: inherit;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+  text-shadow: none;
+  padding: 6px 10px 6px 10px;
+}
+
+DropDown-Item:hover {
+  background-color: #f0f0f0;
+}
+
+DropDown-Item:selected {
+  background-color: #c5dbef;
+}
+
+/* CoolBar default theme */
+
+CoolBar {
+  background-image: none;
+}
+
+CoolItem-Handle {
+  border: 1px solid #bdbdbd;
+  width: 2px;
+}
+
+/* CTabFolder default theme */
+
+CTabFolder {
+  border-color: #bdbdbd;
+  border-radius: 2px;
+}
+
+CTabItem {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  background-color: transparent;
+  background-image: none;
+  padding: 8px 15px;
+  spacing: 10px;
+  text-shadow: none;
+  text-decoration: none;
+}
+
+CTabItem:selected {
+  color: #4a4a4a;
+  background-color: #d6d6d6;
+}
+
+/* Do not gray out disabled CTabItems, this is SWT behavior */
+CTabItem:disabled {
+  color: black;
+}
+
+CTabFolder-DropDownButton-Icon {
+  background-image: url( resource/widget/rap/ctabfolder/ctabfolder-dropdown.png );
+}
+
+CTabFolder-DropDownButton-Icon:hover {
+  background-image: url( resource/widget/rap/ctabfolder/ctabfolder-dropdown-hover.png );
+}
+
+CTabFolder-DropDownButton-Icon[RIGHT_TO_LEFT] {
+  background-image: url( resource/widget/rap/ctabfolder/ctabfolder-dropdown-left.png );
+}
+
+CTabFolder-DropDownButton-Icon[RIGHT_TO_LEFT]:hover {
+  background-image: url( resource/widget/rap/ctabfolder/ctabfolder-dropdown-left-hover.png );
+}
+
+/* Group default theme */
+
+Group {
+  font: 10px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  border: none;
+}
+
+Group-Frame {
+  margin: 20px 0 0 0;
+  padding: 15px 8px 8px 8px;
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+Group-Label {
+  padding: 2px 10px 2px 10px;
+  background-color: #f0f0f0;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  border: 1px solid #bdbdbd;
+  border-radius: 10px;
+  color: inherit;
+  margin: 10px 10px 10px 20px;
+  text-shadow: none;
+}
+
+/* Label default theme */
+
+Label {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  border: none;
+  border-radius: 0;
+  text-decoration: none;
+  cursor: default;
+  opacity: 1;
+  text-shadow: none;
+  padding: 0;
+}
+
+Label[BORDER] {
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+Label-SeparatorLine {
+  background-image: none;
+  background-color: #d2d2d2;
+  border: none;
+  border-radius: 0;
+  width: 2px;
+}
+
+/* Link default theme */
+
+Link {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  text-shadow: none;
+  padding: 2px;
+}
+
+Link[BORDER] {
+  border: 1px solid #bdbdbd;
+}
+
+Link-Hyperlink {
+  color: #416693;
+  text-shadow: none;
+  text-decoration: none;
+}
+
+Link-Hyperlink:disabled {
+  color: #959595;
+}
+
+Link-Hyperlink:hover {
+  text-decoration: underline;
+}
+
+Link-Hyperlink:hover:disabled {
+  color: #959595;
+  text-decoration: none;
+}
+
+/* List default theme */
+
+List {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #ffffff;
+  border: none;
+  color: #4a4a4a;
+}
+
+List[BORDER] {
+  border: 1px solid #bdbdbd;
+}
+
+List-Item {
+  padding: 5px 10px 5px 10px;
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #ffffff;
+  color: inherit;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  text-shadow: none;
+}
+
+List-Item:hover {
+  background-color: #f0f0f0;
+}
+
+List-Item:selected {
+  color: #4a4a4a;
+  /* background-color property is used on the server to compute system color with id
+     SWT.COLOR_LIST_SELECTION (see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=434191) */
+  background-color: #c5dbef;
+}
+
+List-Item:selected:unfocused {
+  background-color:#dfe6ee;
+}
+
+List-Item:even {
+  background-color: #f5f5f5;
+}
+
+List-Item:even:hover {
+  background-color: #e8e8e8;
+}
+
+List-Item:even:selected {
+  background-color: #bdd3e7;
+}
+
+List-Item:even:selected:unfocused {
+  background-color: #dadee6;
+}
+
+List-GridLine {
+  color: transparent;
+}
+
+/* Menu default theme */
+
+Menu {
+  padding: 0;
+  color: #0059a5;
+  background-color: #f9f9f9;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f4f4f4 ),
+    to( #ffffff )
+  );
+  border: 1px solid #a0b3ca;
+  border-radius: 2px;
+  box-shadow: 0 0 4px #ababab;
+  opacity: 1;
+  animation: none;
+}
+
+MenuItem {
+  color: #4a4a4a;
+  background-color: transparent;
+  background-image: none;
+  opacity: 1;
+  text-shadow: none;
+  padding: 4px 10px 4px 10px;
+}
+
+MenuItem[SEPARATOR] {
+  padding: 0px 10px;
+}
+
+MenuItem:hover {
+  color: #ffffff;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #5882b5 ),
+    to( #416693 )
+  );
+}
+
+MenuItem:pressed {
+  color: #ffffff;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #416693 ),
+    to( #5882b5 )
+  );
+}
+
+MenuItem:disabled {
+  color: #bdbdbd;
+  text-shadow: none;
+}
+
+MenuItem:onMenuBar {
+  padding: 4px 6px;
+}
+
+
+MenuItem-CheckIcon {
+  background-image: url( resource/widget/rap/menu/checkbox.gif );
+}
+
+MenuItem-RadioIcon {
+  background-image: url( resource/widget/rap/menu/radiobutton.gif );
+}
+
+MenuItem-CascadeIcon {
+  background-image: url( resource/widget/rap/menu/arrow-right.gif );
+}
+
+MenuItem-CascadeIcon[RIGHT_TO_LEFT] {
+  background-image: url( resource/widget/rap/menu/arrow-left.gif );
+}
+
+/* ProgressBar default theme */
+
+ProgressBar {
+  background-color: #ffffff;
+  background-image: url( resource/widget/rap/progressbar/progressbar-background.png );
+  border: 1px solid #bdbdbd;
+  border-radius: 15px;
+  width: 16px;
+}
+
+ProgressBar-Indicator {
+  background-color: #00589f;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #5882b5 ),
+    to( #416693 )
+  );
+  opacity: 1;
+}
+
+ProgressBar-Indicator:paused {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #818181 ),
+    to( #b5b5b5 )
+  );
+}
+
+ProgressBar-Indicator:error {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #bb1d1d ),
+    to( #fc0000 )
+  );
+}
+
+/* Shell default theme */
+
+Shell {
+  animation: none;
+  border: none;
+  border-radius: 2px;
+  background-color: #ffffff;
+  background-image: none;
+  padding: 0;
+  opacity: 1;
+  box-shadow: none;
+}
+
+Shell[TITLE], Shell[BORDER] {
+  background-color: #ffffff;
+  border: 1px solid #6e6e6e;
+  border-radius: 2px;
+  box-shadow: 0 0 4px #ababab;
+}
+
+Shell[BORDER]:inactive, Shell[TITLE]:inactive {
+  border: 1px solid #bdbdbd;
+  box-shadow: none;
+}
+
+Shell:maximized, Shell:maximized:inactive {
+  border: none;
+  box-shadow: none;
+  border-radius: 0px;
+}
+
+Shell-DisplayOverlay {
+  animation: fadeIn 200ms linear, fadeOut 400ms ease-out;
+  background-image: none;
+  background-color: #808080;
+  opacity: 0.2;
+}
+
+/* Shell titlebar */
+
+Shell-Titlebar {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #0080c0;
+  background-gradient-color: #0080c0;
+  color: #ffffff;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #416693 ), to( #5882b5 )
+  );
+  padding: 0 10px 0 10px;
+  margin: 0px;
+  height: 38px;
+  border: none;
+  border-radius: 0;
+  text-shadow: none;
+}
+
+Shell-Titlebar:inactive {
+  background-color: #7996a5;
+  background-gradient-color: #7996a5;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #818181 ), to( #b5b5b5 )
+  );
+}
+
+/* Shell buttons */
+
+/* Minimize button */
+
+Shell-MinButton {
+  background-image: url( resource/widget/rap/window/shell-min.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-MinButton:hover {
+  background-image: url( resource/widget/rap/window/shell-min-hover.png );
+}
+
+Shell-MinButton:inactive {
+  background-image: url( resource/widget/rap/window/shell-min.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-MinButton:inactive:hover {
+  background-image: url( resource/widget/rap/window/shell-min-hover.png );
+}
+
+/* Maximize button */
+
+Shell-MaxButton {
+  background-image: url( resource/widget/rap/window/shell-max.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-MaxButton:hover {
+  background-image: url( resource/widget/rap/window/shell-max-hover.png );
+}
+
+Shell-MaxButton:inactive {
+  background-image: url( resource/widget/rap/window/shell-max.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-MaxButton:inactive:hover {
+  background-image: url( resource/widget/rap/window/shell-max-hover.png );
+}
+
+/* Restore button */
+
+Shell-MaxButton:maximized {
+  background-image: url( resource/widget/rap/window/shell-restore.png );
+}
+
+Shell-MaxButton:maximized:hover {
+  background-image: url( resource/widget/rap/window/shell-restore-hover.png );
+}
+
+Shell-MaxButton:maximized:inactive {
+  background-image: url( resource/widget/rap/window/shell-restore.png );
+}
+
+Shell-MaxButton:maximized:inactive:hover {
+  background-image: url( resource/widget/rap/window/shell-restore-hover.png );
+}
+
+/* Close button */
+
+Shell-CloseButton {
+  background-image: url( resource/widget/rap/window/shell-close.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-CloseButton:hover {
+  background-image: url( resource/widget/rap/window/shell-close-hover.png );
+}
+
+Shell-CloseButton:inactive {
+  background-image: url( resource/widget/rap/window/shell-close.png );
+  margin: 0 -2px 0 0;
+}
+
+Shell-CloseButton:inactive:hover {
+  background-image: url( resource/widget/rap/window/shell-close-hover.png );
+}
+
+/* Spinner default theme */
+
+Spinner {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  border: none;
+  border-radius: 0 2px 2px 0;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+Spinner[BORDER] {
+  border: 1px solid #aaaaaa;
+  border-radius: 0 2px 2px 0;
+  box-shadow: inset 0 0 3px #bdbdbd;
+}
+
+Spinner[BORDER]:focused {
+  border: 1px solid #4f7cb1;
+  box-shadow: 0 0 5px #4f7cb1;
+}
+
+Spinner:disabled,
+Spinner[BORDER]:disabled {
+  box-shadow: none;
+}
+
+Spinner-Field {
+  padding: 6px 10px 6px 10px;
+}
+
+Spinner-UpButton {
+  background-color: #efefef;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #efefef )
+  );
+  width: 30px;
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-radius: 0px 2px 0px 0px;
+  cursor: default;
+}
+
+Spinner-UpButton[RIGHT_TO_LEFT] {
+  border: none;
+  border-right: 1px solid #bdbdbd;
+}
+
+Spinner-UpButton:disabled {
+  background-image: none;
+  background-color: transparent;
+}
+
+Spinner-UpButton-Icon {
+  background-image: url( resource/widget/rap/spinner/up.png );
+}
+
+Spinner-UpButton-Icon:hover {
+  background-image: url( resource/widget/rap/spinner/up-hover.png );
+}
+
+Spinner-DownButton {
+  background-color: #efefef;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #efefef ),
+    to( #e4e4e4 )
+  );
+  width: 30px;
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-radius: 0px 0px 2px 0px;
+  cursor: default;
+}
+
+Spinner-DownButton[RIGHT_TO_LEFT] {
+  border: none;
+  border-right: 1px solid #bdbdbd;
+}
+
+Spinner-DownButton:disabled {
+  background-image: none;
+  background-color: transparent;
+}
+
+Spinner-DownButton-Icon {
+  background-image: url( resource/widget/rap/spinner/down.png );
+}
+
+Spinner-DownButton-Icon:hover {
+  background-image: url( resource/widget/rap/spinner/down-hover.png );
+}
+
+/* TabFolder default theme */
+
+TabFolder {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  border: none;
+}
+
+TabFolder[BORDER] {
+  border: 1px solid #bdbdbd;
+}
+
+TabFolder-ContentContainer {
+  border: 1px solid #bdbdbd;
+}
+
+TabItem {
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  background-repeat: repeat;
+  background-position: left top;
+  border-top-color: #5882b5;
+  border-bottom-color: #5882b5;
+  text-shadow: 0 1px 0 #ffffff;
+  padding: 6px;
+  margin: 6px 1px 1px 0px;
+  border: 1px solid #bdbdbd;
+  border-bottom: none;
+}
+
+TabItem[RIGHT_TO_LEFT] {
+  margin: 6px 0px 1px 1px;
+}
+
+TabItem:bottom {
+  margin: 1px 1px 6px 0px;
+  border: 1px solid #bdbdbd;
+  border-top: none;
+}
+
+TabItem[RIGHT_TO_LEFT]:bottom {
+  margin: 1px 0px 6px 1px;
+}
+
+TabItem:selected {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #d5d5d5 ),
+    to( #eaeaea )
+  );
+  margin: 3px -1px 0px -2px;
+  border: 1px solid #bdbdbd;
+  border-top: 3px solid #5882b5;
+  border-bottom: none;
+}
+
+TabItem[RIGHT_TO_LEFT]:selected {
+  margin: 3px -2px 0px -1px;
+}
+
+TabItem:bottom:selected {
+  margin: 0px -1px 3px -2px;
+  border: 1px solid #bdbdbd;
+  border-top: none;
+  border-bottom: 3px solid #5882b5;
+}
+
+TabItem[RIGHT_TO_LEFT]:bottom:selected {
+  margin: 0px -2px 3px -1px;
+}
+
+TabItem:selected:first {
+  margin: 3px -1px 0px 0px;
+}
+
+TabItem[RIGHT_TO_LEFT]:selected:first {
+  margin: 3px 0px 0px -1px;
+}
+
+TabItem:bottom:selected:first {
+  margin: 0px -1px 3px 0px;
+}
+
+TabItem[RIGHT_TO_LEFT]:bottom:selected:first {
+  margin: 0px 0px 3px -1px;
+}
+
+/* Table default theme */
+
+Table {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #ffffff;
+  background-image: none;
+  color: #4a4a4a;
+  border: none;
+}
+
+Table[BORDER] {
+  border: 1px solid #bdbdbd;
+}
+
+TableColumn {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #f0f0f0;
+  padding: 8px 3px 8px 3px;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  color: inherit;
+  border-bottom: 1px solid #bdbdbd;
+  text-shadow: 0 1px 0 #ffffff;
+  text-overflow: ellipsis;
+}
+
+TableColumn:hover {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #e4e4e4 ),
+    to( #f9f9f9 )
+  );
+}
+
+TableItem,
+TableItem:linesvisible:even:rowtemplate {
+  background-color: transparent;
+  color: inherit;
+  text-decoration: none;
+  text-shadow: none;
+  background-image: none;
+  text-overflow: ellipsis;
+}
+
+TableItem:linesvisible:even {
+  background-color: #f5f5f5;
+  color: inherit;
+}
+
+Table-RowOverlay {
+  background-color: transparent;
+  color: inherit;
+  background-image: none;
+}
+
+Table-RowOverlay:hover {
+  color: inherit;
+  background-color: rgba( 181, 181, 181, 0.2 );
+  background-image: none;
+}
+
+Table-RowOverlay:selected {
+  color: inherit;
+  background-color: rgba(20, 110, 190, 0.25);
+  background-image: none;
+}
+
+Table-RowOverlay:selected:unfocused {
+  background-color: rgba( 98, 130, 171, 0.2 );
+  background-image: none;
+  color: inherit;
+}
+
+TableColumn-SortIndicator {
+  background-image: none;
+}
+
+TableColumn-SortIndicator:up {
+  background-image: url( resource/widget/rap/column/sort-indicator-up.png );
+}
+
+TableColumn-SortIndicator:down {
+  background-image: url( resource/widget/rap/column/sort-indicator-down.png );
+}
+
+Table-Cell {
+  spacing: 3px;
+  padding: 5px 3px 5px 3px;
+}
+
+Table-GridLine,
+Table-GridLine:vertical:rowtemplate {
+  color: transparent;
+}
+
+Table-GridLine:vertical,
+Table-GridLine:header,
+Table-GridLine:horizontal:rowtemplate {
+  color: #dedede;
+}
+
+
+Table-Checkbox {
+  /*
+  For backward compatibility we have to keep the width property.
+  Deprecated, use "margin" instead.
+  */
+  width: 21px;
+  margin: 0 0 0 4px;
+  background-image: url( resource/widget/rap/button/check-unselected.png );
+}
+
+Table-Checkbox:hover {
+  background-image: url( resource/widget/rap/button/check-unselected-hover.png );
+}
+
+Table-Checkbox:checked {
+  background-image: url( resource/widget/rap/button/check-selected.png );
+}
+
+Table-Checkbox:checked:hover {
+  background-image: url( resource/widget/rap/button/check-selected-hover.png );
+}
+
+Table-Checkbox:checked:grayed {
+  background-image: url( resource/widget/rap/button/check-grayed.png );
+}
+
+Table-Checkbox:checked:grayed:hover {
+  background-image: url( resource/widget/rap/button/check-grayed-hover.png );
+}
+
+/* Text default theme */
+
+Text {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  border: none;
+  border-radius: 0;
+  padding: 5px 10px 5px 10px;
+  color: #4a4a4a;
+  background-repeat: repeat;
+  background-position: left top;
+  background-color: #ffffff;
+  background-image: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+Text[MULTI] {
+/*
+ * padding currently has no effect because of bug 253644
+ * [TODO] remove comment if bug fixed
+ */
+  padding: 5px 10px 5px 10px;
+}
+
+Text[BORDER],
+Text[MULTI][BORDER] {
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+  box-shadow: inset 0 0 3px #bdbdbd;
+}
+
+Text[BORDER]:focused,
+Text[MULTI][BORDER]:focused {
+  border: 1px solid #4f7cb1;
+  box-shadow: 0 0 5px #4f7cb1;
+}
+
+Text[BORDER]:disabled,
+Text[MULTI][BORDER]:disabled,
+Text[BORDER]:read-only,
+Text[MULTI][BORDER]:read-only {
+  box-shadow: none;
+}
+
+Text-Message {
+  color: #a7a6aa;
+  text-shadow: none;
+}
+
+Text-Search-Icon {
+  background-image: url( resource/widget/rap/text/find.png );
+  spacing: 3px;
+}
+
+Text-Cancel-Icon {
+  background-image: url( resource/widget/rap/text/clear.gif );
+  spacing: 3px;
+}
+
+/* ToolBar default theme */
+
+ToolBar {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  padding: 0;
+  spacing: 0;
+  background-color: #fff;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  border: 1px solid #bdbdbd;
+  border-radius: 3px;
+  opacity: 1;
+}
+
+ToolBar[VERTICAL] {
+  background-image: gradient(
+    linear, left top, right top,
+    from( #e9e9e9 ),
+    color-stop( 45%, #f9f9f9 ),
+    color-stop( 55%, #f9f9f9 ),
+    to( #e9e9e9 )
+  );
+}
+
+ToolBar[FLAT] {
+  border: none;
+  background-image: none;
+  spacing: 4px;
+}
+
+ToolBar[FLAT][BORDER] {
+  border: 1px solid #bdbdbd;
+  padding: 3px 3px 6px 3px;
+}
+
+ToolItem {
+  color: inherit;
+  background-color: transparent;
+  background-image: none;
+  border-radius: 0px;
+  padding: 8px;
+  spacing: 4px;
+  opacity: 1;
+  animation: none;
+  text-shadow: 1px 1px 1px #ccc;
+  border: none;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+}
+
+ToolItem[FLAT] {
+  border: 1px solid transparent;
+}
+
+ToolItem[VERTICAL] {
+  border: none;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+ToolItem:first, ToolItem[RIGHT_TO_LEFT]:last {
+  border-radius: 3px 0px 0px 3px;
+}
+
+ToolItem:last, ToolItem[RIGHT_TO_LEFT]:first {
+  border-radius: 0px 3px 3px 0px;
+}
+
+ToolItem[VERTICAL]:first {
+  border-radius: 3px 3px 0px 0px;
+}
+
+ToolItem[VERTICAL]:last {
+  border-radius: 0px 0px 3px 3px;
+}
+
+ToolItem:first:last, ToolItem[VERTICAL]:first:last {
+  border: none;
+  border-radius: 3px 3px 3px 3px;
+}
+
+ToolItem:hover,
+ToolItem:pressed,
+ToolItem:selected {
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-right: 1px solid #bdbdbd;
+}
+
+ToolItem[VERTICAL]:hover,
+ToolItem[VERTICAL]:pressed,
+ToolItem[VERTICAL]:selected {
+  border: none;
+  border-top: 1px solid #bdbdbd;
+  border-bottom: 1px solid #bdbdbd;
+}
+
+ToolItem:hover {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #eaeaea ),
+    to( #d5d5d5 )
+  );
+}
+
+ToolItem:pressed {
+  padding: 9px 8px 7px 8px;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #d5d5d5 ),
+    to( #eaeaea )
+  );
+}
+
+ToolItem:selected {
+  padding: 9px 8px 7px 8px;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #e4e4e4 ),
+    to( #f9f9f9 )
+  );
+}
+
+ToolItem[VERTICAL]:hover {
+  background-image: gradient(
+    linear, left top, right top,
+    from( #d9d9d9 ),
+    color-stop( 45%, #e9e9e9 ),
+    color-stop( 55%, #e9e9e9 ),
+    to( #d9d9d9 )
+  );}
+
+ToolItem[VERTICAL]:pressed, ToolItem[VERTICAL]:selected {
+  background-image: gradient(
+    linear, left top, right top,
+    from( #e9e9e9 ),
+    color-stop( 45%, #dadada ),
+    color-stop( 55%, #dadada ),
+    to( #e9e9e9 )
+  );
+}
+
+ToolItem:first:hover,
+ToolItem:first:selected,
+ToolItem:first:pressed,
+ToolItem[RIGHT_TO_LEFT]:last:hover,
+ToolItem[RIGHT_TO_LEFT]:last:selected,
+ToolItem[RIGHT_TO_LEFT]:last:pressed {
+  border: none;
+  border-left: 1px solid transparent;
+  border-right: 1px solid #bdbdbd;
+}
+
+ToolItem:last:hover,
+ToolItem:last:selected,
+ToolItem:last:pressed,
+ToolItem[RIGHT_TO_LEFT]:first:hover,
+ToolItem[RIGHT_TO_LEFT]:first:selected,
+ToolItem[RIGHT_TO_LEFT]:first:pressed {
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-right: 1px solid transparent;
+}
+
+ToolItem[VERTICAL]:first:hover,
+ToolItem[VERTICAL]:first:selected,
+ToolItem[VERTICAL]:first:pressed {
+  border: none;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid #bdbdbd;
+}
+
+ToolItem[VERTICAL]:last:hover,
+ToolItem[VERTICAL]:last:selected,
+ToolItem[VERTICAL]:last:pressed {
+  border: none;
+  border-top: 1px solid #bdbdbd;
+  border-bottom: 1px solid transparent;
+}
+
+ToolItem[FLAT],
+ToolItem[FLAT]:first,
+ToolItem[FLAT]:last {
+  border: 1px solid transparent;
+  border-radius: 3px 3px 3px 3px;
+}
+
+ToolItem[FLAT]:hover,
+ToolItem[FLAT]:pressed,
+ToolItem[FLAT]:selected,
+ToolItem[FLAT]:first:hover,
+ToolItem[FLAT]:first:pressed,
+ToolItem[FLAT]:first:selected,
+ToolItem[FLAT]:last:hover,
+ToolItem[FLAT]:last:pressed,
+ToolItem[FLAT]:last:selected {
+  border: 1px solid #bdbdbd;
+  border-radius: 3px 3px 3px 3px;
+}
+
+ToolItem[FLAT]:hover,
+ToolItem[FLAT]:first:hover,
+ToolItem[FLAT]:last:hover {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+}
+
+ToolItem[FLAT]:pressed, ToolItem[FLAT]:first:pressed, ToolItem[FLAT]:last:pressed {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #d5d5d5 ),
+    to( #eaeaea )
+  );
+}
+
+ToolItem[FLAT]:selected {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #e4e4e4 ),
+    to( #f9f9f9 )
+  );
+}
+
+ToolItem-DropDownIcon {
+  background-image: url( resource/widget/rap/toolbar/down.png );
+  border: none;
+}
+
+ToolItem-Separator {
+  width: 10px;
+}
+
+/* Tree/Grid default theme */
+
+Tree, Grid {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #ffffff;
+  border: none;
+  color: #4a4a4a;
+}
+
+Tree[BORDER], Grid[BORDER] {
+  border: 1px solid #bdbdbd;
+}
+
+TreeItem, GridItem,
+TreeItem:linesvisible:even:rowtemplate {
+  background-color: transparent;
+  color: inherit;
+  text-decoration: none;
+  text-shadow: none;
+  background-image: none;
+  text-overflow: ellipsis;
+}
+
+TreeItem:linesvisible:even {
+  background-color: #f5f5f5;
+  color: inherit;
+  border: none;
+}
+
+Tree-RowOverlay, Grid-RowOverlay {
+  background-color: transparent;
+  color: inherit;
+  background-image: none;
+}
+
+Tree-RowOverlay:hover, Grid-RowOverlay:hover {
+  color: inherit;
+  background-color: rgba( 181, 181, 181, 0.2 );
+  background-image: none;
+}
+
+Tree-RowOverlay:selected, Grid-RowOverlay:selected {
+  color: inherit;
+  background-color: rgba( 20, 110, 190, 0.25 );
+  background-image: none;
+}
+
+Tree-RowOverlay:selected:unfocused, Grid-RowOverlay:selected:unfocused {
+  background-color: rgba( 98, 130, 171, 0.2 );
+  background-image: none;
+  color: inherit;
+}
+
+TreeColumn, GridColumn {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: inherit;
+  background-color: #f0f0f0;
+   background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  padding: 8px 10px 8px 6px;
+  border-bottom: 1px solid #bdbdbd;
+  text-shadow: none;
+  text-overflow: ellipsis;
+}
+
+TreeColumn:hover, GridColumn:hover {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #e4e4e4 ),
+    to( #f9f9f9 )
+  );
+}
+
+TreeColumn-SortIndicator, GridColumn-SortIndicator {
+  background-image: none;
+}
+
+TreeColumn-SortIndicator:up, GridColumn-SortIndicator:up {
+  background-image: url( resource/widget/rap/column/sort-indicator-up.png );
+}
+
+TreeColumn-SortIndicator:down, GridColumn-SortIndicator:down {
+  background-image: url( resource/widget/rap/column/sort-indicator-down.png );
+}
+
+Tree-Cell, Grid-Cell {
+  spacing: 3px;
+  padding: 5px 3px 5px 3px;
+}
+
+Tree-GridLine,
+Tree-GridLine:vertical:rowtemplate, Grid-GridLine:vertical:rowtemplate {
+  color: transparent;
+}
+
+Tree-GridLine:vertical,
+Tree-GridLine:header,
+Tree-GridLine:horizontal:rowtemplate {
+  color: #dedede;
+}
+
+Grid-GridLine {
+  color: #d0d0d0;
+}
+
+Tree-Checkbox, Grid-Checkbox {
+  margin: 0px 2px 0px 0px;
+  background-image: url( resource/widget/rap/button/check-unselected.png );
+}
+
+Tree-Checkbox:hover, Grid-Checkbox:hover {
+  background-image: url( resource/widget/rap/button/check-unselected-hover.png );
+}
+
+Tree-Checkbox:checked, Grid-Checkbox:checked {
+  background-image: url( resource/widget/rap/button/check-selected.png );
+}
+
+Tree-Checkbox:checked:hover, Grid-Checkbox:checked:hover {
+  background-image: url( resource/widget/rap/button/check-selected-hover.png );
+}
+
+Tree-Checkbox:checked:grayed, Grid-Checkbox:checked:grayed {
+  background-image: url( resource/widget/rap/button/check-grayed.png );
+}
+
+Tree-Checkbox:checked:grayed:hover, Grid-Checkbox:checked:grayed:hover {
+  background-image: url( resource/widget/rap/button/check-grayed-hover.png );
+}
+
+Tree-Indent, Grid-Indent {
+  width: 16px;
+  background-image: none;
+}
+
+Tree-Indent:collapsed, Grid-Indent:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Tree-Indent:collapsed:hover, Grid-Indent:collapsed:hover {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-hover.png );
+}
+
+Tree-Indent:expanded, Grid-Indent:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Tree-Indent:expanded:hover, Grid-Indent:expanded:hover {
+  background-image: url( resource/widget/rap/tree/tree-expanded-hover.png );
+}
+
+Tree-Indent:line, Grid-Indent:line {
+  background-image: none;
+}
+
+Tree-Indent:first, Grid-Indent:first {
+  background-image: none;
+}
+
+Tree-Indent:first:collapsed, Grid-Indent:first:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Tree-Indent:first:collapsed:hover, Grid-Indent:first:collapsed:hover {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-hover.png );
+}
+
+Tree-Indent:first:expanded, Grid-Indent:first:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Tree-Indent:first:expanded:hover, Grid-Indent:first:expanded:hover {
+  background-image: url( resource/widget/rap/tree/tree-expanded-hover.png );
+}
+
+Tree-Indent:last, Grid-Indent:last {
+  background-image: none;
+}
+
+Tree-Indent:last:collapsed, Grid-Indent:last:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Tree-Indent:last:collapsed:hover, Grid-Indent:last:collapsed:hover {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-hover.png );
+}
+
+Tree-Indent:last:expanded, Grid-Indent:last:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Tree-Indent:last:expanded:hover, Grid-Indent:last:expanded:hover {
+  background-image: url( resource/widget/rap/tree/tree-expanded-hover.png );
+}
+
+Tree-Indent:first:last, Grid-Indent:first:last {
+  background-image: none;
+}
+
+Tree-Indent:first:last:collapsed, Grid-Indent:first:last:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed.png );
+}
+
+Tree-Indent:first:last:collapsed:hover, Grid-Indent:first:last:collapsed:hover {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-hover.png );
+}
+
+Tree-Indent:first:last:expanded, Grid-Indent:first:last:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded.png );
+}
+
+Tree-Indent:first:last:expanded:hover, Grid-Indent:first:last:expanded:hover {
+  background-image: url( resource/widget/rap/tree/tree-expanded-hover.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:collapsed, Grid-Indent[RIGHT_TO_LEFT]:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:collapsed:hover, Grid-Indent[RIGHT_TO_LEFT]:collapsed:hover {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-hover-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:expanded, Grid-Indent[RIGHT_TO_LEFT]:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:expanded:hover, Grid-Indent[RIGHT_TO_LEFT]:expanded:hover {
+  background-image: url( resource/widget/rap/tree/tree-expanded-hover-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:first:collapsed, Grid-Indent[RIGHT_TO_LEFT]:first:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:first:collapsed:hover, Grid-Indent[RIGHT_TO_LEFT]:first:collapsed:hover {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-hover-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:first:expanded, Grid-Indent[RIGHT_TO_LEFT]:first:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:first:expanded:hover, Grid-Indent[RIGHT_TO_LEFT]:first:expanded:hover {
+  background-image: url( resource/widget/rap/tree/tree-expanded-hover-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:last:collapsed, Grid-Indent[RIGHT_TO_LEFT]:last:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:last:collapsed:hover, Grid-Indent[RIGHT_TO_LEFT]:last:collapsed:hover {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-hover-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:last:expanded, Grid-Indent[RIGHT_TO_LEFT]:last:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:last:expanded:hover, Grid-Indent[RIGHT_TO_LEFT]:last:expanded:hover {
+  background-image: url( resource/widget/rap/tree/tree-expanded-hover-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:first:last:collapsed, Grid-Indent[RIGHT_TO_LEFT]:first:last:collapsed {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:first:last:collapsed:hover,
+Grid-Indent[RIGHT_TO_LEFT]:first:last:collapsed:hover {
+  background-image: url( resource/widget/rap/tree/tree-collapsed-hover-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:first:last:expanded, Grid-Indent[RIGHT_TO_LEFT]:first:last:expanded {
+  background-image: url( resource/widget/rap/tree/tree-expanded-left.png );
+}
+
+Tree-Indent[RIGHT_TO_LEFT]:first:last:expanded:hover,
+Grid-Indent[RIGHT_TO_LEFT]:first:last:expanded:hover {
+  background-image: url( resource/widget/rap/tree/tree-expanded-hover-left.png );
+}
+
+/* Scale default theme */
+
+Scale {
+  background-color: white;
+  background-image: none;
+  border-radius: 3px;
+}
+
+Scale-Thumb {
+  background-color: #e5e5e5;
+  background-image: none;
+  border: 1px solid #a4a4a4;
+  border-radius: 2px 2px 2px 2px;
+}
+
+Scale-Thumb:focused {
+  border: 1px solid #4f7cb1;
+}
+
+/* DateTime default theme */
+
+DateTime {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  border: none;
+  border-radius: 0 2px 2px 0;
+  color: #464a4e;
+  background-color: #ffffff;
+  background-image: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+DateTime[BORDER]:focused {
+  border: 1px solid #4f7cb1;
+  box-shadow: 0 0 5px #4f7cb1;
+}
+
+DateTime-Field {
+  color: inherit;
+  background-color: transparent;
+  padding: 5px 3px 6px 3px;
+  text-shadow: none;
+}
+
+DateTime[BORDER] {
+  border: 1px solid #aaaaaa;
+  border-radius: 0 2px 2px 0;
+  box-shadow: inset 0 0 3px #bdbdbd;
+}
+
+DateTime[BORDER]:disabled {
+  box-shadow: none;
+}
+
+DateTime-Calendar-Day {
+  border: none;
+  color: inherit;
+  background-color: transparent;
+  text-shadow: none;
+}
+
+DateTime-Calendar-Day:today {
+  border: 1px solid #ff0000;
+}
+
+DateTime-Field:selected,
+DateTime-Calendar-Day:selected {
+  background-color: #5882b5;
+  color: #ffffff;
+}
+
+DateTime-Calendar-Day:selected:hover {
+  background-color: #5882b5;
+  color: #ffffff;
+}
+
+DateTime-Calendar-Day:selected:unfocused {
+  background-color: #c0c0c0;
+}
+
+DateTime-Calendar-Day:otherMonth {
+  background-color: transparent;
+  color: #808080;
+}
+
+DateTime-Calendar-Day:hover {
+  background-color: #b5b5b5;
+}
+
+DateTime-Calendar-Navbar {
+  border: none;
+  border-radius: 0;
+  background-color: #00569c;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #416693 ), to( #5882b5 )
+  );
+  color: white;
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  text-shadow: none;
+}
+
+DateTime-Calendar-PreviousMonthButton {
+  background-image: url( resource/widget/rap/calendar/lastMonth.png );
+  cursor: default;
+}
+
+DateTime-Calendar-PreviousMonthButton:hover {
+  background-image: url( resource/widget/rap/calendar/lastMonth-hover.png );
+}
+
+DateTime-Calendar-NextMonthButton {
+  background-image: url( resource/widget/rap/calendar/nextMonth.png );
+  cursor: default;
+}
+
+DateTime-Calendar-NextMonthButton:hover {
+  background-image: url( resource/widget/rap/calendar/nextMonth-hover.png );
+}
+
+DateTime-Calendar-PreviousYearButton {
+  background-image: url( resource/widget/rap/calendar/lastYear.png );
+  cursor: default;
+}
+
+DateTime-Calendar-PreviousYearButton:hover {
+  background-image: url( resource/widget/rap/calendar/lastYear-hover.png );
+}
+
+DateTime-Calendar-NextYearButton {
+  background-image: url( resource/widget/rap/calendar/nextYear.png );
+  cursor: default;
+}
+
+DateTime-Calendar-NextYearButton:hover {
+  background-image: url( resource/widget/rap/calendar/nextYear-hover.png );
+}
+
+DateTime-Calendar-PreviousMonthButton[RIGHT_TO_LEFT] {
+  background-image: url( resource/widget/rap/calendar/nextMonth.png );
+}
+
+DateTime-Calendar-PreviousMonthButton[RIGHT_TO_LEFT]:hover {
+  background-image: url( resource/widget/rap/calendar/nextMonth-hover.png );
+}
+
+DateTime-Calendar-NextMonthButton[RIGHT_TO_LEFT] {
+  background-image: url( resource/widget/rap/calendar/lastMonth.png );
+}
+
+DateTime-Calendar-NextMonthButton[RIGHT_TO_LEFT]:hover {
+  background-image: url( resource/widget/rap/calendar/lastMonth-hover.png );
+}
+
+DateTime-Calendar-PreviousYearButton[RIGHT_TO_LEFT] {
+  background-image: url( resource/widget/rap/calendar/nextYear.png );
+}
+
+DateTime-Calendar-PreviousYearButton[RIGHT_TO_LEFT]:hover {
+  background-image: url( resource/widget/rap/calendar/nextYear-hover.png );
+}
+
+DateTime-Calendar-NextYearButton[RIGHT_TO_LEFT] {
+  background-image: url( resource/widget/rap/calendar/lastYear.png );
+}
+
+DateTime-Calendar-NextYearButton[RIGHT_TO_LEFT]:hover {
+  background-image: url( resource/widget/rap/calendar/lastYear-hover.png );
+}
+
+DateTime-UpButton {
+  background-color: #f0f0f0;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #efefef )
+  );;
+  width: 30px;
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-radius: 0px 2px 0px 0px;
+  cursor: default;
+}
+
+DateTime-UpButton[RIGHT_TO_LEFT] {
+  border: none;
+  border-right: 1px solid #bdbdbd;
+}
+
+DateTime-UpButton-Icon {
+  background-image: url( resource/widget/rap/datetime/up.png );
+}
+
+DateTime-UpButton-Icon:hover {
+  background-image: url( resource/widget/rap/datetime/up-hover.png );
+}
+
+DateTime-DownButton {
+  background-color: #f0f0f0;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #efefef ),
+    to( #e4e4e4 )
+  );
+  width: 30px;
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-radius: 0px 0px 2px 0px;
+  cursor: default;
+}
+
+DateTime-DownButton[RIGHT_TO_LEFT] {
+  border: none;
+  border-right: 1px solid #bdbdbd;
+}
+
+DateTime-DownButton-Icon {
+  background-image: url( resource/widget/rap/datetime/down.png );
+}
+
+DateTime-DownButton-Icon:hover {
+  background-image: url( resource/widget/rap/datetime/down-hover.png );
+}
+
+DateTime-DropDownButton {
+  cursor: default;
+  background-color: #f0f0f0;
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-radius: 0px 2px 2px 0px;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  width: 30px;
+}
+
+DateTime-DropDownButton[RIGHT_TO_LEFT] {
+  border: none;
+  border-right: 1px solid #bdbdbd;
+}
+
+DateTime-DropDownButton:disabled,
+DateTime-UpButton:disabled,
+DateTime-DownButton:disabled {
+  background-image: none;
+  background-color: transparent;
+}
+
+DateTime-DropDownButton-Icon {
+  background-image: url( resource/widget/rap/spinner/down.png );
+}
+
+DateTime-DropDownButton-Icon:hover {
+  background-image: url( resource/widget/rap/spinner/down-hover.png );
+}
+
+DateTime-DropDownCalendar {
+  border: 1px #a7a6aa solid;
+}
+
+/* ExpandBar default theme */
+
+ExpandBar {
+  color: #4a4a4a;
+  background-color: white;
+}
+
+ExpandBar[BORDER] {
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+ExpandItem {
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+ExpandItem-Header {
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  text-shadow: none;
+}
+
+ExpandItem-Header:disabled {
+  cursor: default;
+}
+
+ExpandItem-Button {
+  background-image: url( resource/widget/rap/expanditem/expanditem-expand.png );
+}
+
+ExpandItem-Button:hover {
+  background-image: url( resource/widget/rap/expanditem/expanditem-expand-hover.png );
+}
+
+ExpandItem-Button:expanded {
+  background-image: url( resource/widget/rap/expanditem/expanditem-collapse.png );
+}
+
+ExpandItem-Button:expanded:hover {
+  background-image: url( resource/widget/rap/expanditem/expanditem-collapse-hover.png );
+}
+
+/* Sash default theme */
+
+Sash {
+  border: none;
+  background-image: none;
+  background-color: transparent;
+}
+
+Sash[BORDER] {
+  border: 1px solid #bdbdbd;
+}
+
+Sash:hover {
+  background-color: #e5e5e5;
+}
+
+Sash-Handle:horizontal {
+  background-image: url( resource/widget/rap/sash/sash-handle-horizontal.png );
+}
+
+Sash-Handle:vertical {
+  background-image: url( resource/widget/rap/sash/sash-handle-vertical.png );
+}
+
+/* Slider default theme */
+
+Slider {
+  border: none;
+  background-color: #f0f0f0;
+  border-radius: 2px;
+}
+
+/* Thumb */
+
+Slider-Thumb[HORIZONTAL],
+Slider-Thumb[VERTICAL] {
+  background-color: #e4e4e4;
+  background-image: url( resource/widget/rap/slider/slider-background.png );
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+/* Buttons */
+
+Slider-UpButton,
+Slider-DownButton {
+  background-color: #e4e4e4;
+  border: 1px solid #bdbdbd;
+  cursor: default;
+  padding: 0;
+}
+
+Slider-UpButton[HORIZONTAL],
+Slider-DownButton[HORIZONTAL] {
+  background-image: none;
+}
+
+Slider-UpButton[VERTICAL],
+Slider-DownButton[VERTICAL] {
+  background-image: none;
+}
+
+Slider-UpButton[HORIZONTAL]:pressed,
+Slider-DownButton[HORIZONTAL]:pressed {
+  background-image: none;
+}
+
+Slider-UpButton[VERTICAL]:pressed,
+Slider-DownButton[VERTICAL]:pressed {
+  background-image: none;
+}
+
+/* Rounded Borders */
+
+Slider-UpButton[HORIZONTAL] {
+  border-radius: 0px 2px 2px 0px;
+}
+
+Slider-UpButton[VERTICAL] {
+  border-radius: 0px 0px 2px 2px;
+}
+
+Slider-DownButton[HORIZONTAL] {
+  border-radius: 2px 0px 0px 2px;
+}
+
+Slider-DownButton[VERTICAL] {
+  border-radius: 2px 2px 0px 0px;
+}
+
+/* Button Icons */
+
+Slider-UpButton-Icon[HORIZONTAL] {
+  background-image: url( resource/widget/rap/slider/right.png );
+}
+
+Slider-UpButton-Icon[HORIZONTAL][RIGHT_TO_LEFT] {
+  background-image: url( resource/widget/rap/slider/left.png );
+}
+
+Slider-UpButton-Icon[VERTICAL] {
+  background-image: url( resource/widget/rap/slider/down.png );
+}
+
+Slider-DownButton-Icon[HORIZONTAL] {
+  background-image: url( resource/widget/rap/slider/left.png );
+}
+
+Slider-DownButton-Icon[HORIZONTAL][RIGHT_TO_LEFT] {
+  background-image: url( resource/widget/rap/slider/right.png );
+}
+
+Slider-DownButton-Icon[VERTICAL] {
+  background-image: url( resource/widget/rap/slider/up.png );
+}
+
+/* ToolTip default theme */
+
+ToolTip {
+  cursor: default;
+  border: 1px solid #a0b3ca;
+  border-radius: 2px;
+  padding: 8px;
+  opacity: 1;
+  color: #4a4a4a;
+  background-image : gradient(
+    linear, left top, right top,
+    from( #f8f9ff ),
+    to( #f4f4f4 )
+  );
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #fcfcfc;
+  animation: fadeIn 200ms linear, fadeOut 600ms ease-out;
+  box-shadow: 0 0 4px #adadad;
+  width: auto;
+  height: auto;
+}
+
+ToolTip-Image[ICON_ERROR] {
+  background-image: url( resource/widget/rap/tooltip/error.png );
+}
+
+ToolTip-Image[ICON_INFORMATION] {
+  background-image: url( resource/widget/rap/tooltip/information.png );
+}
+
+ToolTip-Image[ICON_WARNING] {
+  background-image: url( resource/widget/rap/tooltip/warning.png );
+}
+
+ToolTip-Text {
+  color: #4a4a4a;
+  font: bold 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  text-shadow: none;
+}
+
+ToolTip-Message {
+  color: #4a4a4a;
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  text-shadow: none;
+}
+
+/* CCombo default theme */
+
+CCombo {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  border: none;
+  border-radius: 0 2px 2px 0;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+CCombo[BORDER] {
+  border: 1px solid #aaaaaa;
+  border-radius: 0 2px 2px 0;
+  box-shadow: inset 0 0 3px #bdbdbd;
+}
+
+CCombo[BORDER]:focused {
+  border: 1px solid #4f7cb1;
+  box-shadow: 0 0 5px #4f7cb1;
+}
+
+CCombo:disabled,
+CCombo[BORDER]:disabled {
+  box-shadow: none;
+}
+
+CCombo-Button {
+  cursor: default;
+  background-color: #efefef;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  border: none;
+  border-left: 1px solid #bdbdbd;
+  border-radius: 0px 2px 2px 0px;
+  width: 30px;
+}
+
+CCombo-Button[RIGHT_TO_LEFT] {
+  border: none;
+  border-right: 1px solid #bdbdbd;
+}
+
+CCombo-Button:disabled {
+  background-image: none;
+  background-color: transparent;
+}
+
+CCombo-Button-Icon {
+  background-image: url( resource/widget/rap/ccombo/down.png );
+}
+
+CCombo-Button-Icon:hover {
+  background-image: url( resource/widget/rap/ccombo/down-hover.png );
+}
+
+CCombo-List {
+  border: 1px solid #4f7cb1;
+  box-shadow: 0 0 5px #4f7cb1;
+  border-radius: 2px;
+}
+
+CCombo-List-Item {
+  color: inherit;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+  text-shadow: none;
+  padding: 6px 10px 6px 10px;
+}
+
+CCombo-List-Item:hover, CCombo-List-Item:even:hover {
+  background-color: #f0f0f0;
+}
+
+CCombo-List-Item:selected, CCombo-List-Item:even:selected {
+  background-color: #c5dbef;
+}
+
+CCombo-Field {
+  padding: 5px 10px 5px 10px;
+}
+
+CCombo-FocusIndicator {
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  opacity: 0;
+}
+
+/* CLabel default theme */
+
+CLabel {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  background-image: none;
+  background-repeat: repeat;
+  background-position: left top;
+  border: none;
+  padding: 6px;
+  spacing: 5px;
+  cursor: default;
+  opacity: 1;
+  text-shadow: none;
+}
+
+CLabel[BORDER] {
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+/* Browser default theme */
+
+Browser {
+  border: none;
+}
+
+Browser[BORDER] {
+  border: 1px solid #a4a4a4;
+}
+
+/* ScrollBar default theme */
+
+ScrollBar {
+  background-color: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  width: 8px;
+  opacity: 0;
+}
+
+ScrollBar:active {
+  opacity: 0.8;
+}
+
+ScrollBar-Thumb {
+  background-color: #cccccc;
+  border: 1px solid #bdbdbd;
+  border-radius: 15px;
+  background-image: none;
+  min-height: 20px;
+}
+
+ScrollBar-UpButton,
+ScrollBar-DownButton {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: default;
+  background-image: none;
+}
+
+/* FileUpload default theme */
+
+FileUpload {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #f9f9f9 ),
+    to( #e4e4e4 )
+  );
+  background-repeat: repeat;
+  background-position: left top;
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+  padding: 6px 15px;
+  spacing: 2px;
+  cursor: pointer;
+  animation: none;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  opacity: 1;
+  text-shadow: 0 1px 0 #ffffff;
+}
+
+FileUpload:disabled {
+  cursor: default;
+  color: #d2d2d2;
+  background-image: none;
+  background-color: #fafafa;
+  border: 1px solid #d2d2d2;
+}
+
+FileUpload:hover {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #eaeaea ),
+    to( #d5d5d5 )
+  );
+}
+
+FileUpload:pressed {
+  background-image: gradient(
+    linear, left top, left bottom,
+    from( #d5d5d5 ),
+    to( #eaeaea )
+  );
+}
+
+FileUpload-FocusIndicator {
+  background-color: transparent;
+  border: 1px dotted #b8b8b8;
+  margin: 2px;
+  padding: 0px;
+  opacity: 1;
+}
+
+/* JFace specific theming */
+
+Shell.jface_contentProposalPopup, Shell.jface_infoPopupDialog {
+  border: 1px solid #bdbdbd;
+  padding: 0;
+  box-shadow: 0 0 4px #ababab;
+}

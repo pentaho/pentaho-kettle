@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright (c) 2009, 2015 EclipseSource and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+    EclipseSource - initial API and implementation
+ -->
+
+<theme>
+
+  <element name="CCombo">
+    <description>
+      The theming of RWT CCombo.
+    </description>
+
+    <property name="color">
+      <description>
+        The text color used for the text field and the drop-down list of
+        a CCombo.
+      </description>
+    </property>
+
+    <property name="background-color">
+      <description>
+        The background color used for the text field and the drop-down list of
+        a CCombo.
+      </description>
+    </property>
+
+    <property name="background-image">
+      <description>
+        Background gradient for ccombo text field.
+      </description>
+    </property>
+
+    <property name="font">
+      <description>
+        The font used for the text field and the drop-down list of a CCombo.
+      </description>
+    </property>
+
+    <property name="border" shorthand="true"
+        description="The border that is drawn around a CCombo." />
+
+    <property name="border-top"
+        description="The top side border for CCombo." />
+
+    <property name="border-right"
+        description="The right side border for CCombo." />
+
+    <property name="border-bottom"
+        description="The bottom side border for CCombo." />
+
+    <property name="border-left"
+        description="The left side border for CCombo." />
+
+    <property name="border-radius">
+        <description>
+          Border radius. The border radius has no effect if an enhanced border,
+          like "inset" or "outset" is used.
+        </description>
+    </property>
+
+    <property name="text-shadow">
+      <description>
+        Shadow for text.
+      </description>
+    </property>
+
+    <property name="box-shadow"
+        description="A shadow effect for ccombo text field." />
+
+    <state name="disabled"
+        description="Applies to disabled CCombos." />
+
+    <state name="focused"
+        description="Applies to focused CCombos." />
+
+    <style name="BORDER"
+        description="Style constant for bordered behavior." />
+
+    <element name="CCombo-Button">
+
+      <description>
+        The drop-down button of RWT CCombo.
+      </description>
+
+      <property name="background-image">
+        <description>
+          Background image or gradient for CCombo drop-down button.
+        </description>
+      </property>
+
+      <property name="background-color">
+        <description>
+          The background color of the drop-down button of the CCombo.
+        </description>
+      </property>
+
+      <property name="border" shorthand="true"
+          description="The border of the drop-down button of the CCombo." />
+
+      <property name="border-top"
+          description="The top side border of the CCombo drop-down button." />
+
+      <property name="border-right"
+          description="The right side border of the CCombo drop-down button." />
+
+      <property name="border-bottom"
+          description="The bottom side border of the CCombo drop-down button." />
+
+      <property name="border-left"
+          description="The left side border of the CCombo drop-down button." />
+
+      <property name="border-radius">
+          <description>
+            Border radius. The border radius has no effect if an enhanced border,
+            like "inset" or "outset" is used.
+          </description>
+      </property>
+
+      <property name="cursor"
+        description="CCombo button cursor." />
+
+      <property name="width">
+        <description>
+          The width of the drop-down button of the CCombo.
+        </description>
+      </property>
+
+      <style name="FLAT"
+          description="Applies when style FLAT is set on the parent." />
+
+      <style name="RIGHT_TO_LEFT"
+          description="Indicates that the CCombo is oriented right to left." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the CCombo button." />
+
+      <state name="disabled"
+          description="Applies when the button is disabled." />
+
+      <state name="pressed"
+          description="Applies while a button is pressed." />
+
+    </element>
+
+    <element name="CCombo-Button-Icon">
+      <description>
+        The drop-down button icon.
+      </description>
+
+      <property name="background-image">
+        <description>
+          The icon for the CCombo drop-down button.
+        </description>
+      </property>
+
+      <style name="FLAT"
+          description="Applies when style FLAT is set on the parent." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the CCombo button." />
+
+      <state name="disabled"
+          description="Applies when the button is disabled." />
+
+    </element>
+
+    <element name="CCombo-Field">
+      <description>
+        The text field of RWT CCombo.
+      </description>
+
+      <property name="padding">
+        <description>
+          Padding (inner distance) for ccombo text field.
+        </description>
+      </property>
+
+      <style name="FLAT"
+          description="Applies when style FLAT is set on the parent." />
+
+    </element>
+
+    <element name="CCombo-List">
+      <description>
+        The list of RWT CCombo.
+      </description>
+
+      <property name="border" shorthand="true"
+          description="The border of the CCombo list." />
+
+      <property name="border-top"
+          description="The top side border for CCombo list." />
+
+      <property name="border-right"
+          description="The right side border for CCombo list." />
+
+      <property name="border-bottom"
+          description="The bottom side border for CCombo list." />
+
+      <property name="border-left"
+          description="The left side border for CCombo list." />
+
+      <property name="border-radius">
+          <description>
+            Border radius. The border radius has no effect if an enhanced border,
+            like "inset" or "outset" is used.
+          </description>
+      </property>
+
+      <property name="box-shadow" description="The shadow behind the combos list." />
+
+      <style name="FLAT"
+          description="Applies when style FLAT is set on the parent." />
+
+    </element>
+
+    <element name="CCombo-List-Item">
+      <description>
+        Items of CCombo list.
+      </description>
+
+      <property name="color"
+          description="Item text color" />
+
+      <property name="background-color"
+          description="Item background color" />
+
+      <property name="background-image"
+          description="Item background image/gradient" />
+
+      <property name="text-decoration"
+          description="Decoration for item text." />
+
+      <property name="text-shadow"
+          description="Shadow for item text." />
+
+      <property name="padding"
+          description="Defines the padding (i.e. the inner distance between border and content) for a DropDown item." />
+
+      <state name="selected"
+          description="Applies when CCombo list item is selected." />
+
+      <state name="even"
+          description="Applies to CCombo list items with an even index." />
+
+      <state name="hover"
+          description="Applies while the user hovers over the CCombo list item." />
+
+    </element>
+
+    <element name="CCombo-FocusIndicator"
+          description="The frame that is drawn when the ccombo is focused." >
+
+      <property name="background-color"
+          description="The fill-color of the frame." />
+
+      <property name="border" shorthand="true"
+          description="The border of the frame. 3D-styles inset, outset, etc are not supported." />
+
+      <property name="border-top"
+          description="The top side border of the frame." />
+
+      <property name="border-right"
+          description="The right side border of the frame." />
+
+      <property name="border-bottom"
+          description="The bottom side border of the frame." />
+
+      <property name="border-left"
+          description="The left side border of the frame." />
+
+      <property name="margin">
+        <description>
+          The margin between the ccombos border and the frame.
+        </description>
+      </property>
+
+      <property name="opacity"
+          description="The opacity of the indicator. A value between 0 and 1." />
+
+    </element>
+
+  </element>
+
+</theme>
