@@ -36,11 +36,8 @@ ee:
         - paz-plugin-ee-${platform.version}.zip
         - pdd-plugin-ee-${platform.version}.zip
         - pdi-ee-plugin-${platform.version}.zip
-        - pdi-hana-plugin-package-${platform.version}.zip
-        - pentaho-geo-ee-${platform.version}.zip
         - pentaho-monitoring-plugin-mib-assembly-${platform.version}.zip
         - pir-plugin-ee-${platform.version}.zip
-        - snowflake-plugins-${snowflake-plugin.version}.zip
     server:
         - pentaho-server-ee-${platform.version}.zip
         - pentaho-server-manual-ee-${platform.version}.zip
