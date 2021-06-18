@@ -325,10 +325,10 @@ public class TransExecutor extends BaseStep implements StepInterface {
       String currentVariableToUpdate = (String) resolvingValuesMap.keySet().toArray()[i];
       boolean hasIncomingFieldValues = incomingFieldValues != null && !incomingFieldValues.isEmpty();
       try {
-        if ( i < fieldsToUse.size() && incomingFields.contains( fieldsToUse.get( i ) ) && hasIncomingFieldValues
-          && ( !Utils.isEmpty( Const.trim( incomingFieldValues.get( incomingFields.indexOf( fieldsToUse.get( i ) ) ) ) ) ) ) {
+        if ( i < fieldsToUse.size() && listContainsIgnoreCase( incomingFields,  fieldsToUse.get( i ) ) && hasIncomingFieldValues
+          && ( !Utils.isEmpty( Const.trim( incomingFieldValues.get( getIndexIgnoreCase( incomingFields, fieldsToUse.get( i ) ) ) ) ) ) ) {
           // if field to use is defined on previous steps ( incomingFields ) and is not empty - put that value
-          resolvingValuesMap.put( currentVariableToUpdate, incomingFieldValues.get( incomingFields.indexOf( fieldsToUse.get( i ) ) ) );
+          resolvingValuesMap.put( currentVariableToUpdate, incomingFieldValues.get( getIndexIgnoreCase( incomingFields, fieldsToUse.get( i ) ) ) );
         } else {
           if ( i < staticInputs.size() && !Utils.isEmpty( Const.trim( staticInputs.get( i ) ) ) ) {
             // if we do not have a field to use then check for static input values - if not empty - put that value
@@ -372,6 +372,34 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
     StepWithMappingMeta
         .activateParams( trans, trans, this, trans.listParameters(), parameters.getVariable(), inputFieldValues, meta.getParameters().isInheritingAllVariables() );
+  }
+
+  /**
+   * Search through the provided list for a specified value while ignoring case
+   * @param list list of Strings to be searched
+   * @param value String to search for
+   * @return true if the value is found, false otherwise
+   */
+  private boolean listContainsIgnoreCase( final List<String> list, final String value ) {
+    return list.stream().anyMatch( s -> s.equalsIgnoreCase( value ) );
+  }
+
+  /**
+   * Get the index of the specified value in the list, ignoring case.  Should only be called
+   * after verifying that the value exists first using listContainsIgnoreCase!
+   * @param list list of Strings to be searched
+   * @param value String to search for
+   * @return the index of the value in the list if found, -1 if not found
+   */
+  private int getIndexIgnoreCase( final List<String> list, final String value ) {
+    for ( int i = 0; i < list.size(); i++ ) {
+      if ( list.get( i ).equalsIgnoreCase( value ) ) {
+        return i;
+      }
+    }
+    // THIS SHOULD NEVER HAPPEN BECAUSE WE SHOULD NEVER CALL THIS METHOD WITHOUT FIRST CHECKING FOR THE EXISTENCE OF
+    // THE VALUE WITH listContainsIgnoreCase FIRST!!!!
+    return -1;
   }
 
   @VisibleForTesting
