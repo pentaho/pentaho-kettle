@@ -167,6 +167,10 @@ public class FastJsonReader implements IJsonReader {
     private List<List<?>> results;
     private final int rowCount;
     private int rowNbr;
+    /**
+     * if should skip null-only rows; size won't be exact if set
+     */
+    private boolean cullNulls = true;
 
     public TransposedRowSet( List<List<?>> results ) {
       super();
@@ -176,21 +180,25 @@ public class FastJsonReader implements IJsonReader {
 
     @Override
     public Object[] getRow() {
+      boolean allNulls = cullNulls && rowCount > 1;
       Object[] rowData = null;
-      if ( rowNbr >= rowCount ) {
-        results.clear();
-        return null;
-      }
-      rowData = new Object[ results.size() ];
-      for ( int col = 0; col < results.size(); col++ ) {
-        if ( results.get( col ).isEmpty() ) {
-          rowData[ col ] = null;
-          continue;
+      do {
+        if ( rowNbr >= rowCount ) {
+          results.clear();
+          return null;
         }
-        Object val = results.get( col ).get( rowNbr );
-        rowData[ col ] = val;
-      }
-      rowNbr++;
+        rowData = new Object[ results.size() ];
+        for ( int col = 0; col < results.size(); col++ ) {
+          if ( results.get( col ).isEmpty() ) {
+            rowData[ col ] = null;
+            continue;
+          }
+          Object val = results.get( col ).get( rowNbr );
+          rowData[ col ] = val;
+          allNulls &= val == null;
+        }
+        rowNbr++;
+      } while ( allNulls );
       return rowData;
     }
 
