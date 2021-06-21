@@ -27,6 +27,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
 import com.jayway.jsonpath.ReadContext;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -168,9 +169,12 @@ public class FastJsonReader implements IJsonReader {
     private final int rowCount;
     private int rowNbr;
     /**
-     * if should skip null-only rows; size won't be exact if set
+     * if should skip null-only rows; size won't be exact if set.
+     * If KETTLE_JSON_INPUT_INCLUDE_NULLS is "Y" then nulls will be included otherwise they will not (default behavior)
      */
     private boolean cullNulls = true;
+    private boolean includeNulls =
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_JSON_INPUT_INCLUDE_NULLS, "N" ) );
 
     public TransposedRowSet( List<List<?>> results ) {
       super();
@@ -195,7 +199,7 @@ public class FastJsonReader implements IJsonReader {
           }
           Object val = results.get( col ).get( rowNbr );
           rowData[ col ] = val;
-          allNulls &= val == null;
+          allNulls &= ( val == null && !includeNulls );
         }
         rowNbr++;
       } while ( allNulls );
