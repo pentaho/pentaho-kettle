@@ -1184,6 +1184,9 @@ public class Const {
   // See PDI-18810 for details
   public static final String KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM = "KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM";
 
+  // See PDI-19138 for details
+  public static final String KETTLE_JSON_INPUT_INCLUDE_NULLS = "KETTLE_JSON_INPUT_INCLUDE_NULLS";
+
   /**
    * This property when set to Y force the same output file even when splits is required.
    * See PDI-19064 for details
