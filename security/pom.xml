@@ -18,7 +18,7 @@
 
   <properties>
     <!-- webSpoon specific dependencies -->
-    <rap.version>3.12.0</rap.version>
+    <rap.version>3.12.0.pentaho</rap.version>
   </properties>
 
 
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>org.eclipse.rap</groupId>
       <artifactId>org.eclipse.rap.rwt.testfixture</artifactId>
-      <version>${rap.version}-SNAPSHOT</version>
+      <version>${rap.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
