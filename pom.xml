@@ -317,17 +317,6 @@
 
   <profiles>
     <profile>
-      <id>core</id>
-      <activation>
-        <property>
-          <name>!skipDefault</name>
-        </property>
-      </activation>
-      <modules>
-        <module>core</module>
-      </modules>
-    </profile>
-    <profile>
       <id>base</id>
       <activation>
         <property>
@@ -335,7 +324,10 @@
         </property>
       </activation>
       <modules>
+        <module>engine-ext</module>
+        <module>core</module>
         <module>engine</module>
+        <module>dbdialog</module>
         <module>ui</module>
         <module>security</module>
         <module>utilities</module>
