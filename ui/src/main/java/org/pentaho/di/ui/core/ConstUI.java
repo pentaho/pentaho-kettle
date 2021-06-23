@@ -277,8 +277,8 @@ public class ConstUI {
     // on OS X. Tested on Windows to be sure there is no adverse effect.
     // Unfortunately, I do *not* understand why this works. I ran it by
     // mcasters and he didn't know for sure either.
-    // HiromuHota: uncomment this line to fix HiromuHota/pentaho-kettle#122
-    control.setMenu( menu );
+    // HiromuHota: This line has been commented to fix HiromuHota/pentaho-kettle#122
+    //control.setMenu( menu );
     menu.setVisible( true );
   }
 
