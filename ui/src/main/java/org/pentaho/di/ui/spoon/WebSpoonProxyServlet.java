@@ -23,6 +23,7 @@
 
 package org.pentaho.di.ui.spoon;
 
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URLDecoder;
 
@@ -31,8 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.utils.URIUtils;
 import org.mitre.dsmiley.httpproxy.ProxyServlet;
-import org.pentaho.platform.settings.ServerPort;
-import org.pentaho.platform.settings.ServerPortRegistry;
 
 public class WebSpoonProxyServlet extends ProxyServlet {
 
@@ -70,10 +69,16 @@ public class WebSpoonProxyServlet extends ProxyServlet {
 
   private static Integer getOsgiServicePort() {
     // if no service port is specified try getting it from
-    ServerPort osgiServicePort = ServerPortRegistry.getPort( OSGI_SERVICE_PORT );
-    if ( osgiServicePort != null ) {
-      return osgiServicePort.getAssignedPort();
+    try {
+      Class serverPortRegistry = Class.forName( "org.pentaho.platform.settings.ServerPortRegistry" );
+      Method getPort = serverPortRegistry.getMethod( "getPort", String.class);
+      Object osgiServicePort = getPort.invoke( null, OSGI_SERVICE_PORT );
+
+      Class serverPort = Class.forName( "org.pentaho.platform.settings.ServerPort" );
+      Method getAssignedPort = serverPort.getMethod( "getAssignedPort" );
+      return (Integer) getAssignedPort.invoke( osgiServicePort );
+    } catch ( Exception e ) {
+      return null;
     }
-    return null;
   }
 }
