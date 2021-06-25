@@ -10,7 +10,7 @@ spec:
   serviceNamespace: {{ .Release.Namespace }}
   sso: {{ template "webspoon.sso" . }}
   generateNetworkRoute: true
-  exposeLink: true
+  exposeLink: false
   rewritePath: "/"
   fixedPath: spoon/spoon
   protocol: "https"
