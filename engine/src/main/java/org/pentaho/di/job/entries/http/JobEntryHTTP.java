@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -519,7 +519,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
         URI uri = (new URIBuilder( urlToUse )).build();
 
-        if ( SCHEMA_FILE.equals( uri.getScheme() ) ) {
+        if ( SCHEMA_FILE.equalsIgnoreCase( uri.getScheme() ) ) {
           input = getResultFromFileSchema( uri );
         } else {
           input = getResultFromHttpSchema( realUploadFile, uri );
