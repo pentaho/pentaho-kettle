@@ -1504,6 +1504,11 @@ public class Const {
    */
   public static final String KETTLE_RETURN_ESCAPED_URI_STRINGS = "KETTLE_RETURN_ESCAPED_URI_STRINGS";
   /**
+   * If true, kettle check for new site files to update in the named cluster every time a named cluster is resolved
+   */
+  public static final String KETTLE_AUTO_UPDATE_SITE_FILE = "KETTLE_AUTO_UPDATE_SITE_FILE";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *
