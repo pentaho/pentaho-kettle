@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,13 +34,23 @@ public class NamedClusterSiteFileImpl implements NamedClusterSiteFile {
   @MetaStoreAttribute
   private String siteFileContents;
 
+  @MetaStoreAttribute
+  private long sourceFileModificationTime;
+
   public NamedClusterSiteFileImpl() {
 
   }
 
+  @Deprecated
   public NamedClusterSiteFileImpl( String siteFileName, String siteFileContents ) {
     this.siteFileName = siteFileName;
     this.siteFileContents = siteFileContents;
+  }
+
+  public NamedClusterSiteFileImpl( String siteFileName, long sourceFileModificationTime, String siteFileContents ) {
+    this.siteFileName = siteFileName;
+    this.siteFileContents = siteFileContents;
+    this.sourceFileModificationTime = sourceFileModificationTime;
   }
 
   @Override
@@ -65,6 +75,16 @@ public class NamedClusterSiteFileImpl implements NamedClusterSiteFile {
 
   @Override
   public NamedClusterSiteFile copy() {
-    return new NamedClusterSiteFileImpl( siteFileName, siteFileContents );
+    return new NamedClusterSiteFileImpl( siteFileName, sourceFileModificationTime, siteFileContents );
+  }
+
+  @Override
+  public long getSourceFileModificationTime() {
+    return sourceFileModificationTime;
+  }
+
+  @Override
+  public void setSourceFileModificationTime( long sourceFileModificationTime ) {
+    this.sourceFileModificationTime = sourceFileModificationTime;
   }
 }
