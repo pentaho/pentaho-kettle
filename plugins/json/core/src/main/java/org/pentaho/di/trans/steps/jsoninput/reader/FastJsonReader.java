@@ -27,7 +27,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
 import com.jayway.jsonpath.ReadContext;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -62,6 +61,7 @@ public class FastJsonReader implements IJsonReader {
 
   private final boolean defaultPathLeafToNull;
   private final boolean ignoreMissingPath;
+  private boolean includeNulls = false;
 
   private final JsonInput step;
 
@@ -74,6 +74,20 @@ public class FastJsonReader implements IJsonReader {
 
     this.defaultPathLeafToNull = defaultPathLeafToNull;
     this.ignoreMissingPath = ignoreMissingPath;
+    this.step = step;
+    this.log = log;
+
+    setJsonConfiguration( defaultPathLeafToNull );
+    setInputFields( inputFields );
+  }
+
+  public FastJsonReader( JsonInput step, JsonInputField[] inputFields, boolean defaultPathLeafToNull,
+                         boolean ignoreMissingPath, boolean includeNulls,
+                         LogChannelInterface log ) throws KettleException {
+
+    this.defaultPathLeafToNull = defaultPathLeafToNull;
+    this.ignoreMissingPath = ignoreMissingPath;
+    this.includeNulls = includeNulls;
     this.step = step;
     this.log = log;
 
@@ -145,7 +159,7 @@ public class FastJsonReader implements IJsonReader {
     if ( len == 0 ) {
       return getEmptyResponse();
     }
-    return new TransposedRowSet( results );
+    return new TransposedRowSet( results, includeNulls );
   }
 
   /**
@@ -170,14 +184,13 @@ public class FastJsonReader implements IJsonReader {
     private int rowNbr;
     /**
      * if should skip null-only rows; size won't be exact if set.
-     * If KETTLE_JSON_INPUT_INCLUDE_NULLS is "Y" then nulls will be included otherwise they will not (default behavior)
      */
     private boolean cullNulls = true;
-    private boolean includeNulls =
-      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_JSON_INPUT_INCLUDE_NULLS, "N" ) );
+    private boolean includeNulls; // Include null values in result set
 
-    public TransposedRowSet( List<List<?>> results ) {
+    public TransposedRowSet( List<List<?>> results, boolean includeNulls ) {
       super();
+      this.includeNulls = includeNulls;
       this.results = results;
       this.rowCount = results.isEmpty() ? 0 : FastJsonReader.getMaxRowSize( results );
     }

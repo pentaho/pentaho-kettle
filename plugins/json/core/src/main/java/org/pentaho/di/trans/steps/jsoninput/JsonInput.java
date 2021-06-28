@@ -88,7 +88,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       // Init a new JSON reader
       data.reader =
         new FastJsonReader( this, meta.getInputFields(), meta.isDefaultPathLeafToNull(), meta.isIgnoreMissingPath(),
-          log );
+          meta.isIncludeNulls(), log );
     } catch ( KettleException e ) {
       logError( e.getMessage() );
       return false;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -143,6 +143,9 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   // default path leaf to null
   private Button wDefaultPathLeafToNull;
+
+  // include null values
+  private Button wIncludeNulls;
 
   // do not fail if no files?
   private Button wdoNotFailIfNoFile;
@@ -590,13 +593,38 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wDefaultPathLeafToNull.setLayoutData( fdDefaultPathLeafToNull );
     // default path leaf to null - end
 
+    Label wlIncludeNulls = new Label( wConf, SWT.RIGHT );
+    wlIncludeNulls.setText( BaseMessages.getString( PKG, "JsonInputDialog.IncludeNulls.Label" ) );
+    props.setLook( wlIncludeNulls );
+
+    FormData fdlIncludeNulls = new FormData();
+    fdlIncludeNulls.left = new FormAttachment( 0, 0 );
+    fdlIncludeNulls.top = new FormAttachment( wDefaultPathLeafToNull, margin );
+    fdlIncludeNulls.right = new FormAttachment( middle, -margin );
+    wlIncludeNulls.setLayoutData( fdlIncludeNulls );
+    wIncludeNulls = new Button( wConf, SWT.CHECK );
+    props.setLook( wIncludeNulls );
+    wIncludeNulls.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } );
+    wIncludeNulls.setToolTipText( BaseMessages.getString( PKG, "JsonInputDialog.IncludeNulls.Tooltip" ) );
+
+    FormData fdIncludeNulls = new FormData();
+    fdIncludeNulls.left = new FormAttachment( middle, 0 );
+    fdIncludeNulls.top = new FormAttachment( wDefaultPathLeafToNull, margin );
+    wIncludeNulls.setLayoutData( fdIncludeNulls );
+    // Include nulls - end
+
     wlLimit = new Label( wConf, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "JsonInputDialog.Limit.Label" ) );
     props.setLook( wlLimit );
 
     FormData fdlLimit = new FormData();
     fdlLimit.left = new FormAttachment( 0, 0 );
-    fdlLimit.top = new FormAttachment( wDefaultPathLeafToNull, margin );
+    fdlLimit.top = new FormAttachment( wIncludeNulls, margin );
     fdlLimit.right = new FormAttachment( middle, -margin );
     wlLimit.setLayoutData( fdlLimit );
     wLimit = new Text( wConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -605,7 +633,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     FormData fdLimit = new FormData();
     fdLimit.left = new FormAttachment( middle, 0 );
-    fdLimit.top = new FormAttachment( wDefaultPathLeafToNull, margin );
+    fdLimit.top = new FormAttachment( wIncludeNulls, margin );
     fdLimit.right = new FormAttachment( 100, 0 );
     wLimit.setLayoutData( fdLimit );
 
@@ -1232,6 +1260,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wdoNotFailIfNoFile.setSelection( in.isDoNotFailIfNoFile() );
     wIgnoreMissingPath.setSelection( in.isIgnoreMissingPath() );
     wDefaultPathLeafToNull.setSelection( in.isDefaultPathLeafToNull() );
+    wIncludeNulls.setSelection( in.isIncludeNulls() || JsonInputMeta.getIncludeNullsProperty() );
     wremoveSourceField.setSelection( in.isRemoveSourceField() );
     wSourceStreamField.setSelection( in.isInFields() );
     wSourceIsAFile.setSelection( in.getIsAFile() );
@@ -1373,6 +1402,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setDoNotFailIfNoFile( wdoNotFailIfNoFile.getSelection() );
     in.setIgnoreMissingPath( wIgnoreMissingPath.getSelection() );
     in.setDefaultPathLeafToNull( wDefaultPathLeafToNull.getSelection() );
+    in.setIncludeNulls( wIncludeNulls.getSelection() );
     in.setRemoveSourceField( wremoveSourceField.getSelection() );
     in.setInFields( wSourceStreamField.getSelection() );
     in.setIsAFile( wSourceIsAFile.getSelection() );

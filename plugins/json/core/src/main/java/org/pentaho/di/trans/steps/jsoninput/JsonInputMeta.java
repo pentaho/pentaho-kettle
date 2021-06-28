@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,6 +85,8 @@ public class JsonInputMeta extends
 
   public static final String[] RequiredFilesDesc = new String[] {
     BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+
+  private static final String INCLUDE_NULLS = "includeNulls";
 
   // TextFileInputMeta.Content.includeFilename
   /** Flag indicating that we should include the filename in the output */
@@ -236,6 +238,8 @@ public class JsonInputMeta extends
 
   private boolean defaultPathLeafToNull;
 
+  private boolean includeNulls;
+
   public JsonInputMeta() {
     additionalOutputFields = new JsonInputMeta.AdditionalFileOutputFields();
     inputFiles = new JsonInputMeta.InputFiles();
@@ -254,6 +258,20 @@ public class JsonInputMeta extends
    */
   public void setDefaultPathLeafToNull( boolean defaultPathLeafToNull ) {
     this.defaultPathLeafToNull = defaultPathLeafToNull;
+  }
+
+  /** Returns the includeNulls boolean
+   * @return includeNulls
+   */
+  public boolean isIncludeNulls() {
+    return includeNulls;
+  }
+
+  /** Sets the includeNulls boolean
+   * @param includeNulls the includeNulls to set
+   */
+  public void setIncludeNulls( boolean includeNulls ) {
+    this.includeNulls = includeNulls;
   }
 
   /**
@@ -625,6 +643,7 @@ public class JsonInputMeta extends
     retval.append( "    " + XMLHandler.addTagValue( "doNotFailIfNoFile", doNotFailIfNoFile ) );
     retval.append( "    " + XMLHandler.addTagValue( "ignoreMissingPath", ignoreMissingPath ) );
     retval.append( "    " + XMLHandler.addTagValue( "defaultPathLeafToNull", defaultPathLeafToNull ) );
+    retval.append( "    " + XMLHandler.addTagValue( INCLUDE_NULLS, includeNulls ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum_field", rowNumberField ) );
 
     retval.append( "    <file>" ).append( Const.CR );
@@ -684,6 +703,7 @@ public class JsonInputMeta extends
       isIgnoreEmptyFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsIgnoreEmptyFile" ) );
       ignoreMissingPath = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "ignoreMissingPath" ) );
       defaultPathLeafToNull = getDefaultPathLeafToNull( stepnode );
+      includeNulls = getincludeNulls( stepnode );
       doNotFailIfNoFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "doNotFailIfNoFile" ) );
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
       rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
@@ -745,6 +765,20 @@ public class JsonInputMeta extends
     return result;
   }
 
+  // For backward compatibility: if "includeNulls" tag is absent in the step node at all, then we set
+  // includeNulls default if KETTLE_JSON_INPUT_INCLUDE_NULLS is set to "Y" in kettle.properties
+  // as seen in PDI-19138
+  private static boolean getincludeNulls( Node stepnode ) {
+    boolean result;
+    List<Node> nodes = XMLHandler.getNodes( stepnode, INCLUDE_NULLS );
+    if ( nodes != null && nodes.isEmpty() ) {
+      result = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, INCLUDE_NULLS ) );
+    } else {
+      result = getIncludeNullsProperty();
+    }
+    return result;
+  }
+
   @Deprecated //?needs to be public?
   public void allocate( int nrFiles, int nrFields ) {
     initArrayFields( nrFiles, nrFields );
@@ -763,6 +797,7 @@ public class JsonInputMeta extends
     isIgnoreEmptyFile = false;
     ignoreMissingPath = true;
     defaultPathLeafToNull = true;
+    includeNulls = getIncludeNullsProperty();
     doNotFailIfNoFile = true;
     includeFilename = false;
     filenameField = "";
@@ -846,6 +881,7 @@ public class JsonInputMeta extends
       isIgnoreEmptyFile = rep.getStepAttributeBoolean( id_step, "IsIgnoreEmptyFile" );
       ignoreMissingPath = rep.getStepAttributeBoolean( id_step, "ignoreMissingPath" );
       defaultPathLeafToNull = rep.getStepAttributeBoolean( id_step, 0, "defaultPathLeafToNull", true );
+      includeNulls = rep.getStepAttributeBoolean( id_step, 0, INCLUDE_NULLS, getIncludeNullsProperty() );
 
       doNotFailIfNoFile = rep.getStepAttributeBoolean( id_step, "doNotFailIfNoFile" );
 
@@ -917,6 +953,7 @@ public class JsonInputMeta extends
       rep.saveStepAttribute( id_transformation, id_step, "IsIgnoreEmptyFile", isIgnoreEmptyFile );
       rep.saveStepAttribute( id_transformation, id_step, "ignoreMissingPath", ignoreMissingPath );
       rep.saveStepAttribute( id_transformation, id_step, "defaultPathLeafToNull", defaultPathLeafToNull );
+      rep.saveStepAttribute( id_transformation, id_step, INCLUDE_NULLS, includeNulls );
 
       rep.saveStepAttribute( id_transformation, id_step, "doNotFailIfNoFile", doNotFailIfNoFile );
 
@@ -1104,6 +1141,11 @@ public class JsonInputMeta extends
   @Override
   public String getEncoding() {
     return "UTF-8";
+  }
+
+  // Needed for PDI-19138 purposes
+  public static boolean getIncludeNullsProperty() {
+    return "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_JSON_INPUT_INCLUDE_NULLS, "N" ) );
   }
 
 }
