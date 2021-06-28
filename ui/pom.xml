@@ -186,28 +186,6 @@
       <artifactId>smiley-http-proxy-servlet</artifactId>
       <version>1.11</version>
     </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-platform-api</artifactId>
-      <version>${kettle.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-platform-core</artifactId>
-      <version>${kettle.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
