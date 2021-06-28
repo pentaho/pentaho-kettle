@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1486,6 +1486,11 @@ public class Const {
    */
   public static final String KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_DEFAULT =
     KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_LEGACY;
+
+  /**
+   * If true, kettle check for new site files to update in the named cluster every time a named cluster is resolved
+   */
+  public static final String KETTLE_AUTO_UPDATE_SITE_FILE = "KETTLE_AUTO_UPDATE_SITE_FILE";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
