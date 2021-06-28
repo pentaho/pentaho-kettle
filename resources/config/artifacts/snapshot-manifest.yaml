@@ -22,9 +22,9 @@ ee:
         - pentaho-business-analytics-${platform.version}-x64.app.tar.gz
         - pentaho-business-analytics-${platform.version}-x64.bin
         - pentaho-business-analytics-${platform.version}-x64.exe
-        - pentaho-update-${platform.version}.zip
-        - pentaho-update-${platform.version}.bin
-        - pentaho-update-${platform.version}.exe
+        - pentaho-update-${platform.version}-MacOSX.zip
+        - pentaho-update-${platform.version}-Win.zip
+        - pentaho-update-${platform.version}-Linux.zip
     other:
         - pentaho-operations-mart-${platform.version}.zip
         - pentaho-sdk-${platform.version}.zip

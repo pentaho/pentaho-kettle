@@ -1,7 +1,8 @@
-#foreach ( $library in $libraries )
-library(identifier: '$library', changelog: false)
-#end
-
+<%
+libraries.each { library ->
+  println "library(identifier: '$library', changelog: false)"
+}
+%>
 Map defaultParams = [
   SLAVE_NODE_LABEL    : '$properties.SLAVE_NODE_LABEL',
   WORKSPACE           : '$properties.WORKSPACE',

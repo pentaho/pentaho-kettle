@@ -1,11 +1,12 @@
-#foreach ( $library in $libraries )
-library(identifier: '$library', changelog: false)
-#end
+<%
+libraries.each { library ->
+  println "library(identifier: '$library', changelog: false)"
+}
 
-#set( $runCheckout = $properties.RUN_STAGE_CHECKOUT )
-#set( $runBuild = $properties.RUN_STAGE_BUILD )
-#set( $runSonar = $properties.RUN_STAGE_SONAR && $item.auditable )
-##
+runCheckout = properties.getBool('RUN_STAGE_CHECKOUT')
+runBuild = properties.getBool('RUN_STAGE_BUILD')
+runSonar = properties.getBool('RUN_STAGE_SONAR') && item.auditable
+%>
 Map defaultParams = [
   SLAVE_NODE_LABEL    : '$properties.SLAVE_NODE_LABEL',
   WORKSPACE           : '$properties.WORKSPACE',
