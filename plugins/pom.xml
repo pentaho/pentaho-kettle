@@ -50,6 +50,7 @@
         <module>file-open-save-new/core</module>
         <module>get-fields/core</module>
         <module>repositories/core</module>
+        <module>meta-inject</module>
         <module>engine-configuration/api</module>
         <module>engine-configuration/impl</module>
         <module>engine-configuration/ui</module>
