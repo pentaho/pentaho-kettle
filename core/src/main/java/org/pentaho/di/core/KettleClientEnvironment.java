@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,7 +62,7 @@ public class KettleClientEnvironment {
   private static Boolean initialized;
 
   public enum ClientType {
-    SPOON, PAN, KITCHEN, CARTE, DI_SERVER, SCALE, OTHER;
+    SPOON, PAN, KITCHEN, CARTE, PENTAHO_SERVER, SCALE, OTHER;
     public String getID() {
       if ( this != OTHER ) {
         return this.name();
