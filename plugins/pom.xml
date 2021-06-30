@@ -43,6 +43,7 @@
         </property>
       </activation>
       <modules>
+        <module>core</module>
         <module>core-ui</module>
         <module>file-open-save/core</module>
         <module>file-open-save-new/api</module>
