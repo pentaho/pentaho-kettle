@@ -45,16 +45,13 @@
       <modules>
         <module>core</module>
         <module>core-ui</module>
-        <module>file-open-save/core</module>
-        <module>file-open-save-new/api</module>
-        <module>file-open-save-new/core</module>
-        <module>get-fields/core</module>
-        <module>repositories/core</module>
+        <module>file-open-save</module>
+        <module>file-open-save-new</module>
+        <module>connections</module>
+        <module>get-fields</module>
+        <module>repositories</module>
         <module>meta-inject</module>
-        <module>engine-configuration/api</module>
-        <module>engine-configuration/impl</module>
-        <module>engine-configuration/ui</module>
-        <module>connections/ui</module>
+        <module>engine-configuration</module>
       </modules>
     </profile>
 
