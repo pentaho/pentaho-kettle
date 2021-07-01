@@ -52,6 +52,7 @@
         <module>repositories</module>
         <module>meta-inject</module>
         <module>engine-configuration</module>
+        <module>json</module>
       </modules>
     </profile>
 
