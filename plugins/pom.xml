@@ -52,7 +52,29 @@
         <module>repositories</module>
         <module>meta-inject</module>
         <module>engine-configuration</module>
+        <module>get-previous-row-field</module>
+        <module>aggregate-rows</module>
+        <module>elasticsearch-bulk-insert</module>
+        <module>google-analytics</module>
+        <module>gp-bulk-loader</module>
+        <module>pentaho-googledrive-vfs</module>
+        <module>hl7</module>
+        <module>drools</module>
+        <module>dummy</module>
         <module>json</module>
+        <module>s3csvinput</module>
+        <module>sap</module>
+        <module>shapefilereader</module>
+        <module>gpload</module>
+        <module>openerp</module>
+        <module>palo</module>
+        <module>version-checker</module>
+        <module>lucid-db-streaming-loader</module>
+        <module>salesforce</module>
+        <module>pur</module>
+        <module>ms-access</module>
+        <module>xml</module>
+        <module>streaming</module>
       </modules>
     </profile>
 
