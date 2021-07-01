@@ -1185,6 +1185,12 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM = "KETTLE_COMPATIBILITY_MDI_INJECTED_FILE_ALWAYS_IN_FILESYSTEM";
 
   /**
+   * This property when set to Y force the same output file even when splits is required.
+   * See PDI-19064 for details
+   */
+  public static final String KETTLE_JSON_OUTPUT_FORCE_SAME_OUTPUT_FILE = "KETTLE_JSON_OUTPUT_FORCE_SAME_OUTPUT_FILE";
+
+  /**
    * The XML file that contains the list of native import rules
    */
   public static final String XML_FILE_KETTLE_IMPORT_RULES = "kettle-import-rules.xml";
