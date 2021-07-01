@@ -60,12 +60,6 @@
         <artifactId>kettle-ui-swt</artifactId>
         <version>${pdi.version}</version>
         <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
