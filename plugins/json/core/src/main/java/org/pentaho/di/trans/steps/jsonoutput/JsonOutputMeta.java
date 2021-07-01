@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.jsonoutput;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -447,6 +449,30 @@ public class JsonOutputMeta extends BaseFileOutputMeta {
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
+  }
+
+  public String buildFilename( String filename, Date date ) {
+    SimpleDateFormat daf = new SimpleDateFormat();
+
+    // Replace possible environment variables...
+    StringBuilder filenameOutput = new StringBuilder( filename );
+
+    if ( dateInFilename ) {
+      daf.applyPattern( BaseFileOutputMeta.DEFAULT_DATE_FORMAT );
+      String d = daf.format( date );
+      filenameOutput.append( '_' ).append( d );
+    }
+    if ( timeInFilename ) {
+      daf.applyPattern( BaseFileOutputMeta.DEFAULT_TIME_FORMAT );
+      String t = daf.format( date );
+      filenameOutput.append( '_' ).append( t );
+    }
+
+    if ( extension != null && extension.length() != 0 ) {
+      filenameOutput.append( '.' ).append( extension );
+    }
+
+    return filenameOutput.toString();
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
