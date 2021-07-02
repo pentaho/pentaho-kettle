@@ -2,9 +2,16 @@
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
   <id>client</id>
   <formats>
-    <format>war</format>
+    <format>zip</format>
   </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <baseDirectory>data-integration</baseDirectory>
+  <files>
+    <file>
+      <source>${project.basedir}/src/main/resources/drivers/README</source>
+      <outputDirectory>./drivers</outputDirectory>
+    </file>
+  </files>
   <fileSets>
     <!-- the staging dir -->
     <fileSet>
@@ -13,24 +20,65 @@
     </fileSet>
   </fileSets>
   <dependencySets>
+    <!-- default driver kar set -->
+    <dependencySet>
+      <includes>
+        <include>*:pentaho-hadoop-shims-cdh61-kar:*</include>
+        <include>*:pentaho-hadoop-shims-hdp30-kar:*</include>
+        <include>*:pentaho-hadoop-shims-emr521-kar:*</include>
+        <include>*:pentaho-hadoop-shims-dataproc1421-kar:*</include>
+      </includes>
+      <outputDirectory>./ADDITIONAL-FILES/drivers</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
     <!-- pdi components -->
     <dependencySet>
       <includes>
+        <include>org.pentaho.di:pdi-static:zip</include>
+        <include>org.pentaho.di:pdi-samples:zip</include>
         <include>org.pentaho.di:pdi-libs:zip</include>
+        <include>org.pentaho.di:pdi-plugins:zip</include>
       </includes>
       <unpack>true</unpack>
-      <outputDirectory>WEB-INF</outputDirectory>
+      <outputDirectory>.</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <!-- swt -->
+    <dependencySet>
+      <includes>
+        <include>org.eclipse.platform:*.linux.x86</include>
+      </includes>
+      <outputDirectory>libswt/linux/x86</outputDirectory>
+      <outputFileNameMapping>swt.jar</outputFileNameMapping>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <dependencySet>
       <includes>
-        <include>org.pentaho.di:pdi-static:zip</include>
-        <include>org.pentaho.di:pdi-samples:zip</include>
-        <include>org.pentaho.di:pdi-plugins:zip</include>
+        <include>org.eclipse.platform:*.linux.x86_64</include>
       </includes>
-      <unpack>true</unpack>
-      <outputDirectory>.</outputDirectory>
+      <outputDirectory>libswt/linux/x86_64</outputDirectory>
+      <outputFileNameMapping>swt.jar</outputFileNameMapping>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.eclipse.platform:*.win32.x86_64</include>
+      </includes>
+      <outputDirectory>libswt/win64</outputDirectory>
+      <outputFileNameMapping>swt.jar</outputFileNameMapping>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.eclipse.platform:*.macosx.x86_64</include>
+      </includes>
+      <outputDirectory>libswt/osx64</outputDirectory>
+      <outputFileNameMapping>swt.jar</outputFileNameMapping>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
@@ -48,6 +96,26 @@
       <outputDirectory>.</outputDirectory>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <!-- jdbc drivers -->
+    <dependencySet>
+      <includes>
+        <include>pentaho:pdi-dataservice-driver-bundle:zip</include>
+      </includes>
+      <outputDirectory>Data Service JDBC Driver</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}</outputFileNameMapping>
+    </dependencySet>
+    <!-- application launcher -->
+    <dependencySet>
+      <includes>
+        <include>pentaho:pentaho-application-launcher</include>
+      </includes>
+      <outputDirectory>launcher</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>launcher.jar</outputFileNameMapping>
     </dependencySet>
   </dependencySets>
 </assembly>

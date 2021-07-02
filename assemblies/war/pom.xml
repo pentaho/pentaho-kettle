@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>webspoon</artifactId>
+  <version>9.2.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>PDI Client Community Edition</name>
+
+  <parent>
+    <artifactId>pdi-assemblies</artifactId>
+    <groupId>org.pentaho.di</groupId>
+    <version>9.2.0.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
+    <ael.version>9.2.0.0-SNAPSHOT</ael.version>
+
+    <pentaho-karaf.version>9.2.0.0-SNAPSHOT</pentaho-karaf.version>
+    <pentaho-launcher.version>9.2.0.0-SNAPSHOT</pentaho-launcher.version>
+    <oss-licenses.version>9.2.0.0-SNAPSHOT</oss-licenses.version>
+
+    <!-- Pentaho drivers kar file dependencies versions -->
+    <pentaho-hadoop-shims-cdh61.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-cdh61.version>
+    <pentaho-hadoop-shims-hdp30.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-hdp30.version>
+    <pentaho-hadoop-shims-emr521.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-emr521.version>
+    <pentaho-hadoop-shims-dataproc1421.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-dataproc1421.version>
+  </properties>
+
+  <dependencies>
+    <!-- START Pentaho drivers kar file dependencies -->
+    <dependency>
+      <groupId>org.pentaho.hadoop.shims</groupId>
+      <artifactId>pentaho-hadoop-shims-cdh61-kar</artifactId>
+      <version>${pentaho-hadoop-shims-cdh61.version}</version>
+      <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.hadoop.shims</groupId>
+      <artifactId>pentaho-hadoop-shims-hdp30-kar</artifactId>
+      <version>${pentaho-hadoop-shims-hdp30.version}</version>
+      <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.hadoop.shims</groupId>
+      <artifactId>pentaho-hadoop-shims-emr521-kar</artifactId>
+      <version>${pentaho-hadoop-shims-emr521.version}</version>
+      <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.hadoop.shims</groupId>
+      <artifactId>pentaho-hadoop-shims-dataproc1421-kar</artifactId>
+      <version>${pentaho-hadoop-shims-dataproc1421.version}</version>
+      <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- END Pentaho drivers kar file dependencies -->
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-libs</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-plugins</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-static</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>oss-licenses</artifactId>
+      <version>${oss-licenses.version}</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

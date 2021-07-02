@@ -3,8 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>webspoon</artifactId>
-  <version>9.2.0.0-SNAPSHOT</version>
+  <artifactId>pdi-ce</artifactId>
   <packaging>pom</packaging>
 
   <name>PDI Client Community Edition</name>
@@ -22,6 +21,12 @@
     <pentaho-karaf.version>9.2.0.0-SNAPSHOT</pentaho-karaf.version>
     <pentaho-launcher.version>9.2.0.0-SNAPSHOT</pentaho-launcher.version>
     <oss-licenses.version>9.2.0.0-SNAPSHOT</oss-licenses.version>
+
+    <!-- swt -->
+    <org.eclipse.swt.gtk.linux.x86.version>3.108.0</org.eclipse.swt.gtk.linux.x86.version>
+    <org.eclipse.swt.gtk.linux.x86_64.version>3.108.0</org.eclipse.swt.gtk.linux.x86_64.version>
+    <org.eclipse.swt.win32.win32.x86_64.version>3.115.100</org.eclipse.swt.win32.win32.x86_64.version>
+    <org.eclipse.swt.cocoa.macosx.x86_64.version>3.115.100</org.eclipse.swt.cocoa.macosx.x86_64.version>
 
     <!-- Pentaho drivers kar file dependencies versions -->
     <pentaho-hadoop-shims-cdh61.version>9.2.0.0-SNAPSHOT</pentaho-hadoop-shims-cdh61.version>
@@ -118,21 +123,147 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-samples</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.hitachivantara.karaf.assemblies</groupId>
+      <artifactId>client</artifactId>
+      <version>${pentaho-karaf.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pdi-dataservice-driver-bundle</artifactId>
+      <version>${pdi-dataservice-driver-bundle.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-application-launcher</artifactId>
+      <version>${pentaho-launcher.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>oss-licenses</artifactId>
       <version>${oss-licenses.version}</version>
       <type>zip</type>
+    </dependency>
+    <!-- swt -->
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86</artifactId>
+      <version>${org.eclipse.swt.gtk.linux.x86.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+      <version>${org.eclipse.swt.gtk.linux.x86_64.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+      <version>${org.eclipse.swt.win32.win32.x86_64.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
+      <version>${org.eclipse.swt.cocoa.macosx.x86_64.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-        </configuration>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-karaf</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hitachivantara.karaf.assemblies</groupId>
+                  <artifactId>client</artifactId>
+                  <type>zip</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${assembly.dir}/system/karaf</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- post processing -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>rename-unpacked-dependencies</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <echo message="Moving unpacked dependencies to the right place..."/>
+                <move file="${assembly.dir}/pdi-websocket-daemon" tofile="${assembly.dir}/adaptive-execution" failonerror="false"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

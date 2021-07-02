@@ -1,0 +1,53 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+  <id>client</id>
+  <formats>
+    <format>war</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <!-- the staging dir -->
+    <fileSet>
+      <directory>${assembly.dir}</directory>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <!-- pdi components -->
+    <dependencySet>
+      <includes>
+        <include>org.pentaho.di:pdi-libs:zip</include>
+      </includes>
+      <unpack>true</unpack>
+      <outputDirectory>WEB-INF</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.pentaho.di:pdi-static:zip</include>
+        <include>org.pentaho.di:pdi-samples:zip</include>
+        <include>org.pentaho.di:pdi-plugins:zip</include>
+      </includes>
+      <unpack>true</unpack>
+      <outputDirectory>.</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <!-- licenses -->
+    <dependencySet>
+      <includes>
+        <include>pentaho:oss-licenses:zip</include>
+      </includes>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <includes>
+          <include>PentahoDataIntegration_OSS_Licenses.html</include>
+        </includes>
+      </unpackOptions>
+      <outputDirectory>.</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+  </dependencySets>
+</assembly>
