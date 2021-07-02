@@ -347,8 +347,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
 
   public void validateTransformation( InputStream is ) throws Exception {
     DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
-    df.setAttribute( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
-    df.setAttribute( XMLConstants.ACCESS_EXTERNAL_SCHEMA, "" );
+    df.setFeature( "http://xml.org/sax/features/external-general-entities", false );
+    df.setFeature( "http://xml.org/sax/features/external-parameter-entities", false );
     DocumentBuilder builder = df.newDocumentBuilder();
     Document doc = builder.parse( is );
     if ( !doc.getDocumentElement().getNodeName().equals( "transformation_configuration" ) ) {
