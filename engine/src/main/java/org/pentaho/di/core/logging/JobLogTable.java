@@ -367,7 +367,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
               case CLIENT:
                 value =
                   KettleClientEnvironment.getInstance().getClient() != null ? KettleClientEnvironment
-                    .getInstance().getClient().toString() : "PENTAHO-SERVER";
+                    .getInstance().getClient().toString() : "PENTAHO_SERVER";
                 break;
               default:
                 break;
