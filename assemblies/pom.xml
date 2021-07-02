@@ -37,6 +37,7 @@
     <module>lib</module>
     <module>plugins</module>
     <module>client</module>
+    <module>war</module>
     <module>core</module>
   </modules>
 </project>
