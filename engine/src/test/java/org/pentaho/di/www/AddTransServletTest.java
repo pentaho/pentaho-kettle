@@ -46,6 +46,12 @@ public class AddTransServletTest {
   }
 
   @Test
+  public void doGetInvalidXmlTest() throws Exception {
+    String xml = "<somexml></xml>";
+    doGetTest( xml, HttpServletResponse.SC_BAD_REQUEST );
+  }
+
+  @Test
   public void doGetInvalidTransformationFileTest() throws Exception {
     String xml = "<somexml></somexml>";
     doGetTest( xml, HttpServletResponse.SC_BAD_REQUEST );
