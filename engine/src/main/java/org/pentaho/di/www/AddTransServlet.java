@@ -54,6 +54,7 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -196,6 +197,17 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
 
     response.setStatus( HttpServletResponse.SC_OK );
 
+    addTransformation( request, response, useXML, out, in );
+
+    if ( !useXML ) {
+      out.println( "<p>" );
+      out.println( "</BODY>" );
+      out.println( "</HTML>" );
+    }
+  }
+
+  private void addTransformation( HttpServletRequest request, HttpServletResponse response, boolean useXML,
+                                  PrintWriter out, BufferedReader in ) {
     String realLogFilename = null;
     TransExecutionConfiguration transExecutionConfiguration = null;
 
@@ -242,27 +254,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
 
       if ( transExecutionConfiguration.isSetLogfile() ) {
         realLogFilename = transExecutionConfiguration.getLogFileName();
-        final LogChannelFileWriter logChannelFileWriter;
-        try {
-          FileUtil.createParentFolder( AddTransServlet.class, realLogFilename, transExecutionConfiguration
-            .isCreateParentFolder(), trans.getLogChannel(), trans );
-          logChannelFileWriter =
-            new LogChannelFileWriter( servletLoggingObject.getLogChannelId(), KettleVFS
-              .getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
-          logChannelFileWriter.startLogging();
-
-          trans.addTransListener( new TransAdapter() {
-            @Override
-            public void transFinished( Trans trans ) throws KettleException {
-              if ( logChannelFileWriter != null ) {
-                logChannelFileWriter.stopLogging();
-              }
-            }
-          } );
-
-        } catch ( KettleException e ) {
-          logError( Const.getStackTracker( e ) );
-        }
+        setupLogChannelWriter( realLogFilename, transExecutionConfiguration, servletLoggingObject, trans );
 
       }
 
@@ -303,11 +295,30 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
       printError( useXML, out, ex );
     }
+  }
 
-    if ( !useXML ) {
-      out.println( "<p>" );
-      out.println( "</BODY>" );
-      out.println( "</HTML>" );
+  private void setupLogChannelWriter( String realLogFilename, TransExecutionConfiguration transExecutionConfiguration,
+                                      SimpleLoggingObject servletLoggingObject, Trans trans ) {
+    final LogChannelFileWriter logChannelFileWriter;
+    try {
+      FileUtil.createParentFolder( AddTransServlet.class, realLogFilename, transExecutionConfiguration
+        .isCreateParentFolder(), trans.getLogChannel(), trans );
+      logChannelFileWriter =
+        new LogChannelFileWriter( servletLoggingObject.getLogChannelId(), KettleVFS
+          .getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
+      logChannelFileWriter.startLogging();
+
+      trans.addTransListener( new TransAdapter() {
+        @Override
+        public void transFinished( Trans trans ) throws KettleException {
+          if ( logChannelFileWriter != null ) {
+            logChannelFileWriter.stopLogging();
+          }
+        }
+      } );
+
+    } catch ( KettleException e ) {
+      logError( Const.getStackTracker( e ) );
     }
   }
 
@@ -335,7 +346,10 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
   }
 
   public void validateTransformation( InputStream is ) throws Exception {
-    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+    df.setAttribute( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+    df.setAttribute( XMLConstants.ACCESS_EXTERNAL_SCHEMA, "" );
+    DocumentBuilder builder = df.newDocumentBuilder();
     Document doc = builder.parse( is );
     if ( !doc.getDocumentElement().getNodeName().equals( "transformation_configuration" ) ) {
       throw new SAXException( "Invalid Transformation - Missing transformation_configuration tag" );
