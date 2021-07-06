@@ -771,7 +771,7 @@ public class JsonInputMeta extends
   private static boolean getincludeNulls( Node stepnode ) {
     boolean result;
     List<Node> nodes = XMLHandler.getNodes( stepnode, INCLUDE_NULLS );
-    if ( nodes != null && nodes.isEmpty() ) {
+    if ( nodes != null && !nodes.isEmpty() ) {
       result = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, INCLUDE_NULLS ) );
     } else {
       result = getIncludeNullsProperty();
