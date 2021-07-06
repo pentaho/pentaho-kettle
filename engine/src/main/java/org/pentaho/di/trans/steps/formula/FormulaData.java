@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ public class FormulaData extends BaseStepData implements StepDataInterface {
   public static final int RETURN_TYPE_BIGDECIMAL = 5;
   public static final int RETURN_TYPE_BYTE_ARRAY = 6;
   public static final int RETURN_TYPE_BOOLEAN = 7;
+  public static final int RETURN_TYPE_TIMESTAMP = 9;
   public RowForumulaContext context;
   public Formula[] formulas;
   public FormulaParser parser;
