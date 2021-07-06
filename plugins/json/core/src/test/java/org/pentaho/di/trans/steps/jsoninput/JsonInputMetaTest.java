@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,7 +41,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -91,6 +91,7 @@ public class JsonInputMetaTest {
 
   @Before
   public void setup() {
+    System.clearProperty( Const.KETTLE_JSON_INPUT_INCLUDE_NULLS );
     jsonInputMeta = new JsonInputMeta();
     jsonInputMeta.setInputFiles( inputFiles );
     jsonInputMeta.setInputFields( new JsonInputField[] { inputField } );
@@ -176,5 +177,54 @@ public class JsonInputMetaTest {
       xml = CLEAN_NODES.matcher( xml ).replaceAll( "" );
       return xml;
     }
+  }
+
+  @Test
+  public void testDefaultWithoutIncludeNulls() throws KettleXMLException {
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.loadXML( loadStep( "step_defaultWithoutIncludeNulls.xml" ), DATABASES_LIST, metaStore );
+    assertFalse( jsonInputMeta.isIncludeNulls() );
+  }
+
+  @Test
+  public void testDefaultWithIncludeNulls_Y() throws KettleXMLException {
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.loadXML( loadStep( "step_defaultWithIncludeNulls_Y.xml" ), DATABASES_LIST, metaStore );
+    assertTrue( jsonInputMeta.isIncludeNulls() );
+  }
+
+  @Test
+  public void testDefaultWithIncludeNulls_N() throws KettleXMLException {
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.loadXML( loadStep( "step_default.xml" ), DATABASES_LIST, metaStore );
+    assertFalse( jsonInputMeta.isIncludeNulls() );
+  }
+
+  @Test
+  public void testDefaultWithoutIncludeNullsWithSystemProperty_Y() throws KettleXMLException {
+    System.setProperty( Const.KETTLE_JSON_INPUT_INCLUDE_NULLS, "Y" );
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.loadXML( loadStep( "step_defaultWithoutIncludeNulls.xml" ), DATABASES_LIST, metaStore );
+    assertTrue( jsonInputMeta.isIncludeNulls() );
+  }
+
+  @Test
+  public void testDefaultWithoutIncludeNullsWithSystemProperty_N() throws KettleXMLException {
+    System.setProperty( Const.KETTLE_JSON_INPUT_INCLUDE_NULLS, "N" );
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.loadXML( loadStep( "step_defaultWithoutIncludeNulls.xml" ), DATABASES_LIST, metaStore );
+    assertFalse( jsonInputMeta.isIncludeNulls() );
+  }
+
+  @Test
+  public void testGetIncludeNullsProperty_Y() {
+    System.setProperty( Const.KETTLE_JSON_INPUT_INCLUDE_NULLS, "Y" );
+    assertTrue( JsonInputMeta.getIncludeNullsProperty() );
+  }
+
+  @Test
+  public void testGetIncludeNullsProperty_N() {
+    System.setProperty( Const.KETTLE_JSON_INPUT_INCLUDE_NULLS, "N" );
+    assertFalse( JsonInputMeta.getIncludeNullsProperty() );
   }
 }
