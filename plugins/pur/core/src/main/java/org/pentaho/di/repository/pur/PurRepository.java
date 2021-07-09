@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2010-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2010-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -294,6 +294,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           e );
       }
       this.user = new EEUserInfo( username, password, username, "test user", true );
+      this.user.setAdmin( true );
       this.jobDelegate = new JobDelegate( this, pur );
       this.transDelegate = new TransDelegate( this, pur );
       this.unifiedRepositoryLockService = new UnifiedRepositoryLockService( pur );
