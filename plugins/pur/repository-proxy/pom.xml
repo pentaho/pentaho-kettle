@@ -23,7 +23,7 @@
     <platform.version>9.3.0.0-SNAPSHOT</platform.version>
     <pentaho-osgi-bundles.version>9.3.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <pdi-pur-plugin.version>9.3.0.0-SNAPSHOT</pdi-pur-plugin.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.13.1</junit.version>
     <mockito-core.version>1.9.5</mockito-core.version>
   </properties>
 
