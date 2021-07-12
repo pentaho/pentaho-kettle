@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+                           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.4.xsd">
+
+  <!-- Bean definitions in this file override bean definitions in repository.spring.xml. -->
+
+  <sec:authentication-manager alias="authenticationManager">
+    <sec:authentication-provider>
+      <sec:user-service id="userDetailsService">
+        <sec:user password="password" name="admin" authorities="Authenticated, Administrator"/>
+        <sec:user password="password" name="suzy" authorities="Authenticated"/>
+      </sec:user-service>
+    </sec:authentication-provider>
+  </sec:authentication-manager>
+
+  <bean id="jcrRepository" class="org.springframework.extensions.jcr.jackrabbit.RepositoryFactoryBean">
+    <property name="configuration" value="classpath:/jackrabbit-test-repo.xml"/>
+    <property name="homeDir" value="file:/tmp/repository-future/jackrabbit-test-TRUNK"/>
+  </bean>
+
+  <!-- override to keep only the required managers -->
+  <bean id="backingRepositoryLifecycleManager"
+        class="org.pentaho.platform.repository2.unified.lifecycle.DelegatingBackingRepositoryLifecycleManager">
+    <constructor-arg>
+      <list>
+        <ref bean="defaultBackingRepositoryLifecycleManager"/>
+      </list>
+    </constructor-arg>
+  </bean>
+  <!--
+    To enable RMI in a unit test, put jackrabbit-jcr-rmi-1.5.0.jar in dev-lib and add to Eclipse classpath.
+
+
+    You have to acquire your remote repository using the JackrabbitClientAdapterFactory instead of the default
+    ClientAdapterFactory. Otherwise the Jackrabbit API is not available on the client side.
+
+    In short you should do:
+
+      LocalAdapterFactory aFactory = new JackrabbitClientAdapterFactory();
+      ClientRepositoryFactory rFactory = new ClientRepositoryFactory(aFactory);
+      Repository repo = rFactory.getRepository(rmiURL);
+
+    Then you can cast the NodeTypeManager you get from the workspace to a JackrabbitNodeTypeManager and can then register
+    your node types.
+     -->
+  <!--bean id="rmiClientFactory" class="org.apache.jackrabbit.rmi.client.ClientRepositoryFactory">
+    <constructor-arg>
+      <bean class="org.apache.jackrabbit.rmi.jackrabbit.JackrabbitClientAdapterFactory" />
+    </constructor-arg>
+  </bean>
+
+  <bean id="jcrRepository" factory-bean="rmiClientFactory" factory-method="getRepository">
+    <constructor-arg value="rmi://localhost:1099/jackrabbit"/>
+  </bean-->
+
+</beans>

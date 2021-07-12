@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2021 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class PurRepository_GetObjectInformation_IT extends PurRepositoryTestBase
     FieldUtils.writeField( purRepository, "jobDelegate", jobDelegate, true );
 
     RepositoryElementInterface element = elementProvider.call();
-    RepositoryDirectoryInterface directory = purRepository.findDirectory( element.getRepositoryDirectory().getPath() );
+    RepositoryDirectoryInterface directory = purRepository.findDirectory( element.getRepositoryDirectory().getPath() ).findDirectory( "public" );
     element.setRepositoryDirectory( directory );
 
     purRepository.save( element, null, null );
