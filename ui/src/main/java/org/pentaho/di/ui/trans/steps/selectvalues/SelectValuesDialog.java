@@ -428,6 +428,9 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
           new String[] {
             BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ), } ),
         new ColumnInfo(
+          BaseMessages.getString( PKG, "SelectValuesDialog.ColumnInfo.DateGregorianChange" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false),
+        new ColumnInfo(
           BaseMessages.getString( PKG, "SelectValuesDialog.ColumnInfo.DateFormatLocale" ),
           ColumnInfo.COLUMN_TYPE_CCOMBO, EnvUtil.getLocaleList() ),
         new ColumnInfo(
@@ -667,6 +670,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
             ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
               PKG, "System.Combo.No" ) );
         item
+          .setText( index++, change.getDateGregorianChange() == null ? "" : change.getDateGregorianChange() );
+        item
           .setText( index++, change.getDateFormatLocale() == null ? "" : change.getDateFormatLocale().toString() );
         item.setText( index++, change.getDateFormatTimeZone() == null ? "" : change
           .getDateFormatTimeZone().toString() );
@@ -777,6 +782,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
       // If DateFormatLenient is anything but Yes (including blank) then it is false
       change.setDateFormatLenient( item.getText( index++ ).equalsIgnoreCase(
         BaseMessages.getString( PKG, "System.Combo.Yes" ) ) ? true : false );
+      change.setDateGregorianChange( item.getText( index++ ) );
       change.setDateFormatLocale( item.getText( index++ ) );
       change.setDateFormatTimeZone( item.getText( index++ ) );
       change.setLenientStringToNumber( item.getText( index++ ).equalsIgnoreCase(

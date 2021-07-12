@@ -34,6 +34,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleConversionException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -133,7 +134,7 @@ public class SelectValuesTest {
     stepMeta.getSelectFields()[0].setName( SELECTED_FIELD );
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, SELECTED_FIELD, null, ValueMetaInterface.TYPE_INTEGER, -2, -2,
-        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, false, null, null, null ); // no specified conversion type so should have default conversion mask.
+        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, null, false, null, null, null ); // no specified conversion type so should have default conversion mask.
 
     stepData = new SelectValuesData();
     stepData.select = true;
@@ -161,7 +162,7 @@ public class SelectValuesTest {
     stepMeta.getSelectFields()[0].setName( SELECTED_FIELD );
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, SELECTED_FIELD, null, ValueMetaInterface.TYPE_NUMBER, -2, -2,
-        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, false, null, null, null ); // no specified conversion type so should have default conversion mask for Double.
+        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, null, false, null, null, null ); // no specified conversion type so should have default conversion mask for Double.
 
     stepData = new SelectValuesData();
     stepData.select = true;
@@ -192,7 +193,7 @@ public class SelectValuesTest {
     // no specified conversion type so should have default conversion mask for BigNumber
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, SELECTED_FIELD, null, ValueMetaInterface.TYPE_BIGNUMBER, -2, -2,
-        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, false, null, null, null );
+        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, null, false, null, null, null );
 
     stepData = new SelectValuesData();
     stepData.select = true;
@@ -223,7 +224,7 @@ public class SelectValuesTest {
     stepMeta.getSelectFields()[0].setName( SELECTED_FIELD );
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, SELECTED_FIELD, null, ValueMetaInterface.TYPE_INTEGER, -2, -2,
-        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, false, null, null, null ); // no specified conversion type so should have default conversion mask.
+        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, null, false, null, null, null ); // no specified conversion type so should have default conversion mask.
 
     stepData = new SelectValuesData();
     stepData.select = true;
@@ -252,7 +253,7 @@ public class SelectValuesTest {
     stepMeta.getSelectFields()[0].setName( SELECTED_FIELD );
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, SELECTED_FIELD, null, ValueMetaInterface.TYPE_NUMBER, -2, -2,
-        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, false, null, null, null ); // no specified conversion type so should have default conversion mask for Double.
+        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, null, false, null, null, null ); // no specified conversion type so should have default conversion mask for Double.
 
     stepData = new SelectValuesData();
     stepData.select = true;
@@ -284,7 +285,7 @@ public class SelectValuesTest {
     // no specified conversion type so should have default conversion mask for BigNumber
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, SELECTED_FIELD, null, ValueMetaInterface.TYPE_BIGNUMBER, -2, -2,
-        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, false, null, null, null );
+        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, null, false, null, null, null );
 
     stepData = new SelectValuesData();
     stepData.select = true;
@@ -306,7 +307,7 @@ public class SelectValuesTest {
     stepMeta.getSelectFields()[0].setName( SELECTED_FIELD );
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, SELECTED_FIELD, null, ValueMetaInterface.TYPE_INTEGER, -2, -2,
-        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, false, null, null, null );
+        ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, null, false, null, null, null );
 
     SelectValuesData stepData = new SelectValuesData();
     stepData.select = true;
@@ -329,6 +330,52 @@ public class SelectValuesTest {
       properException = true;
     }
     assertTrue( properException );
+  }
+
+  @Test
+  public void alterDateGregorianChange() throws KettleException {
+    SelectValuesHandler  step2 = null;
+    Object[] inputRow2 = null;
+    RowMeta inputRowMeta = null;
+    SelectValuesMeta stepMeta = null;
+    SelectValuesData stepData = null;
+    ValueMetaInterface vmi =  null;
+
+    step2 = new SelectValuesHandler( helper.stepMeta, helper.stepDataInterface, 1, helper.transMeta, helper.trans );
+    step2 = spy( step2 );
+    inputRow2 = new Object[] { "15821011", "20210607" };
+    doReturn( inputRow2 ).when( step2 ).getRow();
+
+    inputRowMeta = new RowMeta();
+    inputRowMeta.addValueMeta( new ValueMetaString( "uk_julian" ) );
+    inputRowMeta.addValueMeta( new ValueMetaString( "uk_gregorian" ) );
+    step2.setInputRowMeta( inputRowMeta );
+
+    stepMeta = new SelectValuesMeta();
+    stepMeta.allocate( 0, 0, 2 );
+    stepMeta.getMeta()[0] = new SelectMetadataChange( stepMeta, "uk_julian", null,
+            ValueMetaInterface.TYPE_DATE, 0, 0, ValueMetaInterface.STORAGE_TYPE_NORMAL,
+            "yyyyMMdd", false, "17520914",
+            "en_GB", "UTC", false, null,
+            null, null );
+
+    stepMeta.getMeta()[1] = new SelectMetadataChange( stepMeta, "uk_gregorian", null,
+            ValueMetaInterface.TYPE_DATE, 0, 0, ValueMetaInterface.STORAGE_TYPE_NORMAL,
+            "yyyyMMdd", false, "17520914",
+            "en_GB", "UTC", false, null,
+            null, null );
+
+    stepData = new SelectValuesData();
+    stepData.select = false;
+    stepData.metadata = true;
+    stepData.firstselect = false;
+    stepData.firstmetadata = true;
+    boolean result = step2.processRow( stepMeta, stepData );
+    assertTrue(result);
+
+    Object resultRow[] = step2.resultRow;
+    assertEquals("Thu Oct 21 00:00:00 UTC 1582", resultRow[0].toString());
+    assertEquals("Mon Jun 07 00:00:00 UTC 2021", resultRow[1].toString());
   }
 
   public class SelectValuesHandler extends SelectValues {

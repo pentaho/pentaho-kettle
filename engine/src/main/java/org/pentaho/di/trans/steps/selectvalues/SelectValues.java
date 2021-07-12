@@ -290,6 +290,9 @@ public class SelectValues extends BaseStep implements StepInterface {
         }
 
         valueMeta.setDateFormatLenient( change.isDateFormatLenient() );
+        if ( !Utils.isEmpty( change.getDateGregorianChange() ) ) {
+          valueMeta.setDateGregorianChange(change.getDateGregorianChange());
+        }
         valueMeta.setDateFormatLocale( EnvUtil.createLocale( change.getDateFormatLocale() ) );
         valueMeta.setDateFormatTimeZone( EnvUtil.createTimeZone( change.getDateFormatTimeZone() ) );
         valueMeta.setLenientStringToNumber( change.isLenientStringToNumber() );

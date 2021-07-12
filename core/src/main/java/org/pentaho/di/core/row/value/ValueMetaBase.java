@@ -77,8 +77,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ValueMetaBase implements ValueMetaInterface {
 
@@ -150,6 +153,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected Locale dateFormatLocale;
   protected TimeZone dateFormatTimeZone;
   protected boolean dateFormatLenient;
+  protected String dateGregorianChange;
   protected boolean lenientStringToNumber;
   protected boolean ignoreTimezone;
   protected boolean emptyStringAndNullAreDifferent;
@@ -335,6 +339,10 @@ public class ValueMetaBase implements ValueMetaInterface {
     sortedDescending = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "sort_descending" ) );
     outputPaddingEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "output_padding" ) );
     dateFormatLenient = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "date_format_lenient" ) );
+    String dateGregorianChangeString = XMLHandler.getTagValue( node, "date_gregorian_change" );
+    if ( !Utils.isEmpty( dateGregorianChangeString ) ) {
+      dateGregorianChange = dateGregorianChangeString;
+    }
     String dateFormatLocaleString = XMLHandler.getTagValue( node, "date_format_locale" );
     if ( !Utils.isEmpty( dateFormatLocaleString ) ) {
       dateFormatLocale = EnvUtil.createLocale( dateFormatLocaleString );
@@ -881,6 +889,24 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
+   * @return the dateGregorianChange
+   */
+  @Override
+  public String getDateGregorianChange() {
+    return dateGregorianChange;
+  }
+
+  /**
+   * @param dateGregorianChange
+   *          the dateGregorianChange to set
+   */
+  @Override
+  public void setDateGregorianChange( String dateGregorianChange ) {
+    this.dateGregorianChange = dateGregorianChange;
+    dateFormatChanged = true;
+  }
+
+  /**
    * @return the dateFormatLocale
    */
   @Override
@@ -1091,6 +1117,23 @@ public class ValueMetaBase implements ValueMetaInterface {
       // Set the conversion leniency as well
       //
       dateFormat.setLenient( dateFormatLenient );
+
+      if ( !Utils.isEmpty( dateGregorianChange ) ) {
+        Matcher yyyyMMdd = Pattern.compile( "([0-9]{4})-?([0-9]{2})-?([0-9]{2})" ).matcher( dateGregorianChange );
+        if ( yyyyMMdd.matches() ) {
+          // Set the Gregorian change date as well
+          //
+          GregorianCalendar dateFormatCalendar = (GregorianCalendar) dateFormat.getCalendar();
+
+          GregorianCalendar gregorianCalendarChangeDate = (GregorianCalendar) dateFormatCalendar.clone();
+          int year = Integer.parseInt( yyyyMMdd.group(1) );
+          int month = Integer.parseInt( yyyyMMdd.group(2) );
+          int day = Integer.parseInt( yyyyMMdd.group(3) );
+          gregorianCalendarChangeDate.set( year, month - 1, day );  // NOTE: the month -1 is needed because the value must start from 0
+
+          dateFormatCalendar.setGregorianChange(gregorianCalendarChangeDate.getTime());
+        }
+      }
 
       dateFormatChanged = false;
     }
@@ -3072,6 +3115,9 @@ public class ValueMetaBase implements ValueMetaInterface {
       // date format lenient?
       outputStream.writeBoolean( dateFormatLenient );
 
+      // date gregorian change?
+      writeString( outputStream, dateGregorianChange != null ? dateGregorianChange : null );
+
       // date format locale?
       writeString( outputStream, dateFormatLocale != null ? dateFormatLocale.toString() : null );
 
@@ -3200,6 +3246,15 @@ public class ValueMetaBase implements ValueMetaInterface {
       //
       dateFormatLenient = inputStream.readBoolean();
 
+      // date gregorian change
+      //
+      String strDateGregorianChange = readString( inputStream );
+      if ( Utils.isEmpty( strDateGregorianChange ) ) {
+        dateGregorianChange = null;
+      } else {
+        dateGregorianChange = strDateGregorianChange;
+      }
+
       // What is the date format locale?
       //
       String strDateFormatLocale = readString( inputStream );
@@ -3312,6 +3367,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append( XMLHandler.addTagValue( "sort_descending", sortedDescending ) );
     xml.append( XMLHandler.addTagValue( "output_padding", outputPaddingEnabled ) );
     xml.append( XMLHandler.addTagValue( "date_format_lenient", dateFormatLenient ) );
+    xml.append( XMLHandler.addTagValue( "date_gregorian_change", dateGregorianChange != null ? dateGregorianChange
+        : null ) );
     xml.append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale != null ? dateFormatLocale.toString()
         : null ) );
     xml.append( XMLHandler.addTagValue( "date_format_timezone", dateFormatTimeZone != null ? dateFormatTimeZone.getID()

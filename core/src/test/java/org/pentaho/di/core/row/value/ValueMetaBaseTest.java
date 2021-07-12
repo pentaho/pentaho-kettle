@@ -716,6 +716,27 @@ public class ValueMetaBaseTest {
   }
 
   @Test
+  public void testDateParsingLenient() throws Exception {
+    ValueMetaBase dateMeta = new ValueMetaBase("date", ValueMetaInterface.TYPE_DATE);
+    dateMeta.setDateFormatLenient(true);
+
+    // convert date
+    dateMeta.setConversionMask( "yyyyMMdd" );
+    assertEquals( local( 1582, 10, 11, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "15821011" ) );
+  }
+
+  @Test
+  public void testDateParsingEnglangGregorianChange() throws Exception {
+    ValueMetaBase dateMeta = new ValueMetaBase("date", ValueMetaInterface.TYPE_DATE);
+    dateMeta.setDateFormatLenient(false);
+    dateMeta.setDateGregorianChange("17520914");
+
+    // convert date
+    dateMeta.setConversionMask( "yyyyMMdd" );
+    assertEquals( local( 1582, 10, 11, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "15821011" ) );
+  }
+
+  @Test
   public void testSetPreparedStatementStringValueDontLogTruncated() throws KettleDatabaseException {
     ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
 

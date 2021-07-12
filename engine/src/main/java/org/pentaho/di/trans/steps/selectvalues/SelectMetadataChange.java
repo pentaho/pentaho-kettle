@@ -59,6 +59,10 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
   @Injection( name = "META_DATE_FORMAT_LENIENT", group = "METAS" )
   private boolean dateFormatLenient;
 
+  /** Set the Gregorian Calendar change-over date */
+  @Injection( name = "META_DATE_GREGORIAN_CHANGE", group = "METAS" )
+  private String dateGregorianChange;
+
   /** This is the locale to use for date parsing */
   @Injection( name = "META_DATE_FORMAT_LOCALE", group = "METAS" )
   private String dateFormatLocale;
@@ -92,14 +96,14 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
 
   /**
    * @Deprecated This method is left here for external code that may be using it. It may be removed in the future.
-   * @see #SelectMetadataChange(StepAttributesInterface, String, String, int, int, int, int, String, boolean, String,
-   *      String, String)
+   * See {@link #SelectMetadataChange(StepAttributesInterface, String, String, int, int, int, int, String, boolean,
+   *     String, String, String, boolean, String, String, String)}
    */
   public SelectMetadataChange( StepAttributesInterface attributesInterface, String name, String rename, int type,
     int length, int precision, int storageType, String conversionMask, String decimalSymbol,
     String groupingSymbol, String currencySymbol ) {
     this(
-      attributesInterface, name, rename, type, length, precision, storageType, conversionMask, false, null,
+      attributesInterface, name, rename, type, length, precision, storageType, conversionMask, false, null, null,
       null, false, decimalSymbol, groupingSymbol, currencySymbol );
   }
 
@@ -114,6 +118,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
    * @param storageType
    * @param conversionMask
    * @param dateFormatLenient
+   * @param dateGregorianChange
    * @param dateFormatLocale
    * @param dateFormatTimeZone
    * @param lenientStringToNumber
@@ -123,8 +128,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
    */
   public SelectMetadataChange( StepAttributesInterface attributesInterface, String name, String rename, int type,
     int length, int precision, int storageType, String conversionMask, boolean dateFormatLenient,
-    String dateFormatLocale, String dateFormatTimeZone, boolean lenientStringToNumber, String decimalSymbol,
-    String groupingSymbol, String currencySymbol ) {
+    String dateGregorianChange, String dateFormatLocale, String dateFormatTimeZone, boolean lenientStringToNumber,
+    String decimalSymbol, String groupingSymbol, String currencySymbol ) {
     this( attributesInterface );
     this.name = name;
     this.rename = rename;
@@ -134,6 +139,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
     this.storageType = storageType;
     this.conversionMask = conversionMask;
     this.dateFormatLenient = dateFormatLenient;
+    this.dateGregorianChange = dateGregorianChange;
     this.dateFormatLocale = dateFormatLocale;
     this.dateFormatTimeZone = dateFormatTimeZone;
     this.lenientStringToNumber = lenientStringToNumber;
@@ -161,6 +167,9 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
     retval.append( "        " ).append(
       XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_DATE_FORMAT_LENIENT" ), Boolean
         .toString( dateFormatLenient ) ) );
+    retval.append( "        " ).append(
+        XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_DATE_GREGORIAN_CHANGE" ),
+          dateGregorianChange ) );
     retval.append( "        " ).append(
       XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_DATE_FORMAT_LOCALE" ), dateFormatLocale ) );
     retval
@@ -200,6 +209,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
     dateFormatLenient =
       Boolean.parseBoolean( XMLHandler.getTagValue( metaNode, attributesInterface
         .getXmlCode( "META_DATE_FORMAT_LENIENT" ) ) );
+    dateGregorianChange =
+      XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_DATE_GREGORIAN_CHANGE" ) );
     dateFormatLocale =
       XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_DATE_FORMAT_LOCALE" ) );
     dateFormatTimeZone =
@@ -351,6 +362,22 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
    */
   public void setDateFormatLenient( boolean dateFormatLenient ) {
     this.dateFormatLenient = dateFormatLenient;
+  }
+
+  /**
+   *
+   * @return the change date for the gregorian calendar
+   */
+  public String getDateGregorianChange() {
+    return dateGregorianChange;
+  }
+
+  /**
+   * @param dateGregorianChange
+   *          the change date for the gregorian calendar
+   */
+  public void setDateGregorianChange( String dateGregorianChange ) {
+    this.dateGregorianChange = dateGregorianChange;
   }
 
   /**

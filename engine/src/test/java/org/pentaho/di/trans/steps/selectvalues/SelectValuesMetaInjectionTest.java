@@ -101,6 +101,11 @@ public class SelectValuesMetaInjectionTest extends BaseMetadataInjectionTest<Sel
         return meta.getMeta()[0].isDateFormatLenient();
       }
     } );
+    check( "META_DATE_GREGORIAN_CHANGE", new StringGetter() {
+      public String get() {
+        return meta.getMeta()[0].getDateGregorianChange();
+      }
+    } );
     check( "META_DATE_FORMAT_LOCALE", new StringGetter() {
       public String get() {
         return meta.getMeta()[0].getDateFormatLocale();

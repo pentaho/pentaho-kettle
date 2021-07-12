@@ -215,7 +215,7 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     process();
 
     check( new Object[][] { { "1", "This line is un-even enclosure-wise because I'm using an escaped enclosure", "a" },
-      { "2", "Test isn't even\nhere", "b" } } );
+      { "2", "Test isn't even\r\nhere", "b" } } );
   }
 
   @Test( expected = KettleStepException.class )
