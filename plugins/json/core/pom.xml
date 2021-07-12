@@ -18,7 +18,7 @@
     <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
     <pentaho-metaverse.version>9.3.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>9.3.0.0-SNAPSHOT</platform.version>
-    <commons.io.version>1.4</commons.io.version>
+    <commons.io.version>2.7</commons.io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
     <guava.version>17.0</guava.version>
