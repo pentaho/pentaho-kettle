@@ -63,7 +63,7 @@
     <SassyReader.version>0.5</SassyReader.version>
     <saxon.version>9.1.0.8</saxon.version>
     <saxon-dom.version>9.1.0.8</saxon-dom.version>
-    <snakeyaml.version>1.7</snakeyaml.version>
+    <snakeyaml.version>1.26</snakeyaml.version>
     <snmp4j.version>1.9.3d</snmp4j.version>
     <syslog4j.version>0.9.46</syslog4j.version>
     <trilead-ssh2.version>build213</trilead-ssh2.version>
