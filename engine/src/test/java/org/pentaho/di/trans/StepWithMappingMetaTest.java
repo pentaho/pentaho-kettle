@@ -56,6 +56,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.metastore.api.IMetaStore;
 
 
 /**
@@ -147,7 +149,7 @@ public class StepWithMappingMetaTest {
     String testName = "test";
     PowerMockito.mockStatic( StepWithMappingMeta.class );
     when( StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any() ) ).thenReturn( transMeta );
-    when( transMeta.exportResources( any(), anyMap(), any(), any(), any() ) ).thenReturn( testName );
+    when( transMeta.exportResources( any(VariableSpace.class), anyMap(), any(ResourceNamingInterface.class), any(Repository.class), any(IMetaStore.class) ) ).thenReturn( testName );
 
     stepWithMappingMeta.exportResources( null, null, null, null, null );
     verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
