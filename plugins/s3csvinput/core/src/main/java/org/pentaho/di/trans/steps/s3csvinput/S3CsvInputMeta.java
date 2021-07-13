@@ -121,6 +121,9 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   @Injection( name = "RUNNING_IN_PARALLEL" )
   private boolean runningInParallel;
 
+  @Injection( name = "LIST_OBJECTS" )
+  private boolean listObjects;
+
   @Injection( name = "AWS_ACCESS_KEY" )
   private String awsAccessKey;
 
@@ -168,6 +171,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       headerPresent = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "header" ) );
       lazyConversionActive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "lazy_conversion" ) );
       runningInParallel = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "parallel" ) );
+      listObjects = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "list_objects" ) );
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
       int nrfields = XMLHandler.countNodes( fields, "field" );
 
@@ -216,6 +220,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     retval.append( "    " ).append( XMLHandler.addTagValue( "max_line_size", maxLineSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "lazy_conversion", lazyConversionActive ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "parallel", runningInParallel ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "list_objects", listObjects ) );
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < inputFields.length; i++ ) {
@@ -257,6 +262,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       maxLineSize = rep.getStepAttributeString( id_step, "max_line_size" );
       lazyConversionActive = rep.getStepAttributeBoolean( id_step, "lazy_conversion" );
       runningInParallel = rep.getStepAttributeBoolean( id_step, "parallel" );
+      listObjects = rep.getStepAttributeBoolean( id_step, "list_objects" );
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
       allocate( nrfields );
@@ -299,6 +305,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       rep.saveStepAttribute( id_transformation, id_step, "header", headerPresent );
       rep.saveStepAttribute( id_transformation, id_step, "lazy_conversion", lazyConversionActive );
       rep.saveStepAttribute( id_transformation, id_step, "parallel", runningInParallel );
+      rep.saveStepAttribute( id_transformation, id_step, "list_objects", listObjects );
 
       for ( int i = 0; i < inputFields.length; i++ ) {
         TextFileInputField field = inputFields[i];
@@ -678,6 +685,21 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
    */
   public void setRunningInParallel( boolean runningInParallel ) {
     this.runningInParallel = runningInParallel;
+  }
+
+  /**
+   * @return the listObjects
+   */
+  public boolean isListObjects() {
+    return listObjects;
+  }
+
+  /**
+   * @param listObjects
+   *          the runningInParallel to set
+   */
+  public void setListObjects( boolean listObjects ) {
+    this.listObjects = listObjects;
   }
 
   /**

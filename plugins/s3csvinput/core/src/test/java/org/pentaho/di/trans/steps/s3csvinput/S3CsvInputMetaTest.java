@@ -82,7 +82,7 @@ public class S3CsvInputMetaTest {
   public void testSerialization() throws KettleException {
     List<String> attributes = Arrays.asList( "AwsAccessKey", "AwsSecretKey", "Bucket", "Filename", "FilenameField",
       "RowNumField", "IncludingFilename", "Delimiter", "Enclosure", "HeaderPresent", "MaxLineSize",
-      "LazyConversionActive", "RunningInParallel", "InputFields" );
+      "LazyConversionActive", "RunningInParallel", "InputFields", "ListObjects" );
 
     Map<String, FieldLoadSaveValidator<?>> typeMap = new HashMap<>();
     typeMap.put( TextFileInputField[].class.getCanonicalName(),
