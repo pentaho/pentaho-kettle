@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -360,7 +360,9 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
 
       // Based on the working environment determine the parent path to compare too.
       if ( isConnectedToRepository() ) {
-        return replaceCurrentDir( path.replace( '\\', '/' ), meta.getRepositoryDirectory().getPath() );
+        String parentPath =
+          meta.getRepositoryDirectory().getParent() == null ? "" : meta.getRepositoryDirectory().getPath();
+        return replaceCurrentDir( path.replace( '\\', '/' ), parentPath );
       }
 
       // Attempt to match using current file as is
@@ -390,14 +392,17 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   private static String replaceCurrentDir( String path, String parentPath ) {
-    if ( !Utils.isEmpty( path ) && !Utils.isEmpty( parentPath ) && path.startsWith( parentPath ) ) {
+    if ( Utils.isEmpty( path ) || !path.startsWith( parentPath ) ) {
+      return path;
+    }
+
+    // Ensure the path is uniform for windows. Path's using the internal variable need to use forward slash
+    if ( Const.isWindows() ) {
+      path = path.replace( '\\', '/' );
+    }
+
+    if ( !Utils.isEmpty( parentPath ) ) {
       path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-
-      // Ensure the path is uniform for windows. Path's using the internal variable need to use forward slash
-      if ( Const.isWindows() ) {
-        path = path.replace( '\\', '/' );
-      }
-
     }
     return path;
   }
