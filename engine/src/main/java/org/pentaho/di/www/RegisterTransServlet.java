@@ -39,8 +39,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 public class RegisterTransServlet extends BaseJobServlet {
@@ -77,7 +79,8 @@ public class RegisterTransServlet extends BaseJobServlet {
     }
   }
 
-  public void validateTransformation( InputStream is ) throws Exception {
+  public void validateTransformation( InputStream is ) throws IOException, ParserConfigurationException, SAXException,
+    XPathExpressionException {
     DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
     df.setFeature( "http://xml.org/sax/features/external-general-entities", false );
     df.setFeature( "http://xml.org/sax/features/external-parameter-entities", false );
