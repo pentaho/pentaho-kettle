@@ -433,12 +433,12 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
         pass = "******";
       }
       String dns = Const.NVL( dm.getDatabaseName(), "" );
-      sb.append( " userid=" ).append( environmentSubstitute( user ) ).append( "/" ).append(
+      sb.append( " userid='" ).append( environmentSubstitute( user ) ).append( "/" ).append(
         environmentSubstitute( pass ) ).append( "@" );
 
       String overrideName = meta.getDbNameOverride();
       if ( Utils.isEmpty( Const.rtrim( overrideName ) ) ) {
-        sb.append( environmentSubstitute( dns ) );
+        sb.append( environmentSubstitute( dns ) ).append( "'" );
       } else {
         // if the database name override is filled in, do that one.
         sb.append( environmentSubstitute( overrideName ) );
