@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,7 +41,6 @@ import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -140,15 +140,9 @@ public class IngresVectorwiseTest {
     stepMockHelper.cleanUp();
   }
 
-  /**
-   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
-   * Systems:
-   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
-   * operating system besides Windows."
-   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
-   */
   @Test
   public void testGuiErrors() {
+    assumeFalse(isWindows());
     try {
       int r = wrongRows.size();
       BaseStep step = doOutput( wrongRows, "0" );
@@ -165,15 +159,9 @@ public class IngresVectorwiseTest {
     }
   }
 
-  /**
-   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
-   * Systems:
-   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
-   * operating system besides Windows."
-   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
-   */
   @Test
   public void testGuiErrorsWithErrorsAllowed() {
+    assumeFalse(isWindows());
     try {
       int r = wrongRows.size();
       BaseStep step = doOutput( wrongRows, "2" );
@@ -190,15 +178,9 @@ public class IngresVectorwiseTest {
     }
   }
 
-  /**
-   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
-   * Systems:
-   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
-   * operating system besides Windows."
-   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
-   */
   @Test
   public void testGuiSuccess() {
+    assumeFalse(isWindows());
     try {
       int r = rows.size();
       BaseStep step = doOutput( rows, "0" );
@@ -215,15 +197,9 @@ public class IngresVectorwiseTest {
     }
   }
 
-  /**
-   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
-   * Systems:
-   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
-   * operating system besides Windows."
-   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
-   */
   @Test
   public void testWaitForFinish() {
+    assumeFalse(isWindows());
     try {
       int r = rows.size();
       BaseStep step = doOutput( wrongRows, "2" );
@@ -238,16 +214,9 @@ public class IngresVectorwiseTest {
     }
   }
 
-  /**
-   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
-   * Systems:
-   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
-   * operating system besides Windows."
-   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
-   */
   @Test
-  @Ignore
   public void testVWLoadMocker() {
+    assumeFalse(isWindows());
     String cmd =
       "java -cp . -Duser.dir=" + VWLoadMocker.class.getProtectionDomain().getCodeSource().getLocation().getPath()
         + " org.pentaho.di.trans.steps.ivwloader.VWLoadMocker 5000 0 /tmp/error.txt";
@@ -357,4 +326,15 @@ public class IngresVectorwiseTest {
     return ivwLoader;
   }
 
+  /**
+   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
+   * Systems:
+   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
+   * operating system besides Windows."
+   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
+   */
+  private static boolean isWindows() {
+    final String os = System.getProperty("os.name");
+    return os != null && os.toLowerCase().startsWith("win");
+  }
 }
