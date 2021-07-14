@@ -3311,7 +3311,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   public void truncateTable( String schema, String tablename ) throws KettleDatabaseException {
-    if ( Utils.isEmpty( connectionGroup ) ) {
+    if ( Utils.isEmpty( connectionGroup ) && ! databaseMeta.getPluginId().equalsIgnoreCase( "MySQL" ) ) {
       String truncateStatement = databaseMeta.getTruncateTableStatement( schema, tablename );
       if ( truncateStatement == null ) {
         throw new KettleDatabaseException( "Truncate table not supported by "
