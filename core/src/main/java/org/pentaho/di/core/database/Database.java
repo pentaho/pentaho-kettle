@@ -3311,7 +3311,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   public void truncateTable( String schema, String tablename ) throws KettleDatabaseException {
-    if ( Utils.isEmpty( connectionGroup ) && !databaseMeta.getPluginId().equalsIgnoreCase( "MySQL" ) ) {
+    if ( Utils.isEmpty( connectionGroup ) && !databaseMeta.getPluginId().equalsIgnoreCase( "MySQL" ) ) { // this is a hack to fix a know issue on MySQL issue name on Pentaho side BISERVER-14546
       String truncateStatement = databaseMeta.getTruncateTableStatement( schema, tablename );
       if ( truncateStatement == null ) {
         throw new KettleDatabaseException( "Truncate table not supported by "
