@@ -103,6 +103,18 @@ public class AddTransServletTest {
     doGetTest( xml, HttpServletResponse.SC_OK );
   }
 
+  @Test
+  public void doGetValidNameWithInvalidElementTest() throws Exception {
+    String xml = "<transformation_configuration>"
+      +             "<transformation>"
+      +               "<info>"
+      +                 "<name>MyTrans<img src=\"someurl\"></img></name>"
+      +               "</info>"
+      +             "</transformation>"
+      +          "</transformation_configuration>";
+    doGetTest( xml, HttpServletResponse.SC_BAD_REQUEST );
+  }
+
   private void doGetTest( String xmlTrans, int expectedResponseCode ) throws Exception {
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
