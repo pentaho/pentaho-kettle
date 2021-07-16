@@ -100,6 +100,18 @@ public class RegisterTransServletTest {
   }
 
   @Test
+  public void doGetValidNameWithInvalidElementTest() throws Exception {
+    String xml = "<transformation_configuration>"
+      +             "<transformation>"
+      +               "<info>"
+      +                 "<name>MyTrans<img src=\"someurl\"></img></name>"
+      +               "</info>"
+      +             "</transformation>"
+      +          "</transformation_configuration>";
+    doGetTest( xml, HttpServletResponse.SC_BAD_REQUEST );
+  }
+
+  @Test
   public void doGetTransformationOkTest() throws Exception {
 
     String xml = "<transformation_configuration>"
