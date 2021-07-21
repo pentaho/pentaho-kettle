@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -140,7 +140,7 @@ public class LoggingRegistry {
 
     if ( found != null ) {
       String foundLogChannelId = determineExistingLoggingSource( loggingSource, found );
-      if ( !foundLogChannelId.isEmpty() ) {
+      if ( !foundLogChannelId.isEmpty() && loggingSource.getParent() != null && found.getParent() != null ) {
         foundCounter++;
         return foundLogChannelId;
       }
