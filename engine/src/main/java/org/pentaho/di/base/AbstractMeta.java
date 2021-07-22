@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -215,6 +215,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   private boolean alwaysShowRunOptions = true;
 
   private Boolean versioningEnabled;
+
+  //Caches JobMeta and TransMeta that were previously loaded during run.
+  private IMetaFileCache metaFileCache;
 
   public boolean isShowDialog() {
     return showDialog;
@@ -2136,4 +2139,13 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   public void setSafeModeEnabled( boolean safeModeEnabled ) {
     this.runOptions.safeModeEnabled = safeModeEnabled;
   }
+
+  public IMetaFileCache getMetaFileCache() {
+    return metaFileCache;
+  }
+
+  public void setMetaFileCache( IMetaFileCache metaFileCache ) {
+    this.metaFileCache = metaFileCache;
+  }
+
 }

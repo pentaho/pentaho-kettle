@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -153,7 +154,9 @@ public class JobExecutorMetaTest {
 
     jobExecutorMeta.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     jobExecutorMeta.setFileName( "/home/admin/test.kjb" );
-
+    StepMeta parentStepMeta = mock( StepMeta.class );
+    when ( parentStepMeta.getParentTransMeta( ) ).thenReturn( mock( TransMeta.class ) );
+    jobExecutorMeta.setParentStepMeta( parentStepMeta );
     JobMeta jobMeta;
 
     jobExecutorMeta.getParameters().setInheritingAllVariables( false );

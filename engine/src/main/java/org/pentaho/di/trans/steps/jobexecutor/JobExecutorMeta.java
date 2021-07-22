@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.jobexecutor;
 
+import org.pentaho.di.base.IMetaFileLoader;
+import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -31,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -608,100 +609,9 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
   public static final synchronized JobMeta loadJobMeta( JobExecutorMeta executorMeta, Repository rep,
     IMetaStore metaStore, VariableSpace space ) throws KettleException {
-    JobMeta mappingJobMeta = null;
 
-    CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-    VariableSpace tmpSpace = r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(),
-        space, rep, executorMeta.getParentStepMeta(), executorMeta.getFileName() );
-
-    switch ( executorMeta.getSpecificationMethod() ) {
-      case FILENAME:
-        String realFilename = tmpSpace.environmentSubstitute( executorMeta.getFileName() );
-        try {
-          // OK, load the meta-data from file...
-          //
-          // Don't set internal variables: they belong to the parent thread!
-          //
-          if ( rep != null ) {
-            realFilename = r.normalizeSlashes( realFilename );
-            // need to try to load from the repository
-            try {
-              String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
-              String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
-              RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-              mappingJobMeta = rep.loadJob( tmpFilename, dir, null, null );
-            } catch ( KettleException ke ) {
-              // try without extension
-              if ( realFilename.endsWith( Const.STRING_JOB_DEFAULT_EXT ) ) {
-                try {
-                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1,
-                      realFilename.indexOf( "." + Const.STRING_JOB_DEFAULT_EXT ) );
-                  String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
-                  RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-                  mappingJobMeta = rep.loadJob( tmpFilename, dir, null, null );
-                } catch ( KettleException ke2 ) {
-                  // fall back to try loading from file system (mappingJobMeta is going to be null)
-                }
-              }
-            }
-          }
-          if ( mappingJobMeta == null ) {
-            mappingJobMeta = new JobMeta( null, realFilename, rep, metaStore, null );
-            LogChannel.GENERAL.logDetailed( "Loading job from repository", "Job was loaded from XML file ["
-              + realFilename + "]" );
-          }
-        } catch ( Exception e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JobExecutorMeta.Exception.UnableToLoadJob" ), e );
-        }
-        break;
-
-      case REPOSITORY_BY_NAME:
-        String realJobname = tmpSpace.environmentSubstitute( executorMeta.getJobName() );
-        String realDirectory = tmpSpace.environmentSubstitute( executorMeta.getDirectoryPath() );
-
-        if ( rep != null ) {
-          if ( !Utils.isEmpty( realJobname ) && !Utils.isEmpty( realDirectory ) ) {
-            realDirectory = r.normalizeSlashes( realDirectory );
-            RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
-            if ( repdir != null ) {
-              try {
-                // reads the last revision in the repository...
-                //
-                mappingJobMeta = rep.loadJob( realJobname, repdir, null, null ); // TODO: FIXME: should we also pass an
-                                                                                 // external MetaStore into the
-                                                                                 // repository?
-                LogChannel.GENERAL.logDetailed( "Loading job from repository", "Executor job ["
-                  + realJobname + "] was loaded from the repository" );
-              } catch ( Exception e ) {
-                throw new KettleException( "Unable to load job [" + realJobname + "]", e );
-              }
-            }
-          }
-        } else {
-          // rep is null, let's try loading by filename
-          try {
-            mappingJobMeta = new JobMeta( null, realDirectory + "/" + realJobname, rep, metaStore, null );
-          } catch ( KettleException ke ) {
-            try {
-              // add .kjb extension and try again
-              mappingJobMeta = new JobMeta( null,
-                  realDirectory + "/" + realJobname + "." + Const.STRING_JOB_DEFAULT_EXT, rep, metaStore, null );
-            } catch ( KettleException ke2 ) {
-              throw new KettleException( BaseMessages.getString(
-                  PKG, "JobExecutorMeta.Exception.UnableToLoadJob", realJobname )
-                  + realDirectory );
-            }
-          }
-        }
-        break;
-
-      case REPOSITORY_BY_REFERENCE:
-        // Read the last revision by reference...
-        mappingJobMeta = rep.loadJob( executorMeta.getJobObjectId(), null );
-        break;
-      default:
-        break;
-    }
+    IMetaFileLoader<JobMeta> metaFileLoader = new MetaFileLoaderImpl<>( executorMeta, executorMeta.specificationMethod );
+    JobMeta mappingJobMeta = metaFileLoader.getMetaForStep( rep, metaStore, space );
 
     // Pass some important information to the mapping transformation metadata:
 

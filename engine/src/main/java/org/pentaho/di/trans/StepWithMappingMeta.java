@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,24 +23,22 @@
 package org.pentaho.di.trans;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.pentaho.di.base.IMetaFileLoader;
+import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
-import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -56,9 +54,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY;
-import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
-import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME;
-import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY;
 
 /**
  * This class is supposed to use in steps where the mapping to sub transformations takes place
@@ -81,138 +76,11 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
     return loadMappingMeta( mappingMeta, rep, metaStore, space, true );
   }
 
-  /**
-   * @return new var space with follow vars from parent space or just new space if parent was null
-   * 
-   * {@link org.pentaho.di.core.Const#INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY}
-   * {@link org.pentaho.di.core.Const#INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY}
-   * {@link org.pentaho.di.core.Const#INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY}
-   * {@link org.pentaho.di.core.Const#INTERNAL_VARIABLE_JOB_FILENAME_NAME}
-   */
-  private static VariableSpace getVarSpaceOnlyWithRequiredParentVars( VariableSpace parentSpace ) {
-    Variables tmpSpace = new Variables();
-    if ( parentSpace != null ) {
-      tmpSpace.setVariable( INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, parentSpace.getVariable( INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
-      tmpSpace.setVariable( INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, parentSpace.getVariable( INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
-      tmpSpace.setVariable( INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, parentSpace.getVariable( INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
-      tmpSpace.setVariable( INTERNAL_VARIABLE_JOB_FILENAME_NAME, parentSpace.getVariable( INTERNAL_VARIABLE_JOB_FILENAME_NAME ) );
-    }
-    return tmpSpace;
-  }
-
   public static TransMeta loadMappingMeta( StepWithMappingMeta executorMeta, Repository rep, IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
     // Note - was a synchronized static method, but as no static variables are manipulated, this is entirely unnecessary
 
-    TransMeta mappingTransMeta = null;
-
-    CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-    // send restricted parentVariables with several important options
-    // Otherwise we destroy child variables and the option "Inherit all variables from the transformation" is enabled always.
-    VariableSpace tmpSpace = r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(), getVarSpaceOnlyWithRequiredParentVars( space ),
-        rep, executorMeta.getParentStepMeta(), executorMeta.getFileName() );
-
-    switch ( executorMeta.getSpecificationMethod() ) {
-      case FILENAME:
-        String realFilename = tmpSpace.environmentSubstitute( executorMeta.getFileName() );
-        if ( space != null ) {
-          // This is a parent transformation and parent variable should work here. A child file name can be resolved via parent space.
-          realFilename = space.environmentSubstitute( realFilename );
-        }
-        try {
-          // OK, load the meta-data from file...
-          // Don't set internal variables: they belong to the parent thread!
-          if ( rep != null ) {
-            // need to try to load from the repository
-            realFilename = r.normalizeSlashes( realFilename );
-            try {
-              String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
-              String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
-              RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-              mappingTransMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
-            } catch ( KettleException ke ) {
-              // try without extension
-              if ( realFilename.endsWith( Const.STRING_TRANS_DEFAULT_EXT ) ) {
-                try {
-                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, realFilename.indexOf( "." + Const.STRING_TRANS_DEFAULT_EXT ) );
-                  String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
-                  RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-                  mappingTransMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
-                } catch ( KettleException ke2 ) {
-                  // fall back to try loading from file system (transMeta is going to be null)
-                }
-              }
-            }
-          }
-          if ( mappingTransMeta == null ) {
-            mappingTransMeta = new TransMeta( realFilename, metaStore, rep, true, tmpSpace, null );
-            LogChannel.GENERAL.logDetailed( "Loading transformation from repository", "Transformation was loaded from XML file [" + realFilename + "]" );
-          }
-        } catch ( Exception e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans" ), e );
-        }
-        break;
-
-      case REPOSITORY_BY_NAME:
-        String realTransname = tmpSpace.environmentSubstitute( Const.NVL( executorMeta.getTransName(), "" ) );
-        String realDirectory = tmpSpace.environmentSubstitute( Const.NVL( executorMeta.getDirectoryPath(), "" ) );
-
-        if ( space != null ) {
-          // This is a parent transformation and parent variable should work here. A child file name can be resolved via parent space.
-          realTransname = space.environmentSubstitute( realTransname );
-          realDirectory = space.environmentSubstitute( realDirectory );
-        }
-
-        if ( Utils.isEmpty( realDirectory ) && !Utils.isEmpty( realTransname ) ) {
-          int index = realTransname.lastIndexOf( '/' );
-          String transPath =  realTransname;
-          realTransname = realTransname.substring( index + 1 );
-          realDirectory = transPath.substring( 0, index );
-        }
-
-        if ( rep != null ) {
-          if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) ) {
-            realDirectory = r.normalizeSlashes( realDirectory );
-            RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
-            if ( repdir != null ) {
-              try {
-                // reads the last revision in the repository...
-                mappingTransMeta = rep.loadTransformation( realTransname, repdir, null, true, null );
-                // TODO: FIXME: pass in metaStore to repository?
-
-                LogChannel.GENERAL.logDetailed( "Loading transformation from repository", "Executor transformation [" + realTransname + "] was loaded from the repository" );
-              } catch ( Exception e ) {
-                throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
-              }
-            }
-          }
-        } else {
-          // rep is null, let's try loading by filename
-          try {
-            mappingTransMeta = new TransMeta( realDirectory + "/" + realTransname, metaStore, null, true, tmpSpace, null );
-          } catch ( KettleException ke ) {
-            try {
-              // add .ktr extension and try again
-              mappingTransMeta =
-                new TransMeta( realDirectory + "/" + realTransname + "." + Const.STRING_TRANS_DEFAULT_EXT, metaStore, null, true, tmpSpace, null );
-            } catch ( KettleException ke2 ) {
-              throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans",
-                realTransname ) + realDirectory );
-            }
-          }
-        }
-        break;
-
-      case REPOSITORY_BY_REFERENCE:
-        // Read the last revision by reference...
-        mappingTransMeta = rep.loadTransformation( executorMeta.getTransObjectId(), null );
-        break;
-      default:
-        break;
-    }
-    if ( mappingTransMeta == null ) {  //skip warning
-      return null;
-    }
-
+    IMetaFileLoader<TransMeta> metaFileLoader = new MetaFileLoaderImpl<>( executorMeta, executorMeta.getSpecificationMethod() );
+    TransMeta mappingTransMeta = metaFileLoader.getMetaForStep( rep, metaStore, space );
 
     if ( share ) {
       //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the

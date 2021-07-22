@@ -44,6 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.base.IMetaFileCache;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.ConnectionUtil;
@@ -380,9 +381,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       activateParameters();
       ConnectionUtil.init( jobMeta );
 
+      IMetaFileCache.setCacheInstance( jobMeta, IMetaFileCache.initialize( parentJob, log ) );
+
       // Run the job
       //
       fireJobStartListeners();
+
 
       heartbeat = startHeartbeat( getHeartbeatIntervalInSeconds() );
 
@@ -407,6 +411,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     } finally {
       try {
         shutdownHeartbeat( heartbeat );
+        if ( jobMeta.getParent() == null ) {
+          if ( log.isDetailed() && jobMeta.getMetaFileCache() != null ) {
+            jobMeta.getMetaFileCache().logCacheSummary( log );
+          }
+          jobMeta.setMetaFileCache( null );
+        }
 
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, this );
         jobMeta.disposeEmbeddedMetastoreProvider();

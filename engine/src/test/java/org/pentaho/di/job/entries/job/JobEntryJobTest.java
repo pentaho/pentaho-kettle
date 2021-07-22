@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.job.entries.job;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.verifyNew;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
@@ -46,6 +48,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -59,13 +62,14 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Node;
 
 @RunWith( PowerMockRunner.class )
-@PrepareForTest( JobEntryJob.class )
+@PrepareForTest( { JobEntryJob.class, MetaFileLoaderImpl.class  } )
 public class JobEntryJobTest {
 
   private final String JOB_ENTRY_JOB_NAME = "My Job";
@@ -83,6 +87,7 @@ public class JobEntryJobTest {
   private CurrentDirectoryResolver resolver = mock( CurrentDirectoryResolver.class );
   private RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
   private RepositoryDirectoryInterface directory = mock( RepositoryDirectoryInterface.class );
+  private NamedClusterEmbedManager namedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
 
   @Before
   public void setUp() throws Exception {
@@ -94,6 +99,7 @@ public class JobEntryJobTest {
 
     doReturn( null ).when( space ).environmentSubstitute( anyString() );
     doReturn( "" ).when( space ).environmentSubstitute( "" );
+    doReturn( new String[]{} ).when( space ).listVariables();
     doReturn( JOB_ENTRY_FILE_PATH ).when( space ).environmentSubstitute( JOB_ENTRY_FILE_PATH );
     doReturn( JOB_ENTRY_FILE_NAME ).when( space ).environmentSubstitute( JOB_ENTRY_FILE_NAME );
     doReturn( JOB_ENTRY_FILE_DIRECTORY ).when( space ).environmentSubstitute( JOB_ENTRY_FILE_DIRECTORY );
@@ -117,7 +123,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testNotConnectedLoad_NoInfo() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadXML( getNode( jej ), databases, servers, null, store );
 
     assertEquals( ObjectLocationSpecificationMethod.FILENAME, jej.getSpecificationMethod() );
@@ -130,14 +136,15 @@ public class JobEntryJobTest {
    */
   @Test
   public void testNotConnectedLoad_RepByRef() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
     jej.setJobObjectId( JOB_ENTRY_JOB_OBJECT_ID );
     jej.loadXML( getNode( jej ), databases, servers, null, store );
     jej.getJobMeta( null, store, space );
 
     assertEquals( ObjectLocationSpecificationMethod.FILENAME, jej.getSpecificationMethod() );
-    verifyNew( JobMeta.class ).withArguments( space, null, null, store, null );
+    verifyNew( JobMeta.class )
+      .withArguments( any( VariableSpace.class ), eq( null ), eq( null ), eq( store ), eq( null ) );
   }
 
   /**
@@ -147,7 +154,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testNotConnectedLoad_RepByName() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     jej.setJobName( JOB_ENTRY_FILE_NAME );
     jej.setDirectory( JOB_ENTRY_FILE_DIRECTORY );
@@ -155,7 +162,8 @@ public class JobEntryJobTest {
     jej.getJobMeta( null, store, space );
 
     assertEquals( ObjectLocationSpecificationMethod.FILENAME, jej.getSpecificationMethod() );
-    verifyNew( JobMeta.class ).withArguments( space, null, null, store, null );
+    verifyNew( JobMeta.class )
+      .withArguments( any( VariableSpace.class ), eq( null ), eq( null ), eq( store ), eq( null ) );
   }
 
   /**
@@ -164,14 +172,15 @@ public class JobEntryJobTest {
    */
   @Test
   public void testNotConnectedLoad_Filename() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     jej.setFileName( JOB_ENTRY_FILE_PATH );
     jej.loadXML( getNode( jej ), databases, servers, null, store );
     jej.getJobMeta( null, store, space );
 
     assertEquals( ObjectLocationSpecificationMethod.FILENAME, jej.getSpecificationMethod() );
-    verifyNew( JobMeta.class ).withArguments( space, JOB_ENTRY_FILE_PATH, null, store, null );
+    verifyNew( JobMeta.class )
+      .withArguments( any( VariableSpace.class ), eq( JOB_ENTRY_FILE_PATH ), eq( null ), eq( store ), eq( null ) );
   }
 
   /**
@@ -180,7 +189,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_NoInfo() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadXML( getNode( jej ), databases, servers, repository, store );
 
     assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
@@ -193,7 +202,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_RepByRef() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
     jej.setJobObjectId( JOB_ENTRY_JOB_OBJECT_ID );
     jej.loadXML( getNode( jej ), databases, servers, repository, store );
@@ -210,7 +219,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_RepByName() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     jej.setJobName( JOB_ENTRY_FILE_NAME );
     jej.setDirectory( JOB_ENTRY_FILE_DIRECTORY );
@@ -228,14 +237,16 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_Filename() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     jej.setFileName( JOB_ENTRY_FILE_PATH );
     jej.loadXML( getNode( jej ), databases, servers, repository, store );
     jej.getJobMeta( repository, store, space );
 
     assertEquals( ObjectLocationSpecificationMethod.FILENAME, jej.getSpecificationMethod() );
-    verifyNew( JobMeta.class ).withArguments( space, JOB_ENTRY_FILE_PATH, repository, store, null );
+    verifyNew( JobMeta.class )
+      .withArguments( any( VariableSpace.class ), eq( JOB_ENTRY_FILE_PATH ), eq( repository ), eq( store ),
+        eq( null ) );
   }
 
   /**
@@ -245,7 +256,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_RepByRef_Guess() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setJobObjectId( JOB_ENTRY_JOB_OBJECT_ID );
     jej.loadXML( getNode( jej ), databases, servers, repository, store );
     jej.getJobMeta( repository, store, space );
@@ -261,7 +272,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_RepByName_Guess() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setJobName( JOB_ENTRY_FILE_NAME );
     jej.setDirectory( JOB_ENTRY_FILE_DIRECTORY );
     jej.loadXML( getNode( jej ), databases, servers, repository, store );
@@ -278,13 +289,14 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedImport_Filename_Guess() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setFileName( JOB_ENTRY_FILE_PATH );
     jej.loadXML( getNode( jej ), databases, servers, repository, store );
     jej.getJobMeta( repository, store, space );
 
     assertEquals( ObjectLocationSpecificationMethod.FILENAME, jej.getSpecificationMethod() );
-    verifyNew( JobMeta.class ).withArguments( space, JOB_ENTRY_FILE_PATH, repository, store, null );
+    verifyNew( JobMeta.class )
+      .withArguments( any( VariableSpace.class ), eq( JOB_ENTRY_FILE_PATH ), eq( repository ), eq( store ), eq( null ) );
   }
 
   /**
@@ -293,7 +305,7 @@ public class JobEntryJobTest {
    */
   @Test
   public void testConnectedLoad_NoInfo() throws Exception {
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( repository, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
 
     assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
@@ -312,7 +324,7 @@ public class JobEntryJobTest {
     doReturn( "rep_ref" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "specification_method" );
     doReturn( JOB_ENTRY_JOB_OBJECT_ID.toString() ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "job_object_id" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
@@ -335,7 +347,7 @@ public class JobEntryJobTest {
     doReturn( JOB_ENTRY_FILE_NAME ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "name" );
     doReturn( JOB_ENTRY_FILE_DIRECTORY ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "dir_path" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
@@ -356,12 +368,13 @@ public class JobEntryJobTest {
     doReturn( "filename" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "specification_method" );
     doReturn( JOB_ENTRY_FILE_PATH ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "file_name" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
     assertEquals( ObjectLocationSpecificationMethod.FILENAME, jej.getSpecificationMethod() );
-    verifyNew( JobMeta.class ).withArguments( space, JOB_ENTRY_FILE_PATH, myrepo, store, null );
+    verifyNew( JobMeta.class )
+      .withArguments( any( VariableSpace.class ), eq( JOB_ENTRY_FILE_PATH ), eq( myrepo ), eq( store ), eq( null ) );
   }
 
   /**
@@ -378,12 +391,13 @@ public class JobEntryJobTest {
     doReturn( "job" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "name" );
     doReturn( "${hdfs}" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "dir_path" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
     assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
-    verifyNew( JobMeta.class ).withArguments( space, "hdfs://server/path/job.kjb", myrepo, store, null );
+    verifyNew( JobMeta.class )
+      .withArguments( any( VariableSpace.class ), eq( "hdfs://server/path/job.kjb" ), eq( myrepo ), eq( store ), eq( null ) );
   }
 
   /**
@@ -400,7 +414,7 @@ public class JobEntryJobTest {
     doReturn( "rep_name" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "specification_method" );
     doReturn( "${repositoryfullfilepath}" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "name" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
@@ -423,7 +437,7 @@ public class JobEntryJobTest {
     doReturn( "${jobname}" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "name" );
     doReturn( "${repositorypath}" ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "dir_path" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
@@ -443,7 +457,7 @@ public class JobEntryJobTest {
     doReturn( null ).when( myrepo ).getJobEntryAttributeString( any( ObjectId.class ), anyString() );
     doReturn( JOB_ENTRY_JOB_OBJECT_ID.toString() ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "job_object_id" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
@@ -465,7 +479,7 @@ public class JobEntryJobTest {
     doReturn( JOB_ENTRY_FILE_NAME ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "name" );
     doReturn( JOB_ENTRY_FILE_DIRECTORY ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "dir_path" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
@@ -485,12 +499,13 @@ public class JobEntryJobTest {
     doReturn( null ).when( myrepo ).getJobEntryAttributeString( any( ObjectId.class ), anyString() );
     doReturn( JOB_ENTRY_FILE_PATH ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "file_name" );
 
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.loadRep( myrepo, store, JOB_ENTRY_JOB_OBJECT_ID, databases, servers );
     jej.getJobMeta( myrepo, store, space );
 
     assertEquals( ObjectLocationSpecificationMethod.FILENAME, jej.getSpecificationMethod() );
-    verifyNew( JobMeta.class ).withArguments( space, JOB_ENTRY_FILE_PATH, myrepo, store, null );
+    verifyNew( JobMeta.class )
+      .withArguments( any( VariableSpace.class ), eq( JOB_ENTRY_FILE_PATH ), eq( myrepo ), eq( store ), eq( null ) );
   }
 
   private Node getNode( JobEntryJob jej ) throws Exception {
@@ -503,7 +518,7 @@ public class JobEntryJobTest {
   @Test
   public void testCurrDirListener() throws Exception {
     JobMeta meta = mock( JobMeta.class );
-    JobEntryJob jej = new JobEntryJob( JOB_ENTRY_JOB_NAME );
+    JobEntryJob jej = getJej();
     jej.setParentJobMeta( null );
     jej.setParentJobMeta( meta );
     jej.setParentJobMeta( null );
@@ -514,7 +529,7 @@ public class JobEntryJobTest {
   @Test
   public void testExportResources() throws Exception {
     JobMeta meta = mock( JobMeta.class );
-    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobEntryJob jej = getJej();
     jej.setDescription( JOB_ENTRY_DESCRIPTION );
 
     doReturn( meta ).when( jej ).getJobMeta(
@@ -547,5 +562,13 @@ public class JobEntryJobTest {
     jej.getJobMetaFromRepository( myrepo, resolver, "", space );
 
     verify( jobMeta, times( 1 ) ).initializeVariablesFrom( any() );
+  }
+
+  private JobEntryJob getJej() {
+    JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobMeta parentJobMeta = spy( new JobMeta() );
+    when( parentJobMeta.getNamedClusterEmbedManager() ).thenReturn( namedClusterEmbedManager );
+    jej.setParentJobMeta( parentJobMeta);
+    return jej;
   }
 }

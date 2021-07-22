@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -77,6 +78,7 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
+  @PrepareForTest( { StepWithMappingMeta.class, MetaFileLoaderImpl.class } )
   public void loadMappingMeta() throws Exception {
     String variablePath = "Internal.Entry.Current.Directory";
     String virtualDir = "/testFolder/CDA-91";

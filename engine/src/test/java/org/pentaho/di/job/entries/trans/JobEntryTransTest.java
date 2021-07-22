@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,6 +70,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -340,6 +341,10 @@ public class JobEntryTransTest {
     String childValue3 = "childValue3";
 
     JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
+    JobMeta parentJobMeta = spy( new JobMeta() );
+    when( parentJobMeta.getNamedClusterEmbedManager() ).thenReturn( mock( NamedClusterEmbedManager.class ) );
+    jobEntryTrans.setParentJobMeta( parentJobMeta);
+
     Repository rep = Mockito.mock( Repository.class );
     RepositoryDirectory repositoryDirectory = Mockito.mock( RepositoryDirectory.class );
     RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
@@ -385,6 +390,10 @@ public class JobEntryTransTest {
     String parentValue2 = "test";
 
     JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
+    JobMeta parentJobMeta = spy( new JobMeta() );
+    when( parentJobMeta.getNamedClusterEmbedManager() ).thenReturn( mock( NamedClusterEmbedManager.class ) );
+    jobEntryTrans.setParentJobMeta( parentJobMeta);
+
     Repository rep = Mockito.mock( Repository.class );
     RepositoryDirectory repositoryDirectory = Mockito.mock( RepositoryDirectory.class );
     RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );

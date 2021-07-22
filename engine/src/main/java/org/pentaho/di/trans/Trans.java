@@ -56,6 +56,7 @@ import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.base.IMetaFileCache;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
@@ -782,6 +783,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       setArguments( arguments );
     }
 
+    if ( parentTrans != null ) {
+      IMetaFileCache.setCacheInstance( transMeta, IMetaFileCache.initialize( parentTrans, log ) );
+    } else {
+      //If there is no parent, one of these still needs to be called to instantiate a new cache
+      IMetaFileCache.setCacheInstance( transMeta, IMetaFileCache.initialize( parentJob, log ) );
+    }
+
     activateParameters();
     transMeta.activateParameters();
     ConnectionUtil.init( transMeta );
@@ -1433,6 +1441,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         try {
           shutdownHeartbeat( trans != null ? trans.heartbeat : null );
+          if ( trans != null && transMeta.getParent() == null && trans.parentJob == null && trans.parentTrans == null ) {
+            if ( log.isDetailed() && transMeta.getMetaFileCache() != null ) {
+              transMeta.getMetaFileCache().logCacheSummary( log );
+            }
+            transMeta.setMetaFileCache( null );
+          }
 
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationFinish.id, trans );
         } catch ( KettleException e ) {

@@ -23,6 +23,8 @@
 package org.pentaho.di.job.entries.trans;
 
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.base.IMetaFileLoader;
+import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -44,9 +46,7 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
-import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.util.FileUtil;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -83,7 +83,6 @@ import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.w3c.dom.Node;
 
 import java.text.SimpleDateFormat;
@@ -1285,78 +1284,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return getTransMeta( rep, null, space );
   }
 
-  private TransMeta getTransMetaFromRepository( Repository rep, CurrentDirectoryResolver r, String transPath ) throws KettleException {
-    String realTransName = "";
-    String realDirectory = "/";
-
-    if ( StringUtils.isBlank( transPath ) ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobTrans.Exception.MissingTransFileName" ) );
-    }
-
-    int index = transPath.lastIndexOf( RepositoryFile.SEPARATOR );
-    if ( index != -1 ) {
-      realTransName = transPath.substring( index + 1 );
-      realDirectory = index == 0 ? RepositoryFile.SEPARATOR : transPath.substring( 0, index );
-    }
-    realDirectory = r.normalizeSlashes( realDirectory );
-    RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
-    if ( repositoryDirectory == null ) {
-      throw new KettleException( "Unable to find repository directory [" + Const.NVL( realDirectory, "" ) + "]" );
-    }
-    return rep.loadTransformation( realTransName, repositoryDirectory, null, true, null );
-  }
-
   public TransMeta getTransMeta( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     try {
-      TransMeta transMeta = null;
-      CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-      VariableSpace tmpSpace = r.resolveCurrentDirectory(
-          specificationMethod, space, rep, parentJob, getFilename() );
-      switch ( specificationMethod ) {
-        case FILENAME:
-          String realFilename = tmpSpace.environmentSubstitute( getFilename() );
-
-          try {
-            transMeta = new TransMeta( realFilename, metaStore, null, true, null, null );
-          } catch ( KettleException e ) {
-            // try to load from repository, this trans may have been developed locally and later uploaded to the
-            // repository
-            transMeta = rep == null ? new TransMeta( realFilename, metaStore, null, true, this, null ) : getTransMetaFromRepository( rep, r, realFilename );
-          }
-          break;
-        case REPOSITORY_BY_NAME:
-          String realDirectory = tmpSpace.environmentSubstitute( getDirectory() != null ? getDirectory() : "" );
-          String realTransName = tmpSpace.environmentSubstitute( getTransname() );
-
-          String transPath = StringUtil.trimEnd( realDirectory, '/' ) + RepositoryFile.SEPARATOR + StringUtil
-                  .trimStart( realTransName, '/' );
-
-          if ( transPath.startsWith( "file://" ) || transPath.startsWith( "zip:file://" ) || transPath.startsWith(
-                  "hdfs://" ) ) {
-            if ( !transPath.endsWith( RepositoryObjectType.TRANSFORMATION.getExtension() ) ) {
-              transPath = transPath + RepositoryObjectType.TRANSFORMATION.getExtension();
-            }
-            transMeta = new TransMeta( transPath, metaStore, null, true, this, null );
-          } else {
-            transMeta = rep == null ? new TransMeta( transPath, metaStore, null, true, this, null ) : getTransMetaFromRepository( rep, r, transPath );
-          }
-          break;
-        case REPOSITORY_BY_REFERENCE:
-          if ( transObjectId == null ) {
-            throw new KettleException( BaseMessages.getString( PKG,
-              "JobTrans.Exception.ReferencedTransformationIdIsNull" ) );
-          }
-
-          if ( rep != null ) {
-            // Load the last revision
-            //
-            transMeta = rep.loadTransformation( transObjectId, null );
-          }
-          break;
-        default:
-          throw new KettleException( "The specified object location specification method '"
-            + specificationMethod + "' is not yet supported in this job entry." );
-      }
+      IMetaFileLoader<TransMeta> metaFileLoader = new MetaFileLoaderImpl<>( this, specificationMethod );
+      TransMeta transMeta = metaFileLoader.getMetaForEntry( rep, metaStore, space );
 
       if ( transMeta != null ) {
         // set Internal.Entry.Current.Directory again because it was changed
@@ -1762,4 +1693,5 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   public void setSuppressResultData( boolean suppressResultData ) {
     this.suppressResultData = suppressResultData;
   }
+
 }

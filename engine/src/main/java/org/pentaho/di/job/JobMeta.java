@@ -216,6 +216,7 @@ public class JobMeta extends AbstractMeta
     jobLogTable = JobLogTable.getDefault( this, this );
     jobEntryLogTable = JobEntryLogTable.getDefault( this, this );
     extraLogTables = new ArrayList<LogTableInterface>();
+    namedParams = new NamedParamsDefault();
 
     List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins( LogTablePluginType.class );
     for ( PluginInterface plugin : plugins ) {
