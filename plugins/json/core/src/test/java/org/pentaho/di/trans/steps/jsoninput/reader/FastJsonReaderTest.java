@@ -22,18 +22,14 @@
 
 package org.pentaho.di.trans.steps.jsoninput.reader;
 
+import com.jayway.jsonpath.Option;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.trans.steps.jsoninput.JsonInput;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
-
-import com.jayway.jsonpath.Option;
-
-import static org.mockito.Mockito.mock;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,18 +37,20 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-public class FastJsonReaderTest {
-  private static final Option[] DEFAULT_OPTIONS = { Option.SUPPRESS_EXCEPTIONS, Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL };
-  private static final Option[] OPTIONS_WO_DEFAULT_PATH_LEAF_TO_NULL = { Option.SUPPRESS_EXCEPTIONS, Option.ALWAYS_RETURN_LIST };
-  private EnumSet<Option> expectedOptions = EnumSet.noneOf( Option.class );
-  private JsonInputField[] fields;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-  private FastJsonReader fJsonReader;
-  private LogChannelInterface logMock = mock( LogChannelInterface.class );
+import static org.mockito.Mockito.mock;
+
+public class FastJsonReaderTest {
+  private static final Option[] OPTIONS_WITH_DEFAULT_PATH_LEAF_TO_NULL =
+    { Option.SUPPRESS_EXCEPTIONS, Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL };
+  private static final Option[] OPTIONS_WITHOUT_DEFAULT_PATH_LEAF_TO_NULL =
+    { Option.SUPPRESS_EXCEPTIONS, Option.ALWAYS_RETURN_LIST };
+  private final LogChannelInterface logMock = mock( LogChannelInterface.class );
 
   @Before
   public void setUp() throws Exception {
-    fields = new JsonInputField[] {};
   }
 
   @After
@@ -60,43 +58,28 @@ public class FastJsonReaderTest {
   }
 
   @Test
-  public void testFastJsonReaderCreated_Default() throws KettleException {
-    fJsonReader = new FastJsonReader( logMock );
-    expectedOptions.addAll( Arrays.asList( DEFAULT_OPTIONS ) );
-    assertNotNull( fJsonReader );
-    assertEquals( false, fJsonReader.isIgnoreMissingPath() );
-    assertEquals( true, fJsonReader.isDefaultPathLeafToNull() );
-    assertEquals( expectedOptions, fJsonReader.getJsonConfiguration().getOptions() );
+  public void testFastJsonReaderConstructor_DefaultPathLeafToNull_IgnoreMissingPath() throws KettleException {
+    testFastJsonReaderConstructor_Base( mock( JsonInput.class ), new JsonInputField[ 0 ], true, true );
   }
 
   @Test
-  public void testFastJsonReaderCreated_WithInputFields() throws KettleException {
-    expectedOptions.addAll( Arrays.asList( DEFAULT_OPTIONS ) );
-    fJsonReader = new FastJsonReader( fields, logMock );
-    assertNotNull( fJsonReader );
-    assertEquals( false, fJsonReader.isIgnoreMissingPath() );
-    assertEquals( true, fJsonReader.isDefaultPathLeafToNull() );
-    assertEquals( expectedOptions, fJsonReader.getJsonConfiguration().getOptions() );
+  public void testFastJsonReaderConstructor_DefaultPathLeafToNull_NoIgnoreMissingPath() throws KettleException {
+    testFastJsonReaderConstructor_Base( mock( JsonInput.class ), new JsonInputField[ 0 ], true, false );
   }
 
   @Test
-  public void testFastJsonReaderCreated_WithDefaultPathLeafToNullFalse() throws KettleException {
-    expectedOptions.addAll( Arrays.asList( OPTIONS_WO_DEFAULT_PATH_LEAF_TO_NULL ) );
-    fJsonReader = new FastJsonReader( fields, false, logMock );
-    assertNotNull( fJsonReader );
-    assertEquals( false, fJsonReader.isIgnoreMissingPath() );
-    assertEquals( false, fJsonReader.isDefaultPathLeafToNull() );
-    assertEquals( expectedOptions, fJsonReader.getJsonConfiguration().getOptions() );
+  public void testFastJsonReaderConstructor_NoDefaultPathLeafToNull_IgnoreMissingPath() throws KettleException {
+    testFastJsonReaderConstructor_Base( mock( JsonInput.class ), new JsonInputField[ 0 ], false, true );
   }
 
   @Test
-  public void testFastJsonReaderCreated_WithDefaultPathLeafToNullTrue() throws KettleException {
-    expectedOptions.addAll( Arrays.asList( DEFAULT_OPTIONS ) );
-    fJsonReader = new FastJsonReader( fields, true, logMock );
-    assertNotNull( fJsonReader );
-    assertEquals( false, fJsonReader.isIgnoreMissingPath() );
-    assertEquals( true, fJsonReader.isDefaultPathLeafToNull() );
-    assertEquals( expectedOptions, fJsonReader.getJsonConfiguration().getOptions() );
+  public void testFastJsonReaderConstructor_NoDefaultPathLeafToNull_NoIgnoreMissingPath() throws KettleException {
+    testFastJsonReaderConstructor_Base( mock( JsonInput.class ), new JsonInputField[ 0 ], false, false );
+  }
+
+  @Test
+  public void testFastJsonReaderConstructor_Null() throws KettleException {
+    testFastJsonReaderConstructor_Base( mock( JsonInput.class ), new JsonInputField[ 0 ], false, false );
   }
 
   @Test
@@ -115,5 +98,40 @@ public class FastJsonReaderTest {
     mainList.add( l2 );
     mainList.add( l3 );
     assertEquals( 3, FastJsonReader.getMaxRowSize( Collections.singletonList( mainList ) ) );
+  }
+
+  /**
+   * <p>Base method for the 'testFastJsonReaderConstructor_*' tests.</p>
+   * <p>Note that this method immediately asserts the value of the following fields:</p>
+   * <p>
+   *   <ul>
+   *     <li>ignoreMissingPath ({@link FastJsonReader#isIgnoreMissingPath()})</li>
+   *     <li>defaultPathLeafToNull ({@link FastJsonReader#isDefaultPathLeafToNull()})</li>
+   *     <li>Initial Json configuration ({@link FastJsonReader#getJsonConfiguration()})</li>
+   *   </ul>
+   * </p>
+   *
+   * @return the newly created instance
+   * @throws KettleException if something went wrong
+   */
+  private FastJsonReader testFastJsonReaderConstructor_Base( JsonInput step, JsonInputField[] inputFields,
+                                                             boolean defaultPathLeafToNull,
+                                                             boolean ignoreMissingPath ) throws KettleException {
+
+    FastJsonReader reader = new FastJsonReader( step, inputFields, defaultPathLeafToNull, ignoreMissingPath, logMock );
+
+    assertNotNull( reader );
+    assertEquals( defaultPathLeafToNull, reader.isDefaultPathLeafToNull() );
+    assertEquals( ignoreMissingPath, reader.isIgnoreMissingPath() );
+
+    Option[] options = OPTIONS_WITH_DEFAULT_PATH_LEAF_TO_NULL;
+    if ( !defaultPathLeafToNull ) {
+      options = OPTIONS_WITHOUT_DEFAULT_PATH_LEAF_TO_NULL;
+    }
+    EnumSet<Option> expectedOptions = EnumSet.noneOf( Option.class );
+    expectedOptions.addAll( Arrays.asList( options ) );
+    assertEquals( expectedOptions, reader.getJsonConfiguration().getOptions() );
+
+    return reader;
   }
 }
