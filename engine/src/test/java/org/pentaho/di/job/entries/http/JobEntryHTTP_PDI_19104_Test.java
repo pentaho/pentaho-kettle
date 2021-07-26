@@ -61,7 +61,7 @@ public class JobEntryHTTP_PDI_19104_Test {
     localTargetFile.deleteOnExit();
 
     Object[] r = new Object[] {
-      "file://" + localSourceFile.getCanonicalPath(),
+      "file://" + localSourceFile.toURI().toURL().getFile(),
       null,
       localTargetFile.getCanonicalPath() };
 
