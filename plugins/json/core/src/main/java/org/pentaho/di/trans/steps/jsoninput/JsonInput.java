@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,13 +30,11 @@ import java.util.BitSet;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.apache.poi.util.IOUtils;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -80,7 +78,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     data.rownr = 1L;
     data.nrInputFields = meta.getInputFields().length;
     data.repeatedFields = new BitSet( data.nrInputFields );
-    // Take care of variable substitution
     for ( int i = 0; i < data.nrInputFields; i++ ) {
       JsonInputField field = meta.getInputFields()[ i ];
       if ( field.isRepeated() ) {
@@ -89,7 +86,9 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     }
     try {
       // Init a new JSON reader
-      createReader();
+      data.reader =
+        new FastJsonReader( this, meta.getInputFields(), meta.isDefaultPathLeafToNull(), meta.isIgnoreMissingPath(),
+          log );
     } catch ( KettleException e ) {
       logError( e.getMessage() );
       return false;
@@ -104,10 +103,9 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       prepareToRowProcessing();
     }
 
-    Object[] outRow = null;
     try {
       // Grab a row
-      outRow = getOneOutputRow();
+      Object[] outRow = getOneOutputRow();
       if ( outRow == null ) {
         setOutputDone(); // signal end to receiver(s)
         return false; // end of data or error.
@@ -151,7 +149,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   @Override
-  protected void prepareToRowProcessing() throws KettleException, KettleStepException, KettleValueException {
+  protected void prepareToRowProcessing() throws KettleException {
     if ( !meta.isInFields() ) {
       data.outputRowMeta = new RowMeta();
       if ( !meta.isDoNotFailIfNoFile() && data.files.nrOfFiles() == 0 ) {
@@ -200,7 +198,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     // Create convert meta-data objects that will contain Date & Number formatters
     data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
     data.inputs = new InputsReader( this, meta, data, new InputErrorHandler() ).iterator();
-    // data.recordnr = 0;
     data.readerRowSet = new QueueRowSet();
     data.readerRowSet.setDone();
     this.rowOutputConverter = new RowOutputConverter( getLogChannel() );
@@ -322,7 +319,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     if ( meta.isInFields() && !data.hasFirstRow ) {
       return null;
     }
-    Object[] rawReaderRow = null;
+    Object[] rawReaderRow;
     while ( ( rawReaderRow = data.readerRowSet.getRow() ) == null ) {
       if ( data.inputs.hasNext() && data.readerRowSet.isDone() ) {
         try ( InputStream nextIn = data.inputs.next() ) {
@@ -439,18 +436,18 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     }
   }
 
-  private void createReader() throws KettleException {
-    // provide reader input fields with real path [PDI-15942]
-    // [PDI-18283] Need to have this run before we create the FastJsonReader, so we can use resolve Json Paths
-    JsonInputField[] inputFields = new JsonInputField[data.nrInputFields];
-    for ( int i = 0; i < data.nrInputFields; i++ ) {
-      JsonInputField field = meta.getInputFields()[ i ].clone();
-      field.setPath( environmentSubstitute( field.getPath(), true ) );
-      inputFields[i] = field;
+  @Override
+  public void setOutputDone() {
+    if ( null != data.inputs ) {
+      try {
+        data.inputs.close();
+      } catch ( IOException e ) {
+        // Implementations have an Error Handler that handle these errors, as so, this should never happen... but...
+        logError( BaseMessages.getString( PKG, "JsonInput.Log.UnexpectedError", e.toString() ) );
+      }
     }
-    // Instead of putting in the meta.inputFields, we put in our json path resolved input fields
-    data.reader = new FastJsonReader( inputFields, meta.isDefaultPathLeafToNull(), log );
-    data.reader.setIgnoreMissingPath( meta.isIgnoreMissingPath() );
+
+    super.setOutputDone();
   }
 
   @Override
@@ -458,7 +455,21 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     meta = (JsonInputMeta) smi;
     data = (JsonInputData) sdi;
     if ( data.file != null ) {
-      IOUtils.closeQuietly( data.file );
+      try {
+        data.file.close();
+      } catch ( IOException e ) {
+        logError( BaseMessages.getString( PKG, "JsonInput.Log.UnexpectedError", e.toString() ) );
+      }
+    }
+    data.previousRow = null;
+    data.readrow = null;
+    if ( null != data.inputs ) {
+      // Make sure everything was closed.
+      try {
+        data.inputs.close();
+      } catch ( IOException e ) {
+        logError( BaseMessages.getString( PKG, "JsonInput.Log.UnexpectedError", e.toString() ) );
+      }
     }
     data.inputs = null;
     data.reader = null;

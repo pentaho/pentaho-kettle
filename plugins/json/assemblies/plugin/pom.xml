@@ -28,13 +28,16 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>2.1.0</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>net.minidev</groupId>
       <artifactId>json-smart</artifactId>
-      <version>2.2</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.minidev</groupId>
+      <artifactId>asm</artifactId>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
