@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,9 @@ import java.util.Date;
  * A base implementation for all output file based metas.
  */
 public abstract class BaseFileOutputMeta extends BaseFileMeta {
+
+  public static final String DEFAULT_DATE_FORMAT = "yyyMMdd";
+  public static final String DEFAULT_TIME_FORMAT = "HHmmss";
 
   /**
    * Flag: add the stepnr in the filename
@@ -290,20 +293,20 @@ public abstract class BaseFileOutputMeta extends BaseFileMeta {
     } else {
       if ( meta.isDateInFilename() ) {
         if ( showSamples ) {
-          daf.applyPattern( "yyyMMdd" );
+          daf.applyPattern( DEFAULT_DATE_FORMAT );
           String d = daf.format( now );
           retval += "_" + d;
         } else {
-          retval += "_<yyyMMdd>";
+          retval += "_<" + DEFAULT_DATE_FORMAT + ">";
         }
       }
       if ( meta.isTimeInFilename() ) {
         if ( showSamples ) {
-          daf.applyPattern( "HHmmss" );
+          daf.applyPattern( DEFAULT_TIME_FORMAT );
           String t = daf.format( now );
           retval += "_" + t;
         } else {
-          retval += "_<HHmmss>";
+          retval += "_<" + DEFAULT_TIME_FORMAT + ">";
         }
       }
     }
