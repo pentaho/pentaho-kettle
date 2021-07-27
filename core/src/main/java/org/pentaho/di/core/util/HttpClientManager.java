@@ -122,6 +122,7 @@ public class HttpClientManager {
     public CloseableHttpClient build() {
       HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
       httpClientBuilder.setConnectionManager( manager );
+      httpClientBuilder.setConnectionManagerShared( true );
 
       RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
       if ( socketTimeout > 0 ) {
