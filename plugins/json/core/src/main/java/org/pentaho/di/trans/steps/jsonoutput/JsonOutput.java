@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.jsonoutput;
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 
 import org.apache.commons.vfs2.FileObject;
 import org.json.simple.JSONArray;
@@ -57,6 +58,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
 
   private JsonOutputMeta meta;
   private JsonOutputData data;
+  private Date startProcessingDate;
 
   private interface CompatibilityFactory {
     public void execute( Object[] row ) throws KettleException;
@@ -187,6 +189,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
 
     if ( first ) {
       first = false;
+      startProcessingDate = new Date();
       data.inputRowMeta = getInputRowMeta();
       data.inputRowMetaSize = data.inputRowMeta.size();
       if ( data.outputValue ) {
@@ -391,6 +394,14 @@ public class JsonOutput extends BaseStep implements StepInterface {
   }
 
   public String buildFilename() {
+
+    boolean forceSameOutputFile = "Y".equalsIgnoreCase(
+      System.getProperty( Const.KETTLE_JSON_OUTPUT_FORCE_SAME_OUTPUT_FILE, "N" ) );
+
+    if ( forceSameOutputFile ) {
+      return meta.buildFilename( environmentSubstitute( meta.getFileName() ), startProcessingDate );
+    }
+
     return meta.buildFilename( meta.getParentStepMeta().getParentTransMeta(), getCopy() + "", null, data.splitnr + "",
       false );
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,9 @@ package org.pentaho.di.trans.steps.jsonoutput;
 import java.io.File;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +37,11 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.pentaho.di.TestUtilities;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
@@ -51,14 +57,17 @@ import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 
 /**
  * This class was a "copy and modification" of Kettle's JsonOutputTests.
@@ -423,5 +432,57 @@ public class JsonOutputTest extends TestCase {
     JsonNode parsedJson1 = om.readTree( json1 );
     JsonNode parsedJson2 = om.readTree( json2 );
     return parsedJson1.equals( parsedJson2 );
+  }
+
+  @Test
+  public void testBuildFilenameWithForceSameOutputFile() {
+
+    StepMeta stepMeta = mock( StepMeta.class );
+    JsonOutputData jsonOutputData = mock( JsonOutputData.class );
+    JsonOutputMeta jsonOutputMeta = mock( JsonOutputMeta.class );
+    int copyNr = 1;
+    TransMeta transMeta = mock( TransMeta.class );
+    Trans trans = mock( Trans.class );
+    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+
+    when( stepMeta.getName() ).thenReturn( UUID.randomUUID().toString() );
+    when( stepMeta.hasTerminator() ).thenReturn( false );
+    when( transMeta.findStep( any( String.class ) ) ).thenReturn( stepMeta );
+    when( stepMeta.getStepMetaInterface() ).thenReturn( jsonOutputMeta );
+
+    JsonOutput jsonOutput = spy( new JsonOutput( stepMeta, jsonOutputData, copyNr, transMeta, trans ) );
+    setInternalState( jsonOutput, "meta", jsonOutputMeta );
+
+    System.setProperty( Const.KETTLE_JSON_OUTPUT_FORCE_SAME_OUTPUT_FILE, "Y" );
+    jsonOutput.buildFilename();
+
+    verify( jsonOutputMeta, times( 1 ) ).buildFilename( anyString(), any( Date.class ) );
+  }
+
+  @Test
+  public void testBuildFilenameWithoutForceSameOutputFile() {
+
+    StepMeta stepMeta = mock( StepMeta.class );
+    JsonOutputData jsonOutputData = mock( JsonOutputData.class );
+    JsonOutputMeta jsonOutputMeta = mock( JsonOutputMeta.class );
+    int copyNr = 1;
+    TransMeta transMeta = mock( TransMeta.class );
+    Trans trans = mock( Trans.class );
+    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+
+    when( stepMeta.getName() ).thenReturn( UUID.randomUUID().toString() );
+    when( stepMeta.hasTerminator() ).thenReturn( false );
+    when( transMeta.findStep( any( String.class ) ) ).thenReturn( stepMeta );
+    when( stepMeta.getStepMetaInterface() ).thenReturn( jsonOutputMeta );
+    when( jsonOutputMeta.getParentStepMeta() ).thenReturn( stepMeta );
+
+    JsonOutput jsonOutput = spy( new JsonOutput( stepMeta, jsonOutputData, copyNr, transMeta, trans ) );
+    setInternalState( jsonOutput, "meta", jsonOutputMeta );
+    setInternalState( jsonOutput, "data", jsonOutputData );
+
+    System.setProperty( Const.KETTLE_JSON_OUTPUT_FORCE_SAME_OUTPUT_FILE, "N" );
+    jsonOutput.buildFilename();
+
+    verify( jsonOutputMeta, times( 0 ) ).buildFilename( anyString(), any( Date.class ) );
   }
 }
