@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -39,7 +40,9 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -139,13 +142,13 @@ public class TransPreviewProgressDialog {
   }
 
   private void doPreview( final IProgressMonitor progressMonitor, final boolean showErrorDialogs  ) {
+    Date now = new Date(); // capture the date/time before trying to preview...used only if there is an error.
     progressMonitor.beginTask(
       BaseMessages.getString( PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title" ), 100 );
 
     // This transformation is ready to run in preview!
     trans = new Trans( transMeta );
     trans.setPreview( true );
-
     // Prepare the execution...
     //
     try {
@@ -154,9 +157,15 @@ public class TransPreviewProgressDialog {
       if ( showErrorDialogs ) {
         shell.getDisplay().asyncExec( new Runnable() {
           public void run() {
+            // We do not want to display all of the error messages for this ktr's log channel ID
+            // So we must parse out the error messages to display only the messages that are specific
+            // to this preview Exception
+            //
+            String errorMessage = parseErrorMessage( e.getMessage(), now );
             new ErrorDialog( shell,
               BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
-              BaseMessages.getString( PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
+              BaseMessages.getString( PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ),
+                new Exception( errorMessage, e.getCause() ) );
           }
         } );
       }
@@ -252,6 +261,56 @@ public class TransPreviewProgressDialog {
       KettleLogStore.getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), true ).toString();
 
     progressMonitor.done();
+  }
+
+  /**
+   * Parse the error message to return only those whose date/time stamp is after "now" Date
+   * @param errorMessage - String to parse
+   * @param now - Date before error message occurred
+   * @return - The parsed error message with only errors that occurred after "now"
+   */
+  @VisibleForTesting
+  public static String parseErrorMessage( String errorMessage, Date now ) {
+    StringBuilder parsed = new StringBuilder();
+    try {
+      String[] splitString = errorMessage.split( "\\n" );
+      parsed.append( splitString[1] ).append( "\n" );
+      for ( int i = 2; i < splitString.length; i++ ) {
+        String dateStr = splitString[i].substring( 0, splitString[i].indexOf( " -" ) );
+        if ( isDateAfterOrSame( formatDate( now ), dateStr ) ) {
+          parsed.append( splitString[i] ).append( "\n" );
+        }
+      }
+    } catch ( Exception e ) {
+      return errorMessage;
+    }
+    return parsed.toString();
+  }
+
+  /**
+   * Compares 2 date/times lexicographically
+   * @param date1 - String representation of date 1
+   * @param date2 - String representation of date 2
+   * @return - true
+   * true if date2 is lexicographically greater than date1
+   */
+  @VisibleForTesting
+  public static boolean isDateAfterOrSame( String date1, String date2 ) {
+    return date2.compareTo( date1 ) >= 0;
+  }
+
+  /**
+   * Formats a Date object as a String in the form yyyy/MM/dd HH:mm:ss format where HH is 0-23 hour
+   * @param date - Date to format
+   * @return - String representation of Date
+   */
+  private static String formatDate( Date date ) {
+    SimpleDateFormat sdf = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
+    try {
+      return sdf.format( date );
+    } catch ( Exception e ) {
+      return sdf.format( new Date() );
+    }
   }
 
   /**
