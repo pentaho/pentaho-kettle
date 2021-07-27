@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -82,6 +82,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -101,6 +102,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   private static final String URL_FIELDNAME = "URL";
   private static final String UPLOADFILE_FIELDNAME = "UPLOAD";
   private static final String TARGETFILE_FIELDNAME = "DESTINATION";
+  private static final String SCHEMA_FILE = "file";
 
 
   // Base info
@@ -516,121 +518,12 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         outputFile = KettleVFS.getOutputStream( realTargetFile, this, fileAppended );
 
         URI uri = (new URIBuilder( urlToUse )).build();
-        HttpClient client = null;
-        HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-        if ( !Utils.isEmpty( username ) ) {
-          String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
-          String realUser = environmentSubstitute( username );
-          UsernamePasswordCredentials credentials =
-            new UsernamePasswordCredentials( realUser, realPassword != null ? realPassword : "" );
-          CredentialsProvider provider = new BasicCredentialsProvider();
-          provider.setCredentials( AuthScope.ANY, credentials );
-          clientBuilder.setDefaultCredentialsProvider( provider );
-        }
 
-        String proxyHostnameValue = environmentSubstitute( proxyHostname );
-        String proxyPortValue = environmentSubstitute( proxyPort );
-        String nonProxyHostsValue = environmentSubstitute( nonProxyHosts );
-        if ( !Utils.isEmpty( proxyHostnameValue ) ) {
-          HttpHost proxy = new HttpHost( proxyHostnameValue, Integer.parseInt( proxyPortValue ) );
-          clientBuilder.setProxy( proxy );
-          if ( !Utils.isEmpty( nonProxyHostsValue ) ) {
-            HttpRoutePlanner routePlanner = new DefaultProxyRoutePlanner( proxy ) {
-              @Override
-              public HttpRoute determineRoute(
-                      final HttpHost host,
-                      final HttpRequest request,
-                      final HttpContext context ) throws HttpException {
-                String hostName = host.getHostName();
-                if ( hostName.matches( nonProxyHostsValue ) ) {
-                  // Return direct route
-                  return new HttpRoute( host );
-                }
-                return super.determineRoute( host, request, context );
-              }
-            };
-            clientBuilder.setRoutePlanner( routePlanner );
-          }
-        }
-
-        client = clientBuilder.build();
-
-        HttpRequestBase httpRequestBase;
-        // See if we need to send a file over?
-        if ( !Utils.isEmpty( realUploadFile ) ) {
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.SendingFile", realUploadFile ) );
-          }
-          httpRequestBase = new HttpPost( uri );
-
-          // Get content of file
-          String content = new String( Files.readAllBytes( Paths.get( realUploadFile ) ) );
-
-          // upload data to web server
-
-          StringEntity requestEntity = new StringEntity( content );
-          requestEntity.setContentType( "application/x-www-form-urlencoded" );
-          ( (HttpPost) httpRequestBase ).setEntity( requestEntity );
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.FinishedSendingFile" ) );
-          }
+        if ( SCHEMA_FILE.equalsIgnoreCase( uri.getScheme() ) ) {
+          input = getResultFromFileSchema( uri );
         } else {
-          httpRequestBase = new HttpGet( uri );
+          input = getResultFromHttpSchema( realUploadFile, uri );
         }
-
-
-        // if we have HTTP headers, add them
-        if ( !Utils.isEmpty( headerName ) ) {
-          if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobHTTP.Log.HeadersProvided" ) );
-          }
-          for ( int j = 0; j < headerName.length; j++ ) {
-            if ( !Utils.isEmpty( headerValue[ j ] ) ) {
-              httpRequestBase
-                .addHeader( environmentSubstitute( headerName[ j ] ), environmentSubstitute( headerValue[ j ] ) );
-              if ( log.isDebug() ) {
-                log.logDebug( BaseMessages.getString(
-                  PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute( headerName[ j ] ),
-                  environmentSubstitute( headerValue[ j ] ) ) );
-              }
-            }
-          }
-        }
-
-        // Get a stream for the specified URL
-        HttpResponse response = null;
-        if ( !Utils.isEmpty( proxyHostname ) ) {
-          HttpHost target = new HttpHost( uri.getHost(), uri.getPort(), uri.getScheme() );
-          // Create AuthCache instance
-          AuthCache authCache = new BasicAuthCache();
-          // Generate BASIC scheme object and add it to the local
-          // auth cache
-          BasicScheme basicAuth = new BasicScheme();
-          authCache.put( target, basicAuth );
-          // Add AuthCache to the execution context
-          HttpClientContext localContext = HttpClientContext.create();
-          localContext.setAuthCache( authCache );
-          response = client.execute( target, httpRequestBase, localContext );
-        } else {
-          response = client.execute( httpRequestBase );
-        }
-        responseStatusCode = response.getStatusLine().getStatusCode();
-
-        if ( HttpStatus.SC_OK != responseStatusCode ) {
-          throw new KettleException( "StatusCode: " + responseStatusCode );
-        }
-
-
-
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.StartReadingReply" ) );
-        }
-
-        // Read the result from the server...
-        input = response.getEntity().getContent();
-        logBasic( BaseMessages.getString( PKG, "JobHTTP.Log.ReplayInfo",
-          response.getEntity().getContentType(),
-          response.getLastHeader( HttpHeaders.DATE ).getValue() ) );
 
         int oneChar;
         long bytesRead = 0L;
@@ -682,6 +575,132 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     }
 
     return result;
+  }
+
+  private InputStream getResultFromFileSchema( URI uri ) throws IOException {
+    URLConnection connection = uri.toURL().openConnection();
+    connection.setDoOutput( true );
+    Date date = new Date( connection.getLastModified() );
+    logBasic( BaseMessages.getString( PKG, "JobHTTP.Log.ReplayInfo", connection.getContentType(), date ) );
+    return connection.getInputStream();
+  }
+
+  private InputStream getResultFromHttpSchema( String realUploadFile, URI uri ) throws IOException, KettleException {
+    HttpClient client = null;
+    HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+    if ( !Utils.isEmpty( username ) ) {
+      String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
+      String realUser = environmentSubstitute( username );
+      UsernamePasswordCredentials credentials =
+        new UsernamePasswordCredentials( realUser, realPassword != null ? realPassword : "" );
+      CredentialsProvider provider = new BasicCredentialsProvider();
+      provider.setCredentials( AuthScope.ANY, credentials );
+      clientBuilder.setDefaultCredentialsProvider( provider );
+    }
+
+    String proxyHostnameValue = environmentSubstitute( proxyHostname );
+    String proxyPortValue = environmentSubstitute( proxyPort );
+    String nonProxyHostsValue = environmentSubstitute( nonProxyHosts );
+    if ( !Utils.isEmpty( proxyHostnameValue ) ) {
+      HttpHost proxy = new HttpHost( proxyHostnameValue, Integer.parseInt( proxyPortValue ) );
+      clientBuilder.setProxy( proxy );
+      if ( !Utils.isEmpty( nonProxyHostsValue ) ) {
+        HttpRoutePlanner routePlanner = new DefaultProxyRoutePlanner( proxy ) {
+          @Override
+          public HttpRoute determineRoute(
+                  final HttpHost host,
+                  final HttpRequest request,
+                  final HttpContext context ) throws HttpException {
+            String hostName = host.getHostName();
+            if ( hostName.matches( nonProxyHostsValue ) ) {
+              // Return direct route
+              return new HttpRoute( host );
+            }
+            return super.determineRoute( host, request, context );
+          }
+        };
+        clientBuilder.setRoutePlanner( routePlanner );
+      }
+    }
+
+    client = clientBuilder.build();
+
+    HttpRequestBase httpRequestBase;
+    // See if we need to send a file over?
+    if ( !Utils.isEmpty( realUploadFile ) ) {
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.SendingFile", realUploadFile ) );
+      }
+      httpRequestBase = new HttpPost( uri );
+
+      // Get content of file
+      String content = new String( Files.readAllBytes( Paths.get( realUploadFile ) ) );
+
+      // upload data to web server
+
+      StringEntity requestEntity = new StringEntity( content );
+      requestEntity.setContentType( "application/x-www-form-urlencoded" );
+      ( (HttpPost) httpRequestBase ).setEntity( requestEntity );
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.FinishedSendingFile" ) );
+      }
+    } else {
+      httpRequestBase = new HttpGet( uri );
+    }
+
+
+    // if we have HTTP headers, add them
+    if ( !Utils.isEmpty( headerName ) ) {
+      if ( log.isDebug() ) {
+        log.logDebug( BaseMessages.getString( PKG, "JobHTTP.Log.HeadersProvided" ) );
+      }
+      for ( int j = 0; j < headerName.length; j++ ) {
+        if ( !Utils.isEmpty( headerValue[ j ] ) ) {
+          httpRequestBase
+            .addHeader( environmentSubstitute( headerName[ j ] ), environmentSubstitute( headerValue[ j ] ) );
+          if ( log.isDebug() ) {
+            log.logDebug( BaseMessages.getString(
+              PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute( headerName[ j ] ),
+              environmentSubstitute( headerValue[ j ] ) ) );
+          }
+        }
+      }
+    }
+
+    // Get a stream for the specified URL
+    HttpResponse response = null;
+    if ( !Utils.isEmpty( proxyHostname ) ) {
+      HttpHost target = new HttpHost( uri.getHost(), uri.getPort(), uri.getScheme() );
+      // Create AuthCache instance
+      AuthCache authCache = new BasicAuthCache();
+      // Generate BASIC scheme object and add it to the local
+      // auth cache
+      BasicScheme basicAuth = new BasicScheme();
+      authCache.put( target, basicAuth );
+      // Add AuthCache to the execution context
+      HttpClientContext localContext = HttpClientContext.create();
+      localContext.setAuthCache( authCache );
+      response = client.execute( target, httpRequestBase, localContext );
+    } else {
+      response = client.execute( httpRequestBase );
+    }
+    responseStatusCode = response.getStatusLine().getStatusCode();
+
+    if ( HttpStatus.SC_OK != responseStatusCode ) {
+      throw new KettleException( "StatusCode: " + responseStatusCode );
+    }
+
+
+    if ( log.isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.StartReadingReply" ) );
+    }
+
+    logBasic( BaseMessages.getString( PKG, "JobHTTP.Log.ReplayInfo",
+      response.getEntity().getContentType(),
+      response.getLastHeader( HttpHeaders.DATE ).getValue() ) );
+
+    // Read the result from the server...
+    return response.getEntity().getContent();
   }
 
   @Override
