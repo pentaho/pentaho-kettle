@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.pentaho.di.core.exception.KettleException;
@@ -49,7 +49,7 @@ public class PoiWorkbook implements KWorkbook {
   private String encoding;
   // for PDI-10251 we need direct access to streams
   private InputStream internalIS;
-  private NPOIFSFileSystem npoifs;
+  private POIFSFileSystem npoifs;
   private OPCPackage opcpkg;
 
   public PoiWorkbook( String filename, String encoding ) throws KettleException {
@@ -68,7 +68,7 @@ public class PoiWorkbook implements KWorkbook {
         String localFilename = KettleVFS.getFilename( fileObject );
         File excelFile = new File( localFilename );
         try {
-          npoifs = new NPOIFSFileSystem( excelFile );
+          npoifs = new POIFSFileSystem( excelFile );
           workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create( npoifs );
         } catch ( Exception ofe ) {
           try {
