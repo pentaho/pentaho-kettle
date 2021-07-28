@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2021 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -203,6 +204,14 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
   static final String NODE_TRANS = "transformation";
 
   static final String NODE_TRANS_PRIVATE_DATABASES = "transPrivateDatabases";
+
+  static final String NODE_TRANS_DEPENDENCIES = "transDepedencies";
+
+  static final String PROP_TRANS_DEPENDENCY_DB_NAME = "TRANS_DEPENDENCY_DB_NAME";
+
+  static final String PROP_TRANS_DEPENDENCY_TABLE = "TRANS_DEPENDENCY_TABLE";
+
+  static final String PROP_TRANS_DEPENDENCY_FIELD = "TRANS_DEPENDENCY_FIELD";
 
   static final String PROP_TRANS_PRIVATE_DATABASE_NAMES = "PROP_TRANS_PRIVATE_DATABASE_NAMES";
 
@@ -455,6 +464,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     // Load the details at the end, to make sure we reference the databases correctly, etc.
     //
     loadTransformationDetails( rootNode, transMeta );
+    loadDependencies( rootNode, transMeta );
 
     transMeta.eraseParameters();
 
@@ -732,6 +742,8 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     //
     saveTransformationDetails( rootNode, transMeta );
 
+    saveDependencies( rootNode, transMeta );
+
     return rootNode;
   }
 
@@ -739,6 +751,39 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
   private void compatibleSaveRep( StepMetaInterface stepMetaInterface, Repository repository,
       ObjectId id_transformation, ObjectId objectId ) throws KettleException {
     stepMetaInterface.saveRep( repository, id_transformation, objectId );
+  }
+
+  /**
+   * Save transformation dependencies
+   * @param rootNode
+   * @param transMeta
+   */
+  private void saveDependencies( final DataNode rootNode, final TransMeta transMeta ) {
+    DataNode dependenciesNodeRoot = new DataNode( NODE_TRANS_DEPENDENCIES );
+    rootNode.addNode( dependenciesNodeRoot );
+    for ( TransDependency transDependency : transMeta.getDependencies() ) {
+      DataNode dependencyNode = new DataNode(
+        sanitizeNodeName( String.join( "_", transDependency.getDatabase().getName(),
+          transDependency.getTablename(), transDependency.getFieldname() ) ) );
+      dependencyNode.setProperty( PROP_TRANS_DEPENDENCY_DB_NAME, transDependency.getDatabase().getName() );
+      dependencyNode.setProperty( PROP_TRANS_DEPENDENCY_TABLE, transDependency.getTablename() );
+      dependencyNode.setProperty( PROP_TRANS_DEPENDENCY_FIELD, transDependency.getFieldname() );
+      dependenciesNodeRoot.addNode( dependencyNode );
+    }
+  }
+
+  private void loadDependencies( final DataNode rootNode, final TransMeta transMeta ) {
+    if ( rootNode.hasNode( NODE_TRANS_DEPENDENCIES ) ) {
+      DataNode dependenciesNode = rootNode.getNode( NODE_TRANS_DEPENDENCIES );
+      for ( DataNode dependencyNode : dependenciesNode.getNodes() ) {
+        TransDependency transDependency = new TransDependency();
+        transDependency.setTablename( getString( dependencyNode, PROP_TRANS_DEPENDENCY_TABLE ) );
+        transDependency.setFieldname( getString( dependencyNode, PROP_TRANS_DEPENDENCY_FIELD ) );
+        String dbName = getString( dependencyNode, PROP_TRANS_DEPENDENCY_DB_NAME );
+        transDependency.setDatabase( transMeta.findDatabase( dbName ) );
+        transMeta.addDependency( transDependency );
+      }
+    }
   }
 
   private void saveTransformationDetails( final DataNode rootNode, final TransMeta transMeta ) throws KettleException {
