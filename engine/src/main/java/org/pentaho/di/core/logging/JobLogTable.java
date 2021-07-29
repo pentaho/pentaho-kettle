@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -367,7 +367,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
               case CLIENT:
                 value =
                   KettleClientEnvironment.getInstance().getClient() != null ? KettleClientEnvironment
-                    .getInstance().getClient().toString() : "unknown";
+                    .getInstance().getClient().toString() : "PENTAHO_SERVER";
                 break;
               default:
                 break;
