@@ -58,7 +58,7 @@
     <commons-math3.version>3.6.1</commons-math3.version>
     <xmlbeans.version>3.1.0</xmlbeans.version>
     <curvesapi.version>1.06</curvesapi.version>
-    <commons-compress.version>1.19</commons-compress.version>
+    <commons-compress.version>1.21</commons-compress.version>
     <rome.version>1.0</rome.version>
     <SassyReader.version>0.5</SassyReader.version>
     <saxon.version>9.1.0.8</saxon.version>
