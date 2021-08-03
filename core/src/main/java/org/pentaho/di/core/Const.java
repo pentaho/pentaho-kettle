@@ -2296,7 +2296,9 @@ public class Const {
    * @return The Kettle user data directory.
    */
   public static String getKettleUserDataDirectory() {
-    return getKettleUserDirectory() + Const.FILE_SEPARATOR + "data";
+    String dataDir =  getKettleUserDirectory() + Const.FILE_SEPARATOR + "data";
+    return NVL( System.getenv( "WEBSPOON_USER_HOME" ), NVL( System.getProperty( "WEBSPOON_USER_HOME" ),
+            dataDir ) );
   }
 
   /**

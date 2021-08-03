@@ -66,6 +66,7 @@ import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileType;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.Dialog;
@@ -4686,11 +4687,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
     if ( !Utils.isEmpty( lastFileOpened ) ) {
       // Test for Windows vs Linux/Remote parent path
-      int parentIndex = lastFileOpened.lastIndexOf( '\\' );
-      if ( parentIndex == -1 ) {
-        parentIndex = lastFileOpened.lastIndexOf( '/' );
+      String folder = null;
+      if ( KettleVFS.getFileObject( lastFileOpened ).getType() == FileType.FOLDER ) {
+        folder = lastFileOpened;
+      } else {
+        int parentIndex = lastFileOpened.lastIndexOf( '\\' );
+        if ( parentIndex == -1 ) {
+          parentIndex = lastFileOpened.lastIndexOf( '/' );
+        }
+        folder = lastFileOpened.substring( 0, parentIndex );
       }
-      String folder = lastFileOpened.substring( 0, parentIndex );
       fileDialogOperation.setPath( folder );
       fileDialogOperation.setConnection( lastFileOpenedConnection );
       fileDialogOperation.setProvider( lastFileOpenedProvider );

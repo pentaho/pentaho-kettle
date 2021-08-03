@@ -162,9 +162,6 @@ public class KettleClientEnvironment {
     try {
       dir.mkdirs();
 
-      // Create a data directory for this user
-      dir = new File( Const.getKettleUserDataDirectory() );
-      dir.mkdirs();
     } catch ( Exception e ) {
       System.err.println( e.getMessage() );
     }
