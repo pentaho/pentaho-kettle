@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -974,10 +974,15 @@ public class DataHandler extends AbstractXulEventHandler {
   }
 
   public void setAzureSqlDBAuthRelatedFieldsVisible() {
-    passwordBox.setDisabled( azureSqlDBJdbcAuthMethod != null &&
+    if ( passwordBox != null ) {
+      passwordBox.setDisabled( azureSqlDBJdbcAuthMethod != null &&
         ( "Azure Active Directory - Universal With MFA".equals( azureSqlDBJdbcAuthMethod.getValue() ) ||
-            "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) ) );
-    userNameBox.setDisabled( azureSqlDBJdbcAuthMethod != null && "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) );
+          "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) ) );
+    }
+    if ( userNameBox != null ) {
+      userNameBox.setDisabled( azureSqlDBJdbcAuthMethod != null && "Azure Active Directory - Integrated"
+        .equals( azureSqlDBJdbcAuthMethod.getValue() ) );
+    }
   }
 
   public void enableAzureSqlDBEncryption() {
