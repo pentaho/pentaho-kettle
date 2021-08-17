@@ -41,6 +41,7 @@
     <pdi-platform-utils-plugin.version>9.3.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
     <vertica-bulkloader-plugin.version>9.3.0.0-SNAPSHOT</vertica-bulkloader-plugin.version>
     <pdi-pur-plugin.version>9.3.0.0-SNAPSHOT</pdi-pur-plugin.version>
+    <pentaho-mongo-plugin.version>9.3.0.0-SNAPSHOT</pentaho-mongo-plugin.version>
   </properties>
 
   <dependencies>
@@ -312,6 +313,19 @@
       <groupId>pentaho</groupId>
       <artifactId>pdi-platform-utils-plugin</artifactId>
       <version>${pdi-platform-utils-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>com.pentaho.di.plugins</groupId>
+      <artifactId>mongodb-plugin</artifactId>
+      <version>${pentaho-mongo-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

@@ -17,6 +17,7 @@
   <properties>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
+    <pentaho-mongo-plugin.version>9.3.0.0-SNAPSHOT</pentaho-mongo-plugin.version>
 
     <pentaho-json.version>9.3.0.0-SNAPSHOT</pentaho-json.version>
     <pentaho-hadoop-shims.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
@@ -127,6 +128,21 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-mongodb-plugin</artifactId>
+      <version>${pentaho-mongo-plugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-mongo-utils</artifactId>
+      <version>${pentaho-mongo-plugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongo-java-driver</artifactId>
+      <version>3.10.2</version>
+    </dependency>
     <!-- Updated Eclipse Dependencies -->
     <dependency>
       <groupId>org.eclipse.platform</groupId>
