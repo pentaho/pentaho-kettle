@@ -498,6 +498,49 @@ public class TransExecutorUnitTest {
     Assert.assertEquals( fieldValue1, internalTrans.getVariable( childParam ) );
   }
 
+  @Test
+  //PDI-19098
+  public void testExecuteTransWithFieldsCaseInsensitive() throws KettleException {
+    String childParam = "childParam";
+    String childValue = "childValue";
+    String fieldValue1 = "fieldValue1";
+    String fieldValue2 = "fieldValue2";
+    String paramOverwrite = "paramOverwrite";
+    String parentValue = "parentValue";
+
+    meta.getParameters().setVariable( new String[]{ childParam, paramOverwrite } );
+    meta.getParameters().setInput( new String[]{ null, null } );
+    meta.getParameters().setField( new String[]{ "CHILDPARAM", paramOverwrite } );
+    Trans parent = new Trans();
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
+
+    executor.init( meta, data );
+
+    executor.setVariable( paramOverwrite, parentValue );
+    executor.setVariable( childParam, childValue );
+
+    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
+
+    Mockito.when( executor.getLogLevel() ).thenReturn( LogLevel.NOTHING );
+    parent.setLog( new LogChannel( this ) );
+    Mockito.doCallRealMethod().when( executor ).createInternalTrans( );
+    Mockito.when(  executor.getData().getExecutorTransMeta().listVariables() ).thenReturn( new String[0] );
+    Mockito.when(  executor.getData().getExecutorTransMeta().listParameters() ).thenReturn( new String[0] );
+
+    executor.getData().setInputRowMeta( inputRowMeta );
+    Mockito.when(  executor.getData().getInputRowMeta().getFieldNames() ).thenReturn( new String[]{"childParam", "paramOverwrite"} );
+
+    Trans internalTrans = executor.createInternalTrans();
+    executor.getData().setExecutorTrans( internalTrans );
+    executor.passParametersToTrans( Arrays.asList( new String[]{ fieldValue1, fieldValue2 } ) );
+
+    //When the child parameter does exist in the parent parameters, overwrite the child parameter by the parent parameter.
+    Assert.assertEquals( fieldValue2, internalTrans.getVariable( paramOverwrite ) );
+
+    //All other parent parameters need to get copied into the child parameters  (when the 'Inherit all variables from the transformation?' option is checked)
+    Assert.assertEquals( fieldValue1, internalTrans.getVariable( childParam ) );
+  }
+
 
   @Test
   //PDI-16066
