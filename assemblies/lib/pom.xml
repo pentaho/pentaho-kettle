@@ -17,7 +17,7 @@
   <properties>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
-    <pentaho-mongo-plugin.version>9.3.0.0-SNAPSHOT</pentaho-mongo-plugin.version>
+    <pentaho-mongodb-plugin.version>9.3.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
 
     <pentaho-json.version>9.3.0.0-SNAPSHOT</pentaho-json.version>
     <pentaho-hadoop-shims.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
@@ -131,12 +131,12 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-mongodb-plugin</artifactId>
-      <version>${pentaho-mongo-plugin.version}</version>
+      <version>${pentaho-mongodb-plugin.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-mongo-utils</artifactId>
-      <version>${pentaho-mongo-plugin.version}</version>
+      <version>${pentaho-mongodb-plugin.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mongodb</groupId>
