@@ -392,7 +392,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
   }
 
   private static String replaceCurrentDir( String path, String parentPath ) {
-    if ( Utils.isEmpty( path ) || !path.startsWith( parentPath ) ) {
+    if ( Utils.isEmpty( path ) || Utils.isEmpty( parentPath ) || !path.startsWith( parentPath ) ) {
       return path;
     }
 
@@ -401,10 +401,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
       path = path.replace( '\\', '/' );
     }
 
-    if ( !Utils.isEmpty( parentPath ) ) {
-      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-    }
-    return path;
+    return path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
   }
 
   String getRepositoryFilePath( FileDialogOperation fileDialogOperation ) {
