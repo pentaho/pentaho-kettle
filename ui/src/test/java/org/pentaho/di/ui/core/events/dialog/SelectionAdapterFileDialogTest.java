@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,17 +25,27 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.events.dialog.extension.ExtensionPointWrapper;
-import org.pentaho.di.ui.core.events.dialog.FilterType;
 
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +53,8 @@ import static org.mockito.Mockito.when;
 public class SelectionAdapterFileDialogTest {
 
   SelectionAdapterFileDialog testInstance;
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   @Before
   public void setup() {
@@ -80,6 +92,31 @@ public class SelectionAdapterFileDialogTest {
     when( abstractMeta.environmentSubstitute( unresolvedPath ) ).thenReturn( resolvedPath );
 
     assertNotNull( testInstance.resolveFile( abstractMeta, unresolvedPath ) );
+  }
+
+  @Test
+  public void testApplyRelativePathEnvVar() throws IOException {
+    //SETUP
+    LogChannelInterface log = mock( LogChannelInterface.class );
+    StringBuilder textVar = new StringBuilder();
+    AbstractMeta meta = mock( AbstractMeta.class );
+    RepositoryUtility repositoryUtility = mock( RepositoryUtility.class );
+    ExtensionPointWrapper extensionPointWrapper = mock( ExtensionPointWrapper.class );
+    SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE );
+    File testFile = temporaryFolder.newFile( "testFileName" );
+
+    String testPath = testFile.getPath();
+    when( meta.environmentSubstitute( testPath ) ).thenReturn( testPath );
+
+    SelectionAdapterFileDialog testInstance1 = createTestInstance( log, textVar, meta, options, repositoryUtility,
+      extensionPointWrapper );
+    testInstance1.setText( testPath );
+    String pathWithCurrentDirVar = testInstance1.applyRelativePathEnvVar( testPath );
+    assertEquals( testPath, pathWithCurrentDirVar );
+
+    when( meta.getFilename() ).thenReturn( testPath );
+    pathWithCurrentDirVar =  testInstance1.applyRelativePathEnvVar( testPath );
+    assertEquals( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/testFileName", pathWithCurrentDirVar );
   }
 
 
