@@ -987,7 +987,7 @@ public interface DatabaseInterface extends Cloneable {
    */
   default String getSQLListOfSchemas( DatabaseMeta dbMeta ) {
     // Return the previous behavior as default implementation
-   return getSQLListOfSchemas();
+    return getSQLListOfSchemas();
   }
 
   /**

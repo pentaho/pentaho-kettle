@@ -141,6 +141,7 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
     return ALTER_TABLE + tablename + " DROP COLUMN " + v.getName() + Const.CR;
   }
 
+  @Override
   public String getSQLListOfSchemas( DatabaseMeta databaseMeta ) {
     String databaseName = getDatabaseName();
     if ( databaseMeta != null ) {
