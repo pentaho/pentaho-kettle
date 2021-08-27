@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,7 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.getInternalState;
@@ -465,5 +466,13 @@ public class DatabaseMetaTest {
     assertFalse( getInternalState( meta, "needUpdate" ) );
   }
 
+  @Test
+  public void testGetSQLListOfSchemas() {
+    DatabaseMeta databaseMeta = spy( new DatabaseMeta() );
+    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
+    databaseMeta.setDatabaseInterface( databaseInterface );
+    databaseMeta.getSQLListOfSchemas();
+    verify( databaseInterface ).getSQLListOfSchemas( databaseMeta );
+  }
 
 }

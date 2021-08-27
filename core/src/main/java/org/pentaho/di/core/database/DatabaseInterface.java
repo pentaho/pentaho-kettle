@@ -982,6 +982,15 @@ public interface DatabaseInterface extends Cloneable {
   String getSQLListOfSchemas();
 
   /**
+   * @param dbMeta
+   * @return the SQL to retrieve the list of schemas
+   */
+  default String getSQLListOfSchemas( DatabaseMeta dbMeta ) {
+    // Return the previous behavior as default implementation
+    return getSQLListOfSchemas();
+  }
+
+  /**
    * @return The maximum number of columns in a database, <=0 means: no known limit
    */
   int getMaxColumnsInIndex();
