@@ -42,6 +42,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.TextFileInputFieldValidator;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -56,6 +57,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
  */
 @SuppressWarnings( "deprecation" )
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( EnvUtil.class )
 public class S3CsvInputMetaTest {
 

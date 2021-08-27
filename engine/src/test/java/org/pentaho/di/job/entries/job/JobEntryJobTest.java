@@ -64,11 +64,13 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Node;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( { JobEntryJob.class, MetaFileLoaderImpl.class  } )
 public class JobEntryJobTest {
 

@@ -37,6 +37,7 @@ import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.List;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.when;
  * @author Andrey Khayrutdinov
  */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class DataGrid_EmptyStringVsNull_Test {
   private StepMockHelper<DataGridMeta, StepDataInterface> helper;
 

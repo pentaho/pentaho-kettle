@@ -36,6 +36,7 @@ import org.pentaho.di.core.util.HttpClientManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -59,6 +60,7 @@ import static org.powermock.reflect.Whitebox.setInternalState;
  * @since 14-Aug-2018
  */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( HttpClientManager.class )
 public class HTTPTest {
 

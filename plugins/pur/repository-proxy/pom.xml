@@ -61,6 +61,13 @@
       <artifactId>pentaho-kettle-repository-locator-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!-- Endorsed Standards Excluded from Java 11+ -->
+    <dependency>
+      <groupId>jakarta.xml.ws</groupId>
+      <artifactId>jakarta.xml.ws-api</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-pur-plugin-core</artifactId>
