@@ -732,7 +732,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
       while ( ( first && !execPerRow )
         || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
-        // PDI-18776: '<' was changed to '<=' to make sure we iterate once in case Execute Every Input Row checkbox is checked
 
         first = false;
         // Clear the result rows of the result
