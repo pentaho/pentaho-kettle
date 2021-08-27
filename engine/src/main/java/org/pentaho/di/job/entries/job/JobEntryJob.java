@@ -731,8 +731,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
       while ( ( first && !execPerRow )
-        || ( execPerRow && rows != null && iteration <= rows.size() && result.getNrErrors() == 0 ) ) {
-        // PDI-18776: '<' was changed to '<=' to make sure we iterate once in case Execute Every Input Row checkbox is checked
+        || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
 
         first = false;
         // Clear the result rows of the result
