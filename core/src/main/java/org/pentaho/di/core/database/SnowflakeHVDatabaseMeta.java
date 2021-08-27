@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -142,8 +142,17 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
   }
 
   @Override
+  public String getSQLListOfSchemas( DatabaseMeta databaseMeta ) {
+    String databaseName = getDatabaseName();
+    if ( databaseMeta != null ) {
+      databaseName = databaseMeta.environmentSubstitute( databaseName );
+    }
+    return "SELECT SCHEMA_NAME AS \"name\" FROM " + databaseName + ".INFORMATION_SCHEMA.SCHEMATA";
+  }
+
+  @Override
   public String getSQLListOfSchemas() {
-    return "SELECT SCHEMA_NAME AS \"name\" FROM " + getDatabaseName() + ".INFORMATION_SCHEMA.SCHEMATA";
+    return getSQLListOfSchemas( null );
   }
 
   /**
@@ -445,11 +454,11 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
 
   @Override public ResultSet getSchemas( DatabaseMetaData databaseMetaData, DatabaseMeta dbMeta )
     throws SQLException {
-    return databaseMetaData.getSchemas( dbMeta.getDatabaseName(), null );
+    return databaseMetaData.getSchemas( dbMeta.environmentSubstitute( dbMeta.getDatabaseName() ), null );
   }
 
   @Override public ResultSet getTables( DatabaseMetaData databaseMetaData, DatabaseMeta dbMeta, String schemaPattern,
                                         String tableNamePattern, String[] tableTypes ) throws SQLException {
-    return databaseMetaData.getTables( dbMeta.getDatabaseName(), schemaPattern, tableNamePattern, tableTypes );
+    return databaseMetaData.getTables( dbMeta.environmentSubstitute( dbMeta.getDatabaseName() ), schemaPattern, tableNamePattern, tableTypes );
   }
 }
