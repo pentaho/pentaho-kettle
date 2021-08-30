@@ -1,0 +1,27 @@
+{
+	"name": "devcontainer",
+	"settings": {
+		"workbench.colorTheme": "Default Dark+",
+		"terminal.integrated.defaultProfile.linux": "pwsh"
+	},
+	"extensions": [
+		// VS Code specific
+		"coenraads.bracket-pair-colorizer",
+		"vscode-icons-team.vscode-icons",
+		"editorconfig.editorconfig",
+		// GitHub specific
+		"eamodio.gitlens",
+		"cschleiden.vscode-github-actions",
+		"redhat.vscode-yaml",
+		"bierner.markdown-preview-github-styles",
+		"ban.spellright",
+		// Java specific
+		"vscjava.vscode-java-pack"
+	],
+	"postCreateCommand": "mkdir .m2 && cd .m2 && curl -o settings.xml https://raw.githubusercontent.com/pentaho/maven-parent-poms/master/maven-support-files/settings.xml && curl -o settings-security.xml https://raw.githubusercontent.com/pentaho/maven-parent-poms/master/maven-support-files/settings-security.xml",
+	"build": {
+		"dockerfile": "Dockerfile"
+	}
+}
+
+// Built with ❤ by [Pipeline Foundation](https://pipeline.foundation)
