@@ -34,6 +34,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.www.cache.CarteStatusCache;
 import org.pentaho.di.www.exception.DuplicateKeyException;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -57,6 +58,7 @@ import static org.mockito.Mockito.atLeastOnce;
 
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class GetJobStatusServletTest {
   private JobMap mockJobMap;
 

@@ -58,6 +58,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.metastore.api.IMetaStore;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
@@ -90,6 +91,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.anyString;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( { MetaInject.class } )
 public class MetaInjectTest {
 

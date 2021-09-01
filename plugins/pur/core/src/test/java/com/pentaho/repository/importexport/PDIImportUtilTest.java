@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.utils.IRepositoryFactory;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.Mockito.mock;
@@ -36,6 +37,7 @@ import static org.pentaho.di.core.util.Assert.assertNotNull;
  * Created by nbaker on 11/5/15.
  */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class PDIImportUtilTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 

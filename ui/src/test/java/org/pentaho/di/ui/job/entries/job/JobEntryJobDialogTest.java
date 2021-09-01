@@ -34,6 +34,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
@@ -55,6 +56,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
  * @author Vadim_Polynkov
  */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( { PropsUI.class, LoggingRegistry.class, JobEntryJobDialog.class, JobEntryJob.class } )
 public class JobEntryJobDialogTest {
 
