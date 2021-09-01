@@ -79,9 +79,6 @@ node('non-master') {
             stage('Schema Workbench') {
               job.trigger('service-pack-installers-schema-workbench', suiteParameters)
             }
-            stage('Big Data Plugin') {
-              job.trigger('service-pack-installers-big-data-plugin', suiteParameters)
-            }
             stage('Platform Installer Bundler') {
               job.trigger('service-pack-platform-installer-bundler', suiteParameters)
             }
