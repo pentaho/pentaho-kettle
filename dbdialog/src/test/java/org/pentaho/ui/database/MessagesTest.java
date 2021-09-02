@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
@@ -41,6 +42,7 @@ import static org.junit.Assert.assertNotNull;
  * Unit tests for Messages.
  */
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest({ Messages.class })
 public class MessagesTest {
 

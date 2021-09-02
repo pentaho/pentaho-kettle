@@ -54,6 +54,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
 import junit.framework.Assert;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
@@ -63,6 +64,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @see IfNull
  */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class IfNullTest {
   StepMockHelper<IfNullMeta, IfNullData> smh;
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();

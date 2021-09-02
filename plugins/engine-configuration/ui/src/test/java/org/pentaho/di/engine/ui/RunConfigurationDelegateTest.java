@@ -52,6 +52,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
@@ -66,6 +67,7 @@ import org.eclipse.swt.widgets.Shell;
   * @author Luis Martins (16-Feb-2018)
   */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( { Spoon.class, ExtensionPointHandler.class, RunConfigurationDelegate.class } )
 public class RunConfigurationDelegateTest {
 

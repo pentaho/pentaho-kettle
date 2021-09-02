@@ -42,6 +42,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -63,6 +64,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( { ExecuteTransServlet.class, PluginRegistry.class } )
 public class ExecuteTransServletTest {
   private ExecuteTransServlet executeTransServlet;

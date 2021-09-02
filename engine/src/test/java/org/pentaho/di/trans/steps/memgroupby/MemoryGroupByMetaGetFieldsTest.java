@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -60,6 +61,7 @@ import org.pentaho.metastore.api.IMetaStore;
  * @author Luis Martins
  */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( { ValueMetaFactory.class } )
 public class MemoryGroupByMetaGetFieldsTest {
 

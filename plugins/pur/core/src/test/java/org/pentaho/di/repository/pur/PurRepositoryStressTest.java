@@ -41,6 +41,7 @@ import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -79,6 +80,7 @@ import static org.pentaho.di.core.util.Assert.assertNull;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( { ClientRepositoryPaths.class, Encr.class, AttributesMapUtil.class, DBCache.class } )
 public class PurRepositoryStressTest {
   private final int THREADS = 15;

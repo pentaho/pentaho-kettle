@@ -29,6 +29,7 @@ import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -44,6 +45,7 @@ import static org.mockito.Matchers.anyString;
 
 @PrepareForTest( AttributesMapUtil.class )
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class AttributesMapUtilTest {
 
   private static final String SAVE_ATTRIBUTES_MAP_METHOD = "saveAttributesMap";

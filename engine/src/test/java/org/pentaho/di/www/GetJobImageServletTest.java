@@ -31,6 +31,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.servlet.ServletOutputStream;
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.spy;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class GetJobImageServletTest {
   private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!
 
