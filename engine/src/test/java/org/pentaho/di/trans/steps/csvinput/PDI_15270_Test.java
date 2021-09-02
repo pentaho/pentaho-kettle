@@ -34,6 +34,7 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
@@ -49,6 +50,7 @@ import static org.junit.Assert.assertNull;
  * Created by Yury_Bakhmutski on 10/7/2016.
  */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class PDI_15270_Test extends CsvInputUnitTestBase {
   private CsvInput csvInput;
   private String[] expected;

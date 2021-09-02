@@ -42,6 +42,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
@@ -70,6 +71,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Matchers.same;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( BaseMessages.class )
 public class PanCommandExecutorTest {
 

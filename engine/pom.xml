@@ -911,6 +911,17 @@
       <artifactId>httpcore</artifactId>
     </dependency>
 
+    <!-- Endorsed Standards Excluded from Java 11+ -->
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>pentaho-kettle</groupId>

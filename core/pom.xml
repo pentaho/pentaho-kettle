@@ -446,6 +446,12 @@
       <version>${simple-jndi.version}</version>
     </dependency>
 
+    <!-- Endorsed Standards Excluded from Java 11+ -->
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+
     <!-- region - Needed for runtime execution -->
     <dependency>
       <groupId>org.springframework</groupId>

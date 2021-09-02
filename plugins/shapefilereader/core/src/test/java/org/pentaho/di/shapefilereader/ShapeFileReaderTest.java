@@ -36,6 +36,7 @@ import org.pentaho.gis.shapefiles.ShapeFile;
 import org.pentaho.gis.shapefiles.ShapeFileHeader;
 import org.pentaho.gis.shapefiles.ShapePoint;
 import org.pentaho.gis.shapefiles.ShapePolyLine;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( { RowDataUtil.class } )
 public class ShapeFileReaderTest {
 

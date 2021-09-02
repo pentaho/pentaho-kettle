@@ -34,6 +34,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -50,6 +51,7 @@ import static org.mockito.Mockito.when;
 
 @PrepareForTest( AttributesMapUtil.class )
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class JobDelegateTest {
 
 

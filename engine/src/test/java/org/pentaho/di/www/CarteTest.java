@@ -34,6 +34,7 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -55,6 +56,7 @@ import static org.powermock.reflect.Whitebox.getInternalState;
  * Created by ccaspanello on 5/31/2016.
  */
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( Client.class )
 public class CarteTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();

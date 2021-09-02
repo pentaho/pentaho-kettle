@@ -41,6 +41,7 @@ import org.pentaho.di.trans.ael.websocket.DaemonMessagesClientEndpoint;
 import org.pentaho.di.trans.ael.websocket.TransWebSocketEngineAdapter;
 import org.pentaho.di.trans.ael.websocket.exception.MessageEventHandlerExecutionException;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( {DefaultLogLevel.class, LoggingRegistry.class, LogLevel.class, KettleLogStore.class, Utils.class} )
 public class StopMessageEventHandlerTest {
   @Mock

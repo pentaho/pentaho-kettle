@@ -39,6 +39,7 @@ import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.streaming.api.StreamSource;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -74,6 +75,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith( PowerMockRunner.class )
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( MQTTClientBuilder.class )
 public class MQTTStreamSourceTest {
 
