@@ -2370,6 +2370,18 @@ public class Const {
   }
 
   /**
+   * Determines the Kettle user data directory in the user's home directory.
+   * This is per user-basis.
+   *
+   * @return The Kettle user data directory.
+   */
+  public static String getUserDataDirectory() {
+    String dataDir =  getKettleDirectory() + Const.FILE_SEPARATOR + "data";
+    return NVL( System.getenv( "WEBSPOON_USER_HOME" ), NVL( System.getProperty( "WEBSPOON_USER_HOME" ),
+            dataDir ) );
+  }
+
+  /**
    * Determines the Kettle directory in the user's home directory.
    *
    * @return The Kettle directory.

@@ -18,6 +18,9 @@
   </parent>
 
   <properties>
+    <!-- webSpoon specific dependencies -->
+    <rap.version>3.12.0.pentaho</rap.version>
+
     <!-- Test running configuration -->
     <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
 
@@ -445,11 +448,16 @@
       <artifactId>simple-jndi</artifactId>
       <version>${simple-jndi.version}</version>
     </dependency>
-
-    <!-- Endorsed Standards Excluded from Java 11+ -->
     <dependency>
-      <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.rwt</artifactId>
+      <version>${rap.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- region - Needed for runtime execution -->
