@@ -138,6 +138,8 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     Point thumb = getThumb( area, max );
     offset = getOffset( thumb, area );
 
+    // Make sure the canvas is scaled 100%
+    gc.setTransform( 0, 0, 0, 1.0f );
     // First clear the image in the background color
     gc.setBackground( EColor.BACKGROUND );
     gc.fillRectangle( 0, 0, area.x, area.y );
@@ -163,10 +165,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
   }
 
   private void drawTrans( Point thumb ) {
-    if ( !shadow && gridSize > 1 ) {
-      drawGrid();
-    }
-
     if ( hori != null && vert != null ) {
       hori.setThumb( thumb.x );
       vert.setThumb( thumb.y );
