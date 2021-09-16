@@ -423,7 +423,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       try {
         outputRowData[ rowIndex++ ] = new Boolean( data.file.isHidden() );
       } catch ( FileSystemException e ) {
-        logError( BaseMessages.getString( PKG, "JsonInput.Log.ErrorDeterminingHiddenFileProperty" ) );
+        logError( BaseMessages.getString( PKG, "JsonInput.Log.ErrorOccurredWhileDeterminingHiddenFileProperty" ) );
         throw new KettleException( e );
       }
     }
