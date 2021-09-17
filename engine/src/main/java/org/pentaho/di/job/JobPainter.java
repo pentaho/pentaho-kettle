@@ -81,7 +81,11 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     Point thumb = getThumb( area, max );
     offset = getOffset( thumb, area );
 
+    // Make sure the canvas is scaled 100%
+    gc.setTransform( 0, 0, 0, 1.0f );
+    // First clear the image in the background color
     gc.setBackground( EColor.BACKGROUND );
+    gc.fillRectangle( 0, 0, area.x, area.y );
 
     if ( hori != null ) {
       hori.setThumb( thumb.x );
@@ -113,10 +117,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
   }
 
   private void drawJobElements() {
-    if ( !shadow && gridSize > 1 ) {
-      drawGrid();
-    }
-
     try {
       ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobPainterStart.id, this );
     } catch ( KettleException e ) {
