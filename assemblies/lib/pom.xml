@@ -55,7 +55,6 @@
     <kafka.spark.version>2.3.2</kafka.spark.version>
     <databricks.version>4.0.0</databricks.version>
     <bahir.version>2.3.2</bahir.version>
-    <snowflake-jdbc.version>3.6.28</snowflake-jdbc.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <jface.version>3.22.0</jface.version>
   </properties>
