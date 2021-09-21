@@ -62,7 +62,7 @@ import java.util.concurrent.TimeUnit;
 @Step( id = "ElasticSearchBulk", i18nPackageName = "org.pentaho.di.trans.steps.elasticsearch",
         name = "ElasticSearchBulk.TypeLongDesc.ElasticSearchBulk",
         description = "ElasticSearchBulk.TypeTooltipDesc.ElasticSearchBulk",
-        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk", image = "ESB.svg",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated", image = "ESB.svg",
         documentationUrl = "Products/ElasticSearch_Bulk_Insert" )
 @InjectionSupported( localizationPrefix = "ElasticSearchBulk.Injection." )
 public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInterface {
