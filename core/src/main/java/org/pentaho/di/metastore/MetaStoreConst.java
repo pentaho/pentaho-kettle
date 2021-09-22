@@ -75,7 +75,11 @@ public class MetaStoreConst {
       return null;
     }
     if ( !rootFolderFile.exists() ) {
-      rootFolderFile.mkdirs();
+      try {
+        rootFolderFile.mkdirs();
+      } catch ( SecurityException e ) {
+        throw new MetaStoreException( e.getMessage() );
+      }
     }
 
     XmlMetaStore metaStore = new XmlMetaStore( rootFolder );
