@@ -2350,6 +2350,17 @@ public class Const {
   }
 
   /**
+   * Determines if the RUNNING_ON_WEBSPOON_MODE flag is set and returns its boolean value.
+   * This is per user-basis.
+   *
+   * @return Boolean signalig the use of Webspoon mode.
+   */
+  public static boolean isRunningOnWebspoonMode() {
+    return Boolean.parseBoolean( NVL( System.getenv( "RUNNING_ON_WEBSPOON_MODE" ), NVL( System.getProperty( "RUNNING_ON_WEBSPOON_MODE" ),
+            "false" ) ) );
+  }
+
+  /**
    * Looks up the user's home directory (or KETTLE_HOME) for every invocation. This is no longer a static property so
    * the value may be set after this class is loaded.
    *
@@ -2367,6 +2378,18 @@ public class Const {
    */
   public static String getKettleDirectory() {
     return getUserHomeDirectory() + FILE_SEPARATOR + getUserBaseDir();
+  }
+
+  /**
+   * Determines the Kettle user data directory in the user's home directory.
+   * This is per user-basis.
+   *
+   * @return The Kettle user data directory.
+   */
+  public static String getUserDataDirectory() {
+    String dataDir =  getKettleDirectory() + Const.FILE_SEPARATOR + "data";
+    return NVL( System.getenv( "WEBSPOON_USER_HOME" ), NVL( System.getProperty( "WEBSPOON_USER_HOME" ),
+            dataDir ) );
   }
 
   /**
