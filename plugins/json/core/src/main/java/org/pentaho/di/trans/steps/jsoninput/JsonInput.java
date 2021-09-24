@@ -391,7 +391,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   // should be refactored
-  private void addExtraFields( Object[] outputRowData, JsonInputData data ) {
+  private void addExtraFields( Object[] outputRowData, JsonInputData data ) throws KettleException {
     int rowIndex = data.totalpreviousfields + data.nrInputFields;
 
     // See if we need to add the filename to the row...
@@ -420,7 +420,12 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     }
     // add Hidden
     if ( meta.isHiddenField() != null && meta.isHiddenField().length() > 0 ) {
-      outputRowData[ rowIndex++ ] = new Boolean( data.path );
+      try {
+        outputRowData[ rowIndex++ ] = new Boolean( data.file.isHidden() );
+      } catch ( FileSystemException e ) {
+        logError( BaseMessages.getString( PKG, "JsonInput.Log.ErrorOccurredWhileDeterminingHiddenFileProperty" ) );
+        throw new KettleException( e );
+      }
     }
     // Add modification date
     if ( meta.getLastModificationDateField() != null && meta.getLastModificationDateField().length() > 0 ) {
