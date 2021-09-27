@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -51,7 +53,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Tatsiana_Kasiankova
- * 
+ *
  */
 public class XMLOutputTest {
 
@@ -137,6 +139,33 @@ public class XMLOutputTest {
     assertEquals( xmlFields[1].getContentType(), ContentType.Attribute );
     assertEquals( xmlFields[2].getContentType(), ContentType.Element );
     assertEquals( xmlFields[3].getContentType(), ContentType.Element );
+  }
+
+  /**
+   * [PDI-19286] Testing to verify that namespace is valid (URI)
+   */
+  @Test
+  public void testIsValidNamespace() {
+    String[] validNamespaces = {
+      "http://www.foobar.com",
+      "https://www.foobar.com%20foobar",
+      "namespace",
+      "%3Cnamespace%26%3E",
+      "ftp://ftp.is.co.za/rfc/rfc1808.txt",
+      "www.foobar.com",
+      "www.foobar.com%7b%7D"
+    };
+    String[] invalidNamespaces = {
+      "<namespace&>",
+      "www.foobar.com{}",
+      "www.foobar.com@##"
+    };
+    for ( String s : validNamespaces ) {
+      assertTrue( XMLOutput.isValidNamespace( s ) );
+    }
+    for ( String s : invalidNamespaces ) {
+      assertFalse( XMLOutput.isValidNamespace( s ) );
+    }
   }
 
   private void testNullValuesInAttribute( int writeNullInvocationExpected ) throws KettleException, XMLStreamException {
