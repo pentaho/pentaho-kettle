@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,12 +24,14 @@ package org.pentaho.di.trans.steps.xmloutput;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.value.ValueMetaBase;
@@ -52,7 +54,7 @@ import org.pentaho.di.trans.steps.xmloutput.XMLField.ContentType;
 
 /**
  * Converts input rows to one or more XML files.
- * 
+ *
  * @author Matt
  * @since 14-jan-2006
  */
@@ -325,20 +327,42 @@ public class XMLOutput extends BaseStep implements StepInterface {
       // OK, write the header & the parent element:
       data.writer.writeStartElement( meta.getMainElement() );
       // Add the name space if defined
-      if ( ( meta.getNameSpace() != null ) && ( !"".equals( meta.getNameSpace() ) ) ) {
-        data.writer.writeDefaultNamespace( meta.getNameSpace() );
+      String namespace = meta.getNameSpace();
+      if ( !Utils.isEmpty( namespace ) ) {
+        if ( isValidNamespace( namespace ) ) {
+          data.writer.writeDefaultNamespace( namespace );
+        } else {
+          throw new KettleException( "Error: Namespace \"" + namespace + "\" is invalid." );
+        }
       }
       data.writer.writeCharacters( EOL );
 
       retval = true;
+    } catch ( KettleException e ) {
+      logError( e.toString() );
     } catch ( Exception e ) {
       logError( "Error opening new file : " + e.toString() );
     }
-    // System.out.println("end of newFile(), splitnr="+splitnr);
 
     data.splitnr++;
 
     return retval;
+  }
+
+  /**
+   *
+   * @param ns - namespace string
+   * @return - true if ns is a valid URI, false otherwise
+   */
+  @SuppressWarnings( { "squid:S1854", "squid:S1481" } )
+  @VisibleForTesting
+  static boolean isValidNamespace( String ns ) {
+    try {
+      URI uri = new URI( ns );
+      return true;
+    } catch ( Exception e ) {
+      return false;
+    }
   }
 
   void closeOutputStream( OutputStream stream ) {
