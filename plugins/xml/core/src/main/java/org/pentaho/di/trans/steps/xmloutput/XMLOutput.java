@@ -332,7 +332,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
         if ( isValidNamespace( namespace ) ) {
           data.writer.writeDefaultNamespace( namespace );
         } else {
-          throw new KettleException( "Error: Namespace \"" + namespace + "\" is invalid." );
+          throw new KettleException( "ERROR: There was an error opening the file, since the default namespace \""
+            + namespace + "\" is invalid." );
         }
       }
       data.writer.writeCharacters( EOL );
