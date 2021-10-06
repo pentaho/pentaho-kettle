@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -98,7 +98,7 @@ public class LogBrowser {
     final Timer logRefreshTimer = new Timer( "log sniffer Timer" );
     TimerTask timerTask = new TimerTask() {
       public void run() {
-        if ( text.isDisposed() ) {
+        if ( text.isDisposed() || text.getDisplay().isDisposed() ) {
           return;
         }
 
@@ -130,7 +130,7 @@ public class LogBrowser {
                 lastNr = Math.min( lastNr, lastLogId.get() + MAX_NR_LOG_LINES_CHUNK );
 
                 List<KettleLoggingEvent> logLines =
-                  KettleLogStore.getLogBufferFromTo( childIds, true, lastLogId.get(), lastNr );
+                  KettleLogStore.getLogBufferFromTo( childIds, false, lastLogId.get(), lastNr );
 
                 synchronized ( text ) {
 

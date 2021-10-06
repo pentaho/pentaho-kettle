@@ -221,7 +221,9 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
         wFields.redraw();
       }
     };
-    shell.addListener( SWT.Resize, lsResize );
+    if ( !Const.isRunningOnWebspoonMode() ) {
+      shell.addListener( SWT.Resize, lsResize );
+    }
 
     // Set the shell size, based upon previous time...
     setSize();

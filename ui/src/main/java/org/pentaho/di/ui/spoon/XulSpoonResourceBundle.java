@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -62,7 +63,11 @@ public class XulSpoonResourceBundle extends ResourceBundle {
     }
     URLClassLoader classLoader = URLClassLoader.newInstance( new URL[] { url } );
 
-    lafBundle = ResourceBundle.getBundle( "ui/laf", Locale.getDefault(), classLoader );
+    if ( Const.isRunningOnWebspoonMode() ) {
+      lafBundle = ResourceBundle.getBundle( "ui/laf", Locale.getDefault() );
+    } else {
+      lafBundle = ResourceBundle.getBundle( "ui/laf", Locale.getDefault(), classLoader );
+    }
   }
 
   @Override

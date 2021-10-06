@@ -290,7 +290,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
             }
 
             // Dislay in red missing field names
-            Display.getDefault().asyncExec( new Runnable() {
+            Runnable asyncExecRunnable = new Runnable() {
               public void run() {
                 if ( !wFields.isDisposed() ) {
                   for ( int i = 0; i < wFields.table.getItemCount(); i++ ) {
@@ -303,7 +303,12 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
                   }
                 }
               }
-            } );
+            };
+            if ( Const.isRunningOnWebspoonMode() ) {
+              display.asyncExec( asyncExecRunnable );
+            } else {
+              Display.getDefault().asyncExec( asyncExecRunnable );
+            }
 
           } catch ( KettleException e ) {
             logError( "Error getting fields from incoming stream!", e );
