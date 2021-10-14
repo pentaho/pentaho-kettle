@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3461,11 +3461,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     inputRowSetsLock.writeLock().lock();
     try {
       for ( int i = 0; i < inputRowSets.size(); i++ ) {
-        BlockingRowSet rs = (BlockingRowSet) inputRowSets.get( i );
+        RowSet rs = inputRowSets.get( i );
         if ( rs.getOriginStepName().equalsIgnoreCase( stepName ) ) {
           // swap this one and position 0...that means, the main stream is always stream 0 --> easy!
           //
-          BlockingRowSet zero = (BlockingRowSet) inputRowSets.get( 0 );
+          RowSet zero = inputRowSets.get( 0 );
           inputRowSets.set( 0, rs );
           inputRowSets.set( i, zero );
         }
