@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
@@ -91,7 +92,14 @@ public class SWTGC implements GCInterface {
 
   public SWTGC( Device device, Point area, int iconsize ) {
     this.image = new Image( device, area.x, area.y );
-    this.gc = new GC( image );
+    GC gc = new GC( image );
+    init( gc, area, iconsize );
+  }
+  public SWTGC( GC gc, Point area, int iconsize ) {
+    init( gc, area, iconsize );
+  }
+  private void init( GC gc, Point area, int iconsize ) {
+    this.gc = gc;
     this.images = GUIResource.getInstance().getImagesSteps();
     this.iconsize = iconsize;
     this.area = area;
@@ -119,7 +127,9 @@ public class SWTGC implements GCInterface {
   }
 
   public void dispose() {
-    gc.dispose();
+    if ( !Const.isRunningOnWebspoonMode() ) {
+      gc.dispose();
+    }
     if ( transform != null && transform.isDisposed() == false ) {
       transform.dispose();
     }

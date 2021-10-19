@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -192,8 +193,10 @@ public class JobMetricsDelegate extends SpoonDelegate {
         if ( jobGraph.job != null && ( jobGraph.job.isFinished() || jobGraph.job.isStopped() ) ) {
           refreshImage( event.gc );
 
-          if ( image != null && !image.isDisposed() ) {
-            event.gc.drawImage( image, 0, 0 );
+          if ( !Const.isRunningOnWebspoonMode() ) {
+            if ( image != null && !image.isDisposed() ) {
+              event.gc.drawImage( image, 0, 0 );
+            }
           }
         } else {
           Rectangle bounds = canvas.getBounds();
@@ -228,6 +231,16 @@ public class JobMetricsDelegate extends SpoonDelegate {
         timer.cancel();
       }
     } );
+
+    if ( Const.isRunningOnWebspoonMode() ) {
+      // When the browser tab/window is closed, we remove the update timer
+      jobMetricsTab.getDisplay().disposeExec( new Runnable() {
+        @Override
+        public void run() {
+          timer.cancel();
+        }
+      } );
+    }
 
     // Show tool tips with details...
     //
@@ -285,6 +298,9 @@ public class JobMetricsDelegate extends SpoonDelegate {
   }
 
   public void updateGraph() {
+    if ( Const.isRunningOnWebspoonMode() && jobGraph.getDisplay().isDisposed() ) {
+      return;
+    }
 
     jobGraph.getDisplay().asyncExec( new Runnable() {
       public void run() {
@@ -352,12 +368,18 @@ public class JobMetricsDelegate extends SpoonDelegate {
     bounds.height = Math.max( durations.size() * barHeight, bounds.height );
     canvas.setSize( bounds.width, bounds.height );
 
-    SWTGC gc =
-        new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI.getInstance().getIconSize() );
+    SWTGC gc;
+    if ( Const.isRunningOnWebspoonMode() ) {
+      gc = new SWTGC( canvasGc, new Point( bounds.width, bounds.height ), PropsUI.getInstance().getIconSize() );
+    } else {
+      gc = new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI.getInstance().getIconSize() );
+    }
     MetricsPainter painter = new MetricsPainter( gc, barHeight );
     // checking according to method's contract
     drawAreas = painter.paint( durations );
-    image = (Image) gc.getImage();
+    if ( !Const.isRunningOnWebspoonMode() ) {
+      image = (Image) gc.getImage();
+    }
 
     // refresh the scrolled composite
     //
@@ -371,7 +393,9 @@ public class JobMetricsDelegate extends SpoonDelegate {
 
     // Draw the image on the canvas...
     //
-    canvas.redraw();
+    if ( !Const.isRunningOnWebspoonMode() ) {
+      canvas.redraw();
+    }
   }
 
   /**

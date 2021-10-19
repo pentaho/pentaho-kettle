@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -295,7 +295,7 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
             }
 
             // Dislay in red missing field names
-            Display.getDefault().asyncExec( new Runnable() {
+            Runnable asyncExecRunnable = new Runnable() {
               public void run() {
                 if ( !wFields.isDisposed() ) {
                   for ( int i = 0; i < wFields.table.getItemCount(); i++ ) {
@@ -308,7 +308,12 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
                   }
                 }
               }
-            } );
+            };
+            if ( Const.isRunningOnWebspoonMode() ) {
+              display.asyncExec( asyncExecRunnable );
+            } else {
+              Display.getDefault().asyncExec( asyncExecRunnable );
+            }
 
           } catch ( KettleException e ) {
             logError( BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.ErrorGettingPreviousFields", e
