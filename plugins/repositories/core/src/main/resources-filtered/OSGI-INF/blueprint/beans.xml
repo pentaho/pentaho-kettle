@@ -74,6 +74,8 @@
   <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
   </bean>
 
+  <bean id="webSpoonFilter" class="org.pentaho.di.ui.repo.endpoints.WebSpoonFilter"></bean>
+
   <bean id="repositoryEndpoint" class="org.pentaho.di.ui.repo.endpoints.RepositoryEndpoint">
     <argument ref="repositoryConnectController" />
   </bean>
@@ -89,6 +91,7 @@
 
     <jaxrs:providers>
       <ref component-id="jsonProvider"/>
+      <ref component-id="webSpoonFilter"/>
     </jaxrs:providers>
 
   </jaxrs:server>
