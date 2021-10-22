@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -29,12 +30,15 @@ import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * SpoonPluginManager is a singleton class which loads all SpoonPlugins from the SPOON_HOME/plugins/spoon directory.
@@ -121,7 +125,18 @@ public class SpoonPluginManager implements PluginTypeListener {
    * @return SpoonPerspectiveManager
    */
   public static SpoonPluginManager getInstance() {
-    return instance;
+    if ( Const.isRunningOnWebspoonMode() ) {
+      try {
+        Class singletonUtil = Class.forName( "org.eclipse.rap.rwt.SingletonUtil" );
+        Method getDeclaredMethod = singletonUtil.getDeclaredMethod( "getSessionInstance", Class.class );
+        return (SpoonPluginManager) getDeclaredMethod.invoke( null, SpoonPluginManager.class );
+      } catch ( ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+        e.printStackTrace();
+        return null;
+      }
+    } else {
+      return instance;
+    }
   }
 
   public void applyPluginsForContainer( final String category, final XulDomContainer container ) throws XulException {

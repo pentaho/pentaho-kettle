@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,8 @@ import java.util.TimerTask;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -40,6 +42,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
@@ -107,8 +111,10 @@ public class Splash {
     shell.setImage( kettleIcon );
 
     shell.setText( BaseMessages.getString( PKG, "SplashDialog.Title" ) ); // "Pentaho Data Integration"
+    shell.setLayout( new FillLayout() );
+    final Canvas canvas = new Canvas( shell, SWT.NO_REDRAW_RESIZE );
 
-    shell.addPaintListener( e -> {
+    canvas.addPaintListener( e -> {
       StringBuilder sb = new StringBuilder();
       String line;
 
@@ -202,6 +208,7 @@ public class Splash {
     } );
 
     shell.addDisposeListener( disposeEvent -> {
+      canvas.dispose();
       kettleImage.dispose();
       kettleIcon.dispose();
       exclamationImage.dispose();
