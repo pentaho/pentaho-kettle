@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -51,6 +52,8 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,6 +66,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Singleton Object controlling SpoonPerspectives.
@@ -175,7 +179,22 @@ public class SpoonPerspectiveManager {
    * @return SpoonPerspectiveManager instance.
    */
   public static SpoonPerspectiveManager getInstance() {
-    return instance;
+    if ( Const.isRunningOnWebspoonMode() ) {
+      try {
+        Class webSpoonUtils = Class.forName( "org.pentaho.di.webspoon.WebSpoonUtils" );
+        Method getUISession = webSpoonUtils.getDeclaredMethod( "getUISession" );
+        Class singletonUtil = Class.forName( "org.eclipse.rap.rwt.SingletonUtil" );
+        Method getUniqueInstance = Arrays.stream( singletonUtil.getDeclaredMethods() )
+                .filter( method -> method.getName().equals( "getUniqueInstance" ) && method.toGenericString().contains( "UISession" ) )
+                .collect( Collectors.toList() ).get( 0 );
+        return (SpoonPerspectiveManager) getUniqueInstance.invoke( null, SpoonPerspectiveManager.class, getUISession.invoke( null ) );
+      } catch ( ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+        e.printStackTrace();
+        return null;
+      }
+    } else {
+      return instance;
+    }
   }
 
   /**

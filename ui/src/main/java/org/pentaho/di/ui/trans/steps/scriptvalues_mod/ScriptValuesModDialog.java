@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -647,6 +647,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
               setInputOutputFields();
             } else {
               // Can not get fields...end of wait message
+              if ( Const.isRunningOnWebspoonMode() && ( iteminput.isDisposed() || itemoutput.isDisposed() ) ) {
+                return;
+              }
               iteminput.removeAll();
               itemoutput.removeAll();
             }
@@ -1682,6 +1685,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     shell.getDisplay().syncExec( new Runnable() {
       public void run() {
         // fields are got...end of wait message
+        if ( Const.isRunningOnWebspoonMode() && ( iteminput.isDisposed() || itemoutput.isDisposed() ) ) {
+          return;
+        }
         iteminput.removeAll();
         itemoutput.removeAll();
 

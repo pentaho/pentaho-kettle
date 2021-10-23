@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.SwtUniversalImageBitmap;
 import org.pentaho.di.core.SwtUniversalImageSvg;
@@ -76,13 +77,15 @@ public class SwtSvgImageUtil {
    */
   public static SwtUniversalImage getMissingImage( Display display ) {
     Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-    GC gc = new GC( img );
-    gc.setForeground( new Color( display, 0, 0, 0 ) );
-    gc.drawRectangle( 4, 4, ConstUI.ICON_SIZE - 8, ConstUI.ICON_SIZE - 8 );
-    gc.setForeground( new Color( display, 255, 0, 0 ) );
-    gc.drawLine( 4, 4, ConstUI.ICON_SIZE - 4, ConstUI.ICON_SIZE - 4 );
-    gc.drawLine( ConstUI.ICON_SIZE - 4, 4, 4, ConstUI.ICON_SIZE - 4 );
-    gc.dispose();
+    if ( !Const.isRunningOnWebspoonMode() ) {
+      GC gc = new GC( img );
+      gc.setForeground( new Color( display, 0, 0, 0 ) );
+      gc.drawRectangle( 4, 4, ConstUI.ICON_SIZE - 8, ConstUI.ICON_SIZE - 8 );
+      gc.setForeground( new Color( display, 255, 0, 0 ) );
+      gc.drawLine( 4, 4, ConstUI.ICON_SIZE - 4, ConstUI.ICON_SIZE - 4 );
+      gc.drawLine( ConstUI.ICON_SIZE - 4, 4, 4, ConstUI.ICON_SIZE - 4 );
+      gc.dispose();
+    }
     return new SwtUniversalImageBitmap( img );
   }
 

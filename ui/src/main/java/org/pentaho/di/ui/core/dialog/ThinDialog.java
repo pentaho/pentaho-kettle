@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -38,12 +39,15 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -110,6 +114,20 @@ public class ThinDialog extends Dialog {
         Shell shell = browse.getShell();
         shell.close();
       } );
+      if ( Const.isRunningOnWebspoonMode() ) {
+        new BrowserFunction( browser, "getConnectionId" ) {
+          @Override public Object function( Object[] arguments ) {
+            try {
+              Class webSpoonUtils = Class.forName( "org.pentaho.di.webspoon.WebSpoonUtils" );
+              Method getConnectionId = webSpoonUtils.getDeclaredMethod( "getConnectionId" );
+              return getConnectionId.invoke( null );
+            } catch ( ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e ) {
+              e.printStackTrace();
+              return null;
+            }
+          }
+        };
+      }
     } catch ( Exception e ) {
       MessageBox messageBox = new MessageBox( dialog, SWT.ICON_ERROR | SWT.OK );
       messageBox.setMessage( "Browser cannot be initialized." );

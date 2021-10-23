@@ -20,21 +20,6 @@
     </fileSet>
   </fileSets>
   <dependencySets>
-    <!-- default driver kar set -->
-    <dependencySet>
-      <includes>
-        <include>*:pentaho-hadoop-shims-cdh61-kar:*</include>
-        <include>*:pentaho-hadoop-shims-hdp30-kar:*</include>
-        <include>*:pentaho-hadoop-shims-emr521-kar:*</include>
-        <include>*:pentaho-hadoop-shims-dataproc1421-kar:*</include>
-        <include>*:pentaho-hadoop-shims-cdpdc71-kar:*</include>
-        <include>*:pentaho-hadoop-shims-mapr61-kar:*</include>
-        <include>*:pentaho-hadoop-shims-hdi40-kar:*</include>
-      </includes>
-      <outputDirectory>./ADDITIONAL-FILES/drivers</outputDirectory>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
     <!-- pdi components -->
     <dependencySet>
       <includes>

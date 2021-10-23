@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.spoon;
 
 import org.eclipse.swt.widgets.ScrollBar;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.ScrollBarInterface;
 
 public class SwtScrollBar implements ScrollBarInterface {
@@ -37,7 +38,11 @@ public class SwtScrollBar implements ScrollBarInterface {
   }
 
   public int getSelection() {
-    return scrollBar.getSelection();
+    if ( Const.isRunningOnWebspoonMode() ) {
+      return Math.round( scrollBar.getSelection() / scrollBar.getMaximum() );
+    } else {
+      return scrollBar.getSelection();
+    }
   }
 
   public void setThumb( int thumb ) {

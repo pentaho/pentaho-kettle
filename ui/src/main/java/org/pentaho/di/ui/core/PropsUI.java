@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,6 +68,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.stream.Collectors;
+import java.util.Arrays;
 
 /**
  * We use Props to store all kinds of user interactive information such as the selected colors, fonts, positions of
@@ -121,7 +125,7 @@ public class PropsUI extends Props {
    * @param t The type of properties file.
    */
   public static void init( Display d, int t ) {
-    if ( props == null ) {
+    if ( props == null || Const.isRunningOnWebspoonMode() ) {
       display = d;
       props = new PropsUI( t );
 
@@ -160,7 +164,21 @@ public class PropsUI extends Props {
   }
 
   public static PropsUI getInstance() {
-    if ( props != null ) {
+    if ( Const.isRunningOnWebspoonMode() ) {
+      try {
+        Class webSpoonUtils = Class.forName( "org.pentaho.di.webspoon.WebSpoonUtils" );
+        Method getUISession = webSpoonUtils.getDeclaredMethod( "getUISession" );
+        Class singletonUtil = Class.forName( "org.eclipse.rap.rwt.SingletonUtil" );
+        Method getUniqueInstance = Arrays.stream( singletonUtil.getDeclaredMethods() )
+                .filter( method -> method.getName().equals( "getUniqueInstance" ) && method.toGenericString().contains( "UISession" ) )
+                .collect( Collectors.toList() ).get( 0 );
+        return (PropsUI) getUniqueInstance.invoke( null, PropsUI.class, getUISession.invoke( null ) );
+      } catch ( ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+        e.printStackTrace();
+        return null;
+      }
+    }
+    else if ( props != null ) {
       return (PropsUI) props;
     }
 
@@ -231,7 +249,7 @@ public class PropsUI extends Props {
     properties.setProperty( STRING_LOG_LEVEL, getLogLevel() );
     properties.setProperty( STRING_LOG_FILTER, getLogFilter() );
 
-    if ( display != null ) {
+    if ( ( !Const.isRunningOnWebspoonMode() && display != null ) || ( Const.isRunningOnWebspoonMode() && Display.getCurrent() != null ) ) {
       // Set Default Look for all dialogs and sizes.
       String prop =
         BasePropertyHandler.getProperty( "Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default" );
@@ -837,7 +855,11 @@ public class PropsUI extends Props {
   }
 
   public FontData getDefaultFontData() {
-    return display.getSystemFont().getFontData()[ 0 ];
+    if ( Const.isRunningOnWebspoonMode() ) {
+      return Display.getCurrent().getSystemFont().getFontData()[ 0 ];
+    } else {
+      return display.getSystemFont().getFontData()[0];
+    }
   }
 
   public void setMaxUndo( int max ) {
@@ -1078,7 +1100,11 @@ public class PropsUI extends Props {
    * @return Returns the display.
    */
   public static Display getDisplay() {
-    return display;
+    if ( Const.isRunningOnWebspoonMode() ) {
+      return Display.getCurrent();
+    } else {
+      return display;
+    }
   }
 
   /**

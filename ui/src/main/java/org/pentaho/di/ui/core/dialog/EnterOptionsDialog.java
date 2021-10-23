@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -938,6 +938,7 @@ public class EnterOptionsDialog extends Dialog {
     wlDefaultLocale.setLayoutData( fdlDefaultLocale );
     wDefaultLocale = new Combo( wLookComp, SWT.SINGLE | SWT.READ_ONLY | SWT.LEFT | SWT.BORDER );
     wDefaultLocale.setItems( GlobalMessages.localeDescr );
+    wDefaultLocale.setEnabled( false );
     props.setLook( wDefaultLocale );
     FormData fdDefaultLocale = new FormData();
     fdDefaultLocale.left = new FormAttachment( middle, 0 );
