@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,11 +28,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,6 +195,15 @@ public class TreeManager {
 
   private TreeItem createTreeItem( TreeNode treeNode, Object tree ) {
     TreeItem childTreeItem = createTreeItem( tree, treeNode.getIndex() );
+    if ( Const.isRunningOnWebspoonMode() && treeNode.hasChildren() ) {
+      try {
+        Class webSpoonUtils = Class.forName( "org.pentaho.di.webspoon.WebSpoonUtils" );
+        Method setTestId = webSpoonUtils.getDeclaredMethod( "setTestId", Widget.class, String.class );
+        setTestId.invoke( null, childTreeItem, "view_" + treeNode.getLabel() );
+      } catch ( ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e ) {
+        e.printStackTrace();
+      }
+    }
     populateTreeItem( childTreeItem, treeNode );
     return childTreeItem;
   }

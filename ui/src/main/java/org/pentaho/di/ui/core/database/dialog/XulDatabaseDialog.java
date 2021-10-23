@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -111,9 +111,7 @@ public class XulDatabaseDialog {
    * @return databaseName (or NULL on error or cancel) TODO: Fix deprecation warning in v3.2 by using the new dialog
    */
   public String open() {
-    if ( databaseDialogInstance == null ) {
-      createDialog();
-    }
+    createDialog();
 
     try {
 

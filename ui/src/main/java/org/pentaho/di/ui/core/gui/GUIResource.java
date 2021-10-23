@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /*
  * colors etc. are allocated once and released once at the end of the program.
@@ -77,6 +79,8 @@ public class GUIResource {
   private static GUIResource guiResource;
 
   private Display display;
+
+  private static boolean initialized = false;
 
   // 33 resources
 
@@ -153,13 +157,13 @@ public class GUIResource {
   private ManagedFont fontBold;
 
   /* * * Images * * */
-  private Map<String, SwtUniversalImage> imagesSteps = new ConcurrentHashMap<>();
+  private static Map<String, SwtUniversalImage> imagesSteps = new ConcurrentHashMap<>();
 
-  private Map<String, Image> imagesStepsSmall = new ConcurrentHashMap<>();
+  private static Map<String, Image> imagesStepsSmall = new ConcurrentHashMap<>();
 
-  private Map<String, SwtUniversalImage> imagesJobentries;
+  private static Map<String, SwtUniversalImage> imagesJobentries = new ConcurrentHashMap<String, SwtUniversalImage>();
 
-  private Map<String, Image> imagesJobentriesSmall;
+  private static Map<String, Image> imagesJobentriesSmall = new ConcurrentHashMap<String, Image>();
 
   private SwtUniversalImage imageHop;
 
@@ -428,6 +432,10 @@ public class GUIResource {
    */
   private Clipboard clipboard;
 
+  private GUIResource() {
+    this( PropsUI.getDisplay() );
+  }
+
   private GUIResource( Display display ) {
     this.display = display;
 
@@ -470,10 +478,20 @@ public class GUIResource {
         // nothing needed here
       }
     } );
-
+    initialized = true;
   }
 
   public static GUIResource getInstance() {
+    if ( Const.isRunningOnWebspoonMode() ) {
+      try {
+        Class singletonUtil = Class.forName( "org.eclipse.rap.rwt.SingletonUtil" );
+        Method getSessionInstance = singletonUtil.getDeclaredMethod( "getSessionInstance", Class.class );
+        return (GUIResource) getSessionInstance.invoke( null, GUIResource.class );
+      } catch ( ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+        e.printStackTrace();
+        return null;
+      }
+    }
     if ( guiResource != null ) {
       return guiResource;
     }
@@ -531,8 +549,10 @@ public class GUIResource {
     // Load all images from files...
     loadFonts();
     loadCommonImages();
-    loadStepImages();
-    loadJobEntryImages();
+    if ( !initialized || !Const.isRunningOnWebspoonMode() ) {
+      loadStepImages();
+      loadJobEntryImages();
+    }
   }
 
   private void dispose( boolean reload ) {
@@ -717,11 +737,12 @@ public class GUIResource {
 
       disposeImage( imageShowErrorLines );
 
-      // big images
-      disposeUniversalImages( imagesSteps.values() );
-
-      // Small images
-      disposeImages( imagesStepsSmall.values() );
+      if ( !Const.isRunningOnWebspoonMode() ) {
+        // big images
+        disposeUniversalImages( imagesSteps.values() );
+        // Small images
+        disposeImages( imagesStepsSmall.values() );
+      }
 
       // Dispose of the images in the map
       disposeImages( imageMap.values() );
@@ -946,7 +967,8 @@ public class GUIResource {
         .getProperty( "MIS_image" ) );
 
     // "ui/images/spoon.ico"
-    imageSpoon = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ), 0 );
+    int size = ( Const.isRunningOnWebspoonMode() ) ? 0 : 32;
+    imageSpoon = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ), size );
 
     // "ui/images/spoon_lowres.ico"
     imageSpoonLow = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image_low" ), 48 );
@@ -1324,8 +1346,10 @@ public class GUIResource {
    * Load all step images from files.
    */
   private void loadJobEntryImages() {
-    imagesJobentries = new Hashtable<>();
-    imagesJobentriesSmall = new Hashtable<>();
+    if ( !Const.isRunningOnWebspoonMode() ) {
+      imagesJobentries = new Hashtable<>();
+      imagesJobentriesSmall = new Hashtable<>();
+    }
 
     // //
     // // JOB ENTRY IMAGES TO LOAD

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.core;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Transform;
 
 public class SwtUniversalImageBitmap extends SwtUniversalImage {
@@ -49,13 +50,9 @@ public class SwtUniversalImageBitmap extends SwtUniversalImage {
 
   @Override
   protected Image renderSimple( Device device, int width, int height ) {
-    int xsize = bitmap.getBounds().width;
-    int ysize = bitmap.getBounds().height;
-    Image result = new Image( device, width, height );
-    GC gc = new GC( result );
-    gc.drawImage( bitmap, 0, 0, xsize, ysize, 0, 0, width, height );
-    gc.dispose();
-    return result;
+    ImageData imageData = bitmap.getImageData();
+    ImageData scaledData = imageData.scaledTo( width, height );
+    return new Image( device, scaledData );
   }
 
   @Override

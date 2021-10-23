@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -221,7 +221,9 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
         wFields.redraw();
       }
     };
-    shell.addListener( SWT.Resize, lsResize );
+    if ( !Const.isRunningOnWebspoonMode() ) {
+      shell.addListener( SWT.Resize, lsResize );
+    }
 
     // Set the shell size, based upon previous time...
     setSize();

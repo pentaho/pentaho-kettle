@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.core.widget;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +48,7 @@ import org.eclipse.swt.widgets.Label;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class CheckBoxToolTip extends ToolTip {
-  private String message;
+  private String message = "";
   private String title;
   private Image image;
   private String checkBoxMessage;
@@ -204,6 +206,14 @@ public class CheckBoxToolTip extends ToolTip {
    */
   public void setTitle( String title ) {
     this.title = title;
+    try {
+      Method setText = super.getClass().getMethod( "setText", String.class );
+      setText.invoke( this, title );
+    } catch ( NoSuchMethodException e ) {
+      // For Webspoon: No need to call method if it doesn't exist.
+    } catch ( InvocationTargetException | IllegalAccessException e )  {
+      e.printStackTrace();
+    }
   }
 
   /**
