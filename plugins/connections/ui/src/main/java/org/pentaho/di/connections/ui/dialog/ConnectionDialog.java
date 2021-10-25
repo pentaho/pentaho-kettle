@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.platform.settings.ServerPort;
@@ -131,7 +132,11 @@ public class ConnectionDialog extends ThinDialog {
       host = LOCALHOST;
       port = getOsgiServicePort();
     }
-    return "http://" + host + ":" + port + path;
+    if ( Const.isRunningOnWebspoonMode() ) {
+      return System.getProperty( "KETTLE_CONTEXT_PATH" ) + "/osgi" + path;
+    } else {
+      return "http://" + host + ":" + port + path;
+    }
   }
 
   private static String getKettleProperty( String propertyName ) {
