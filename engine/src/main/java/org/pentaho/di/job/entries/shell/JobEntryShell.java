@@ -708,18 +708,30 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   @VisibleForTesting
   void populateProcessBuilderEnvironment( ProcessBuilder processBuilder ) {
     Map<String, String> env = processBuilder.environment();
-    String[] variables = listVariables();
-    String[] envsToIgnore = Const.NVL( getVariable( Const.SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE ),
-            Const.SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE_DEFAULT )
-            .split( "," );
+    List<String> envsToIgnore =
+      Arrays.asList( Const.NVL( getVariable( Const.SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE ),
+          Const.SHELL_STEP_ENVIRONMENT_VARIABLES_TO_IGNORE_DEFAULT )
+        .split( "," ) );
 
-    for ( String variable : variables ) {
-      if ( envsToIgnore.length > 0 && Arrays.asList( envsToIgnore ).contains( variable ) ) {
+    for ( String variable : listVariables() ) {
+      String value = getVariable( variable );
+      int size = ( null != value ) ? value.length() : 0;
+
+      if ( log.isDebug() ) {
+        if ( log.isRowLevel() ) {
+          logRowlevel( BaseMessages.getString( PKG, "JobShell.VariableValueForProcessBuilderEnvironment", variable,
+            size, value ) );
+        } else {
+          logDebug( BaseMessages.getString( PKG, "JobShell.VariableSizeForProcessBuilderEnvironment", variable,
+            size ) );
+        }
+      }
+      if ( envsToIgnore.contains( variable ) ) {
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "JobShell.VariableIgnoredFromProcessBuilderEnvironment", variable ) );
         }
       } else {
-        env.put( variable, getVariable( variable ) );
+        env.put( variable, value );
       }
     }
   }
