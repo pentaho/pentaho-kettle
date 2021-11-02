@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -333,6 +333,17 @@ public class SalesforceConnectionTest {
     SObject childObject = createObject( "subField", "subValue" );
     parentObject.addField( "subField", childObject );
     assertEquals( "Get value of record with hierarchy", "subValue", conn.getRecordValue( sObject, "parentField.subField" ) );
+
+    SObject parentObject2 = createObject( "parentField2", null );
+    sObject.addField( "parentField2", parentObject2 );
+    SObject childObject2 = createObject( "subField2", null );
+    parentObject2.addField( "subField2", childObject2 );
+    assertNull( "Get value of record with hierarchy", conn.getRecordValue( sObject, "parentField2.subField2" ) );
+
+    SObject parentObject3 = createObject( "parentField3", null );
+    sObject.addField( "parentField3", parentObject3 );
+    parentObject3.addField( "subField3", null );
+    assertNull( "Get value of record with hierarchy", conn.getRecordValue( sObject, "parentField3.subField3" ) );
 
     XmlObject nullObject = new XmlObject( new QName( "nullField" ) );
     sObject.addField( "nullField", nullObject );
