@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,18 +22,12 @@
 
 package org.pentaho.di.core.variables;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +36,18 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.value.ValueMetaString;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Variables tests.
@@ -66,7 +66,7 @@ public class VariablesTest {
   @Test
   public void testInitializeVariablesFrom() {
     final Variables variablesMock = mock( Variables.class );
-    doCallRealMethod().when( variablesMock ).initializeVariablesFrom( any( VariableSpace.class ) );
+    doCallRealMethod().when( variablesMock ).initializeVariablesFrom( eq( null ) );
 
     @SuppressWarnings( "unchecked" )
     final Map<String, String> propertiesMock = mock( Map.class );
@@ -92,7 +92,7 @@ public class VariablesTest {
     variablesMock.initializeVariablesFrom( null );
     int expectedNumOfProperties = System.getProperties().size() - 1;
     verify( variablesMock, times( expectedNumOfProperties ) ).getProperties();
-    verify( propertiesMock, times( expectedNumOfProperties * 2 ) ).put( anyString(), anyString() );
+    verify( propertiesMock, times( expectedNumOfProperties ) ).put( anyString(), anyString() );
   }
 
   private void modifySystemproperties() {
