@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -610,7 +610,7 @@ public class SalesforceConnection {
     for ( int index = 0; index <= lastIndex; index++ ) {
       for ( XmlObject element : getChildren( currentSObject ) ) {
         if ( element.getName().getLocalPart().equals( fieldHierarchy[index] ) ) {
-          if ( index == lastIndex ) {
+          if ( index == lastIndex || ( element.getValue() == null && !element.hasChildren() ) ) {
             return element;
           } else {
             if ( element instanceof  SObject ) {
