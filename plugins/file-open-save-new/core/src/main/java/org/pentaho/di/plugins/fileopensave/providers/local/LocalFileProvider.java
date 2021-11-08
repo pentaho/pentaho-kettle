@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -105,6 +105,9 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    */
   public List<LocalFile> getFiles( LocalFile file, String filters ) {
     List<LocalFile> files = new ArrayList<>();
+    if ( !Paths.get( file.getPath() ).toAbsolutePath().startsWith( Paths.get( Const.getKettleUserDataDirectory() ) ) ) {
+      return files;
+    }
     try ( Stream<Path> paths = Files.list( Paths.get( file.getPath() ) ) ) {
       paths.forEach( path -> {
         String name = path.getFileName().toString();
