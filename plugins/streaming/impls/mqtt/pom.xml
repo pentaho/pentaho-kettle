@@ -73,7 +73,6 @@
     <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
     <junit.version>4.12</junit.version>
     <guava.version>17.0</guava.version>
-    <powermock.version>1.6.6</powermock.version>
   </properties>
 
   <dependencies>
@@ -120,18 +119,17 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>${powermock.version}</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>${powermock.version}</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-inline</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
-
 
     <dependency>
       <groupId>org.apache.activemq</groupId>
