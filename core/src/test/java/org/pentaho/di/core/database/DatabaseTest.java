@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -191,7 +192,7 @@ public class DatabaseTest {
     String columnType = "Integer";
     int columnSize = 15;
 
-    when( dbMetaData.getColumns( anyString(), anyString(), anyString(), anyString() ) ).thenReturn( rs );
+    when( dbMetaData.getColumns( anyString(), anyString(), or( anyString(), eq( null ) ), or( anyString(), eq( null ) ) ) ).thenReturn( rs );
     when( rs.next() ).thenReturn( true ).thenReturn( false );
     when( rs.getString( "COLUMN_NAME" ) ).thenReturn( columnName );
     when( rs.getString( "SOURCE_DATA_TYPE" ) ).thenReturn( columnType );
@@ -250,7 +251,7 @@ public class DatabaseTest {
     when( ps.getMetaData() ).thenReturn( rsMetaData );
     Database db = new Database( log, meta );
     Connection conn = mock( Connection.class );
-    when( conn.prepareStatement( anyString() ) ).thenReturn( ps );
+    when( conn.prepareStatement( or( anyString(), eq( null ) ) ) ).thenReturn( ps );
 
     db.setConnection( conn );
     String[] name = new String[] { "a" };
@@ -687,13 +688,13 @@ public class DatabaseTest {
   @Test
   public void testNormalConnect_WhenTheProviderDoesNotReturnDataSourceWithPool() throws Exception {
     Driver driver = mock( Driver.class );
-    when( driver.acceptsURL( anyString() ) ).thenReturn( true );
-    when( driver.connect( anyString(), any( Properties.class ) ) ).thenReturn( conn );
+    when( driver.acceptsURL( or( anyString(), eq( null ) ) ) ).thenReturn( true );
+    when( driver.connect( or( anyString(), eq( null ) ), any( Properties.class ) ) ).thenReturn( conn );
     DriverManager.registerDriver( driver );
 
     when( meta.isUsingConnectionPool() ).thenReturn( true );
     when( meta.getDriverClass() ).thenReturn( driver.getClass().getName() );
-    when( meta.getURL( anyString() ) ).thenReturn( "mockUrl" );
+    when( meta.getURL( or( anyString(), eq( null ) ) ) ).thenReturn( "mockUrl" );
     when( meta.getInitialPoolSize() ).thenReturn( 1 );
     when( meta.getMaximumPoolSize() ).thenReturn( 1 );
 
@@ -749,8 +750,8 @@ public class DatabaseTest {
   @Test
   public void testNormalConnectWhenDatasourceDontNeedsUpdate() throws Exception {
     Driver driver = mock( Driver.class );
-    when( driver.acceptsURL( anyString() ) ).thenReturn( true );
-    when( driver.connect( anyString(), any( Properties.class ) ) ).thenReturn( conn );
+    when( driver.acceptsURL( or( anyString(), eq( null ) ) ) ).thenReturn( true );
+    when( driver.connect( or( anyString(), eq( null ) ), any( Properties.class ) ) ).thenReturn( conn );
     DriverManager.registerDriver( driver );
 
     when( meta.isUsingConnectionPool() ).thenReturn( true );
@@ -827,7 +828,7 @@ public class DatabaseTest {
     when( rs.next() ).thenReturn( true, false );
     when( rs.getString( "TABLE_NAME" ) ).thenReturn( EXISTING_TABLE_NAME );
     when( dbMetaMock.getTables(
-      same( dbMetaDataMock ), anyString(), anyString(), any() ) ).thenReturn( rs );
+      same( dbMetaDataMock ), or( anyString(), eq( null ) ), or( anyString(), eq( null ) ), any() ) ).thenReturn( rs );
     Database db = new Database( log, dbMetaMock );
     db.setConnection( mockConnection( dbMetaDataMock ) );
 

@@ -23,6 +23,7 @@
 
 package org.pentaho.di.trans.steps.uniquerowsbyhashset;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.slf4j.Logger;
@@ -88,7 +87,6 @@ public class Slf4jLoggingEventListenerTest {
   @Test
   public void testAddLogEventTrans() {
     when( logObjProvider.apply( logChannelId ) ).thenReturn( loggingObject );
-    when( loggingObject.getLogChannelId() ).thenReturn( logChannelId );
     when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.TRANS );
     when( loggingObject.getFilename() ).thenReturn( "filename" );
     when( message.getLevel() ).thenReturn( LogLevel.BASIC );
@@ -106,7 +104,6 @@ public class Slf4jLoggingEventListenerTest {
   @Test
   public void testAddLogEventJob() {
     when( logObjProvider.apply( logChannelId ) ).thenReturn( loggingObject );
-    when( loggingObject.getLogChannelId() ).thenReturn( logChannelId );
     when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.JOB );
     when( loggingObject.getFilename() ).thenReturn( "filename" );
     when( message.getLevel() ).thenReturn( LogLevel.BASIC );
@@ -125,7 +122,6 @@ public class Slf4jLoggingEventListenerTest {
   @Test
   public void testJobWithAndWithoutFilename() {
     when( logObjProvider.apply( logChannelId ) ).thenReturn( loggingObject );
-    when( loggingObject.getLogChannelId() ).thenReturn( logChannelId );
     when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.JOB );
     when( loggingObject.getObjectName() ).thenReturn( "TestJob" );
     when( loggingObject.getFilename() ).thenReturn( "filename" );
@@ -148,7 +144,6 @@ public class Slf4jLoggingEventListenerTest {
   @Test
   public void testTransWithAndWithoutFilename() {
     when( logObjProvider.apply( logChannelId ) ).thenReturn( loggingObject );
-    when( loggingObject.getLogChannelId() ).thenReturn( logChannelId );
     when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.TRANS );
     when( loggingObject.getObjectName() ).thenReturn( "TestTrans" );
     when( loggingObject.getFilename() ).thenReturn( "filename" );

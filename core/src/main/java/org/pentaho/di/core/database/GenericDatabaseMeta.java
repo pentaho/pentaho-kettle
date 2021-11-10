@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.database;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -304,7 +305,13 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     return super.getAttribute( DATABASE_DIALECT_ID, getPluginName() );
   }
 
-  private void resolveDialect( String dialectName ) {
+  @VisibleForTesting
+  protected DatabaseInterface getDatabaseDialectInternal() {
+    return databaseDialect;
+  }
+
+  @VisibleForTesting
+  protected void resolveDialect( String dialectName ) {
     if ( dialectName == null ) {
       return;
     }

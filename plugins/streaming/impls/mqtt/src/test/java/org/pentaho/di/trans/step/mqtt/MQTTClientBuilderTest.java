@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,13 +28,14 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -78,7 +79,6 @@ public class MQTTClientBuilderTest {
   public void before() throws MqttException {
     when( factory.getClient( any(), clientIdCapture.capture(), any() ) )
       .thenReturn( client );
-    when( step.getParentVariableSpace() ).thenReturn( space );
     when( step.getLogChannel() ).thenReturn( logger );
     when( step.getStepMeta() ).thenReturn( meta );
     when( step.getStepMeta().getName() ).thenReturn( "Step Name" );
@@ -108,7 +108,7 @@ public class MQTTClientBuilderTest {
       .withAutomaticReconnect( "false" )
       .buildAndConnect();
     verify( client ).setCallback( callback );
-    verify( factory ).getClient( anyString(), anyString(), any( MemoryPersistence.class ) );
+    verify( factory ).getClient( anyString(), anyString(), any( MqttDefaultFilePersistence.class ) );
     verify( client ).connect( connectOptsCapture.capture() );
 
     MqttConnectOptions opts = connectOptsCapture.getValue();

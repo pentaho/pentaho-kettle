@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -688,5 +688,15 @@ public class LoggingRegistry {
   @VisibleForTesting
   int getTimerHashCode( ) {
     return purgeTimer.hashCode();
+  }
+
+  @VisibleForTesting
+  void setFileWriterBuffers( Map<String, LogChannelFileWriterBuffer> buffers ) {
+    fileWriterBuffers = buffers;
+  }
+
+  @VisibleForTesting
+  void setChildrenMap( Map<String, List<String>> map ) {
+    childrenMap = map;
   }
 }

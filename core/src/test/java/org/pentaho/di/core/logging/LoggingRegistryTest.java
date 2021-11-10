@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,9 +24,7 @@ package org.pentaho.di.core.logging;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,15 +38,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
+@RunWith( MockitoJUnitRunner.class )
 public class LoggingRegistryTest {
   public static final String LOG_CHANEL_ID_PARENT = "parent-chanel-id";
   public static final String LOG_CHANEL_ID_CHILD = "child-chanel-id";
@@ -116,15 +113,15 @@ public class LoggingRegistryTest {
 
     Map<String, LogChannelFileWriterBuffer> fileWriterBuffers = getDummyFileWriterBuffers();
 
-    Whitebox.setInternalState( loggingRegistry, "fileWriterBuffers", fileWriterBuffers );
-    Whitebox.setInternalState( loggingRegistry, "childrenMap", getDummyChildrenMap() );
+    loggingRegistry.setFileWriterBuffers( fileWriterBuffers );
+    loggingRegistry.setChildrenMap( getDummyChildrenMap() );
 
     assertEquals( "dc8c1482-30ab-4d0f-b9f6-e4c32a627bf0", loggingRegistry.getLogChannelFileWriterBuffer( "dcffc35f-c74f-4e37-b463-97313998ea20" ).getLogChannelId() );
 
     //Switch the order of the writers
     fileWriterBuffers.remove( "7c1526bc-789e-4f5a-8d68-1f9c39488ceb" );
     fileWriterBuffers.put( "7c1526bc-789e-4f5a-8d68-1f9c39488ceb", new LogChannelFileWriterBuffer( "7c1526bc-789e-4f5a-8d68-1f9c39488ceb" ) );
-    Whitebox.setInternalState( loggingRegistry, "fileWriterBuffers", fileWriterBuffers );
+    loggingRegistry.setFileWriterBuffers( fileWriterBuffers );
 
     //regardless of the order of the writers the correct the same should be selected
     assertEquals( "dc8c1482-30ab-4d0f-b9f6-e4c32a627bf0", loggingRegistry.getLogChannelFileWriterBuffer( "dcffc35f-c74f-4e37-b463-97313998ea20" ).getLogChannelId() );
@@ -138,8 +135,8 @@ public class LoggingRegistryTest {
 
     fileWriterBuffers.remove( "7c1526bc-789e-4f5a-8d68-1f9c39488ceb" );
 
-    Whitebox.setInternalState( loggingRegistry, "fileWriterBuffers", fileWriterBuffers );
-    Whitebox.setInternalState( loggingRegistry, "childrenMap", getDummyChildrenMap() );
+    loggingRegistry.setFileWriterBuffers( fileWriterBuffers );
+    loggingRegistry.setChildrenMap( getDummyChildrenMap() );
 
     assertEquals( "dc8c1482-30ab-4d0f-b9f6-e4c32a627bf0", loggingRegistry.getLogChannelFileWriterBuffer( "dcffc35f-c74f-4e37-b463-97313998ea20" ).getLogChannelId() );
   }
@@ -152,8 +149,8 @@ public class LoggingRegistryTest {
 
     fileWriterBuffers.clear();
 
-    Whitebox.setInternalState( loggingRegistry, "fileWriterBuffers", fileWriterBuffers );
-    Whitebox.setInternalState( loggingRegistry, "childrenMap", getDummyChildrenMap() );
+    loggingRegistry.setFileWriterBuffers( fileWriterBuffers );
+    loggingRegistry.setChildrenMap( getDummyChildrenMap() );
 
     assertNull( loggingRegistry.getLogChannelFileWriterBuffer( "dcffc35f-c74f-4e37-b463-97313998ea20" ) );
   }

@@ -69,6 +69,7 @@
 
     <!-- Test dependencies -->
     <mockito-all.version>1.10.19</mockito-all.version>
+    <mockito.version>3.12.4</mockito.version>
 
     <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
     <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>

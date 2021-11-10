@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -90,8 +90,8 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
           sharedStreamingBatchPool = (ThreadPoolExecutor) Executors.newFixedThreadPool( sharedStreamingBatchPoolSize );
         } else {
           if ( sharedStreamingBatchPool.getCorePoolSize() != sharedStreamingBatchPoolSize ) {
-            sharedStreamingBatchPool.setCorePoolSize( sharedStreamingBatchPoolSize );
             sharedStreamingBatchPool.setMaximumPoolSize( sharedStreamingBatchPoolSize );
+            sharedStreamingBatchPool.setCorePoolSize( sharedStreamingBatchPoolSize );
           }
         }
       }
