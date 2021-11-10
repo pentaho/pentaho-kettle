@@ -58,6 +58,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -67,8 +68,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.reflect.Whitebox.getInternalState;
-import static org.powermock.reflect.Whitebox.setInternalState;
 
 public class DatabaseMetaTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
@@ -204,7 +203,7 @@ public class DatabaseMetaTest {
     doCallRealMethod().when( databaseMeta2 ).getName();
     doCallRealMethod().when( databaseMeta2 ).setDisplayName( anyString() );
     doCallRealMethod().when( databaseMeta2 ).getDisplayName();
-    doCallRealMethod().when( databaseMeta2 ).verifyAndModifyDatabaseName( any( ArrayList.class ), anyString() );
+    doCallRealMethod().when( databaseMeta2 ).verifyAndModifyDatabaseName( any( ArrayList.class ), eq( null ) );
     databaseMeta2.setDatabaseInterface( odbm2 );
     databaseMeta2.setName( "test" );
 
@@ -441,29 +440,15 @@ public class DatabaseMetaTest {
   @Test
   public void testIsNeedUpdateTrue() {
     DatabaseMeta meta = new DatabaseMeta();
-    setInternalState( meta, "needUpdate", true );
+    meta.setNeedUpdate( true );
     assertTrue( meta.isNeedUpdate() );
   }
 
   @Test
   public void testIsNeedUpdateFalse() {
     DatabaseMeta meta = new DatabaseMeta();
-    setInternalState( meta, "needUpdate", false );
-    assertFalse( meta.isNeedUpdate() );
-  }
-
-  @Test
-  public void testSetNeedUpdateTrue() {
-    DatabaseMeta meta = new DatabaseMeta();
-    meta.setNeedUpdate( true );
-    assertTrue( getInternalState( meta, "needUpdate" ) );
-  }
-
-  @Test
-  public void testSetNeedUpdateFalse() {
-    DatabaseMeta meta = new DatabaseMeta();
     meta.setNeedUpdate( false );
-    assertFalse( getInternalState( meta, "needUpdate" ) );
+    assertFalse( meta.isNeedUpdate() );
   }
 
   @Test

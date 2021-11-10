@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -131,7 +131,6 @@ public class ConnectionPoolUtilTest implements Driver {
   @Test
   public void testGetConnectionName() throws Exception {
     when( dbMeta.getName() ).thenReturn( "CP2" );
-    when( dbMeta.getPassword() ).thenReturn( ENCR_PASSWORD );
     String connectionName = ConnectionPoolUtil.buildPoolName( dbMeta, "" );
     assertTrue( connectionName.equals( "CP2" ) );
     assertFalse( connectionName.equals( "CP2pentaho" ) );

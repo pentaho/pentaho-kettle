@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,15 +33,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.streaming.api.StreamSource;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -74,9 +74,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( MQTTClientBuilder.class )
+@RunWith( MockitoJUnitRunner.class )
 public class MQTTStreamSourceTest {
 
   int port;
@@ -100,18 +98,12 @@ public class MQTTStreamSourceTest {
     brokerService.start();
     brokerService.waitUntilStarted();
     when( consumerMeta.getQos() ).thenReturn( "2" );
-    when( consumerMeta.withVariables( any() ) ).thenReturn( consumerMeta );
     when( consumerMeta.getMqttServer() ).thenReturn( "127.0.0.1:" + port );
     when( consumerMeta.getTopics() ).thenReturn( singletonList( "mytopic" ) );
-    when( mqttConsumer.environmentSubstitute( anyString() ) )
-      .thenAnswer( answer -> answer.getArguments()[ 0 ] );
-    when( mqttConsumer.environmentSubstitute( any( String[].class ) ) )
-      .thenAnswer( answer -> answer.getArguments()[ 0 ] );
     when( mqttConsumer.getLogChannel() ).thenReturn( logger );
     when( mqttConsumer.getStepMeta() ).thenReturn( stepMeta );
     when( stepMeta.getName() ).thenReturn( "Mqtt Step" );
     when( mqttConsumer.getVariablizedStepMeta() ).thenReturn( consumerMeta );
-    when( subtransExecutor.getPrefetchCount() ).thenReturn( 1000 );
     when( mqttConsumer.getSubtransExecutor() ).thenReturn( subtransExecutor );
   }
 
@@ -212,22 +204,23 @@ public class MQTTStreamSourceTest {
 
   @Test
   public void testMQTTOpenException() throws Exception {
-    PowerMockito.mockStatic( MQTTClientBuilder.class );
-    MQTTClientBuilder.ClientFactory clientFactory = mock( MQTTClientBuilder.ClientFactory.class );
-    MqttClient mqttClient = mock( MqttClient.class );
-    MQTTClientBuilder builder = spy( MQTTClientBuilder.class );
-    MqttException mqttException = mock( MqttException.class );
+    try ( MockedStatic<MQTTClientBuilder> mqttClientBuilderMockedStatic = Mockito.mockStatic( MQTTClientBuilder.class ) ) {
 
-    when( clientFactory.getClient( any(), any(), any() ) ).thenReturn( mqttClient );
-    when( mqttException.toString() ).thenReturn( "There is an error connecting" );
-    doThrow( mqttException ).when( builder ).buildAndConnect();
-    PowerMockito.when( MQTTClientBuilder.builder() ).thenReturn( builder );
+      MQTTClientBuilder.ClientFactory clientFactory = mock( MQTTClientBuilder.ClientFactory.class );
+      MqttClient mqttClient = mock( MqttClient.class );
+      MQTTClientBuilder builder = spy( MQTTClientBuilder.class );
+      MqttException mqttException = mock( MqttException.class );
 
-    MQTTStreamSource source = new MQTTStreamSource( consumerMeta, mqttConsumer );
-    source.open();
+      when( mqttException.toString() ).thenReturn( "There is an error connecting" );
+      doThrow( mqttException ).when( builder ).buildAndConnect();
+      mqttClientBuilderMockedStatic.when( MQTTClientBuilder::builder ).thenReturn( builder );
 
-    verify( mqttConsumer ).stopAll();
-    verify( mqttConsumer ).logError( "There is an error connecting" );
+      MQTTStreamSource source = new MQTTStreamSource( consumerMeta, mqttConsumer );
+      source.open();
+
+      verify( mqttConsumer ).stopAll();
+      verify( mqttConsumer ).logError( "There is an error connecting" );
+    }
   }
 
   @Test
