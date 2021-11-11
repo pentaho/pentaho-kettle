@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2021 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ define(
      * @return {Object} The dataService api
      */
     function factory($http, $q) {
-      var baseUrl = "/cxf/get-fields";
+      var baseUrl = ( IS_RUNNING_ON_WEBSPOON_MODE ) ? "../../cxf/get-fields" : "/cxf/get-fields";
       var httpRequestCancellers = [];
       return {
         sample: sample,

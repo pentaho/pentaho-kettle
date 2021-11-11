@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 Hitachi Vantara. All rights reserved.
+ * Copyright 2018-2021 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -61,6 +62,12 @@ public class GetFieldsDialog extends ThinDialog {
     this.paths = paths;
   }
 
+  private void disposeBrowser() {
+    browser.dispose();
+    dialog.close();
+    dialog.dispose();
+  }
+
   public void open() {
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
@@ -75,12 +82,16 @@ public class GetFieldsDialog extends ThinDialog {
     createDialog( title, getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
     dialog.setMinimumSize( 470, 580 );
 
+    GetFieldsDialog currentDialog = this;
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
         paths = new ArrayList<>();
-        browser.dispose();
-        dialog.close();
-        dialog.dispose();
+        if ( Const.isRunningOnWebspoonMode() ) {
+          Runnable execute = currentDialog::disposeBrowser;
+          display.asyncExec( execute );
+        } else {
+          disposeBrowser();
+        }
         return true;
       }
     };
@@ -91,9 +102,12 @@ public class GetFieldsDialog extends ThinDialog {
         for ( Object path : (Object[]) arguments[0] ) {
           paths.add( (String) path );
         }
-        browser.dispose();
-        dialog.close();
-        dialog.dispose();
+        if ( Const.isRunningOnWebspoonMode() ) {
+          Runnable execute = currentDialog::disposeBrowser;
+          display.asyncExec( execute );
+        } else {
+          disposeBrowser();
+        }
         return true;
       }
     };
@@ -117,6 +131,9 @@ public class GetFieldsDialog extends ThinDialog {
   }
 
   private static String getRepoURL( String path ) {
+    if ( Const.isRunningOnWebspoonMode() ) {
+      return System.getProperty( "KETTLE_CONTEXT_PATH", "" ) + "/osgi" + path;
+    }
     String host;
     Integer port;
     try {
