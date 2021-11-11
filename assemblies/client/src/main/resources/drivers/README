@@ -1,4 +1,6 @@
-This directory contains installed big data drivers to be used by the Pentaho Data Integration.
-If you want the Pentaho Data Integration to read them from the default location, please copy the driver Kar files to this directory.
-If you would like the Pentaho Data Integration to read the files from a different location, copy the driver Kar files to the desired location and change the value of
-the SHIM_DRIVER_DEPLOYMENT_LOCATION property within the kettle.properties file to the full path of the location where the Kar files were placed.
+Big data drivers are not included by default. You are required to download the drivers individually from the
+support portal, if desired. The support portal is https://support.pentaho.com/hc/en-us.
+After downloading a big data driver, add it to this directory and restart the application.
+If you would like the Pentaho Data Integration to read the files from a different location,
+copy the driver Kar files to the desired location and change the value of the SHIM_DRIVER_DEPLOYMENT_LOCATION
+property within the kettle.properties file to the full path of the location where the Kar files were placed.
