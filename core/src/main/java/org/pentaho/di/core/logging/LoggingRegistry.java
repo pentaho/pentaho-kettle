@@ -497,7 +497,9 @@ public class LoggingRegistry {
 
         if ( channelsNotToRemove.size() >= (int) ( maxSize * .90 ) ) {
           // No point to attempt purge channels there's more "active" channels that can be safely removed.
-          logError( "Logging Registry is unable to purge LogChannels to many active channels. Recommend increasing the LoggingRegistry Size!" );
+          logBasic( "Logging Registry is unable to purge LogChannels since there are too many active channels. "
+            + "We recommend increasing the LoggingRegistry Size "
+            + "(KETTLE_MAX_LOGGING_REGISTRY_SIZE) in kettle.properties." );
         } else {
 
           // Avoid attempting to remove channels that can not be removed.
@@ -575,6 +577,20 @@ public class LoggingRegistry {
     try {
       if ( KettleLogStore.isInitialized() ) {
         LogChannel.GENERAL.logError( msg );
+      }
+    } catch ( RuntimeException ignored ) {
+      // Ignore this can occur if LogStore is not ready.
+    }
+  }
+
+  /**
+   * Helper method to avoid logging when the logStore is not ready.
+   * @param msg string to log.
+   */
+  private void logBasic( String msg ) {
+    try {
+      if ( KettleLogStore.isInitialized() ) {
+        LogChannel.GENERAL.logBasic( msg );
       }
     } catch ( RuntimeException ignored ) {
       // Ignore this can occur if LogStore is not ready.
