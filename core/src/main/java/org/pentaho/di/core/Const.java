@@ -2610,7 +2610,7 @@ public class Const {
    */
   public static String nullToEmpty( String source ) {
     if ( source == null ) {
-      return "";
+      return EMPTY_STRING;
     }
     return source;
   }

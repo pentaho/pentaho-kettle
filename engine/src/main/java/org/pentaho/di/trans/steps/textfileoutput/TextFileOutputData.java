@@ -213,12 +213,12 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
     @Override
     public String getLastFileName() {
-      return namesList.size() > 0 ? namesList.get( namesList.size() - 1 ) : null;
+      return namesList.isEmpty() ? null : namesList.get( namesList.size() - 1 );
     }
 
     @Override
     public FileStream getLastStream() {
-      return streamsList.size() > 0 ? streamsList.get( streamsList.size() - 1 ) : null;
+      return streamsList.isEmpty() ? null : streamsList.get( streamsList.size() - 1 );
     }
 
     @Override
