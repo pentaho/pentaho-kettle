@@ -7,20 +7,35 @@
   <!-- Requesting webcontext.js one level above to workaround the filter on PDI issue (BACKLOG-17885) -->
   <!-- Remove '../' when not needed -->
   <script type="text/javascript" src="../webcontext.js?requireJsOnly=true"></script>
-  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css">
-  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/global.css">
   <link rel="stylesheet" type="text/css" href="css/index.css">
   <script>
     (function () {
       "use strict";
 
       // overrides just for this app
+      var basePath = "";
+      if ( IS_RUNNING_ON_WEBSPOON_MODE ) {
+        basePath = "../..";
+      }
+
+      //add stylesheets
+      var stylesheet1 = document.createElement('link');
+      stylesheet1.rel = "stylesheet";
+      stylesheet1.type = "text/css";
+      stylesheet1.href = basePath + "/@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css";
+      document.head.appendChild(stylesheet1);
+      var stylesheet2 = document.createElement('link');
+      stylesheet2.rel = "stylesheet";
+      stylesheet2.type = "text/css";
+      stylesheet2.href = basePath + "/@pentaho/di-core-ui@${project.version}/css/global.css";
+      document.head.appendChild(stylesheet2);
+
       require.config({
         paths: {
-          "pentaho": "/@pentaho/di-core-ui@${project.version}/pentaho",
-          "css": "/require-css@${require-css.version}/css",
-          "text": "/requirejs-text@${requirejs-text.version}/text",
-          "dojo": "/dojo@${dojo.version}"
+          "pentaho": basePath + "/@pentaho/di-core-ui@${project.version}/pentaho",
+          "css": basePath + "/require-css@${require-css.version}/css",
+          "text": basePath + "/requirejs-text@${requirejs-text.version}/text",
+          "dojo": basePath + "/dojo@${dojo.version}"
         }
       });
 
