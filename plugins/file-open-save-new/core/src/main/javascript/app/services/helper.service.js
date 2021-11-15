@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2019-2021 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ define(
         function _wrapHttp(method, url, data) {
           var options = {
             method: method,
-            url: _cacheBust(url),
+            url: ( ( IS_RUNNING_ON_WEBSPOON_MODE ) ? CONTEXT_PATH : "" ) + _cacheBust(url),
             headers: {
               Accept: "application/json"
             }
@@ -132,6 +132,10 @@ define(
             url += "&v=" + value;
           } else {
             url += "?v=" + value;
+          }
+          if ( IS_RUNNING_ON_WEBSPOON_MODE ) {
+            var cid = getConnectionId();
+            url += "&cid=" + cid;
           }
           return url;
         }

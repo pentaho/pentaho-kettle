@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 Hitachi Vantara. All rights reserved.
+ * Copyright 2020-2021 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -306,7 +306,16 @@ define(
           return $q(function (resolve, reject) {
             var folder = null;
             for (var i = 0; i < node.children.length; i++) {
-              if (node.children[i].name.trim() === name.trim()) {
+              var parts = node.children[i].name.trim().split("/");
+              var foundPart = false;
+              if ( IS_RUNNING_ON_WEBSPOON_MODE ) {
+                for (var p = 0; p < parts.length; p++) {
+                  if (parts[p].trim() === name.trim()) {
+                    foundPart = true;
+                  }
+                }
+              }
+              if (node.children[i].name.trim() === name.trim() || ( IS_RUNNING_ON_WEBSPOON_MODE && foundPart === true ) ) {
                 folder = node.children[i];
                 folder.open = true;
                 folder.loading = false;
