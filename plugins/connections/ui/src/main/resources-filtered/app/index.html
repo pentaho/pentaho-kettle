@@ -6,8 +6,8 @@
   <title>VFS Connection Dialog</title>
   <!-- Requesting webcontext.js one level above to workaround the filter on PDI issue (BACKLOG-17885) -->
   <!-- Remove '../' when not needed -->
-  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css">
-  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/global.css">
+  <link id="style.css" rel="stylesheet" type="text/css">
+  <link id="global.css" rel="stylesheet" type="text/css">
   <script type="text/javascript" src="../webcontext.js?requireJsOnly=true"></script>
   <link rel="stylesheet" type="text/css" href="css/index.css">
   <script>
@@ -15,13 +15,28 @@
       "use strict";
 
       // overrides just for this app
-      require.config({
-        paths: {
-          "pentaho": "/@pentaho/di-core-ui@${project.version}/pentaho",
-          "css": "/require-css@${require-css.version}/css",
-          "text": "/requirejs-text@${requirejs-text.version}/text"
-        }
-      });
+      if ( IS_RUNNING_ON_WEBSPOON_MODE ) {
+        document.getElementById('style.css').href = "../../@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css";
+        document.getElementById('global.css').href = "../../@pentaho/di-core-ui@${project.version}/css/global.css";
+        require.config({
+          paths: {
+            "pentaho": "../../@pentaho/di-core-ui@${project.version}/pentaho",
+            "css": "../../require-css@${require-css.version}/css",
+            "text": "../../requirejs-text@${requirejs-text.version}/text",
+            "dojo": "../../dojo@${dojo.version}"
+          }
+        });
+      } else {
+        document.getElementById('style.css').href = "/@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css";
+        document.getElementById('global.css').href = "/@pentaho/di-core-ui@${project.version}/css/global.css";
+        require.config({
+          paths: {
+            "pentaho": "/@pentaho/di-core-ui@${project.version}/pentaho",
+            "css": "/require-css@${require-css.version}/css",
+            "text": "/requirejs-text@${requirejs-text.version}/text"
+          }
+        });
+      }
 
       require(["pentaho/di/plugin/connections"], function (app) {
           app.bootstrap(document);
