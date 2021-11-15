@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -154,18 +154,23 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
-        closeBrowser( browser );
+        if ( Const.isRunningOnWebspoonMode() ) {
+          Runnable execute = () -> closeBrowser( browser );
+          display.asyncExec( execute );
+        } else {
+          closeBrowser( browser );
+        }
         return true;
       }
     };
 
     new BrowserFunction( browser, "select" ) {
       @Override public Object function( Object[] arguments ) {
-        try {
-          setProperties( arguments );
-          closeBrowser( browser );
-        } catch ( Exception e ) {
-          log.logError( "Error in processing select() from file-open-save app: ", e );
+        if ( Const.isRunningOnWebspoonMode() ) {
+          Runnable execute = () -> closeBrowserWithParameters( arguments );
+          display.asyncExec( execute );
+        } else {
+          closeBrowserWithParameters( arguments );
         }
         return true;
       }
@@ -182,6 +187,15 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
       if ( !display.readAndDispatch() ) {
         display.sleep();
       }
+    }
+  }
+
+  private void closeBrowserWithParameters( Object[] arguments ) {
+    try {
+      setProperties( arguments );
+      closeBrowser( browser );
+    } catch ( Exception e ) {
+      log.logError( "Error in processing select() from file-open-save app: ", e );
     }
   }
 
@@ -231,6 +245,9 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
   }
 
   private static String getRepoURL( String path ) {
+    if ( Const.isRunningOnWebspoonMode() ) {
+      return System.getProperty( "KETTLE_CONTEXT_PATH", "" ) + "/osgi" + path;
+    }
     String host;
     Integer port;
     try {
