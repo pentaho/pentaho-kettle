@@ -60,7 +60,7 @@ define([
 
     function onBodyClick() {
       $scope.$apply(function() {
-        vm.isShowOptions = false;
+        vm.isShowOptions = !vm.isShowOptions;
       });
 
     }
@@ -72,8 +72,10 @@ define([
 
     function selectOption(option) {
       vm.selectedValue = option;
-      vm.isShowOptions = false;
       vm.onSelect({value: option});
+      $scope.$apply(function () {
+        vm.isShowOptions = !vm.isShowOptions;
+      });
     }
   }
 

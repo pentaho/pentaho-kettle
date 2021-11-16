@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.local;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
@@ -80,7 +81,14 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   @Override public Tree getTree() {
     LocalTree localTree = new LocalTree( NAME );
     List<LocalFile> rootFiles = new ArrayList<>();
-    FileSystems.getDefault().getRootDirectories().forEach( path -> {
+    ArrayList<Path> paths = new ArrayList<>();
+    if ( Const.isRunningOnWebspoonMode() ) {
+      Path kettleUserDataDirectoryPath = Paths.get( Const.getUserDataDirectory() );
+      paths.add( kettleUserDataDirectoryPath );
+    } else {
+      FileSystems.getDefault().getRootDirectories().forEach( paths::add );
+    }
+    paths.forEach( path -> {
       LocalDirectory localDirectory = new LocalDirectory();
       localDirectory.setPath( path.toString() );
       localDirectory.setName( path.toString() );
@@ -101,6 +109,9 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    */
   public List<LocalFile> getFiles( LocalFile file, String filters ) {
     List<LocalFile> files = new ArrayList<>();
+    if ( Const.isRunningOnWebspoonMode() && !Paths.get( file.getPath() ).toAbsolutePath().startsWith( Paths.get( Const.getUserDataDirectory() ) ) ) {
+      return files;
+    }
     try ( Stream<Path> paths = Files.list( Paths.get( file.getPath() ) ) ) {
       paths.forEach( path -> {
         String name = path.getFileName().toString();

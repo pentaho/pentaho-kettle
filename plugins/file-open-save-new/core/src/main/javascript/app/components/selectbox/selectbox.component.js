@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 Hitachi Vantara. All rights reserved.
+ * Copyright 2019-2021 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ define([
 
     function onBodyClick() {
       $scope.$apply(function() {
-        vm.isShowOptions = false;
+        vm.isShowOptions = ( IS_RUNNING_ON_WEBSPOON_MODE ) ? !vm.isShowOptions : false;
       });
 
     }
@@ -76,8 +76,14 @@ define([
 
     function selectOption(option) {
       vm.selectedValue = option;
-      vm.isShowOptions = false;
       vm.onSelect({value: option});
+      if ( IS_RUNNING_ON_WEBSPOON_MODE ) {
+        $scope.$apply(function () {
+            vm.isShowOptions = !vm.isShowOptions;
+        });
+      } else {
+        vm.isShowOptions = false;
+      }
     }
   }
 
