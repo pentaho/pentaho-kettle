@@ -34,6 +34,7 @@ import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -69,13 +70,88 @@ import java.util.Map;
 public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaInterface, ResolvableResource {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  protected static final int FILE_COMPRESSION_TYPE_NONE = 0;
+  // Strings used in XML
+  private static final String CONST_STRING_ADD_DATE = "add_date";
+  private static final String CONST_STRING_ADD_TIME = "add_time";
+  private static final String CONST_STRING_ADD_TO_RESULT_FILENAMES = "add_to_result_filenames";
+  private static final String CONST_STRING_APPEND = "append";
+  private static final String CONST_STRING_COMPRESSION = "compression";
+  private static final String CONST_STRING_CREATE_PARENT_FOLDER = "create_parent_folder";
+  private static final String CONST_STRING_CURRENCY = "currency";
+  private static final String CONST_STRING_DATE_TIME_FORMAT = "date_time_format";
+  private static final String CONST_STRING_DECIMAL = "decimal";
+  private static final String CONST_STRING_DO_NOT_OPEN_NEW_FILE_INIT = "do_not_open_new_file_init";
+  private static final String CONST_STRING_ENCLOSURE = "enclosure";
+  private static final String CONST_STRING_ENCLOSURE_FIX_DISABLED = "enclosure_fix_disabled";
+  private static final String CONST_STRING_ENCLOSURE_FORCED = "enclosure_forced";
+  private static final String CONST_STRING_ENCODING = "encoding";
+  private static final String CONST_STRING_ENDED_LINE = "endedLine";
+  private static final String CONST_STRING_EXTENTION = "extention";
+  private static final String CONST_STRING_FAST_DUMP = "fast_dump";
+  private static final String CONST_STRING_FIELD = "field";
+  private static final String CONST_STRING_FIELD_CURRENCY = "field_currency";
+  private static final String CONST_STRING_FIELD_DECIMAL = "field_decimal";
+  private static final String CONST_STRING_FIELD_FORMAT = "field_format";
+  private static final String CONST_STRING_FIELD_GROUP = "field_group";
+  private static final String CONST_STRING_FIELD_LENGTH = "field_length";
+  private static final String CONST_STRING_FIELD_NAME = "field_name";
+  private static final String CONST_STRING_FIELD_NULLIF = "field_nullif";
+  private static final String CONST_STRING_FIELD_PRECISION = "field_precision";
+  private static final String CONST_STRING_FIELD_TRIM_TYPE = "field_trim_type";
+  private static final String CONST_STRING_FIELD_TYPE = "field_type";
+  private static final String CONST_STRING_FIELDS = "fields";
+  private static final String CONST_STRING_FILE = "file";
+  private static final String CONST_STRING_FILE_ADD_DATE = "file_add_date";
+  private static final String CONST_STRING_FILE_ADD_PARTNR = "file_add_partnr";
+  private static final String CONST_STRING_FILE_ADD_STEPNR = "file_add_stepnr";
+  private static final String CONST_STRING_FILE_ADD_TIME = "file_add_time";
+  private static final String CONST_STRING_FILE_APPEND = "file_append";
+  private static final String CONST_STRING_FILE_EXTENTION = "file_extention";
+  private static final String CONST_STRING_FILE_FAST_DUMP = "file_fast_dump";
+  private static final String CONST_STRING_FILE_NAME = "file_name";
+  private static final String CONST_STRING_FILE_NAME_FIELD = "fileNameField";
+  private static final String CONST_STRING_FILE_NAME_IN_FIELD = "fileNameInField";
+  private static final String CONST_STRING_FILE_PAD = "file_pad";
+  private static final String CONST_STRING_FILE_SERVLET_OUTPUT = "file_servlet_output";
+  private static final String CONST_STRING_FILE_SPLIT_ROWS = "file_split_rows";
+  private static final String CONST_STRING_FOOTER = "footer";
+  private static final String CONST_STRING_FORMAT = "format";
+  private static final String CONST_STRING_GROUP = "group";
+  private static final String CONST_STRING_HASPARTNO = "haspartno";
+  private static final String CONST_STRING_HEADER = "header";
+  private static final String CONST_STRING_LENGTH = "length";
+  private static final String CONST_STRING_NAME = "name";
+  private static final String CONST_STRING_NULLIF = "nullif";
+  private static final String CONST_STRING_PAD = "pad";
+  private static final String CONST_STRING_PRECISION = "precision";
+  private static final String CONST_STRING_SEPARATOR = "separator";
+  private static final String CONST_STRING_SERVLET_OUTPUT = "servlet_output";
+  private static final String CONST_STRING_SPECIFY_FORMAT = "SpecifyFormat";
+  private static final String CONST_STRING_SPLIT = "split";
+  private static final String CONST_STRING_SPLITEVERY = "splitevery";
+  private static final String CONST_STRING_TRIM_TYPE = "trim_type";
+  private static final String CONST_STRING_TYPE = "type";
+  private static final String CONST_STRING_ZIPPED = "zipped";
 
+  private static final String CONST_STRING_CR = "CR";
+  private static final String CONST_STRING_DOS = "DOS";
+  private static final String CONST_STRING_FILE_SPLIT = "file_split";
+  private static final String CONST_STRING_NONE = "None";
+  private static final String CONST_STRING_TXT = "txt";
+  private static final String CONST_STRING_UNIX = "UNIX";
+  private static final String CONST_STRING_ZIP = "Zip";
+
+  private static final String NEW_LINE_CR_FORMAT = "\r";
+  private static final String NEW_LINE_DOS_FORMAT = "\r\n";
+  private static final String NEW_LINE_UNIX_FORMAT = "\n";
+
+  protected static final int FILE_COMPRESSION_TYPE_NONE = 0;
   protected static final int FILE_COMPRESSION_TYPE_ZIP = 1;
 
-  protected static final String[] fileCompressionTypeCodes = new String[] { "None", "Zip" };
+  protected static final String[] fileCompressionTypeCodes = new String[] { CONST_STRING_NONE, CONST_STRING_ZIP };
 
-  public static final String[] formatMapperLineTerminator = new String[] { "DOS", "UNIX", "CR", "None" };
+  public static final String[] formatMapperLineTerminator = new String[] { CONST_STRING_DOS, CONST_STRING_UNIX,
+    CONST_STRING_CR, CONST_STRING_NONE };
 
   /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
   @Injection( name = "PASS_TO_SERVLET" )
@@ -168,6 +244,8 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   /** Flag : Do not open new file when transformation start */
   @Injection( name = "DO_NOT_CREATE_FILE_AT_STARTUP" )
   private boolean doNotOpenNewFileInit;
+
+  private ValueMetaInterface[] metaWithFieldOptions = null;
 
   public TextFileOutputMeta() {
     super(); // allocate BaseStepMeta
@@ -573,97 +651,82 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
 
   protected void readData( Node stepnode, IMetaStore metastore ) throws KettleXMLException {
     try {
-      separator = XMLHandler.getTagValue( stepnode, "separator" );
-      if ( separator == null ) {
-        separator = "";
-      }
+      separator = Const.NVL( XMLHandler.getTagValue( stepnode, CONST_STRING_SEPARATOR ), Const.EMPTY_STRING );
 
-      enclosure = XMLHandler.getTagValue( stepnode, "enclosure" );
-      if ( enclosure == null ) {
-        enclosure = "";
-      }
+      enclosure = Const.NVL( XMLHandler.getTagValue( stepnode, CONST_STRING_ENCLOSURE ), Const.EMPTY_STRING );
 
-      enclosureForced = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "enclosure_forced" ) );
+      enclosureForced = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_ENCLOSURE_FORCED ) );
 
-      String sDisableEnclosureFix = XMLHandler.getTagValue( stepnode, "enclosure_fix_disabled" );
+      String sDisableEnclosureFix = XMLHandler.getTagValue( stepnode, CONST_STRING_ENCLOSURE_FIX_DISABLED );
       // Default this value to true for backwards compatibility
-      if ( sDisableEnclosureFix == null ) {
-        disableEnclosureFix = true;
-      } else {
-        disableEnclosureFix = "Y".equalsIgnoreCase( sDisableEnclosureFix );
-      }
+      disableEnclosureFix = ( sDisableEnclosureFix == null ) || "Y".equalsIgnoreCase( sDisableEnclosureFix );
 
       // Default createparentfolder to true if the tag is missing
-      String createParentFolderTagValue = XMLHandler.getTagValue( stepnode, "create_parent_folder" );
-      createparentfolder =
-          ( createParentFolderTagValue == null ) ? true : "Y".equalsIgnoreCase( createParentFolderTagValue );
+      String createParentFolderTagValue = XMLHandler.getTagValue( stepnode, CONST_STRING_CREATE_PARENT_FOLDER );
+      createparentfolder = ( createParentFolderTagValue == null ) || "Y".equalsIgnoreCase( createParentFolderTagValue );
 
-      headerEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "header" ) );
-      footerEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "footer" ) );
-      fileFormat = XMLHandler.getTagValue( stepnode, "format" );
-      setFileCompression( XMLHandler.getTagValue( stepnode, "compression" ) );
+      headerEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_HEADER ) );
+      footerEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FOOTER ) );
+      fileFormat = XMLHandler.getTagValue( stepnode, CONST_STRING_FORMAT );
+      setFileCompression( XMLHandler.getTagValue( stepnode, CONST_STRING_COMPRESSION ) );
       if ( getFileCompression() == null ) {
-        if ( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) ) ) {
+        if ( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_ZIPPED ) ) ) {
           setFileCompression(  fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP] );
         } else {
           setFileCompression( fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE] );
         }
       }
-      encoding = XMLHandler.getTagValue( stepnode, "encoding" );
 
-      endedLine = XMLHandler.getTagValue( stepnode, "endedLine" );
-      if ( endedLine == null ) {
-        endedLine = "";
-      }
+      encoding = XMLHandler.getTagValue( stepnode, CONST_STRING_ENCODING );
+
+      endedLine = Const.NVL( XMLHandler.getTagValue( stepnode, CONST_STRING_ENDED_LINE ), Const.EMPTY_STRING );
 
       fileName = loadSource( stepnode, metastore );
-      servletOutput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "servlet_output" ) );
+      servletOutput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE,
+        CONST_STRING_SERVLET_OUTPUT ) );
       doNotOpenNewFileInit =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_new_file_init" ) );
-      extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
-      fileAppended = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "append" ) );
-      stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
-      partNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "haspartno" ) );
-      dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
-      timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) );
-      setSpecifyingFormat( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "SpecifyFormat" ) ) );
-      setDateTimeFormat( XMLHandler.getTagValue( stepnode, "file", "date_time_format" ) );
+          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_DO_NOT_OPEN_NEW_FILE_INIT ) );
+      extension = XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_EXTENTION );
+      fileAppended = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_APPEND ) );
+      stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_SPLIT ) );
+      partNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_HASPARTNO ) );
+      dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_ADD_DATE ) );
+      timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_ADD_TIME ) );
+      setSpecifyingFormat( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_SPECIFY_FORMAT ) ) );
+      setDateTimeFormat( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_DATE_TIME_FORMAT ) );
 
-      String AddToResultFiles = XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" );
-      if ( Utils.isEmpty( AddToResultFiles ) ) {
-        addToResultFilenames = true;
-      } else {
-        addToResultFilenames = "Y".equalsIgnoreCase( AddToResultFiles );
-      }
+      String addToResultFiles = XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_ADD_TO_RESULT_FILENAMES );
+      addToResultFilenames = Utils.isEmpty( addToResultFiles ) || "Y".equalsIgnoreCase( addToResultFiles );
 
-      padded = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "pad" ) );
-      fastDump = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "fast_dump" ) );
-      splitEveryRows = XMLHandler.getTagValue( stepnode, "file", "splitevery" );
+      padded = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_PAD ) );
+      fastDump = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_FAST_DUMP ) );
+      splitEveryRows = XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_SPLITEVERY );
 
       newline = getNewLine( fileFormat );
 
-      fileNameInField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "fileNameInField" ) );
-      fileNameField = XMLHandler.getTagValue( stepnode, "fileNameField" );
+      fileNameInField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, CONST_STRING_FILE_NAME_IN_FIELD ) );
+      fileNameField = XMLHandler.getTagValue( stepnode, CONST_STRING_FILE_NAME_FIELD );
 
-      Node fields = XMLHandler.getSubNode( stepnode, "fields" );
-      int nrfields = XMLHandler.countNodes( fields, "field" );
+      Node fields = XMLHandler.getSubNode( stepnode, CONST_STRING_FIELDS );
+      int nrfields = XMLHandler.countNodes( fields, CONST_STRING_FIELD );
 
       allocate( nrfields );
 
       for ( int i = 0; i < nrfields; i++ ) {
-        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
+        Node fnode = XMLHandler.getSubNodeByNr( fields, CONST_STRING_FIELD, i );
 
         outputFields[i] = new TextFileField();
-        outputFields[i].setName( XMLHandler.getTagValue( fnode, "name" ) );
-        outputFields[i].setType( XMLHandler.getTagValue( fnode, "type" ) );
-        outputFields[i].setFormat( XMLHandler.getTagValue( fnode, "format" ) );
-        outputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
-        outputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
-        outputFields[i].setGroupingSymbol( XMLHandler.getTagValue( fnode, "group" ) );
-        outputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
-        outputFields[i].setNullString( XMLHandler.getTagValue( fnode, "nullif" ) );
-        outputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
-        outputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
+        outputFields[i].setName( XMLHandler.getTagValue( fnode, CONST_STRING_NAME ) );
+        outputFields[i].setType( XMLHandler.getTagValue( fnode, CONST_STRING_TYPE ) );
+        outputFields[i].setFormat( XMLHandler.getTagValue( fnode, CONST_STRING_FORMAT ) );
+        outputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, CONST_STRING_CURRENCY ) );
+        outputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, CONST_STRING_DECIMAL ) );
+        outputFields[i].setGroupingSymbol( XMLHandler.getTagValue( fnode, CONST_STRING_GROUP ) );
+        outputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode,
+          CONST_STRING_TRIM_TYPE ) ) );
+        outputFields[i].setNullString( XMLHandler.getTagValue( fnode, CONST_STRING_NULLIF ) );
+        outputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, CONST_STRING_LENGTH ), -1 ) );
+        outputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, CONST_STRING_PRECISION ), -1 ) );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -675,17 +738,17 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   }
 
   public String getNewLine( String fformat ) {
-    String nl = System.getProperty( "line.separator" );
+    String nl = Const.CR;
 
     if ( fformat != null ) {
-      if ( fformat.equalsIgnoreCase( "DOS" ) ) {
-        nl = "\r\n";
-      } else if ( fformat.equalsIgnoreCase( "UNIX" ) ) {
-        nl = "\n";
-      } else if ( fformat.equalsIgnoreCase( "CR" ) ) {
-        nl = "\r";
-      } else if ( fformat.equalsIgnoreCase( "None" ) ) {
-        nl = "";
+      if ( fformat.equalsIgnoreCase( CONST_STRING_DOS ) ) {
+        nl = NEW_LINE_DOS_FORMAT;
+      } else if ( fformat.equalsIgnoreCase( CONST_STRING_UNIX ) ) {
+        nl = NEW_LINE_UNIX_FORMAT;
+      } else if ( fformat.equalsIgnoreCase( CONST_STRING_CR ) ) {
+        nl = NEW_LINE_CR_FORMAT;
+      } else if ( fformat.equalsIgnoreCase( CONST_STRING_NONE ) ) {
+        nl = Const.EMPTY_STRING;
       }
     }
 
@@ -703,12 +766,12 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
     disableEnclosureFix = false;
     headerEnabled = true;
     footerEnabled = false;
-    fileFormat = "DOS";
+    fileFormat = CONST_STRING_DOS;
     setFileCompression( fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE] );
-    fileName = "file";
+    fileName = CONST_STRING_FILE;
     servletOutput = false;
     doNotOpenNewFileInit = false;
-    extension = "txt";
+    extension = CONST_STRING_TXT;
     stepNrInFilename = false;
     partNrInFilename = false;
     dateInFilename = false;
@@ -716,27 +779,11 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
     padded = false;
     fastDump = false;
     addToResultFilenames = true;
+    fileAppended = false;
 
     newline = getNewLine( fileFormat );
 
-    int i, nrfields = 0;
-
-    allocate( nrfields );
-
-    for ( i = 0; i < nrfields; i++ ) {
-      outputFields[i] = new TextFileField();
-
-      outputFields[i].setName( "field" + i );
-      outputFields[i].setType( "Number" );
-      outputFields[i].setFormat( " 0,000,000.00;-0,000,000.00" );
-      outputFields[i].setCurrencySymbol( "" );
-      outputFields[i].setDecimalSymbol( "," );
-      outputFields[i].setGroupingSymbol( "." );
-      outputFields[i].setNullString( "" );
-      outputFields[i].setLength( -1 );
-      outputFields[i].setPrecision( -1 );
-    }
-    fileAppended = false;
+    allocate( 0 );
   }
 
   public String buildFilename( VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive ) {
@@ -756,39 +803,38 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   public String getXML() {
     StringBuilder retval = new StringBuilder( 800 );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "separator", separator ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "enclosure", enclosure ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "enclosure_forced", enclosureForced ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "enclosure_fix_disabled", disableEnclosureFix ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "header", headerEnabled ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "footer", footerEnabled ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "format", fileFormat ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "compression", getFileCompression() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "endedLine", endedLine ) );
-    retval.append( "    " + XMLHandler.addTagValue( "fileNameInField", fileNameInField ) );
-    retval.append( "    " + XMLHandler.addTagValue( "fileNameField", fileNameField ) );
-    retval.append( "    " + XMLHandler.addTagValue( "create_parent_folder", createparentfolder ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_SEPARATOR, separator ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_ENCLOSURE, enclosure ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_ENCLOSURE_FORCED, enclosureForced ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_ENCLOSURE_FIX_DISABLED, disableEnclosureFix ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_HEADER, headerEnabled ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_FOOTER, footerEnabled ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_FORMAT, fileFormat ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_COMPRESSION, getFileCompression() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_ENCODING, encoding ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_ENDED_LINE, endedLine ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_FILE_NAME_IN_FIELD, fileNameInField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_FILE_NAME_FIELD, fileNameField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( CONST_STRING_CREATE_PARENT_FOLDER, createparentfolder ) );
     retval.append( "    <file>" ).append( Const.CR );
     saveFileOptions( retval );
     retval.append( "    </file>" ).append( Const.CR );
 
     retval.append( "    <fields>" ).append( Const.CR );
-    for ( int i = 0; i < outputFields.length; i++ ) {
-      TextFileField field = outputFields[i];
-
-      if ( field.getName() != null && field.getName().length() != 0 ) {
+    for ( TextFileField field : outputFields ) {
+      if ( !Utils.isEmpty( field.getName() ) ) {
         retval.append( "      <field>" ).append( Const.CR );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getName() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "type", field.getTypeDesc() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "format", field.getFormat() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", field.getCurrencySymbol() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", field.getDecimalSymbol() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "group", field.getGroupingSymbol() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "nullif", field.getNullString() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", field.getTrimTypeCode() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "length", field.getLength() ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", field.getPrecision() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_NAME, field.getName() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_TYPE, field.getTypeDesc() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_FORMAT, field.getFormat() ) );
+        retval.append( "        " )
+          .append( XMLHandler.addTagValue( CONST_STRING_CURRENCY, field.getCurrencySymbol() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_DECIMAL, field.getDecimalSymbol() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_GROUP, field.getGroupingSymbol() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_NULLIF, field.getNullString() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_TRIM_TYPE, field.getTrimTypeCode() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_LENGTH, field.getLength() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( CONST_STRING_PRECISION, field.getPrecision() ) );
         retval.append( "      </field>" ).append( Const.CR );
       }
     }
@@ -802,101 +848,98 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
       parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( fileName );
     }
     saveSource( retval, fileName );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "servlet_output", servletOutput ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "do_not_open_new_file_init", doNotOpenNewFileInit ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "extention", extension ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "append", fileAppended ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "split", stepNrInFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "haspartno", partNrInFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "add_date", dateInFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "add_time", timeInFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "SpecifyFormat", isSpecifyingFormat() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_format", getDateTimeFormat() ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_SERVLET_OUTPUT, servletOutput ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_DO_NOT_OPEN_NEW_FILE_INIT, doNotOpenNewFileInit ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_EXTENTION, extension ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_APPEND, fileAppended ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_SPLIT, stepNrInFilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_HASPARTNO, partNrInFilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_ADD_DATE, dateInFilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_ADD_TIME, timeInFilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_SPECIFY_FORMAT, isSpecifyingFormat() ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_DATE_TIME_FORMAT, getDateTimeFormat() ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "add_to_result_filenames", addToResultFilenames ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "pad", padded ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "fast_dump", fastDump ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "splitevery", splitEveryRows ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_ADD_TO_RESULT_FILENAMES, addToResultFilenames ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_PAD, padded ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_FAST_DUMP, fastDump ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_SPLITEVERY, splitEveryRows ) );
   }
 
   @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
-      separator = rep.getStepAttributeString( id_step, "separator" );
-      enclosure = rep.getStepAttributeString( id_step, "enclosure" );
-      enclosureForced = rep.getStepAttributeBoolean( id_step, "enclosure_forced" );
-      disableEnclosureFix = rep.getStepAttributeBoolean( id_step, 0, "enclosure_fix_disabled", true );
-      createparentfolder = rep.getStepAttributeBoolean( id_step, "create_parent_folder" );
-      headerEnabled = rep.getStepAttributeBoolean( id_step, "header" );
-      footerEnabled = rep.getStepAttributeBoolean( id_step, "footer" );
-      fileFormat = rep.getStepAttributeString( id_step, "format" );
-      setFileCompression( rep.getStepAttributeString( id_step, "compression" ) );
-      fileNameInField = rep.getStepAttributeBoolean( id_step, "fileNameInField" );
-      fileNameField = rep.getStepAttributeString( id_step, "fileNameField" );
+      separator = rep.getStepAttributeString( id_step, CONST_STRING_SEPARATOR );
+      enclosure = rep.getStepAttributeString( id_step, CONST_STRING_ENCLOSURE );
+      enclosureForced = rep.getStepAttributeBoolean( id_step, CONST_STRING_ENCLOSURE_FORCED );
+      disableEnclosureFix = rep.getStepAttributeBoolean( id_step, 0, CONST_STRING_ENCLOSURE_FIX_DISABLED, true );
+      createparentfolder = rep.getStepAttributeBoolean( id_step, CONST_STRING_CREATE_PARENT_FOLDER );
+      headerEnabled = rep.getStepAttributeBoolean( id_step, CONST_STRING_HEADER );
+      footerEnabled = rep.getStepAttributeBoolean( id_step, CONST_STRING_FOOTER );
+      fileFormat = rep.getStepAttributeString( id_step, CONST_STRING_FORMAT );
+      setFileCompression( rep.getStepAttributeString( id_step, CONST_STRING_COMPRESSION ) );
+      fileNameInField = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_NAME_IN_FIELD );
+      fileNameField = rep.getStepAttributeString( id_step, CONST_STRING_FILE_NAME_FIELD );
       if ( getFileCompression() == null ) {
-        if ( rep.getStepAttributeBoolean( id_step, "zipped" ) ) {
+        if ( rep.getStepAttributeBoolean( id_step, CONST_STRING_ZIPPED ) ) {
           setFileCompression( fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP] );
         } else {
           setFileCompression( fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE] );
         }
       }
-      encoding = rep.getStepAttributeString( id_step, "encoding" );
+      encoding = rep.getStepAttributeString( id_step, CONST_STRING_ENCODING );
 
       fileName = loadSourceRep( rep, id_step, metaStore );
-      servletOutput = rep.getStepAttributeBoolean( id_step, "file_servlet_output" );
-      doNotOpenNewFileInit = rep.getStepAttributeBoolean( id_step, "do_not_open_new_file_init" );
-      extension = rep.getStepAttributeString( id_step, "file_extention" );
-      fileAppended = rep.getStepAttributeBoolean( id_step, "file_append" );
+      servletOutput = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_SERVLET_OUTPUT );
+      doNotOpenNewFileInit = rep.getStepAttributeBoolean( id_step, CONST_STRING_DO_NOT_OPEN_NEW_FILE_INIT );
+      extension = rep.getStepAttributeString( id_step, CONST_STRING_FILE_EXTENTION );
+      fileAppended = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_APPEND );
 
-      splitEveryRows = rep.getStepAttributeString( id_step, "file_split_rows" );
+      splitEveryRows = rep.getStepAttributeString( id_step, CONST_STRING_FILE_SPLIT_ROWS );
       if ( Utils.isEmpty( splitEveryRows ) ) {
         // test for legacy
-        long splitEvery = rep.getStepAttributeInteger( id_step, "file_split" );
+        long splitEvery = rep.getStepAttributeInteger( id_step, CONST_STRING_FILE_SPLIT );
         if ( splitEvery > 0 ) {
           splitEveryRows = Long.toString( splitEvery );
         }
       }
 
-      stepNrInFilename = rep.getStepAttributeBoolean( id_step, "file_add_stepnr" );
-      partNrInFilename = rep.getStepAttributeBoolean( id_step, "file_add_partnr" );
-      dateInFilename = rep.getStepAttributeBoolean( id_step, "file_add_date" );
-      timeInFilename = rep.getStepAttributeBoolean( id_step, "file_add_time" );
-      setSpecifyingFormat( rep.getStepAttributeBoolean( id_step, "SpecifyFormat" ) );
-      setDateTimeFormat( rep.getStepAttributeString( id_step, "date_time_format" ) );
+      stepNrInFilename = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_ADD_STEPNR );
+      partNrInFilename = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_ADD_PARTNR );
+      dateInFilename = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_ADD_DATE );
+      timeInFilename = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_ADD_TIME );
+      setSpecifyingFormat( rep.getStepAttributeBoolean( id_step, CONST_STRING_SPECIFY_FORMAT ) );
+      setDateTimeFormat( rep.getStepAttributeString( id_step, CONST_STRING_DATE_TIME_FORMAT ) );
 
-      String AddToResultFiles = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
-      if ( Utils.isEmpty( AddToResultFiles ) ) {
-        addToResultFilenames = true;
-      } else {
-        addToResultFilenames = rep.getStepAttributeBoolean( id_step, "add_to_result_filenames" );
-      }
+      String addToResultFiles = rep.getStepAttributeString( id_step, CONST_STRING_ADD_TO_RESULT_FILENAMES );
+      addToResultFilenames = Utils.isEmpty( addToResultFiles ) || rep.getStepAttributeBoolean( id_step,
+        CONST_STRING_ADD_TO_RESULT_FILENAMES );
 
-      padded = rep.getStepAttributeBoolean( id_step, "file_pad" );
-      fastDump = rep.getStepAttributeBoolean( id_step, "file_fast_dump" );
+      padded = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_PAD );
+      fastDump = rep.getStepAttributeBoolean( id_step, CONST_STRING_FILE_FAST_DUMP );
 
       newline = getNewLine( fileFormat );
 
-      int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
+      int nrfields = rep.countNrStepAttributes( id_step, CONST_STRING_FIELD_NAME );
 
       allocate( nrfields );
 
       for ( int i = 0; i < nrfields; i++ ) {
         outputFields[i] = new TextFileField();
 
-        outputFields[i].setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        outputFields[i].setType( rep.getStepAttributeString( id_step, i, "field_type" ) );
-        outputFields[i].setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
-        outputFields[i].setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
-        outputFields[i].setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
-        outputFields[i].setGroupingSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
+        outputFields[i].setName( rep.getStepAttributeString( id_step, i, CONST_STRING_FIELD_NAME ) );
+        outputFields[i].setType( rep.getStepAttributeString( id_step, i, CONST_STRING_FIELD_TYPE ) );
+        outputFields[i].setFormat( rep.getStepAttributeString( id_step, i, CONST_STRING_FIELD_FORMAT ) );
+        outputFields[i].setCurrencySymbol( rep.getStepAttributeString( id_step, i, CONST_STRING_FIELD_CURRENCY ) );
+        outputFields[i].setDecimalSymbol( rep.getStepAttributeString( id_step, i, CONST_STRING_FIELD_DECIMAL ) );
+        outputFields[i].setGroupingSymbol( rep.getStepAttributeString( id_step, i, CONST_STRING_FIELD_GROUP ) );
         outputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
-            "field_trim_type" ) ) );
-        outputFields[i].setNullString( rep.getStepAttributeString( id_step, i, "field_nullif" ) );
-        outputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
-        outputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
+          CONST_STRING_FIELD_TRIM_TYPE ) ) );
+        outputFields[i].setNullString( rep.getStepAttributeString( id_step, i, CONST_STRING_FIELD_NULLIF ) );
+        outputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, CONST_STRING_FIELD_LENGTH ) );
+        outputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, CONST_STRING_FIELD_PRECISION ) );
       }
-      endedLine = rep.getStepAttributeString( id_step, "endedLine" );
+      endedLine = rep.getStepAttributeString( id_step, CONST_STRING_ENDED_LINE );
 
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -907,50 +950,50 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
-      rep.saveStepAttribute( id_transformation, id_step, "separator", separator );
-      rep.saveStepAttribute( id_transformation, id_step, "enclosure", enclosure );
-      rep.saveStepAttribute( id_transformation, id_step, "enclosure_forced", enclosureForced );
-      rep.saveStepAttribute( id_transformation, id_step, 0, "enclosure_fix_disabled", disableEnclosureFix );
-      rep.saveStepAttribute( id_transformation, id_step, "header", headerEnabled );
-      rep.saveStepAttribute( id_transformation, id_step, "footer", footerEnabled );
-      rep.saveStepAttribute( id_transformation, id_step, "format", fileFormat );
-      rep.saveStepAttribute( id_transformation, id_step, "compression", getFileCompression() );
-      rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_SEPARATOR, separator );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_ENCLOSURE, enclosure );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_ENCLOSURE_FORCED, enclosureForced );
+      rep.saveStepAttribute( id_transformation, id_step, 0, CONST_STRING_ENCLOSURE_FIX_DISABLED, disableEnclosureFix );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_HEADER, headerEnabled );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FOOTER, footerEnabled );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FORMAT, fileFormat );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_COMPRESSION, getFileCompression() );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_ENCODING, encoding );
       saveSourceRep( rep, id_transformation, id_step, fileName );
-      rep.saveStepAttribute( id_transformation, id_step, "file_servlet_output", servletOutput );
-      rep.saveStepAttribute( id_transformation, id_step, "do_not_open_new_file_init", doNotOpenNewFileInit );
-      rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );
-      rep.saveStepAttribute( id_transformation, id_step, "file_append", fileAppended );
-      rep.saveStepAttribute( id_transformation, id_step, "file_split_rows", splitEveryRows );
-      rep.saveStepAttribute( id_transformation, id_step, "file_add_stepnr", stepNrInFilename );
-      rep.saveStepAttribute( id_transformation, id_step, "file_add_partnr", partNrInFilename );
-      rep.saveStepAttribute( id_transformation, id_step, "file_add_date", dateInFilename );
-      rep.saveStepAttribute( id_transformation, id_step, "date_time_format", getDateTimeFormat() );
-      rep.saveStepAttribute( id_transformation, id_step, "create_parent_folder", createparentfolder );
-      rep.saveStepAttribute( id_transformation, id_step, "SpecifyFormat", isSpecifyingFormat() );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_SERVLET_OUTPUT, servletOutput );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_DO_NOT_OPEN_NEW_FILE_INIT, doNotOpenNewFileInit );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_EXTENTION, extension );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_APPEND, fileAppended );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_SPLIT_ROWS, splitEveryRows );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_ADD_STEPNR, stepNrInFilename );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_ADD_PARTNR, partNrInFilename );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_ADD_DATE, dateInFilename );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_DATE_TIME_FORMAT, getDateTimeFormat() );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_CREATE_PARENT_FOLDER, createparentfolder );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_SPECIFY_FORMAT, isSpecifyingFormat() );
 
-      rep.saveStepAttribute( id_transformation, id_step, "add_to_result_filenames", addToResultFilenames );
-      rep.saveStepAttribute( id_transformation, id_step, "file_add_time", timeInFilename );
-      rep.saveStepAttribute( id_transformation, id_step, "file_pad", padded );
-      rep.saveStepAttribute( id_transformation, id_step, "file_fast_dump", fastDump );
-      rep.saveStepAttribute( id_transformation, id_step, "fileNameInField", fileNameInField );
-      rep.saveStepAttribute( id_transformation, id_step, "fileNameField", fileNameField );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_ADD_TO_RESULT_FILENAMES, addToResultFilenames );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_ADD_TIME, timeInFilename );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_PAD, padded );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_FAST_DUMP, fastDump );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_NAME_IN_FIELD, fileNameInField );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_NAME_FIELD, fileNameField );
 
       for ( int i = 0; i < outputFields.length; i++ ) {
         TextFileField field = outputFields[i];
 
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field.getTypeDesc() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_format", field.getFormat() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", field.getCurrencySymbol() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", field.getDecimalSymbol() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_group", field.getGroupingSymbol() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", field.getTrimTypeCode() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_nullif", field.getNullString() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_length", field.getLength() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field.getPrecision() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_NAME, field.getName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_TYPE, field.getTypeDesc() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_FORMAT, field.getFormat() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_CURRENCY, field.getCurrencySymbol() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_DECIMAL, field.getDecimalSymbol() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_GROUP, field.getGroupingSymbol() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_TRIM_TYPE, field.getTrimTypeCode() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_NULLIF, field.getNullString() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_LENGTH, field.getLength() );
+        rep.saveStepAttribute( id_transformation, id_step, i, CONST_STRING_FIELD_PRECISION, field.getPrecision() );
       }
-      rep.saveStepAttribute( id_transformation, id_step, "endedLine", endedLine );
+      rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_ENDED_LINE, endedLine );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
@@ -965,24 +1008,25 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "TextFileOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+          "TextFileOutputMeta.CheckResult.FieldsReceived", Const.EMPTY_STRING + prev.size() ), stepMeta );
       remarks.add( cr );
 
-      String error_message = "";
-      boolean error_found = false;
+      StringBuilder missingFields = new StringBuilder();
+      boolean errorFound = false;
 
       // Starting from selected fields in ...
-      for ( int i = 0; i < outputFields.length; i++ ) {
-        int idx = prev.indexOfValue( outputFields[i].getName() );
+      for ( TextFileField outputField : outputFields ) {
+        int idx = prev.indexOfValue( outputField.getName() );
         if ( idx < 0 ) {
-          error_message += "\t\t" + outputFields[i].getName() + Const.CR;
-          error_found = true;
+          missingFields.append( "\t\t" ).append( outputField.getName() ).append( Const.CR );
+          errorFound = true;
         }
       }
-      if ( error_found ) {
-        error_message = BaseMessages.getString( PKG, "TextFileOutputMeta.CheckResult.FieldsNotFound", error_message );
-        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
+      if ( errorFound ) {
+        String errorMessage = BaseMessages.getString( PKG, "TextFileOutputMeta.CheckResult.FieldsNotFound",
+          missingFields );
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
         remarks.add( cr );
       } else {
         cr =
@@ -1070,20 +1114,20 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   }
 
   protected String loadSource( Node stepnode, IMetaStore metastore ) {
-    return XMLHandler.getTagValue( stepnode, "file", "name" );
+    return XMLHandler.getTagValue( stepnode, CONST_STRING_FILE, CONST_STRING_NAME );
   }
 
   protected void saveSource( StringBuilder retVal, String value ) {
-    retVal.append( "      " ).append( XMLHandler.addTagValue( "name", fileName ) );
+    retVal.append( "      " ).append( XMLHandler.addTagValue( CONST_STRING_NAME, fileName ) );
   }
 
   protected String loadSourceRep( Repository rep, ObjectId id_step, IMetaStore metaStore  ) throws KettleException {
-    return rep.getStepAttributeString( id_step, "file_name" );
+    return rep.getStepAttributeString( id_step, CONST_STRING_FILE_NAME );
   }
 
   protected void saveSourceRep( Repository rep, ObjectId id_transformation, ObjectId id_step, String value )
     throws KettleException {
-    rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
+    rep.saveStepAttribute( id_transformation, id_step, CONST_STRING_FILE_NAME, fileName );
   }
 
   /**
@@ -1106,5 +1150,54 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
         throw new RuntimeException( e );
       }
     }
+  }
+
+  /**
+   * <p>Creates a copy of the meta information of the output fields, so that we don't make any changes to the
+   * original meta information.</p>
+   * <p>It is based on the original meta information and augmented with the information the user configured.</p>
+   *
+   * @param data
+   */
+  protected void calcMetaWithFieldOptions( TextFileOutputData data ) {
+    if ( getOutputFields() != null ) {
+      metaWithFieldOptions = new ValueMetaInterface[ getOutputFields().length ];
+
+      for ( int i = 0; i < getOutputFields().length; ++i ) {
+        ValueMetaInterface v = data.outputRowMeta.getValueMeta( data.fieldnrs[ i ] );
+
+        if ( v != null ) {
+          metaWithFieldOptions[ i ] = v.clone();
+
+          TextFileField field = getOutputFields()[ i ];
+          metaWithFieldOptions[ i ].setLength( field.getLength() );
+          metaWithFieldOptions[ i ].setPrecision( field.getPrecision() );
+          if ( !Utils.isEmpty( field.getFormat() ) ) {
+            metaWithFieldOptions[ i ].setConversionMask( field.getFormat() );
+          }
+          metaWithFieldOptions[ i ].setDecimalSymbol( field.getDecimalSymbol() );
+          metaWithFieldOptions[ i ].setGroupingSymbol( field.getGroupingSymbol() );
+          metaWithFieldOptions[ i ].setCurrencySymbol( field.getCurrencySymbol() );
+          metaWithFieldOptions[ i ].setTrimType( field.getTrimType() );
+          if ( !Utils.isEmpty( getEncoding() ) ) {
+            metaWithFieldOptions[ i ].setStringEncoding( getEncoding() );
+          }
+
+          // enable output padding by default to be compatible with v2.5.x
+          //
+          metaWithFieldOptions[ i ].setOutputPaddingEnabled( true );
+        }
+      }
+    } else {
+      metaWithFieldOptions = null;
+    }
+  }
+
+  protected ValueMetaInterface[] getMetaWithFieldOptions() {
+    if ( null == metaWithFieldOptions ) {
+      metaWithFieldOptions = new ValueMetaInterface[ 0 ];
+    }
+
+    return metaWithFieldOptions;
   }
 }
