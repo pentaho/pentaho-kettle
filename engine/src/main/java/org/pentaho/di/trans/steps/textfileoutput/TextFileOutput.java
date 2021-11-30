@@ -443,6 +443,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     Object[] row = getRow(); // This also waits for a row to be finished.
 
     if ( first ) {
+      first = false;
       if ( row != null ) {
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
@@ -719,7 +720,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     try {
       // If we have fields specified: list them in this order!
-      if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
+      if ( !Utils.isEmpty( meta.getOutputFields() ) ) {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           String fieldName = meta.getOutputFields()[i].getName();
           ValueMetaInterface v = r.searchValueMeta( fieldName );
