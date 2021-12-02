@@ -72,9 +72,11 @@ if exist java.exe goto USEJAVAFROMPATH
 goto USEJAVAFROMPATH
 :USEJAVAFROMPENTAHOJAVAHOME
 FOR /F %%a IN ('.\java.exe -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+FOR /F %%a IN ('.\java.exe -version 2^>^&1^|%windir%\system32\find /C "version ""1.8."') DO (SET /a ISJAVA8=%%a)
 GOTO CHECK32VS64BITJAVA
 :USEJAVAFROMPATH
 FOR /F %%a IN ('java -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+FOR /F %%a IN ('java -version 2^>^&1^|%windir%\system32\find /C "version ""1.8."') DO (SET /a ISJAVA8=%%a)
 GOTO CHECK32VS64BITJAVA
 :CHECK32VS64BITJAVA
 
@@ -99,11 +101,19 @@ popd
 REM **************************************************
 REM ** Setup Karaf endorsed libraries directory     **
 REM **************************************************
-
 set JAVA_ENDORSED_DIRS=
-if not "%_PENTAHO_JAVA_HOME%" == "" set JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;
-set JAVA_ENDORSED_DIRS=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed
+set JAVA_LOCALE_COMPAT=
+IF NOT %ISJAVA8% == 1 GOTO :SKIPENDORSEDJARS
 
+if not "%_PENTAHO_JAVA_HOME%" == "" set JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;
+set JAVA_ENDORSED_DIRS=-Djava.endorsed.dirs=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed
+GOTO :COLLECTARGUMENTS
+
+:SKIPENDORSEDJARS
+REM required for Java 11 date/time formatting backwards compatibility
+set JAVA_LOCALE_COMPAT=-Djava.locale.providers=COMPAT,SPI
+
+:COLLECTARGUMENTS
 REM **********************
 REM   Collect arguments
 REM **********************
@@ -124,7 +134,7 @@ REM ******************************************************************
 
 if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xms1024m" "-Xmx2048m"
 
-set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" "-Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin" "-Djava.endorsed.dirs=%JAVA_ENDORSED_DIRS%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
+set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" "-Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin" %JAVA_ENDORSED_DIRS% %JAVA_LOCALE_COMPAT% "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
 
 REM ***************
 REM ** Run...    **
