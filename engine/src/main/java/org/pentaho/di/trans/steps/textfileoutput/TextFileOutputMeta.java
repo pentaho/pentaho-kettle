@@ -638,12 +638,23 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   @Override
   public Object clone() {
     TextFileOutputMeta retval = (TextFileOutputMeta) super.clone();
-    int nrfields = outputFields.length;
+    int nrFields = outputFields.length;
 
-    retval.allocate( nrfields );
+    retval.allocate( nrFields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.outputFields[i] = (TextFileField) outputFields[i].clone();
+    for ( int i = 0; i < nrFields; i++ ) {
+      retval.outputFields[ i ] = (TextFileField) outputFields[ i ].clone();
+    }
+
+    if ( null != metaWithFieldOptions ) {
+      int nrMetas = metaWithFieldOptions.length;
+
+      retval.metaWithFieldOptions = new ValueMetaInterface[ nrMetas ];
+      for ( int i = 0; i < nrMetas; i++ ) {
+        retval.metaWithFieldOptions[ i ] = metaWithFieldOptions[ i ].clone();
+      }
+    } else {
+      retval.metaWithFieldOptions = null;
     }
 
     return retval;
@@ -784,6 +795,7 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
     newline = getNewLine( fileFormat );
 
     allocate( 0 );
+    metaWithFieldOptions = null;
   }
 
   public String buildFilename( VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive ) {
@@ -1160,7 +1172,7 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
    * @param data
    */
   protected void calcMetaWithFieldOptions( TextFileOutputData data ) {
-    if ( getOutputFields() != null ) {
+    if ( !Utils.isEmpty( getOutputFields() ) ) {
       metaWithFieldOptions = new ValueMetaInterface[ getOutputFields().length ];
 
       for ( int i = 0; i < getOutputFields().length; ++i ) {
