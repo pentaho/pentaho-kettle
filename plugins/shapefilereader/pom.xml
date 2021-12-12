@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-9</version>
   </parent>
 
   <artifactId>shapefilereader</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-9</version>
   <packaging>pom</packaging>
 
   <name>PDI Shape File Reader Plugin</name>
@@ -36,7 +36,7 @@
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <junit.version>4.7</junit.version>
     <ascsapjco3wrp.version>20100529</ascsapjco3wrp.version>
-    <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.3.0.0-9</pdi.version>
   </properties>
 
   <dependencyManagement>

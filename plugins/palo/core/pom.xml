@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>palo</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-9</version>
   </parent>
 
   <artifactId>kettle-palo-plugin-core</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-9</version>
   <packaging>jar</packaging>
 
   <name>PDI Palo Plugin Core</name>
