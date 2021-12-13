@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>lucid-db-streaming-loader-assemblies</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-10</version>
   </parent>
 
   <artifactId>lucid-db-streaming-loader-plugin</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-10</version>
   <packaging>pom</packaging>
 
   <name>PDI Lucid DB Streaming Loader Plugin Distribution</name>

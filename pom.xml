@@ -6,7 +6,7 @@
 
   <groupId>org.pentaho.di</groupId>
   <artifactId>pdi</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-10</version>
   <packaging>pom</packaging>
 
   <name>Pentaho Data Integration</name>
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-10</version>
   </parent>
 
   <scm>
@@ -55,8 +55,8 @@
     <license.licenseName>apache_v2</license.licenseName>
 
     <!-- Pentaho dependencies -->
-    <commons-xul.version>9.3.0.0-SNAPSHOT</commons-xul.version>
-    <pentaho-metastore.version>9.3.0.0-SNAPSHOT</pentaho-metastore.version>
+    <commons-xul.version>9.3.0.0-10</commons-xul.version>
+    <pentaho-metastore.version>9.3.0.0-10</pentaho-metastore.version>
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>

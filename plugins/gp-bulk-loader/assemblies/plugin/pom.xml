@@ -6,17 +6,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>gp-bulk-loader-assemblies</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-10</version>
   </parent>
 
   <artifactId>gp-bulk-loader-plugin</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-10</version>
   <packaging>pom</packaging>
 
   <name>PDI GP Bulk Loader Plugin Distribution</name>
 
   <properties>
-    <project.revision>9.3.0.0-SNAPSHOT</project.revision>
+    <project.revision>9.3.0.0-10</project.revision>
   </properties>
 
   <dependencies>
