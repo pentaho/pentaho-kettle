@@ -1,40 +1,46 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+package org.pentaho.di.core.logging.log4j;
 
-package org.pentaho.di.core.logging;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.log4j.Layout;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.layout.AbstractStringLayout;
+import org.apache.logging.log4j.core.layout.ByteBufferDestination;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.version.BuildVersion;
 
-public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Log4jKettleLayout extends AbstractStringLayout implements Log4jLayout {
   private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
+    @Override
     protected SimpleDateFormat initialValue() {
-      return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
+        return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
     }
   };
 
@@ -42,24 +48,21 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
 
   private boolean timeAdded;
 
-  public Log4jKettleLayout() {
-    this( true );
+  public Log4jKettleLayout( Charset charset, boolean timeAdded ) {
+    super( charset );
+    this.timeAdded = timeAdded;
   }
 
-  public Log4jKettleLayout( boolean addTime ) {
-    this.timeAdded = addTime;
-  }
-
-  public String format( LoggingEvent event ) {
+  public String format( LogEvent event ) {
     // OK, perhaps the logging information has multiple lines of data.
     // We need to split this up into different lines and all format these
     // lines...
     //
-    StringBuffer line = new StringBuffer();
+    StringBuilder line = getStringBuilder();
 
     String dateTimeString = "";
     if ( timeAdded ) {
-      dateTimeString = LOCAL_SIMPLE_DATE_PARSER.get().format( new Date( event.timeStamp ) ) + " - ";
+      dateTimeString = LOCAL_SIMPLE_DATE_PARSER.get().format( new Date( event.getTimeMillis() ) ) + " - ";
     }
 
     Object object = event.getMessage();
@@ -100,16 +103,16 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
           line.append( ") : " );
         }
 
-        line.append( parts[i] );
+        line.append( parts[ i ] );
         if ( i < parts.length - 1 ) {
           line.append( Const.CR ); // put the CR's back in there!
         }
-      }
+    }
     } else {
       line.append( dateTimeString );
       line.append( ( object != null ? object.toString() : "<null>" ) );
     }
-
+    line.append( Const.CR );
     return line.toString();
   }
 
@@ -118,6 +121,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
   }
 
   public void activateOptions() {
+      // not used
   }
 
   public boolean isTimeAdded() {
@@ -127,4 +131,34 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
   public void setTimeAdded( boolean addTime ) {
     this.timeAdded = addTime;
   }
+
+  @Override
+  public byte[] getFooter() {
+    return new byte[ 0 ];
+  }
+
+  @Override
+  public byte[] getHeader() {
+    return new byte[ 0 ];
+  }
+
+  @Override public String toSerializable( LogEvent event ) {
+    return format( event );
+  }
+
+  @Override
+  public String getContentType() {
+    return null;
+  }
+
+  @Override
+  public Map<String, String> getContentFormat() {
+    return new HashMap<>();
+  }
+
+  @Override
+  public void encode( LogEvent source, ByteBufferDestination destination ) {
+      // not used
+  }
 }
+

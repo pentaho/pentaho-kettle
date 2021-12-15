@@ -16,11 +16,11 @@
  */
 package com.pentaho.di.purge;
 
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
 
 /**
  * Provides a common interface for implementation of the Purge Utility Log File. The implementation should extend
- * <code>org.apache.log4j.Layout</code>
+ * <code>org.apache.logging.log4j.core.Layout</code>
  * 
  * @author tkafalas
  * 
@@ -44,17 +44,7 @@ public interface IPurgeUtilityLayout {
   /**
    * Format the log line for output
    */
-  String format( LoggingEvent event );
-
-  /**
-   * Returns appropriate header text for the log.
-   */
-  String getHeader();
-
-  /**
-   * Returns the appropriate footer text for the log.
-   */
-  String getFooter();
+  String format( LogEvent event );
 
   /**
    * return <code>false</code> if the layout processes a throwable in the logging event, returns <code>true</code>

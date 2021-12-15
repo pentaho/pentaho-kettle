@@ -104,6 +104,7 @@ set JAVA_ENDORSED_DIRS=
 if not "%_PENTAHO_JAVA_HOME%" == "" set JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;
 set JAVA_ENDORSED_DIRS=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed
 
+:COLLECTARGUMENTS
 REM **********************
 REM   Collect arguments
 REM **********************
