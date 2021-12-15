@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <!--
 
@@ -23,14 +22,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pentaho-streaming-jms-plugin</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-15</version>
   <packaging>bundle</packaging>
 
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-streaming-impls</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-15</version>
   </parent>
 
 
@@ -41,7 +40,7 @@
   <properties>
     <ibmmq.version>9.0.4.0</ibmmq.version>
     <jms.version>2.0.1</jms.version>
-    <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.3.0.0-15</pdi.version>
     <artemis.version>2.5.0</artemis.version>
   </properties>
 
