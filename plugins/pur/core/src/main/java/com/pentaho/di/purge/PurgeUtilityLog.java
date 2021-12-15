@@ -20,11 +20,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-import org.apache.log4j.WriterAppender;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Layout;
+import org.pentaho.platform.api.util.LogUtil;
+
+import org.slf4j.MDC;
 
 public class PurgeUtilityLog {
 
@@ -35,7 +38,7 @@ public class PurgeUtilityLog {
   private String logName;
   private String purgePath;
   private Level logLevel;
-  private WriterAppender writeAppender;
+  private Appender appender;
   static protected Class layoutClass = PurgeUtilityTextLayout.class;
 
   /**
@@ -61,8 +64,8 @@ public class PurgeUtilityLog {
 
   private void init() {
     logName = "PurgeUtilityLog." + getThreadName();
-    logger = Logger.getLogger( logName );
-    logger.setLevel( logLevel );
+    logger = LogManager.getLogger( logName );
+    LogUtil.setLevel( logger, logLevel );
     IPurgeUtilityLayout layout;
     if ( layoutClass == PurgeUtilityHTMLLayout.class ) {
       layout = new PurgeUtilityHTMLLayout( logLevel );
@@ -70,14 +73,14 @@ public class PurgeUtilityLog {
       layout = new PurgeUtilityTextLayout( logLevel );
     }
     layout.setTitle( "Purge Utility Log" );
-    writeAppender =
-        new WriterAppender( (Layout) layout, new OutputStreamWriter( outputStream, Charset.forName( "utf-8" ) ) );
-    logger.addAppender( writeAppender );
+    appender =
+            LogUtil.makeAppender( logName, new OutputStreamWriter( outputStream, Charset.forName( "utf-8" ) ), (Layout) layout);
+    LogUtil.addAppender( appender, logger, logLevel );
   }
 
   public Logger getLogger() {
     if ( logger == null ) {
-      return Logger.getLogger( Thread.currentThread().getStackTrace()[4].getClassName() );
+      return LogManager.getLogger( Thread.currentThread().getStackTrace()[4].getClassName() );
     } else {
       return logger;
     }
@@ -110,12 +113,12 @@ public class PurgeUtilityLog {
 
   protected void endJob() {
     try {
-      outputStream.write( writeAppender.getLayout().getFooter().getBytes() );
+      outputStream.write( appender.getLayout().getFooter() );
     } catch ( Exception e ) {
       System.out.println( e );
       // Don't try logging a log error.
     }
-    logger.removeAppender( logName );
+    LogUtil.removeAppender(appender, logger);
   }
 
   private String getThreadName() {
