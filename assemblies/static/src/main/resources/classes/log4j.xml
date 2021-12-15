@@ -23,6 +23,9 @@
 
       <param name="File" value="logs/pdi.log"/>
       <param name="Append" value="false"/>
+      <param name="Threshold" value="INFO"/>
+      <!-- BufferedIO=true also forces the log to flush immediately; does not by default -->
+      <param name="BufferedIO" value="true"/>
 
       <!-- Rollover at midnight each day -->
       <param name="DatePattern" value="'.'yyyy-MM-dd"/>
@@ -41,15 +44,7 @@
       </layout>
    </appender>
 
-  <appender name="pdi-execution-appender" class="org.apache.log4j.rolling.RollingFileAppender">
-    <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-      <param name="ActiveFileName"  value="logs/pdi.log" />
-      <param name="FileNamePattern" value="logs/pdi.%d{yyyy-MM-dd}.log" />
-    </rollingPolicy>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p &lt;%t&gt; %m%n"/>
-    </layout>
-  </appender>
+   <!-- With the conversion to log4j2, you cannot configure a RollingFileAppender in a log4j1 xml configuration file -->
 
    <!-- ================== -->
    <!-- Log4JDBC Appenders -->
@@ -123,12 +118,12 @@
 
   <logger name="org.pentaho.di.trans.Trans" additivity="false">
     <level value="INFO"/>
-    <appender-ref ref="pdi-execution-appender"/>
+    <appender-ref ref="PENTAHOFILE"/>
   </logger>
 
   <logger name="org.pentaho.di.job.Job" additivity="false">
     <level value="INFO"/>
-    <appender-ref ref="pdi-execution-appender"/>
+    <appender-ref ref="PENTAHOFILE"/>
   </logger>
 
   <category name="org.pentaho.hadoop.shim.DriverManager">
