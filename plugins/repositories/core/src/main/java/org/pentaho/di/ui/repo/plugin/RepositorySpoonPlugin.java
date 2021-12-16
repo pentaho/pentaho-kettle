@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.repo.plugin;
 
 import org.eclipse.swt.widgets.ToolBar;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.ui.repo.menu.RepositoryConnectMenu;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -48,7 +49,7 @@ public class RepositorySpoonPlugin implements SpoonPluginInterface {
 
   @Override
   public void applyToContainer( String category, XulDomContainer container ) throws XulException {
-    if ( category.equals( SPOON_CATEGORY ) ) {
+    if ( ( category.equals( SPOON_CATEGORY ) && !Const.isRunningOnWebspoonMode() ) ) {
       XulToolbar toolbar = (XulToolbar) container.getDocumentRoot().getElementById( "main-toolbar" );
       RepositoryConnectMenu repoConnectMenu =
         new RepositoryConnectMenu( Spoon.getInstance(), (ToolBar) toolbar.getManagedObject(),
