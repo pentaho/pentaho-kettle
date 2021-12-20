@@ -34,7 +34,7 @@ buildProperties:
     test: test
 
   JOB_ITEM_DEFAULTS :
-    dockerImage     : jenkins-build/maven/oracle-jdk/8
+    dockerImage     : jenkins-build/maven/open-jdk/11
     scmBranch       : master
 
 jobGroups:
