@@ -18,13 +18,18 @@ package com.pentaho.di.purge;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
+import java.io.Serializable;
 
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-import org.apache.log4j.WriterAppender;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.WriterAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 public class PurgeUtilityLog {
 
@@ -35,7 +40,7 @@ public class PurgeUtilityLog {
   private String logName;
   private String purgePath;
   private Level logLevel;
-  private WriterAppender writeAppender;
+  private Appender writeAppender;
   static protected Class layoutClass = PurgeUtilityTextLayout.class;
 
   /**
@@ -61,23 +66,22 @@ public class PurgeUtilityLog {
 
   private void init() {
     logName = "PurgeUtilityLog." + getThreadName();
-    logger = Logger.getLogger( logName );
-    logger.setLevel( logLevel );
+    logger = LogManager.getLogger( logName );
+
     IPurgeUtilityLayout layout;
     if ( layoutClass == PurgeUtilityHTMLLayout.class ) {
       layout = new PurgeUtilityHTMLLayout( logLevel );
     } else {
       layout = new PurgeUtilityTextLayout( logLevel );
     }
-    layout.setTitle( "Purge Utility Log" );
     writeAppender =
-        new WriterAppender( (Layout) layout, new OutputStreamWriter( outputStream, Charset.forName( "utf-8" ) ) );
-    logger.addAppender( writeAppender );
+      makeAppender("PurgeUtilityLog", new OutputStreamWriter(outputStream), (Layout<Serializable>)layout);
+    addAppender(writeAppender, getLogger(), logLevel);
   }
 
   public Logger getLogger() {
     if ( logger == null ) {
-      return Logger.getLogger( Thread.currentThread().getStackTrace()[4].getClassName() );
+      return LogManager.getLogger( Thread.currentThread().getStackTrace()[4].getClassName() );
     } else {
       return logger;
     }
@@ -97,7 +101,7 @@ public class PurgeUtilityLog {
   public void setCurrentFilePath( String currentFilePath ) {
     this.currentFilePath = currentFilePath;
     if ( currentFilePath != null ) {
-      MDC.put( FILE_KEY, currentFilePath );
+      ThreadContext.put( FILE_KEY, currentFilePath );
     }
   }
 
@@ -110,16 +114,47 @@ public class PurgeUtilityLog {
 
   protected void endJob() {
     try {
-      outputStream.write( writeAppender.getLayout().getFooter().getBytes() );
+      outputStream.write( writeAppender.getLayout().getFooter() );
     } catch ( Exception e ) {
       System.out.println( e );
       // Don't try logging a log error.
     }
-    logger.removeAppender( logName );
+    removeAppender(writeAppender, getLogger());
   }
 
   private String getThreadName() {
     return Thread.currentThread().getName();
   }
 
+  public static void addAppender(Appender appender, Logger logger, Level level) {
+    LoggerContext ctx = (LoggerContext) LogManager.getContext( false );
+    Configuration config = ctx.getConfiguration();
+    appender.start();
+    config.addAppender(appender);
+    LoggerConfig loggerConfig = config.getLoggerConfig( logger.getName() );
+    loggerConfig.setLevel(level);
+    loggerConfig.addAppender( appender, level, null );
+    ctx.updateLoggers();
+  }
+
+  public static void removeAppender(Appender appender, Logger logger) {
+    appender.stop();
+    LoggerContext ctx = (LoggerContext) LogManager.getContext( false );
+    Configuration config = ctx.getConfiguration();
+    LoggerConfig loggerConfig = config.getLoggerConfig( logger.getName() );
+    loggerConfig.removeAppender( appender.getName() );
+    ctx.updateLoggers();
+  }
+
+  public static Appender makeAppender(
+      String name,
+      OutputStreamWriter sw,
+      Layout<Serializable> layout)
+  {
+    return WriterAppender.newBuilder()
+        .setName(name)
+        .setLayout(layout)
+        .setTarget(sw)
+        .build();
+  }
 }

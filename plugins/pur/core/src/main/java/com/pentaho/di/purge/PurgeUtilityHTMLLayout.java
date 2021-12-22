@@ -16,17 +16,20 @@
  */
 package com.pentaho.di.purge;
 
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.helpers.LogLog;
-import org.apache.log4j.helpers.Transform;
-import org.apache.log4j.spi.LocationInfo;
-import org.apache.log4j.spi.LoggingEvent;
-import org.slf4j.MDC;
 
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.layout.AbstractStringLayout;
+import org.apache.logging.log4j.core.util.Transform;
+import org.apache.logging.log4j.util.Strings;
 
 /**
  * This class was derived from Log4j HTMLLayout.
@@ -36,7 +39,7 @@ import java.util.Date;
  * 
  * @author tkafalas
  */
-public class PurgeUtilityHTMLLayout extends Layout implements IPurgeUtilityLayout {
+public class PurgeUtilityHTMLLayout extends AbstractStringLayout implements IPurgeUtilityLayout {
 
   protected static final int BUF_SIZE = 256;
   protected static final int MAX_CAPACITY = 1024;
@@ -44,33 +47,18 @@ public class PurgeUtilityHTMLLayout extends Layout implements IPurgeUtilityLayou
   protected static final String thCss = "background: #336699; color: #FFFFFF; text-align: left";
   static String TRACE_PREFIX = "<br>&nbsp;&nbsp;&nbsp;&nbsp;";
 
+  private static final Logger LOGGER = LogManager.getLogger( PurgeUtilityHTMLLayout.class );
   private Level loggerLogLevel = Level.DEBUG;
 
   // output buffer appended to when format() is invoked
   private StringBuffer sbuf = new StringBuffer( BUF_SIZE );
 
-  String title = "Log4J Log Messages";
+  static final String title = "Purge Utility Log";
+  static final String footer = "End of Log";
 
   public PurgeUtilityHTMLLayout( Level loggerLogLevel ) {
-    super();
+    super(Charset.forName("UTF-8"));
     this.loggerLogLevel = loggerLogLevel;
-  }
-
-  /**
-   * The <b>Title</b> option takes a String value. This option sets the document title of the generated HTML document.
-   * 
-   * <p>
-   * Defaults to 'Log4J Log Messages'.
-   */
-  public void setTitle( String title ) {
-    this.title = title;
-  }
-
-  /**
-   * Returns the current value of the <b>Title</b> option.
-   */
-  public String getTitle() {
-    return title;
   }
 
   /**
@@ -86,7 +74,7 @@ public class PurgeUtilityHTMLLayout extends Layout implements IPurgeUtilityLayou
   public void activateOptions() {
   }
 
-  public String format( LoggingEvent event ) {
+  public byte[] format( LogEvent event ) {
 
     Level logLevel = event.getLevel();
     if ( sbuf.capacity() > MAX_CAPACITY ) {
@@ -98,71 +86,60 @@ public class PurgeUtilityHTMLLayout extends Layout implements IPurgeUtilityLayou
     if ( showTimeColumn() ) {
       DateFormat df = new SimpleDateFormat( "MM/dd/yyyy HH:mm:ss" );
       Date date = new Date();
-      date.setTime( event.timeStamp );
+      date.setTime( event.getTimeMillis() );
       String time = null;
       try {
         time = df.format( date );
       } catch ( Exception ex ) {
-        LogLog.error( "Error occured while converting date.", ex );
+    	  LOGGER.error( "Error occured while converting date.", ex );
       }
 
-      sbuf.append( Layout.LINE_SEP + "<tr>" + Layout.LINE_SEP );
+      sbuf.append( Strings.LINE_SEPARATOR + "<tr>" + Strings.LINE_SEPARATOR );
 
       sbuf.append( "<td>" );
-      sbuf.append( Transform.escapeTags( time ) );
-      sbuf.append( "</td>" + Layout.LINE_SEP );
+      sbuf.append( Transform.escapeHtmlTags( time ) );
+      sbuf.append( "</td>" + Strings.LINE_SEPARATOR );
     }
 
     sbuf.append( "<td title=\"Purge File/Folder\">" );
-    sbuf.append( Transform.escapeTags( MDC.get( PurgeUtilityLog.FILE_KEY ) ) );
-    sbuf.append( "</td>" + Layout.LINE_SEP );
+    sbuf.append( Transform.escapeHtmlTags( ThreadContext.get( PurgeUtilityLog.FILE_KEY ) ) );
+    sbuf.append( "</td>" + Strings.LINE_SEPARATOR );
 
     if ( showLevelColumn() ) {
       sbuf.append( "<td title=\"Level\">" );
       if ( logLevel.equals( Level.DEBUG ) ) {
         sbuf.append( "<font color=\"#339933\">" );
-        sbuf.append( Transform.escapeTags( String.valueOf( event.getLevel() ) ) );
+        sbuf.append( Transform.escapeHtmlTags( String.valueOf( event.getLevel() ) ) );
         sbuf.append( "</font>" );
-      } else if ( logLevel.isGreaterOrEqual( Level.WARN ) ) {
+      } else if ( logLevel.compareTo( Level.WARN ) >= 0 ) {
         sbuf.append( "<font color=\"#993300\"><strong>" );
-        sbuf.append( Transform.escapeTags( String.valueOf( event.getLevel() ) ) );
+        sbuf.append( Transform.escapeHtmlTags( String.valueOf( event.getLevel() ) ) );
         sbuf.append( "</strong></font>" );
       } else {
-        sbuf.append( Transform.escapeTags( String.valueOf( event.getLevel() ) ) );
+        sbuf.append( Transform.escapeHtmlTags( String.valueOf( event.getLevel() ) ) );
       }
-      sbuf.append( "</td>" + Layout.LINE_SEP );
+      sbuf.append( "</td>" + Strings.LINE_SEPARATOR );
     }
 
     if ( showCodeLineColumn() ) {
-      LocationInfo locInfo = event.getLocationInformation();
       sbuf.append( "<td>" );
-      sbuf.append( Transform.escapeTags( MDC.get( PurgeUtilityLogger.CODE_LINE ) ) );
-      // sbuf.append( Transform.escapeTags( locInfo.getFileName() ) );
-      // sbuf.append( ':' );
-      // sbuf.append( locInfo.getLineNumber() );
-      sbuf.append( "</td>" + Layout.LINE_SEP );
+      sbuf.append( Transform.escapeHtmlTags( ThreadContext.get( PurgeUtilityLogger.CODE_LINE ) ) );
+      sbuf.append( "</td>" + Strings.LINE_SEPARATOR );
     }
 
     sbuf.append( "<td title=\"Message\">" );
-    sbuf.append( Transform.escapeTags( event.getRenderedMessage() ) );
-    sbuf.append( "</td>" + Layout.LINE_SEP );
-    sbuf.append( "</tr>" + Layout.LINE_SEP );
+    sbuf.append( Transform.escapeHtmlTags( event.getMessage().getFormattedMessage() ) );
+    sbuf.append( "</td>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "</tr>" + Strings.LINE_SEPARATOR );
 
-    if ( event.getNDC() != null ) {
+    if ( event.getContextStack() != null ) {
       sbuf.append( "<tr><td bgcolor=\"#EEEEEE\" style=\"font-size : "
           + "xx-small;\" colspan=\"6\" title=\"Nested Diagnostic Context\">" );
-      sbuf.append( "NDC: " + Transform.escapeTags( event.getNDC() ) );
-      sbuf.append( "</td></tr>" + Layout.LINE_SEP );
+      appendThrowableAsHTML(event.getContextStack().asList().toArray(new String[event.getContextStack().asList().size()]), sbuf);
+      sbuf.append( "</td></tr>" + Strings.LINE_SEPARATOR );
     }
 
-    String[] s = event.getThrowableStrRep();
-    if ( s != null ) {
-      sbuf.append( "<tr><td bgcolor=\"#993300\" style=\"color:White; font-size : xx-small;\" colspan=\"6\">" );
-      appendThrowableAsHTML( s, sbuf );
-      sbuf.append( "</td></tr>" + Layout.LINE_SEP );
-    }
-
-    return sbuf.toString();
+    return sbuf.toString().getBytes();
   }
 
   void appendThrowableAsHTML( String[] s, StringBuffer sbuf ) {
@@ -171,12 +148,12 @@ public class PurgeUtilityHTMLLayout extends Layout implements IPurgeUtilityLayou
       if ( len == 0 ) {
         return;
       }
-      sbuf.append( Transform.escapeTags( s[0] ) );
-      sbuf.append( Layout.LINE_SEP );
+      sbuf.append( Transform.escapeHtmlTags( s[0] ) );
+      sbuf.append( Strings.LINE_SEPARATOR );
       for ( int i = 1; i < len; i++ ) {
         sbuf.append( TRACE_PREFIX );
-        sbuf.append( Transform.escapeTags( s[i] ) );
-        sbuf.append( Layout.LINE_SEP );
+        sbuf.append( Transform.escapeHtmlTags( s[i] ) );
+        sbuf.append( Strings.LINE_SEPARATOR );
       }
     }
   }
@@ -184,52 +161,52 @@ public class PurgeUtilityHTMLLayout extends Layout implements IPurgeUtilityLayou
   /**
    * Returns appropriate HTML headers.
    */
-  public String getHeader() {
+  public byte[] getHeader() {
     StringBuffer sbuf = new StringBuffer();
     sbuf.append( "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" "
-        + "\"http://www.w3.org/TR/html4/loose.dtd\">" + Layout.LINE_SEP );
-    sbuf.append( "<html>" + Layout.LINE_SEP );
-    sbuf.append( "<head>" + Layout.LINE_SEP );
-    sbuf.append( "<title>" + title + "</title>" + Layout.LINE_SEP );
-    sbuf.append( "<style type=\"text/css\">" + Layout.LINE_SEP );
-    sbuf.append( "<!--" + Layout.LINE_SEP );
-    sbuf.append( "body, table {font-family: arial,sans-serif; font-size: x-small;}" + Layout.LINE_SEP );
-    sbuf.append( "th {background: #336699; color: #FFFFFF; text-align: left;}" + Layout.LINE_SEP );
-    sbuf.append( "-->" + Layout.LINE_SEP );
-    sbuf.append( "</style>" + Layout.LINE_SEP );
-    sbuf.append( "</head>" + Layout.LINE_SEP );
+        + "\"http://www.w3.org/TR/html4/loose.dtd\">" + Strings.LINE_SEPARATOR );
+    sbuf.append( "<html>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "<head>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "<title>" + title + "</title>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "<style type=\"text/css\">" + Strings.LINE_SEPARATOR );
+    sbuf.append( "<!--" + Strings.LINE_SEPARATOR );
+    sbuf.append( "body, table {font-family: arial,sans-serif; font-size: x-small;}" + Strings.LINE_SEPARATOR );
+    sbuf.append( "th {background: #336699; color: #FFFFFF; text-align: left;}" + Strings.LINE_SEPARATOR );
+    sbuf.append( "-->" + Strings.LINE_SEPARATOR );
+    sbuf.append( "</style>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "</head>" + Strings.LINE_SEPARATOR );
     sbuf.append( "<body bgcolor=\"#FFFFFF\" topmargin=\"6\" leftmargin=\"6\" style=\"" + fontCss + "\">"
-        + Layout.LINE_SEP );
-    sbuf.append( "<hr size=\"1\" noshade>" + Layout.LINE_SEP );
-    sbuf.append( "Log session start time " + new Date() + "<br>" + Layout.LINE_SEP );
-    sbuf.append( "<br>" + Layout.LINE_SEP );
+        + Strings.LINE_SEPARATOR );
+    sbuf.append( "<hr size=\"1\" noshade>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "Log session start time " + new Date() + "<br>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "<br>" + Strings.LINE_SEPARATOR );
     sbuf.append( "<table cellspacing=\"0\" cellpadding=\"4\" border=\"1\" bordercolor=\"#224466\" width=\"100%\">"
-        + Layout.LINE_SEP );
-    sbuf.append( "<tr style=\"" + thCss + "\">" + Layout.LINE_SEP );
+        + Strings.LINE_SEPARATOR );
+    sbuf.append( "<tr style=\"" + thCss + "\">" + Strings.LINE_SEPARATOR );
     if ( showTimeColumn() ) {
-      sbuf.append( "<th>Time</th>" + Layout.LINE_SEP );
+      sbuf.append( "<th>Time</th>" + Strings.LINE_SEPARATOR );
     }
-    sbuf.append( "<th>File/Folder</th>" + Layout.LINE_SEP );
+    sbuf.append( "<th>File/Folder</th>" + Strings.LINE_SEPARATOR );
     if ( showLevelColumn() ) {
-      sbuf.append( "<th>Level</th>" + Layout.LINE_SEP );
+      sbuf.append( "<th>Level</th>" + Strings.LINE_SEPARATOR );
     }
     if ( showCodeLineColumn() ) {
-      sbuf.append( "<th>File:Line</th>" + Layout.LINE_SEP );
+      sbuf.append( "<th>File:Line</th>" + Strings.LINE_SEPARATOR );
     }
-    sbuf.append( "<th>Message</th>" + Layout.LINE_SEP );
-    sbuf.append( "</tr>" + Layout.LINE_SEP );
-    return sbuf.toString();
+    sbuf.append( "<th>Message</th>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "</tr>" + Strings.LINE_SEPARATOR );
+    return sbuf.toString().getBytes();
   }
 
   /**
    * Returns the appropriate HTML footers.
    */
-  public String getFooter() {
+  public byte[] getFooter() {
     StringBuffer sbuf = new StringBuffer();
-    sbuf.append( "</table>" + Layout.LINE_SEP );
-    sbuf.append( "<br>" + Layout.LINE_SEP );
+    sbuf.append( "</table>" + Strings.LINE_SEPARATOR );
+    sbuf.append( "<br>" + Strings.LINE_SEPARATOR );
     sbuf.append( "</body></html>" );
-    return sbuf.toString();
+    return sbuf.toString().getBytes();
   }
 
   /**
@@ -240,14 +217,19 @@ public class PurgeUtilityHTMLLayout extends Layout implements IPurgeUtilityLayou
   }
 
   private boolean showCodeLineColumn() {
-    return Level.DEBUG.isGreaterOrEqual( loggerLogLevel ) ? true : false;
+	  return Level.DEBUG.compareTo( loggerLogLevel ) >= 0 ? true : false;
   }
 
   private boolean showTimeColumn() {
-    return Level.DEBUG.isGreaterOrEqual( loggerLogLevel ) ? true : false;
+    return Level.DEBUG.compareTo( loggerLogLevel ) >= 0 ? true : false;
   }
 
   private boolean showLevelColumn() {
     return true;
+  }
+
+  @Override
+  public String toSerializable(LogEvent event) {
+    return new String(format(event));
   }
 }

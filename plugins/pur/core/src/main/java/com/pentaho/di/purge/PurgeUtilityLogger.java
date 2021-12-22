@@ -18,9 +18,10 @@ package com.pentaho.di.purge;
 
 import java.io.OutputStream;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.Logger;
+
 
 /**
  * 
@@ -176,13 +177,13 @@ public class PurgeUtilityLogger implements IPurgeUtilityLogger {
   @Override
   public boolean isErrorEnabled() {
     setCodeLine();
-    return Level.ERROR.isGreaterOrEqual( getLogger().getLevel() );
+    return Level.ERROR.compareTo( getLogger().getLevel() ) >= 0 ? true : false;
   }
 
   @Override
   public boolean isFatalEnabled() {
     setCodeLine();
-    return Level.FATAL.isGreaterOrEqual( getLogger().getLevel() );
+    return Level.FATAL.compareTo( getLogger().getLevel() ) >= 0 ? true : false;
   }
 
   @Override
@@ -200,7 +201,7 @@ public class PurgeUtilityLogger implements IPurgeUtilityLogger {
   @Override
   public boolean isWarnEnabled() {
     setCodeLine();
-    return Level.WARN.isGreaterOrEqual( getLogger().getLevel() );
+    return Level.WARN.compareTo( getLogger().getLevel() ) >= 0 ? true : false;
   }
 
   @Override
@@ -231,7 +232,7 @@ public class PurgeUtilityLogger implements IPurgeUtilityLogger {
     for ( int stackLevel = 1; stackLevel < Thread.currentThread().getStackTrace().length; stackLevel++ ) {
       StackTraceElement ste = Thread.currentThread().getStackTrace()[stackLevel];
       if ( !ste.getClassName().equals( this.getClass().getName() ) ) {
-        MDC.put( CODE_LINE, ste.getClassName() + "." + ste.getMethodName() + ":" + ste.getLineNumber() );
+        ThreadContext.put( CODE_LINE, ste.getClassName() + "." + ste.getMethodName() + ":" + ste.getLineNumber() );
         break;
       }
     }

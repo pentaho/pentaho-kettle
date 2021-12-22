@@ -16,15 +16,18 @@
  */
 package com.pentaho.di.purge;
 
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.helpers.LogLog;
-import org.apache.log4j.spi.LoggingEvent;
-import org.slf4j.MDC;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.layout.AbstractStringLayout;
+import org.apache.logging.log4j.util.Strings;
 
 /**
  * This class was derived from Log4j HTMLLayout.
@@ -34,31 +37,24 @@ import org.slf4j.MDC;
  * 
  * @author tkafalas
  */
-public class PurgeUtilityTextLayout extends Layout implements IPurgeUtilityLayout {
+public class PurgeUtilityTextLayout extends AbstractStringLayout implements IPurgeUtilityLayout {
 
   protected static final int BUF_SIZE = 256;
   protected static final int MAX_CAPACITY = 1024;
 
+  private static final Logger LOGGER = LogManager.getLogger( PurgeUtilityTextLayout.class );
   private Level loggerLogLevel = Level.DEBUG;
 
   // output buffer appended to when format() is invoked
   private StringBuffer sbuf = new StringBuffer( BUF_SIZE );
 
-  String title = "Log4J Log Messages";
+  static final String title = "Purge Utility Log";
+  static final String footer = "End of Log";
 
   public PurgeUtilityTextLayout( Level loggerLogLevel ) {
-    super();
+    super(Charset.forName("UTF-8"));
+    //super(((LoggerContext)LogManager.getContext(false)).getConfiguration(), title.getBytes(), footer.getBytes());
     this.loggerLogLevel = loggerLogLevel;
-  }
-
-  /**
-   * The <b>Title</b> option takes a String value. This option sets the document title of the generated HTML document.
-   * 
-   * <p>
-   * Defaults to 'Log4J Log Messages'.
-   */
-  public void setTitle( String title ) {
-    this.title = title;
   }
 
   /**
@@ -81,26 +77,25 @@ public class PurgeUtilityTextLayout extends Layout implements IPurgeUtilityLayou
   public void activateOptions() {
   }
 
-  public String format( LoggingEvent event ) {
+  public byte[] format( LogEvent event ) {
 
-    Level logLevel = event.getLevel();
     if ( sbuf.capacity() > MAX_CAPACITY ) {
       sbuf = new StringBuffer( BUF_SIZE );
     } else {
       sbuf.setLength( 0 );
     }
 
-    sbuf.append( Layout.LINE_SEP );
+    sbuf.append( Strings.LINE_SEPARATOR );
 
     if ( showTimeColumn() ) {
       DateFormat df = new SimpleDateFormat( "MM/dd/yyyy HH:mm:ss" );
       Date date = new Date();
-      date.setTime( event.timeStamp );
+      date.setTime( event.getTimeMillis() );
       String time = null;
       try {
         time = df.format( date );
       } catch ( Exception ex ) {
-        LogLog.error( "Error occured while converting date.", ex );
+        LOGGER.error( "Error occured while converting date.", ex );
       }
 
       sbuf.append( time );
@@ -108,7 +103,7 @@ public class PurgeUtilityTextLayout extends Layout implements IPurgeUtilityLayou
 
     // File/Folder
     sbuf.append( "\t" );
-    sbuf.append( MDC.get( PurgeUtilityLog.FILE_KEY ) );
+    sbuf.append( ThreadContext.get( PurgeUtilityLog.FILE_KEY ) );
 
     // debug level
     if ( showLevelColumn() ) {
@@ -119,32 +114,30 @@ public class PurgeUtilityTextLayout extends Layout implements IPurgeUtilityLayou
     // Code class and line
     if ( showCodeLineColumn() ) {
       sbuf.append( "\t" );
-      sbuf.append( MDC.get( PurgeUtilityLogger.CODE_LINE ) );
+      sbuf.append( ThreadContext.get( PurgeUtilityLogger.CODE_LINE ) );
     }
 
     // Message
     sbuf.append( "\t" );
-    sbuf.append( event.getRenderedMessage() );
+    sbuf.append( event.getMessage().getFormattedMessage() );
 
-    return sbuf.toString();
+    return sbuf.toString().getBytes();
   }
 
   /**
    * Returns appropriate headers.
    */
-  public String getHeader() {
-    StringBuffer sbuf = new StringBuffer();
-    sbuf.append( title );
-    return sbuf.toString();
+  public byte[] getHeader() {
+    return title.getBytes();
   }
 
   /**
    * Returns the appropriate footers.
    */
-  public String getFooter() {
+  public byte[] getFooter() {
     StringBuffer sbuf = new StringBuffer();
-    sbuf.append( "End of Log" );
-    return sbuf.toString();
+    sbuf.append( footer );
+    return sbuf.toString().getBytes();
   }
 
   /**
@@ -155,14 +148,19 @@ public class PurgeUtilityTextLayout extends Layout implements IPurgeUtilityLayou
   }
 
   private boolean showCodeLineColumn() {
-    return Level.DEBUG.isGreaterOrEqual( loggerLogLevel ) ? true : false;
+	  return Level.DEBUG.compareTo( loggerLogLevel ) >= 0 ? true : false;
   }
 
   private boolean showTimeColumn() {
-    return Level.DEBUG.isGreaterOrEqual( loggerLogLevel ) ? true : false;
+    return Level.DEBUG.compareTo( loggerLogLevel ) >= 0 ? true : false;
   }
 
   private boolean showLevelColumn() {
     return true;
+  }
+
+  @Override
+  public String toSerializable(LogEvent event) {
+    return new String(format(event));
   }
 }
