@@ -260,7 +260,7 @@ fi
 LOG4J1_COMPAT=""
 # Uncomment below to use the old log4j version 1 confiuration file
 # Note that the old RollingFileAppender no longer works with an XML configuration file
-#LOG4J1_COMPAT="-Dlog4j1.compatibility=true -Dlog4j.configuration=${BASEDIR}/classes/log4j.xml"
+#LOG4J1_COMPAT="-Dlog4j1.compatibility=true -Dlog4j.configuration=${BASEDIR}/classes/log4j2.xml"
 
 OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djava.library.path=$LIBPATH $JAVA_ENDORSED_DIRS $JAVA_LOCALE_COMPAT $LOG4J1_COMPAT -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT -DKETTLE_JNDI_ROOT=$KETTLE_JNDI_ROOT"
 
