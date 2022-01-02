@@ -1,20 +1,20 @@
 package org.pentaho.di.core.logging.log4j;
 
 
-import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.StringLayout;
 import org.apache.logging.log4j.core.layout.ByteBufferDestination;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.version.BuildVersion;
 
-public class Log4jKettleLayout  implements Log4jLayout, Layout {
+public class Log4jKettleLayout  implements Log4jLayout, StringLayout {
     private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
         protected SimpleDateFormat initialValue() {
             return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
@@ -127,7 +127,7 @@ public class Log4jKettleLayout  implements Log4jLayout, Layout {
     }
 
     @Override
-    public Serializable toSerializable(LogEvent event) {
+    public String toSerializable(LogEvent event) {
         return null;
     }
 
@@ -142,7 +142,12 @@ public class Log4jKettleLayout  implements Log4jLayout, Layout {
     }
 
     @Override
-    public void encode(Object source, ByteBufferDestination destination) {
+    public Charset getCharset() {
+        return null;
+    }
+
+    @Override
+    public void encode(LogEvent source, ByteBufferDestination destination) {
 
     }
 }
