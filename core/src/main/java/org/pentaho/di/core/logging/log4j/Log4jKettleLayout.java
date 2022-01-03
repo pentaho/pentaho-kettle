@@ -1,13 +1,28 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package org.pentaho.di.core.logging.log4j;
 
 
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.StringLayout;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 import org.apache.logging.log4j.core.layout.ByteBufferDestination;
 import org.pentaho.di.core.Const;
@@ -15,138 +30,141 @@ import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.version.BuildVersion;
 
-public class Log4jKettleLayout  extends AbstractStringLayout implements Log4jLayout  {
-    private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-        }
-    };
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-    public static final String ERROR_STRING = "ERROR";
+public class Log4jKettleLayout extends AbstractStringLayout implements Log4jLayout {
+  private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
+    @Override
+    protected SimpleDateFormat initialValue() {
+        return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
+    }
+  };
 
-    private boolean timeAdded;
+  public static final String ERROR_STRING = "ERROR";
 
-    public Log4jKettleLayout(Charset charset, boolean timeAdded) {
-        super(charset);
-        this.timeAdded = timeAdded;
+  private boolean timeAdded;
+
+  public Log4jKettleLayout( Charset charset, boolean timeAdded ) {
+    super( charset );
+    this.timeAdded = timeAdded;
+  }
+
+  public String format( LogEvent event ) {
+    // OK, perhaps the logging information has multiple lines of data.
+    // We need to split this up into different lines and all format these
+    // lines...
+    //
+    StringBuffer line = new StringBuffer();
+
+    String dateTimeString = "";
+    if ( timeAdded ) {
+      dateTimeString = LOCAL_SIMPLE_DATE_PARSER.get().format( new Date( event.getTimeMillis() ) ) + " - ";
     }
 
-    public String format( LogEvent event ) {
-        // OK, perhaps the logging information has multiple lines of data.
-        // We need to split this up into different lines and all format these
-        // lines...
-        //
-        StringBuffer line = new StringBuffer();
+    Object object = event.getMessage();
+    if ( object instanceof LogMessage ) {
+      LogMessage message = (LogMessage) object;
 
-        String dateTimeString = "";
-        if ( timeAdded ) {
-            dateTimeString = LOCAL_SIMPLE_DATE_PARSER.get().format( new Date( event.getTimeMillis() ) ) + " - ";
-        }
+      String[] parts = message.getMessage().split( Const.CR );
+      for ( int i = 0; i < parts.length; i++ ) {
+        // Start every line of the output with a dateTimeString
+        line.append( dateTimeString );
 
-        Object object = event.getMessage();
-        if ( object instanceof LogMessage ) {
-            LogMessage message = (LogMessage) object;
-
-            String[] parts = message.getMessage().split( Const.CR );
-            for ( int i = 0; i < parts.length; i++ ) {
-                // Start every line of the output with a dateTimeString
-                line.append( dateTimeString );
-
-                // Include the subject too on every line...
-                if ( message.getSubject() != null ) {
-                    line.append( message.getSubject() );
-                    if ( message.getCopy() != null ) {
-                        line.append( "." ).append( message.getCopy() );
-                    }
-                    line.append( " - " );
-                }
-
-                if ( message.isError() ) {
-                    BuildVersion buildVersion = BuildVersion.getInstance();
-                    line.append( ERROR_STRING );
-                    line.append( " (version " );
-                    line.append( buildVersion.getVersion() );
-                    if ( !Utils.isEmpty( buildVersion.getRevision() ) ) {
-                        line.append( ", build " );
-                        line.append( buildVersion.getRevision() );
-                    }
-                    if ( !Utils.isEmpty( buildVersion.getBuildDate() ) ) {
-                        line.append( " from " );
-                        line.append( buildVersion.getBuildDate() );
-                    }
-                    if ( !Utils.isEmpty( buildVersion.getBuildUser() ) ) {
-                        line.append( " by " );
-                        line.append( buildVersion.getBuildUser() );
-                    }
-                    line.append( ") : " );
-                }
-
-                line.append( parts[i] );
-                if ( i < parts.length - 1 ) {
-                    line.append( Const.CR ); // put the CR's back in there!
-                }
-            }
-        } else {
-            line.append( dateTimeString );
-            line.append( ( object != null ? object.toString() : "<null>" ) );
+        // Include the subject too on every line...
+        if ( message.getSubject() != null ) {
+          line.append( message.getSubject() );
+          if ( message.getCopy() != null ) {
+            line.append( "." ).append( message.getCopy() );
+          }
+          line.append( " - " );
         }
 
-        return line.toString();
+        if ( message.isError() ) {
+          BuildVersion buildVersion = BuildVersion.getInstance();
+          line.append( ERROR_STRING );
+          line.append( " (version " );
+          line.append( buildVersion.getVersion() );
+          if ( !Utils.isEmpty( buildVersion.getRevision() ) ) {
+            line.append( ", build " );
+            line.append( buildVersion.getRevision() );
+          }
+          if ( !Utils.isEmpty( buildVersion.getBuildDate() ) ) {
+            line.append( " from " );
+            line.append( buildVersion.getBuildDate() );
+          }
+          if ( !Utils.isEmpty( buildVersion.getBuildUser() ) ) {
+            line.append( " by " );
+            line.append( buildVersion.getBuildUser() );
+          }
+          line.append( ") : " );
+        }
+
+        line.append( parts[ i ] );
+        if ( i < parts.length - 1 ) {
+          line.append( Const.CR ); // put the CR's back in there!
+        }
+      }
+    } else {
+      line.append( dateTimeString );
+      line.append( ( object != null ? object.toString() : "<null>" ) );
     }
 
-    public boolean ignoresThrowable() {
-        return false;
-    }
+    return line.toString();
+  }
 
-    public void activateOptions() {
-    }
+  public boolean ignoresThrowable() {
+    return false;
+  }
 
-    public boolean isTimeAdded() {
-        return timeAdded;
-    }
+  public void activateOptions() {
+      // not used
+  }
 
-    public void setTimeAdded( boolean addTime ) {
-        this.timeAdded = addTime;
-    }
+  public boolean isTimeAdded() {
+    return timeAdded;
+  }
 
-    @Override
-    public byte[] getFooter() {
-        return new byte[0];
-    }
+  public void setTimeAdded( boolean addTime ) {
+    this.timeAdded = addTime;
+  }
 
-    @Override
-    public byte[] getHeader() {
-        return new byte[0];
-    }
+  @Override
+  public byte[] getFooter() {
+    return new byte[ 0 ];
+  }
 
-    @Override
-    public byte[] toByteArray(LogEvent event) {
-        return new byte[0];
-    }
+  @Override
+  public byte[] getHeader() {
+    return new byte[ 0 ];
+  }
 
-    @Override
-    public String toSerializable(LogEvent event) {
-        return null;
-    }
+  @Override
+  public byte[] toByteArray( LogEvent event ) {
+    return new byte[ 0 ];
+  }
 
-    @Override
-    public String getContentType() {
-        return null;
-    }
+  @Override
+  public String toSerializable( LogEvent event ) {
+    return null;
+  }
 
-    @Override
-    public Map<String, String> getContentFormat() {
-        return null;
-    }
+  @Override
+  public String getContentType() {
+    return null;
+  }
 
-    @Override
-    public Charset getCharset() {
-        return null;
-    }
+  @Override
+  public Map<String, String> getContentFormat() {
+    return new HashMap<>();
+  }
 
-    @Override
-    public void encode(LogEvent source, ByteBufferDestination destination) {
-
-    }
+  @Override
+  public void encode( LogEvent source, ByteBufferDestination destination ) {
+      // not used
+  }
 }
 
