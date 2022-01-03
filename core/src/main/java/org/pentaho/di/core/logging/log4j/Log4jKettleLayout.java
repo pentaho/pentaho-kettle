@@ -8,13 +8,14 @@ import java.util.Map;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.StringLayout;
+import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 import org.apache.logging.log4j.core.layout.ByteBufferDestination;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.version.BuildVersion;
 
-public class Log4jKettleLayout  implements Log4jLayout, StringLayout {
+public class Log4jKettleLayout  extends AbstractStringLayout implements Log4jLayout  {
     private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
         protected SimpleDateFormat initialValue() {
             return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
@@ -25,12 +26,9 @@ public class Log4jKettleLayout  implements Log4jLayout, StringLayout {
 
     private boolean timeAdded;
 
-    public Log4jKettleLayout() {
-        this( true );
-    }
-
-    public Log4jKettleLayout( boolean addTime ) {
-        this.timeAdded = addTime;
+    public Log4jKettleLayout(Charset charset, boolean timeAdded) {
+        super(charset);
+        this.timeAdded = timeAdded;
     }
 
     public String format( LogEvent event ) {
