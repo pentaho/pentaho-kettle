@@ -58,7 +58,7 @@ public class Log4jKettleLayout extends AbstractStringLayout implements Log4jLayo
     // We need to split this up into different lines and all format these
     // lines...
     //
-    StringBuffer line = new StringBuffer();
+    StringBuilder line = getStringBuilder();
 
     String dateTimeString = "";
     if ( timeAdded ) {
@@ -142,14 +142,8 @@ public class Log4jKettleLayout extends AbstractStringLayout implements Log4jLayo
     return new byte[ 0 ];
   }
 
-  @Override
-  public byte[] toByteArray( LogEvent event ) {
-    return new byte[ 0 ];
-  }
-
-  @Override
-  public String toSerializable( LogEvent event ) {
-    return null;
+  @Override public String toSerializable( LogEvent event ) {
+    return format( event );
   }
 
   @Override
