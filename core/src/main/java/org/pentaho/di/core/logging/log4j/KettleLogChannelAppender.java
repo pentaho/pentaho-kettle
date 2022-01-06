@@ -56,17 +56,14 @@ public class KettleLogChannelAppender implements Appender {
     LOG_LEVEL_MAP = Collections.unmodifiableMap( map );
   }
 
-  private LogChannelInterface kettleLogChannelInterface;
-  private Log4jLayout layout;
-  private boolean isStarted;
-  private State state;
+  private final LogChannelInterface kettleLogChannelInterface;
+  private final Layout<String> layout;
+  private volatile State state;
   private ErrorHandler errorHandler;
 
-
-  public KettleLogChannelAppender( LogChannelInterface log, Log4jLayout layout ) {
+  public KettleLogChannelAppender( LogChannelInterface log, Log4jKettleLayout layout ) {
     kettleLogChannelInterface = log;
     this.layout = layout;
-    this.isStarted = false;
     this.state = State.INITIALIZED;
     this.errorHandler = new ErrorHandler() {
       @Override public void error( String msg ) {
@@ -84,7 +81,7 @@ public class KettleLogChannelAppender implements Appender {
   }
 
   public void append( LogEvent event ) {
-    String s = layout.format( event );
+    String s = layout.toSerializable( event );
 
     if ( Level.DEBUG.equals( event.getLevel() ) ) {
       kettleLogChannelInterface.logDebug( s );
@@ -111,7 +108,7 @@ public class KettleLogChannelAppender implements Appender {
   }
 
   @Override public Layout<? extends Serializable> getLayout() {
-    return null;
+    return layout;
   }
 
   @Override public boolean ignoreExceptions() {
@@ -135,20 +132,18 @@ public class KettleLogChannelAppender implements Appender {
   }
 
   @Override public void start() {
-    this.isStarted = true;
     this.state = State.STARTED;
   }
 
   @Override public void stop() {
     this.state = State.STOPPED;
-    this.isStarted = false;
   }
 
   @Override public boolean isStarted() {
-    return isStarted;
+    return State.STARTED.equals( state );
   }
 
   @Override public boolean isStopped() {
-    return !isStarted;
+    return State.STOPPED.equals( state );
   }
 }
