@@ -90,6 +90,7 @@
     <!--<Logger name="org.pentaho" level="ERROR"/>-->
 
     <Logger name="org.apache.hadoop.io.retry" level="INFO"/>
+    <Logger name="org.apache.sqoop" level="INFO"/>
 
     <Logger name="org.pentaho.platform.osgi" level="INFO"/>
 
