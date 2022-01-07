@@ -112,7 +112,7 @@ public class Log4jKettleLayout extends AbstractStringLayout implements Log4jLayo
       line.append( dateTimeString );
       line.append( ( object != null ? object.toString() : "<null>" ) );
     }
-
+    line.append( Const.CR );
     return line.toString();
   }
 
