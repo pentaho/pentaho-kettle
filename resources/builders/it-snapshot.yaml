@@ -21,7 +21,7 @@ buildProperties:
   PARALLEL_SIZE_TEST    : 20
 
   JOB_ITEM_DEFAULTS:
-    dockerImage : jenkins-build/pentaho-build-tools/8
+    dockerImage : jenkins-build/maven/open-jdk/11
     scmBranch   : master
     archivable  : false
 
