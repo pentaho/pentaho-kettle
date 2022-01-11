@@ -186,7 +186,7 @@ public class PropsUI extends Props {
   }
 
   private PropsUI( ) {
-    super( );
+    super( Props.TYPE_PROPERTIES_SPOON );
   }
 
   private PropsUI( int t ) {
