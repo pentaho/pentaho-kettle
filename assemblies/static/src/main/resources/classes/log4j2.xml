@@ -10,7 +10,7 @@
    | website: https://logging.apache.org/log4j/2.x/manual/configuration.html
  -->
 
-<Configuration name="PentahoKettle" status="INFO" dest="out" monitorInterval="10">
+<Configuration name="PentahoKettle" status="INFO" dest="out">
 
     <Appenders>
 
@@ -19,7 +19,7 @@
         <!-- ================================= -->
 
         <!-- A time/date based rolling appender -->
-        <RollingFile name="PENTAHOFILE" fileName="logs/pdi.log" filePattern="'.'%d{yyyy-MM-dd}" append="false" bufferedIO="true" immediateFlush="true">
+        <RollingFile name="PENTAHOFILE" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log" append="false" bufferedIO="true" immediateFlush="true">
             <PatternLayout>
                 <Pattern>%d %-5p [%c] %m%n</Pattern>
             </PatternLayout>
