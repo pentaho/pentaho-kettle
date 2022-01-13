@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-libs</artifactId>
@@ -11,24 +10,24 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-21</version>
   </parent>
 
   <properties>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
-    <pentaho-mongodb-plugin.version>9.3.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
+    <pentaho-mongodb-plugin.version>9.3.0.0-21</pentaho-mongodb-plugin.version>
 
-    <pentaho-json.version>9.3.0.0-SNAPSHOT</pentaho-json.version>
-    <pentaho-hadoop-shims.version>9.3.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
+    <pentaho-json.version>9.3.0.0-21</pentaho-json.version>
+    <pentaho-hadoop-shims.version>9.3.2021.05.00-21</pentaho-hadoop-shims.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
-    <pdi-osgi-bridge.version>9.3.0.0-SNAPSHOT</pdi-osgi-bridge.version>
-    <commons-database.version>9.3.0.0-SNAPSHOT</commons-database.version>
-    <pentaho-registry.version>9.3.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-metaverse.version>9.3.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <platform.version>9.3.0.0-SNAPSHOT</platform.version>
-    <pentaho-reporting.version>9.3.0.0-SNAPSHOT</pentaho-reporting.version>
-    <big-data-plugin.version>9.3.0.0-SNAPSHOT</big-data-plugin.version>
+    <pdi-osgi-bridge.version>9.3.0.0-21</pdi-osgi-bridge.version>
+    <commons-database.version>9.3.0.0-21</commons-database.version>
+    <pentaho-registry.version>9.3.0.0-21</pentaho-registry.version>
+    <pentaho-metaverse.version>9.3.0.0-21</pentaho-metaverse.version>
+    <platform.version>9.3.0.0-21</platform.version>
+    <pentaho-reporting.version>9.3.0.0-21</pentaho-reporting.version>
+    <big-data-plugin.version>9.3.0.0-21</big-data-plugin.version>
 
     <!-- third party -->
     <derbyclient.version>10.2.1.6</derbyclient.version>
