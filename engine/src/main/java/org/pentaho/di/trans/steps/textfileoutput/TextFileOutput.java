@@ -443,7 +443,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     Object[] row = getRow(); // This also waits for a row to be finished.
 
     if ( first ) {
-      first = false;
+
       if ( row != null ) {
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
