@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-pur-plugin-core</artifactId>
   <packaging>jar</packaging>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-24</version>
 
   <name>PDI PUR Plugin Core</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-24</version>
   </parent>
 
   <properties>
     <!-- Kettle dependencies -->
-    <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.3.0.0-24</pdi.version>
 
     <!-- Pentaho dependenceis -->
-    <platform.version>9.3.0.0-SNAPSHOT</platform.version>
-    <pentaho-json.version>9.3.0.0-SNAPSHOT</pentaho-json.version>
+    <platform.version>9.3.0.0-24</platform.version>
+    <pentaho-json.version>9.3.0.0-24</pentaho-json.version>
 
     <!-- Third party dependencies -->
     <webservices-api.version>2.3.1</webservices-api.version>
@@ -398,36 +397,23 @@
             <configuration>
               <target>
                 <echo message="Compiling the Wadl description..."/>
-                <taskdef name="wjc" classname="org.jvnet.ws.wadl2java.WJCTask" classpathref="maven.plugin.classpath"/>
+                <taskdef classname="org.jvnet.ws.wadl2java.WJCTask" classpathref="maven.plugin.classpath" name="wjc"/>
 
-                <wjc description="wadl2java/wadl-resource/application.wadl.xml"
-                     package="com.pentaho.di.services"
-                     autoSchemaPackage="false"
-                     target="src/main/java">
+                <wjc autoSchemaPackage="false" description="wadl2java/wadl-resource/application.wadl.xml" package="com.pentaho.di.services" target="src/main/java">
 
                   <produces dir="src/main/java" includes="**/*.java"/>
-                  <customClassName uri="http://localhost:9080/pentaho-di/plugin/"
-                                   classname="PurRepositoryPluginServices"/>
+                  <customClassName classname="PurRepositoryPluginServices" uri="http://localhost:9080/pentaho-di/plugin/"/>
                 </wjc>
 
                 <!-- Modify the resulting class adding our tagging interface -->
-                <replaceregexp file="${wadl2java.codedir}/${wadl2java.generated-class-name}.java"
-                               match="package com.pentaho.di.services;${line.separator}"
-                               replace="package com.pentaho.di.services;${line.separator}${line.separator}import org.pentaho.di.repository.IRepositoryService;"/>
+                <replaceregexp file="${wadl2java.codedir}/${wadl2java.generated-class-name}.java" match="package com.pentaho.di.services;${line.separator}" replace="package com.pentaho.di.services;${line.separator}${line.separator}import org.pentaho.di.repository.IRepositoryService;"/>
 
-                <replaceregexp file="${wadl2java.codedir}/${wadl2java.generated-class-name}.java"
-                               match="public static class (.*) \{"
-                               replace="public static class \1 implements IRepositoryService {"
-                               byline="true"/>
+                <replaceregexp byline="true" file="${wadl2java.codedir}/${wadl2java.generated-class-name}.java" match="public static class (.*) \{" replace="public static class \1 implements IRepositoryService {"/>
 
-                <replaceregexp file="${wadl2java.codedir}/${wadl2java.generated-class-name}.java"
-                               match="${wadl2java.generated-class-name}"
-                               replace="${wadl2java.desired-class-name}"
-                               byline="true"/>
+                <replaceregexp byline="true" file="${wadl2java.codedir}/${wadl2java.generated-class-name}.java" match="${wadl2java.generated-class-name}" replace="${wadl2java.desired-class-name}"/>
 
                 <!-- Finally rename the file and overwrite the original -->
-                <move file="${wadl2java.codedir}/${wadl2java.generated-class-name}.java"
-                      tofile="${wadl2java.codedir}/${wadl2java.desired-class-name}.java"/>
+                <move file="${wadl2java.codedir}/${wadl2java.generated-class-name}.java" tofile="${wadl2java.codedir}/${wadl2java.desired-class-name}.java"/>
               </target>
             </configuration>
           </execution>
