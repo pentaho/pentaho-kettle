@@ -727,7 +727,7 @@ jobGroups:
   4600:
      - jobID           :  installers
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/bitrock-installbuilder-8
+       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
        archivable      :  true
        testable        :  false
        parallelize     :  true
