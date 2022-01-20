@@ -21,7 +21,7 @@ import java.io.OutputStream;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.junit.Test;
 
 public class PurgeUtilityLoggerTest {
