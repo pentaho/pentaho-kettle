@@ -113,11 +113,11 @@ GOTO :COLLECTARGUMENTS
 REM required for Java 11 date/time formatting backwards compatibility
 set JAVA_LOCALE_COMPAT=-Djava.locale.providers=COMPAT,SPI
 
+:COLLECTARGUMENTS
 REM **********************
 REM   Collect arguments
 REM **********************
 
-:COLLECTARGUMENTS
 set _cmdline=
 :TopArg
 if %1!==! goto EndArg
@@ -135,6 +135,7 @@ REM ******************************************************************
 if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xms1024m" "-Xmx2048m"
 
 set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" "-Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin" %JAVA_ENDORSED_DIRS% %JAVA_LOCALE_COMPAT% "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
+
 REM ***************
 REM ** Run...    **
 REM ***************
