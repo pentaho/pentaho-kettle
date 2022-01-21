@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j2 Configuration                                                  -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!--
+   | For more configuration information and examples see the Apache Log4j
+   | website: https://logging.apache.org/log4j/2.x/manual/configuration.html
+ -->
+
+<Configuration name="PentahoKettle" status="INFO" dest="out" monitorInterval="10">
+   <Appenders>
+      <!-- ============================== -->
+      <!-- Append messages to the console -->
+      <!-- ============================== -->
+      <Console name="PENTAHOCONSOLE">
+         <PatternLayout>
+            <Pattern>%d{ABSOLUTE} %-5p [%c{1}] %m%n</Pattern>
+         </PatternLayout>
+      </Console>
+   </Appenders>
+   <!-- ================ -->
+   <!-- Limit categories -->
+   <!-- ================ -->
+   <Loggers>
+      <!-- ================ -->
+      <!-- Setup the Root category -->
+      <!-- ======================= -->
+
+      <Root level="INFO">
+         <appender-ref ref="PENTAHOCONSOLE"/>
+      </Root>
+   </Loggers>
+</Configuration>
+
