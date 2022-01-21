@@ -18,7 +18,7 @@ package com.pentaho.di.purge;
 
 import java.util.Date;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 
 /**
  * @author tkafalas
