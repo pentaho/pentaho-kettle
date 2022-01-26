@@ -725,13 +725,13 @@ jobGroups:
        versionProperty :  pdi-sdk-plugins.version
 
   4600:
-     - jobID           :  installers
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
-       archivable      :  true
-       testable        :  false
-       parallelize     :  true
-       versionProperty :  pentaho.version
+#     - jobID           :  installers
+#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+#       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
+#       archivable      :  true
+#       testable        :  false
+#       parallelize     :  true
+#       versionProperty :  pentaho.version
 
      - jobID           :  installer-tool
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
