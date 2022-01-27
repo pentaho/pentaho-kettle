@@ -13,24 +13,6 @@
 <Configuration name="PentahoKettle" status="INFO" dest="out">
 
     <Appenders>
-
-        <!-- ================================= -->
-        <!-- Preserve messages in a local file -->
-        <!-- ================================= -->
-
-        <!-- A time/date based rolling appender -->
-        <RollingFile name="PENTAHOFILE" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log" append="false" bufferedIO="true" immediateFlush="true">
-            <PatternLayout>
-                <Pattern>%d %-5p [%c] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <OnStartupTriggeringPolicy />
-                <TimeBasedTriggeringPolicy />
-            </Policies>
-            <DefaultRolloverStrategy/>
-        </RollingFile>
-
-
         <!-- ================== -->
         <!-- Log4JDBC Appenders -->
         <!-- ================== -->
@@ -68,16 +50,14 @@
             </PatternLayout>
         </Console>
 
-        <RollingFile name="pdi-execution-appender" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log"
-                     append="false" bufferedIO="true" immediateFlush="true">
+        <RollingFile name="pdi-execution-appender" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p &lt;%t&gt; %m%n</Pattern>
             </PatternLayout>
             <Policies>
-                <OnStartupTriggeringPolicy />
                 <TimeBasedTriggeringPolicy />
             </Policies>
-            <DefaultRolloverStrategy />
+            <DefaultRolloverStrategy/>
         </RollingFile>
     </Appenders>
 
@@ -117,7 +97,6 @@
 
       <Root level="ERROR">
          <appender-ref ref="PENTAHOCONSOLE"/>
-         <!--<appender-ref ref="PENTAHOFILE"/>-->
       </Root>
       <!-- ================ -->
       <!-- Log4JDBC Loggers -->

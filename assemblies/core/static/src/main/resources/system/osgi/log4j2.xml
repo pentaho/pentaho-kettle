@@ -18,16 +18,14 @@
       <!-- ================================= -->
 
       <!-- A time/date based rolling appender -->
-      <RollingFile name="PENTAHOFILE" fileName="logs/pdi.log" filePattern="'.'%d{yyyy-MM-dd}" append="false" bufferedIO="true" immediateFlush="true">
+      <RollingFile name="PENTAHOFILE" fileName="logs/pdi.log" filePattern="'.'%d{yyyy-MM-dd}">
          <PatternLayout>
             <Pattern>%d %-5p [%c] %m%n</Pattern>
          </PatternLayout>
          <Policies>
-            <OnStartupTriggeringPolicy />
-            <SizeBasedTriggeringPolicy size="20 MB" />
-            <TimeBasedTriggeringPolicy />
+            <SizeBasedTriggeringPolicy size="20MB" />
          </Policies>
-         <DefaultRolloverStrategy max="1" fileIndex="min"/>
+         <DefaultRolloverStrategy max="1"/>
       </RollingFile>
 
          <!-- ============================== -->
