@@ -45,6 +45,7 @@
         <!-- Append messages to the console -->
         <!-- ============================== -->
         <Console name="PENTAHOCONSOLE">
+            <ThresholdFilter level="INFO"/>
             <PatternLayout>
                 <Pattern>%d{ABSOLUTE} %-5p [%c{1}] %m%n</Pattern>
             </PatternLayout>
