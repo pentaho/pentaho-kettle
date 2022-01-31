@@ -78,7 +78,7 @@
 
         <Logger name="com.pentaho.yarn" level="INFO"/>
 
-        <Logger name="com.pentaho.bigata.bundles" level="INFO"/>
+        <Logger name="com.pentaho.big.data.bundles" level="INFO"/>
 
         <Logger name="com.pentaho.big.data.ee" level="INFO"/>
 
@@ -92,36 +92,36 @@
 
         <Logger name="org.pentaho.hadoop.shim.DriverManager" level="INFO"/>
 
-      <!-- ======================= -->
-      <!-- Setup the Root category -->
-      <!-- ======================= -->
+        <!-- ======================= -->
+        <!-- Setup the Root category -->
+        <!-- ======================= -->
 
-      <Root level="ERROR">
-         <appender-ref ref="PENTAHOCONSOLE"/>
-      </Root>
-      <!-- ================ -->
-      <!-- Log4JDBC Loggers -->
-      <!-- ================ -->
-      <!--
-      <Logger name="jdbc.sqlonly" additivity="false" level="INFO">
-       <appender-ref ref="sql-appender"/>
-      </Logger>
+        <Root level="ERROR">
+            <appender-ref ref="PENTAHOCONSOLE"/>
+        </Root>
+        <!-- ================ -->
+        <!-- Log4JDBC Loggers -->
+        <!-- ================ -->
+        <!--
+        <Logger name="jdbc.sqlonly" additivity="false" level="INFO">
+         <appender-ref ref="sql-appender"/>
+        </Logger>
 
-      <Logger name="jdbc.sqltiming" additivity="false" level="INFO">
-         <appender-ref ref="sql-timing-appender"/>
-      </Logger>
+        <Logger name="jdbc.sqltiming" additivity="false" level="INFO">
+           <appender-ref ref="sql-timing-appender"/>
+        </Logger>
 
-      <Logger name="jdbc.audit" additivity="false" level="INFO">
-         <appender-ref ref="jdbc-appender"/>
-      </Logger>
+        <Logger name="jdbc.audit" additivity="false" level="INFO">
+           <appender-ref ref="jdbc-appender"/>
+        </Logger>
 
-      <Logger name="jdbc.resultset" additivity="false" level="INFO">
-         <appender-ref ref="jdbc-appender"/>
-      </Logger>
+        <Logger name="jdbc.resultset" additivity="false" level="INFO">
+           <appender-ref ref="jdbc-appender"/>
+        </Logger>
 
-      <Logger name="jdbc.connection" additivity="false" level="INFO">
-         <appender-ref ref="connection-appender"/>
-      </Logger>
-      -->
-   </Loggers>
+        <Logger name="jdbc.connection" additivity="false" level="INFO">
+           <appender-ref ref="connection-appender"/>
+        </Logger>
+        -->
+    </Loggers>
 </Configuration>
