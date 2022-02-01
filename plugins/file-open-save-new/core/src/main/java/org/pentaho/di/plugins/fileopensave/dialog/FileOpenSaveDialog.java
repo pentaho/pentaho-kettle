@@ -62,7 +62,7 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
   public static final String STATE_SAVE = "save";
   public static final String STATE_OPEN = "open";
   public static final String SELECT_FOLDER = "selectFolder";
-  private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
+  private Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
