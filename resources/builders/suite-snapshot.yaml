@@ -396,6 +396,10 @@ jobGroups:
        directives      :  += -Dagilebi
        archivable      :  true
 
+     - jobID           :  container-utils-internal
+       scmUrl          :  https://github.com/pentaho/container-utils.git
+       archivable      :  true
+
   3500:
      - jobID           :  platform-chart-plugin-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee-chart-plugin.git
@@ -414,6 +418,13 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -DfeaturesOnly
        root            :  assemblies
+
+     - jobID           :  container-utils-public
+       scmUrl          :  https://github.com/pentaho/container-utils.git
+       root            :  dock-maker
+       directives      :  += -Ppublic
+       archivable      :  true
+       versionProperty :  container-utils.version
 
   3600:
      - jobID           :  data-exploration-ee

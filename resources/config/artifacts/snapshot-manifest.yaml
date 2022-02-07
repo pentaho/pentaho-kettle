@@ -28,6 +28,8 @@ ee:
     other:
         - pentaho-operations-mart-${platform.version}.zip
         - pentaho-sdk-${platform.version}.zip
+        - dock-maker-${platform.version}-internal.zip
+        - dock-maker-${platform.version}-public.zip
     patches:
         - SP${SP_RELEASE_VERSION}-${platform.version}-Linux.zip
         - SP${SP_RELEASE_VERSION}-${platform.version}-Mac.zip

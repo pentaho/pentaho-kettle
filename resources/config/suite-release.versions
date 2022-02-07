@@ -19,6 +19,7 @@ commons-database.version=9.3.0.0-BUILDTAG
 commons-ee.version=9.3.0.0-BUILDTAG
 commons-gwt.version=9.3.0.0-BUILDTAG
 commons-xul.version=9.3.0.0-BUILDTAG
+container-utils.version=9.3.0.0-BUILDTAG
 dashboard.version=9.3.0.0-BUILDTAG
 dashboard-plugin.version=9.3.0.0-BUILDTAG
 encryption-support.version=9.3.0.0-BUILDTAG

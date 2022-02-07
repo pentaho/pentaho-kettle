@@ -517,6 +517,10 @@ jobGroups:
        archivable      :  true
        versionProperty :  analyzer-plugin.version
 
+     - jobID           :  container-utils-internal
+       scmUrl          :  https://github.com/pentaho/container-utils.git
+       versionProperty :  container-utils.version
+
   3500:
      - jobID           :  platform-chart-plugin-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee-chart-plugin.git
@@ -542,6 +546,13 @@ jobGroups:
        directives      :  += -DskipDefault -DfeaturesOnly
        root            :  assemblies
        versionProperty :  big-data-plugin.version
+
+     - jobID           :  container-utils-public
+       scmUrl          :  https://github.com/pentaho/container-utils.git
+       root            :  dock-maker
+       directives      :  += -Ppublic -Deula-wrap
+       archivable      :  true
+       versionProperty :  container-utils.version
 
   3600:
      - jobID           :  data-exploration-ee
@@ -725,13 +736,13 @@ jobGroups:
        versionProperty :  pdi-sdk-plugins.version
 
   4600:
-#     - jobID           :  installers
-#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-#       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
-#       archivable      :  true
-#       testable        :  false
-#       parallelize     :  true
-#       versionProperty :  pentaho.version
+     - jobID           :  installers
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
+       archivable      :  true
+       testable        :  false
+       parallelize     :  true
+       versionProperty :  pentaho.version
 
      - jobID           :  installer-tool
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
