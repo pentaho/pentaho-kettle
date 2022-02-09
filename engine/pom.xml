@@ -73,7 +73,7 @@
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <wsdl4j-qname.version>1.6.1</wsdl4j-qname.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
-    <hibernate-core.version>3.6.9.Final</hibernate-core.version>
+    <hibernate-core.version>5.4.24.Final</hibernate-core.version>
     <hibernate-c3p0.version>3.6.9.Final</hibernate-c3p0.version>
     <hibernate-commons-annotations.version>3.2.0.Final</hibernate-commons-annotations.version>
     <hibernate-ehcache.version>3.6.9.Final</hibernate-ehcache.version>
