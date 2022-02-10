@@ -36,7 +36,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
-import org.h2.util.IOUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -52,10 +51,12 @@ import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.utils.TestUtils;
 import org.pentaho.di.www.GetPropertiesServlet;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,7 +128,7 @@ public class SlaveServerTest {
     when( status.getStatusCode() ).thenReturn( statusCode );
     when( resp.getStatusLine() ).thenReturn( status );
     HttpEntity entity = mock( HttpEntity.class );
-    when( entity.getContent() ).thenReturn( IOUtils.getInputStream( entityText ) );
+    when( entity.getContent() ).thenReturn( new ByteArrayInputStream(entityText.getBytes(StandardCharsets.UTF_8)) );
     when( resp.getEntity() ).thenReturn( entity );
     return resp;
   }
