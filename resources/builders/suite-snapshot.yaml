@@ -355,7 +355,6 @@ jobGroups:
   2900:
      - jobID           :  pdi-daemon
        scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
-       directives      :  += -Dtest=\!SparkEngineContextTest,\!TaskObservableTest,\!JobGroupDriverTaskTest
 
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
