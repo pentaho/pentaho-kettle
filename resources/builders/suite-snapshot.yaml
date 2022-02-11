@@ -258,8 +258,8 @@ jobGroups:
      - jobID           :  metaverse-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-metaverse.git
        
-     - jobID           :  layout-editor
-       scmUrl          :  https://github.com/pentaho/layout-editor.git
+#     - jobID           :  layout-editor
+#       scmUrl          :  https://github.com/pentaho/layout-editor.git
 
   2400:
      - jobID           :  pdi-core-plugins
