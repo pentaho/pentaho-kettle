@@ -17,14 +17,13 @@
 package com.pentaho.di.purge;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.StringLayout;
 import org.apache.logging.log4j.core.layout.ByteBufferDestination;
-import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.core.util.Transform;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.Strings;
-import org.slf4j.MDC;
-
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -126,7 +125,7 @@ public class PurgeUtilityHTMLLayout implements StringLayout, IPurgeUtilityLayout
     }
 
     sbuf.append( "<td title=\"Purge File/Folder\">" );
-    sbuf.append( Transform.escapeHtmlTags( MDC.get( PurgeUtilityLog.FILE_KEY ) ) );
+    sbuf.append( Transform.escapeHtmlTags( ThreadContext.get( PurgeUtilityLog.FILE_KEY ) ) );
     sbuf.append( "</td>" + LINE_SEP );
 
     if ( showLevelColumn() ) {
@@ -148,7 +147,7 @@ public class PurgeUtilityHTMLLayout implements StringLayout, IPurgeUtilityLayout
     if ( showCodeLineColumn() ) {
       StackTraceElement element = event.getSource();
      sbuf.append( "<td>" );
-      sbuf.append( Transform.escapeHtmlTags( MDC.get( PurgeUtilityLogger.CODE_LINE ) ) );
+      sbuf.append( Transform.escapeHtmlTags( ThreadContext.get( PurgeUtilityLogger.CODE_LINE ) ) );
       // sbuf.append( Transform.escapeTags( locInfo.getFileName() ) );
       // sbuf.append( ':' );
       // sbuf.append( element.getLineNumber() );
@@ -168,7 +167,7 @@ public class PurgeUtilityHTMLLayout implements StringLayout, IPurgeUtilityLayout
       sbuf.append( "</td></tr>" + LINE_SEP );
     }
 
-    String[] s = event.getContextStack().toArray(new String[0]);
+    String[] s = event.getContextStack().asList().toArray( new String[0] );
     if ( s != null ) {
       sbuf.append( "<tr><td bgcolor=\"#993300\" style=\"color:White; font-size : xx-small;\" colspan=\"6\">" );
       appendThrowableAsHTML( s, sbuf );
