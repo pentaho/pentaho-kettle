@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Layout;
@@ -100,7 +101,7 @@ public class PurgeUtilityLog {
   public void setCurrentFilePath( String currentFilePath ) {
     this.currentFilePath = currentFilePath;
     if ( currentFilePath != null ) {
-      MDC.put( FILE_KEY, currentFilePath );
+      ThreadContext.put( FILE_KEY, currentFilePath );
     }
   }
 
