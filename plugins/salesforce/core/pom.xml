@@ -19,7 +19,7 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
 
     <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
-    <com.force.api.version>47.0.0</com.force.api.version>
+    <com.force.api.version>54.0.0</com.force.api.version>
   </properties>
 
   <build>
