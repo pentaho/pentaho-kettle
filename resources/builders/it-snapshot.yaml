@@ -157,7 +157,7 @@ jobGroups:
 
      - jobID           :  metaverse-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-metaverse.git
-       directives      :  -= verify += install
+       directives      :  -= verify += install -Dtest=\!AnnotationDrivenStepMetaAnalyzerTest
 
      - jobID           :  pdi-monitoring-plugin
        scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
