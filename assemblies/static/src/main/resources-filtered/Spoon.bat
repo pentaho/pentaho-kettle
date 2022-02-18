@@ -106,7 +106,7 @@ set JAVA_LOCALE_COMPAT=
 IF NOT %ISJAVA8% == 1 GOTO :SKIPENDORSEDJARS
 
 if not "%_PENTAHO_JAVA_HOME%" == "" set JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;
-set JAVA_ENDORSED_DIRS=-Djava.endorsed.dirs=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed
+set JAVA_ENDORSED_DIRS="-Djava.endorsed.dirs=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed"
 GOTO :COLLECTARGUMENTS
 
 :SKIPENDORSEDJARS
