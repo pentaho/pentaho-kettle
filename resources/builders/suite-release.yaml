@@ -575,10 +575,6 @@ jobGroups:
        directives      :  += -Djavadoc
        versionProperty :  pentaho-data-mining.version
 
-     - jobID           :  worker-nodes-ee-plugin
-       scmUrl          :  https://github.com/pentaho/worker-nodes-ee-plugin.git
-       versionProperty :  platform.version
-
   3700:
      - jobID           :  pdi-weka-plugins-ee
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining-ee.git
@@ -703,12 +699,6 @@ jobGroups:
        versionProperty :  aggdesigner.version
 
   4500:
-     - jobID           :  worker-nodes-custom-resources
-       scmUrl          :  https://github.com/pentaho/worker-nodes-custom-resources.git
-       testable        :  false
-       archivable      :  true
-       versionProperty :  worker-nodes-custom-resources.version
-
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
        directives      :  += -DskipDefault -P platform-ee-assemble -Deula-wrap
