@@ -324,9 +324,6 @@ jobGroups:
      - jobID           :  pad
        scmUrl          :  https://github.com/pentaho/pentaho-aggdesigner.git
 
-     - jobID           :  foundry-workers-ee
-       scmUrl          :  https://github.com/pentaho/worker-nodes-ee.git
-
      - jobID           :  metadata-editor-ee
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
 
