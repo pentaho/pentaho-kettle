@@ -265,6 +265,12 @@
             <groupId>org.pentaho.reporting.engine</groupId>
             <artifactId>classic-extensions-kettle</artifactId>
             <version>${pentaho-reporting.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.woodstox</groupId>
+                    <artifactId>wstx-asl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.pentaho.reporting.engine</groupId>
