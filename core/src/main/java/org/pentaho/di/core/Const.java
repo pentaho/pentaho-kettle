@@ -2342,23 +2342,23 @@ public class Const {
    */
   public static String getDocUrl( final String uri ) {
 
-      // if the uri is not empty, use it to build the URL
-      if ( !Utils.isEmpty( uri ) ) {
-        if ( uri.startsWith( WIKI_URL ) ) {
-          // if the link is to the old wiki replace it with the new wiki
-          String docWikiUrl = getBaseWikiDocUrl();
-          String wikiURL = uri.substring( WIKI_URL.length() );
-          return ( wikiURL.startsWith( "/" ) ? docWikiUrl + wikiURL.substring( 1 ) : docWikiUrl + wikiURL );
-        } else if ( uri.startsWith( "http" ) ) {
-          // use what is provided, it's already absolute
-          return uri;
-        } else {
-          // the uri provided needs to be assembled
-          String baseDocURL = getBaseDocUrl();
-          return ( uri.startsWith( "/" ) ? baseDocURL + uri.substring( 1 ) : baseDocURL + uri );
-        }
+    // if the uri is not empty, use it to build the URL
+    if ( !Utils.isEmpty( uri ) ) {
+      if ( uri.startsWith( WIKI_URL ) ) {
+        // if the link is to the old wiki replace it with the new wiki
+        String docWikiUrl = getBaseWikiDocUrl();
+        String wikiURL = uri.substring( WIKI_URL.length() );
+        return ( wikiURL.startsWith( "/" ) ? docWikiUrl + wikiURL.substring( 1 ) : docWikiUrl + wikiURL );
+      } else if ( uri.startsWith( "http" ) ) {
+        // use what is provided, it's already absolute
+        return uri;
+      } else {
+        // the uri provided needs to be assembled
+        String baseDocURL = getBaseDocUrl();
+        return ( uri.startsWith( "/" ) ? baseDocURL + uri.substring( 1 ) : baseDocURL + uri );
       }
-      return getBaseDocUrl();
+    }
+    return getBaseDocUrl();
   }
 
   /**
@@ -2890,7 +2890,7 @@ public class Const {
     return splitList.toArray( new String[splitList.size()] );
   }
 
-  private static String WIKI_URL = "http://wiki.pentaho.com";
+  private static final String WIKI_URL = "http://wiki.pentaho.com";
 
   private static String removeEnclosure( String stringToSplit, String enclosure ) {
 
