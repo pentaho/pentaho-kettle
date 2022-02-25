@@ -466,42 +466,5 @@ public class DatabaseMetaTest {
     assertFalse( getInternalState( meta, "needUpdate" ) );
   }
 
-  @Test
-  public void testGetSQLListOfSchemas() {
-    DatabaseMeta databaseMeta = spy( new DatabaseMeta() );
-    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
-    databaseMeta.setDatabaseInterface( databaseInterface );
-    databaseMeta.getSQLListOfSchemas();
-    verify( databaseInterface ).getSQLListOfSchemas( databaseMeta );
-  }
-
-  @Test
-  public void testIsNeedUpdateTrue() {
-    DatabaseMeta meta = new DatabaseMeta();
-    setInternalState( meta, "needUpdate", true );
-    assertTrue( meta.isNeedUpdate() );
-  }
-
-  @Test
-  public void testIsNeedUpdateFalse() {
-    DatabaseMeta meta = new DatabaseMeta();
-    setInternalState( meta, "needUpdate", false );
-    assertFalse( meta.isNeedUpdate() );
-  }
-
-  @Test
-  public void testSetNeedUpdateTrue() {
-    DatabaseMeta meta = new DatabaseMeta();
-    meta.setNeedUpdate( true );
-    assertTrue( getInternalState( meta, "needUpdate" ) );
-  }
-
-  @Test
-  public void testSetNeedUpdateFalse() {
-    DatabaseMeta meta = new DatabaseMeta();
-    meta.setNeedUpdate( false );
-    assertFalse( getInternalState( meta, "needUpdate" ) );
-  }
-
 
 }

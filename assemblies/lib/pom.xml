@@ -41,7 +41,7 @@
     <sqlite-jdbc.version>3.27.2.1</sqlite-jdbc.version>
     <slf4j-api.version>1.7.7</slf4j-api.version>
     <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
-    <log4j.version>1.2.17</log4j.version>
+    <!--<log4j.version>1.2.17</log4j.version>-->
     <apache-log4j-extras>1.2.17</apache-log4j-extras>
     <webservices-api.version>2.3.1</webservices-api.version>
     <webservices-rt.version>2.3.1</webservices-rt.version>
