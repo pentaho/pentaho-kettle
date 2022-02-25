@@ -938,7 +938,7 @@ public class EnterOptionsDialog extends Dialog {
     wlDefaultLocale.setLayoutData( fdlDefaultLocale );
     wDefaultLocale = new Combo( wLookComp, SWT.SINGLE | SWT.READ_ONLY | SWT.LEFT | SWT.BORDER );
     wDefaultLocale.setItems( GlobalMessages.localeDescr );
-    wDefaultLocale.setEnabled( false );
+    wDefaultLocale.setEnabled( !Const.isRunningOnWebspoonMode() );
     props.setLook( wDefaultLocale );
     FormData fdDefaultLocale = new FormData();
     fdDefaultLocale.left = new FormAttachment( middle, 0 );
