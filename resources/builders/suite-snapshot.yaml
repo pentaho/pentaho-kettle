@@ -257,6 +257,7 @@ jobGroups:
 
      - jobID           :  metaverse-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-metaverse.git
+       test            :  test -Dtest=\!AnnotationDrivenStepMetaAnalyzerTest
        
 #     - jobID           :  layout-editor
 #       scmUrl          :  https://github.com/pentaho/layout-editor.git
