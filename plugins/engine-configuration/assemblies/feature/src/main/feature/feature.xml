@@ -26,6 +26,7 @@
 
   <feature name="${project.artifactId}" version="${project.version}">
     <details>${project.description}</details>
+    <bundle>mvn:com.hitachivantara.security.web/csrf-token-service-client-java-httpclient-v4/${csrf.token.service.client.version}</bundle>
   </feature>
 
   <feature name="pdi-engine-configuration-ui" version="${project.version}">
