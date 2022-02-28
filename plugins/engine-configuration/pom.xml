@@ -17,7 +17,6 @@
 
   <properties>
     <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
-    <csrf.token.service.client.version>0.8.0</csrf.token.service.client.version>
   </properties>
 
   <modules>

@@ -80,7 +80,7 @@
     <dependency>
       <groupId>com.hitachivantara.security.web</groupId>
       <artifactId>csrf-token-service-client-java-httpclient-v4</artifactId>
-      <version>${csrf.token.service.client.version}</version>
+      <version>${hv-security-web.version}</version>
       <scope>provided</scope>
     </dependency>
 
