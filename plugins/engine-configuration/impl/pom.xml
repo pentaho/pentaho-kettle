@@ -77,6 +77,11 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.hitachivantara.security.web</groupId>
+      <artifactId>csrf-token-service-client-java-httpclient-v4</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- Endorsed Standards Excluded from Java 11+ -->
     <dependency>
@@ -102,6 +107,7 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Import-Package>org.pentaho.di.osgi,
+              com.hitachivantara.security.web.impl.client.csrf.httpclientv4,
               *</Import-Package>
             <Export-Package>org.pentaho.di.engine.configuration.impl,
               org.pentaho.di.engine.configuration.impl.*</Export-Package>
