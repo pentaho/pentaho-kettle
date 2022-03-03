@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.engine.configuration.impl.pentaho.scheduler;
 
-import org.apache.http.client.HttpClient;
+import com.hitachivantara.security.web.impl.client.csrf.httpclientv4.CsrfHttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
@@ -38,6 +38,7 @@ import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -47,6 +48,7 @@ import java.util.Base64;
 public class SchedulerRequest {
 
   public static final String API_SCHEDULER_JOB = "/api/scheduler/job";
+  private static final String API_CSRF_TOKEN = "/api/csrf/token";
   public static final String CONTENT_TYPE = "Content-Type";
   public static final String APPLICATION_XML = "application/xml";
   public static final String UTF_8 = "UTF-8";
@@ -54,7 +56,6 @@ public class SchedulerRequest {
 
   public static final String STRING_TYPE = "string";
 
-  private HttpClient httpclient = HttpClients.createDefault();
   private HttpPost httpPost;
   private Repository repository;
   private String baseUrl;
@@ -117,8 +118,11 @@ public class SchedulerRequest {
 
   public void submit( AbstractMeta meta ) {
     try {
+      CsrfHttpClient csrfHttpClient = new CsrfHttpClient(
+              new URI( baseUrl + API_CSRF_TOKEN ),
+              HttpClients.createDefault() );
       httpPost.setEntity( buildSchedulerRequestEntity( meta ) );
-      httpclient.execute( httpPost );
+      csrfHttpClient.execute( httpPost );
       logMessage();
     } catch ( Exception e ) {
       e.printStackTrace();
