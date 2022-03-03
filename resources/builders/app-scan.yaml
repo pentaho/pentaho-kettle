@@ -13,6 +13,12 @@ buildProperties:
   CREATE_TAG                     : false
   ARCHIVE_ARTIFACTS              : true
 
+  PARALLEL_SIZE_CHECKOUT: 15
+  PARALLEL_SIZE_BUILD   : 10
+  PARALLEL_SIZE_TEST    : 10
+  PARALLEL_SIZE_TAG     : 20
+  PARALLEL_SIZE_ARCHIVE : 10
+
   MAVEN_DEFAULT_DIRECTIVES       : clean package -P appscan -Dmaven.test.skip -fn
   ARCHIVING_CONFIG               : '- .*.irx'
   JOB_ITEM_DEFAULTS              : 
