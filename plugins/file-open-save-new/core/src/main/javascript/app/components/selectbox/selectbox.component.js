@@ -60,7 +60,7 @@ define([
 
     function onBodyClick() {
       $scope.$apply(function() {
-        vm.isShowOptions = ( IS_RUNNING_ON_WEBSPOON_MODE ) ? !vm.isShowOptions : false;
+        vm.isShowOptions = false;
       });
 
     }
@@ -76,14 +76,8 @@ define([
 
     function selectOption(option) {
       vm.selectedValue = option;
+      vm.isShowOptions = false;
       vm.onSelect({value: option});
-      if ( IS_RUNNING_ON_WEBSPOON_MODE ) {
-        $scope.$apply(function () {
-            vm.isShowOptions = !vm.isShowOptions;
-        });
-      } else {
-        vm.isShowOptions = false;
-      }
     }
   }
 
