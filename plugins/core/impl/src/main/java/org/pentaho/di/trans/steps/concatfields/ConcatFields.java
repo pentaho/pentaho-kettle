@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -92,6 +92,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
             PKG, "ConcatFields.Error.FieldNotFoundInputStream", "" + meta.getOutputFields()[ i ].getName() ) );
         }
       }
+
+      meta.calcMetaWithFieldOptions( data );
 
       // prepare for fast data dump (StringBuilder size)
       data.targetFieldLengthFastDataDump = meta.getTargetFieldLength();
