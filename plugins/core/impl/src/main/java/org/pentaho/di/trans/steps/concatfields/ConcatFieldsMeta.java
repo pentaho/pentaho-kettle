@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
+import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputData;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -335,5 +336,10 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   @Override
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
     return new ConcatFieldsMetaInjection( this );
+  }
+
+  @Override
+  protected void calcMetaWithFieldOptions( TextFileOutputData data ) {
+    super.calcMetaWithFieldOptions( data );
   }
 }
