@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -216,7 +216,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
     String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
-    int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
+    int startLineNr = Const.toInt( request.getParameter( "from" ), 9999999 );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
