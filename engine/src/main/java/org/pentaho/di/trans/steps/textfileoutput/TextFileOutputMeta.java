@@ -1171,41 +1171,43 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
    *
    * @param data
    */
-  protected void calcMetaWithFieldOptions( TextFileOutputData data ) {
-    if ( !Utils.isEmpty( getOutputFields() ) ) {
-      metaWithFieldOptions = new ValueMetaInterface[ getOutputFields().length ];
+  protected synchronized void calcMetaWithFieldOptions( TextFileOutputData data ) {
+    if ( null == metaWithFieldOptions ) {
+      if ( !Utils.isEmpty( getOutputFields() ) ) {
+        metaWithFieldOptions = new ValueMetaInterface[ getOutputFields().length ];
 
-      for ( int i = 0; i < getOutputFields().length; ++i ) {
-        ValueMetaInterface v = data.outputRowMeta.getValueMeta( data.fieldnrs[ i ] );
+        for ( int i = 0; i < getOutputFields().length; ++i ) {
+          ValueMetaInterface v = data.outputRowMeta.getValueMeta( data.fieldnrs[ i ] );
 
-        if ( v != null ) {
-          metaWithFieldOptions[ i ] = v.clone();
+          if ( v != null ) {
+            metaWithFieldOptions[ i ] = v.clone();
 
-          TextFileField field = getOutputFields()[ i ];
-          metaWithFieldOptions[ i ].setLength( field.getLength() );
-          metaWithFieldOptions[ i ].setPrecision( field.getPrecision() );
-          if ( !Utils.isEmpty( field.getFormat() ) ) {
-            metaWithFieldOptions[ i ].setConversionMask( field.getFormat() );
+            TextFileField field = getOutputFields()[ i ];
+            metaWithFieldOptions[ i ].setLength( field.getLength() );
+            metaWithFieldOptions[ i ].setPrecision( field.getPrecision() );
+            if ( !Utils.isEmpty( field.getFormat() ) ) {
+              metaWithFieldOptions[ i ].setConversionMask( field.getFormat() );
+            }
+            metaWithFieldOptions[ i ].setDecimalSymbol( field.getDecimalSymbol() );
+            metaWithFieldOptions[ i ].setGroupingSymbol( field.getGroupingSymbol() );
+            metaWithFieldOptions[ i ].setCurrencySymbol( field.getCurrencySymbol() );
+            metaWithFieldOptions[ i ].setTrimType( field.getTrimType() );
+            if ( !Utils.isEmpty( getEncoding() ) ) {
+              metaWithFieldOptions[ i ].setStringEncoding( getEncoding() );
+            }
+
+            // enable output padding by default to be compatible with v2.5.x
+            //
+            metaWithFieldOptions[ i ].setOutputPaddingEnabled( true );
           }
-          metaWithFieldOptions[ i ].setDecimalSymbol( field.getDecimalSymbol() );
-          metaWithFieldOptions[ i ].setGroupingSymbol( field.getGroupingSymbol() );
-          metaWithFieldOptions[ i ].setCurrencySymbol( field.getCurrencySymbol() );
-          metaWithFieldOptions[ i ].setTrimType( field.getTrimType() );
-          if ( !Utils.isEmpty( getEncoding() ) ) {
-            metaWithFieldOptions[ i ].setStringEncoding( getEncoding() );
-          }
-
-          // enable output padding by default to be compatible with v2.5.x
-          //
-          metaWithFieldOptions[ i ].setOutputPaddingEnabled( true );
         }
+      } else {
+        metaWithFieldOptions = null;
       }
-    } else {
-      metaWithFieldOptions = null;
     }
   }
 
-  protected ValueMetaInterface[] getMetaWithFieldOptions() {
+  protected synchronized ValueMetaInterface[] getMetaWithFieldOptions() {
     if ( null == metaWithFieldOptions ) {
       metaWithFieldOptions = new ValueMetaInterface[ 0 ];
     }
