@@ -143,7 +143,6 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
   public T getMetaForEntry( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     try {
-      metaFileCache = jobEntryBase.getParentJobMeta().getMetaFileCache(); //Get the cache from the parent or create it
       T theMeta = null;
       CurrentDirectoryResolver r = new CurrentDirectoryResolver();
       VariableSpace tmpSpace = r.resolveCurrentDirectory(
