@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -245,7 +245,7 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   @Injection( name = "DO_NOT_CREATE_FILE_AT_STARTUP" )
   private boolean doNotOpenNewFileInit;
 
-  private ValueMetaInterface[] metaWithFieldOptions = null;
+  protected ValueMetaInterface[] metaWithFieldOptions = null;
 
   public TextFileOutputMeta() {
     super(); // allocate BaseStepMeta

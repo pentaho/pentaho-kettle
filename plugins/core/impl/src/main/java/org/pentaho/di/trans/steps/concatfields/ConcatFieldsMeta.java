@@ -342,4 +342,47 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   protected void calcMetaWithFieldOptions( TextFileOutputData data ) {
     super.calcMetaWithFieldOptions( data );
   }
+
+  /**
+   * <p>Creates a copy of the meta information of the modified input fields, so that we don't make any changes to the
+   * original meta information.</p>
+   * <p>It is based on the original meta information and augmented with the information the user configured.</p>
+   *
+   * @param data
+   */
+  protected synchronized void calcMetaWithFieldOptions( ConcatFieldsData data ) {
+    if ( null == metaWithFieldOptions ) {
+      if ( !Utils.isEmpty( getOutputFields() ) ) {
+        metaWithFieldOptions = new ValueMetaInterface[ getOutputFields().length ];
+
+        for ( int i = 0; i < getOutputFields().length; ++i ) {
+          ValueMetaInterface v = data.inputRowMetaModified.getValueMeta( data.fieldnrs[ i ] );
+
+          if ( v != null ) {
+            metaWithFieldOptions[ i ] = v.clone();
+
+            TextFileField field = getOutputFields()[ i ];
+            metaWithFieldOptions[ i ].setLength( field.getLength() );
+            metaWithFieldOptions[ i ].setPrecision( field.getPrecision() );
+            if ( !Utils.isEmpty( field.getFormat() ) ) {
+              metaWithFieldOptions[ i ].setConversionMask( field.getFormat() );
+            }
+            metaWithFieldOptions[ i ].setDecimalSymbol( field.getDecimalSymbol() );
+            metaWithFieldOptions[ i ].setGroupingSymbol( field.getGroupingSymbol() );
+            metaWithFieldOptions[ i ].setCurrencySymbol( field.getCurrencySymbol() );
+            metaWithFieldOptions[ i ].setTrimType( field.getTrimType() );
+            if ( !Utils.isEmpty( getEncoding() ) ) {
+              metaWithFieldOptions[ i ].setStringEncoding( getEncoding() );
+            }
+
+            // enable output padding by default to be compatible with v2.5.x
+            //
+            metaWithFieldOptions[ i ].setOutputPaddingEnabled( true );
+          }
+        }
+      } else {
+        metaWithFieldOptions = null;
+      }
+    }
+  }
 }
