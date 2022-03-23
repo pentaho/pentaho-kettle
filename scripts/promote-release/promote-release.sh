@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # This script works by copying the hosted files to FTP Golden
 #
 # The transfer mechanism to FTP Golden is via a copy on the build node to a NFS mount
@@ -47,7 +47,9 @@ function promote_to_ftp_golden {
 #    $1 = source folder, $3 = destination folder
 # TODO: Using the BOX API, do a folder copy to the releases folder
 function promote_to_box {
-  echo "TODO: Box copy via Box API..."
+  if [ "${PROMOTE_TO_BOX}" == "true" ]; then
+    box_shared_link=$(python3 box_folder_copy.py "${BOXGUY}" "${1}" "${2}" "${3}")
+  fi  
 }
 
 # Write job params to manifest:
@@ -67,6 +69,10 @@ write_to_promotion_log "SUITE_BOX_BASE_DIR: %s\n"                  "${SUITE_BOX_
 
 HOSTED_RELEASE_BASE_DIR=${BUILD_HOSTING_ROOT}/${DEPLOYMENT_FOLDER}/${BUILD_NUMBER}/release
 write_to_promotion_log "HOSTED_RELEASE_BASE_DIR: %s\n\n" "${HOSTED_RELEASE_BASE_DIR}"
+
+
+BOX_SOURCE_DIR="CI/${DEPLOYMENT_FOLDER}/${BUILD_NUMBER}/"    
+write_to_promotion_log "BOX_SOURCE_DIR: %s\n\n" "${BOX_SOURCE_DIR}"
 
 # Check parameters
 if [ -z "${RELEASE_TYPE}" ]; then
@@ -89,18 +95,18 @@ fi
 # Shim promotion setup
 if [ "${RELEASE_TYPE}" == "Shim" ]; then
   GOLDEN_RELEASE_BASE_DIR=${SHIM_GOLDEN_BASE_DIR}/${SHIM_TYPE}/${DEPLOYMENT_FOLDER}
-  BOX_RELEASE_BASE_DIR=${SHIM_BOX_BASE_DIR}/${SHIM_TYPE}/${DEPLOYMENT_FOLDER}
+  BOX_RELEASE_BASE_DIR=${SHIM_BOX_BASE_DIR}/${SHIM_TYPE}
 fi
 # Suite promotion setup
 if [ "${RELEASE_TYPE}" == "Suite" ]; then
   GOLDEN_RELEASE_BASE_DIR=${SUITE_GOLDEN_BASE_DIR}/${DEPLOYMENT_FOLDER}
-  BOX_RELEASE_BASE_DIR=${SUITE_BOX_BASE_DIR}/${DEPLOYMENT_FOLDER}
+  BOX_RELEASE_BASE_DIR=${SUITE_BOX_BASE_DIR}
 fi
 
 # Do the actual promotion
 mkdir -p ${GOLDEN_RELEASE_BASE_DIR}
 promote_to_ftp_golden ${HOSTED_RELEASE_BASE_DIR} "${GOLDEN_RELEASE_BASE_DIR}/"
-promote_to_box ${HOSTED_RELEASE_BASE_DIR} "${BOX_RELEASE_BASE_DIR}"
+promote_to_box ${BOX_SOURCE_DIR} "${BOX_RELEASE_BASE_DIR}/" "${DEPLOYMENT_FOLDER}"
 
 # Write the email body to the promotion log for easy cut and paste, eventually this
 # should be emailed directly to the consumers
@@ -109,7 +115,7 @@ write_to_promotion_log "${DEPLOYMENT_FOLDER}-${BUILD_NUMBER} has been promoted:\
 
 # Write the
 if [ "${PROMOTE_TO_BOX}" == "true" ]; then
-  write_to_promotion_log "\nBox: [replace with shared BOX http URL]"
+  write_to_promotion_log "\nBox: ${box_shared_link}"
   write_to_promotion_log "\nBox FTP: ftp://%s/%s" "${BOX_FTP_HOST_NAME}" "${BOX_RELEASE_BASE_DIR}"
 fi
 if [ "${PROMOTE_TO_FTP_GOLDEN}" == "true" ]; then

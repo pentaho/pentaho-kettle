@@ -6,8 +6,8 @@ buildProperties:
   # Fix these tokens from the shim build email:
   #      [shim-name] - Name of the shim (eg. CDH 6.1)
   #      [shim-id] - Shim ID (eg. cdh61)
-  #      [shim-version] - Major/Minor version (eg. 9.3)
-  #      [shim-release-version] - Release version (eg. 9.3.2021.05.00)
+  #      [shim-version] - Major/Minor version (eg. 9.4)
+  #      [shim-release-version] - Release version (eg. 9.4.2021.05.00)
 
   BUILD_PLAN_ID                  : [shim-name] Shim Release
 
@@ -34,7 +34,7 @@ buildProperties:
   DEFAULT_BRANCH                 : [shim-id]-[shim-release-version]
   SUITE_BUILD_RESOURCES_BRANCH   : [shim-id]-[shim-release-version]
   SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
-  JENKINS_FOLDER_NAME            : "9.3"
+  JENKINS_FOLDER_NAME            : "9.4"
 
   # We need to override this until this pipeline is the nightly
   BUILD_HOSTING_ROOT             : /build2/artifacts/hosted

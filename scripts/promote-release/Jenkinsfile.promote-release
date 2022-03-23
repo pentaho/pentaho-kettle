@@ -1,0 +1,25 @@
+node('non-master') {
+    docker.withRegistry("${params.DOCKER_REGISTRY_URL}") {
+        def image = docker.image("${params.DOCKER_IMAGE}")
+        List volumes = []
+        volumes << '/var/run/docker.sock:/var/run/docker.sock'
+        volumes << '/build2/artifacts/hosted:/build2/artifacts/hosted'
+        volumes << '/build/PentahoNightly/PentahoGolden/:/build/PentahoNightly/PentahoGolden/'
+        String gid = sh(returnStdout: true, script: 'stat -c %g /var/run/docker.sock')
+        String args = volumes.collect { "-v $it" }.join(' ') + " --group-add ${gid} --memory-swappiness 0 --network=host"
+        
+        image.pull()
+        image.inside(args) {
+        
+            stage('Checkout') {
+                git url: params.PIPELINE_URL, branch: params.PIPELINE_BRANCH, credentialsId: 'github-buildguy'
+            }
+              
+            stage('Promote Release') {
+                withCredentials([file(credentialsId: 'boxguy-config', variable: 'BOXGUY')]) {
+                    sh "cd scripts/promote-release && ./promote-release.sh"
+                }    
+            }    
+        }
+    }
+}    
