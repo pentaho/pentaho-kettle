@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>file-open-save-new-assemblies</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.4.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>file-open-save-new-plugin</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.4.0.0-SNAPSHOT</version>
   <packaging>kar</packaging>
 
   <name>PDI File Open and Save New Plugin Distribution</name>

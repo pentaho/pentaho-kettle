@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>version-checker-assemblies</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.4.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kettle-version-checker</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.4.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Version Checker Plugin Distribution</name>
