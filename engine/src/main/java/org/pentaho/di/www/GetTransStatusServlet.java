@@ -216,7 +216,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
     String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
-    int startLineNr = Const.toInt( request.getParameter( "from" ), 9999999 );
+    int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
