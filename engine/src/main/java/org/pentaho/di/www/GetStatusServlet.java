@@ -762,7 +762,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "'"
         + " + '?name=' + encodeURIComponent(document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex )"
         + ".innerText)"
-        + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerText + '&from=9999999' );" );
+        + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerText );" );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );

@@ -150,9 +150,9 @@ public class GetTransStatusServletTest {
     when( cacheMock.get( logId, 0 ) ).thenReturn( new byte[] { 0, 1, 2 } );
     getTransStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
-    verify( cacheMock, times( 2 ) ).get( logId, 9999999 );
-    verify( cacheMock, times( 2 ) ).put( eq( logId ), anyString(), eq( 9999999 ) );
-    verify( mockTrans, times( 2 ) ).getLogChannel();
+    verify( cacheMock, times( 2 ) ).get( logId, 0 );
+    verify( cacheMock, times( 1 ) ).put( eq( logId ), anyString(), eq( 0 ) );
+    verify( mockTrans, times( 1 ) ).getLogChannel();
 
   }
 
