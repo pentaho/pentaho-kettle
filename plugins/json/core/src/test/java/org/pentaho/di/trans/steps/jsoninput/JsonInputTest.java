@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -217,6 +218,7 @@ public class JsonInputTest {
   @After
   public void tearDown() {
     helper.cleanUp();
+    System.clearProperty( Const.KETTLE_COMPATIBILITY_JSON_INPUT_LEGACY_MODE );
   }
 
   @Test
@@ -1474,5 +1476,42 @@ public class JsonInputTest {
       Assert.assertTrue( results.contains( "one" ) );
       Assert.assertTrue( results.contains( "three" ) );
     }
+  }
+
+
+  /**
+   * PDI-19445
+   * In the Json parser step syntax used to point to the key : $[*].value worked with the version 8.3 vanilla version
+   * however after the upgrade to 8.3.0.10 the syntax throws null value.
+   *
+   */
+  @Test
+  public void testExpressionWithLegacyModeEnable() throws Exception {
+    System.setProperty( Const.KETTLE_COMPATIBILITY_JSON_INPUT_LEGACY_MODE, "Y" );
+    String json = "{\"value\":\"value_data\",\"id\":\"id_data\"}";
+    JsonInputField inputField = new JsonInputField( "value" );
+    inputField.setPath( "$[*].value" );
+    inputField.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta inputMeta = createSimpleMeta( "json", inputField );
+    JsonInput jsonInput = createJsonInput( "json", inputMeta, new Object[] { json } );
+
+    jsonInput.addRowListener( new RowComparatorListener( new Object[][] { new Object[] { json, "value_data" } } ) );
+    processRows( jsonInput, 2 );
+  }
+
+  @Test
+  public void testExpressionWithLegacyModeDisable() throws Exception {
+    System.setProperty( Const.KETTLE_COMPATIBILITY_JSON_INPUT_LEGACY_MODE, "N" );
+    String json = "{\"value\":\"value_data\",\"id\":\"id_data\"}";
+    JsonInputField inputField = new JsonInputField( "value" );
+    inputField.setPath( "$[*].value" );
+    inputField.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta inputMeta = createSimpleMeta( "json", inputField );
+    JsonInput jsonInput = createJsonInput( "json", inputMeta, new Object[] { json } );
+
+    jsonInput.addRowListener( new RowComparatorListener( new Object[][] { new Object[] { json, null } } ) );
+    processRows( jsonInput, 2 );
   }
 }

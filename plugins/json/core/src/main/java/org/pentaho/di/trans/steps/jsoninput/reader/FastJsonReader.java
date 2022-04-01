@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
 import com.jayway.jsonpath.ReadContext;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -141,7 +142,12 @@ public class FastJsonReader implements IJsonReader {
       compiledJsonPaths = new JsonPath[ inputFields.length ];
       int i = 0;
       for ( JsonInputField inputField : inputFields ) {
-        compiledJsonPaths[ i++ ] = JsonPath.compile( step.environmentSubstitute( inputField.getPath(), true ) );
+        if ( System.getProperty( Const.KETTLE_COMPATIBILITY_JSON_INPUT_LEGACY_MODE, "N" ).equals( "Y" ) ) {
+          compiledJsonPaths[ i++ ] = JsonPath.compile( step.environmentSubstitute( inputField.getPath(), false ).trim() );
+        } else {
+          compiledJsonPaths[ i++ ] = JsonPath.compile( step.environmentSubstitute( inputField.getPath(), true ) );
+        }
+
       }
     } else {
       this.inputFields = ZERO_INPUT_FIELDS;
