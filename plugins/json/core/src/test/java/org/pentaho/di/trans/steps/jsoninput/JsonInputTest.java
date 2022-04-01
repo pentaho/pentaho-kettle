@@ -1337,6 +1337,9 @@ public class JsonInputTest {
     return jsonInput;
   }
 
+  /**
+   * This throws an exception if the comparison fails
+   */
   protected static class RowComparatorListener extends RowAdapter {
 
     Object[][] data;
