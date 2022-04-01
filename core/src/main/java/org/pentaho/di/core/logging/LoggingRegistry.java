@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -231,7 +231,7 @@ public class LoggingRegistry {
   }
 
   /**
-   * @deprecated This is unsafe call and references to this method will be remove.
+   * @deprecated This is unsafe call and references to this method will be removed.
    */
   @Deprecated
   public Map<String, LoggingObjectInterface> getMap() {
@@ -275,10 +275,7 @@ public class LoggingRegistry {
         return children;
       }
 
-      Iterator<String> kids = list.iterator();
-      while ( kids.hasNext() ) {
-        String logChannelId = kids.next();
-
+      for ( String logChannelId : list ) {
         // Add the children recursively
         getLogChannelChildren( children, logChannelId );
 
@@ -307,19 +304,19 @@ public class LoggingRegistry {
     for ( LoggingObjectInterface o : this.map.values() ) {
       if ( ( includeGeneral ) || ( !o.getObjectType().equals( LoggingObjectType.GENERAL ) ) ) {
         out.append( o.getContainerObjectId() );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getLogChannelId() );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getObjectType().name() );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getObjectName() );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getParent() != null ? o.getParent().getLogChannelId() : "-" );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getParent() != null ? o.getParent().getObjectType().name() : "-" );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getParent() != null ? o.getParent().getObjectName() : "-" );
-        out.append( "\n" );
+        out.append( '\n' );
       }
     }
     return out.toString();
@@ -444,8 +441,7 @@ public class LoggingRegistry {
    */
   public void removeLogChannelFileWriterBuffer( String id ) {
     synchronized ( this.syncObject ) {
-      Set<String> bufferIds = this.fileWriterBuffers.keySet();
-      for ( String bufferId : bufferIds ) {
+      for ( String bufferId : this.fileWriterBuffers.keySet() ) {
         if ( getLogChannelChildren( id ).contains( bufferId ) ) {
           this.fileWriterBuffers.remove( bufferId );
         }
@@ -467,7 +463,6 @@ public class LoggingRegistry {
       purgedObjectCount = 0;
       foundCounter = 0;
 
-
       if ( purgeTimer != null ) {
         purgeTimer.cancel();
         purgeTimer.purge();
@@ -478,7 +473,7 @@ public class LoggingRegistry {
   }
 
   /**
-   * Method that performs the clean up the Registry on the PurgeTimerTasks.
+   * Method that performs the cleanup the Registry on the PurgeTimerTasks.
    */
   private void purgeRegistry() {
 
@@ -486,7 +481,7 @@ public class LoggingRegistry {
             && ( map.size() > maxSize ) ) {
 
       synchronized ( syncObject ) {
-        int cutCount = (int) ( ( map.size() ) - ( maxSize - maxSize * .10 ) );
+        int cutCount = (int) ( map.size() - ( maxSize * .90 ) );
         int cutCounter = 0;
         int limitCounter = 0; // prevent locking loops
 
@@ -508,7 +503,6 @@ public class LoggingRegistry {
 
           // Attempt to purge LogChannels based on CutCount. Limit Size prevents looping longer than the size of the queue.
           do {
-
             if ( purgeObject( channelsNotToRemove ) ) {
               cutCounter++;
             }
@@ -543,10 +537,13 @@ public class LoggingRegistry {
 
       // Only Objects that are tied to a buffer can be purged.
       if ( !channelsNotToRemove.contains( objId ) ) {
-        // Object safe to remove!
-        map.remove( objId );
-        purgedObjectCount++;
-        result = true;
+        // Object is safe to remove, but the counter for purged objects will only be incremented if it is really
+        // removed from the map.
+        // It's possible for the object to not exist on the map.
+        if ( null != map.remove( objId ) ) {
+          purgedObjectCount++;
+          result = true;
+        }
       } else {
         // Object can't be removed right now add it back to the queue to remove it later
         registerPurgeQueue.add( obj );
