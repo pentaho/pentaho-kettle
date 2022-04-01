@@ -470,7 +470,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
         SlaveServerTransStatus ts =
           SpoonSlave.this.slaveServer.getTransStatus(
-            transStatus.getTransName(), transStatus.getId(), 9999999 );
+            transStatus.getTransName(), transStatus.getId(), 0 );
         if ( log.isDetailed() ) {
           log.logDetailed( "Finished receiving transformation status for [{0}] from server [{1}]", transStatus
             .getTransName(), SpoonSlave.this.slaveServer );
