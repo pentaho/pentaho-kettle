@@ -1498,7 +1498,7 @@ public class JsonInputTest {
 
     jsonInput.addRowListener( new RowComparatorListener( new Object[][] { new Object[] { json, "value_data" } } ) );
     processRows( jsonInput, 2 );
-    assertTrue( true );
+    Assert.assertEquals( "error", 0, jsonInput.getErrors() );
   }
 
   @Test
@@ -1514,6 +1514,6 @@ public class JsonInputTest {
 
     jsonInput.addRowListener( new RowComparatorListener( new Object[][] { new Object[] { json, null } } ) );
     processRows( jsonInput, 2 );
-    assertTrue( true );
+    Assert.assertEquals( "error", 0, jsonInput.getErrors() );
   }
 }
