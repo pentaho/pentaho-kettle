@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -144,6 +144,9 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
   public T getMetaForEntry( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     try {
       T theMeta = null;
+      if ( jobEntryBase.getParentJob() != null ) {
+        metaFileCache = jobEntryBase.getParentJobMeta().getMetaFileCache(); //Get the cache from the parent or create it
+      }
       CurrentDirectoryResolver r = new CurrentDirectoryResolver();
       VariableSpace tmpSpace = r.resolveCurrentDirectory(
         specificationMethod, space, rep, jobEntryBase.getParentJob(), filename );
