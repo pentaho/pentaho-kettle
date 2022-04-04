@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -428,17 +428,38 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014&#x2f;02&#x2f;27 12&#x3a;46&#x3a;06.545</created_date>
+    <created_date>2014/02/27 12:46:06.545</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2007&#x2f;04&#x2f;11 16&#x3a;04&#x3a;17.734</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2007/04/11 16:04:17.734</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
+    <notepad>
+      <note>Generate random sample rows(1000) for a product</note>
+      <xloc>48</xloc>
+      <yloc>144</yloc>
+      <width>346</width>
+      <heigth>30</heigth>
+      <fontname>Segoe UI</fontname>
+      <fontsize>9</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
   </notepads>
   <order>
     <hop>
-      <from>Generate Rows</from>
+      <from>Generate 1000 Rows</from>
       <to>Modified Java Script Value</to>
       <enabled>Y</enabled>
     </hop>
@@ -454,7 +475,7 @@
     </hop>
   </order>
   <step>
-    <name>Generate Rows</name>
+    <name>Generate 1000 Rows</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -471,6 +492,7 @@
     <interval_in_ms/>
     <row_time_field/>
     <last_time_field/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -483,8 +505,7 @@
       <yloc>57</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Modified Java Script Value</name>
     <type>ScriptValueMod</type>
@@ -498,34 +519,57 @@
     </partitioning>
     <compatible>Y</compatible>
     <optimizationLevel/>
-    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>java&#x3b;&#xa;&#xa;var description&#x3d;Packages.org.pentaho.di.core.util.StringUtil.generateRandomString&#x28;4, &#x22;&#x22;, &#x22;-desc&#x22;, false&#x29;&#x3b;&#xa;var code &#x3d; Packages.org.pentaho.di.core.util.StringUtil.generateRandomString&#x28;3, &#x22;PRD-&#x22;, &#x22;&#x22;, true&#x29;&#x3b;&#xa;var category &#x3d; Packages.org.pentaho.di.core.util.StringUtil.generateRandomString&#x28;1, &#x22;&#x22;, &#x22;&#x22;, true&#x29;&#x3b;&#xa;&#xa;var price &#x3d; 150.00 &#x2b; &#x28; Math.random&#x28;&#x29; &#x2a; 1000 &#x29;&#x3b;&#xa;&#xa;</jsScript_script>
-      </jsScript>    </jsScripts>    <fields>      <field>        <name>description</name>
+        <jsScript_script>java;
+
+var description=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(4, "", "-desc", false);
+var code = Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(3, "PRD-", "", true);
+var category = Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(1, "", "", true);
+
+var price = 150.00 + ( Math.random() * 1000 );
+
+</jsScript_script>
+      </jsScript>
+    </jsScripts>
+    <fields>
+      <field>
+        <name>description</name>
         <rename>description</rename>
         <type>String</type>
         <length>30</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>      <field>        <name>code</name>
+      </field>
+      <field>
+        <name>code</name>
         <rename>code</rename>
         <type>String</type>
         <length>10</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>      <field>        <name>price</name>
+      </field>
+      <field>
+        <name>price</name>
         <rename>price</rename>
         <type>Number</type>
         <length>7</length>
         <precision>2</precision>
         <replace>N</replace>
-      </field>      <field>        <name>category</name>
+      </field>
+      <field>
+        <name>category</name>
         <rename>category</rename>
         <type>String</type>
         <length>1</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>    </fields>    <cluster_schema/>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -537,8 +581,7 @@
       <yloc>57</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>id</name>
     <type>Sequence</type>
@@ -550,16 +593,17 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-      <valuename>id</valuename>
-      <use_database>N</use_database>
-      <connection/>
-      <schema/>
-      <seqname>SEQ_</seqname>
-      <use_counter>Y</use_counter>
-      <counter_name>Customer ID</counter_name>
-      <start_at>1</start_at>
-      <increment_by>1</increment_by>
-      <max_value>9999999</max_value>
+    <valuename>id</valuename>
+    <use_database>N</use_database>
+    <connection/>
+    <schema/>
+    <seqname>SEQ_</seqname>
+    <use_counter>Y</use_counter>
+    <counter_name>Customer ID</counter_name>
+    <start_at>1</start_at>
+    <increment_by>1</increment_by>
+    <max_value>9999999</max_value>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -572,8 +616,7 @@
       <yloc>57</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>products-random.txt</name>
     <type>TextFileOutput</type>
@@ -585,8 +628,8 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <separator>&#x3b;</separator>
-    <enclosure>&#x22;</enclosure>
+    <separator>;</separator>
+    <enclosure>"</enclosure>
     <enclosure_forced>N</enclosure_forced>
     <enclosure_fix_disabled>Y</enclosure_fix_disabled>
     <header>Y</header>
@@ -599,8 +642,7 @@
     <fileNameField/>
     <create_parent_folder>Y</create_parent_folder>
     <file>
-      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;..&#x2f;..&#x2f;transformations&#x2f;output&#x2f;products-random</name>
-      <is_command>N</is_command>
+      <name>${Internal.Transformation.Filename.Directory}/../../transformations/output/products-random</name>
       <servlet_output>N</servlet_output>
       <do_not_open_new_file_init>N</do_not_open_new_file_init>
       <extention>txt</extention>
@@ -678,6 +720,7 @@
         <precision>-1</precision>
       </field>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -690,11 +733,11 @@
       <yloc>57</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>
