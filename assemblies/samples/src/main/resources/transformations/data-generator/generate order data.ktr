@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -428,13 +428,34 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014&#x2f;02&#x2f;27 12&#x3a;46&#x3a;04.302</created_date>
+    <created_date>2014/02/27 12:46:04.302</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2007&#x2f;04&#x2f;11 16&#x3a;04&#x3a;17.734</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2007/04/11 16:04:17.734</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
+    <notepad>
+      <note>Generate 1M sample order data rows</note>
+      <xloc>16</xloc>
+      <yloc>144</yloc>
+      <width>256</width>
+      <heigth>30</heigth>
+      <fontname>Segoe UI</fontname>
+      <fontsize>9</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
   </notepads>
   <order>
     <hop>
@@ -486,16 +507,48 @@
     </partitioning>
     <compatible>Y</compatible>
     <optimizationLevel/>
-    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>&#x2f;&#x2f; The ordernr is linked to the customerId and the orderSeq.&#xa;&#x2f;&#x2f; it starts at 5000000 and is then incremented each time&#xa;&#x2f;&#x2f; there is a new customerId&#x2f;orderSeq combination&#xa;&#xa;var prevId&#x3b;&#xa;var prevSeq&#x3b;&#xa;var orderNr&#xa;&#xa;if &#x28;prevId &#x3d;&#x3d; null&#x29;&#xa;&#x7b;&#xa;  orderNr &#x3d; 5000000&#x3b;&#xa;&#x7d;&#xa;else&#xa;&#x7b;&#xa;  if &#x28;prevId &#x21;&#x3d; customerId.getInteger&#x28;&#x29; &#x7c;&#x7c; prevSeq &#x21;&#x3d; orderSeq.getInteger&#x28;&#x29;&#x29;&#xa;  &#x7b;&#xa;    orderNr&#x2b;&#x2b;&#x3b;&#xa;  &#x7d;&#xa;&#x7d;&#xa;&#xa;prevId &#x3d; customerId.getInteger&#x28;&#x29;&#x3b;&#xa;prevSeq &#x3d; orderSeq.getInteger&#x28;&#x29;&#x3b;&#xa;&#xa;</jsScript_script>
-      </jsScript>    </jsScripts>    <fields>      <field>        <name>orderNr</name>
+        <jsScript_script>// The ordernr is linked to the customerId and the orderSeq.
+// it starts at 5000000 and is then incremented each time
+// there is a new customerId/orderSeq combination
+
+var prevId;
+var prevSeq;
+var orderNr
+
+if (prevId == null)
+{
+  orderNr = 5000000;
+}
+else
+{
+  if (prevId != customerId.getInteger() || prevSeq != orderSeq.getInteger())
+  {
+    orderNr++;
+  }
+}
+
+prevId = customerId.getInteger();
+prevSeq = orderSeq.getInteger();
+
+</jsScript_script>
+      </jsScript>
+    </jsScripts>
+    <fields>
+      <field>
+        <name>orderNr</name>
         <rename>orderNr</rename>
         <type>Integer</type>
         <length>7</length>
         <precision>0</precision>
         <replace>N</replace>
-      </field>    </fields>    <cluster_schema/>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -507,8 +560,7 @@
       <yloc>199</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Generate 10M Rows</name>
     <type>RowGenerator</type>
@@ -527,6 +579,7 @@
     <interval_in_ms/>
     <row_time_field/>
     <last_time_field/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -539,8 +592,7 @@
       <yloc>72</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Generate random stuff</name>
     <type>ScriptValueMod</type>
@@ -554,46 +606,82 @@
     </partitioning>
     <compatible>Y</compatible>
     <optimizationLevel/>
-    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>&#xa;&#x2f;&#x2f; 1M customers&#xa;var customerId &#x3d; Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 1000000 &#x29;&#x3b;&#xa;&#xa;&#x2f;&#x2f; 1000 products&#xa;var productId &#x3d; Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 1000 &#x29;&#x3b;&#xa;&#xa;&#x2f;&#x2f; Order date&#xa;var orderDate &#x3d; new Date&#x28;2000&#x2b;Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 6&#x29;, Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 12 &#x29;, Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 31 &#x29;&#x29;&#x3b;&#xa;&#xa;&#x2f;&#x2f; Discount &#x25; &#x3a; between 0 and 20&#x25; in 5&#x25; blocks&#xa;var discountPct &#x3d; Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 4 &#x29; &#x2a; 5&#x3b;&#xa;&#xa;&#x2f;&#x2f; Number of products &#x3a; between 1 and 5&#xa;var nrProducts &#x3d; 1 &#x2b; Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 4 &#x29;&#x3b;&#xa;&#xa;&#xa;var orderSeq&#x3d;Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 5 &#x29;&#x3b;</jsScript_script>
-      </jsScript>    </jsScripts>    <fields>      <field>        <name>customerId</name>
+        <jsScript_script>
+// 1M customers
+var customerId = Math.round( Math.random() * 1000000 );
+
+// 1000 products
+var productId = Math.round( Math.random() * 1000 );
+
+// Order date
+var orderDate = new Date(2000+Math.round( Math.random() * 6), Math.round( Math.random() * 12 ), Math.round( Math.random() * 31 ));
+
+// Discount % : between 0 and 20% in 5% blocks
+var discountPct = Math.round( Math.random() * 4 ) * 5;
+
+// Number of products : between 1 and 5
+var nrProducts = 1 + Math.round( Math.random() * 4 );
+
+
+var orderSeq=Math.round( Math.random() * 5 );</jsScript_script>
+      </jsScript>
+    </jsScripts>
+    <fields>
+      <field>
+        <name>customerId</name>
         <rename>customerId</rename>
         <type>Integer</type>
         <length>7</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>      <field>        <name>productId</name>
+      </field>
+      <field>
+        <name>productId</name>
         <rename>productId</rename>
         <type>Integer</type>
         <length>7</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>      <field>        <name>orderDate</name>
+      </field>
+      <field>
+        <name>orderDate</name>
         <rename>orderDate</rename>
         <type>Date</type>
         <length>-1</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>      <field>        <name>discountPct</name>
+      </field>
+      <field>
+        <name>discountPct</name>
         <rename>discountPct</rename>
         <type>Integer</type>
         <length>3</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>      <field>        <name>nrProducts</name>
+      </field>
+      <field>
+        <name>nrProducts</name>
         <rename>nrProducts</rename>
         <type>Integer</type>
         <length>3</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>      <field>        <name>orderSeq</name>
+      </field>
+      <field>
+        <name>orderSeq</name>
         <rename>orderSeq</rename>
         <type>Integer</type>
         <length>2</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>    </fields>    <cluster_schema/>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -605,8 +693,7 @@
       <yloc>72</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Group by</name>
     <type>GroupBy</type>
@@ -618,30 +705,31 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-      <all_rows>Y</all_rows>
-      <ignore_aggregate>N</ignore_aggregate>
-      <field_ignore/>
-      <directory>&#x25;&#x25;java.io.tmpdir&#x25;&#x25;</directory>
-      <prefix>grp</prefix>
-      <add_linenr>Y</add_linenr>
-      <linenr_fieldname>orderLineNr</linenr_fieldname>
-      <give_back_row>N</give_back_row>
-      <group>
-        <field>
-          <name>customerId</name>
-        </field>
-        <field>
-          <name>orderSeq</name>
-        </field>
-      </group>
-      <fields>
-        <field>
-          <aggregate>minOrderDate</aggregate>
-          <subject>orderDate</subject>
-          <type>MIN</type>
-          <valuefield/>
-        </field>
-      </fields>
+    <all_rows>Y</all_rows>
+    <ignore_aggregate>N</ignore_aggregate>
+    <field_ignore/>
+    <directory>%%java.io.tmpdir%%</directory>
+    <prefix>grp</prefix>
+    <add_linenr>Y</add_linenr>
+    <linenr_fieldname>orderLineNr</linenr_fieldname>
+    <give_back_row>N</give_back_row>
+    <group>
+      <field>
+        <name>customerId</name>
+      </field>
+      <field>
+        <name>orderSeq</name>
+      </field>
+    </group>
+    <fields>
+      <field>
+        <aggregate>minOrderDate</aggregate>
+        <subject>orderDate</subject>
+        <type>MIN</type>
+        <valuefield/>
+      </field>
+    </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -654,8 +742,7 @@
       <yloc>199</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Remove orderSeq</name>
     <type>SelectValues</type>
@@ -667,10 +754,16 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <fields>        <select_unspecified>N</select_unspecified>
-      <remove>        <name>orderSeq</name>
-      </remove>      <remove>        <name>orderDate</name>
-      </remove>      <meta>        <name>minOrderDate</name>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <remove>
+        <name>orderSeq</name>
+      </remove>
+      <remove>
+        <name>orderDate</name>
+      </remove>
+      <meta>
+        <name>minOrderDate</name>
         <rename>orderDate</rename>
         <type>None</type>
         <length>-2</length>
@@ -685,7 +778,10 @@
         <grouping_symbol/>
         <currency_symbol/>
         <storage_type/>
-      </meta>    </fields>    <cluster_schema/>
+      </meta>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -697,8 +793,7 @@
       <yloc>199</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Sort rows</name>
     <type>SortRows</type>
@@ -710,13 +805,13 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-      <directory>&#x25;&#x25;java.io.tmpdir&#x25;&#x25;</directory>
-      <prefix>out</prefix>
-      <sort_size>50000</sort_size>
-      <free_memory/>
-      <compress>Y</compress>
-      <compress_variable/>
-      <unique_rows>N</unique_rows>
+    <directory>%%java.io.tmpdir%%</directory>
+    <prefix>out</prefix>
+    <sort_size>50000</sort_size>
+    <free_memory/>
+    <compress>Y</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
     <fields>
       <field>
         <name>customerId</name>
@@ -735,6 +830,7 @@
         <presorted>N</presorted>
       </field>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -747,8 +843,7 @@
       <yloc>72</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Sorted Merge</name>
     <type>SortedMerge</type>
@@ -764,12 +859,13 @@
       <field>
         <name>customerId</name>
         <ascending>Y</ascending>
-        </field>
+      </field>
       <field>
         <name>orderSeq</name>
         <ascending>Y</ascending>
-        </field>
-      </fields>
+      </field>
+    </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -782,8 +878,7 @@
       <yloc>72</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>orders-random.txt</name>
     <type>TextFileOutput</type>
@@ -795,8 +890,8 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <separator>&#x3b;</separator>
-    <enclosure>&#x22;</enclosure>
+    <separator>;</separator>
+    <enclosure>"</enclosure>
     <enclosure_forced>N</enclosure_forced>
     <enclosure_fix_disabled>Y</enclosure_fix_disabled>
     <header>Y</header>
@@ -809,8 +904,7 @@
     <fileNameField/>
     <create_parent_folder>Y</create_parent_folder>
     <file>
-      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;..&#x2f;..&#x2f;transformations&#x2f;output&#x2f;orders-random</name>
-      <is_command>N</is_command>
+      <name>${Internal.Transformation.Filename.Directory}/../../transformations/output/orders-random</name>
       <servlet_output>N</servlet_output>
       <do_not_open_new_file_init>N</do_not_open_new_file_init>
       <extention>txt</extention>
@@ -854,7 +948,7 @@
       <field>
         <name>orderDate</name>
         <type>Date</type>
-        <format>yyyy&#x2f;MM&#x2f;dd</format>
+        <format>yyyy/MM/dd</format>
         <currency/>
         <decimal/>
         <group/>
@@ -912,6 +1006,7 @@
         <precision>-1</precision>
       </field>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -924,11 +1019,11 @@
       <yloc>362</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>
