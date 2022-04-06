@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,7 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileNotFoundException;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -652,6 +653,61 @@ public class ValueDataUtilTest {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_DIVIDE ) );
     assertEquals( BigDecimal.valueOf( Long.valueOf( "2" ) ), calculate( "100", "50", ValueMetaInterface.TYPE_BIGNUMBER,
         CalculatorMetaFunction.CALC_DIVIDE ) );
+  }
+
+  @Test
+  public void testSqRt() throws Exception {
+    ValueMetaNumber vmn = new ValueMetaNumber();
+    ValueMetaInteger vmi = new ValueMetaInteger();
+    ValueMetaBigNumber vmbn = new ValueMetaBigNumber();
+    // Test Kettle number types
+    assertEquals( Double.valueOf( "2.0" ), calculate( "4", ValueMetaInterface.TYPE_NUMBER,
+      CalculatorMetaFunction.CALC_SQUARE_ROOT ) );
+    try {
+      ValueDataUtil.sqrt( vmn, "-0.1" );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
+    try {
+      vmn = new ValueMetaNumber();
+      ValueDataUtil.sqrt( vmn, "hello" );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
+
+    // Test Kettle Integer (Java Long) types
+    assertEquals( Long.valueOf( "2" ), calculate( "4", ValueMetaInterface.TYPE_INTEGER,
+      CalculatorMetaFunction.CALC_SQUARE_ROOT ) );
+    try {
+      ValueDataUtil.sqrt( vmi, "-1" );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
+    try {
+      ValueDataUtil.sqrt( vmi, "hello" );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
+
+    // Test Kettle big Number types
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "2.0" ) ), calculate( "4", ValueMetaInterface.TYPE_BIGNUMBER,
+      CalculatorMetaFunction.CALC_SQUARE_ROOT ) );
+    try {
+      ValueDataUtil.sqrt( vmbn, "-1" );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
+    try {
+      ValueDataUtil.sqrt( vmbn, "hello" );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
   }
 
   @Test
@@ -1455,6 +1511,8 @@ public class ValueDataUtilTest {
         return ValueDataUtil.getJaroWinkler_Similitude( valueMetaA, dataA, valueMetaB, dataB );
       } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_MULTIPLY ) {
         return ValueDataUtil.multiply( valueMetaA, dataA, valueMetaB, dataB );
+      } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_SQUARE_ROOT ) {
+        return ValueDataUtil.sqrt( valueMetaA, dataA );
       } else {
         fail( "Invalid CalculatorMetaFunction specified." );
         return null;
