@@ -519,6 +519,7 @@ jobGroups:
 
      - jobID           :  container-utils-internal
        scmUrl          :  https://github.com/pentaho/container-utils.git
+       directives      :  += -DskipTests
        versionProperty :  container-utils.version
 
   3500:
