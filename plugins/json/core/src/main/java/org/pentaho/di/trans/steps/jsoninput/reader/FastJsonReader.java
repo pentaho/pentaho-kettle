@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -127,7 +127,12 @@ public class FastJsonReader implements IJsonReader {
       compiledJsonPaths = new JsonPath[ inputFields.length ];
       int i = 0;
       for ( JsonInputField inputField : inputFields ) {
+        if ( System.getProperty( Const.KETTLE_COMPATIBILITY_JSON_INPUT_LEGACY_MODE, "N" ).equals( "Y" ) ) {
+          compiledJsonPaths[ i++ ] = JsonPath.compile( step.environmentSubstitute( inputField.getPath(), false ).trim() );
+        } else {
         compiledJsonPaths[ i++ ] = JsonPath.compile( step.environmentSubstitute( inputField.getPath(), true ) );
+      }
+
       }
     } else {
       this.inputFields = ZERO_INPUT_FIELDS;
