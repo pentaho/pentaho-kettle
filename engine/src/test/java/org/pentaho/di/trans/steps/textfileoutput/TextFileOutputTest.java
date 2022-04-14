@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -417,6 +417,10 @@ public class TextFileOutputTest {
       .calcMetaWithFieldOptions( any( TextFileOutputData.class ) );
     when( stepMockHelper.processRowsStepMetaInterface.getMetaWithFieldOptions() ).thenCallRealMethod();
 
+    // This is necessary because the step meta code is being executed multiple times without being fully
+    // re-initialized (in `testsIterate`), and the step code expects this field to be null when processing the first
+    // row during execution.
+    stepMockHelper.processRowsStepMetaInterface.metaWithFieldOptions = null;
     for ( Object[] row : rows ) {
       textFileOutput.setRow( row );
       textFileOutput.processRow( stepMockHelper.processRowsStepMetaInterface, textFileOutputData );
