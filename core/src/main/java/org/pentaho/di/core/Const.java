@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -829,6 +829,11 @@ public class Const {
    */
   public static final String KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION =
     "KETTLE_COMPATIBILITY_INVOKE_FILES_WITH_OR_WITHOUT_FILE_EXTENSION";
+
+  /**
+   * System-wide flag to keep legacy behavior on json input step. See PDI-19445 and PDI-18521 for details.
+   */
+  public static final String KETTLE_COMPATIBILITY_JSON_INPUT_LEGACY_MODE = "KETTLE_COMPATIBILITY_JSON_INPUT_LEGACY_MODE";
 
   /**
    * You can use this variable to speed up hostname lookup.
