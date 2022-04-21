@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -510,7 +510,8 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           log.logDetailed( "Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer );
         }
 
-        SlaveServerJobStatus ts = slaveServer.getJobStatus( jobStatus.getJobName(), jobStatus.getId(), 0 );
+        SlaveServerJobStatus ts =
+          slaveServer.getJobStatus( jobStatus.getJobName(), jobStatus.getId(), 9999999 );
 
         if ( log.isDetailed() ) {
           log.logDetailed(
