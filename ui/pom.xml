@@ -6,7 +6,7 @@
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-ui-swt</artifactId>
   <packaging>jar</packaging>
-  <version>9.2.0.3-482</version>
+  <version>9.2.0.3-C263</version>
 
   <name>PDI User Interface</name>
 
@@ -42,7 +42,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
+      <version>9.2.0.3-C263</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -143,7 +143,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
+      <version>9.2.0.3-C263</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>9.2.0.3-482</version>
+  <version>9.2.0.3-C263</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
