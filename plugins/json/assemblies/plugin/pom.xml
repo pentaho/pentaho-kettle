@@ -5,17 +5,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>json-assemblies</artifactId>
-    <version>8.3.0.26-1502</version>
+    <version>8.3.0.26-C262</version>
   </parent>
 
   <artifactId>kettle-json-plugin</artifactId>
-  <version>8.3.0.26-1502</version>
+  <version>8.3.0.26-C262</version>
   <packaging>pom</packaging>
 
   <name>PDI Json Plugin Distribution</name>
 
   <properties>
-    <project.revision>8.3.0.26-1502</project.revision>
+    <project.revision>8.3.0.26-C262</project.revision>
   </properties>
 
   <dependencies>

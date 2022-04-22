@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>json</artifactId>
-  <version>8.3.0.26-1502</version>
+  <version>8.3.0.26-C262</version>
   <packaging>pom</packaging>
 
   <name>PDI Json Plugin</name>
