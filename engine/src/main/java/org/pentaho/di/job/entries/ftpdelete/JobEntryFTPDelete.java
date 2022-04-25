@@ -717,19 +717,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           realproxyusername, realproxypassword, realproxyport, timeout );
 
         filelist = ftpclient.dir();
-
-        // Some FTP servers return a message saying no files found as a string in the filenlist
-        // e.g. Solaris 8
-        // CHECK THIS !!!
-        if ( filelist.length == 1 ) {
-          String translatedWildcard = environmentSubstitute( wildcard );
-          if ( !Utils.isEmpty( translatedWildcard ) ) {
-            if ( filelist[0].startsWith( translatedWildcard ) ) {
-              throw new FTPException( filelist[0] );
-            }
-
-          }
-        }
       } else if ( protocol.equals( PROTOCOL_FTPS ) ) {
         // establish the secure connection
         FTPSConnect( realservername, realUsername, realserverport, realPassword, realFtpDirectory, timeout );
