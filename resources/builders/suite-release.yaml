@@ -657,12 +657,27 @@ jobGroups:
        archivable      :  true
        versionProperty :  pdi-pur-plugin.version
 
+     - jobID           :  prd-assembly-no-osgi
+       scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
+       directives      :  += -Dno-osgi
+       root            :  assemblies/prd-ce
+       archivable      :  true
+       versionProperty :  pentaho-reporting.version
+
   4100:
      - jobID           :  pdi-operations-mart-ee
        scmUrl          :  https://github.com/pentaho/pdi-operations-mart.git
        directives      :  += -Deula-wrap
        archivable      :  true
        versionProperty :  pentaho-operations-mart.version
+
+     - jobID           :  prd-assembly-ee-no-osgi
+       scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
+       directives      :  += -Deula-wrap -Dno-osgi
+       root            :  assemblies/prd-ee
+       archivable      :  true
+       testable        :  false
+       versionProperty :  pentaho-reporting.version
 
   4200:
      - jobID           :  pdi-client-assembly

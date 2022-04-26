@@ -504,10 +504,23 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pdi-ee-plugin.git
        archivable      :  true
 
+     - jobID           :  prd-assembly-no-osgi
+       scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
+       directives      :  += -Dno-osgi -Pdesigner -Dmaven.test.failure.ignore=true
+       root            :  assemblies/prd-ce
+       archivable      :  true
+
   4100:
      - jobID           :  pdi-operations-mart-ee
        scmUrl          :  https://github.com/pentaho/pdi-operations-mart.git
        archivable      :  true
+
+     - jobID           :  prd-assembly-ee-no-osgi
+       scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
+       directives      :  += -Dno-osgi
+       root            :  assemblies/prd-ee
+       archivable      :  true
+       testable        :  false
 
   4200:
      - jobID           :  pdi-client-assembly

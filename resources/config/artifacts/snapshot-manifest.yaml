@@ -17,6 +17,7 @@ ee:
         - pentaho-big-data-ee-package-${platform.version}-dist.zip
         - pme-ee-${platform.version}.zip
         - prd-ee-${platform.version}.zip
+        - prd-ee-${platform.version}-no-osgi.zip
         - psw-ee-${mondrian.version}.zip
     installers:
         - pentaho-business-analytics-${platform.version}-x64.app.tar.gz
@@ -64,6 +65,7 @@ ce:
         - pentaho-big-data-plugin-${platform.version}.zip
         - pme-ce-${platform.version}.zip
         - prd-ce-${platform.version}.zip
+        - prd-ce-${platform.version}-no-osgi.zip
         - psw-ce-${mondrian.version}.zip
     plugins:
         - kettle-sdk-plugin-assembly-${platform.version}.zip
