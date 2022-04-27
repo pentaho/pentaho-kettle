@@ -22,7 +22,7 @@
 
     <!-- Pentaho dependencies -->
     <pentaho-vfs-browser.version>9.2.0.3-482</pentaho-vfs-browser.version>
-    <pentaho-capability-manager.version>${project.version}</pentaho-capability-manager.version>
+    <pentaho-capability-manager.version>9.2.0.3-482</pentaho-capability-manager.version>
 
     <!-- Third-party dependencies -->
     <common.version>3.3.0-v20070426</common.version>
@@ -37,7 +37,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>9.2.0.3-482</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-dbdialog</artifactId>
-      <version>${project.version}</version>
+      <version>9.2.0.3-482</version>
     </dependency>
 
     <!-- Pentaho dependencies -->
@@ -150,7 +150,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>9.2.0.3-482</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
