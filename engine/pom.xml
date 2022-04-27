@@ -103,7 +103,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>8.3.0.26-1502</version>
+      <version>8.3.0.26-C262</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
@@ -956,7 +956,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${pentaho-metastore.version}</version>
+      <version>8.3.0.26-1502</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>
