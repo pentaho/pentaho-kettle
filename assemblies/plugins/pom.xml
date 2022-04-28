@@ -42,6 +42,7 @@
     <engine-configuration-plugin.version>${project.version}</engine-configuration-plugin.version>
     <metastore-locator-plugin.version>${project.version}</metastore-locator-plugin.version>
     <repository-locator-plugin.version>${project.version}</repository-locator-plugin.version>
+    <file-open-save-new-plugin.version>${project.version}</file-open-save-new-plugin.version>
   </properties>
 
   <dependencies>
@@ -359,7 +360,19 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>pentaho-kettle-repository-locator-spoon-plugin</artifactId>
+      <artifactId>file-open-save-new-plugin</artifactId>
+      <version>${file-open-save-new-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>kettle-repository-locator-spoon-plugin</artifactId>
       <version>${repository-locator-plugin.version}</version>
       <type>zip</type>
       <exclusions>
