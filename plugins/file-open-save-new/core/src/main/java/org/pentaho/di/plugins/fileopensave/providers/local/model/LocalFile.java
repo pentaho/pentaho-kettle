@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by bmorrise on 2/16/19.
@@ -61,5 +62,24 @@ public class LocalFile extends BaseEntity implements File {
     localFile.setRoot( LocalFileProvider.NAME );
     localFile.setCanEdit( true );
     return localFile;
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash( getProvider(), getPath() );
+  }
+  
+  @Override
+  public boolean equals( Object obj ) {
+    if( obj == this ) {
+      return true;
+    }
+    
+    if( !(obj instanceof LocalFile )) {
+      return false;
+    }
+    
+    LocalFile compare = (LocalFile) obj;
+    return compare.getProvider().equals( getProvider() ) && Objects.equals( getPath(), compare.getPath() );
   }
 }

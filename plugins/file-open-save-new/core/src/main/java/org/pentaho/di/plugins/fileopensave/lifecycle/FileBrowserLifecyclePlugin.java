@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.lifecycle;
 
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
+import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener;
 import org.pentaho.di.ui.spoon.SpoonPerspective;
@@ -43,6 +44,10 @@ public class FileBrowserLifecyclePlugin implements SpoonPluginInterface, SpoonLi
   private final FileCache fileCache;
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
+  public FileBrowserLifecyclePlugin() {
+    this( FileCacheService.INSTANCE.get() );
+  }
+  
   public FileBrowserLifecyclePlugin( FileCache fileCache ) {
     this.fileCache = fileCache;
   }
