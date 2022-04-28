@@ -6,17 +6,21 @@
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
-    <artifactId>file-open-save-new</artifactId>
+    <artifactId>file-open-save-new-assemblies</artifactId>
     <version>9.4.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>file-open-save-new-assemblies</artifactId>
+  <artifactId>file-open-save-new-plugin</artifactId>
   <version>9.4.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>PDI File Open and Save New Plugin Assemblies</name>
+  <name>PDI File Open Save New Plugin</name>
 
-  <modules>
-    <module>plugin</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>file-open-save-new-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
