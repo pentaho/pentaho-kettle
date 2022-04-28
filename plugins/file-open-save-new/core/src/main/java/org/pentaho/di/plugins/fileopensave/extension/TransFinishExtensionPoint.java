@@ -27,6 +27,7 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
+import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
 
 @ExtensionPoint(
   id = "TransFinishExtensionPoint",
@@ -37,6 +38,10 @@ public class TransFinishExtensionPoint implements ExtensionPointInterface {
 
   private final FileCache fileCache;
 
+  public TransFinishExtensionPoint() {
+    this( FileCacheService.INSTANCE.get() );
+  }
+  
   public TransFinishExtensionPoint( FileCache fileCache ) {
     this.fileCache = fileCache;
   }
