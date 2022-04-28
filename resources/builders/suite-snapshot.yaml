@@ -30,7 +30,7 @@ buildProperties:
   PARALLEL_SIZE_ARCHIVE : 10
 
   MAVEN_DEFAULT_DIRECTIVES:
-    build: clean deploy -DskipTests
+    build: clean deploy -DskipTests -Drelease
     test: test
 
   JOB_ITEM_DEFAULTS :
