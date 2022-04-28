@@ -11,7 +11,7 @@
 
   <artifactId>file-open-save-new-api</artifactId>
   <version>9.4.0.0-SNAPSHOT</version>
-  <packaging>bundle</packaging>
+  <!-- <packaging>bundle</packaging> -->
 
   <name>PDI File Open and Save New Plugin API</name>
 
@@ -22,40 +22,42 @@
     </dependency>
   </dependencies>
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>bundle</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>**/*</include>
-          </includes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.4.0</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.pentaho.di.plugins.fileopensave.api.file,
-              org.pentaho.di.plugins.fileopensave.api.providers,
-              org.pentaho.di.plugins.fileopensave.api.providers.exception
-            </Export-Package>
-            <Import-Package>org.pentaho.di.osgi, *</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
+    <!--
+     <plugins>
+       <plugin>
+         <artifactId>maven-remote-resources-plugin</artifactId>
+         <executions>
+           <execution>
+             <goals>
+               <goal>bundle</goal>
+             </goals>
+           </execution>
+         </executions>
+         <configuration>
+           <includes>
+             <include>**/*</include>
+           </includes>
+         </configuration>
+       </plugin>
+       <plugin>
+         <groupId>org.apache.felix</groupId>
+         <artifactId>maven-bundle-plugin</artifactId>
+         <version>2.4.0</version>
+         <extensions>true</extensions>
+         <configuration>
+           <instructions>
+             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+             <Bundle-Version>${project.version}</Bundle-Version>
+             <Export-Package>
+               org.pentaho.di.plugins.fileopensave.api.file,
+               org.pentaho.di.plugins.fileopensave.api.providers,
+               org.pentaho.di.plugins.fileopensave.api.providers.exception
+             </Export-Package>
+             <Import-Package>org.pentaho.di.osgi, *</Import-Package>
+           </instructions>
+         </configuration>
+       </plugin>
+     </plugins>
+     -->
   </build>
 </project>
