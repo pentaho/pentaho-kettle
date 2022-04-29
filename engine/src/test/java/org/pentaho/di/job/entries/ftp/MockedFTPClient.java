@@ -117,18 +117,18 @@ public class MockedFTPClient extends FTPClient {
   }
 
   @Override
-  public FTPFile[] dirDetails(String arg0) throws IOException, FTPException, ParseException {
+  public FTPFile[] dirDetails( String arg0 ) throws IOException, FTPException, ParseException {
     FTPFile[] files;
     // Test when there is only single file
-    if (dir.equals("SingleFile")) {
+    if ( dir.equals( "SingleFile" ) ) {
       files = new FTPFile[1];
-      files[0] = new FTPFile("robots.txt", "robots.txt", 100, false, new Date());
+      files[0] = new FTPFile( "robots.txt", "robots.txt", 100, false, new Date() );
     } else {
       files = new FTPFile[10];
-      for (int i = 0; i < files.length - 1; i++) {
-        files[i] = new FTPFile("file_" + i, "file_" + i, 100, false, new Date());
+      for ( int i = 0; i < files.length - 1; i++ ) {
+        files[i] = new FTPFile( "file_" + i, "file_" + i, 100, false, new Date() );
       }
-      files[files.length - 1] = new FTPFile("robots.txt", "robots.txt", 100, false, new Date());
+      files[files.length - 1] = new FTPFile( "robots.txt", "robots.txt", 100, false, new Date() );
     }
     return files;
   }
