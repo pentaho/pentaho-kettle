@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -462,7 +462,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           }
           try {
             try {
-              this.connection = dsp.getNamedDataSource( name, DatasourceType.POOLED ).getConnection();
+              this.connection = dsp.getPooledDataSourceFromMeta( databaseMeta, DatasourceType.POOLED ).getConnection();
             } catch ( UnsupportedOperationException | NullPointerException e ) {
               // UnsupportedOperationException is happen at DatabaseUtil doesn't support pooled DS, use legacy routine
               // NullPointerException is happen when we will try to run the transformation on the remote server but

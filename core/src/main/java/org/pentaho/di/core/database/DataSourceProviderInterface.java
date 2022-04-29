@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,17 @@ public interface DataSourceProviderInterface {
    */
   DataSource getNamedDataSource( String datasourceName, DatasourceType type ) throws DataSourceNamingException;
 
+  /**
+   * Returns the specified data source of respecting its <code>type</code>
+   *
+   * @param dbMeta  definition of the datasource provided via DatabaseMeta
+   * @param type    data source's type
+   * @return named data source
+   * @throws DataSourceNamingException
+   */
+  default DataSource getPooledDataSourceFromMeta( DatabaseMeta dbMeta, DatasourceType type ) throws DataSourceNamingException {
+    throw new UnsupportedOperationException( "getNamedDataSourceFromMeta is not supported" );
+  }
 
   /**
    * Invalidate the named data source of respecting its <code>type</code>
