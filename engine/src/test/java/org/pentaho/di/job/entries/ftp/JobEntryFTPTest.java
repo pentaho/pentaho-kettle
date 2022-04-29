@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.junit.After;
@@ -221,5 +223,17 @@ public class JobEntryFTPTest {
     assertTrue( "Output file matches expected format", expectedFormat.matcher( actualValue ).matches() );
     assertTrue( "The actual time is not too early for test run", actualValue.compareTo( beforeString ) >= 0 );
     assertTrue( "The actual time is not too late for test run", actualValue.compareTo( afterString ) <= 0 );
+  }
+
+  @Test
+  public void testDirectoryWithSingleFile() throws IOException {
+    final File destFolder = tempFolder.newFolder("pdi19431");
+    entry.setTargetDirectory(destFolder.getAbsolutePath());
+    entry.setFtpDirectory("SingleFile");
+    final Result result = entry.execute(new Result(), 0);
+    assertEquals("There should be one file", 1, result.getNrFilesRetrieved());
+    assertEquals("There should be no errors", 0, result.getNrErrors());
+    assertEquals("There should be one file", 1, Objects.requireNonNull(destFolder.list()).length);
+    destFolder.deleteOnExit();
   }
 }
