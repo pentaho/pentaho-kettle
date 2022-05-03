@@ -551,7 +551,8 @@ jobGroups:
      - jobID           :  container-utils-public
        scmUrl          :  https://github.com/pentaho/container-utils.git
        root            :  dock-maker
-       directives      :  += -Ppublic -Deula-wrap
+       directives      :
+                 build :  deploy -DskipTests -Drelease -Ppublic -Deula-wrap
        archivable      :  true
        versionProperty :  container-utils.version
 
@@ -659,7 +660,8 @@ jobGroups:
 
      - jobID           :  prd-assembly-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Dno-osgi
+       directives      :
+                 build :  deploy -DskipTests -Drelease -Dno-osgi
        root            :  assemblies/prd-ce
        archivable      :  true
        versionProperty :  pentaho-reporting.version
@@ -673,7 +675,8 @@ jobGroups:
 
      - jobID           :  prd-assembly-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
-       directives      :  += -Dno-osgi-eula-wrap -Dno-osgi
+       directives      :
+                 build :  deploy -DskipTests -Drelease -Dno-osgi-eula-wrap -Dno-osgi
        root            :  assemblies/prd-ee
        archivable      :  true
        testable        :  false
