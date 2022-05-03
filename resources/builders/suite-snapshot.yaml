@@ -424,6 +424,7 @@ jobGroups:
        root            :  dock-maker
        directives      :
                  build :  deploy -DskipTests -Drelease -Ppublic
+                 test  :  test
        archivable      :  true
        versionProperty :  container-utils.version
 
@@ -509,6 +510,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        directives      :
                  build :  deploy -DskipTests -Drelease -Dno-osgi -Pdesigner -Dmaven.test.failure.ignore=true
+                 test  :  test
        root            :  assemblies/prd-ce
        archivable      :  true
 
@@ -521,6 +523,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
        directives      :
                  build :  deploy -DskipTests -Drelease -Dno-osgi
+                 test  :  test
        root            :  assemblies/prd-ee
        archivable      :  true
        testable        :  false

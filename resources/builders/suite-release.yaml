@@ -553,6 +553,7 @@ jobGroups:
        root            :  dock-maker
        directives      :
                  build :  deploy -DskipTests -Drelease -Ppublic -Deula-wrap
+                 test  :  test
        archivable      :  true
        versionProperty :  container-utils.version
 
@@ -662,6 +663,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        directives      :
                  build :  deploy -DskipTests -Drelease -Dno-osgi
+                 test  :  test
        root            :  assemblies/prd-ce
        archivable      :  true
        versionProperty :  pentaho-reporting.version
@@ -677,6 +679,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
        directives      :
                  build :  deploy -DskipTests -Drelease -Dno-osgi-eula-wrap -Dno-osgi
+                 test  :  test
        root            :  assemblies/prd-ee
        archivable      :  true
        testable        :  false
