@@ -246,6 +246,7 @@ import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.SimpleMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.dialog.SubjectDataBrowserDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -272,7 +273,6 @@ import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
-import org.pentaho.di.ui.spoon.dialog.CapabilityManagerDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
 import org.pentaho.di.ui.spoon.dialog.MetaStoreExplorerDialog;
@@ -374,6 +374,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   OverwritePrompter, PDIObserver, LifeEventHandler, XulEventSource, XulEventHandler, PartitionSchemasProvider {
 
   public static final String CONNECTION = "connection";
+  private static final String XML_EXTENSION = "xml";
   private static Class<?> PKG = Spoon.class;
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Spoon", LoggingObjectType.SPOON,
@@ -4301,10 +4302,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     openFile( false );
   }
 
-  public void importFile() {
-    openFile( true );
-  }
-
   public void openFile( boolean importfile ) {
     try {
       SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
@@ -4621,6 +4618,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       fileDialogOperation.setProvider( lastFileOpenedProvider );
     }
     try {
+      fileDialogOperation.setFilter( FilterType.KETTLE_FILES + "," + FilterType.XML + "," + FilterType.ALL );
+      fileDialogOperation.setDefaultFilter( FilterType.KETTLE_FILES.toString() );
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
         fileDialogOperation );
       String path = fileDialogOperation.getPath();
@@ -4643,7 +4642,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean saveAsNew() {
-    EngineMetaInterface meta = getActiveMeta();
+    return saveAsNew( null, false );
+  }
+
+  public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export ) {
+    EngineMetaInterface meta = inputMeta;
+    if ( meta == null ) {
+      meta = getActiveMeta();
+    }
     String fileType = meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION )
       ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
 
@@ -4696,7 +4702,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( lastFileOpenedConnection != null && meta instanceof VariableSpace ) {
           ( (VariableSpace) meta ).setVariable( CONNECTION, lastFileOpenedConnection );
         }
-        saved = saveXMLFile( meta, filename, false );
+        saved = saveXMLFile( meta, filename, export );
       }
     } catch ( KettleException e ) {
       return false;
@@ -5214,6 +5220,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean saveFile() {
+    return saveFile( false );
+  }
+
+  public boolean saveFile( boolean export ) {
     try {
       EngineMetaInterface meta = getActiveMeta();
       if ( meta != null ) {
@@ -5225,7 +5235,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           return false;
         }
         if ( meta != null ) {
-          return saveToFile( meta );
+          return saveToFile( meta, export );
         }
       }
     } catch ( Exception e ) {
@@ -5246,6 +5256,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean saveToFile( EngineMetaInterface meta ) throws KettleException {
+    return saveToFile( meta, false );
+  }
+
+  public boolean saveToFile( EngineMetaInterface meta, boolean export ) throws KettleException {
     if ( meta == null ) {
       return false;
     }
@@ -5270,18 +5284,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     String activePerspectiveId = activePerspective.getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
-    if ( rep != null && etlPerspective ) {
-      if ( meta.getObjectId() == null ) {
-        meta.setFilename( null );
-      }
+
+    if ( meta.getFilename() != null ) {
+      saved = save( meta, meta.getFilename(), export );
+    } else if ( rep != null && etlPerspective && meta.getObjectId() != null ) {
       saved = saveToRepository( meta );
     } else {
-      if ( meta.getFilename() != null ) {
-        saved = save( meta, meta.getFilename(), false );
-      } else {
-        if ( meta.canSave() ) {
-          saved = saveFileAs( meta );
-        }
+      if ( meta.canSave() ) {
+        saved = saveAsNew();
       }
     }
 
@@ -5939,7 +5949,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     try {
       XmlExportHelper.swapTables( transMeta );
-      return saveXMLFile( transMeta, export );
+      return saveAsNew( transMeta, export );
     } finally {
       transMeta.setTransLogTable( origTransLogTable );
       transMeta.setStepLogTable( origStepLogTable );
@@ -5958,7 +5968,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     try {
       XmlExportHelper.swapTables( jobMeta );
-      return saveXMLFile( jobMeta, export );
+      return saveAsNew( jobMeta, export );
     } finally {
       jobMeta.setJobLogTable( origJobLogTable );
       jobMeta.setJobEntryLogTable( originEntryLogTable );
@@ -6006,7 +6016,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( !meta.getDefaultExtension().startsWith( "." ) && !filename.endsWith( "." ) ) {
           filename += ".";
         }
-        filename += meta.getDefaultExtension();
+        if ( export ) {
+          filename += XML_EXTENSION;
+        } else {
+          filename += meta.getDefaultExtension();
+        }
       }
       // See if the file already exists...
       int id = SWT.YES;
@@ -6189,7 +6203,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean saveMeta( EngineMetaInterface meta, String filename ) {
-    meta.setFilename( filename );
+    return saveMeta( meta, filename, false );
+  }
+
+  public boolean saveMeta( EngineMetaInterface meta, String filename, boolean export ) {
+    if ( !export ) {
+      meta.setFilename( filename );
+    }
     if ( Utils.isEmpty( meta.getName() )
       || delegates.jobs.isDefaultJobName( meta.getName() )
       || delegates.trans.isDefaultTransformationName( meta.getName() ) ) {
@@ -6217,9 +6237,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       // written
       // to
-      meta.setFilename( filename );
-      meta.clearChanged();
-      setShellText();
+      if ( !export ) {
+        meta.setFilename( filename );
+        meta.clearChanged();
+        setShellText();
+      }
     } catch ( Exception e ) {
       if ( log.isDebug() ) {
         // "Error opening file for writing! --> "
@@ -6319,10 +6341,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public void editCapabilities() {
-    CapabilityManagerDialog capabilityManagerDialog = new CapabilityManagerDialog( this.shell );
-    capabilityManagerDialog.open();
-  }
+
 
   public void editKettlePropertiesFile() {
     KettlePropertiesFileDialog dialog = new KettlePropertiesFileDialog( shell, SWT.NONE );
@@ -6912,7 +6931,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave );
         disableMenuItem( doc, "toolbar-file-save-as", disableTransMenu
           && disableJobMenu && disableMetaMenu || disableSave );
-        disableMenuItem( doc, "file-save-as-vfs", disableTransMenu && disableJobMenu && disableMetaMenu );
         disableMenuItem( doc, "file-close", disableTransMenu && disableJobMenu && disableMetaMenu );
         disableMenuItem( doc, "file-print", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-export-to-xml", disableTransMenu && disableJobMenu );

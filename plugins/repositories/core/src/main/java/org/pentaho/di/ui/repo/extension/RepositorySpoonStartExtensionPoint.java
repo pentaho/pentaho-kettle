@@ -33,6 +33,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
+import org.pentaho.di.ui.repo.dialog.RepositoryConnectionSWT;
 import org.pentaho.di.ui.repo.dialog.RepositoryDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -47,8 +48,8 @@ public class RepositorySpoonStartExtensionPoint implements ExtensionPointInterfa
 
   private RepositoryConnectController repositoryConnectController;
 
-  public RepositorySpoonStartExtensionPoint( RepositoryConnectController repositoryConnectController ) {
-    this.repositoryConnectController = repositoryConnectController;
+  public RepositorySpoonStartExtensionPoint() {
+    this.repositoryConnectController = RepositoryConnectController.getInstance();
   }
 
   public static CommandLineOption getCommandLineOption( CommandLineOption[] options, String opt ) {
@@ -95,7 +96,7 @@ public class RepositorySpoonStartExtensionPoint implements ExtensionPointInterfa
         if ( repositoryMeta.getId().equals( "KettleFileRepository" ) ) {
           repositoryConnectController.connectToRepository( repositoryMeta );
         } else {
-          new RepositoryDialog( getSpoon().getShell(), repositoryConnectController ).openLogin( repositoryMeta );
+          new RepositoryConnectionSWT( getSpoon().getShell() ).createDialog( repositoryMeta.getName() );
         }
       }
     }

@@ -1,0 +1,132 @@
+<attributes>
+<!--
+    <attribute id="CONNECTION">
+        <xmlcode>connection</xmlcode>
+        <repcode>id_connection</repcode>
+        <description>BaseStepDialog.Connection.Label</description>
+        <tooltip/>
+        <valuetype>None</valuetype>
+        <parentid/>
+    </attribute>
+-->
+    <attribute id="SCHEMA">
+        <xmlcode>schema</xmlcode>
+        <repcode>schema</repcode>
+        <description>MonetDBBulkLoaderDialog.TargetSchema.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="TABLE">
+        <xmlcode>table</xmlcode>
+        <repcode>table</repcode>
+        <description>MonetDBBulkLoaderDialog.TargetTable.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="LOGFILE">
+        <xmlcode>log_file</xmlcode>
+        <repcode>log_file</repcode>
+        <description>MonetDBBulkLoaderDialog.LogFile.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="FIELD_SEPARATOR">
+        <xmlcode>field_separator</xmlcode>
+        <repcode>field_separator</repcode>
+        <description>MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.FieldSeparator.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="FIELD_ENCLOSURE">
+        <xmlcode>field_enclosure</xmlcode>
+        <repcode>field_enclosure</repcode>
+        <description>MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.FieldEnclosure.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="NULL_REPRESENTATION">
+        <xmlcode>null_representation</xmlcode>
+        <repcode>null_representation</repcode>
+        <description>MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.NULLrepresentation.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="ENCODING">
+        <xmlcode>encoding</xmlcode>
+        <repcode>encoding</repcode>
+        <description>MonetDBBulkLoaderDialog.Encoding.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="TRUNCATE">
+        <xmlcode>truncate</xmlcode>
+        <repcode>truncate</repcode>
+        <description>MonetDBBulkLoaderDialog.Truncate.Label</description>
+        <tooltip/>
+        <valuetype>Boolean</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="FULLY_QUOTE_SQL">
+        <xmlcode>fully_quote_sql</xmlcode>
+        <repcode>fully_quote_sql</repcode>
+        <description>MonetDBBulkLoaderDialog.FullyQuoteSQL.Label</description>
+        <tooltip/>
+        <valuetype>Boolean</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="BUFFER_SIZE">
+        <xmlcode>buffer_size</xmlcode>
+        <repcode>buffer_size</repcode>
+        <description>MonetDBBulkLoaderDialog.BufferSize.Label</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="MAPPINGS">
+        <xmlcode>mapping</xmlcode>
+        <repcode/>
+        <description>MonetDBBulkLoaderDialog.Fields.Label</description>
+        <tooltip/>
+        <valuetype>None</valuetype>
+        <parentid/>
+    </attribute>
+    <attribute id="MAPPING">
+        <xmlcode>mapping</xmlcode>
+        <repcode/>
+        <description>MonetDBBulkLoaderDialog.Fields.Label</description>
+        <tooltip/>
+        <valuetype>None</valuetype>
+        <parentid>MAPPINGS</parentid>
+    </attribute>
+    <attribute id="STREAMNAME">
+        <xmlcode>stream_name</xmlcode>
+        <repcode>stream_name</repcode>
+        <description>MonetDBBulkLoaderDialog.ColumnInfo.StreamField</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid>MAPPING</parentid>
+    </attribute>
+    <attribute id="FIELDNAME">
+        <xmlcode>field_name</xmlcode>
+        <repcode>field_name</repcode>
+        <description>MonetDBBulkLoaderDialog.ColumnInfo.TableField</description>
+        <tooltip/>
+        <valuetype>String</valuetype>
+        <parentid>MAPPING</parentid>
+    </attribute>
+    <attribute id="FIELD_FORMAT_OK">
+        <xmlcode>field_format_ok</xmlcode>
+        <repcode>field_format_ok</repcode>
+        <description>MonetDBBulkLoaderDialog.ColumnInfo.FormatOK</description>
+        <tooltip/>
+        <valuetype>Boolean</valuetype>
+        <parentid>MAPPING</parentid>
+    </attribute>
+</attributes>

@@ -37,6 +37,7 @@
     <mockito.version>1.9.5</mockito.version>
     <saxon.version>8.7</saxon.version>
     <poi.version>4.1.1</poi.version>
+    <platform.version>9.4.0.0-SNAPSHOT</platform.version>
   </properties>
 
   <dependencyManagement>
@@ -64,6 +65,12 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>pentaho</groupId>
+        <artifactId>pentaho-platform-core</artifactId>
+        <version>${platform.version}</version>
+        <scope>provided</scope>
       </dependency>
       <!-- SWT is required to compile for it to work with architecture -->
       <dependency>

@@ -22,9 +22,9 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.local;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
+import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
@@ -88,12 +88,14 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     LocalTree localTree = new LocalTree( NAME );
     List<LocalFile> rootFiles = new ArrayList<>();
     ArrayList<Path> paths = new ArrayList<>();
+    //TODO: Re-enable this when running on a snapshot build of spoon
+    /*
     if ( Const.isRunningOnWebspoonMode() ) {
       Path kettleUserDataDirectoryPath = Paths.get( Const.getUserDataDirectory() );
       paths.add( kettleUserDataDirectoryPath );
-    } else {
+    } else { */
       FileSystems.getDefault().getRootDirectories().forEach( paths::add );
-    }
+    //}
     paths.forEach( path -> {
       LocalDirectory localDirectory = new LocalDirectory();
       localDirectory.setPath( path.toString() );
@@ -109,7 +111,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
 
   @Override public List<LocalFile> getFiles( LocalFile file, String filters, VariableSpace space )
     throws FileException {
-    return null;
+    return getFiles( file, filters );
   }
 
   // TODO: Filter out certain files from root
@@ -120,9 +122,12 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    */
   public List<LocalFile> getFiles( LocalFile file, String filters ) {
     List<LocalFile> files = new ArrayList<>();
+    //TODO: Re-enable this when running on a SNAPSHOT build of Spoon
+    /*
     if ( Const.isRunningOnWebspoonMode() && !Paths.get( file.getPath() ).toAbsolutePath().startsWith( Paths.get( Const.getUserDataDirectory() ) ) ) {
       return files;
     }
+    */
     try ( Stream<Path> paths = Files.list( Paths.get( file.getPath() ) ) ) {
       paths.forEach( path -> {
         String name = path.getFileName().toString();
@@ -353,6 +358,19 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
 
   public void clearProviderCache() {
     //Any local caches that this provider might use should be cleared here.
+  }
+
+  @Override public LocalFile createDirectory( String parentPath, LocalFile file, String newFolderName )
+    throws FileException {
+    LocalFile newLocalFile;
+    if ( file instanceof Directory ) {
+      newLocalFile = LocalFile.create( parentPath,
+        Paths.get( file.getPath() + FileSystems.getDefault().getSeparator() + newFolderName ) );
+    } else {
+      newLocalFile = LocalFile.create( parentPath,
+        Paths.get( file.getParent() + FileSystems.getDefault().getSeparator() + newFolderName ) );
+    }
+    return this.add( newLocalFile, null );
   }
 
   @Override public LocalFile getFile( LocalFile file, VariableSpace space ) {

@@ -3,7 +3,7 @@
 *
 *  Pentaho Data Integration
 *
-*  Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+*  Copyright (C) 2018-2022 by Hitachi Vantara : http://www.pentaho.com
 *
 *  *******************************************************************************
 *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -41,11 +41,7 @@ import java.util.List;
         description = "" )
 public class RunConfigurationIsPentahoExtensionPoint implements ExtensionPointInterface {
 
-  private RunConfigurationManager runConfigurationManager;
-
-  public RunConfigurationIsPentahoExtensionPoint( RunConfigurationManager runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
-  }
+  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
 
   @SuppressWarnings( "unchecked" )
   @Override

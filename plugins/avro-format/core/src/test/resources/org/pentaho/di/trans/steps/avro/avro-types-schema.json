@@ -1,0 +1,159 @@
+{
+  "type" : "record",
+  "name" : "FieldNames",
+  "namespace" : "ns",
+  "doc" : "This Schema contains fields of different data types",
+  "fields" : [ {
+    "name" : "null_field",
+    "type" : "null"
+  }, {
+    "name" : "boolean_field",
+    "type" : "boolean"
+  }, {
+    "name" : "int_field",
+    "type" : "int"
+  }, {
+    "name" : "long_field",
+    "type" : "long"
+  }, {
+    "name" : "float_field",
+    "type" : "float"
+  }, {
+    "name" : "double_field",
+    "type" : "double"
+  }, {
+    "name" : "bytes_field",
+    "type" : "bytes"
+  }, {
+    "name" : "string_field",
+    "type" : "string"
+  }, {
+    "name" : "record_field",
+    "type" : {
+      "type" : "record",
+      "name" : "Record_field",
+      "fields": [
+          { "name": "record_field_int", "type" : "int"},
+          { "name": "record_field_string", "type" : "string"}
+        ]
+    }
+  }, {
+    "name" : "enum_field",
+    "type" : {
+      "name": "Enum_field",
+      "type" : "enum",
+      "symbols" : ["ONE", "TWO", "THREE"]
+    }
+  }, {
+    "name" : "array_field",
+    "type" : {
+      "type" : "array",
+      "items": "string",
+      "name" : "Array_field"
+    }
+  }, {
+    "name" : "map_field",
+    "type" : {
+      "type" : "map",
+      "values": "string",
+      "name" : "Map_field"
+    }
+  }, {
+    "name" : "union_string_field",
+    "type" : ["null", "string"]
+  }, {
+    "name" : "fixed_field",
+    "type" : {
+      "type" : "fixed",
+      "size": 16,
+      "name": "Fixed_field"
+    }
+  }, {
+    "name" : "union_fixed_field",
+    "type" : ["null", "Fixed_field"]
+
+  }, {
+    "name" : "decimal_bytes_field",
+    "type" : {
+      "type" : "bytes",
+      "logicalType" : "decimal",
+      "precision": 4,
+      "scale": 2
+    }
+  }, {
+    "name" : "decimal_fixed_field",
+    "type" : {
+      "type" : "fixed",
+      "name" : "fixed_decimal",
+      "size": 16,
+      "logicalType" : "decimal",
+      "precision": 4,
+      "scale": 3
+    }
+  }, {
+    "name" : "date_field",
+    "type" : {
+      "type" : "int",
+      "logicalType" : "date"
+    }
+  }, {
+    "name" : "time_millis_field",
+    "type" : {
+      "type" : "int",
+      "logicalType" : "time-millis"
+    }
+  }, {
+    "name" : "time_micros_field",
+    "type" : {
+      "type" : "long",
+      "logicalType" : "time-micros"
+    }
+  }, {
+    "name" : "timestamp_millis_field",
+    "type" : {
+      "type" : "long",
+      "logicalType" : "timestamp-millis"
+    }
+  }, {
+    "name" : "timestamp_micros_field",
+    "type" : {
+      "type" : "long",
+      "logicalType" : "timestamp-micros"
+    }
+  }, {
+    "name" : "duration_field",
+    "type" : {
+      "name" : "Duration_field",
+      "type" : "fixed",
+      "size" : 12,
+      "logicalType" : "duration"
+    }
+  }, {
+    "name" : "address",
+    "type" : [ "null", "string" ]
+  }, {
+    "name" : "zip_code",
+    "type" : [ "null", "long" ]
+  }, {
+    "name" : "double",
+    "type" : [ "null", "double" ]
+  }, {
+    "name" : "date",
+    "logicalType" : "date",
+    "type" : [ "null", "int" ]
+  }, {
+    "name" : "time",
+    "logicalType" : "timestamp-millis",
+    "type" : [ "null", "long" ]
+  }, {
+    "name" : "active",
+    "type" : [ "null", "boolean" ]
+  }, {
+    "name" : "cost",
+    "logicalType" : "decimal",
+    "precision" : 2,
+    "scale" : 1,
+    "type" : [ "null", "bytes" ]
+  }
+  ]
+}
