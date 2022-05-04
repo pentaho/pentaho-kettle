@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1081,20 +1081,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetAscii" ) );
           }
         }
-
-        // Some FTP servers return a message saying no files found as a string in the filenlist
-        // e.g. Solaris 8
-        // CHECK THIS !!!
-
-        if ( ftpFiles.length == 1 ) {
-          String translatedWildcard = environmentSubstitute( wildcard );
-          if ( !Utils.isEmpty( translatedWildcard ) ) {
-            if ( ftpFiles[0].getName().startsWith( translatedWildcard ) ) {
-              throw new FTPException( ftpFiles[0].getName() );
-            }
-          }
-        }
-
         Pattern pattern = null;
         if ( !Utils.isEmpty( wildcard ) ) {
           String realWildcard = environmentSubstitute( wildcard );
