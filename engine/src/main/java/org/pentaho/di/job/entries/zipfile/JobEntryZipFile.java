@@ -1182,6 +1182,25 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               + e.getMessage() );
       resultat = false;
       return resultat;
+
+    } catch ( KettleFileException e ) {
+      e.printStackTrace();
+    } finally {
+      try {
+        if ( fileObjectm != null ) {
+          fileObjectm.close();
+        }
+        if( fileObjectSource != null ) {
+          fileObjectSource.close();
+        }
+      } catch ( Exception e ) {
+        if ( fileObjectm != null ) {
+          logError( "Error closing file '" + fileObjectm.toString() + "'", e );
+        }
+        else if(fileObjectSource != null) {
+          logError( "Error closing file '" + fileObjectSource.toString() + "'", e );
+        }
+      }
     }
     return resultat;
   }
