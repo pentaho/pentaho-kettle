@@ -1166,7 +1166,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         fileObjectd.moveTo( fileObjectm );
         //delete the existing folder structure in source to make sure it is a clean move
         //before that check if there are any child files left
-        if( !fileObjectSource.equals( sourceFileOrFolder ) && fileObjectSource.getChildren().length == 0 ) {
+        if ( !fileObjectSource.equals( sourceFileOrFolder ) && fileObjectSource.getChildren().length == 0 ) {
           fileObjectSource.delete();
         }
       } else {
@@ -1190,14 +1190,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         if ( fileObjectm != null ) {
           fileObjectm.close();
         }
-        if( fileObjectSource != null ) {
+        if ( fileObjectSource != null ) {
           fileObjectSource.close();
         }
       } catch ( Exception e ) {
         if ( fileObjectm != null ) {
           logError( "Error closing file '" + fileObjectm.toString() + "'", e );
-        }
-        else if(fileObjectSource != null) {
+        } else {
           logError( "Error closing file '" + fileObjectSource.toString() + "'", e );
         }
       }
