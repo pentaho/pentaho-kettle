@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -638,32 +638,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                     }
                   } else if ( afterZip == 2 ) {
                     // Move File
-                    FileObject fileObjectm = null;
-                    try {
-                      fileObjectm =
-                        KettleVFS.getFileObject( realMovetodirectory
-                          + Const.FILE_SEPARATOR + fileObjectd.getName().getBaseName(), this );
-                      fileObjectd.moveTo( fileObjectm );
-                    } catch ( IOException e ) {
-                      logError( BaseMessages.getString( PKG, "JobZipFiles.Cant_Move_File1.Label" )
-                        + zippedFiles[i] + BaseMessages.getString( PKG, "JobZipFiles.Cant_Move_File2.Label" )
-                        + e.getMessage() );
-                      resultat = false;
-                    } finally {
-                      try {
-                        if ( fileObjectm != null ) {
-                          fileObjectm.close();
-                        }
-                      } catch ( Exception e ) {
-                        if ( fileObjectm != null ) {
-                          logError( "Error closing file '" + fileObjectm.toString() + "'", e );
-                        }
+                    resultat = moveFilesToDestinationFolder( sourceFileOrFolder, fileObjectd, realMovetodirectory,
+                      isSourceDirectory, zippedFiles[i] );
+                    if( resultat ){
+                      if ( log.isDebug() ) {
+                        logDebug( BaseMessages.getString( PKG, "JobZipFiles.File_Moved1.Label" )
+                                + zippedFiles[i] + BaseMessages.getString( PKG, "JobZipFiles.File_Moved2.Label" ) );
                       }
-                    }
-                    // File moved
-                    if ( log.isDebug() ) {
-                      logDebug( BaseMessages.getString( PKG, "JobZipFiles.File_Moved1.Label" )
-                        + zippedFiles[i] + BaseMessages.getString( PKG, "JobZipFiles.File_Moved2.Label" ) );
                     }
                   }
                 }
@@ -1158,4 +1139,54 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     }
   }
 
+  public boolean moveFilesToDestinationFolder( FileObject sourceFileOrFolder, FileObject fileObjectd,
+                                              String realMovetodirectory, boolean isSourceDirectory, FileObject zippedFile ) {
+    // Move Files from source to destintion
+    String relativeName = null;
+    FileObject fileObjectm = null;
+    FileObject fileObjectSource = null;
+    boolean resultat = true;
+
+    try {
+      String fullName = fileObjectd.getName().getPath();
+      String basePath = sourceFileOrFolder.getName().getPath();
+      fileObjectSource = KettleVFS.getFileObject( fullName ).getParent();
+      if( isSourceDirectory ) {
+        if( fullName.startsWith( basePath ) ) {
+          //to find out the folder structure from defined source
+          relativeName = fullName.substring( basePath.length()+1 );
+        } else {
+          relativeName = fullName ;
+        }
+        fileObjectm =
+                KettleVFS.getFileObject( realMovetodirectory
+                        + Const.FILE_SEPARATOR + relativeName, this );
+        if( !fileObjectm.getParent().exists() ) {
+          //if at all there is a parent folder structure we need to create, we create one
+          fileObjectm.getParent().createFolder();
+        }
+          fileObjectd.moveTo( fileObjectm );
+          //delete the existing folder structure in source to make sure it is a clean move
+          //before that check if there are any child files left
+          if( !fileObjectSource.equals( sourceFileOrFolder ) ) {
+            if ( fileObjectSource.getChildren().length == 0 ) {
+              fileObjectSource.delete();
+            }
+          }
+      } else {
+        fileObjectm =
+                KettleVFS.getFileObject( realMovetodirectory
+                        + Const.FILE_SEPARATOR + fileObjectd.getName().getBaseName(), this );
+        fileObjectd.moveTo( fileObjectm );
+      }
+
+    } catch ( IOException e ) {
+      logError( BaseMessages.getString( PKG, "JobZipFiles.Cant_Move_File1.Label" )
+              + zippedFile + BaseMessages.getString( PKG, "JobZipFiles.Cant_Move_File2.Label" )
+              + e.getMessage() );
+      resultat = false;
+    } finally {
+      return resultat;
+    }
+  }
 }
