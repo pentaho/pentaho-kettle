@@ -10,13 +10,13 @@
     <toolbarbutton id="toolbar-file-new" image="images/new.svg" tooltiptext="${Spoon.Tooltip.NewFile}" menu="new-file-popup" />
     <toolbarseparator />
     <toolbarbutton id="toolbar-file-open" image="images/open.svg"
-      tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="spoon.openFile()" />
+      tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="spoon.openFileNew()" />
     <toolbarbutton id="toolbar-expore-repository" image="images/exploreRepo.svg" 
       tooltiptext="${Spoon.Tooltip.ExploreRepository}" onclick="spoon.exploreRepository()" />      
     <toolbarbutton id="toolbar-file-save" image="images/save.svg"
       tooltiptext="${Spoon.Tooltip.SaveCurrentTranformation}" onclick="spoon.saveFile()" />
     <toolbarbutton id="toolbar-file-save-as" image="images/saveas.svg"
-      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()"/>
+      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveAsNew()"/>
     <toolbarseparator />
     <toolbarspacer flex="1"/>
   </toolbar>
