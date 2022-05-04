@@ -640,11 +640,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                     // Move File
                     resultat = moveFilesToDestinationFolder( sourceFileOrFolder, fileObjectd, realMovetodirectory,
                       isSourceDirectory, zippedFiles[i] );
-                    if( resultat ){
-                      if ( log.isDebug() ) {
-                        logDebug( BaseMessages.getString( PKG, "JobZipFiles.File_Moved1.Label" )
-                                + zippedFiles[i] + BaseMessages.getString( PKG, "JobZipFiles.File_Moved2.Label" ) );
-                      }
+                    if ( resultat && log.isDebug() ) {
+                      logDebug( BaseMessages.getString( PKG, "JobZipFiles.File_Moved1.Label" )
+                              + zippedFiles[i] + BaseMessages.getString( PKG, "JobZipFiles.File_Moved2.Label" ) );
                     }
                   }
                 }
@@ -1151,28 +1149,26 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       String fullName = fileObjectd.getName().getPath();
       String basePath = sourceFileOrFolder.getName().getPath();
       fileObjectSource = KettleVFS.getFileObject( fullName ).getParent();
-      if( isSourceDirectory ) {
-        if( fullName.startsWith( basePath ) ) {
+      if ( isSourceDirectory ) {
+        if ( fullName.startsWith( basePath ) ) {
           //to find out the folder structure from defined source
-          relativeName = fullName.substring( basePath.length()+1 );
+          relativeName = fullName.substring( basePath.length() + 1 );
         } else {
-          relativeName = fullName ;
+          relativeName = fullName;
         }
         fileObjectm =
                 KettleVFS.getFileObject( realMovetodirectory
                         + Const.FILE_SEPARATOR + relativeName, this );
-        if( !fileObjectm.getParent().exists() ) {
+        if ( !fileObjectm.getParent().exists() ) {
           //if at all there is a parent folder structure we need to create, we create one
           fileObjectm.getParent().createFolder();
         }
-          fileObjectd.moveTo( fileObjectm );
-          //delete the existing folder structure in source to make sure it is a clean move
-          //before that check if there are any child files left
-          if( !fileObjectSource.equals( sourceFileOrFolder ) ) {
-            if ( fileObjectSource.getChildren().length == 0 ) {
-              fileObjectSource.delete();
-            }
-          }
+        fileObjectd.moveTo( fileObjectm );
+        //delete the existing folder structure in source to make sure it is a clean move
+        //before that check if there are any child files left
+        if( !fileObjectSource.equals( sourceFileOrFolder ) && fileObjectSource.getChildren().length == 0 ) {
+          fileObjectSource.delete();
+        }
       } else {
         fileObjectm =
                 KettleVFS.getFileObject( realMovetodirectory
@@ -1185,8 +1181,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               + zippedFile + BaseMessages.getString( PKG, "JobZipFiles.Cant_Move_File2.Label" )
               + e.getMessage() );
       resultat = false;
-    } finally {
       return resultat;
     }
+    return resultat;
   }
 }

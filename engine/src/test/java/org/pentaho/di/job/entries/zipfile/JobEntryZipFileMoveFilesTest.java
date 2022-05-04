@@ -61,6 +61,7 @@ public class JobEntryZipFileMoveFilesTest {
                 result = jobEntryZipFile.moveFilesToDestinationFolder( sourceFileOrFolder, fileObject,
                         destFolder.toString(), sourceFileOrFolder.isFolder(), fileObject );
                 Assert.assertTrue( result );
+                fileObject.close();
             }
             sourceFileOrFolder.close();
             sourceFileorFolderPath.delete();
