@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -55,11 +55,7 @@ import java.util.stream.Collectors;
   description = "" )
 public class RunConfigurationImportExtensionPoint implements ExtensionPointInterface {
 
-  private RunConfigurationManager runConfigurationManager;
-
-  public RunConfigurationImportExtensionPoint( RunConfigurationManager runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
-  }
+  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     AbstractMeta abstractMeta = (AbstractMeta) o;
@@ -129,5 +125,10 @@ public class RunConfigurationImportExtensionPoint implements ExtensionPointInter
       .findFirst();
 
     return String.format( "%s_%d", defaultName, index.orElse( 0 ) + 1 );
+  }
+
+  @VisibleForTesting
+  void setRunConfigurationManager( RunConfigurationManager runConfigurationManager ) {
+    this.runConfigurationManager = runConfigurationManager;
   }
 }

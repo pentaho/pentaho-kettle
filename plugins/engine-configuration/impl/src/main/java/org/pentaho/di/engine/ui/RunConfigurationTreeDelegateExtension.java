@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -31,6 +31,7 @@ import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
+import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.ui.spoon.TreeSelection;
 import org.pentaho.di.ui.spoon.delegates.SpoonTreeDelegateExtension;
@@ -44,11 +45,7 @@ import java.util.List;
   extensionPointId = "SpoonTreeDelegateExtension" )
 public class RunConfigurationTreeDelegateExtension implements ExtensionPointInterface {
 
-  private RunConfigurationService runConfigurationManager;
-
-  public RunConfigurationTreeDelegateExtension( RunConfigurationService runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
-  }
+  private RunConfigurationService runConfigurationManager = RunConfigurationManager.getInstance();
 
   @Override public void callExtensionPoint( LogChannelInterface log, Object extension ) throws KettleException {
     SpoonTreeDelegateExtension treeDelExt = (SpoonTreeDelegateExtension) extension;

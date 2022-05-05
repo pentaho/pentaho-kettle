@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  s *
- *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -29,18 +29,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.pentaho.capabilities.api.ICapability;
 import org.pentaho.capabilities.api.ICapabilityProvider;
 import org.pentaho.capabilities.impl.DefaultCapabilityManager;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
-import java.util.Dictionary;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by bmorrise on 3/22/17.
@@ -49,9 +46,6 @@ import static org.mockito.Mockito.*;
 public class SparkRunConfigurationExecutorTest {
 
   private SparkRunConfigurationExecutor sparkRunConfigurationExecutor;
-
-  @Mock
-  private Dictionary<String, Object> properties;
 
   @Mock
   private AbstractMeta abstractMeta;
@@ -64,12 +58,7 @@ public class SparkRunConfigurationExecutorTest {
 
   @Before
   public void setup() throws Exception {
-    Configuration configuration = mock( Configuration.class );
-    ConfigurationAdmin configurationAdmin = mock( ConfigurationAdmin.class );
-
-    doReturn( properties ).when( configuration ).getProperties();
-
-    sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor( configurationAdmin );
+    sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor();
     capabilityProvider = mock( ICapabilityProvider.class );
 
     capabilityManager = DefaultCapabilityManager.getInstance();
@@ -142,51 +131,5 @@ public class SparkRunConfigurationExecutorTest {
 
     verify( variableSpace ).setVariable( "engine.scheme", "http://" );
     verify( variableSpace ).setVariable( "engine.url", "127.0.0.2:8121" );
-  }
-
-  @Test
-  public void testExecuteWithAelSecurityInstalled() {
-    ICapability aelSecurityCapability = mock( ICapability.class );
-    setCapability( aelSecurityCapability, SparkRunConfigurationExecutor.AEL_SECURITY_CAPABILITY_ID, true );
-
-    ICapability jaasCapability = mock( ICapability.class );
-    setCapability( jaasCapability, SparkRunConfigurationExecutor.JAAS_CAPABILITY_ID, false );
-
-    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
-    sparkRunConfiguration.setName( "Spark Configuration" );
-
-    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
-
-    sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
-
-    verify( jaasCapability ).isInstalled();
-    verify( jaasCapability ).install();
-
-  }
-
-  @Test
-  public void testExecuteWithNoAelSecurityInstalled() {
-    ICapability aelSecurityCapability = mock( ICapability.class );
-    setCapability( aelSecurityCapability, SparkRunConfigurationExecutor.AEL_SECURITY_CAPABILITY_ID, false );
-
-    ICapability jaasCapability = mock( ICapability.class );
-    setCapability( jaasCapability, SparkRunConfigurationExecutor.JAAS_CAPABILITY_ID, false );
-
-    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
-    sparkRunConfiguration.setName( "Spark Configuration" );
-
-    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
-
-    sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
-
-    verify( jaasCapability, never() ).isInstalled();
-
-  }
-
-  private void setCapability( ICapability capability, String capabilityId, Object isInstalled ) {
-    doReturn( capability ).when( capabilityProvider ).getCapabilityById( capabilityId );
-    doReturn( isInstalled ).when( capability ).isInstalled();
   }
 }
