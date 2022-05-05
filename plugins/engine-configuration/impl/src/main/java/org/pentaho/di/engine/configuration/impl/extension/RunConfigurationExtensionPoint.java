@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -40,11 +40,7 @@ import java.util.List;
   description = "" )
 public class RunConfigurationExtensionPoint implements ExtensionPointInterface {
 
-  private RunConfigurationManager runConfigurationManager;
-
-  public RunConfigurationExtensionPoint( RunConfigurationManager runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
-  }
+  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
 
   @SuppressWarnings( "unchecked" )
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {

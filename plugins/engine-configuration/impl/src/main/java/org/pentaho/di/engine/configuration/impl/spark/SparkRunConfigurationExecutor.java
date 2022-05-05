@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -24,10 +24,6 @@
 
 package org.pentaho.di.engine.configuration.impl.spark;
 
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.pentaho.capabilities.api.ICapability;
-import org.pentaho.capabilities.api.ICapabilityManager;
-import org.pentaho.capabilities.impl.DefaultCapabilityManager;
 import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
@@ -41,16 +37,16 @@ import org.pentaho.di.repository.Repository;
  */
 public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
 
-  public static String JAAS_CAPABILITY_ID = "pentaho-kerberos-jaas";
-  public static String AEL_SECURITY_CAPABILITY_ID = "ael-security";
   public static String DEFAULT_SCHEMA = "http";
   public static String DEFAULT_URL = "127.0.0.1:53000";
 
-  private ConfigurationAdmin configurationAdmin;
-  private ICapabilityManager capabilityManager = DefaultCapabilityManager.getInstance();
+  private static SparkRunConfigurationExecutor instance;
 
-  public SparkRunConfigurationExecutor( ConfigurationAdmin configurationAdmin ) {
-    this.configurationAdmin = configurationAdmin;
+  public static SparkRunConfigurationExecutor getInstance() {
+    if ( null == instance ) {
+      instance = new SparkRunConfigurationExecutor();
+    }
+    return instance;
   }
 
   /**
@@ -64,16 +60,6 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
    */
   @Override public void execute( RunConfiguration runConfiguration, ExecutionConfiguration configuration,
                                  AbstractMeta meta, VariableSpace variableSpace, Repository repository ) {
-
-    // Check to see if the ael-security feature is installed. If it is, then install the jaas capability if it is
-    // not already installed
-    ICapability securityCapability = capabilityManager.getCapabilityById( AEL_SECURITY_CAPABILITY_ID );
-    ICapability jaasCapability = capabilityManager.getCapabilityById( JAAS_CAPABILITY_ID );
-    if ( securityCapability != null && securityCapability.isInstalled() ) {
-      if ( jaasCapability != null && !jaasCapability.isInstalled() ) {
-        jaasCapability.install();
-      }
-    }
 
     SparkRunConfiguration sparkRunConfiguration = (SparkRunConfiguration) runConfiguration;
 
