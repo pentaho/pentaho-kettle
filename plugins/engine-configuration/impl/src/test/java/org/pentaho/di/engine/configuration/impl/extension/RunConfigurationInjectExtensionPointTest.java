@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2018-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -83,7 +83,8 @@ public class RunConfigurationInjectExtensionPointTest {
 
   @Before
   public void setup() {
-    runConfigurationInjectExtensionPoint = new RunConfigurationInjectExtensionPoint( runConfigurationManager );
+    runConfigurationInjectExtensionPoint = new RunConfigurationInjectExtensionPoint();
+    runConfigurationInjectExtensionPoint.setRunConfigurationManager( runConfigurationManager );
     executionExt = new JobExecutionExtension( job, result, jobEntryCopy, false );
 
     when( abstractMeta.getEmbeddedMetaStore() ).thenReturn( embeddedMetaStore );
