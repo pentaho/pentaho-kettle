@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2018-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -24,6 +24,7 @@
 
 package org.pentaho.di.engine.configuration.impl.extension;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
@@ -49,11 +50,7 @@ import java.util.List;
   description = "" )
 public class RunConfigurationSaveExtensionPoint implements ExtensionPointInterface {
 
-  private RunConfigurationManager runConfigurationManager;
-
-  public RunConfigurationSaveExtensionPoint( RunConfigurationManager runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
-  }
+  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     JobMeta jobMeta = (JobMeta) ( (Object[]) o )[ 0 ];
@@ -101,4 +98,8 @@ public class RunConfigurationSaveExtensionPoint implements ExtensionPointInterfa
     }
   }
 
+  @VisibleForTesting
+  void setRunConfigurationManager( RunConfigurationManager runConfigurationManager ) {
+    this.runConfigurationManager = runConfigurationManager;
+  }
 }
