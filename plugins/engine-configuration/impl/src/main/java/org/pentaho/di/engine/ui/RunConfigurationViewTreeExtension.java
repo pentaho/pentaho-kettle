@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -48,11 +48,7 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
   private static final Class<?> PKG = RunConfigurationViewTreeExtension.class;
   public static String TREE_LABEL = BaseMessages.getString( PKG, "RunConfigurationTree.Title" );
 
-  private RunConfigurationDelegate runConfigurationDelegate;
-
-  public RunConfigurationViewTreeExtension( RunConfigurationDelegate runConfigurationDelegate ) {
-    this.runConfigurationDelegate = runConfigurationDelegate;
-  }
+  private RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance();
 
   @Override public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
     SelectionTreeExtension selectionTreeExtension = (SelectionTreeExtension) object;
