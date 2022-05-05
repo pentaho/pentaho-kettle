@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -44,6 +44,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
+import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfiguration;
 import org.pentaho.di.job.JobMeta;
@@ -83,13 +84,9 @@ public class RunConfigurationDelegateTest {
     PowerMockito.mockStatic( Spoon.class );
     when( Spoon.getInstance() ).thenReturn( spoon );
 
-    service = mock( RunConfigurationService.class );
-    delegate = spy( new RunConfigurationDelegate( service ) );
-  }
-
-  @Test
-  public void testNew() {
-    assertSame( service, Whitebox.getInternalState( delegate, "configurationManager" ) );
+    delegate = spy( new RunConfigurationDelegate() );
+    service = mock( RunConfigurationManager.class );
+    delegate.setRunConfigurationManager( service );
   }
 
   @Test
