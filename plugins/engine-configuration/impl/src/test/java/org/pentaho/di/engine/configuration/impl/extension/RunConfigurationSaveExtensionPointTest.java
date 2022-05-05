@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2020-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -84,7 +84,8 @@ public class RunConfigurationSaveExtensionPointTest {
     when( jobMeta.getJobCopies() ).thenReturn( jobEntryCopies );
 
     RunConfigurationSaveExtensionPoint runConfigurationSaveExtensionPoint =
-      new RunConfigurationSaveExtensionPoint( runConfigurationManager );
+      new RunConfigurationSaveExtensionPoint();
+    runConfigurationSaveExtensionPoint.setRunConfigurationManager( runConfigurationManager );
     runConfigurationSaveExtensionPoint.callExtensionPoint( log, new Object[] { jobMeta } );
 
     for ( int i = 0; i < JOB_ENTRY_COUNT; i++ ) {
@@ -104,7 +105,8 @@ public class RunConfigurationSaveExtensionPointTest {
     when( jobMeta.getJobCopies() ).thenReturn( jobEntryCopies );
 
     RunConfigurationSaveExtensionPoint runConfigurationSaveExtensionPoint =
-      new RunConfigurationSaveExtensionPoint( runConfigurationManager );
+      new RunConfigurationSaveExtensionPoint();
+    runConfigurationSaveExtensionPoint.setRunConfigurationManager( runConfigurationManager );
     runConfigurationSaveExtensionPoint.callExtensionPoint( log, new Object[] { jobMeta } );
 
     verify( runConfigurationManager, times( 1 ) ).load( anyString() );
@@ -120,7 +122,8 @@ public class RunConfigurationSaveExtensionPointTest {
     when( jobMeta.getJobCopies() ).thenReturn( jobEntryCopies );
 
     RunConfigurationSaveExtensionPoint runConfigurationSaveExtensionPoint =
-      new RunConfigurationSaveExtensionPoint( runConfigurationManager );
+      new RunConfigurationSaveExtensionPoint();
+    runConfigurationSaveExtensionPoint.setRunConfigurationManager( runConfigurationManager );
     runConfigurationSaveExtensionPoint.callExtensionPoint( log, new Object[] { jobMeta } );
 
     verify( runConfigurationManager ).load();
@@ -140,7 +143,8 @@ public class RunConfigurationSaveExtensionPointTest {
     when( jobMeta.getJobCopies() ).thenReturn( jobEntryCopies );
 
     RunConfigurationSaveExtensionPoint runConfigurationSaveExtensionPoint =
-      new RunConfigurationSaveExtensionPoint( runConfigurationManager );
+      new RunConfigurationSaveExtensionPoint();
+    runConfigurationSaveExtensionPoint.setRunConfigurationManager( runConfigurationManager );
     runConfigurationSaveExtensionPoint.callExtensionPoint( log, new Object[] { jobMeta } );
 
     verify( runConfigurationManager ).load();

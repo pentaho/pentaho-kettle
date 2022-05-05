@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -26,10 +26,10 @@ package org.pentaho.di.engine.configuration.impl;
 
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationFactory;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,10 +41,18 @@ import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
  */
 public abstract class MetaStoreRunConfigurationFactory implements RunConfigurationFactory {
 
-  protected MetastoreLocator metastoreLocator;
+  protected IMetaStore metaStore;
 
-  public MetaStoreRunConfigurationFactory( MetastoreLocator metastoreLocator ) {
-    this.metastoreLocator = metastoreLocator;
+  public MetaStoreRunConfigurationFactory( IMetaStore metaStore ) {
+    this.metaStore = metaStore;
+  }
+
+  public MetaStoreRunConfigurationFactory() {
+    try {
+      this.metaStore = MetaStoreConst.openLocalPentahoMetaStore();
+    } catch ( MetaStoreException e ) {
+      e.printStackTrace();
+    }
   }
 
   private <T extends RunConfiguration> MetaStoreFactory<T> getMetastoreFactory( Class<T> clazz,
@@ -54,7 +62,7 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
 
   protected <T extends RunConfiguration> MetaStoreFactory<T> getMetastoreFactory( Class<T> clazz )
     throws MetaStoreException {
-    return getMetastoreFactory( clazz, metastoreLocator.getMetastore() );
+    return getMetastoreFactory( clazz, metaStore );
   }
 
   protected abstract <T extends RunConfiguration> MetaStoreFactory<T> getMetaStoreFactory() throws MetaStoreException;
@@ -122,7 +130,7 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
     }
   }
 
-  public void setMetastoreLocator( MetastoreLocator metastoreLocator ) {
-    this.metastoreLocator = metastoreLocator;
-  }
+//  public void setMetastoreLocator( MetastoreLocator metastoreLocator ) {
+//    this.metastoreLocator = metastoreLocator;
+//  }
 }

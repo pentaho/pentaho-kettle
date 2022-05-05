@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -31,9 +31,9 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.MetaStoreRunConfigurationFactory;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,10 +60,13 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
     defaultRunConfiguration.setLocal( true );
   }
 
-  public DefaultRunConfigurationProvider( MetastoreLocator metastoreLocator,
-                                          DefaultRunConfigurationExecutor defaultRunConfigurationExecutor ) {
-    super( metastoreLocator );
-    this.defaultRunConfigurationExecutor = defaultRunConfigurationExecutor;
+  public DefaultRunConfigurationProvider() {
+    this.defaultRunConfigurationExecutor = DefaultRunConfigurationExecutor.getInstance();
+  }
+
+  public DefaultRunConfigurationProvider( IMetaStore metaStore ) {
+    super( metaStore );
+    this.defaultRunConfigurationExecutor = DefaultRunConfigurationExecutor.getInstance();
   }
 
   @Override public RunConfiguration getConfiguration() {

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -66,7 +66,8 @@ public class RunConfigurationImportExtensionPointTest {
 
   @Before
   public void setup() {
-    runConfigurationImportExtensionPoint = new RunConfigurationImportExtensionPoint( runConfigurationManager );
+    runConfigurationImportExtensionPoint = new RunConfigurationImportExtensionPoint();
+    runConfigurationImportExtensionPoint.setRunConfigurationManager( runConfigurationManager );
 
     when( abstractMeta.getEmbeddedMetaStore() ).thenReturn( embeddedMetaStore );
   }

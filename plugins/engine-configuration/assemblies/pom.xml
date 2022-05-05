@@ -17,6 +17,6 @@
   <name>PDI Engine Configuration Plugin Assemblies</name>
 
   <modules>
-    <module>feature</module>
+    <module>plugin</module>
   </modules>
 </project>

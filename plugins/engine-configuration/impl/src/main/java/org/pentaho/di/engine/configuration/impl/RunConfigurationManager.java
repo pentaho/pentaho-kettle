@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -29,6 +29,7 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,10 +41,23 @@ import java.util.List;
 public class RunConfigurationManager implements RunConfigurationService {
 
   private RunConfigurationProvider defaultRunConfigurationProvider;
-  private List<RunConfigurationProvider> runConfigurationProviders;
+  private List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
+  private static RunConfigurationManager instance;
+
+  public static RunConfigurationManager getInstance() {
+    if ( null == instance ) {
+      instance = new RunConfigurationManager();
+    }
+    return instance;
+  }
 
   public RunConfigurationManager( List<RunConfigurationProvider> runConfigurationProviders ) {
     this.runConfigurationProviders = runConfigurationProviders;
+  }
+
+  private RunConfigurationManager() {
+    this.runConfigurationProviders.add( new SparkRunConfigurationProvider() );
+    this.defaultRunConfigurationProvider = new DefaultRunConfigurationProvider();
   }
 
   @Override public List<RunConfiguration> load() {
