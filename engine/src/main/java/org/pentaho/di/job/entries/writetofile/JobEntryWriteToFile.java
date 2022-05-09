@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -95,7 +95,10 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "createParentFolder", createParentFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "appendFile", appendFile ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "content", content ) );
+    // XML parsers must, before parsing, translate CRLF and any CR not followed by a LF to a single LF. This behavior
+    // is defined in the End-of-Line handling section of the XML 1.0 specification. XMLHandler correctly does not do
+    // that by default.  We must therefore encode any CR in the content, or lose it.
+    retval.append( "      " ).append( encodeCR( XMLHandler.addTagValue( "content", content ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
     if ( parentJobMeta != null ) {
       parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
@@ -311,5 +314,9 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
     Repository repository, IMetaStore metaStore ) {
     JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+  }
+
+  private String encodeCR( String s ){
+    return s.replaceAll( "\r", "&#xd;");
   }
 }
