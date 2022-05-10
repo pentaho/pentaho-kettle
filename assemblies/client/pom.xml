@@ -125,6 +125,54 @@
     </dependency>
     <!-- END Pentaho drivers kar file dependencies -->
     <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-libs</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-plugins</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-static</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-samples</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pdi-dataservice-driver-bundle</artifactId>
       <version>${pdi-dataservice-driver-bundle.version}</version>
@@ -213,54 +261,6 @@
       </properties>
       <dependencies>
         <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-static</artifactId>
-          <version>${project.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-plugins</artifactId>
-          <version>${project.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-libs</artifactId>
-          <version>${project.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-samples</artifactId>
-          <version>${project.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
           <groupId>org.hitachivantara.karaf.assemblies</groupId>
           <artifactId>client</artifactId>
           <version>${pentaho-karaf.version}</version>
@@ -325,60 +325,6 @@
           <name>no-osgi</name>
         </property>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-static</artifactId>
-          <version>${project.version}</version>
-          <classifier>no-osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-plugins</artifactId>
-          <version>${project.version}</version>
-          <classifier>no-osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-libs</artifactId>
-          <version>${project.version}</version>
-          <classifier>no-osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-samples</artifactId>
-          <version>${project.version}</version>
-          <classifier>no-osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-      </dependencies>
       <build>
         <plugins>
           <plugin>

@@ -68,7 +68,7 @@
                                     <descriptors>
                                         <desciptor>${basedir}/src/assemblies/assembly-no-osgi.xml</desciptor>
                                     </descriptors>
-                                    <appendAssemblyId>true</appendAssemblyId>
+                                    <appendAssemblyId>false</appendAssemblyId>
                                 </configuration>
                             </execution>
                         </executions>
