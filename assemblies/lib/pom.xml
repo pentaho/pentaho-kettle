@@ -20,15 +20,12 @@
     <pentaho-mongodb-plugin.version>9.4.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
 
     <pentaho-json.version>9.4.0.0-SNAPSHOT</pentaho-json.version>
-    <pentaho-hadoop-shims.version>9.4.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
-    <pdi-osgi-bridge.version>9.4.0.0-SNAPSHOT</pdi-osgi-bridge.version>
     <commons-database.version>9.4.0.0-SNAPSHOT</commons-database.version>
     <pentaho-registry.version>9.4.0.0-SNAPSHOT</pentaho-registry.version>
     <pentaho-metaverse.version>9.4.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>9.4.0.0-SNAPSHOT</platform.version>
     <pentaho-reporting.version>9.4.0.0-SNAPSHOT</pentaho-reporting.version>
-    <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
 
     <!-- third party -->
     <derbyclient.version>10.2.1.6</derbyclient.version>
@@ -111,17 +108,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-big-data-legacy-core</artifactId>
-      <version>${big-data-plugin.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
 
     <dependency>
       <groupId>pentaho</groupId>
@@ -199,11 +185,6 @@
       <version>${pentaho-json.version}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pdi-osgi-bridge-core</artifactId>
-      <version>${pdi-osgi-bridge.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>commons-database-model</artifactId>
       <version>${commons-database.version}</version>
@@ -273,28 +254,6 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
       <version>${platform.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>pentaho-hadoop-shims-common-mapreduce</artifactId>
-      <version>${pentaho-hadoop-shims.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>shim-api-core</artifactId>
-      <version>${pentaho-hadoop-shims.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -381,77 +340,6 @@
       <version>${pentaho-reporting.version}</version>
     </dependency>
 
-    <!-- OSGi Dependencies -->
-    <!-- Because of: -->
-    <!-- pentaho-platform-core (PentahoSystem) and pdi-osgi-bridge-core (KarafLifecycleListener and OSGIPluginRegistryExtension) -->
-    <dependency>
-       <groupId>org.osgi</groupId>
-       <artifactId>org.osgi.core</artifactId>
-       <scope>compile</scope>
-    </dependency>
-
-    <!-- Karaf Dependencies -->
-    <dependency>
-      <groupId>org.apache.karaf</groupId>
-      <artifactId>org.apache.karaf.main</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.karaf</groupId>
-      <artifactId>org.apache.karaf.util</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.karaf.jaas</groupId>
-      <artifactId>org.apache.karaf.jaas.boot</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.karaf.diagnostic</groupId>
-      <artifactId>org.apache.karaf.diagnostic.boot</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.karaf.specs</groupId>
-      <artifactId>org.apache.karaf.specs.activator</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.karaf.specs</groupId>
-      <artifactId>org.apache.karaf.specs.locator</artifactId>
-      <version>${karaf.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
@@ -781,23 +669,152 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>standard</id>
+      <activation>
+        <property>
+          <name>!no-osgi</name>
+        </property>
+      </activation>
+      <properties>
+        <pdi-osgi-bridge.version>9.4.0.0-SNAPSHOT</pdi-osgi-bridge.version>
+        <pentaho-hadoop-shims.version>9.4.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
+        <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>pentaho</groupId>
+          <artifactId>pdi-osgi-bridge-core</artifactId>
+          <version>${pdi-osgi-bridge.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.pentaho</groupId>
+          <artifactId>pentaho-hadoop-shims-common-mapreduce</artifactId>
+          <version>${pentaho-hadoop-shims.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.pentaho</groupId>
+          <artifactId>shim-api-core</artifactId>
+          <version>${pentaho-hadoop-shims.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>pentaho</groupId>
+          <artifactId>pentaho-big-data-legacy-core</artifactId>
+          <version>${big-data-plugin.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+
+        <!--OSGi Dependencies-->
+        <!--Because of:-->
+        <!--pentaho-platform-core (PentahoSystem) and pdi-osgi-bridge-core (KarafLifecycleListener and OSGIPluginRegistryExtension)-->
+        <dependency>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+          <scope>compile</scope>
+        </dependency>
+
+        <!-- Karaf Dependencies -->
+        <dependency>
+          <groupId>org.apache.karaf</groupId>
+          <artifactId>org.apache.karaf.main</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.karaf</groupId>
+          <artifactId>org.apache.karaf.util</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.karaf.jaas</groupId>
+          <artifactId>org.apache.karaf.jaas.boot</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.karaf.diagnostic</groupId>
+          <artifactId>org.apache.karaf.diagnostic.boot</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.karaf.specs</groupId>
+          <artifactId>org.apache.karaf.specs.activator</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.karaf.specs</groupId>
+          <artifactId>org.apache.karaf.specs.locator</artifactId>
+          <version>${karaf.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <plugin>
-      <artifactId>maven-dependency-plugin</artifactId>
-      <executions>
-      <execution>
-        <id>copy-libs</id>
-        <phase>generate-resources</phase>
-        <goals>
-          <goal>copy-dependencies</goal>
-        </goals>
-        <configuration>
-          <includeScope>compile</includeScope>
-          <outputDirectory>${assembly.dir}</outputDirectory>
-        </configuration>
-      </execution>
-      </executions>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-libs</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>compile</includeScope>
+              <outputDirectory>${assembly.dir}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
