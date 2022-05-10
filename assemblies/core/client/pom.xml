@@ -31,6 +31,31 @@
     </properties>
 
     <dependencies>
+        <!-- PDI Assemblies -->
+        <dependency>
+            <groupId>org.pentaho.di</groupId>
+            <artifactId>pdi-core-static</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.pentaho.di</groupId>
+            <artifactId>pdi-core-libs</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>pentaho</groupId>
             <artifactId>pdi-dataservice-driver-bundle</artifactId>
@@ -113,31 +138,6 @@
                 <pentaho-karaf.version>9.4.0.0-SNAPSHOT</pentaho-karaf.version>
             </properties>
             <dependencies>
-                <!-- PDI Assemblies -->
-                <dependency>
-                    <groupId>org.pentaho.di</groupId>
-                    <artifactId>pdi-core-static</artifactId>
-                    <version>${project.version}</version>
-                    <type>zip</type>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.pentaho.di</groupId>
-                    <artifactId>pdi-core-libs</artifactId>
-                    <version>${project.version}</version>
-                    <type>zip</type>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
                 <dependency>
                     <groupId>org.hitachivantara.karaf.assemblies</groupId>
                     <artifactId>client</artifactId>
@@ -204,35 +204,6 @@
                     <name>no-osgi</name>
                 </property>
             </activation>
-            <dependencies>
-                <!-- PDI Assemblies -->
-                <dependency>
-                    <groupId>org.pentaho.di</groupId>
-                    <artifactId>pdi-core-static</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>no-osgi</classifier>
-                    <type>zip</type>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.pentaho.di</groupId>
-                    <artifactId>pdi-core-libs</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>no-osgi</classifier>
-                    <type>zip</type>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
@@ -248,7 +219,7 @@
                                     <descriptors>
                                         <descriptor>${basedir}/src/assemblies/assembly-no-osgi.xml</descriptor>
                                     </descriptors>
-                                    <appendAssemblyId>true</appendAssemblyId>
+                                    <appendAssemblyId>false</appendAssemblyId>
                                 </configuration>
                             </execution>
                         </executions>
