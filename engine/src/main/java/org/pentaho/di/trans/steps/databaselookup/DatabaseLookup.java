@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -98,7 +98,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
         //If input is of type date and its mask does not contain time then we should trim the time part from the date
         //otherwise we will clog the database lookup cache with to many entries
-        if ( input.getType() == ValueMetaInterface.TYPE_DATE && isTimelessMask( input.getConversionMask() ) ) {
+        if ( lookupRow[lookupIndex] != null && input.getType() == ValueMetaInterface.TYPE_DATE && isTimelessMask( input.getConversionMask() ) ) {
           lookupRow[lookupIndex] = Const.trimDate( (Date) lookupRow[lookupIndex] );
         }
 
