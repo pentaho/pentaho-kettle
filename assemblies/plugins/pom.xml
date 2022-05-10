@@ -32,10 +32,7 @@
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
-    <pdi-xml-plugin.version>9.4.0.0-SNAPSHOT</pdi-xml-plugin.version>
-    <pdi-json-plugin.version>9.4.0.0-SNAPSHOT</pdi-json-plugin.version>
     <pdi-sap-plugin.version>9.4.0.0-SNAPSHOT</pdi-sap-plugin.version>
-    <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
     <pentaho-cassandra-plugin.version>9.4.0.0-SNAPSHOT</pentaho-cassandra-plugin.version>
     <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
     <pdi-platform-utils-plugin.version>9.4.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
@@ -239,44 +236,8 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>pdi-xml-plugin</artifactId>
-      <version>${pdi-xml-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>kettle-json-plugin</artifactId>
-      <version>${pdi-json-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>kettle-sap-plugin</artifactId>
       <version>${pdi-sap-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-big-data-plugin</artifactId>
-      <version>${big-data-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
@@ -321,7 +282,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>com.pentaho.di.plugins</groupId>
       <artifactId>mongodb-plugin</artifactId>
@@ -359,4 +319,57 @@
       </exclusions>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>standard</id>
+      <activation>
+        <property>
+          <name>!no-osgi</name>
+        </property>
+      </activation>
+      <properties>
+        <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
+        <pdi-json-plugin.version>9.4.0.0-SNAPSHOT</pdi-json-plugin.version>
+        <pdi-xml-plugin.version>9.4.0.0-SNAPSHOT</pdi-xml-plugin.version>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>pentaho</groupId>
+          <artifactId>pentaho-big-data-plugin</artifactId>
+          <version>${big-data-plugin.version}</version>
+          <type>zip</type>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.pentaho.di.plugins</groupId>
+          <artifactId>kettle-json-plugin</artifactId>
+          <version>${pdi-json-plugin.version}</version>
+          <type>zip</type>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
+          <groupId>org.pentaho.di.plugins</groupId>
+          <artifactId>pdi-xml-plugin</artifactId>
+          <version>${pdi-xml-plugin.version}</version>
+          <type>zip</type>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
