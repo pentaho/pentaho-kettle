@@ -46,7 +46,10 @@ NOTES:
  - Steps for REGENERATING pdi-spark-driver.zip are similar to the above, but additionally you _may_ need to:
    a) If HDFS file already exists on HDFS filesystem, you will need to delete it first. This can be done with:
       - hdfs -rm -f /your/directory-path-in-hdfs/pdi-spark-driver.zip
-   b) Restart the PDI-AEL Daemon so your changes take effect, in case you made changes to AEL
+   b) Clean KARAF cache directories on $PENTAHO_CLIENT_PATH/data-integration/system/karaf/caches
+      - rm -Rf $PENTAHO_CLIENT_PATH/data-integration/system/karaf/caches ## CAUTION w/ this command!
+      - mkdir -p $PENTAHO_CLIENT_PATH/data-integration/system/karaf/caches
+   c) Restart the PDI-AEL Daemon so your changes take effect, in case you made changes to AEL
      - cd $PENTAHO_CLIENT_PATH/data-integration/adaptive-execution
      - ./daemon stop
      - ./daemon start
