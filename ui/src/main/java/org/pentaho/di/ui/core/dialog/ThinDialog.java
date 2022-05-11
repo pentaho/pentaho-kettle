@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,12 @@
 
 package org.pentaho.di.ui.core.dialog;
 
+import com.hitachivantara.security.web.impl.client.csrf.httpclientv4.CsrfHttpClient;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -72,6 +72,7 @@ public class ThinDialog extends Dialog {
   private LogChannelInterface log = spoonSupplier.get().getLog();
   @SuppressWarnings( "squid:S1075" )
   private static final String SECURITY_CHECK_PATH = "/j_spring_security_check";
+  private static final String API_CSRF_TOKEN = "/api/csrf/token";
 
   /**
    * @param doAuthenticate if true, will attempt to authenticate against the repository server prior to opening the SWT
@@ -160,20 +161,26 @@ public class ThinDialog extends Dialog {
   /**
    * POSTs username/pass to the security check page, retrieving the JSESSIONID cookie and setting it on the browser.
    */
-  private void setCookies( IUser user, URI uri ) {
+  private void setCookies( IUser user, URI baseUri ) {
     Objects.requireNonNull( browser );
-    HttpClient client = HttpClientBuilder.create().build();
     try {
-      URIBuilder builder = new URIBuilder( uri.toString() + SECURITY_CHECK_PATH );
-      builder.addParameter( "j_username", user.getName() )
+      CsrfHttpClient csrfClient = new CsrfHttpClient(
+        new URI( baseUri + API_CSRF_TOKEN ),
+        HttpClients.createDefault() );
+
+      URIBuilder builder = new URIBuilder( baseUri + SECURITY_CHECK_PATH )
+        .addParameter( "j_username", user.getName() )
         .addParameter( "j_password", user.getPassword() );
+
       log.logDebug( "Authenticating with " + user.getName() );
-      HttpResponse resp = client.execute( new HttpPost( builder.build() ) );
+
+      HttpResponse resp = csrfClient.execute( new HttpPost( builder.build() ) );
 
       Arrays.stream( resp.getHeaders( "Set-Cookie" ) )
         .map( Header::getValue )
         .flatMap( s -> HttpCookie.parse( s ).stream() )
-        .forEach( cookie -> Browser.setCookie( cookie.toString(), uri.toString() ) );
+        .forEach( cookie -> Browser.setCookie( cookie.toString(), baseUri.toString() ) );
+
     } catch ( IOException | URISyntaxException e ) {
       log.logError( e.getMessage(), e );
     }
