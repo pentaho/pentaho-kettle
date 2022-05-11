@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -29,9 +29,9 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.MetaStoreRunConfigurationFactory;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,10 +47,12 @@ public class SparkRunConfigurationProvider extends MetaStoreRunConfigurationFact
   private SparkRunConfigurationExecutor sparkRunConfigurationExecutor;
   private List<String> supported = Arrays.asList( TransMeta.XML_TAG );
 
-  public SparkRunConfigurationProvider( MetastoreLocator metastoreLocator,
-                                        SparkRunConfigurationExecutor sparkRunConfigurationExecutor ) {
-    super( metastoreLocator );
-    this.sparkRunConfigurationExecutor = sparkRunConfigurationExecutor;
+  public SparkRunConfigurationProvider() {
+    this.sparkRunConfigurationExecutor = SparkRunConfigurationExecutor.getInstance();
+  }
+
+  public SparkRunConfigurationProvider( IMetaStore metaStore ) {
+    super( metaStore );
   }
 
   @Override public RunConfiguration getConfiguration() {

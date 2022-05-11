@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,8 +39,8 @@ public class RunConfigurationLifecycleListener implements LifecycleListener {
   private RunConfigurationDelegate runConfigurationDelegate;
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
-  public RunConfigurationLifecycleListener( RunConfigurationDelegate runConfigurationDelegate ) {
-    this.runConfigurationDelegate = runConfigurationDelegate;
+  public RunConfigurationLifecycleListener() {
+    this.runConfigurationDelegate = RunConfigurationDelegate.getInstance();
   }
 
   @Override
