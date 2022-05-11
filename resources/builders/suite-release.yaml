@@ -374,7 +374,9 @@ jobGroups:
   2450:
     - jobID           :  pdi-monitoring-plugin
       scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
-      directives      :  += -Deula-wrap
+      directives      :
+                 build :  deploy -Deula-wrap
+                 test  :  test
       archivable      :  true
       versionProperty :  pdi-monitoring-plugin.version
 
