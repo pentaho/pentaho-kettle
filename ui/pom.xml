@@ -80,6 +80,12 @@
       </exclusions>
     </dependency>
 
+    <!-- HV Dependencies -->
+    <dependency>
+      <groupId>com.hitachivantara.security.web</groupId>
+      <artifactId>csrf-token-service-client-java-httpclient-v4</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- Third-party dependencies -->
     <dependency>
