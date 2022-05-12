@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -80,6 +80,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -803,7 +804,7 @@ public class AbstractMetaTest {
       t1.start();
       t2.start();
       t3.start();
-      latch.await(); // Will hang out waiting for each thread to complete...
+      assertTrue( "Test took longer than 5 minutes, deadlock?", latch.await( 300, TimeUnit.SECONDS ) ); // Will hang out waiting for each thread to complete...
     } catch ( InterruptedException badTest ) {
       throw badTest;
     }
