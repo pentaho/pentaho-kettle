@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -176,14 +176,14 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
 
     PrintWriter out = response.getWriter();
 
-    //jobName is a mandatory parameter
+    //Either jobName or id is required parameter
     String h1End = "</H1>";
     String h1 = "<H1>";
     String hrefEnd = "</a><p>";
     String href = "<a href=\"";
-    if ( jobName == null ) {
+    if ( jobName == null && id == null ) {
       response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-      String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobNameIsMandatory" );
+      String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobNameOrIdIsMandatory" );
       if ( useXML ) {
         response.setContentType( "text/xml" );
         response.setCharacterEncoding( Const.XML_ENCODING );
@@ -246,6 +246,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         //
         entry = new CarteObjectEntry( jobName, id );
         job = getJobMap().getJob( entry );
+        jobName = job.getJobMeta().getName(); //get the correct jobName
       }
 
       if ( job != null ) {
