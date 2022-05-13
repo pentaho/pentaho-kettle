@@ -40,6 +40,8 @@
     <pdi-pur-plugin.version>9.4.0.0-SNAPSHOT</pdi-pur-plugin.version>
     <pentaho-mongodb-plugin.version>9.4.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
     <engine-configuration-plugin.version>${project.version}</engine-configuration-plugin.version>
+    <metastore-locator-plugin.version>${project.version}</metastore-locator-plugin.version>
+    <repository-locator-plugin.version>${project.version}</repository-locator-plugin.version>
   </properties>
 
   <dependencies>
@@ -323,6 +325,42 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-engine-configuration-plugin</artifactId>
       <version>${engine-configuration-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-metastore-locator-plugin</artifactId>
+      <version>${metastore-locator-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>kettle-repository-locator-plugin</artifactId>
+      <version>${repository-locator-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-kettle-repository-locator-spoon-plugin</artifactId>
+      <version>${repository-locator-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
