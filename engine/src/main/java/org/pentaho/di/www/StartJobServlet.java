@@ -246,7 +246,9 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         //
         entry = new CarteObjectEntry( jobName, id );
         job = getJobMap().getJob( entry );
-        jobName = job.getJobMeta().getName(); //get the correct jobName
+        if ( job != null && job.getJobMeta() != null ) {
+          jobName = job.getJobMeta().getName(); //get the correct jobName
+        }
       }
 
       if ( job != null ) {
