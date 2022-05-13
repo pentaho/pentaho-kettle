@@ -26,7 +26,6 @@ package org.pentaho.di.engine.configuration.impl;
 
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationFactory;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
@@ -42,18 +41,10 @@ import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
  */
 public abstract class MetaStoreRunConfigurationFactory implements RunConfigurationFactory {
 
-  protected IMetaStore metaStore;
+  protected MetastoreLocator metastoreLocator;
 
-  public MetaStoreRunConfigurationFactory( IMetaStore metaStore ) {
-    this.metaStore = metaStore;
-  }
-
-  public MetaStoreRunConfigurationFactory() {
-    try {
-      this.metaStore = MetaStoreConst.openLocalPentahoMetaStore();
-    } catch ( MetaStoreException e ) {
-      e.printStackTrace();
-    }
+  public MetaStoreRunConfigurationFactory( MetastoreLocator metastoreLocator ) {
+    this.metastoreLocator = metastoreLocator;
   }
 
   private <T extends RunConfiguration> MetaStoreFactory<T> getMetastoreFactory( Class<T> clazz,
@@ -63,7 +54,7 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
 
   protected <T extends RunConfiguration> MetaStoreFactory<T> getMetastoreFactory( Class<T> clazz )
     throws MetaStoreException {
-    return getMetastoreFactory( clazz, metaStore );
+    return getMetastoreFactory( clazz, metastoreLocator.getMetastore() );
   }
 
   protected abstract <T extends RunConfiguration> MetaStoreFactory<T> getMetaStoreFactory() throws MetaStoreException;
@@ -131,7 +122,7 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
     }
   }
 
-//  public void setMetastoreLocator( MetastoreLocator metastoreLocator ) {
-//    this.metastoreLocator = metastoreLocator;
-//  }
+  public void setMetastoreLocator( MetastoreLocator metastoreLocator ) {
+    this.metastoreLocator = metastoreLocator;
+  }
 }
