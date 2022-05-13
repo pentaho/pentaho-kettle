@@ -31,7 +31,7 @@
            default-timeout="20000" default-activation="eager">
 
   <reference id="metastoreLocator"
-             interface="org.pentaho.osgi.metastore.locator.api.MetastoreLocator"
+             interface="org.pentaho.metastore.locator.api.MetastoreLocator"
              availability="optional"/>
 
   <bean id="ConnectionDelegate" scope="singleton" class="org.pentaho.di.connections.ui.dialog.ConnectionDelegate" />

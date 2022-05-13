@@ -24,6 +24,9 @@
 
 package org.pentaho.di.engine.configuration.impl.spark;
 
+import com.lowagie.text.Meta;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
@@ -31,9 +34,13 @@ import org.pentaho.di.engine.configuration.impl.MetaStoreRunConfigurationFactory
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.persist.MetaStoreFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,16 +50,27 @@ import java.util.List;
 public class SparkRunConfigurationProvider extends MetaStoreRunConfigurationFactory
   implements RunConfigurationProvider {
 
+  private Logger logger = LoggerFactory.getLogger( SparkRunConfigurationProvider.class );
   public static String TYPE = "Spark";
   private SparkRunConfigurationExecutor sparkRunConfigurationExecutor;
   private List<String> supported = Arrays.asList( TransMeta.XML_TAG );
 
   public SparkRunConfigurationProvider() {
+    super( null );
+    MetastoreLocator metastoreLocator = null;
+    try {
+      Collection<MetastoreLocator> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocator.class );
+      metastoreLocator = metastoreLocators.stream().findFirst().get();
+      super.setMetastoreLocator( metastoreLocator );
+    } catch ( Exception e ) {
+      logger.warn( "Error getting MetastoreLocator", e );
+    }
     this.sparkRunConfigurationExecutor = SparkRunConfigurationExecutor.getInstance();
   }
 
-  public SparkRunConfigurationProvider( IMetaStore metaStore ) {
-    super( metaStore );
+  public SparkRunConfigurationProvider( MetastoreLocator metastoreLocator ) {
+    super( metastoreLocator );
+    this.sparkRunConfigurationExecutor = SparkRunConfigurationExecutor.getInstance();
   }
 
   @Override public RunConfiguration getConfiguration() {
