@@ -36,6 +36,8 @@ import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationE
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfiguration;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.util.ArrayList;
@@ -59,12 +61,13 @@ public class RunConfigurationManagerTest {
   public void setup() throws Exception {
 
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
+    MetastoreLocator metastoreLocator = createMetastoreLocator( memoryMetaStore );
 
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( memoryMetaStore );
+      new DefaultRunConfigurationProvider( metastoreLocator );
 
     SparkRunConfigurationProvider sparkRunConfigurationProvider =
-      new SparkRunConfigurationProvider( memoryMetaStore );
+      new SparkRunConfigurationProvider( metastoreLocator );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     runConfigurationProviders.add( sparkRunConfigurationProvider );
@@ -168,12 +171,12 @@ public class RunConfigurationManagerTest {
   @Test
   public void testOrdering() {
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-
+    MetastoreLocator metastoreLocator = createMetastoreLocator( memoryMetaStore );
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( memoryMetaStore );
+      new DefaultRunConfigurationProvider( metastoreLocator );
 
     SparkRunConfigurationProvider sparkRunConfigurationProvider =
-      new SparkRunConfigurationProvider( memoryMetaStore );
+      new SparkRunConfigurationProvider( metastoreLocator );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     runConfigurationProviders.add( sparkRunConfigurationProvider );
@@ -218,5 +221,31 @@ public class RunConfigurationManagerTest {
     assertEquals( names.get( 3 ), "f" );
     assertEquals( names.get( 4 ), "x" );
     assertEquals( names.get( 5 ), "z" );
+  }
+
+  private static MetastoreLocator createMetastoreLocator( IMetaStore memoryMetaStore ) {
+    return new MetastoreLocator() {
+
+      @Override
+      public IMetaStore getMetastore( String providerKey ) {
+        return memoryMetaStore;
+      }
+
+      @Override
+      public IMetaStore getMetastore() {
+        return memoryMetaStore;
+      }
+
+      @Override public String setEmbeddedMetastore( IMetaStore metastore ) {
+        return null;
+      }
+
+      @Override public void disposeMetastoreProvider( String providerKey ) {
+      }
+
+      @Override public IMetaStore getExplicitMetastore( String providerKey ) {
+        return null;
+      }
+    };
   }
 }
