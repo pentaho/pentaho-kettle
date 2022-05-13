@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <artifactId>pdi-plugins</artifactId>
+    <version>9.4.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>metastore-locator</artifactId>
+  <version>9.4.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Pentaho Metastore Locator</name>
+
+  <modules>
+    <module>api</module>
+    <module>core</module>
+    <module>assemblies</module>
+  </modules>
+
+  <properties>
+    <pdi.version>9.4.0.0-SNAPSHOT</pdi.version>
+    <version.for.license>${project.version}</version.for.license>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>lowdeps</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>api</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>highdeps</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>core</module>
+        <module>assemblies</module>
+      </modules>
+    </profile>
+  </profiles>
+</project>

@@ -1,0 +1,58 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+package org.pentaho.di.core.service;
+
+public interface ServiceProviderInterface<T> {
+
+  /**
+   * Returns a boolean if the PluginServiceLoader should use the
+   * java.lang.reflect.Proxy that sets the Thread Context ClassLoader
+   * on the service
+   * @return A boolean where <code>true</code> indicates to proxy wrap
+   */
+  default boolean useProxyWrap() {
+    return false;
+  }
+  
+  /**
+   * Returns a boolean that indicates if the PluginServiceLoader should
+   * use the factoryCreate method to build and return the service
+   * provided by the provides tag. If <code>true</code>, the factoryCreate method
+   * must be implemented. Otherwise, the PluginRegistry will load the class
+   * and call newInstance() of the Class<?> in the provides property of the
+   * ServiceLoader annotation.
+   * @return A boolean where <code>true</code> indicates to use the <code>factoryCreate</code> method.
+   */
+  default boolean useFactory() {
+    return false;
+  }
+  
+  /**
+   * Provides a factory method to create an instance of the ServiceProvider provides
+   * item.
+   * @return An instance of the provided service
+   */
+  default T factoryCreate() {
+    return null;
+  }
+  
+}
