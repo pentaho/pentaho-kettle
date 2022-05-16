@@ -548,6 +548,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           // Check if the sheet already exists
           data.sheet = data.workbook.getSheet( sheetName );
           if ( null == data.sheet ) {
+            logError("WorkSheet Name is null or different from that of Template WorkSheet Name");
             // Create the sheet at the end of the workbook using the first sheet as template
             data.workbook.copySheet( 0, sheetName, data.workbook.getNumberOfSheets() );
             data.sheet = data.workbook.getSheet( sheetName );
