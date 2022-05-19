@@ -657,9 +657,9 @@ public class ValueDataUtilTest {
 
   @Test
   public void testSqRt() throws Exception {
-    ValueMetaNumber vmn = new ValueMetaNumber();
-    ValueMetaInteger vmi = new ValueMetaInteger();
-    ValueMetaBigNumber vmbn = new ValueMetaBigNumber();
+    ValueMetaInterface vmn = createValueMeta( "num", ValueMetaInterface.TYPE_NUMBER );
+    ValueMetaInterface vmi = createValueMeta( "integer", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface vmbn = createValueMeta( "bigNum", ValueMetaInterface.TYPE_BIGNUMBER );
     // Test Kettle number types
     assertEquals( Double.valueOf( "2.0" ), calculate( "4", ValueMetaInterface.TYPE_NUMBER,
       CalculatorMetaFunction.CALC_SQUARE_ROOT ) );
@@ -1211,6 +1211,69 @@ public class ValueDataUtilTest {
     assertEquals( BigDecimal.valueOf( Double.valueOf( "-12.35" ) ), calculate( "-12.355", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
   }
+
+  @Test
+  public void testRound3() {
+    ValueMetaInterface vmn = createValueMeta( "num", ValueMetaInterface.TYPE_NUMBER );
+    ValueMetaInterface vmi = createValueMeta( "integer", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface vmbn = createValueMeta( "bigNum", ValueMetaInterface.TYPE_BIGNUMBER );
+
+    try {
+      // Number
+      assertEquals( Double.valueOf( "-2.0" ), ValueDataUtil.round( vmn, -1.1, BigDecimal.ROUND_UP ) );
+      assertEquals( Double.valueOf( "-1.0" ), ValueDataUtil.round( vmn, -1.1, BigDecimal.ROUND_DOWN ) );
+      assertEquals( Double.valueOf( "-1.0" ), ValueDataUtil.round( vmn, -1.1, BigDecimal.ROUND_CEILING ) );
+      assertEquals( Double.valueOf( "-2.0" ), ValueDataUtil.round( vmn, -1.1, BigDecimal.ROUND_FLOOR ) );
+      assertEquals( Double.valueOf( "-2.0" ), ValueDataUtil.round( vmn, -1.5, BigDecimal.ROUND_HALF_UP ) );
+      assertEquals( Double.valueOf( "-1.0" ), ValueDataUtil.round( vmn, -1.5, BigDecimal.ROUND_HALF_DOWN ) );
+      assertEquals( Double.valueOf( "2.0" ), ValueDataUtil.round( vmn, 2.5, BigDecimal.ROUND_HALF_EVEN ) );
+      assertEquals( Double.valueOf( "1.1" ), ValueDataUtil.round( vmn, 1.1, BigDecimal.ROUND_UNNECESSARY ) );
+
+      // Integer
+      assertEquals( Long.valueOf( "-1" ), ValueDataUtil.round( vmi, Long.valueOf( "-1" ), BigDecimal.ROUND_UP ) );
+      assertEquals( Long.valueOf( "-1" ), ValueDataUtil.round( vmi, Long.valueOf( "-1" ), BigDecimal.ROUND_DOWN ) );
+      assertEquals( Long.valueOf( "-1" ), ValueDataUtil.round( vmi, Long.valueOf( "-1" ), BigDecimal.ROUND_CEILING ) );
+      assertEquals( Long.valueOf( "-1" ), ValueDataUtil.round( vmi, Long.valueOf( "-1" ), BigDecimal.ROUND_FLOOR ) );
+      assertEquals( Long.valueOf( "-1" ), ValueDataUtil.round( vmi, Long.valueOf( "-1" ), BigDecimal.ROUND_HALF_UP ) );
+      assertEquals( Long.valueOf( "-1" ), ValueDataUtil.round( vmi, Long.valueOf( "-1" ), BigDecimal.ROUND_HALF_DOWN ) );
+      assertEquals( Long.valueOf( "-1" ), ValueDataUtil.round( vmi, Long.valueOf( "-1" ), BigDecimal.ROUND_HALF_EVEN ) );
+      assertEquals( Long.valueOf( "-1" ), ValueDataUtil.round( vmi, Long.valueOf( "-1" ), BigDecimal.ROUND_UNNECESSARY ) );
+
+      // Big Number
+      assertEquals( BigDecimal.valueOf( -2 ), ValueDataUtil.round( vmbn, BigDecimal.valueOf( -1.1 ), BigDecimal.ROUND_UP ) );
+      assertEquals( BigDecimal.valueOf( -1 ), ValueDataUtil.round( vmbn, BigDecimal.valueOf( -1.1 ), BigDecimal.ROUND_DOWN ) );
+      assertEquals( BigDecimal.valueOf( -1 ), ValueDataUtil.round( vmbn, BigDecimal.valueOf( -1.1 ), BigDecimal.ROUND_CEILING ) );
+      assertEquals( BigDecimal.valueOf( -2 ), ValueDataUtil.round( vmbn, BigDecimal.valueOf( -1.1 ), BigDecimal.ROUND_FLOOR ) );
+      assertEquals( BigDecimal.valueOf( -2 ), ValueDataUtil.round( vmbn, BigDecimal.valueOf( -1.5 ), BigDecimal.ROUND_HALF_UP ) );
+      assertEquals( BigDecimal.valueOf( -1 ), ValueDataUtil.round( vmbn, BigDecimal.valueOf( -1.5 ), BigDecimal.ROUND_HALF_DOWN ) );
+      assertEquals( BigDecimal.valueOf( 2 ), ValueDataUtil.round( vmbn, BigDecimal.valueOf( 2.5 ), BigDecimal.ROUND_HALF_EVEN ) );
+      assertEquals( BigDecimal.valueOf( 1.1 ), ValueDataUtil.round( vmbn, BigDecimal.valueOf( 1.1 ), BigDecimal.ROUND_UNNECESSARY ) );
+    } catch ( KettleValueException kve ) {
+      fail();
+    }
+
+    try {
+      ValueDataUtil.round( vmn, "hello", BigDecimal.ROUND_UP );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
+
+    try {
+      ValueDataUtil.round( vmi, "hello", BigDecimal.ROUND_UP );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
+
+    try {
+      ValueDataUtil.round( vmbn, "hello", BigDecimal.ROUND_UP );
+      fail();
+    } catch ( KettleValueException kve ) {
+      assertTrue( true );
+    }
+  }
+
 
   @Test
   public void testNVL() {
