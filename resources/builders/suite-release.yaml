@@ -701,9 +701,17 @@ jobGroups:
        archivable      :  true
        versionProperty :  pdi.version
 
-  4400:
      - jobID           :  metadata-editor
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       archivable      :  true
+       versionProperty :  pentaho-metadata.version
+
+  4400:
+     - jobID           :  metadata-editor-no-osgi
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       directives      :
+                 build :  deploy -DskipTests -Drelease -Dno-osgi
+                 test  :  test
        archivable      :  true
        versionProperty :  pentaho-metadata.version
 
@@ -720,6 +728,12 @@ jobGroups:
        archivable      :  true
        versionProperty :  aggdesigner.version
 
+     - jobID           :  metadata-editor-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
+       directives      :  += -Deula-wrap
+       archivable      :  true
+       versionProperty :  pentaho-metadata.version
+
   4500:
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
@@ -728,9 +742,11 @@ jobGroups:
        archivable      :  true
        versionProperty :  platform.version
 
-     - jobID           :  metadata-editor-ee
+     - jobID           :  metadata-editor-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       directives      :  += -Deula-wrap
+       directives      :
+                 build :  deploy -DskipTests -Drelease -Dno-osgi-eula-wrap -Dno-osgi
+                 test  :  test
        archivable      :  true
        versionProperty :  pentaho-metadata.version
 

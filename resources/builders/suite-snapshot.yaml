@@ -541,9 +541,16 @@ jobGroups:
        testable        :  false
        archivable      :  true
 
-  4400:
      - jobID           :  metadata-editor
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       archivable      :  true
+
+  4400:
+     - jobID           :  metadata-editor-no-osgi
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       directives      :
+                 build :  deploy -DskipTests -Drelease -Dno-osgi
+                 test  :  test
        archivable      :  true
 
      - jobID           :  platform-server-assembly
@@ -558,6 +565,10 @@ jobGroups:
        testable         : false
        archivable      :  true
 
+     - jobID           :  metadata-editor-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
+       archivable      :  true
+
   4500:
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
@@ -565,8 +576,11 @@ jobGroups:
        testable        :  false
        archivable      :  true
 
-     - jobID           :  metadata-editor-ee
+     - jobID           :  metadata-editor-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
+       directives      :
+                 build :  deploy -DskipTests -Drelease -Dno-osgi
+                 test  :  test
        archivable      :  true
 
      - jobID           :  pad-assembly-ee
