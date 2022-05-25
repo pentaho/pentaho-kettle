@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -658,6 +658,8 @@ public class DatabaseTest {
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
     when( provider.getNamedDataSource( anyString(), any( DataSourceProviderInterface.DatasourceType.class ) ) )
       .thenReturn( ds );
+    when( provider.getPooledDataSourceFromMeta( any( DatabaseMeta.class ), any( DataSourceProviderInterface.DatasourceType.class ) ) )
+      .thenReturn( ds );
 
     Database db = new Database( log, meta );
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
@@ -729,7 +731,7 @@ public class DatabaseTest {
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
     DataSource dataSource = mock( DataSource.class );
     Connection connection = mock( Connection.class );
-    when( provider.getNamedDataSource( any(), any() ) ).thenReturn( dataSource );
+    when( provider.getPooledDataSourceFromMeta( any(), any() ) ).thenReturn( dataSource );
     when( dataSource.getConnection() ).thenReturn( connection );
     Database db = new Database( log, meta );
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
