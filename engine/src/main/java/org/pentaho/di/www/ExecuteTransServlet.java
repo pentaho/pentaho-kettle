@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -328,10 +328,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
         if ( trans.isFinishedOrStopped() && trans.getErrors() > 0 ) {
           response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
           out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-                  PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ) ) );
-        } else {
-          out.println( new WebResult( WebResult.STRING_OK, BaseMessages.getString(
-                  PKG, "ExecuteTransServlet.Log.ExecuteTransFinished", logging ) ) );
+            PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ) ) );
         }
         out.flush();
       } catch ( Exception executionException ) {
