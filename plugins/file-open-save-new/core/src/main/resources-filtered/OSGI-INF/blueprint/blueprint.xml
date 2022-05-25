@@ -3,7 +3,7 @@
            xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
            xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs" default-timeout="20000">
 
-  <reference id="metaStoreLocator" interface="org.pentaho.osgi.metastore.locator.api.MetastoreLocator" />
+  <reference id="metaStoreLocator" interface="org.pentaho.metastore.locator.api.MetastoreLocator" />
 
   <bean id="repositoryBrowserController" scope="singleton"
         class="org.pentaho.di.plugins.fileopensave.controllers.RepositoryBrowserController">
