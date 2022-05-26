@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -78,12 +78,15 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.di.core.annotations.PluginDialog;
 
 /**
  * Dialog class for the Greenplum bulk loader step. Created on 28mar2008, copied from Sven Boden's Oracle version
  *
  * @author Luke Lonergan
  */
+@PluginDialog( id = "PGBulkLoader", image = "BLKPG.svg", pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/PostgreSQL+Bulk+Loader" )
 public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
