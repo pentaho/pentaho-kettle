@@ -24,7 +24,6 @@ __List of the current core plugins:__
 * lucid-db-streaming-loader
 * meta-inject
 * ms-access-bulk-loader
-* postgresql-db-bulk-loader
 * engine-configuration
 * pur
 * repositories
