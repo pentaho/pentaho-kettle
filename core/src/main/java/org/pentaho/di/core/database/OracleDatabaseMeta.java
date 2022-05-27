@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -555,17 +555,6 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   @Override
   public boolean requiresCreateTablePrimaryKeyAppend() {
     return true;
-  }
-
-  /**
-   * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
-   *
-   * @return true if the database supports retrieval of query metadata from a prepared statement. False if the query
-   *         needs to be executed first.
-   */
-  @Override
-  public boolean supportsPreparedStatementMetadataRetrieval() {
-    return false;
   }
 
   /**
