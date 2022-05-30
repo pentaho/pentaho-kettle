@@ -19,10 +19,10 @@ package com.pentaho.di.purge;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
-import junit.framework.Assert;
-
 import org.apache.logging.log4j.Level;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class PurgeUtilityLoggerTest {
 
@@ -50,10 +50,10 @@ public class PurgeUtilityLoggerTest {
 
     String logOutput = out.toString();
 
-    Assert.assertTrue( logOutput.contains( PURGE_PATH ) );
-    Assert.assertTrue( logOutput.contains( "info on 1st file" ) );
-    Assert.assertTrue( logOutput.contains( "debug on file2" ) );
-    Assert.assertTrue( logOutput.contains( "java.lang.NullPointerException" ) );
+    assertTrue( logOutput.contains( PURGE_PATH ) );
+    assertTrue( logOutput.contains( "info on 1st file" ) );
+    assertTrue( logOutput.contains( "debug on file2" ) );
+    assertTrue( logOutput.contains( "java.lang.NullPointerException" ) );
   }
 
   @SuppressWarnings( "null" )
@@ -78,10 +78,10 @@ public class PurgeUtilityLoggerTest {
 
     String logOutput = out.toString();
 
-    Assert.assertTrue( logOutput.contains( PURGE_PATH ) );
-    Assert.assertTrue( logOutput.contains( "info on 1st file" ) );
-    Assert.assertTrue( logOutput.contains( "debug on file2" ) );
-    Assert.assertTrue( logOutput.contains( "java.lang.NullPointerException" ) );
+    assertTrue( logOutput.contains( PURGE_PATH ) );
+    assertTrue( logOutput.contains( "info on 1st file" ) );
+    assertTrue( logOutput.contains( "debug on file2" ) );
+    assertTrue( logOutput.contains( "java.lang.NullPointerException" ) );
   }
 
 }

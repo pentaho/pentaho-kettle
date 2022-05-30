@@ -20,6 +20,7 @@ import java.io.OutputStream;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.MDC;
 
 /**
@@ -231,7 +232,7 @@ public class PurgeUtilityLogger implements IPurgeUtilityLogger {
     for ( int stackLevel = 1; stackLevel < Thread.currentThread().getStackTrace().length; stackLevel++ ) {
       StackTraceElement ste = Thread.currentThread().getStackTrace()[stackLevel];
       if ( !ste.getClassName().equals( this.getClass().getName() ) ) {
-        MDC.put( CODE_LINE, ste.getClassName() + "." + ste.getMethodName() + ":" + ste.getLineNumber() );
+        ThreadContext.put( CODE_LINE, ste.getClassName() + "." + ste.getMethodName() + ":" + ste.getLineNumber() );
         break;
       }
     }
