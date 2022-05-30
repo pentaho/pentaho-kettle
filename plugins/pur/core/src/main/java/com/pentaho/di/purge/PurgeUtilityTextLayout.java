@@ -16,20 +16,20 @@
  */
 package com.pentaho.di.purge;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.StringLayout;
+import org.apache.logging.log4j.core.layout.ByteBufferDestination;
+import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.Strings;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.StringLayout;
-import org.apache.logging.log4j.core.layout.ByteBufferDestination;
-import org.apache.logging.log4j.status.StatusLogger;
-import org.apache.logging.log4j.util.Strings;
-import org.slf4j.MDC;
 
 /**
  * This class was derived from Log4j HTML
@@ -120,7 +120,7 @@ public class PurgeUtilityTextLayout implements StringLayout, IPurgeUtilityLayout
 
     // File/Folder
     sbuf.append( "\t" );
-    sbuf.append( MDC.get( PurgeUtilityLog.FILE_KEY ) );
+    sbuf.append( ThreadContext.get( PurgeUtilityLog.FILE_KEY ) );
 
     // debug level
     if ( showLevelColumn() ) {
@@ -131,7 +131,7 @@ public class PurgeUtilityTextLayout implements StringLayout, IPurgeUtilityLayout
     // Code class and line
     if ( showCodeLineColumn() ) {
       sbuf.append( "\t" );
-      sbuf.append( MDC.get( PurgeUtilityLogger.CODE_LINE ) );
+      sbuf.append( ThreadContext.get( PurgeUtilityLogger.CODE_LINE ) );
     }
 
     // Message
