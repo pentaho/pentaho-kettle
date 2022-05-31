@@ -72,6 +72,7 @@
         <module>lucid-db-streaming-loader</module>
         <module>salesforce</module>
         <module>pur</module>
+        <module>monet-db-bulk-loader</module>
         <module>ms-access</module>
         <module>xml</module>
         <module>streaming</module>
