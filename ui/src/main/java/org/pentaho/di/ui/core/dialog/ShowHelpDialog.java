@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -118,102 +118,7 @@ public class ShowHelpDialog extends Dialog {
   }
 
   public void open() {
-    Shell parent = getParent();
-    display = parent.getDisplay();
-
-    shell = createShell( parent );
-    shell.setImage( GUIResource.getInstance().getImageSpoon() );
-    props.setLook( shell );
-
-    FormLayout formLayout = new FormLayout();
-
-    shell.setLayout( formLayout );
-    shell.setText( dialogTitle );
-
-    //Set Images
-    setImages();
-
-    // Canvas
-    wBrowser = new Browser( shell, SWT.NONE );
-    props.setLook( wBrowser );
-
-    // Browser canvas
-    FormData fdBrowser = new FormData();
-    fdBrowser.top = new FormAttachment( 0, TOOLBAR_HEIGHT );
-    fdBrowser.bottom = new FormAttachment( 100, 0 );
-    fdBrowser.right = new FormAttachment( 100, 0 );
-    fdBrowser.left = new FormAttachment( 0, 0 );
-    wBrowser.setLayoutData( fdBrowser );
-    wBrowser.setUrl( url );
-
-    // Left toolbar (back, forward, refresh, home)
-    toolbarLeft = new ToolBar( shell, SWT.WRAP );
-    FormData fdToolbarLeft = new FormData();
-    fdToolbarLeft.top = new FormAttachment( 0, MARGIN );
-    toolbarLeft.setLayoutData( fdToolbarLeft );
-    toolbarLeft.setCursor( cursorEnabled );
-    toolbarLeft.setBackground( toolbarLeft.getParent().getBackground() );
-
-    tltmBack = new ToolItem( toolbarLeft, SWT.PUSH );
-    tltmBack.setImage( imageBackEnabled );
-    tltmBack.setDisabledImage( imageBackDisabled );
-    tltmBack.setToolTipText( BaseMessages.getString( PKG, "Spoon.Documentation.Tooltip.Back" ) );
-    tltmBack.setEnabled( false );
-
-    tltmForward = new ToolItem( toolbarLeft, SWT.PUSH );
-    tltmForward.setImage( imageForwardEnabled );
-    tltmForward.setDisabledImage( imageForwardDisabled );
-    tltmForward.setToolTipText( BaseMessages.getString( PKG, "Spoon.Documentation.Tooltip.Forward" ) );
-    tltmForward.setEnabled( false );
-
-    tltmRefresh = new ToolItem( toolbarLeft, SWT.PUSH );
-    tltmRefresh.setImage( imageRefreshEnabled );
-    tltmRefresh.setDisabledImage( imageRefreshDisabled );
-    tltmRefresh.setToolTipText( BaseMessages.getString( PKG, "Spoon.Documentation.Tooltip.Refresh" ) );
-    tltmRefresh.setEnabled( true );
-
-    tltmHome = new ToolItem( toolbarLeft, SWT.PUSH );
-    tltmHome.setImage( imageHomeEnabled );
-    tltmHome.setDisabledImage( imageHomeDisabled );
-    tltmHome.setToolTipText( BaseMessages.getString( PKG, "Spoon.Documentation.Tooltip.Home" ) );
-    tltmHome.setEnabled( true );
-
-    // Right toolbar (print)
-    toolbarRight = new ToolBar( shell, SWT.WRAP );
-    FormData fdToolbarRight = new FormData();
-    fdToolbarRight.top = new FormAttachment( 0, MARGIN );
-    fdToolbarRight.right = new FormAttachment( 100, -1 * TOOL_ITEM_SPACING );
-    toolbarRight.setLayoutData( fdToolbarRight );
-    toolbarRight.setCursor( cursorEnabled );
-    toolbarRight.setBackground( toolbarRight.getParent().getBackground() );
-
-    // URL toolbar element
-    textURL = new Text( shell, SWT.BORDER );
-    FormData fdText = new FormData();
-    fdText.top = new FormAttachment( 0, MARGIN );
-    fdText.right = new FormAttachment( toolbarRight, -1 * TOOL_ITEM_SPACING );
-    fdText.left = new FormAttachment( toolbarLeft, TOOL_ITEM_SPACING );
-    textURL.setLayoutData( fdText );
-    textURL.setForeground( new Color( display, 101, 101, 101 ) );
-
-    tltmPrint = new ToolItem( toolbarRight, SWT.PUSH );
-    tltmPrint.setImage( imagePrintEnabled );
-    tltmPrint.setDisabledImage( imagePrintDisabled );
-    tltmPrint.setToolTipText( BaseMessages.getString( PKG, "Spoon.Documentation.Tooltip.Print" ) );
-    tltmPrint.setEnabled( true );
-
-    setUpListeners();
-
-    // Specs are 760/530, but due to rendering differences, we need to adjust the actual hgt/wdt used
-    BaseStepDialog.setSize( shell, 755, 538, true );
-    shell.setMinimumSize( 515, 408 );
-
-    shell.open();
-    while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() ) {
-        display.sleep();
-      }
-    }
+      Program.launch( url );
   }
 
   private void setImages() {
