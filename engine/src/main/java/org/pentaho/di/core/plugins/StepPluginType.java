@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,6 +69,7 @@ import org.w3c.dom.Node;
     "BaseStep.Category.Mapping",
     "BaseStep.Category.Bulk",
     "BaseStep.Category.Inline",
+    "BaseStep.Category.MetadataDiscovery",
     "BaseStep.Category.Experimental",
     "BaseStep.Category.Deprecated" },
   i18nPackageClass = StepInterface.class )
