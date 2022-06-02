@@ -60,6 +60,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.*;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
@@ -121,9 +122,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private String type;
   private String connection;
   private String provider;
-  private String command = "open";
+  private String command = STATE_SAVE;
   private FileDialogOperation fileDialogOperation = new FileDialogOperation(command);
 
+  private Text txtFileName;
   private LogChannelInterface log;
   private int width;
   private int height;
@@ -148,17 +150,18 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
 
   public void open(FileDialogOperation fileDialogOperation ) {
-    if(fileDialogOperation == null) {
-      fileDialogOperation = new FileDialogOperation("open");
-    }
-    String dialogPath = fileDialogOperation.getPath() != null
-            ? fileDialogOperation.getPath()
-            : fileDialogOperation.getStartDir();
 
+    try {
+      String dialogPath = fileDialogOperation.getPath() != null
+              ? fileDialogOperation.getPath()
+              : fileDialogOperation.getStartDir();
+    } catch (Exception ex) {
+
+    }
 
     this.fileDialogOperation = fileDialogOperation;
-    this.command = fileDialogOperation.getCommand();
-    this.shellTitle = this.command; // TODO: Get from translation package
+    command = fileDialogOperation.getCommand();
+    shellTitle = BaseMessages.getString( PKG, "FileOpenSaveDialog.dialog." + command + ".title");
 
     this.open();
     while ( !this.getShell().isDisposed() ) {
@@ -200,7 +203,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
                     .setDisabledImage( rasterImage( "img/help.svg", 24, 24 ) )
                     .setEnabled( true )
                     .setLayoutData( new FormDataBuilder().bottom( 100, 0 ).left( 0, 20 ).result() );
-    helpButton.getLabel().setText( "Help" );
+    helpButton.getLabel().setText(BaseMessages.getString( PKG,  "file-open-save-plugin.app.help.label"));
 
     Composite select = createFilesBrowser( parent );
     select.setLayoutData( new FormDataBuilder().top( buttons, 15 ).left( 0, 0 ).right( 100, 0 )
@@ -208,7 +211,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     Combo comboFilter = new Combo(parent, SWT.NONE);
     Label labelComboFilter = new Label(parent, SWT.NONE);
-    labelComboFilter.setText("File Type:");
+    labelComboFilter.setText(BaseMessages.getString(PKG, "file-open-save-plugin.app.save.file-filter.label"));
     PropsUI.getInstance().setLook(labelComboFilter);
     PropsUI.getInstance().setLook(comboFilter);
     String filters = fileDialogOperation.getFilter() != null ? fileDialogOperation.getFilter() : fileDialogOperation.getDefaultFilter();
@@ -223,32 +226,30 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
     } else {
       comboFilter.setItems(new String[]{});
-      comboFilter.setText("All Files");
+      comboFilter.setText("All Files"); //TODO: Solve why `fileDialogOperation.getDefaultFilter()` is null
     }
-    if (command.equalsIgnoreCase(FileDialogOperation.SAVE)) {
-      Text filenameText = new Text(parent, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    if (command.equalsIgnoreCase(STATE_SAVE)) {
+      txtFileName = new Text(parent, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
       Label filenameLabel = new Label(parent, SWT.NONE);
 
-      filenameLabel.setText("File Name:");
+      filenameLabel.setText(BaseMessages.getString(PKG, "file-open-save-plugin.app.save.file-name.label"));
 
       PropsUI.getInstance().setLook(filenameLabel);
-      PropsUI.getInstance().setLook(filenameText);
+      PropsUI.getInstance().setLook(txtFileName);
 
-      filenameText.setSize(40, 40); // TODO: Figure out how to set size correctly
+      txtFileName.setSize(40, 40); // TODO: Figure out how to set size correctly
 
 
       filenameLabel.setLayoutData(new FormDataBuilder().top(select, 20).left(helpButton.getLabel(), 150).result());
-      filenameText.setLayoutData(new FormDataBuilder().top(select, 20).left(filenameLabel, 5).result());
-      labelComboFilter.setLayoutData(new FormDataBuilder().top(select, 20).left(filenameText, 25).result());
+      txtFileName.setLayoutData(new FormDataBuilder().top(select, 20).left(filenameLabel, 5).result());
+      labelComboFilter.setLayoutData(new FormDataBuilder().top(select, 20).left(txtFileName, 25).result());
       comboFilter.setLayoutData(new FormDataBuilder().top(select, 20).left(labelComboFilter, 5).result());
 
-    }else{
-
     }
-    Button cancelButton = new Button(parent, SWT.NONE);
-    PropsUI.getInstance().setLook(cancelButton);
+    Button btnCancel = new Button(parent, SWT.NONE);
+    PropsUI.getInstance().setLook(btnCancel);
 
-    cancelButton.addSelectionListener(new SelectionListener() {
+    btnCancel.addSelectionListener(new SelectionListener() {
       @Override
       public void widgetSelected(SelectionEvent selectionEvent) {
         parentPath = null;
@@ -264,14 +265,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
     });
 
-    if (this.command.equalsIgnoreCase(FileDialogOperation.OPEN)) {
+    if (this.command.equalsIgnoreCase(STATE_OPEN)) {
       Button btnOpen = new Button(parent, SWT.NONE);
       PropsUI.getInstance().setLook(btnOpen);
       labelComboFilter.setLayoutData(new FormDataBuilder().top(select, 20).right(comboFilter, -5).result());
       comboFilter.setLayoutData(new FormDataBuilder().top(select, 20).right(btnOpen, -15).result());
 
-      btnOpen.setLayoutData(new FormDataBuilder().top(select, 20).right(cancelButton, -15).result());
-      btnOpen.setText("Open");
+      btnOpen.setLayoutData(new FormDataBuilder().top(select, 20).right(btnCancel, -15).result());
+      btnOpen.setText(BaseMessages.getString(PKG, "file-open-save-plugin.app.open.button"));
       btnOpen.addSelectionListener(new SelectionListener() {
         @Override
         public void widgetSelected(SelectionEvent selectionEvent) {
@@ -294,39 +295,35 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
         }
       });
-      cancelButton.setLayoutData(new FormDataBuilder().top(select, 20).right(100, -30).result());
-      cancelButton.setText("Cancel");
+      btnCancel.setLayoutData(new FormDataBuilder().top(select, 20).right(100, -30).result());
+      btnCancel.setText(BaseMessages.getString(PKG, "file-open-save-plugin.app.cancel.button"));
     }
     else if (this.command.equalsIgnoreCase(FileDialogOperation.SAVE))
     {
 
 
-      Button saveButton = new Button(parent, SWT.NONE);
-      PropsUI.getInstance().setLook(saveButton);
-      saveButton.setLayoutData(new FormDataBuilder().top(select, 20).left(comboFilter, 30).result());
-      saveButton.setText("Save");
-      saveButton.addSelectionListener(new SelectionListener() {
+      Button btnSave = new Button(parent, SWT.NONE);
+      PropsUI.getInstance().setLook(btnSave);
+      btnSave.setLayoutData(new FormDataBuilder().top(select, 20).left(comboFilter, 30).result());
+      btnSave.setText(BaseMessages.getString( PKG, "file-open-save-plugin.app.save.button"));
+      btnSave.addSelectionListener(new SelectionListener() {
         @Override
         public void widgetSelected(SelectionEvent selectionEvent) {
-          // TODO: Fix behavior overall
+          // TODO: Make behavior mimic original thin client
           StructuredSelection structuredSelection = (StructuredSelection) fileTableViewer.getSelection();
           Directory directory = (Directory) structuredSelection.getFirstElement();
 
           if (directory != null) {
 
-            fileDialogOperation.setPath(directory.getPath());
-            fileDialogOperation.setFilename("test"); //TODO: Un-hardcode
-            fileDialogOperation.setFileType(".ktr"); //TODO: Un-hardcode
-
             parentPath = directory.getParent();
-            type = ".ktr";
+            type = fileDialogOperation.getFileType();
             path = directory.getPath();
-            name = "test";
+            name = txtFileName.getText().contains(".") ? txtFileName.getText().split(".")[0] : txtFileName.getText();
             provider = directory.getProvider();
 
             getShell().dispose();
           } else {
-            // TODO: Display something?
+            // TODO: Display something informing the user
           }
         }
 
@@ -338,8 +335,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
 
       });
-      cancelButton.setLayoutData(new FormDataBuilder().top(select, 20).left(saveButton, 15).result());
-      cancelButton.setText("Cancel");
+      btnCancel.setLayoutData(new FormDataBuilder().top(select, 20).left(btnSave, 15).result());
+      btnCancel.setText(BaseMessages.getString(PKG, "file-open-save-plugin.app.cancel.button"));
     }
     return parent;
   }
@@ -618,23 +615,23 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.setExpandedState( selection, true );
         treeViewer.setSelection( new StructuredSelection( selection ), true );
       } else if (selection != null && selection instanceof File) {
+        // TODO: Make this work for more than just the `LocalFileProvider`
         File f = (File) selection;
 
-//        objectId
         path = f.getPath();
         parentPath = f.getParent();
         type = f.getType();
-//        connection;
+        connection = this.fileDialogOperation.getConnection();
         provider = f.getProvider();
       }
     });
 
 
     fileTableViewer.addDoubleClickListener( ( e ) -> {
-      LocalFile jjarvis = new LocalFile();
-      jjarvis.setPath( "/C:\\/Users/kurena" );
+      LocalFile localFileRoot = new LocalFile();
+      localFileRoot.setPath( "/" ); // TODO: Check if necessary
 
-      treeViewer.expandToLevel( jjarvis, TreeViewer.ALL_LEVELS );
+      treeViewer.expandToLevel( localFileRoot, TreeViewer.ALL_LEVELS );
     });
 
     sashForm.setWeights( new int[] {
@@ -655,7 +652,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private void openHelpDialog() {
-    HelpUtils.openHelpDialog( getShell(), "", HELP_URL );
+    Program.launch( HELP_URL );
   }
 
   public String getObjectId() {
@@ -851,14 +848,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     @Override
     public Object[] getElements( Object inputElement ) {
-      /*
-       * System.out.println( "here " + inputElement ); if ( "Root".equals( inputElement ) ) { Object[] results =
-       * fileController.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray(); for ( Object o : results ) {
-       * System.out.println( ( (Tree) o ).getName() ); } return results;
-       *
-       * } return null;
-       */
-
       return (Object[]) inputElement;
     }
 
@@ -866,14 +855,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     public Object[] getChildren( Object parentElement ) {
 
       if ( parentElement instanceof Tree ) {
-        System.out.println( "Get Children " + ((Tree) parentElement ).getName() );
+
         Tree parentTree = (Tree) parentElement;
         if( parentTree.isHasChildren() ) {
           return ( parentTree ).getChildren().toArray();
         }
       } else if ( parentElement instanceof Directory ) {
         try {
-          System.out.println( "Get Children " + ((File) parentElement).getPath() );
           return fileController.getFiles( (Directory) parentElement, null, true ).stream()
                   .filter( f -> f instanceof Directory )
                   .sorted( Comparator.comparing( f -> f.getName(), String.CASE_INSENSITIVE_ORDER ) ).toArray();
