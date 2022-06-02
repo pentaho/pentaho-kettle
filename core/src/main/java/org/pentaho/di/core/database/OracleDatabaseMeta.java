@@ -668,15 +668,4 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     getAttributes().setProperty( STRICT_BIGNUMBER_INTERPRETATION, strictBigNumberInterpretation ? "Y" : "N" );
   }
 
-  /**
-   * Based on Oracle documentation
-   * https://docs.oracle.com/javadb/10.10.1.2/ref/rrefclob.html#:~:text=A%20CLOB%20(character%20large%20object,up%20to%202%2C147%2C483%2C647%20characters%20long.
-   * A CLOB (character large object) value can be up to 2,147,483,647 characters long
-   * This is the same as MAX value of an Integrer type.
-   */
-  @Override
-  public int getMaxTextFieldLength() {
-    return Integer.MAX_VALUE;
-  }
-
 }
