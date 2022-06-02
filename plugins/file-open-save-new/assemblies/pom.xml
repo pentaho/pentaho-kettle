@@ -17,6 +17,6 @@
   <name>PDI File Open and Save New Plugin Assemblies</name>
 
   <modules>
-    <module>feature</module>
+<!--    <module>feature</module>-->
   </modules>
 </project>

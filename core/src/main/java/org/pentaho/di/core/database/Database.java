@@ -2393,17 +2393,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
     // No cache entry found
 
-    // The new method of retrieving the query fields fails on Oracle because
-    // they failed to implement the getMetaData method on a prepared statement.
-    // (!!!)
-    // Even recent drivers like 10.2 fail because of it.
-    //
-    // There might be other databases that don't support it (we have no
-    // knowledge of this at the time of writing).
-    // If we discover other RDBMSs, we will create an interface for it.
-    // For now, we just try to get the field layout on the re-bound in the
-    // exception block below.
-    //
     try {
       if ( databaseMeta.supportsPreparedStatementMetadataRetrieval() ) {
         // On with the regular program.
