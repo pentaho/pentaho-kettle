@@ -639,19 +639,21 @@ jobGroups:
        archivable      :  true
        atomicScmCheckout: true
        versionProperty :  big-data-plugin.version
-
-     - jobID           :  prd-assembly
+       
+     - jobID           :  prd-assembly-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Pdesigner -Djavadoc -Dmaven.test.failure.ignore=true
+       directives      :  += -Pdesigner -Djavadoc -Dmaven.test.failure.ignore=true -Dno-osgi
        archivable      :  true
        versionProperty :  pentaho-reporting.version
 
   4000:
-     - jobID           :  prd-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
-       directives      :  += -Deula-wrap
+     - jobID           :  prd-assembly
+       scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
+       root            :  assemblies/prd-ce
+       directives      :
+                 build :  deploy -DskipTests -Drelease
+                 test  :  test
        archivable      :  true
-       testable        :  false
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-pur-plugin-ee
@@ -659,13 +661,11 @@ jobGroups:
        archivable      :  true
        versionProperty :  pdi-pur-plugin.version
 
-     - jobID           :  prd-assembly-no-osgi
-       scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :
-                 build :  deploy -DskipTests -Drelease -Dno-osgi
-                 test  :  test
-       root            :  assemblies/prd-ce
+     - jobID           :  prd-assembly-ee-no-osgi
+       scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
+       directives      :  += -Dno-osgi-eula-wrap -Dno-osgi
        archivable      :  true
+       testable        :  false
        versionProperty :  pentaho-reporting.version
 
   4100:
@@ -675,12 +675,12 @@ jobGroups:
        archivable      :  true
        versionProperty :  pentaho-operations-mart.version
 
-     - jobID           :  prd-assembly-ee-no-osgi
+     - jobID           :  prd-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
-       directives      :
-                 build :  deploy -DskipTests -Drelease -Dno-osgi-eula-wrap -Dno-osgi
-                 test  :  test
        root            :  assemblies/prd-ee
+       directives      :
+                 build :  deploy -DskipTests -Drelease -Deula-wrap
+                 test  :  test
        archivable      :  true
        testable        :  false
        versionProperty :  pentaho-reporting.version
@@ -701,16 +701,17 @@ jobGroups:
        archivable      :  true
        versionProperty :  pdi.version
 
-     - jobID           :  metadata-editor
+     - jobID           :  metadata-editor-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       directives      :  += -Dno-osgi
        archivable      :  true
        versionProperty :  pentaho-metadata.version
 
   4400:
-     - jobID           :  metadata-editor-no-osgi
+     - jobID           :  metadata-editor
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
        directives      :
-                 build :  deploy -DskipTests -Drelease -Dno-osgi
+                 build :  deploy -DskipTests -Drelease
                  test  :  test
        archivable      :  true
        versionProperty :  pentaho-metadata.version
@@ -727,10 +728,10 @@ jobGroups:
        testable        :  false
        archivable      :  true
        versionProperty :  aggdesigner.version
-
-     - jobID           :  metadata-editor-ee
+       
+     - jobID           :  metadata-editor-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       directives      :  += -Deula-wrap
+       directives      :  += -Dno-osgi-eula-wrap -Dno-osgi
        archivable      :  true
        versionProperty :  pentaho-metadata.version
 
@@ -742,10 +743,10 @@ jobGroups:
        archivable      :  true
        versionProperty :  platform.version
 
-     - jobID           :  metadata-editor-ee-no-osgi
+     - jobID           :  metadata-editor-ee
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
        directives      :
-                 build :  deploy -DskipTests -Drelease -Dno-osgi-eula-wrap -Dno-osgi
+                 build :  deploy -DskipTests -Drelease -Deula-wrap
                  test  :  test
        archivable      :  true
        versionProperty :  pentaho-metadata.version
