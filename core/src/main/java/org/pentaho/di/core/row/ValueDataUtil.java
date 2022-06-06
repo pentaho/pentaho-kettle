@@ -1153,7 +1153,7 @@ public class ValueDataUtil {
       case ValueMetaInterface.TYPE_INTEGER:
         return new Long( Math.round( Math.sqrt( metaA.getInteger( dataA ).longValue()
           * metaA.getInteger( dataA ).longValue() + metaB.getInteger( dataB ).longValue()
-          / metaB.getInteger( dataB ).longValue() ) ) );
+          * metaB.getInteger( dataB ).longValue() ) ) );
 
       case ValueMetaInterface.TYPE_BIGNUMBER:
         return BigDecimal.valueOf( Math.sqrt( metaA.getNumber( dataA ).doubleValue()
