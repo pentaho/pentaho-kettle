@@ -15,12 +15,6 @@
 
   <name>Pentaho Metastore Locator</name>
 
-  <modules>
-    <module>api</module>
-    <module>core</module>
-    <module>assemblies</module>
-  </modules>
-
   <properties>
     <pdi.version>9.4.0.0-SNAPSHOT</pdi.version>
     <version.for.license>${project.version}</version.for.license>
