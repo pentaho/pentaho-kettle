@@ -57,10 +57,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <modules>
-    <module>api</module>
-    <module>impl</module>
-  </modules>
   <profiles>
     <profile>
       <id>lowdeps</id>
