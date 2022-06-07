@@ -32,6 +32,7 @@
       </activation>
       <modules>
         <module>metastore-locator</module>
+        <module>repository-locator</module>
       </modules>
     </profile>
 
@@ -76,6 +77,7 @@
         <module>xml</module>
         <module>streaming</module>
         <module>metastore-locator</module>
+        <module>repository-locator</module>
       </modules>
     </profile>
 
