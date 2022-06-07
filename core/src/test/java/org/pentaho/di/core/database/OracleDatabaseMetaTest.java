@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -126,7 +126,7 @@ public class OracleDatabaseMetaTest {
         .getExtraOptionsHelpText() );
     assertArrayEquals( new String[] { "ojdbc14.jar", "orai18n.jar" }, nativeMeta.getUsedLibraries() );
     assertTrue( nativeMeta.requiresCreateTablePrimaryKeyAppend() );
-    assertFalse( nativeMeta.supportsPreparedStatementMetadataRetrieval() );
+    assertTrue( nativeMeta.supportsPreparedStatementMetadataRetrieval() ); // Since PDI-19514
     String quoteTest1 = "FOO 'BAR' \r TEST \n";
     String quoteTest2 = "FOO 'BAR' \\r TEST \\n";
     assertEquals( "'FOO ''BAR'' '||chr(10)||' TEST '||chr(13)||''", nativeMeta.quoteSQLString( quoteTest1 ) );

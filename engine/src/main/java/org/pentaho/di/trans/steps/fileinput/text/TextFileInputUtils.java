@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -850,28 +850,33 @@ public class TextFileInputUtils {
             }
             pol = sbpol.toString();
           }
-
-          // replace the escaped enclosures with enclosures...
-          if ( contains_escaped_enclosures ) {
+          if ( !Utils.isEmpty( inf.content.escapeCharacter ) && ( inf.content.escapeCharacter.equals( enclosure ) ) && ( contains_escaped_escape || contains_escaped_enclosures ) ) {
+            // replace the escaped enclosures with enclosures...
             String replace = inf.content.escapeCharacter + enclosure;
             String replaceWith = enclosure;
 
             pol = Const.replace( pol, replace, replaceWith );
+          } else {
+            if ( contains_escaped_enclosures ) {
+              String replace = inf.content.escapeCharacter + enclosure;
+              String replaceWith = enclosure;
+
+              pol = Const.replace(pol, replace, replaceWith);
+            }
+
+            contains_escaped_escape = pol.contains(inf.content.escapeCharacter + inf.content.escapeCharacter);
+            if ( contains_escaped_escape ) {
+              String replace = inf.content.escapeCharacter + inf.content.escapeCharacter;
+              String replaceWith = inf.content.escapeCharacter;
+
+              pol = Const.replace(pol, replace, replaceWith);
+            }
           }
 
           // replace the escaped separators with separators...
           if ( contains_escaped_separators ) {
             String replace = inf.content.escapeCharacter + delimiter;
             String replaceWith = delimiter;
-
-            pol = Const.replace( pol, replace, replaceWith );
-          }
-
-          // replace the escaped escape with escape...
-          contains_escaped_escape = pol.contains( inf.content.escapeCharacter + inf.content.escapeCharacter );
-          if ( contains_escaped_escape ) {
-            String replace = inf.content.escapeCharacter + inf.content.escapeCharacter;
-            String replaceWith = inf.content.escapeCharacter;
 
             pol = Const.replace( pol, replace, replaceWith );
           }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -558,17 +558,6 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   }
 
   /**
-   * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
-   *
-   * @return true if the database supports retrieval of query metadata from a prepared statement. False if the query
-   *         needs to be executed first.
-   */
-  @Override
-  public boolean supportsPreparedStatementMetadataRetrieval() {
-    return false;
-  }
-
-  /**
    * @return The maximum number of columns in a database, <=0 means: no known limit
    */
   @Override
@@ -678,4 +667,5 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   public void setStrictBigNumberInterpretation( boolean strictBigNumberInterpretation ) {
     getAttributes().setProperty( STRICT_BIGNUMBER_INTERPRETATION, strictBigNumberInterpretation ? "Y" : "N" );
   }
+
 }
