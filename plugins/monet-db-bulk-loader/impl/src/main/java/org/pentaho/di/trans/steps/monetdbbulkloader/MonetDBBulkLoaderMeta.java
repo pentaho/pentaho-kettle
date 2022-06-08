@@ -70,7 +70,7 @@ import java.util.List;
         description = "BaseStep.TypeTooltipDesc.MonetDBBulkLoader",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
         image = "images/BLKM.svg",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/MonetDB+bulk+loader",
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/spaces/EAI/pages/386803510/MonetDB+bulk+loader",
         i18nPackageName = "org.pentaho.di.trans.steps.monetdbbulkloader" )
 public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionInterface, StepMetaInterface,
     ProvidesDatabaseConnectionInformation {

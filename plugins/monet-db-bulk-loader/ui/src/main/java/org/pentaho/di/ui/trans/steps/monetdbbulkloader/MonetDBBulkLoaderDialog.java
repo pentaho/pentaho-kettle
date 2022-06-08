@@ -100,7 +100,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 @PluginDialog( id = "MonetDBBulkLoader", image = "BLKM.svg",
         pluginType = PluginDialog.PluginType.STEP,
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/MonetDB+bulk+loader" )
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/spaces/EAI/pages/386803510/MonetDB+bulk+loader" )
 public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
