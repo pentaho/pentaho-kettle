@@ -75,6 +75,7 @@
         <module>pur</module>
         <module>ms-access</module>
         <module>postgresql-db-bulk-loader</module>
+        <module>oracle-bulk-loader</module>
         <module>xml</module>
         <module>streaming</module>
         <module>metastore-locator</module>
