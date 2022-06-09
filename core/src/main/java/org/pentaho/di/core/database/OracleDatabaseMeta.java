@@ -667,4 +667,5 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   public void setStrictBigNumberInterpretation( boolean strictBigNumberInterpretation ) {
     getAttributes().setProperty( STRICT_BIGNUMBER_INTERPRETATION, strictBigNumberInterpretation ? "Y" : "N" );
   }
+
 }

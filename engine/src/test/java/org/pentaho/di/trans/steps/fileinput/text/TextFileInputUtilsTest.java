@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -219,4 +219,27 @@ public class TextFileInputUtilsTest {
 
   }
 
+  @Test
+  public void convertCSVLinesToStringsWithSameEnclosureAndEscape() throws Exception {
+    TextFileInputMeta inputMeta = Mockito.mock(TextFileInputMeta.class);
+    inputMeta.content = new TextFileInputMeta.Content();
+    inputMeta.content.fileType = "CSV";
+    inputMeta.inputFields = new BaseFileField[2];
+    inputMeta.content.escapeCharacter = "\"";
+    inputMeta.content.enclosure = "\"";
+    //the escape character is same as enclosure
+    String line = "\"\"\"\"\"\""; // """"""
+
+    String[] strings = TextFileInputUtils
+            .convertLineToStrings(Mockito.mock(LogChannelInterface.class), line, inputMeta, ",", "\"", "\"");
+    Assert.assertNotNull(strings);
+    Assert.assertEquals("\"\"", strings[0]);//""""
+
+    line = "\"{\"\"Example1\"\":\"\"\"\",\"\"Example\"\":\"\"Test\"\"}\""; // """"""
+
+    strings = TextFileInputUtils
+            .convertLineToStrings(Mockito.mock(LogChannelInterface.class), line, inputMeta, ",", "\"", "\"");
+    Assert.assertNotNull(strings);
+    Assert.assertEquals("{\"Example1\":\"\",\"Example\":\"Test\"}", strings[0]);//""""
+  }
 }
