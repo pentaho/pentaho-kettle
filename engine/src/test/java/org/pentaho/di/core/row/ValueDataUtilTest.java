@@ -1012,16 +1012,20 @@ public class ValueDataUtilTest {
         CalculatorMetaFunction.CALC_COMBINATION_2 ) );
     assertEquals( Double.valueOf( "111.80339887498948" ), calculate( "100", "50", ValueMetaInterface.TYPE_NUMBER,
         CalculatorMetaFunction.CALC_COMBINATION_2 ) );
+    assertEquals( Double.valueOf( "100.0" ), calculate( "100", "0", ValueMetaInterface.TYPE_NUMBER,
+      CalculatorMetaFunction.CALC_COMBINATION_2 ) );
 
     // Test Kettle Integer (Java Long) types
     assertEquals( Long.valueOf( "1" ), calculate( "1", "1", ValueMetaInterface.TYPE_INTEGER,
         CalculatorMetaFunction.CALC_COMBINATION_2 ) );
-    assertEquals( Long.valueOf( "2" ), calculate( "2", "2", ValueMetaInterface.TYPE_INTEGER,
+    assertEquals( Long.valueOf( "3" ), calculate( "2", "2", ValueMetaInterface.TYPE_INTEGER,
         CalculatorMetaFunction.CALC_COMBINATION_2 ) );
-    assertEquals( Long.valueOf( "10" ), calculate( "10", "20", ValueMetaInterface.TYPE_INTEGER,
+    assertEquals( Long.valueOf( "22" ), calculate( "10", "20", ValueMetaInterface.TYPE_INTEGER,
         CalculatorMetaFunction.CALC_COMBINATION_2 ) );
-    assertEquals( Long.valueOf( "100" ), calculate( "100", "50", ValueMetaInterface.TYPE_INTEGER,
+    assertEquals( Long.valueOf( "112" ), calculate( "100", "50", ValueMetaInterface.TYPE_INTEGER,
         CalculatorMetaFunction.CALC_COMBINATION_2 ) );
+    assertEquals( Long.valueOf( "100" ), calculate( "100", "0", ValueMetaInterface.TYPE_INTEGER,
+      CalculatorMetaFunction.CALC_COMBINATION_2 ) );
 
     // Test Kettle big Number types
     assertEquals( 0, new BigDecimal( "1.4142135623730951" ).compareTo( (BigDecimal) calculate( "1", "1",
@@ -1032,6 +1036,8 @@ public class ValueDataUtilTest {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_2 ) ) );
     assertEquals( 0, new BigDecimal( "111.80339887498948" ).compareTo( (BigDecimal) calculate( "100", "50",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_2 ) ) );
+    assertEquals( 0, new BigDecimal( "100.0" ).compareTo( (BigDecimal) calculate( "100", "0",
+      ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_2 ) ) );
   }
 
   @Test
