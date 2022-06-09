@@ -23,6 +23,7 @@ __List of the current core plugins:__
 * log4j
 * lucid-db-streaming-loader
 * meta-inject
+* monet-db-bulk-loader
 * ms-access-bulk-loader
 * engine-configuration
 * pur

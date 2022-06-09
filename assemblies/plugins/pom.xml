@@ -27,6 +27,7 @@
     <kettle-palo-plugin.version>${project.version}</kettle-palo-plugin.version>
     <pdi-google-analytics-plugin.version>9.4.0.0-SNAPSHOT</pdi-google-analytics-plugin.version>
     <pdi-salesforce-plugin.version>9.4.0.0-SNAPSHOT</pdi-salesforce-plugin.version>
+    <monet-db-bulk-loader-plugin.version>${project.version}</monet-db-bulk-loader-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
     <postgresql-db-bulk-loader-plugin.version>${project.version}</postgresql-db-bulk-loader-plugin.version>
@@ -172,6 +173,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-salesforce-plugin</artifactId>
       <version>${pdi-salesforce-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>monet-db-bulk-loader-plugins</artifactId>
+      <version>${monet-db-bulk-loader-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
