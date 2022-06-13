@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -248,7 +248,6 @@ public class RegisterPackageServletTest {
 
     // SETUP
     when( IOUtils.copy( any( InputStream.class ), any( OutputStream.class ) ) ).thenReturn( bytesCopied );
-    PowerMockito.doNothing().when( IOUtils.class, "closeQuietly", any( OutputStream.class ) );
 
     // EXECUTE
     servlet.copyAndClose( inputStream, outputStream );
