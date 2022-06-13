@@ -433,16 +433,15 @@ public class SpoonTest {
   @Test
   public void testJobToRepSaveToFile() throws Exception {
     JobMeta mockJobMeta = mock( JobMeta.class );
-
     prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, MainSpoonPerspective.ID, true,
-        true, null, null, true, true );
+        true, LastUsedFile.FILE_TYPE_JOB, null, false, true );
 
     doCallRealMethod().when( spoon ).saveToFile( mockJobMeta );
+    doCallRealMethod().when( spoon ).saveToFile( mockJobMeta, false );
+    doCallRealMethod().when( spoon ).saveToRepository( any( AbstractMeta.class ) );
     assertTrue( spoon.saveToFile( mockJobMeta ) );
     verify( mockJobMeta ).setRepository( spoon.rep );
     verify( mockJobMeta ).setMetaStore( spoon.metaStore );
-
-    verify( mockJobMeta ).setFilename( null );
 
     verify( spoon.delegates.tabs ).renameTabs();
     verify( spoon ).enableMenus();
@@ -456,6 +455,7 @@ public class SpoonTest {
         true, null, "filename", true, true );
 
     doCallRealMethod().when( spoon ).saveToFile( mockJobMeta );
+    doCallRealMethod().when( spoon ).saveToFile( mockJobMeta, false );
     assertTrue( spoon.saveToFile( mockJobMeta ) );
     verify( mockJobMeta ).setRepository( spoon.rep );
     verify( mockJobMeta ).setMetaStore( spoon.metaStore );
@@ -472,7 +472,9 @@ public class SpoonTest {
         true, null, null, true, true );
 
     doCallRealMethod().when( spoon ).saveToFile( mockJobMeta );
+    doCallRealMethod().when( spoon ).saveToFile( mockJobMeta, false );
     doReturn( true ).when( spoon ).saveFileAs( mockJobMeta );
+    doReturn( true ).when( spoon ).saveAsNew();
     assertTrue( spoon.saveToFile( mockJobMeta ) );
     verify( mockJobMeta ).setRepository( spoon.rep );
     verify( mockJobMeta ).setMetaStore( spoon.metaStore );
@@ -489,6 +491,7 @@ public class SpoonTest {
         true, null, null, true, false );
 
     doCallRealMethod().when( spoon ).saveToFile( mockJobMeta );
+    doCallRealMethod().when( spoon ).saveToFile( mockJobMeta, false );
     doReturn( true ).when( spoon ).saveFileAs( mockJobMeta );
     assertFalse( spoon.saveToFile( mockJobMeta ) );
     verify( mockJobMeta ).setRepository( spoon.rep );
@@ -501,6 +504,7 @@ public class SpoonTest {
 
     // now mock mockJobMeta.canSave() to return true, such that saveFileAs is called (also mocked to return true)
     doReturn( true ).when( mockJobMeta ).canSave();
+    doReturn( true ).when( spoon ).saveAsNew();
     spoon.saveToFile( mockJobMeta );
     // and verify that renameTabs is called
     verify( spoon.delegates.tabs ).renameTabs();
@@ -511,14 +515,14 @@ public class SpoonTest {
     TransMeta mockTransMeta = mock( TransMeta.class );
 
     prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockTransMeta, false, false, MainSpoonPerspective.ID, true,
-        true, null, null, true, true );
+        true, LastUsedFile.FILE_TYPE_TRANSFORMATION, null, false, true );
 
     doCallRealMethod().when( spoon ).saveToFile( mockTransMeta );
+    doCallRealMethod().when( spoon ).saveToFile( mockTransMeta, false );
+    doCallRealMethod().when( spoon ).saveToRepository( any( AbstractMeta.class ) );
     assertTrue( spoon.saveToFile( mockTransMeta ) );
     verify( mockTransMeta ).setRepository( spoon.rep );
     verify( mockTransMeta ).setMetaStore( spoon.metaStore );
-
-    verify( mockTransMeta ).setFilename( null );
 
     verify( spoon.delegates.tabs ).renameTabs();
     verify( spoon ).enableMenus();
@@ -676,6 +680,7 @@ public class SpoonTest {
         true, null, null, false, true );
 
     doCallRealMethod().when( spoon ).saveToFile( mockTransMeta );
+    doCallRealMethod().when( spoon ).saveToFile( mockTransMeta, false );
     assertTrue( spoon.saveToFile( mockTransMeta ) );
     verify( mockTransMeta ).setRepository( spoon.rep );
     verify( mockTransMeta ).setMetaStore( spoon.metaStore );
@@ -751,12 +756,13 @@ public class SpoonTest {
 
     doReturn( mock( LogChannelInterface.class ) ).when( spoon ).getLog();
     doReturn( perspectiveID ).when( spoonPerspective ).getId();
+    doReturn( metaData ).when( spoonPerspective ).getActiveMeta();
 
     doReturn( basicLevel ).when( log ).isBasic();
     doReturn( basicLevel ).when( log ).isDetailed();
     doReturn( mockTabMapEntry ).when( spoon.delegates.tabs ).findTabMapEntry( any() );
     doReturn( mockTabItem ).when( mockTabMapEntry ).getTabItem();
-    doReturn( saveToRepository ).when( spoon ).saveToRepository( metaData, true );
+    doReturn( saveToRepository ).when( spoon ).saveToRepository( eq( metaData ), anyBoolean() );
     doReturn( saveXMLFile ).when( spoon ).saveXMLFile( metaData, false );
     if ( objectIdIsNull ) {
       doReturn( null ).when( metaData ).getObjectId();
