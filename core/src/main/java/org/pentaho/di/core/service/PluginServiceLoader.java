@@ -21,22 +21,26 @@
  ******************************************************************************/
 package org.pentaho.di.core.service;
 
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
+import java.util.stream.Collectors;
 
 public class PluginServiceLoader {
 
-  private static ConcurrentHashMap<PluginInterface, ServiceProviderInterface<?>> spiCache = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<PluginInterface, ServiceProviderInterface<?>> spiCache = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<ServiceProviderInterface<?>, ProviderServicePriority<?>> singletonCache = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<String, Collection<ProviderServicePriority<?>>> dynamicallyAddedServices = new ConcurrentHashMap<>();
 
   @SuppressWarnings( "unchecked" )
   public static <T> Collection<T> loadServices( Class<T> apiInterface ) throws KettlePluginException {
@@ -44,7 +48,7 @@ public class PluginServiceLoader {
     PluginRegistry registry = PluginRegistry.getInstance();
     List<PluginInterface> plugins = registry.getPlugins( ServiceProviderPluginType.class );
 
-    List<T> services = new ArrayList<>();
+    List<ProviderServicePriority<?>> unsortedServices = new ArrayList<>();
 
     for ( PluginInterface pi : plugins ) {
       for ( Entry<Class<?>, String> e : pi.getClassMap().entrySet() ) {
@@ -60,8 +64,18 @@ public class PluginServiceLoader {
               throw new RuntimeException( e1 );
             }
           } );
-          
-          T service = null;
+
+          ProviderServicePriority<?> providerServicePriority = null;
+          T service;
+          // try to get singletons from the cache first
+          if ( spi.isSingleton() ) {
+            providerServicePriority = singletonCache.get( spi );
+            if ( null != providerServicePriority ) {
+              unsortedServices.add( providerServicePriority );
+              continue;
+            }
+          }
+
           if ( spi.useFactory() ) {
             // This service had its own factory in the ServiceProviderInterface
             service = (T) spi.factoryCreate();
@@ -82,14 +96,36 @@ public class PluginServiceLoader {
 
           // TODO: Consider throwing a KettlePluginException instead
           if ( service != null ) {
-            services.add( service );
+            providerServicePriority = new ProviderServicePriority<>( null, service, spi.getPriority() );
+            if ( spi.isSingleton() ) {
+              singletonCache.put( spi, providerServicePriority );
+            }
+            unsortedServices.add( providerServicePriority );
           }
-
         }
       }
     }
+    // add any providers created dynamically (not part of plugin registry initialization)
+    if ( dynamicallyAddedServices.containsKey( apiInterface.getName() ) ) {
+      unsortedServices.addAll( dynamicallyAddedServices.get( apiInterface ) );
+    }
 
-    return services;
+    // sort by priority, extract the service, and cast to the interface type
+    return unsortedServices.stream().sorted( Comparator.comparing( ProviderServicePriority::getPriority ) ).
+      map( ProviderServicePriority::getService ).map( s -> (T) s ).collect( Collectors.toCollection( ArrayList::new ) );
+  }
+
+  // only allow one service per provider per API
+  public static <I, S extends I> void registerService( Object provider, Class<I> apiInterface, S service, int priority ) {
+    Collection<ProviderServicePriority<?>> providersAndServices;
+    if ( dynamicallyAddedServices.containsKey( apiInterface.getName() ) ) {
+      providersAndServices = dynamicallyAddedServices.get( apiInterface.getName() );
+      providersAndServices.removeIf( e -> e.getProvider().equals( provider ) );
+    } else {
+      providersAndServices = new ArrayList<>();
+    }
+    providersAndServices.add( new ProviderServicePriority<>( provider, service, priority ) );
+    dynamicallyAddedServices.put( apiInterface.getName(), providersAndServices );
   }
 
   private static class WrappingClassLoaderChangingInvocationHandler implements InvocationHandler {
@@ -114,5 +150,4 @@ public class PluginServiceLoader {
     }
 
   }
-
 }
