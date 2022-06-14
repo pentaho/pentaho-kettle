@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,16 +24,23 @@ package org.pentaho.di.connections.ui;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ui.endpoints.ConnectionEndpoints;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.plugins.Plugin;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ConnectionEndpointsTest {
 
@@ -53,15 +60,22 @@ public class ConnectionEndpointsTest {
   @Test
   public void createConnection() {
     addProvider();
-    ConnectionEndpoints connectionEndpoints = new ConnectionEndpoints( getMetaStoreLocator() );
-    try {
-      connectionEndpoints.createConnection( getConnectionDetails(), CONNECTION_NAME );
-    } catch ( Exception e ) {
-      // Bypass exceptions thrown by lack of getSpoon().getShell().getDisplay() since we are not running the UI
-    }
+    try ( MockedStatic<PluginServiceLoader> pluginServiceLoaderMockedStatic = Mockito.mockStatic( PluginServiceLoader.class ) ) {
+      Collection<MetastoreLocator> services = new ArrayList<>();
+      services.add( getMetaStoreLocator() );
+      pluginServiceLoaderMockedStatic.when( () -> PluginServiceLoader.loadServices( MetastoreLocator.class ) )
+        .thenReturn( services );
 
-    Response response = connectionEndpoints.getConnectionExists( CONNECTION_NAME );
-    assertEquals( "true", response.getEntity() );
+      ConnectionEndpoints connectionEndpoints = new ConnectionEndpoints();
+      try {
+        connectionEndpoints.createConnection( getConnectionDetails(), CONNECTION_NAME );
+      } catch ( Exception e ) {
+        // Bypass exceptions thrown by lack of getSpoon().getShell().getDisplay() since we are not running the UI
+      }
+
+      Response response = connectionEndpoints.getConnectionExists( CONNECTION_NAME );
+      assertEquals( "true", response.getEntity() );
+    }
   }
 
   private void addProvider() {

@@ -21,22 +21,38 @@
  ******************************************************************************/
 package org.pentaho.di.core.service;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+class ProviderServicePriority<S> {
+  private int priority;
+  private S service;
+  private Object provider;
 
-@Retention( RetentionPolicy.RUNTIME )
-@Documented
-@Target( ElementType.TYPE )
-public @interface ServiceProvider {
+  public ProviderServicePriority( Object provider, S service, int priority ) {
+    this.provider = provider;
+    this.service = service;
+    this.priority = priority;
+  }
 
-  String id();
-  
-  String description();
-  
-  String classLoaderGroup() default "";
- 
-  Class<?> provides();
+  public S getService() {
+    return service;
+  }
+
+  public void setService( S service ) {
+    this.service = service;
+  }
+
+  public Object getProvider() {
+    return provider;
+  }
+
+  public void setProvider( Object provider ) {
+    this.provider = provider;
+  }
+
+  public int getPriority() {
+    return priority;
+  }
+
+  public void setPriority( int priority ) {
+    this.priority = priority;
+  }
 }
