@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 
 /**
  * Created by bmorrise on 7/6/18.

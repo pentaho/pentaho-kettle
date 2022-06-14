@@ -30,11 +30,7 @@
            xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
            default-timeout="20000" default-activation="eager">
 
-  <reference id="metastoreLocator"
-             interface="org.pentaho.metastore.locator.api.MetastoreLocator"
-             availability="optional"/>
-
-  <bean id="ConnectionDelegate" scope="singleton" class="org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate" />
+  <bean id="ConnectionDelegate" scope="singleton" class="org.pentaho.di.connections.ui.dialog.ConnectionDelegate" />
 
   <bean id="VFSConnectionTreeDelegateExtension" scope="singleton"
         class="org.pentaho.di.connections.ui.tree.ConnectionTreeDelegateExtension">
@@ -55,14 +51,12 @@
 
   <bean id="ConnectionLifecycleListener"
         class="org.pentaho.di.connections.ui.lifecycle.ConnectionLifecycleListener">
-    <argument ref="metastoreLocator"/>
     <pen:di-plugin type="org.pentaho.di.core.plugins.LifecyclePluginType" />
   </bean>
 
   <jaxrs:server address="/connection" id="browser-endpoint">
     <jaxrs:serviceBeans>
       <bean class="org.pentaho.di.connections.ui.endpoints.ConnectionEndpoints">
-        <argument ref="metastoreLocator"/>
       </bean>
     </jaxrs:serviceBeans>
 

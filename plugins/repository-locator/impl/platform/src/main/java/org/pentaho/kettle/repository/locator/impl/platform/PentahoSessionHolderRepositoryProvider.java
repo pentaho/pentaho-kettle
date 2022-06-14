@@ -67,4 +67,9 @@ public class PentahoSessionHolderRepositoryProvider implements KettleRepositoryP
     }
     return repository;
   }
+
+  @Override
+  public int getPriority() {
+    return 150;
+  }
 }
