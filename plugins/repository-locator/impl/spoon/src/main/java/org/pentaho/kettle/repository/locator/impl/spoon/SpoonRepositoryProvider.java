@@ -51,4 +51,9 @@ public class SpoonRepositoryProvider implements KettleRepositoryProvider, Servic
       return null;
     }
   }
+
+  @Override
+  public int getPriority() {
+    return 150;
+  }
 }
