@@ -67,6 +67,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TypedListener;
@@ -102,6 +103,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private final Image logo = GUIResource.getInstance().getImageLogoSmall();
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String HELP_URL = Const.getDocUrl( "Products/Work_with_transformations#Open_a_transformation" );
+
+  private static final String TRANSFORMATION_TYPE = "transformation";
+  private static final String JOB_TYPE = "job";
 
   public static final String PATH_PARAM = "path";
   public static final String USE_SCHEMA_PARAM = "useSchema";
@@ -155,6 +159,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   // Colors
   private Color clrGray;
 
+
   // Images
   private Image imgTime;
   private Image imgVFS;
@@ -179,6 +184,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     this.width = width;
     this.height = height;
     setShellStyle( OPTIONS );
+
   }
 
   public void open( FileDialogOperation fileDialogOperation ) {
@@ -226,6 +232,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     newShell.setText( shellTitle );
     PropsUI.getInstance().setLook( newShell );
     newShell.setMinimumSize( 545, 458 );
+    newShell.addListener( SWT.Close, new Listener() {
+      public void handleEvent( Event event ) {
+        parentPath = null;
+        type = null;
+        provider = null;
+        path = null;
+      }
+    } );
   }
 
   @Override protected Point getInitialSize() {
@@ -324,6 +338,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     PropsUI.getInstance().setLook( filenameLabel );
     PropsUI.getInstance().setLook( txtFileName );
 
+
     txtFileName.setSize( 40, 40 ); // TODO: Figure out how to set size correctly
     btnSave = new Button( parent, SWT.NONE );
     btnSave.setEnabled( false );
@@ -342,7 +357,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     PropsUI.getInstance().setLook( btnSave );
     btnSave.setLayoutData( new FormDataBuilder().top( select, 20 ).right( btnCancel, -15 ).result() );
     btnSave.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.save.button" ) );
-
 
     btnSave.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
@@ -364,7 +378,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     if ( directory != null ) {
 
       parentPath = directory.getParent();
-      type = fileDialogOperation.getFileType();
       path = directory.getPath();
       name = txtFileName.getText().contains( "." ) ? txtFileName.getText().split( "." )[0] : txtFileName.getText();
       provider = directory.getProvider();
@@ -373,7 +386,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } else if ( !treeViewer.getSelection().isEmpty() ) {
       type = fileDialogOperation.getFileType();
       name = txtFileName.getText().contains( "." ) ? txtFileName.getText().split( "." )[0] : txtFileName.getText();
-
+      
       getShell().dispose();
     } else {
       // TODO: Display something informing the user
@@ -488,12 +501,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
             .setToolTipText( BaseMessages.getString( PKG, "file-open-save-plugin.app.refresh.button" ) )
             .setLayoutData( new RowData() ).setEnabled( true );
 
-    Composite navComposite = new Composite( buttons, SWT.BORDER );
-    PropsUI.getInstance().setLook( navComposite );
-    navComposite.setBackground( getShell().getDisplay().getSystemColor( SWT.COLOR_WHITE ) );
-    navComposite.setLayoutData(
+    txtNavigation = new Text( buttons, SWT.BOTTOM | SWT.LEFT | SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL );
+    PropsUI.getInstance().setLook( txtNavigation );
+    txtNavigation.setBackground( getShell().getDisplay().getSystemColor( SWT.COLOR_WHITE ) );
+    txtNavigation.setLayoutData(
         new FormDataBuilder().left( forwardButton.getLabel(), 10 ).right( fileButtons, -10 ).height( 32 ).result() );
-
     return buttons;
   }
 
@@ -787,7 +799,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   protected void selectPath( Object selectedElement, boolean useCache ) {
 
     if ( selectedElement instanceof Tree ) {
-
       List<Object> children = ( (Tree) selectedElement ).getChildren();
       if ( children != null ) {
         fileTableViewer.setInput( children.toArray() );
@@ -795,16 +806,20 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         parentPath = null;
         path = null;
       }
+      
       flatBtnAdd.setEnabled( false );
       setButtonSaveState();
       setButtonOpenState();
+
     } else if ( selectedElement instanceof Directory ) {
       try {
+
         fileTableViewer.setInput( FILE_CONTROLLER.getFiles( (File) selectedElement, null, useCache ).stream().sorted(
                 Comparator.comparing( f -> f instanceof Directory, Boolean::compare ).reversed()
                     .thenComparing( Comparator.comparing( f -> ( (File) f ).getName(),
                       String.CASE_INSENSITIVE_ORDER ) ) )
             .toArray() );
+
         if ( ( (Directory) selectedElement ).isCanAddChildren() ) {
           flatBtnAdd.setEnabled( true );
         } else {
@@ -871,6 +886,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         };
       } );
     }
+
 
     public CLabel getLabel() {
       return label;
@@ -992,7 +1008,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     @Override public void dispose() {
       // TODO Auto-generated method stub
-
     }
 
     @Override public void inputChanged( Viewer arg0, Object arg1, Object arg2 ) {
@@ -1002,4 +1017,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   }
 
+  private String getExtension( String type ) {
+    if ( type.equalsIgnoreCase( TRANSFORMATION_TYPE ) ) {
+      return ".ktr";
+    } else if ( type.equalsIgnoreCase( JOB_TYPE ) ) {
+      return ".kjb";
+    }
+    return "";
+  }
 }
