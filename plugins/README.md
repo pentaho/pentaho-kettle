@@ -26,6 +26,7 @@ __List of the current core plugins:__
 * monet-db-bulk-loader
 * ms-access-bulk-loader
 * postgresql-db-bulk-loader
+* infobright-bulk-loader
 * engine-configuration
 * pur
 * repositories
