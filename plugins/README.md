@@ -25,6 +25,7 @@ __List of the current core plugins:__
 * meta-inject
 * ms-access-bulk-loader
 * postgresql-db-bulk-loader
+* infobright-bulk-loader
 * engine-configuration
 * pur
 * repositories
