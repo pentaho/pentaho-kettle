@@ -519,4 +519,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   public void clearProviderCache() {
     this.roots = new HashMap<>();
   }
+
+  @Override public VFSFile createDirectory( String parentPath, VFSFile file, String newDirectoryName) {
+    file.setPath( file.getPath() + VFSFile.DELIMITER + newDirectoryName );
+    VFSFile createdDirectory = add( file );
+    return createdDirectory;
+  }
 }

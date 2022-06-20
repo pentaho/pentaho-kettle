@@ -360,6 +360,12 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     //Any local caches that this provider might use should be cleared here.
   }
 
+  @Override public LocalFile createDirectory( String parentPath, LocalFile file, String newFolderName )
+    throws FileException {
+    LocalFile newLocalFile = LocalFile.create( parentPath, Paths.get( file.getPath() + FileSystems.getDefault().getSeparator() + newFolderName ) );
+    return this.add( newLocalFile );
+  }
+
   @Override public LocalFile getFile( LocalFile file, VariableSpace space ) {
     return null;
   }
