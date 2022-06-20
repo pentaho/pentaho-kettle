@@ -134,6 +134,10 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     // Not cached
   }
 
+  @Override public RecentFile createDirectory( String parentPath, RecentFile file, String newDirectoryName ) {
+    return null;
+  }
+
   private PropsUI getPropsUI() {
     return propsUISupplier.get();
   }

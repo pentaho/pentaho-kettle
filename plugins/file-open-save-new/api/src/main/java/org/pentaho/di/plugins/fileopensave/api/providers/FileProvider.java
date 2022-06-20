@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.api.providers;
 
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.ui.core.FileDialogOperation;
@@ -90,4 +91,6 @@ public interface FileProvider<T extends File> {
   void clearProviderCache();
 
   void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation );
+
+  T createDirectory( String parentPath, T file, String newDirectoryName ) throws FileException, KettleFileException;
 }

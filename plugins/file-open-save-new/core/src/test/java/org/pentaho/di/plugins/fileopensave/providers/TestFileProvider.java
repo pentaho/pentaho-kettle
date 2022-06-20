@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers;
 
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
@@ -242,6 +243,11 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
 
   public void clearProviderCache() {
     //Any local caches that this provider might use should be cleared here.
+  }
+
+  @Override public TestFile createDirectory( String parentPath, TestFile file, String newDirectoryName )
+    throws FileException, KettleFileException {
+    return null;
   }
 
   @Override public TestFile getFile( TestFile file ) {
