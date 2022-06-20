@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,9 +29,11 @@ import org.pentaho.di.connections.ui.dialog.ConnectionDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -42,6 +44,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 import java.util.function.Supplier;
 
 import org.pentaho.di.ui.util.HelpUtils;
@@ -58,9 +61,17 @@ public class ConnectionEndpoints {
   public static final String HELP_URL =
     Const.getDocUrl( BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Help" ) );
 
-  public ConnectionEndpoints( MetastoreLocator metastoreLocator ) {
+  public ConnectionEndpoints() {
+    MetastoreLocator metastoreLocator;
     this.connectionManager = ConnectionManager.getInstance();
-    this.connectionManager.setMetastoreSupplier( metastoreLocator::getMetastore );
+    try {
+      Collection<MetastoreLocator> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocator.class );
+      metastoreLocator = metastoreLocators.stream().findFirst().get();
+      this.connectionManager.setMetastoreSupplier( metastoreLocator::getMetastore );
+    } catch ( Exception e ) {
+      LogChannel.GENERAL.logError( "Error getting MetastoreLocator", e );
+      throw new IllegalStateException( e );
+    }
   }
 
   @GET

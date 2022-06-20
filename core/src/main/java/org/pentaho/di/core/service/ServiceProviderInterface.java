@@ -54,5 +54,22 @@ public interface ServiceProviderInterface<T> {
   default T factoryCreate() {
     return null;
   }
-  
+
+  /**
+   * Indicate whether one instance of this service should be created and reused by all clients
+   * or if a new instance should be created each time.
+   * @return A boolean where <code>true</code> indicates that one instance should be created and reused
+   * for the lifetime of the application.
+   */
+  default boolean isSingleton() {
+    return false;
+  }
+
+  /**
+   * Indicate the order in which to use this provider if there are multiple providers for a given service
+   * @return An int where a higher number is a higher priority (should be used before lower priorities)
+   */
+  default int getPriority() {
+    return 0;
+  }
 }

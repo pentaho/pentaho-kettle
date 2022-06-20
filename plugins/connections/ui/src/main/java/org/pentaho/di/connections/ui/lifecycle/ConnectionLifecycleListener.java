@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,9 +30,12 @@ import org.pentaho.di.core.annotations.LifecyclePlugin;
 import org.pentaho.di.core.lifecycle.LifeEventHandler;
 import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleListener;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 
+import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
@@ -49,8 +52,14 @@ public class ConnectionLifecycleListener implements LifecycleListener {
   private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
   private MetastoreLocator metastoreLocator;
 
-  public ConnectionLifecycleListener( MetastoreLocator metastoreLocator ) {
-    this.metastoreLocator = metastoreLocator;
+  public ConnectionLifecycleListener() {
+    try {
+      Collection<MetastoreLocator> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocator.class );
+      metastoreLocator = metastoreLocators.stream().findFirst().get();
+    } catch ( Exception e ) {
+      LogChannel.GENERAL.logError( "Error getting MetastoreLocator", e );
+      throw new IllegalStateException( e );
+    }
   }
 
   @Override
