@@ -629,6 +629,14 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     fileDialogOperation.setFilename( fileDetails.getName() );
   }
 
+  @Override public RepositoryFile createDirectory( String parentPath, RepositoryFile repositoryFile, String newDirectoryName)
+    throws FileException {
+      RepositoryDirectory newRepositoryDirectory = RepositoryDirectory.build( parentPath, findDirectory( repositoryFile.getPath() ) );
+      newRepositoryDirectory.setName( newDirectoryName );
+      RepositoryFile addRepositoryDirectoryResult = add( newRepositoryDirectory );
+    return addRepositoryDirectoryResult;
+  }
+
   private Repository getRepository() {
     return RepositoryBrowserController.repository != null ? RepositoryBrowserController.repository
       : spoonSupplier.get().getRepository();
