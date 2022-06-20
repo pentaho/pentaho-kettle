@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -78,6 +79,7 @@ import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.api.providers.Entity;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
+import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
@@ -529,13 +531,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       IStructuredSelection selection = (IStructuredSelection) e.getSelection();
       Object selectedNode = selection.getFirstElement();
       // Expand the selection in the treeviewer
-      if ( !treeViewer.getExpandedState( selectedNode ) ) {
+      if ( selectedNode != null && !treeViewer.getExpandedState( selectedNode ) ) {
         treeViewer.setExpandedState( selectedNode, true );
       }
       // Update the path that is selected
       selectPath( selectedNode );
       setButtonOpenState();
-      setButtonOpenState();
+      setButtonSaveState();
     } );
 
     fileTableViewer = new TableViewer( sashForm, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION );
@@ -621,7 +623,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           provider = ( (Directory) selection).getProvider();
         }
       } else if ( selection instanceof File ) {
-        // TODO: Make this work for more than just the `LocalFileProvider`
         File f = (File) selection;
 
         openFileSelector( f );
@@ -648,7 +649,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private void setButtonOpenState() {
-    if ( btnOpen != null ) {
+    if ( btnOpen != null && !getShell().isDisposed() ) {
       openStructuredSelectionPath( (IStructuredSelection) treeViewer.getSelection() );
 
       openStructuredSelectionPath( (IStructuredSelection) fileTableViewer.getSelection() );
@@ -661,8 +662,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     }
   }
   private void setButtonSaveState() {
-    if ( btnSave != null && txtFileName != null ) {
-      // If the path set by the treeViewer (use the left-hand values)
+    if ( btnSave != null && txtFileName != null  && !getShell().isDisposed() ) {
+      // If the path set by the treeViewer; use the left-hand values
       saveStructuredSelectionPath( (IStructuredSelection) treeViewer.getSelection() );
 
       // If the path is set by the fileTableViewer override the treeViewer values (use the right-hand values)
@@ -699,9 +700,53 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     }
   }
 
-  private boolean addFolder( String folderName ) {
+
+
+  private boolean addFolder( String newFolderName ) {
     try {
-      log.logBasic( folderName );
+      Object selection;
+      StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
+      TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
+      FileProvider fileProvider = null;
+      String localPathToAdd = "";
+
+
+      if ( !fileTableViewerSelection.isEmpty() ) {
+        selection = fileTableViewerSelection.getFirstElement();
+      } else {
+        selection = treeViewerSelection.getFirstElement();
+      }
+
+      if ( selection instanceof Directory ) {
+        fileProvider = ProviderServiceService.INSTANCE.get().get( ( (Directory) selection).getProvider() );
+        localPathToAdd = ( (Directory) selection ).getPath();
+        log.logBasic( "Folder Name: " + newFolderName );
+        log.logBasic( "Name: " + name );
+        log.logBasic( "Path: " + path );
+        log.logBasic( "Parent Path: " + parentPath );
+      } else if ( selection instanceof File ) {
+        fileProvider = ProviderServiceService.INSTANCE.get().get( ( (File) selection).getParent() );
+        localPathToAdd = ( (File) selection ).getParent();
+        log.logBasic( "File Selected" );
+      }
+
+      File folderAddResult =  fileProvider.createDirectory( localPathToAdd, (File) selection, newFolderName );
+
+      flatBtnAdd.setEnabled( false );
+      setButtonSaveState();
+      setButtonOpenState();
+      List<Object> children = ProviderServiceService.INSTANCE.get().get( fileProvider.getName() ).getTree().getChildren();
+      if ( children != null ) {
+        fileTableViewer.setInput( children.toArray() );
+      }
+      selectPath( selection, false );
+      treeViewer.setContentProvider( new FileTreeContentProvider( FILE_CONTROLLER ) );
+      IStructuredSelection selectionAsStructuredSelection = new StructuredSelection( selection );
+      treeViewer.setSelection( selectionAsStructuredSelection, true );
+      if ( !treeViewer.getExpandedState( selectionAsStructuredSelection ) ) {
+        treeViewer.setExpandedState( selectionAsStructuredSelection, true );
+      }
+
       return true;
     } catch ( Exception ex ) {
       ex.printStackTrace();
@@ -791,9 +836,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       List<Object> children = ( (Tree) selectedElement ).getChildren();
       if ( children != null ) {
         fileTableViewer.setInput( children.toArray() );
-      } else {
+        // Sets state to blank
         parentPath = null;
         path = null;
+        name = null;
       }
       flatBtnAdd.setEnabled( false );
       setButtonSaveState();
