@@ -107,7 +107,7 @@ public class PluginServiceLoader {
     }
     // add any providers created dynamically (not part of plugin registry initialization)
     if ( dynamicallyAddedServices.containsKey( apiInterface.getName() ) ) {
-      unsortedServices.addAll( dynamicallyAddedServices.get( apiInterface ) );
+      unsortedServices.addAll( dynamicallyAddedServices.get( apiInterface.getName() ) );
     }
 
     // sort by priority, extract the service, and cast to the interface type
