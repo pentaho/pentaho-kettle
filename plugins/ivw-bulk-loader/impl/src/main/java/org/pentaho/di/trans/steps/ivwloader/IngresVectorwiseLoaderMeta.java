@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,11 +46,18 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.di.core.annotations.Step;
 import org.w3c.dom.Node;
 
 /**
  * Metadata for the VectorWise bulk loader.
  */
+@Step( id = "VectorWiseBulkLoader", name = "BaseStep.TypeLongDesc.VectorWiseBulkLoader",
+        description = "BaseStep.TypeTooltipDesc.VectorWiseBulkLoader",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
+        image = "BLKVW.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader",
+        i18nPackageName = "org.pentaho.di.trans.steps.ivwloader" )
 public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMetaInterface,
   ProvidesDatabaseConnectionInformation {
 
