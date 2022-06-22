@@ -31,6 +31,7 @@ __List of the current core plugins:__
 * pur
 * repositories
 * salesforce
+* mysql-bulk-loader
 
 __Deprecated plugins:__
 

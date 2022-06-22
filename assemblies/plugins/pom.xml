@@ -47,6 +47,7 @@
     <metastore-locator-plugin.version>${project.version}</metastore-locator-plugin.version>
     <repository-locator-plugin.version>${project.version}</repository-locator-plugin.version>
     <file-open-save-new-plugin.version>${project.version}</file-open-save-new-plugin.version>
+	<mysql-bulk-load-plugin.version>${project.version}</mysql-bulk-load-plugin.version>
   </properties>
 
   <dependencies>
@@ -426,6 +427,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>kettle-repository-locator-spoon-plugin</artifactId>
       <version>${repository-locator-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+	 <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>mysql-bulk-loader-plugins</artifactId>
+      <version>${mysql-bulk-load-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
