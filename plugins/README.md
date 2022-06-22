@@ -27,6 +27,7 @@ __List of the current core plugins:__
 * ms-access-bulk-loader
 * postgresql-db-bulk-loader
 * infobright-bulk-loader
+* ivw-bulk-loader
 * engine-configuration
 * pur
 * repositories
