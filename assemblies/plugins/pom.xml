@@ -32,6 +32,7 @@
     <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
     <postgresql-db-bulk-loader-plugin.version>${project.version}</postgresql-db-bulk-loader-plugin.version>
     <infobright-bulk-loader-plugin.version>${project.version}</infobright-bulk-loader-plugin.version>
+	<excel-plugin.version>${project.version}</excel-plugin.version>
     <ivw-bulk-loader-plugin.version>${project.version}</ivw-bulk-loader-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
@@ -236,6 +237,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>infobright-bulk-loader-plugins</artifactId>
       <version>${infobright-bulk-loader-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+	<dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>excel-plugins</artifactId>
+      <version>${excel-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
