@@ -78,6 +78,7 @@
         <module>postgresql-db-bulk-loader</module>
         <module>oracle-bulk-loader</module>
         <module>infobright-bulk-loader</module>
+        <module>excel</module>
         <module>ivw-bulk-loader</module>
         <module>xml</module>
         <module>streaming</module>
