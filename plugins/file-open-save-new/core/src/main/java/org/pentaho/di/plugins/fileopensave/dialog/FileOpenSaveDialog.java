@@ -70,6 +70,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TypedListener;
 import org.pentaho.di.core.Const;
@@ -91,7 +92,8 @@ import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.EnterStringDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
@@ -167,7 +169,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   // Dialogs
 
-  private EnterTextDialog enterTextDialog;
+  private EnterStringDialog enterStringDialog;
 
   // Top Right Buttons
   private FlatButton flatBtnAdd;
@@ -467,8 +469,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         new SelectionAdapter() {
           @Override public void widgetSelected( SelectionEvent selectionEvent ) {
             // TODO: Get text from i18 package
-            enterTextDialog = new EnterTextDialog( getShell(), "New Folder Name", "Please provide a folder name", StringUtils.EMPTY, true );
-            String newFolderName = enterTextDialog.open();
+            enterStringDialog = new EnterStringDialog( getShell(), StringUtils.EMPTY,  "Please provide a folder name", "New Folder Name" );
+            String newFolderName = enterStringDialog.open();
 
             if ( StringUtils.isNotEmpty( newFolderName ) ) {
               addFolder( newFolderName );
@@ -537,6 +539,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
       // Update the path that is selected
       selectPath( selectedNode );
+      // Clears the selection from fileTableViewer
+      fileTableViewer.setSelection( new StructuredSelection() );
       setButtonOpenState();
       setButtonSaveState();
     } );
@@ -706,6 +710,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private boolean addFolder( String newFolderName ) {
     try {
       Object selection;
+      Object treeViewerDestination;
       StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
       TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
       FileProvider fileProvider = null;
@@ -714,43 +719,48 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
       if ( !fileTableViewerSelection.isEmpty() ) {
         selection = fileTableViewerSelection.getFirstElement();
+        if ( selection instanceof Directory ) {
+          treeViewerDestination = fileTableViewerSelection.getFirstElement();
+        } else {
+          treeViewerDestination = treeViewerSelection.getFirstElement();
+        }
       } else {
         selection = treeViewerSelection.getFirstElement();
+        treeViewerDestination = treeViewerSelection.getFirstElement();
       }
 
       if ( selection instanceof Directory ) {
         fileProvider = ProviderServiceService.INSTANCE.get().get( ( (Directory) selection).getProvider() );
         localPathToAdd = ( (Directory) selection ).getPath();
-        log.logBasic( "Folder Name: " + newFolderName );
-        log.logBasic( "Name: " + name );
-        log.logBasic( "Path: " + path );
-        log.logBasic( "Parent Path: " + parentPath );
       } else if ( selection instanceof File ) {
-        fileProvider = ProviderServiceService.INSTANCE.get().get( ( (File) selection).getParent() );
+        fileProvider = ProviderServiceService.INSTANCE.get().get( ( (File) selection).getProvider() );
         localPathToAdd = ( (File) selection ).getParent();
-        log.logBasic( "File Selected" );
       }
 
-      File folderAddResult =  fileProvider.createDirectory( localPathToAdd, (File) selection, newFolderName );
+      fileProvider.createDirectory( localPathToAdd, (File) selection, newFolderName );
+      FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
+      treeViewer.refresh( treeViewerDestination );
 
-      flatBtnAdd.setEnabled( false );
-      setButtonSaveState();
-      setButtonOpenState();
-      List<Object> children = ProviderServiceService.INSTANCE.get().get( fileProvider.getName() ).getTree().getChildren();
-      if ( children != null ) {
-        fileTableViewer.setInput( children.toArray() );
-      }
-      selectPath( selection, false );
-      treeViewer.setContentProvider( new FileTreeContentProvider( FILE_CONTROLLER ) );
-      IStructuredSelection selectionAsStructuredSelection = new StructuredSelection( selection );
+      selectPath( treeViewerDestination, false );
+
+      IStructuredSelection selectionAsStructuredSelection = new StructuredSelection( treeViewerDestination );
       treeViewer.setSelection( selectionAsStructuredSelection, true );
       if ( !treeViewer.getExpandedState( selectionAsStructuredSelection ) ) {
         treeViewer.setExpandedState( selectionAsStructuredSelection, true );
       }
-
+      // Set selection in fileTableViewer to new folder
+      for ( TableItem tableItem: fileTableViewer.getTable().getItems() ) {
+        if ( tableItem.getText( 0 ).equals( newFolderName ) ) {
+          fileTableViewer.getTable().setSelection( tableItem );
+          fileTableViewer.getTable().setFocus();
+          break;
+        }
+      }
+      setButtonSaveState();
+      setButtonOpenState();
       return true;
     } catch ( Exception ex ) {
-      ex.printStackTrace();
+      ErrorDialog errorDialog = new ErrorDialog( getShell(), "Error",  BaseMessages.getString( PKG, "file-open-save-plugin.error.unable-to-move-file.message" ), ex, false );
     }
     return false;
   }
