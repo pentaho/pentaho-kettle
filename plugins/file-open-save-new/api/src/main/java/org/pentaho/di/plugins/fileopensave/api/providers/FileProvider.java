@@ -93,5 +93,8 @@ public interface FileProvider<T extends File> {
 
   void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation );
 
-  T createDirectory( String parentPath, T file, String newDirectoryName ) throws FileException, KettleFileException;
+
+  default T createDirectory( String parentPath, T file, String newDirectoryName ) throws FileException, KettleFileException {
+    throw new UnsupportedOperationException();
+  }
 }
