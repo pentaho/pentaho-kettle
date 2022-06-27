@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.terafast;
+package org.pentaho.di.ui.trans.steps.terafastbulkloader;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -34,15 +34,15 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.terafast.TeraFastMeta;
+import org.pentaho.di.trans.steps.terafastbulkloader.TeraFastMeta;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
  *
  */
+
 public class TeraFastAboutDialog {
 
   private static Class<?> PKG = TeraFastMeta.class; // for i18n purposes, needed by Translator2!!
@@ -98,11 +98,7 @@ public class TeraFastAboutDialog {
     grdData.horizontalIndent = DEFAULT_INDENT;
     ok.setLayoutData( grdData );
 
-    ok.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event arg0 ) {
-        dialog.dispose();
-      }
-    } );
+    ok.addListener( SWT.Selection, (Event arg0 ) -> dialog.dispose( ) );
   }
 
   /**
@@ -129,10 +125,6 @@ public class TeraFastAboutDialog {
     grdData.verticalIndent = DEFAULT_INDENT;
     this.ascLink.setLayoutData( grdData );
 
-    this.ascLink.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( final Event event ) {
-        Program.launch( event.text );
-      }
-    } );
+    this.ascLink.addListener( SWT.Selection, ( final Event event ) -> Program.launch( event.text ) );
   }
 }
