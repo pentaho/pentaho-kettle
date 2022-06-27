@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.dialog;
 
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.List;
@@ -713,7 +714,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
       TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
       FileProvider fileProvider = null;
-      String localPathToAdd = "";
+      String parentPathOfSelection = "";
 
 
       if ( !fileTableViewerSelection.isEmpty() ) {
@@ -730,13 +731,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
       if ( selection instanceof Directory ) {
         fileProvider = ProviderServiceService.INSTANCE.get().get( ( (Directory) selection).getProvider() );
-        localPathToAdd = ( (Directory) selection ).getPath();
+        parentPathOfSelection = ( (Directory) selection ).getPath();
       } else if ( selection instanceof File ) {
         fileProvider = ProviderServiceService.INSTANCE.get().get( ( (File) selection).getProvider() );
-        localPathToAdd = ( (File) selection ).getParent();
+        parentPathOfSelection = Paths.get( ( (File) selection ).getParent() ).getParent().toString();
       }
 
-      fileProvider.createDirectory( localPathToAdd, (File) selection, newFolderName );
+      fileProvider.createDirectory( parentPathOfSelection, (File) selection, newFolderName );
       FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
       treeViewer.refresh( treeViewerDestination );
 
