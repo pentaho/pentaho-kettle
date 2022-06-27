@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.terafast;
+package org.pentaho.di.ui.trans.steps.terafastbulkloader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SourceToTargetMapping;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.database.TeradataDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -64,7 +65,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.terafast.TeraFastMeta;
+import org.pentaho.di.trans.steps.terafastbulkloader.TeraFastMeta;
 import org.pentaho.di.ui.core.SimpleFileSelection;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -81,6 +82,8 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
  *
  */
+@PluginDialog( id = "TeraFast,TeraFastPlugin", image = "BLKTD.svg", pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Teradata+Fastload+Bulk+Loader" )
 public class TeraFastDialog extends BaseStepDialog implements StepDialogInterface {
 
   private static Class<?> PKG = TeraFastMeta.class; // for i18n purposes, needed by Translator2!!
@@ -95,7 +98,11 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
   private Label wlConnection;
 
-  private Button wbwConnection, wbnConnection, wbeConnection;
+  private Button wbwConnection;
+
+  private Button wbnConnection;
+
+  private Button wbeConnection;
 
   private Label wlTable;
 
@@ -244,25 +251,23 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     // Search the fields in the background
     //
 
-    final Runnable runnable = new Runnable() {
-      public void run() {
-        final StepMeta stepMetaSearchFields =
-          TeraFastDialog.this.transMeta.findStep( TeraFastDialog.this.stepname );
-        if ( stepMetaSearchFields == null ) {
-          return;
-        }
-        try {
-          final RowMetaInterface row = TeraFastDialog.this.transMeta.getPrevStepFields( stepMetaSearchFields );
+    final Runnable runnable = () -> {
+      final StepMeta stepMetaSearchFields =
+        TeraFastDialog.this.transMeta.findStep( TeraFastDialog.this.stepname );
+      if ( stepMetaSearchFields == null ) {
+        return;
+      }
+      try {
+        final RowMetaInterface row = TeraFastDialog.this.transMeta.getPrevStepFields( stepMetaSearchFields );
 
-          // Remember these fields...
-          for ( int i = 0; i < row.size(); i++ ) {
-            TeraFastDialog.this.inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
-          }
-
-          setComboBoxes();
-        } catch ( KettleException e ) {
-          TeraFastDialog.this.logError( BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Message" ) );
+        // Remember these fields...
+        for ( int i = 0; i < row.size(); i++ ) {
+          TeraFastDialog.this.inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
         }
+
+        setComboBoxes();
+      } catch ( KettleException e ) {
+        TeraFastDialog.this.logError( BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Message" ) );
       }
     };
     new Thread( runnable ).start();
@@ -344,22 +349,10 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
    * Configure listeners.
    */
   private void listeners() {
-    this.lsCancel = new Listener() {
-      public void handleEvent( final Event event ) {
-        cancel();
-      }
-    };
-    this.lsOK = new Listener() {
-      public void handleEvent( final Event event ) {
-        ok();
-      }
-    };
+    this.lsCancel = event -> cancel();
+    this.lsOK = event -> ok();
 
-    this.wAbout.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event arg0 ) {
-        new TeraFastAboutDialog( TeraFastDialog.this.shell ).open();
-      }
-    } );
+    this.wAbout.addListener( SWT.Selection, arg0 -> new TeraFastAboutDialog( TeraFastDialog.this.shell ).open());
 
     this.wCancel.addListener( SWT.Selection, this.lsCancel );
     this.wOK.addListener( SWT.Selection, this.lsOK );
@@ -371,11 +364,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
       }
     };
 
-    this.lsGetLU = new Listener() {
-      public void handleEvent( final Event event ) {
-        getUpdate();
-      }
-    };
+    this.lsGetLU = event -> getUpdate();
 
     this.wGetLU.addListener( SWT.Selection, this.lsGetLU );
     this.wStepname.addSelectionListener( this.lsDef );
@@ -387,17 +376,10 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
       this.shell, this.wFastLoadPath, allFileTypes ) );
     this.wbLogFile.addSelectionListener( new SimpleFileSelection( this.shell, this.wLogFile, allFileTypes ) );
 
-    this.wDoMapping.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( final Event event ) {
-        generateMappings();
-      }
-    } );
+    this.wDoMapping.addListener( SWT.Selection, event -> generateMappings());
 
-    this.wAscLink.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( final Event event ) {
-        Program.launch( event.text );
-      }
-    } );
+    this.wAscLink.addListener( SWT.Selection, ( final Event event ) ->
+        Program.launch( event.text ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     this.shell.addShellListener( new ShellAdapter() {
@@ -502,11 +484,9 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     try {
       final RowMetaInterface row = this.transMeta.getPrevStepFields( this.stepname );
       if ( row != null ) {
-        TableItemInsertListener listener = new TableItemInsertListener() {
-          public boolean tableItemInserted( final TableItem tableItem, final ValueMetaInterface value ) {
-            // possible to check format of input fields
-            return true;
-          }
+        TableItemInsertListener listener = (tableItem, value) -> {
+          // possible to check format of input fields
+          return true;
         };
         BaseStepDialog.getFieldsFromPrevious(
           row, this.wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
@@ -590,7 +570,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     this.wOK = factory.createPushButton( BaseMessages.getString( PKG, "System.Button.OK" ) );
     this.wCancel = factory.createPushButton( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
     this.wAbout = factory.createPushButton( BaseMessages.getString( PKG, "TeraFastDialog.About.Button" ) );
-    setButtonPositions( new Button[] { this.wOK, this.wCancel, this.wAbout }, factory.getMargin(), this.wAscLink );
+    setButtonPositions( new Button[] { this.wOK, this.wCancel, this.wAbout }, 0, this.wAscLink );
   }
 
   /**
@@ -894,11 +874,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
    * ...
    */
   protected void assignChangeListener() {
-    final ModifyListener lsMod = new ModifyListener() {
-      public void modifyText( final ModifyEvent event ) {
-        getMeta().setChanged();
-      }
-    };
+    final ModifyListener lsMod = event -> getMeta().setChanged();
     final SelectionAdapter lsSel = new SelectionAdapter() {
       @Override
       public void widgetSelected( final SelectionEvent event ) {
@@ -1009,14 +985,12 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
           if ( this.dialog.shell.isDisposed() ) {
             return;
           }
-          this.dialog.shell.getDisplay().asyncExec( new Runnable() {
-            public void run() {
-              if ( FieldLoader.this.dialog.shell.isDisposed() ) {
-                return;
-              }
-              colInfo.setComboValues( fieldNames );
+          this.dialog.shell.getDisplay().asyncExec(() -> {
+            if ( FieldLoader.this.dialog.shell.isDisposed() ) {
+              return;
             }
-          } );
+            colInfo.setComboValues( fieldNames );
+          });
         }
       } catch ( KettleException e ) {
         this.dialog.logError( this.toString(), "Error while reading fields", e );

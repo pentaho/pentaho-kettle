@@ -2,10 +2,10 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
- *vg
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.terafast;
+package org.pentaho.di.trans.steps.terafastbulkloader;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +33,7 @@ import org.pentaho.di.core.util.GenericStepData;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -64,7 +64,7 @@ public class TeraFastTest {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown()  {
     stepMockHelper.cleanUp();
   }
 

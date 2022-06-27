@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.terafast;
+package org.pentaho.di.trans.steps.terafastbulkloader;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,7 +148,6 @@ public class TeraFast extends AbstractStep implements StepInterface {
   @Override
   public boolean init( final StepMetaInterface smi, final StepDataInterface sdi ) {
     this.meta = (TeraFastMeta) smi;
-    // this.data = (GenericStepData) sdi;
     simpleDateFormat = new SimpleDateFormat( FastloadControlBuilder.DEFAULT_DATE_FORMAT );
     if ( super.init( smi, sdi ) ) {
       try {
@@ -171,7 +170,6 @@ public class TeraFast extends AbstractStep implements StepInterface {
   @Override
   public boolean processRow( final StepMetaInterface smi, final StepDataInterface sdi ) throws KettleException {
     this.meta = (TeraFastMeta) smi;
-    // this.data = (GenericStepData) sdi;
 
     Object[] row = getRow();
     if ( row == null ) {
@@ -220,7 +218,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
       // targetTable
       this.tableRowMeta = this.meta.getRequiredFields( this.getTransMeta() );
       RowMetaInterface streamRowMeta = this.getTransMeta().getPrevStepFields( this.getStepMeta() );
-      this.columnSortOrder = new ArrayList<Integer>( this.tableRowMeta.size() );
+      this.columnSortOrder = new ArrayList<>( this.tableRowMeta.size() );
       for ( int i = 0; i < this.tableRowMeta.size(); i++ ) {
         ValueMetaInterface column = this.tableRowMeta.getValueMeta( i );
         int tableIndex = this.meta.getTableFieldList().getValue().indexOf( column.getName() );
@@ -260,7 +258,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
         switch ( valueMeta.getType() ) {
           case ValueMetaInterface.TYPE_STRING:
             String s = rowMetaInterface.getString( row, i );
-            dataFilePrintStream.print( pad( valueMeta, s.toString() ) );
+            dataFilePrintStream.print( pad( valueMeta, s ) );
             break;
           case ValueMetaInterface.TYPE_INTEGER:
             Long l = rowMetaInterface.getInteger( row, i );
@@ -320,7 +318,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
    *           ...
    */
   public void execute() throws KettleException {
-    if ( this.meta.getTruncateTable().getValue() ) {
+    if ( Boolean.TRUE.equals ( this.meta.getTruncateTable().getValue() ) ){
       Database db = new Database( this, this.meta.getDbMeta() );
       db.connect();
       db.truncateTable( this.meta.getTargetTable().getValue() );
@@ -329,7 +327,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
     }
     startFastLoad();
 
-    if ( this.meta.getUseControlFile().getValue() ) {
+    if ( Boolean.TRUE.equals ( this.meta.getUseControlFile().getValue() ) ){
       this.invokeLoadingControlFile();
     } else {
       this.invokeLoadingCommand();
@@ -416,7 +414,6 @@ public class TeraFast extends AbstractStep implements StepInterface {
     try {
       logDetailed( "Control file: " + control );
       IOUtils.write( control, this.fastload );
-      // this.fastload.flush();
     } catch ( IOException e ) {
       throw new KettleException( "Error while execution control command [controlCommand=" + control + "]", e );
     } finally {
@@ -433,7 +430,6 @@ public class TeraFast extends AbstractStep implements StepInterface {
   @Override
   public void dispose( final StepMetaInterface smi, final StepDataInterface sdi ) {
     this.meta = (TeraFastMeta) smi;
-    // this.data = (GenericStepData) sdi;
 
     try {
       if ( this.fastload != null ) {
