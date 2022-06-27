@@ -17,9 +17,16 @@
 package org.pentaho.metastore.locator.api.impl;
 
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -32,14 +39,20 @@ public class MetastoreLocatorNewTransExtensionPointTest {
 
   @Test
   public void testCallExtensionPoint() throws Exception {
-    MetastoreLocatorOsgi mockMetastoreLocator = mock( MetastoreLocatorOsgi.class );
+    MetastoreLocatorOsgi metastoreLocator = new MetastoreLocatorImpl();
     LogChannelInterface logChannelInterface = mock( LogChannelInterface.class );
     TransMeta mockTransMeta = mock( TransMeta.class );
-    MetastoreLocatorNewTransExtensionPoint metastoreLocatorNewTransExtensionPoint =
-      new MetastoreLocatorNewTransExtensionPoint( mockMetastoreLocator );
+    Collection<MetastoreLocator> metastoreLocators = new ArrayList<>();
+    metastoreLocators.add( (MetastoreLocator) metastoreLocator );
+    try ( MockedStatic<PluginServiceLoader> pluginServiceLoaderMockedStatic = Mockito.mockStatic( PluginServiceLoader.class ) ) {
+      pluginServiceLoaderMockedStatic.when( () -> PluginServiceLoader.loadServices( MetastoreLocator.class ) )
+        .thenReturn( metastoreLocators );
+      MetastoreLocatorNewTransExtensionPoint metastoreLocatorNewTransExtensionPoint =
+        new MetastoreLocatorNewTransExtensionPoint();
 
-    metastoreLocatorNewTransExtensionPoint.callExtensionPoint( logChannelInterface, mockTransMeta );
-    verify( mockTransMeta ).setMetastoreLocatorOsgi( eq( mockMetastoreLocator ) );
+      metastoreLocatorNewTransExtensionPoint.callExtensionPoint( logChannelInterface, mockTransMeta );
+      verify( mockTransMeta ).setMetastoreLocatorOsgi( eq( metastoreLocator ) );
+    }
   }
 
 }
