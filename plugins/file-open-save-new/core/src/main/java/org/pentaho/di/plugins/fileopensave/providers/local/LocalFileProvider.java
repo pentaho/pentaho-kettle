@@ -22,8 +22,8 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.local;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
+import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
@@ -345,7 +345,14 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
 
   @Override public LocalFile createDirectory( String parentPath, LocalFile file, String newFolderName )
     throws FileException {
-    LocalFile newLocalFile = LocalFile.create( parentPath, Paths.get( file.getPath() + FileSystems.getDefault().getSeparator() + newFolderName ) );
+    LocalFile newLocalFile;
+    if ( file instanceof Directory ) {
+      newLocalFile = LocalFile.create( parentPath,
+        Paths.get( file.getPath() + FileSystems.getDefault().getSeparator() + newFolderName ) );
+    } else {
+      newLocalFile = LocalFile.create( parentPath,
+        Paths.get( file.getParent() + FileSystems.getDefault().getSeparator() + newFolderName ) );
+    }
     return this.add( newLocalFile );
   }
 
