@@ -17,10 +17,17 @@
 package org.pentaho.metastore.locator.api.impl;
 
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -34,28 +41,40 @@ public class MetastoreLocatorExtensionPointTest {
 
   @Test
   public void testCallExtensionPointWithTransMeta() throws Exception {
-    MetastoreLocatorOsgi mockMetastoreLocator = mock( MetastoreLocatorOsgi.class );
+    MetastoreLocatorOsgi metastoreLocator = new MetastoreLocatorImpl();
     LogChannelInterface logChannelInterface = mock( LogChannelInterface.class );
     TransMeta mockTransMeta = mock( TransMeta.class );
-    MetastoreLocatorExtensionPoint metastoreLocatorExtensionPoint =
-      new MetastoreLocatorExtensionPoint( mockMetastoreLocator );
+    Collection<MetastoreLocator> metastoreLocators = new ArrayList<>();
+    metastoreLocators.add( (MetastoreLocator) metastoreLocator );
+    try ( MockedStatic<PluginServiceLoader> pluginServiceLoaderMockedStatic = Mockito.mockStatic( PluginServiceLoader.class ) ) {
+      pluginServiceLoaderMockedStatic.when( () -> PluginServiceLoader.loadServices( MetastoreLocator.class ) )
+        .thenReturn( metastoreLocators );
+      MetastoreLocatorExtensionPoint metastoreLocatorExtensionPoint =
+        new MetastoreLocatorExtensionPoint();
 
-    metastoreLocatorExtensionPoint.callExtensionPoint( logChannelInterface, mockTransMeta );
-    verify( mockTransMeta ).setMetastoreLocatorOsgi( eq( mockMetastoreLocator ) );
+      metastoreLocatorExtensionPoint.callExtensionPoint( logChannelInterface, mockTransMeta );
+      verify( mockTransMeta ).setMetastoreLocatorOsgi( eq( metastoreLocator ) );
+    }
   }
 
   @Test
   public void testCallExtensionPointWithTrans() throws Exception {
-    MetastoreLocatorOsgi mockMetastoreLocator = mock( MetastoreLocatorOsgi.class );
+    MetastoreLocatorOsgi mockMetastoreLocator = new MetastoreLocatorImpl();
     LogChannelInterface logChannelInterface = mock( LogChannelInterface.class );
     TransMeta mockTransMeta = mock( TransMeta.class );
     Trans mockTrans = mock( Trans.class );
     when( mockTrans.getTransMeta() ).thenReturn( mockTransMeta );
-    MetastoreLocatorExtensionPoint metastoreLocatorExtensionPoint =
-      new MetastoreLocatorExtensionPoint( mockMetastoreLocator );
+    Collection<MetastoreLocator> metastoreLocators = new ArrayList<>();
+    metastoreLocators.add( (MetastoreLocator) mockMetastoreLocator );
+    try ( MockedStatic<PluginServiceLoader> pluginServiceLoaderMockedStatic = Mockito.mockStatic( PluginServiceLoader.class ) ) {
+      pluginServiceLoaderMockedStatic.when( () -> PluginServiceLoader.loadServices( MetastoreLocator.class ) )
+        .thenReturn( metastoreLocators );
+      MetastoreLocatorExtensionPoint metastoreLocatorExtensionPoint =
+        new MetastoreLocatorExtensionPoint();
 
-    metastoreLocatorExtensionPoint.callExtensionPoint( logChannelInterface, mockTrans );
-    verify( mockTransMeta ).setMetastoreLocatorOsgi( eq( mockMetastoreLocator ) );
+      metastoreLocatorExtensionPoint.callExtensionPoint( logChannelInterface, mockTrans );
+      verify( mockTransMeta ).setMetastoreLocatorOsgi( eq( mockMetastoreLocator ) );
+    }
   }
 
 }
