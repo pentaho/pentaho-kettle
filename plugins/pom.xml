@@ -77,6 +77,7 @@
         <module>ms-access</module>
         <module>postgresql-db-bulk-loader</module>
         <module>oracle-bulk-loader</module>
+        <module>terafast-bulk-loader</module>
         <module>infobright-bulk-loader</module>
         <module>excel</module>
         <module>ivw-bulk-loader</module>
