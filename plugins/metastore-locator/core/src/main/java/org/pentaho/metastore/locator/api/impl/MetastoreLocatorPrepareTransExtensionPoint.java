@@ -17,7 +17,6 @@
 package org.pentaho.metastore.locator.api.impl;
 
 import org.pentaho.di.core.extension.ExtensionPoint;
-import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
 
 /**
  * Created by tkafalas on 7/31/2017.
@@ -27,7 +26,4 @@ import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
 @ExtensionPoint( id = "MetstoreLocatorPrepareTransExtensionPoint", extensionPointId = "TransformationPrepareExecution",
   description = "" )
 public class MetastoreLocatorPrepareTransExtensionPoint extends MetastoreLocatorExtensionPoint {
-  public MetastoreLocatorPrepareTransExtensionPoint( MetastoreLocatorOsgi metastoreLocatorOsgi ) {
-    super( metastoreLocatorOsgi );
-  }
 }
