@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.terafast;
+package org.pentaho.di.trans.steps.terafastbulkloader;
 
 import java.util.List;
 
@@ -47,11 +47,18 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.di.core.annotations.Step;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
  *
  */
+@Step( id = "TeraFast,TeraFastPlugin", name = "BaseStep.TypeLongDesc.TeraFast",
+        description = "BaseStep.TypeTooltipDesc.TeraFast",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
+        image = "BLKTD.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Teradata+Fastload+Bulk+Loader",
+        i18nPackageName = "org.pentaho.di.trans.steps.terafastbulkloader.TeraFastMeta" )
 public class TeraFastMeta extends AbstractStepMeta {
 
   public static final PluginMessages MESSAGES = PluginMessages.getMessages( TeraFastMeta.class );
@@ -214,7 +221,7 @@ public class TeraFastMeta extends AbstractStepMeta {
           remarks.add( checkResult );
         }
       }
-      // else { job mode. no input rows. pentaho doesn't seem to allow to check jobs. Default Warning: Step is not
+      // else job mode. no input rows. pentaho doesn't seem to allow to check jobs. Default Warning: Step is not
       // in transformation.
     } catch ( KettleDatabaseException e ) {
       checkResult =
@@ -298,7 +305,7 @@ public class TeraFastMeta extends AbstractStepMeta {
    */
   @Override
   public RowMetaInterface getRequiredFields( final VariableSpace space ) throws KettleException {
-    if ( !this.useControlFile.getValue() ) {
+    if ( Boolean.FALSE.equals ( this.useControlFile.getValue() ) ){
       final Database database = connectToDatabase();
       database.shareVariablesWith( space );
 
@@ -313,16 +320,6 @@ public class TeraFastMeta extends AbstractStepMeta {
       return fields;
     }
     return null;
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.pentaho.di.trans.step.BaseStepMeta#clone()
-   */
-  @Override
-  public Object clone() {
-    return super.clone();
   }
 
   /**
