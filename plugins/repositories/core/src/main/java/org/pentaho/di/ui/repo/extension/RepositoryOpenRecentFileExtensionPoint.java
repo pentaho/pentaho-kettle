@@ -29,6 +29,7 @@ import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
+import org.pentaho.di.ui.repo.dialog.RepositoryConnectionSWT;
 import org.pentaho.di.ui.repo.dialog.RepositoryDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -44,8 +45,8 @@ public class RepositoryOpenRecentFileExtensionPoint implements ExtensionPointInt
 
   private RepositoryConnectController repositoryConnectController;
 
-  public RepositoryOpenRecentFileExtensionPoint( RepositoryConnectController repositoryConnectController ) {
-    this.repositoryConnectController = repositoryConnectController;
+  public RepositoryOpenRecentFileExtensionPoint() {
+    this.repositoryConnectController = RepositoryConnectController.getInstance();
   }
 
   @Override public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
@@ -66,7 +67,7 @@ public class RepositoryOpenRecentFileExtensionPoint implements ExtensionPointInt
             getSpoon().closeRepository();
             repositoryConnectController.connectToRepository( repositoryMeta );
           } else {
-            new RepositoryDialog( getSpoon().getShell(), repositoryConnectController ).openLogin( repositoryMeta );
+            new RepositoryConnectionSWT( getSpoon().getShell() ).createDialog( repositoryMeta.getName() );
           }
           if ( repositoryConnectController.isConnected( repositoryMeta.getName() ) ) {
             getSpoon().loadLastUsedFile( recentFile, repositoryMeta.getName() );
