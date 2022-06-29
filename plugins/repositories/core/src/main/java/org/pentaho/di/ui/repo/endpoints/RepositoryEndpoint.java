@@ -50,8 +50,8 @@ public class RepositoryEndpoint {
 
   private RepositoryConnectController controller;
 
-  public RepositoryEndpoint( RepositoryConnectController controller ) {
-    this.controller = controller;
+  public RepositoryEndpoint() {
+    this.controller = RepositoryConnectController.getInstance();
   }
 
   @GET
@@ -67,11 +67,13 @@ public class RepositoryEndpoint {
   }
 
 
+/*
   @GET
   @Path( "/connection/create" )
   public Response createConnection() {
     return Response.ok( controller.createConnection() ).build();
   }
+*/
 
   @POST
   @Path( "/connection/edit" )
@@ -85,25 +87,31 @@ public class RepositoryEndpoint {
     return Response.ok( controller.deleteDatabaseConnection( database ) ).build();
   }
 
-  @POST
-  @Path( "/login" )
-  @Consumes( { APPLICATION_JSON } )
-  public Response login( LoginModel loginModel ) {
+//  @POST
+//  @Path( "/login" )
+ // @Consumes( { APPLICATION_JSON } )
+  public Response login( String repositoryName, String userName, String password ) {
+    System.out.println("here in login end point");
     try {
       if ( controller.isRelogin() ) {
+        System.out.println("here in relogin");
         controller
-          .reconnectToRepository( loginModel.getRepositoryName(), loginModel.getUsername(), loginModel.getPassword() );
+          .reconnectToRepository( repositoryName, repositoryName, password );
       } else {
+        System.out.println("here in login");
         controller
-          .connectToRepository( loginModel.getRepositoryName(), loginModel.getUsername(), loginModel.getPassword() );
+          .connectToRepository(repositoryName, repositoryName, password );
       }
       return Response.ok().build();
     } catch ( Exception e ) {
+      System.out.println("here in catch block");
       if ( e.getMessage().contains( ERROR_401 ) || e instanceof KettleAuthException ) {
+        System.out.println("catch block error 401");
         return Response.serverError()
           .entity( new ErrorModel( BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidCredentials" ) ) )
           .build();
       } else {
+        System.out.println("catch block server error");
         return Response.serverError()
           .entity( new ErrorModel( BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidServer" ) ) )
           .build();
