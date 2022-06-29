@@ -49,8 +49,8 @@ public class RequestLoginToRepositoryExtensionPoint implements ExtensionPointInt
 
   private final RepositoryConnectController repositoryConnectController;
 
-  public RequestLoginToRepositoryExtensionPoint( RepositoryConnectController repositoryConnectController ) {
-    this.repositoryConnectController = repositoryConnectController;
+  public RequestLoginToRepositoryExtensionPoint() {
+    this.repositoryConnectController = RepositoryConnectController.getInstance();
   }
 
   @Override

@@ -175,6 +175,7 @@ public class RepositoryConnectControllerTest {
     result = controller.createRepository( id, items );
     assertEquals( null, result );
   }
+/*
 
   @Test
   public void testGetRepositories() {
@@ -196,6 +197,7 @@ public class RepositoryConnectControllerTest {
         + "\"id\":\"Repository ID\"}]",
       repositories );
   }
+*/
 
   @Test
   public void testConnectToRepository() throws Exception {
