@@ -36,6 +36,7 @@
 	<excel-plugin.version>${project.version}</excel-plugin.version>
     <ldap-plugin.version>${project.version}</ldap-plugin.version>
     <ivw-bulk-loader-plugin.version>${project.version}</ivw-bulk-loader-plugin.version>
+    <edi2xml-plugin.version>${project.version}</edi2xml-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
@@ -239,6 +240,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>postgresql-db-bulk-loader-plugins</artifactId>
       <version>${postgresql-db-bulk-loader-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>edi2xml-plugins</artifactId>
+      <version>${edi2xml-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
