@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,7 +50,10 @@ import org.pentaho.di.trans.steps.edi2xml.Edi2XmlMeta;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.core.annotations.PluginDialog;
 
+@PluginDialog( id = "TypeExitEdi2XmlStep", image = "EDI2XML.svg", pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Edi+to+XML" )
 public class Edi2XmlDialog extends BaseStepDialog implements StepDialogInterface {
 
   private static Class<?> PKG = Edi2XmlMeta.class; // for i18n purposes
