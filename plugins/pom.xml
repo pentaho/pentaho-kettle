@@ -81,6 +81,7 @@
         <module>infobright-bulk-loader</module>
         <module>excel</module>
         <module>ivw-bulk-loader</module>
+        <module>edi2xml</module>
         <module>xml</module>
         <module>streaming</module>
         <module>metastore-locator</module>
