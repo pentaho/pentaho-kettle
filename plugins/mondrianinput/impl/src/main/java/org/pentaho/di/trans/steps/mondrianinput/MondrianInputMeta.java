@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,11 +55,18 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+import org.pentaho.di.core.annotations.Step;
 
 /*
  * Created on 2-jun-2003
  *
  */
+@Step( id = "MondrianInput", name = "BaseStep.TypeLongDesc.MondrianInput",
+        description = "BaseStep.TypeTooltipDesc.MondrianInput",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
+        image = "MON.svg",
+        documentationUrl = "Products/Mondrian_Input",
+        i18nPackageName = "org.pentaho.di.trans.steps.mondrianinput" )
 public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface {
   private DatabaseMeta databaseMeta;
   private String sql;
