@@ -29,6 +29,7 @@ __List of the current core plugins:__
 * infobright-bulk-loader
 * excel
 * ivw-bulk-loader
+* mondrianinput
 * engine-configuration
 * pur
 * repositories
