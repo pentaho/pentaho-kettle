@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.ui.trans.steps.yamlinput;
 
 import java.util.ArrayList;
-
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -81,6 +81,9 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
+@PluginDialog( id = "YamlInput", image = "YamlI.svg",
+        pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/spaces/EAI/pages/388311572/Yaml+Input" )
 public class YamlInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = YamlInputMeta.class; // for i18n purposes, needed by Translator2!!
 
