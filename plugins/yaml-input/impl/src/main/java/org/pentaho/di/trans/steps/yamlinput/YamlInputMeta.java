@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -62,6 +63,12 @@ import org.w3c.dom.Node;
 /**
  * Store run-time data on the YamlInput step.
  */
+@Step( id = "YamlInput", name = "BaseStep.TypeLongDesc.YamlInput",
+        description = "BaseStep.TypeTooltipDesc.YamlInput",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
+        image = "images/YamlI.svg",
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/spaces/EAI/pages/388311572/Yaml+Input",
+        i18nPackageName = "org.pentaho.di.trans.steps.yamlinput" )
 public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = YamlInputMeta.class; // for i18n purposes, needed by Translator2!!
 
