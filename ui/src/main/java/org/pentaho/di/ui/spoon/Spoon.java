@@ -4618,6 +4618,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       fileDialogOperation.setProvider( lastFileOpenedProvider );
     }
     try {
+      fileDialogOperation.setFilter( "KTR_KJB_XML,KTR_XML,KJB_XML,KTR,XML,KJB,ALL" );
+      fileDialogOperation.setDefaultFilter( "KTR_KJB_XML" );
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
         fileDialogOperation );
       String path = fileDialogOperation.getPath();
