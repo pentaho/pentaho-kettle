@@ -88,6 +88,7 @@
         <module>repository-locator</module>
         <module>mysql-bulk-loader</module>
         <module>ldap</module>
+        <module>yaml-input</module>
       </modules>
     </profile>
 

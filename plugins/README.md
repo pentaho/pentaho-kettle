@@ -36,6 +36,7 @@ __List of the current core plugins:__
 * salesforce
 * mysql-bulk-loader
 * ldap
+* yaml-input
 
 __Deprecated plugins:__
 
