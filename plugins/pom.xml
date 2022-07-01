@@ -100,6 +100,7 @@
         <module>metastore-locator</module>
         <module>repository-locator</module>
         <module>ldap</module>
+        <module>yaml-input</module>
       </modules>
     </profile>
 
