@@ -28,6 +28,7 @@
     <pdi-google-analytics-plugin.version>9.4.0.0-SNAPSHOT</pdi-google-analytics-plugin.version>
     <pdi-salesforce-plugin.version>9.4.0.0-SNAPSHOT</pdi-salesforce-plugin.version>
     <monet-db-bulk-loader-plugin.version>${project.version}</monet-db-bulk-loader-plugin.version>
+    <yaml-input-plugin.version>${project.version}</yaml-input-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
     <terafast-bulk-loader-plugin.version>${project.version}</terafast-bulk-loader-plugin.version>
@@ -35,7 +36,7 @@
     <infobright-bulk-loader-plugin.version>${project.version}</infobright-bulk-loader-plugin.version>
 	<excel-plugin.version>${project.version}</excel-plugin.version>
     <ivw-bulk-loader-plugin.version>${project.version}</ivw-bulk-loader-plugin.version>
-    <mondrianinput-plugin.version>${project.version}</mondrianinput-plugin.version>
+    <edi2xml-plugin.version>${project.version}</edi2xml-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
@@ -52,6 +53,7 @@
     <repository-locator-plugin.version>${project.version}</repository-locator-plugin.version>
     <file-open-save-new-plugin.version>${project.version}</file-open-save-new-plugin.version>
 	<mysql-bulk-load-plugin.version>${project.version}</mysql-bulk-load-plugin.version>
+    <mondrianinput-plugin.version>${project.version}</mondrianinput-plugin.version>
   </properties>
 
   <dependencies>
@@ -201,6 +203,18 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>yaml-input-plugins</artifactId>
+      <version>${yaml-input-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>ms-access-plugins</artifactId>
       <version>${ms-access-plugin.version}</version>
       <type>zip</type>
@@ -249,6 +263,30 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>edi2xml-plugins</artifactId>
+      <version>${edi2xml-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>mondrianinput-plugin</artifactId>
+      <version>${mondrianinput-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>infobright-bulk-loader-plugins</artifactId>
       <version>${infobright-bulk-loader-plugin.version}</version>
       <type>zip</type>
@@ -275,18 +313,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>ivw-bulk-loader-plugins</artifactId>
       <version>${ivw-bulk-loader-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>mondrianinput-plugin</artifactId>
-      <version>${mondrianinput-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

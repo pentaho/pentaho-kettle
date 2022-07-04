@@ -29,12 +29,14 @@ __List of the current core plugins:__
 * infobright-bulk-loader
 * excel
 * ivw-bulk-loader
+* edi2xml
 * mondrianinput
 * engine-configuration
 * pur
 * repositories
 * salesforce
 * mysql-bulk-loader
+* yaml-input
 
 __Deprecated plugins:__
 
