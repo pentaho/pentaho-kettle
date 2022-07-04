@@ -24,14 +24,17 @@ package org.pentaho.di.plugins.fileopensave.dialog;
 
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -72,6 +75,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.TypedListener;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
@@ -83,6 +87,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Entity;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
+import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
@@ -103,6 +108,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   public static final String STATE_SAVE = "save";
   public static final String STATE_OPEN = "open";
+  public static final String STATE_SELECT_FILE = "selectFile";
+
   public static final String SELECT_FOLDER = "selectFolder";
   private final Image logo = GUIResource.getInstance().getImageLogoSmall();
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
@@ -123,6 +130,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   public static final String NAME_PARAM = "name";
   public static final String PARENT_PARAM = "parent";
   public static final String TYPE_PARAM = "type";
+  private static final String ALL_FILE_TYPES = "ALL";
 
   private String shellTitle = "Open";
   private String objectId;
@@ -159,6 +167,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   // Colors
   private Color clrGray;
+  private Color clrBlack;
 
   // Images
   private Image imgTime;
@@ -192,10 +201,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     command = fileDialogOperation.getCommand();
     shellTitle = BaseMessages.getString( PKG, "FileOpenSaveDialog.dialog." + command + ".title" );
     open();
-    while ( !getShell().isDisposed() ) {
-      if ( !getShell().getDisplay().readAndDispatch() ) {
-        getShell().getDisplay().sleep();
+    if ( getShell() != null ) {
+      while ( !getShell().isDisposed() ) {
+        if ( !getShell().getDisplay().readAndDispatch() ) {
+          getShell().getDisplay().sleep();
+        }
       }
+    } else {
+      clearState();
     }
   }
 
@@ -249,7 +262,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     btnOpen.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
         StructuredSelection structuredSelection = (StructuredSelection) fileTableViewer.getSelection();
+
         File file = (File) structuredSelection.getFirstElement();
+
         if ( file != null ) {
           openFileSelector( file );
           getShell().dispose();
@@ -296,18 +311,34 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     lblComboFilter.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.save.file-filter.label" ) );
     PropsUI.getInstance().setLook( lblComboFilter );
     // TODO: Implement retrieving and setting filters
-    comboFilter.setItems();
-    comboFilter.setText( "All Files" );
+    String[] fileFilters = StringUtils.isNotEmpty( fileDialogOperation.getFilter() )
+      ? fileDialogOperation.getFilter().split( "," )
+      : new String[] {ALL_FILE_TYPES};
+
+
+    for ( int i = 0; i < fileFilters.length; i++ ) {
+      comboFilter.add( fileFilters[i] );
+    }
+    int defaultIndex = Arrays.asList( fileFilters ).indexOf( fileDialogOperation.getDefaultFilter() );
+    comboFilter.setText( defaultIndex == -1 ? fileFilters[0] : fileFilters[ defaultIndex ] );
+
+    SelectionListener fileFilterSelectionListener = new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        super.widgetSelected( selectionEvent );
+        IStructuredSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
+        selectPath( treeViewerSelection.getFirstElement() );
+        setButtonSaveState();
+        setButtonOpenState();
+      }
+    };
+
+    comboFilter.addSelectionListener( fileFilterSelectionListener );
+
     btnCancel = new Button( parent, SWT.NONE );
     PropsUI.getInstance().setLook( btnCancel );
-
     btnCancel.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        parentPath = null;
-        type = null;
-        provider = null;
-        path = null;
-
+        clearState();
         parent.dispose();
       }
     } );
@@ -318,6 +349,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       createOpenFileOrFolderLayout( parent, select );
     }
     return parent;
+  }
+
+  private void clearState() {
+    parentPath = null;
+    type = null;
+    provider = null;
+    path = null;
   }
 
   private void createOpenFileOrFolderLayout( Composite parent, Composite select ) {
@@ -504,6 +542,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   private Composite createFilesBrowser( Composite parent ) {
     clrGray = getShell().getDisplay().getSystemColor( SWT.COLOR_GRAY );
+    clrBlack = getShell().getDisplay().getSystemColor( SWT.COLOR_BLACK );
     imgTime = rasterImage( "img/Time.S_D.svg", 25, 25 );
     imgVFS = rasterImage( "img/VFS_D.svg", 25, 25 );
     imgFolder = rasterImage( "img/file_icons/Archive.S_D.svg", 25, 25 );
@@ -615,6 +654,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     fileTableViewer.setContentProvider( new ArrayContentProvider() );
 
+    fileTableViewer.addPostSelectionChangedListener( e -> {
+      IStructuredSelection selection = (IStructuredSelection) e.getSelection();
+      Object selectedNode = selection.getFirstElement();
+      if ( selectedNode instanceof File ) {
+        setButtonOpenState();
+      }
+    } );
+
     fileTableViewer.addDoubleClickListener( e -> {
       Object selection = ( (IStructuredSelection) e.getSelection() ).getFirstElement();
 
@@ -622,17 +669,22 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.setExpandedState( selection, true );
         treeViewer.setSelection( new StructuredSelection( selection ), true );
 
-        if ( !command.contains( STATE_OPEN ) ) {
+        if ( command.equals( STATE_SAVE ) || command.equals( SELECT_FOLDER ) ) {
           parentPath = ( (Directory) selection ).getParent();
           path = ( (Directory) selection ).getPath();
           provider = ( (Directory) selection).getProvider();
         }
+
       } else if ( selection instanceof File ) {
-        File f = (File) selection;
-
-        openFileSelector( f );
-
-        if ( command.equalsIgnoreCase( STATE_OPEN ) ) {
+        File localFile = (File) selection;
+        if ( command.equalsIgnoreCase( STATE_SELECT_FILE ) ) {
+          String fileExtension = Utils.getExtension(  localFile.getName() );
+          if ( comboFilter.getText().toLowerCase().contains( fileExtension ) ) {
+            openFileSelector( localFile );
+            getShell().dispose();
+          }
+        } else if ( command.equalsIgnoreCase( STATE_OPEN ) ) {
+          openFileSelector( localFile );
           getShell().dispose();
         }
       }
@@ -659,11 +711,22 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
       openStructuredSelectionPath( (IStructuredSelection) fileTableViewer.getSelection() );
 
-      if ( StringUtils.isNotEmpty( path ) || StringUtils.isNotEmpty( name ) ) {
-        btnOpen.setEnabled( true );
-      } else {
-        btnOpen.setEnabled( false );
+      if ( command.equalsIgnoreCase( STATE_OPEN ) ) {
+        if ( StringUtils.isNotEmpty( path ) || StringUtils.isNotEmpty( name ) ) {
+          btnOpen.setEnabled( true );
+        } else {
+          btnOpen.setEnabled( false );
+        }
+      } else if ( command.equalsIgnoreCase( STATE_SELECT_FILE ) ) {
+
+        if ( StringUtils.isNotEmpty( name )
+          && comboFilter.getText().toLowerCase().contains( Utils.getExtension( name ).toLowerCase() ) ) {
+          btnOpen.setEnabled( true );
+        } else {
+          btnOpen.setEnabled( false );
+        }
       }
+
     }
   }
   private void setButtonSaveState() {
@@ -862,6 +925,20 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
               .thenComparing( Comparator.comparing( f -> ( (File) f ).getName(),
                 String.CASE_INSENSITIVE_ORDER ) ) )
           .toArray() );
+        for ( TableItem fileTableItem : fileTableViewer.getTable().getItems() ) {
+          Object tableItemObject = fileTableItem.getData();
+          if ( !( tableItemObject instanceof Directory ) ) {
+            String fileExtension  = Utils.getExtension( ( (File) tableItemObject ).getName() );
+            if ( comboFilter.getText().equalsIgnoreCase( ALL_FILE_TYPES )
+              || comboFilter.getText().toLowerCase().contains( fileExtension.toLowerCase() ) ) {
+              fileTableItem.setForeground( clrBlack );
+            } else {
+              fileTableItem.setForeground( clrGray );
+            }
+          }
+        }
+
+
         if ( ( (Directory) selectedElement ).isCanAddChildren() ) {
           flatBtnAdd.setEnabled( true );
         } else {
