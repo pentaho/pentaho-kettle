@@ -42,6 +42,7 @@
         <module>yaml-input</module>
         <module>metastore-locator</module>
         <module>repository-locator</module>
+        <module>rss</module>
       </modules>
     </profile>
 
