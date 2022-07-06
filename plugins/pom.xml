@@ -84,6 +84,7 @@
         <module>salesforce</module>
         <module>pur</module>
         <module>ms-access</module>
+        <module>rss</module>
         <module>xml</module>
         <module>streaming</module>
         <module>metastore-locator</module>

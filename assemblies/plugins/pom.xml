@@ -33,6 +33,7 @@
     <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
     <terafast-bulk-loader-plugin.version>${project.version}</terafast-bulk-loader-plugin.version>
     <postgresql-db-bulk-loader-plugin.version>${project.version}</postgresql-db-bulk-loader-plugin.version>
+    <rss-plugin.version>${project.version}</rss-plugin.version>
     <infobright-bulk-loader-plugin.version>${project.version}</infobright-bulk-loader-plugin.version>
 	<excel-plugin.version>${project.version}</excel-plugin.version>
     <ldap-plugin.version>${project.version}</ldap-plugin.version>
@@ -241,6 +242,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>terafast-bulk-loader-plugins</artifactId>
       <version>${terafast-bulk-loader-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>rss-plugins</artifactId>
+      <version>${rss-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
