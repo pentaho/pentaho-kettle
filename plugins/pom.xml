@@ -44,6 +44,7 @@
         <module>metastore-locator</module>
         <module>repository-locator</module>
         <module>rss</module>
+        <module>pentaho-reporting</module>
       </modules>
     </profile>
 
