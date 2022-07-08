@@ -29,6 +29,7 @@
     <pdi-salesforce-plugin.version>9.4.0.0-SNAPSHOT</pdi-salesforce-plugin.version>
     <monet-db-bulk-loader-plugin.version>${project.version}</monet-db-bulk-loader-plugin.version>
     <yaml-input-plugin.version>${project.version}</yaml-input-plugin.version>
+    <pentaho-reporting-plugin.version>${project.version}</pentaho-reporting-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
     <terafast-bulk-loader-plugin.version>${project.version}</terafast-bulk-loader-plugin.version>
@@ -207,6 +208,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>yaml-input-plugins</artifactId>
       <version>${yaml-input-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-reporting-plugins</artifactId>
+      <version>${pentaho-reporting-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
