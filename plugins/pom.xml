@@ -45,6 +45,7 @@
         <module>repository-locator</module>
         <module>rss</module>
         <module>pentaho-reporting</module>
+        <module>mondrianinput</module>
       </modules>
     </profile>
 

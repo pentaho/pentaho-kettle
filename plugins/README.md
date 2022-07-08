@@ -38,6 +38,7 @@ __List of the current core plugins:__
 * ldap
 * yaml-input
 * pentaho-reporting
+* mondrianinput
 
 __Deprecated plugins:__
 
