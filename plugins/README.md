@@ -37,6 +37,7 @@ __List of the current core plugins:__
 * mysql-bulk-loader
 * ldap
 * yaml-input
+* pentaho-reporting
 * mondrianinput
 
 __Deprecated plugins:__
