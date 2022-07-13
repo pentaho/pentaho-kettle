@@ -111,11 +111,6 @@
 
     <dependency>
       <groupId>pentaho</groupId>
-      <artifactId>pentaho-mongodb-plugin</artifactId>
-      <version>${pentaho-mongodb-plugin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
       <artifactId>pentaho-mongo-utils</artifactId>
       <version>${pentaho-mongodb-plugin.version}</version>
     </dependency>
