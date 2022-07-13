@@ -246,6 +246,7 @@ import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.SimpleMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.dialog.SubjectDataBrowserDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -4618,8 +4619,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       fileDialogOperation.setProvider( lastFileOpenedProvider );
     }
     try {
-      fileDialogOperation.setFilter( "KTR_KJB_XML,KTR_XML,KJB_XML,KTR,XML,KJB,ALL" );
-      fileDialogOperation.setDefaultFilter( "KTR_KJB_XML" );
+      fileDialogOperation.setFilter( FilterType.KETTLE_FILES + "," + FilterType.XML + "," + FilterType.ALL );
+      fileDialogOperation.setDefaultFilter( FilterType.KETTLE_FILES.toString() );
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
         fileDialogOperation );
       String path = fileDialogOperation.getPath();

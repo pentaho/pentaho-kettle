@@ -1,0 +1,2067 @@
+[
+  {
+    "id": "A_3G2",
+    "value": "\\.3g2$",
+    "label": "*.3g2"
+  },
+  {
+    "id": "A_3GA",
+    "value": "\\.3ga$",
+    "label": "*.3ga"
+  },
+  {
+    "id": "A_3GP",
+    "value": "\\.3gp$",
+    "label": "*.3gp"
+  },
+  {
+    "id": "A_7Z",
+    "value": "\\.7z$",
+    "label": "*.7z"
+  },
+  {
+    "id": "AA",
+    "value": "\\.aa$",
+    "label": "*.aa"
+  },
+  {
+    "id": "AAC",
+    "value": "\\.aac$",
+    "label": "*.aac"
+  },
+  {
+    "id": "AC",
+    "value": "\\.ac$",
+    "label": "*.ac"
+  },
+  {
+    "id": "ACCDB",
+    "value": "\\.accdb$",
+    "label": "*.accdb"
+  },
+  {
+    "id": "ACCDT",
+    "value": "\\.accdt$",
+    "label": "*.accdt"
+  },
+  {
+    "id": "ACE",
+    "value": "\\.ace$",
+    "label": "*.ace"
+  },
+  {
+    "id": "ADN",
+    "value": "\\.adn$",
+    "label": "*.adn"
+  },
+  {
+    "id": "ALL",
+    "value": "*",
+    "label": "All Files"
+  },
+  {
+    "id": "AI",
+    "value": "\\.ai$",
+    "label": "*.ai"
+  },
+  {
+    "id": "AIF",
+    "value": "\\.aif$",
+    "label": "*.aif"
+  },
+  {
+    "id": "AIFC",
+    "value": "\\.aifc$",
+    "label": "*.aifc"
+  },
+  {
+    "id": "AIFF",
+    "value": "\\.aiff$",
+    "label": "*.aiff"
+  },
+  {
+    "id": "AIT",
+    "value": "\\.ait$",
+    "label": "*.ait"
+  },
+  {
+    "id": "AMR",
+    "value": "\\.amr$",
+    "label": "*.amr"
+  },
+  {
+    "id": "ANI",
+    "value": "\\.ani$",
+    "label": "*.ani"
+  },
+  {
+    "id": "APK",
+    "value": "\\.apk$",
+    "label": "*.apk"
+  },
+  {
+    "id": "APP",
+    "value": "\\.app$",
+    "label": "*.app"
+  },
+  {
+    "id": "APPLESCRIPT",
+    "value": "\\.applescript$",
+    "label": "*.applescript"
+  },
+  {
+    "id": "ASAX",
+    "value": "\\.asax$",
+    "label": "*.asax"
+  },
+  {
+    "id": "ASC",
+    "value": "\\.asc$",
+    "label": "*.asc"
+  },
+  {
+    "id": "ASCX",
+    "value": "\\.ascx$",
+    "label": "*.ascx"
+  },
+  {
+    "id": "ASF",
+    "value": "\\.asf$",
+    "label": "*.asf"
+  },
+  {
+    "id": "ASH",
+    "value": "\\.ash$",
+    "label": "*.ash"
+  },
+  {
+    "id": "ASHX",
+    "value": "\\.ashx$",
+    "label": "*.ashx"
+  },
+  {
+    "id": "ASM",
+    "value": "\\.asm$",
+    "label": "*.asm"
+  },
+  {
+    "id": "ASMX",
+    "value": "\\.asmx$",
+    "label": "*.asmx"
+  },
+  {
+    "id": "ASP",
+    "value": "\\.asp$",
+    "label": "*.asp"
+  },
+  {
+    "id": "ASPX",
+    "value": "\\.aspx$",
+    "label": "*.aspx"
+  },
+  {
+    "id": "ASX",
+    "value": "\\.asx$",
+    "label": "*.asx"
+  },
+  {
+    "id": "AU",
+    "value": "\\.au$",
+    "label": "*.au"
+  },
+  {
+    "id": "AUP",
+    "value": "\\.aup$",
+    "label": "*.aup"
+  },
+  {
+    "id": "AVI",
+    "value": "\\.avi$",
+    "label": "*.avi"
+  },
+  {
+    "id": "AVRO",
+    "value": "\\.avro$",
+    "label": "*.avro"
+  },
+  {
+    "id": "AXD",
+    "value": "\\.axd$",
+    "label": "*.axd"
+  },
+  {
+    "id": "AZE",
+    "value": "\\.aze$",
+    "label": "*.aze"
+  },
+  {
+    "id": "BAK",
+    "value": "\\.bak$",
+    "label": "*.bak"
+  },
+  {
+    "id": "BASH",
+    "value": "\\.bash$",
+    "label": "*.bash"
+  },
+  {
+    "id": "BAT",
+    "value": "\\.bat$",
+    "label": "*.bat"
+  },
+  {
+    "id": "BIN",
+    "value": "\\.bin$",
+    "label": "*.bin"
+  },
+  {
+    "id": "BLANK",
+    "value": "\\.blank$",
+    "label": "*.blank"
+  },
+  {
+    "id": "BMP",
+    "value": "\\.bmp$",
+    "label": "*.bmp"
+  },
+  {
+    "id": "BOWERRC",
+    "value": "\\.bowerrc$",
+    "label": "*.bowerrc"
+  },
+  {
+    "id": "BPG",
+    "value": "\\.bpg$",
+    "label": "*.bpg"
+  },
+  {
+    "id": "BROWSER",
+    "value": "\\.browser$",
+    "label": "*.browser"
+  },
+  {
+    "id": "BZ2",
+    "value": "\\.bz2$",
+    "label": "*.bz2"
+  },
+  {
+    "id": "BZEMPTY",
+    "value": "\\.bzempty$",
+    "label": "*.bzempty"
+  },
+  {
+    "id": "C",
+    "value": "\\.c$",
+    "label": "*.c"
+  },
+  {
+    "id": "CAB",
+    "value": "\\.cab$",
+    "label": "*.cab"
+  },
+  {
+    "id": "CAD",
+    "value": "\\.cad$",
+    "label": "*.cad"
+  },
+  {
+    "id": "CAF",
+    "value": "\\.caf$",
+    "label": "*.caf"
+  },
+  {
+    "id": "CAL",
+    "value": "\\.cal$",
+    "label": "*.cal"
+  },
+  {
+    "id": "CATALOG",
+    "value": "\\.catalog$",
+    "label": "*.catalog"
+  },
+  {
+    "id": "CD",
+    "value": "\\.cd$",
+    "label": "*.cd"
+  },
+  {
+    "id": "CDDA",
+    "value": "\\.cdda$",
+    "label": "*.cdda"
+  },
+  {
+    "id": "CER",
+    "value": "\\.cer$",
+    "label": "*.cer"
+  },
+  {
+    "id": "CFG",
+    "value": "\\.cfg$",
+    "label": "*.cfg"
+  },
+  {
+    "id": "CFM",
+    "value": "\\.cfm$",
+    "label": "*.cfm"
+  },
+  {
+    "id": "CFML",
+    "value": "\\.cfml$",
+    "label": "*.cfml"
+  },
+  {
+    "id": "CGI",
+    "value": "\\.cgi$",
+    "label": "*.cgi"
+  },
+  {
+    "id": "CHM",
+    "value": "\\.chm$",
+    "label": "*.chm"
+  },
+  {
+    "id": "CLASS",
+    "value": "\\.class$",
+    "label": "*.class"
+  },
+  {
+    "id": "CMD",
+    "value": "\\.cmd$",
+    "label": "*.cmd"
+  },
+  {
+    "id": "CODE_WORKSPACE",
+    "value": "\\.code-workspace$",
+    "label": "*.code-workspace"
+  },
+  {
+    "id": "CODEKIT",
+    "value": "\\.codekit$",
+    "label": "*.codekit"
+  },
+  {
+    "id": "COFFEE",
+    "value": "\\.coffee$",
+    "label": "*.coffee"
+  },
+  {
+    "id": "COFFEELINTIGNORE",
+    "value": "\\.coffeelintignore$",
+    "label": "*.coffeelintignore"
+  },
+  {
+    "id": "COM",
+    "value": "\\.com$",
+    "label": "*.com"
+  },
+  {
+    "id": "COMPILE",
+    "value": "\\.compile$",
+    "label": "*.compile"
+  },
+  {
+    "id": "CONF",
+    "value": "\\.conf$",
+    "label": "*.conf"
+  },
+  {
+    "id": "CONFIG",
+    "value": "\\.config$",
+    "label": "*.config"
+  },
+  {
+    "id": "CPP",
+    "value": "\\.cpp$",
+    "label": "*.cpp"
+  },
+  {
+    "id": "CPTX",
+    "value": "\\.cptx$",
+    "label": "*.cptx"
+  },
+  {
+    "id": "CR2",
+    "value": "\\.cr2$",
+    "label": "*.cr2"
+  },
+  {
+    "id": "CRDOWNLOAD",
+    "value": "\\.crdownload$",
+    "label": "*.crdownload"
+  },
+  {
+    "id": "CRT",
+    "value": "\\.crt$",
+    "label": "*.crt"
+  },
+  {
+    "id": "CRYPT",
+    "value": "\\.crypt$",
+    "label": "*.crypt"
+  },
+  {
+    "id": "CS",
+    "value": "\\.cs$",
+    "label": "*.cs"
+  },
+  {
+    "id": "CSH",
+    "value": "\\.csh$",
+    "label": "*.csh"
+  },
+  {
+    "id": "CSON",
+    "value": "\\.cson$",
+    "label": "*.cson"
+  },
+  {
+    "id": "CSPROJ",
+    "value": "\\.csproj$",
+    "label": "*.csproj"
+  },
+  {
+    "id": "CSS",
+    "value": "\\.css$",
+    "label": "*.css"
+  },
+  {
+    "id": "CSV",
+    "value": "\\.csv$",
+    "label": "*.csv"
+  },
+  {
+    "id": "CSV_TXT",
+    "value": "\\.csv$|\\.txt$",
+    "label": "*.csv, *.txt"
+  },
+  {
+    "id": "CUBE",
+    "value": "\\.cube$",
+    "label": "*.cube"
+  },
+  {
+    "id": "CUE",
+    "value": "\\.cue$",
+    "label": "*.cue"
+  },
+  {
+    "id": "CUR",
+    "value": "\\.cur$",
+    "label": "*.cur"
+  },
+  {
+    "id": "DART",
+    "value": "\\.dart$",
+    "label": "*.dart"
+  },
+  {
+    "id": "DAT",
+    "value": "\\.dat$",
+    "label": "*.dat"
+  },
+  {
+    "id": "DATA",
+    "value": "\\.data$",
+    "label": "*.data"
+  },
+  {
+    "id": "DB",
+    "value": "\\.db$",
+    "label": "*.db"
+  },
+  {
+    "id": "DBF",
+    "value": "\\.dbf$",
+    "label": "*.dbf"
+  },
+  {
+    "id": "DEB",
+    "value": "\\.deb$",
+    "label": "*.deb"
+  },
+  {
+    "id": "DEFAULT",
+    "value": "\\.default$",
+    "label": "*.default"
+  },
+  {
+    "id": "DGN",
+    "value": "\\.dgn$",
+    "label": "*.dgn"
+  },
+  {
+    "id": "DIST",
+    "value": "\\.dist$",
+    "label": "*.dist"
+  },
+  {
+    "id": "DIZ",
+    "value": "\\.diz$",
+    "label": "*.diz"
+  },
+  {
+    "id": "DLL",
+    "value": "\\.dll$",
+    "label": "*.dll"
+  },
+  {
+    "id": "DMG",
+    "value": "\\.dmg$",
+    "label": "*.dmg"
+  },
+  {
+    "id": "DNG",
+    "value": "\\.dng$",
+    "label": "*.dng"
+  },
+  {
+    "id": "DOC",
+    "value": "\\.doc$",
+    "label": "*.doc"
+  },
+  {
+    "id": "DOCB",
+    "value": "\\.docb$",
+    "label": "*.docb"
+  },
+  {
+    "id": "DOCM",
+    "value": "\\.docm$",
+    "label": "*.docm"
+  },
+  {
+    "id": "DOCX",
+    "value": "\\.docx$",
+    "label": "*.docx"
+  },
+  {
+    "id": "DOT",
+    "value": "\\.dot$",
+    "label": "*.dot"
+  },
+  {
+    "id": "DOTM",
+    "value": "\\.dotm$",
+    "label": "*.dotm"
+  },
+  {
+    "id": "DOTX",
+    "value": "\\.dotx$",
+    "label": "*.dotx"
+  },
+  {
+    "id": "DOWNLOAD",
+    "value": "\\.download$",
+    "label": "*.download"
+  },
+  {
+    "id": "DPJ",
+    "value": "\\.dpj$",
+    "label": "*.dpj"
+  },
+  {
+    "id": "DS_STORE",
+    "value": "\\.ds_store$",
+    "label": "*.ds_store"
+  },
+  {
+    "id": "DSN",
+    "value": "\\.dsn$",
+    "label": "*.dsn"
+  },
+  {
+    "id": "DTD",
+    "value": "\\.dtd$",
+    "label": "*.dtd"
+  },
+  {
+    "id": "DWG",
+    "value": "\\.dwg$",
+    "label": "*.dwg"
+  },
+  {
+    "id": "DXF",
+    "value": "\\.dxf$",
+    "label": "*.dxf"
+  },
+  {
+    "id": "EDITORCONFIG",
+    "value": "\\.editorconfig$",
+    "label": "*.editorconfig"
+  },
+  {
+    "id": "EL",
+    "value": "\\.el$",
+    "label": "*.el"
+  },
+  {
+    "id": "ELF",
+    "value": "\\.elf$",
+    "label": "*.elf"
+  },
+  {
+    "id": "EML",
+    "value": "\\.eml$",
+    "label": "*.eml"
+  },
+  {
+    "id": "ENC",
+    "value": "\\.enc$",
+    "label": "*.enc"
+  },
+  {
+    "id": "EOT",
+    "value": "\\.eot$",
+    "label": "*.eot"
+  },
+  {
+    "id": "EPS",
+    "value": "\\.eps$",
+    "label": "*.eps"
+  },
+  {
+    "id": "EPUB",
+    "value": "\\.epub$",
+    "label": "*.epub"
+  },
+  {
+    "id": "ESLINTIGNORE",
+    "value": "\\.eslintignore$",
+    "label": "*.eslintignore"
+  },
+  {
+    "id": "EXE",
+    "value": "\\.exe$",
+    "label": "*.exe"
+  },
+  {
+    "id": "F4V",
+    "value": "\\.f4v$",
+    "label": "*.f4v"
+  },
+  {
+    "id": "FAX",
+    "value": "\\.fax$",
+    "label": "*.fax"
+  },
+  {
+    "id": "FB2",
+    "value": "\\.fb2$",
+    "label": "*.fb2"
+  },
+  {
+    "id": "FLA",
+    "value": "\\.fla$",
+    "label": "*.fla"
+  },
+  {
+    "id": "FLAC",
+    "value": "\\.flac$",
+    "label": "*.flac"
+  },
+  {
+    "id": "FLV",
+    "value": "\\.flv$",
+    "label": "*.flv"
+  },
+  {
+    "id": "FNT",
+    "value": "\\.fnt$",
+    "label": "*.fnt"
+  },
+  {
+    "id": "FOLDER",
+    "value": "\\.folder$",
+    "label": "*.folder"
+  },
+  {
+    "id": "FON",
+    "value": "\\.fon$",
+    "label": "*.fon"
+  },
+  {
+    "id": "GADGET",
+    "value": "\\.gadget$",
+    "label": "*.gadget"
+  },
+  {
+    "id": "GDP",
+    "value": "\\.gdp$",
+    "label": "*.gdp"
+  },
+  {
+    "id": "GEM",
+    "value": "\\.gem$",
+    "label": "*.gem"
+  },
+  {
+    "id": "GIF",
+    "value": "\\.gif$",
+    "label": "*.gif"
+  },
+  {
+    "id": "GITATTRIBUTES",
+    "value": "\\.gitattributes$",
+    "label": "*.gitattributes"
+  },
+  {
+    "id": "GITIGNORE",
+    "value": "\\.gitignore$",
+    "label": "*.gitignore"
+  },
+  {
+    "id": "GO",
+    "value": "\\.go$",
+    "label": "*.go"
+  },
+  {
+    "id": "GPG",
+    "value": "\\.gpg$",
+    "label": "*.gpg"
+  },
+  {
+    "id": "GPL",
+    "value": "\\.gpl$",
+    "label": "*.gpl"
+  },
+  {
+    "id": "GRADLE",
+    "value": "\\.gradle$",
+    "label": "*.gradle"
+  },
+  {
+    "id": "GZ",
+    "value": "\\.gz$",
+    "label": "*.gz"
+  },
+  {
+    "id": "H",
+    "value": "\\.h$",
+    "label": "*.h"
+  },
+  {
+    "id": "HANDLEBARS",
+    "value": "\\.handlebars$",
+    "label": "*.handlebars"
+  },
+  {
+    "id": "HBS",
+    "value": "\\.hbs$",
+    "label": "*.hbs"
+  },
+  {
+    "id": "HEIC",
+    "value": "\\.heic$",
+    "label": "*.heic"
+  },
+  {
+    "id": "HLP",
+    "value": "\\.hlp$",
+    "label": "*.hlp"
+  },
+  {
+    "id": "HS",
+    "value": "\\.hs$",
+    "label": "*.hs"
+  },
+  {
+    "id": "HSL",
+    "value": "\\.hsl$",
+    "label": "*.hsl"
+  },
+  {
+    "id": "HTM",
+    "value": "\\.htm$",
+    "label": "*.htm"
+  },
+  {
+    "id": "HTML",
+    "value": "\\.html$",
+    "label": "*.html"
+  },
+  {
+    "id": "IBOOKS",
+    "value": "\\.ibooks$",
+    "label": "*.ibooks"
+  },
+  {
+    "id": "ICNS",
+    "value": "\\.icns$",
+    "label": "*.icns"
+  },
+  {
+    "id": "ICO",
+    "value": "\\.ico$",
+    "label": "*.ico"
+  },
+  {
+    "id": "ICS",
+    "value": "\\.ics$",
+    "label": "*.ics"
+  },
+  {
+    "id": "IDX",
+    "value": "\\.idx$",
+    "label": "*.idx"
+  },
+  {
+    "id": "IFF",
+    "value": "\\.iff$",
+    "label": "*.iff"
+  },
+  {
+    "id": "IFO",
+    "value": "\\.ifo$",
+    "label": "*.ifo"
+  },
+  {
+    "id": "IMAGE",
+    "value": "\\.image$",
+    "label": "*.image"
+  },
+  {
+    "id": "IMG",
+    "value": "\\.img$",
+    "label": "*.img"
+  },
+  {
+    "id": "IML",
+    "value": "\\.iml$",
+    "label": "*.iml"
+  },
+  {
+    "id": "IN",
+    "value": "\\.in$",
+    "label": "*.in"
+  },
+  {
+    "id": "INC",
+    "value": "\\.inc$",
+    "label": "*.inc"
+  },
+  {
+    "id": "INDD",
+    "value": "\\.indd$",
+    "label": "*.indd"
+  },
+  {
+    "id": "INF",
+    "value": "\\.inf$",
+    "label": "*.inf"
+  },
+  {
+    "id": "INFO",
+    "value": "\\.info$",
+    "label": "*.info"
+  },
+  {
+    "id": "INI",
+    "value": "\\.ini$",
+    "label": "*.ini"
+  },
+  {
+    "id": "INV",
+    "value": "\\.inv$",
+    "label": "*.inv"
+  },
+  {
+    "id": "ISO",
+    "value": "\\.iso$",
+    "label": "*.iso"
+  },
+  {
+    "id": "J2",
+    "value": "\\.j2$",
+    "label": "*.j2"
+  },
+  {
+    "id": "JAR",
+    "value": "\\.jar$",
+    "label": "*.jar"
+  },
+  {
+    "id": "JAR_ZIP",
+    "value": "\\.jar$|\\.zip$",
+    "label": "*.jar, *.zip"
+  },
+  {
+    "id": "JAVA",
+    "value": "\\.java$",
+    "label": "*.java"
+  },
+  {
+    "id": "JPE",
+    "value": "\\.jpe$",
+    "label": "*.jpe"
+  },
+  {
+    "id": "JPG",
+    "value": "\\.jpg$|\\.jpeg$",
+    "label": "*.jpg, *jpeg"
+  },
+  {
+    "id": "JS",
+    "value": "\\.js$",
+    "label": "*.js"
+  },
+  {
+    "id": "JSON",
+    "value": "\\.json$",
+    "label": "*.json"
+  },
+  {
+    "id": "JSP",
+    "value": "\\.jsp$",
+    "label": "*.jsp"
+  },
+  {
+    "id": "JSX",
+    "value": "\\.jsx$",
+    "label": "*.jsx"
+  },
+  {
+    "id": "KETTLE_FILES",
+    "value": "\\.kjb$|\\.ktr$",
+    "label": "Kettle Files"
+  },
+  {
+    "id": "KETTLE_JOB",
+    "value": "\\.kjb$",
+    "label": "*.kjb"
+  },
+  {
+    "id": "KETTLE_TRANS",
+    "value": "\\.ktr$",
+    "label": "*.ktr"
+  },
+  {
+    "id": "KEY",
+    "value": "\\.key$",
+    "label": "*.key"
+  },
+  {
+    "id": "KF8",
+    "value": "\\.kf8$",
+    "label": "*.kf8"
+  },
+  {
+    "id": "KJB",
+    "value": "\\.kjb$",
+    "label": "*.kjb"
+  },
+  {
+    "id": "KMK",
+    "value": "\\.kmk$",
+    "label": "*.kmk"
+  },
+  {
+    "id": "KSH",
+    "value": "\\.ksh$",
+    "label": "*.ksh"
+  },
+  {
+    "id": "KT",
+    "value": "\\.kt$",
+    "label": "*.kt"
+  },
+  {
+    "id": "KTR",
+    "value": "\\.ktr$",
+    "label": "*.ktr"
+  },
+  {
+    "id": "KTS",
+    "value": "\\.kts$",
+    "label": "*.kts"
+  },
+  {
+    "id": "KUP",
+    "value": "\\.kup$",
+    "label": "*.kup"
+  },
+  {
+    "id": "LESS",
+    "value": "\\.less$",
+    "label": "*.less"
+  },
+  {
+    "id": "LEX",
+    "value": "\\.lex$",
+    "label": "*.lex"
+  },
+  {
+    "id": "LICX",
+    "value": "\\.licx$",
+    "label": "*.licx"
+  },
+  {
+    "id": "LISP",
+    "value": "\\.lisp$",
+    "label": "*.lisp"
+  },
+  {
+    "id": "LIT",
+    "value": "\\.lit$",
+    "label": "*.lit"
+  },
+  {
+    "id": "LNK",
+    "value": "\\.lnk$",
+    "label": "*.lnk"
+  },
+  {
+    "id": "LOCK",
+    "value": "\\.lock$",
+    "label": "*.lock"
+  },
+  {
+    "id": "LOG",
+    "value": "\\.log$",
+    "label": "*.log"
+  },
+  {
+    "id": "LUA",
+    "value": "\\.lua$",
+    "label": "*.lua"
+  },
+  {
+    "id": "M",
+    "value": "\\.m$",
+    "label": "*.m"
+  },
+  {
+    "id": "M2V",
+    "value": "\\.m2v$",
+    "label": "*.m2v"
+  },
+  {
+    "id": "M3U",
+    "value": "\\.m3u$",
+    "label": "*.m3u"
+  },
+  {
+    "id": "M3U8",
+    "value": "\\.m3u8$",
+    "label": "*.m3u8"
+  },
+  {
+    "id": "M4",
+    "value": "\\.m4$",
+    "label": "*.m4"
+  },
+  {
+    "id": "M4A",
+    "value": "\\.m4a$",
+    "label": "*.m4a"
+  },
+  {
+    "id": "M4R",
+    "value": "\\.m4r$",
+    "label": "*.m4r"
+  },
+  {
+    "id": "M4V",
+    "value": "\\.m4v$",
+    "label": "*.m4v"
+  },
+  {
+    "id": "MAP",
+    "value": "\\.map$",
+    "label": "*.map"
+  },
+  {
+    "id": "MASTER",
+    "value": "\\.master$",
+    "label": "*.master"
+  },
+  {
+    "id": "MC",
+    "value": "\\.mc$",
+    "label": "*.mc"
+  },
+  {
+    "id": "MD",
+    "value": "\\.md$",
+    "label": "*.md"
+  },
+  {
+    "id": "MDB",
+    "value": "\\.mdb$",
+    "label": "*.mdb"
+  },
+  {
+    "id": "MDF",
+    "value": "\\.mdf$",
+    "label": "*.mdf"
+  },
+  {
+    "id": "ME",
+    "value": "\\.me$",
+    "label": "*.me"
+  },
+  {
+    "id": "MI",
+    "value": "\\.mi$",
+    "label": "*.mi"
+  },
+  {
+    "id": "MID",
+    "value": "\\.mid$",
+    "label": "*.mid"
+  },
+  {
+    "id": "MIDI",
+    "value": "\\.midi$",
+    "label": "*.midi"
+  },
+  {
+    "id": "MK",
+    "value": "\\.mk$",
+    "label": "*.mk"
+  },
+  {
+    "id": "MKV",
+    "value": "\\.mkv$",
+    "label": "*.mkv"
+  },
+  {
+    "id": "MM",
+    "value": "\\.mm$",
+    "label": "*.mm"
+  },
+  {
+    "id": "MNG",
+    "value": "\\.mng$",
+    "label": "*.mng"
+  },
+  {
+    "id": "MO",
+    "value": "\\.mo$",
+    "label": "*.mo"
+  },
+  {
+    "id": "MOBI",
+    "value": "\\.mobi$",
+    "label": "*.mobi"
+  },
+  {
+    "id": "MOD",
+    "value": "\\.mod$",
+    "label": "*.mod"
+  },
+  {
+    "id": "MOV",
+    "value": "\\.mov$",
+    "label": "*.mov"
+  },
+  {
+    "id": "MP2",
+    "value": "\\.mp2$",
+    "label": "*.mp2"
+  },
+  {
+    "id": "MP3",
+    "value": "\\.mp3$",
+    "label": "*.mp3"
+  },
+  {
+    "id": "MP4",
+    "value": "\\.mp4$",
+    "label": "*.mp4"
+  },
+  {
+    "id": "MPA",
+    "value": "\\.mpa$",
+    "label": "*.mpa"
+  },
+  {
+    "id": "MPD",
+    "value": "\\.mpd$",
+    "label": "*.mpd"
+  },
+  {
+    "id": "MPE",
+    "value": "\\.mpe$",
+    "label": "*.mpe"
+  },
+  {
+    "id": "MPEG",
+    "value": "\\.mpeg$",
+    "label": "*.mpeg"
+  },
+  {
+    "id": "MPG",
+    "value": "\\.mpg$",
+    "label": "*.mpg"
+  },
+  {
+    "id": "MPGA",
+    "value": "\\.mpga$",
+    "label": "*.mpga"
+  },
+  {
+    "id": "MPP",
+    "value": "\\.mpp$",
+    "label": "*.mpp"
+  },
+  {
+    "id": "MPT",
+    "value": "\\.mpt$",
+    "label": "*.mpt"
+  },
+  {
+    "id": "MSG",
+    "value": "\\.msg$",
+    "label": "*.msg"
+  },
+  {
+    "id": "MSI",
+    "value": "\\.msi$",
+    "label": "*.msi"
+  },
+  {
+    "id": "MSU",
+    "value": "\\.msu$",
+    "label": "*.msu"
+  },
+  {
+    "id": "NEF",
+    "value": "\\.nef$",
+    "label": "*.nef"
+  },
+  {
+    "id": "NES",
+    "value": "\\.nes$",
+    "label": "*.nes"
+  },
+  {
+    "id": "NFO",
+    "value": "\\.nfo$",
+    "label": "*.nfo"
+  },
+  {
+    "id": "NIX",
+    "value": "\\.nix$",
+    "label": "*.nix"
+  },
+  {
+    "id": "NPMIGNORE",
+    "value": "\\.npmignore$",
+    "label": "*.npmignore"
+  },
+  {
+    "id": "OCX",
+    "value": "\\.ocx$",
+    "label": "*.ocx"
+  },
+  {
+    "id": "ODB",
+    "value": "\\.odb$",
+    "label": "*.odb"
+  },
+  {
+    "id": "ODS",
+    "value": "\\.ods$",
+    "label": "*.ods"
+  },
+  {
+    "id": "ODT",
+    "value": "\\.odt$",
+    "label": "*.odt"
+  },
+  {
+    "id": "OGG",
+    "value": "\\.ogg$",
+    "label": "*.ogg"
+  },
+  {
+    "id": "OGV",
+    "value": "\\.ogv$",
+    "label": "*.ogv"
+  },
+  {
+    "id": "OST",
+    "value": "\\.ost$",
+    "label": "*.ost"
+  },
+  {
+    "id": "OTF",
+    "value": "\\.otf$",
+    "label": "*.otf"
+  },
+  {
+    "id": "OTT",
+    "value": "\\.ott$",
+    "label": "*.ott"
+  },
+  {
+    "id": "OVA",
+    "value": "\\.ova$",
+    "label": "*.ova"
+  },
+  {
+    "id": "OVF",
+    "value": "\\.ovf$",
+    "label": "*.ovf"
+  },
+  {
+    "id": "P12",
+    "value": "\\.p12$",
+    "label": "*.p12"
+  },
+  {
+    "id": "P7B",
+    "value": "\\.p7b$",
+    "label": "*.p7b"
+  },
+  {
+    "id": "PAGES",
+    "value": "\\.pages$",
+    "label": "*.pages"
+  },
+  {
+    "id": "PART",
+    "value": "\\.part$",
+    "label": "*.part"
+  },
+  {
+    "id": "PCD",
+    "value": "\\.pcd$",
+    "label": "*.pcd"
+  },
+  {
+    "id": "PDB",
+    "value": "\\.pdb$",
+    "label": "*.pdb"
+  },
+  {
+    "id": "PDF",
+    "value": "\\.pdf$",
+    "label": "*.pdf"
+  },
+  {
+    "id": "PEM",
+    "value": "\\.pem$",
+    "label": "*.pem"
+  },
+  {
+    "id": "PFX",
+    "value": "\\.pfx$",
+    "label": "*.pfx"
+  },
+  {
+    "id": "PGP",
+    "value": "\\.pgp$",
+    "label": "*.pgp"
+  },
+  {
+    "id": "PH",
+    "value": "\\.ph$",
+    "label": "*.ph"
+  },
+  {
+    "id": "PHAR",
+    "value": "\\.phar$",
+    "label": "*.phar"
+  },
+  {
+    "id": "PHP",
+    "value": "\\.php$",
+    "label": "*.php"
+  },
+  {
+    "id": "PID",
+    "value": "\\.pid$",
+    "label": "*.pid"
+  },
+  {
+    "id": "PKG",
+    "value": "\\.pkg$",
+    "label": "*.pkg"
+  },
+  {
+    "id": "PL",
+    "value": "\\.pl$",
+    "label": "*.pl"
+  },
+  {
+    "id": "PLIST",
+    "value": "\\.plist$",
+    "label": "*.plist"
+  },
+  {
+    "id": "PM",
+    "value": "\\.pm$",
+    "label": "*.pm"
+  },
+  {
+    "id": "PNG",
+    "value": "\\.png$",
+    "label": "*.png"
+  },
+  {
+    "id": "PO",
+    "value": "\\.po$",
+    "label": "*.po"
+  },
+  {
+    "id": "POM",
+    "value": "\\.pom$",
+    "label": "*.pom"
+  },
+  {
+    "id": "POT",
+    "value": "\\.pot$",
+    "label": "*.pot"
+  },
+  {
+    "id": "POTX",
+    "value": "\\.potx$",
+    "label": "*.potx"
+  },
+  {
+    "id": "PPS",
+    "value": "\\.pps$",
+    "label": "*.pps"
+  },
+  {
+    "id": "PPSX",
+    "value": "\\.ppsx$",
+    "label": "*.ppsx"
+  },
+  {
+    "id": "PPT",
+    "value": "\\.ppt$",
+    "label": "*.ppt"
+  },
+  {
+    "id": "PPTM",
+    "value": "\\.pptm$",
+    "label": "*.pptm"
+  },
+  {
+    "id": "PPTX",
+    "value": "\\.pptx$",
+    "label": "*.pptx"
+  },
+  {
+    "id": "PROP",
+    "value": "\\.prop$",
+    "label": "*.prop"
+  },
+  {
+    "id": "PS",
+    "value": "\\.ps$",
+    "label": "*.ps"
+  },
+  {
+    "id": "PS1",
+    "value": "\\.ps1$",
+    "label": "*.ps1"
+  },
+  {
+    "id": "PSD",
+    "value": "\\.psd$",
+    "label": "*.psd"
+  },
+  {
+    "id": "PSP",
+    "value": "\\.psp$",
+    "label": "*.psp"
+  },
+  {
+    "id": "PST",
+    "value": "\\.pst$",
+    "label": "*.pst"
+  },
+  {
+    "id": "PUB",
+    "value": "\\.pub$",
+    "label": "*.pub"
+  },
+  {
+    "id": "PY",
+    "value": "\\.py$",
+    "label": "*.py"
+  },
+  {
+    "id": "PYC",
+    "value": "\\.pyc$",
+    "label": "*.pyc"
+  },
+  {
+    "id": "QT",
+    "value": "\\.qt$",
+    "label": "*.qt"
+  },
+  {
+    "id": "RA",
+    "value": "\\.ra$",
+    "label": "*.ra"
+  },
+  {
+    "id": "RAM",
+    "value": "\\.ram$",
+    "label": "*.ram"
+  },
+  {
+    "id": "RAR",
+    "value": "\\.rar$",
+    "label": "*.rar"
+  },
+  {
+    "id": "RAW",
+    "value": "\\.raw$",
+    "label": "*.raw"
+  },
+  {
+    "id": "RB",
+    "value": "\\.rb$",
+    "label": "*.rb"
+  },
+  {
+    "id": "RDF",
+    "value": "\\.rdf$",
+    "label": "*.rdf"
+  },
+  {
+    "id": "RDL",
+    "value": "\\.rdl$",
+    "label": "*.rdl"
+  },
+  {
+    "id": "REG",
+    "value": "\\.reg$",
+    "label": "*.reg"
+  },
+  {
+    "id": "RESX",
+    "value": "\\.resx$",
+    "label": "*.resx"
+  },
+  {
+    "id": "RETRY",
+    "value": "\\.retry$",
+    "label": "*.retry"
+  },
+  {
+    "id": "RM",
+    "value": "\\.rm$",
+    "label": "*.rm"
+  },
+  {
+    "id": "ROM",
+    "value": "\\.rom$",
+    "label": "*.rom"
+  },
+  {
+    "id": "RPM",
+    "value": "\\.rpm$",
+    "label": "*.rpm"
+  },
+  {
+    "id": "RPT",
+    "value": "\\.rpt$",
+    "label": "*.rpt"
+  },
+  {
+    "id": "RSA",
+    "value": "\\.rsa$",
+    "label": "*.rsa"
+  },
+  {
+    "id": "RSS",
+    "value": "\\.rss$",
+    "label": "*.rss"
+  },
+  {
+    "id": "RST",
+    "value": "\\.rst$",
+    "label": "*.rst"
+  },
+  {
+    "id": "RTF",
+    "value": "\\.rtf$",
+    "label": "*.rtf"
+  },
+  {
+    "id": "RU",
+    "value": "\\.ru$",
+    "label": "*.ru"
+  },
+  {
+    "id": "RUB",
+    "value": "\\.rub$",
+    "label": "*.rub"
+  },
+  {
+    "id": "SASS",
+    "value": "\\.sass$",
+    "label": "*.sass"
+  },
+  {
+    "id": "SCSS",
+    "value": "\\.scss$",
+    "label": "*.scss"
+  },
+  {
+    "id": "SDF",
+    "value": "\\.sdf$",
+    "label": "*.sdf"
+  },
+  {
+    "id": "SED",
+    "value": "\\.sed$",
+    "label": "*.sed"
+  },
+  {
+    "id": "SH",
+    "value": "\\.sh$",
+    "label": "*.sh"
+  },
+  {
+    "id": "SHP",
+    "value": "\\.shp$",
+    "label": "*.shp"
+  },
+  {
+    "id": "SIT",
+    "value": "\\.sit$",
+    "label": "*.sit"
+  },
+  {
+    "id": "SITEMAP",
+    "value": "\\.sitemap$",
+    "label": "*.sitemap"
+  },
+  {
+    "id": "SKIN",
+    "value": "\\.skin$",
+    "label": "*.skin"
+  },
+  {
+    "id": "SLDM",
+    "value": "\\.sldm$",
+    "label": "*.sldm"
+  },
+  {
+    "id": "SLDX",
+    "value": "\\.sldx$",
+    "label": "*.sldx"
+  },
+  {
+    "id": "SLN",
+    "value": "\\.sln$",
+    "label": "*.sln"
+  },
+  {
+    "id": "SOL",
+    "value": "\\.sol$",
+    "label": "*.sol"
+  },
+  {
+    "id": "SPHINX",
+    "value": "\\.sphinx$",
+    "label": "*.sphinx"
+  },
+  {
+    "id": "SQL",
+    "value": "\\.sql$",
+    "label": "*.sql"
+  },
+  {
+    "id": "SQLITE",
+    "value": "\\.sqlite$",
+    "label": "*.sqlite"
+  },
+  {
+    "id": "STEP",
+    "value": "\\.step$",
+    "label": "*.step"
+  },
+  {
+    "id": "STL",
+    "value": "\\.stl$",
+    "label": "*.stl"
+  },
+  {
+    "id": "SVG",
+    "value": "\\.svg$",
+    "label": "*.svg"
+  },
+  {
+    "id": "SWD",
+    "value": "\\.swd$",
+    "label": "*.swd"
+  },
+  {
+    "id": "SWF",
+    "value": "\\.swf$",
+    "label": "*.swf"
+  },
+  {
+    "id": "SWIFT",
+    "value": "\\.swift$",
+    "label": "*.swift"
+  },
+  {
+    "id": "SWP",
+    "value": "\\.swp$",
+    "label": "*.swp"
+  },
+  {
+    "id": "SYS",
+    "value": "\\.sys$",
+    "label": "*.sys"
+  },
+  {
+    "id": "TAR",
+    "value": "\\.tar$",
+    "label": "*.tar"
+  },
+  {
+    "id": "TAX",
+    "value": "\\.tax$",
+    "label": "*.tax"
+  },
+  {
+    "id": "TCSH",
+    "value": "\\.tcsh$",
+    "label": "*.tcsh"
+  },
+  {
+    "id": "TEX",
+    "value": "\\.tex$",
+    "label": "*.tex"
+  },
+  {
+    "id": "TFIGNORE",
+    "value": "\\.tfignore$",
+    "label": "*.tfignore"
+  },
+  {
+    "id": "TGA",
+    "value": "\\.tga$",
+    "label": "*.tga"
+  },
+  {
+    "id": "TGZ",
+    "value": "\\.tgz$",
+    "label": "*.tgz"
+  },
+  {
+    "id": "TIFF",
+    "value": "\\.tiff$|\\.tif$",
+    "label": "*.tiff, *.tif"
+  },
+  {
+    "id": "TMP",
+    "value": "\\.tmp$",
+    "label": "*.tmp"
+  },
+  {
+    "id": "TMX",
+    "value": "\\.tmx$",
+    "label": "*.tmx"
+  },
+  {
+    "id": "TORRENT",
+    "value": "\\.torrent$",
+    "label": "*.torrent"
+  },
+  {
+    "id": "TPL",
+    "value": "\\.tpl$",
+    "label": "*.tpl"
+  },
+  {
+    "id": "TS",
+    "value": "\\.ts$",
+    "label": "*.ts"
+  },
+  {
+    "id": "TSV",
+    "value": "\\.tsv$",
+    "label": "*.tsv"
+  },
+  {
+    "id": "TTF",
+    "value": "\\.ttf$",
+    "label": "*.ttf"
+  },
+  {
+    "id": "TWIG",
+    "value": "\\.twig$",
+    "label": "*.twig"
+  },
+  {
+    "id": "TXT",
+    "value": "\\.txt$",
+    "label": "*.txt"
+  },
+  {
+    "id": "UDF",
+    "value": "\\.udf$",
+    "label": "*.udf"
+  },
+  {
+    "id": "VB",
+    "value": "\\.vb$",
+    "label": "*.vb"
+  },
+  {
+    "id": "VBPROJ",
+    "value": "\\.vbproj$",
+    "label": "*.vbproj"
+  },
+  {
+    "id": "VBS",
+    "value": "\\.vbs$",
+    "label": "*.vbs"
+  },
+  {
+    "id": "VCD",
+    "value": "\\.vcd$",
+    "label": "*.vcd"
+  },
+  {
+    "id": "VCF",
+    "value": "\\.vcf$",
+    "label": "*.vcf"
+  },
+  {
+    "id": "VCS",
+    "value": "\\.vcs$",
+    "label": "*.vcs"
+  },
+  {
+    "id": "VDI",
+    "value": "\\.vdi$",
+    "label": "*.vdi"
+  },
+  {
+    "id": "VDX",
+    "value": "\\.vdx$",
+    "label": "*.vdx"
+  },
+  {
+    "id": "VMDK",
+    "value": "\\.vmdk$",
+    "label": "*.vmdk"
+  },
+  {
+    "id": "VOB",
+    "value": "\\.vob$",
+    "label": "*.vob"
+  },
+  {
+    "id": "VOX",
+    "value": "\\.vox$",
+    "label": "*.vox"
+  },
+  {
+    "id": "VSCODEIGNORE",
+    "value": "\\.vscodeignore$",
+    "label": "*.vscodeignore"
+  },
+  {
+    "id": "VSD",
+    "value": "\\.vsd$",
+    "label": "*.vsd"
+  },
+  {
+    "id": "VSS",
+    "value": "\\.vss$",
+    "label": "*.vss"
+  },
+  {
+    "id": "VST",
+    "value": "\\.vst$",
+    "label": "*.vst"
+  },
+  {
+    "id": "VSX",
+    "value": "\\.vsx$",
+    "label": "*.vsx"
+  },
+  {
+    "id": "VTX",
+    "value": "\\.vtx$",
+    "label": "*.vtx"
+  },
+  {
+    "id": "WAR",
+    "value": "\\.war$",
+    "label": "*.war"
+  },
+  {
+    "id": "WAV",
+    "value": "\\.wav$",
+    "label": "*.wav"
+  },
+  {
+    "id": "WBK",
+    "value": "\\.wbk$",
+    "label": "*.wbk"
+  },
+  {
+    "id": "WEBINFO",
+    "value": "\\.webinfo$",
+    "label": "*.webinfo"
+  },
+  {
+    "id": "WEBM",
+    "value": "\\.webm$",
+    "label": "*.webm"
+  },
+  {
+    "id": "WEBP",
+    "value": "\\.webp$",
+    "label": "*.webp"
+  },
+  {
+    "id": "WMA",
+    "value": "\\.wma$",
+    "label": "*.wma"
+  },
+  {
+    "id": "WMF",
+    "value": "\\.wmf$",
+    "label": "*.wmf"
+  },
+  {
+    "id": "WMV",
+    "value": "\\.wmv$",
+    "label": "*.wmv"
+  },
+  {
+    "id": "WOFF",
+    "value": "\\.woff$",
+    "label": "*.woff"
+  },
+  {
+    "id": "WOFF2",
+    "value": "\\.woff2$",
+    "label": "*.woff2"
+  },
+  {
+    "id": "WPS",
+    "value": "\\.wps$",
+    "label": "*.wps"
+  },
+  {
+    "id": "WSF",
+    "value": "\\.wsf$",
+    "label": "*.wsf"
+  },
+  {
+    "id": "XAML",
+    "value": "\\.xaml$",
+    "label": "*.xaml"
+  },
+  {
+    "id": "XCF",
+    "value": "\\.xcf$",
+    "label": "*.xcf"
+  },
+  {
+    "id": "XFL",
+    "value": "\\.xfl$",
+    "label": "*.xfl"
+  },
+  {
+    "id": "XLM",
+    "value": "\\.xlm$",
+    "label": "*.xlm"
+  },
+  {
+    "id": "XLS",
+    "value": "\\.xls$",
+    "label": "*.xls"
+  },
+  {
+    "id": "XLSM",
+    "value": "\\.xlsm$",
+    "label": "*.xlsm"
+  },
+  {
+    "id": "XLSX",
+    "value": "\\.xlsx$",
+    "label": "*.xlsx"
+  },
+  {
+    "id": "XLT",
+    "value": "\\.xlt$",
+    "label": "*.xlt"
+  },
+  {
+    "id": "XLTM",
+    "value": "\\.xltm$",
+    "label": "*.xltm"
+  },
+  {
+    "id": "XLTX",
+    "value": "\\.xltx$",
+    "label": "*.xltx"
+  },
+  {
+    "id": "XML",
+    "value": "\\.xml$",
+    "label": "*.xml"
+  },
+  {
+    "id": "XPI",
+    "value": "\\.xpi$",
+    "label": "*.xpi"
+  },
+  {
+    "id": "XPS",
+    "value": "\\.xps$",
+    "label": "*.xps"
+  },
+  {
+    "id": "XRB",
+    "value": "\\.xrb$",
+    "label": "*.xrb"
+  },
+  {
+    "id": "XSD",
+    "value": "\\.xsd$",
+    "label": "*.xsd"
+  },
+  {
+    "id": "XSL",
+    "value": "\\.xsl$",
+    "label": "*.xsl"
+  },
+  {
+    "id": "XSPF",
+    "value": "\\.xspf$",
+    "label": "*.xspf"
+  },
+  {
+    "id": "XZ",
+    "value": "\\.xz$",
+    "label": "*.xz"
+  },
+  {
+    "id": "YAML",
+    "value": "\\.yml$|\\.yaml$",
+    "label": "*.yml, *.yaml"
+  },
+  {
+    "id": "Z",
+    "value": "\\.z$",
+    "label": "*.z"
+  },
+  {
+    "id": "ZIP",
+    "value": "\\.zip$",
+    "label": "*.zip"
+  },
+  {
+    "id": "ZSH",
+    "value": "\\.zsh$",
+    "label": "*.zsh"
+  }
+]
