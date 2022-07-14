@@ -344,9 +344,9 @@ jobGroups:
 #       versionProperty :  layout-editor.version
 
   2400:
-    - jobID            :  big-data-mongodb-plugin
-      scmUrl           :  https://github.com/pentaho/pentaho-mongodb-plugin.git
-      versionProperty  :  pentaho-mongodb-plugin.version
+     - jobID           :  big-data-mongodb-plugin
+       scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
+       versionProperty :  pentaho-mongodb-plugin.version
 
      - jobID           :  pdi-core-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
