@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,9 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
+
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -39,6 +42,7 @@ import static org.pentaho.di.core.logging.LoggingObjectType.TRANS;
 import static org.pentaho.di.core.logging.LoggingObjectType.STEP;
 import static org.pentaho.di.core.logging.LoggingObjectType.JOB;
 import static org.pentaho.di.core.logging.LoggingObjectType.JOBENTRY;
+import static org.pentaho.di.core.logging.LoggingObjectType.GENERAL;
 
 public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
 
@@ -65,7 +69,7 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
       LogMessage message = (LogMessage) messageObject;
       LoggingObjectInterface loggingObject = logObjProvider.apply( message.getLogChannelId() );
 
-      if ( loggingObject == null ) {
+      if ( loggingObject == null || ( loggingObject.getObjectType() == GENERAL && "Y".equals( EnvUtil.getSystemProperty( Const.KETTLE_LOG_GENERAL_OBJECTS_TO_DI_LOGGER ) ) ) ) {
         // this can happen if logObject has been discarded while log events are still in flight.
         logToLogger( diLogger, message.getLevel(),
           message.getSubject() + " " + message.getMessage() );
