@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,30 +19,18 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package org.pentaho.di.connections.vfs;
 
-package org.pentaho.di.connections;
+public interface VFSDetailsComposite {
+  Object open();
 
-import java.util.List;
+  void close();
 
-/**
- * Created by bmorrise on 2/12/19.
- */
-public interface ConnectionProvider<T extends ConnectionDetails> {
-  String getName();
-
-  String getKey();
-
-  Class<T> getClassType();
-
-  List<String> getNames();
-
-  List<T> getConnectionDetails();
-
-  boolean test( T connectionDetails );
-
-  T prepare( T connectionDetails );
-
-  default String getFriendlyName( ) {
-    return "unknown";
+  /**
+   * Validates the fields that the DetailsComposite if responsible for.
+   * @return null if successfully validates or an error message if it does not.
+   */
+  default String validate() {
+    return null;
   }
 }
