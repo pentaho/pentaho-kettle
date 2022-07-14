@@ -265,10 +265,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
        versionProperty :  pentaho-splunk-plugin.version
 
-     - jobID           :  big-data-mongodb-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
-       versionProperty :  pentaho-mongodb-plugin.version
-
      - jobID           :  big-data-cassandra-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-cassandra-plugin.git
        versionProperty :  pentaho-cassandra-plugin.version
@@ -348,6 +344,10 @@ jobGroups:
 #       versionProperty :  layout-editor.version
 
   2400:
+    - jobID            :  big-data-mongodb-plugin
+      scmUrl           :  https://github.com/pentaho/pentaho-mongodb-plugin.git
+      versionProperty  :  pentaho-mongodb-plugin.version
+
      - jobID           :  pdi-core-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
        directives      :  += -DskipDefault -P highdeps
