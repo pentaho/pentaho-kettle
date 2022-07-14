@@ -34,7 +34,7 @@
              interface="org.pentaho.osgi.metastore.locator.api.MetastoreLocator"
              availability="optional"/>
 
-  <bean id="ConnectionDelegate" scope="singleton" class="org.pentaho.di.connections.ui.dialog.ConnectionDelegate" />
+  <bean id="ConnectionDelegate" scope="singleton" class="org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate" />
 
   <bean id="VFSConnectionTreeDelegateExtension" scope="singleton"
         class="org.pentaho.di.connections.ui.tree.ConnectionTreeDelegateExtension">

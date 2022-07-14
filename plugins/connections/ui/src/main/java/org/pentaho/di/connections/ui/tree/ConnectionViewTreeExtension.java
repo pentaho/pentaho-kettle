@@ -22,7 +22,7 @@
 
 package org.pentaho.di.connections.ui.tree;
 
-import org.pentaho.di.connections.ui.dialog.ConnectionDelegate;
+import org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
