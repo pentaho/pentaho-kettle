@@ -69,7 +69,7 @@ import org.pentaho.di.core.annotations.Step;
         description = "BaseStep.TypeTooltipDesc.OraBulkLoader",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
         image = "BLKO.svg",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/Oracle+Bulk+Loader",
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/spaces/EAI/pages/371558251/Oracle+Bulk+Loader",
         i18nPackageName = "org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta" )
 @InjectionSupported( localizationPrefix = "OraBulkLoader.Injection.", groups = { "FIELDS", "DATABASE_FIELDS" } )
 public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,

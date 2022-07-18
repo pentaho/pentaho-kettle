@@ -62,7 +62,7 @@ import org.pentaho.di.core.annotations.Step;
         description = "BaseStep.TypeTooltipDesc.RssOutput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
         image = "RRO.svg",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/Rss",
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/spaces/EAI/pages/388311425/RSS+Output",
         i18nPackageName = "org.pentaho.di.trans.steps.rssoutput" )
 
 public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {

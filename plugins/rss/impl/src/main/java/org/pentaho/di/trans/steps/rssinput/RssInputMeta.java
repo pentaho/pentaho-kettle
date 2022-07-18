@@ -56,7 +56,7 @@ import org.pentaho.di.core.annotations.Step;
         description = "BaseStep.TypeTooltipDesc.RssInput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
         image = "RIR.svg",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/Rss",
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/spaces/EAI/pages/376443633/RSS+Input",
         i18nPackageName = "org.pentaho.di.trans.steps.rssinput" )
 public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!

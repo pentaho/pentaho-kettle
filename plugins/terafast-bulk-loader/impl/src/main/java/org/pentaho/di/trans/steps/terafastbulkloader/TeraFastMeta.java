@@ -57,7 +57,7 @@ import org.pentaho.di.core.annotations.Step;
         description = "BaseStep.TypeTooltipDesc.TeraFast",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
         image = "BLKTD.svg",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/Teradata+Fastload+Bulk+Loader",
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/spaces/EAI/pages/386798585/Teradata+Fastload+Bulk+Loader",
         i18nPackageName = "org.pentaho.di.trans.steps.terafastbulkloader.TeraFastMeta" )
 public class TeraFastMeta extends AbstractStepMeta {
 
