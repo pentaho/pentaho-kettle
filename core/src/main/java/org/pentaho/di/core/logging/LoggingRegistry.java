@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -63,7 +62,7 @@ public class LoggingRegistry {
   /** Registry's FileWriterBuffer Map containing objects keyed by object's LogChannelID **/
   private Map<String, LogChannelFileWriterBuffer> fileWriterBuffers;
 
-  /** Map containing a list of LogChannelIds that belong toa parent Object. The key is the parent's LogChannelID **/
+  /** Map containing a list of LogChannelIds that belong to a parent Object. The key is the parent's LogChannelID **/
   private Map<String, List<String>> childrenMap;
 
   /** Registry's PurgeQueue where Registry will remove entries based on FIFO performed on PurgeTimer Task **/
@@ -87,8 +86,6 @@ public class LoggingRegistry {
   private int purgeTimerCount;
   /** Stat that counts the amount of Objects removed from registry map.**/
   private int purgedObjectCount;
-  /** Stat that counts how many objects are found instead of added to the map.**/
-  private int foundCounter;
 
   /** Sync object **/
   private final Object syncObject = new Object();
@@ -102,7 +99,6 @@ public class LoggingRegistry {
     this.lastModificationTime = new Date();
     this.purgeTimerCount = 0;
     this.purgedObjectCount = 0;
-    this.foundCounter = 0;
 
     updateFromProperties();
     installPurgeTimer();
@@ -125,7 +121,7 @@ public class LoggingRegistry {
 
   /**
    * Register Method for objects that implement the LoggingObjectInterface which adds them to the LoggingRegistry,
-   * Includes a flag to identify loggingObjects that should not be removed from the registry i.e. Signleton classes or
+   * Includes a flag to identify loggingObjects that should not be removed from the registry i.e. Singleton classes or
    * "General" that stick around the life of the application.
    *
    * @param object  the object to register.
@@ -141,7 +137,6 @@ public class LoggingRegistry {
     if ( found != null ) {
       String foundLogChannelId = determineExistingLoggingSource( loggingSource, found );
       if ( !foundLogChannelId.isEmpty() ) {
-        foundCounter++;
         return foundLogChannelId;
       }
     }
@@ -177,7 +172,7 @@ public class LoggingRegistry {
   }
 
   /**
-   * Finds a Existing LoggingObjectInterface in the registry using the LoggingObject's equals method.
+   * Finds an Existing LoggingObjectInterface in the registry using the LoggingObject's equals method.
    * @param loggingObject  the object to search for.
    * @return  the LoggingObjectInterface if found, null otherwise.
    */
@@ -231,7 +226,7 @@ public class LoggingRegistry {
   }
 
   /**
-   * @deprecated This is unsafe call and references to this method will be remove.
+   * @deprecated This is unsafe call and references to this method will be removed.
    */
   @Deprecated
   public Map<String, LoggingObjectInterface> getMap() {
@@ -250,7 +245,7 @@ public class LoggingRegistry {
   /**
    * Searches for a LogChannel and returns a list of children IDs.
    * @param parentLogChannelId  The ID of the parent to search for.
-   * @return  a list of LogChannelID's that are the children of the parent object.
+   * @return  a list of LogChannelID's that are the children of the parent object (parent also included on the list).
    */
   public List<String> getLogChannelChildren( String parentLogChannelId ) {
     if ( parentLogChannelId == null ) {
@@ -275,10 +270,7 @@ public class LoggingRegistry {
         return children;
       }
 
-      Iterator<String> kids = list.iterator();
-      while ( kids.hasNext() ) {
-        String logChannelId = kids.next();
-
+      for ( String logChannelId : list ) {
         // Add the children recursively
         getLogChannelChildren( children, logChannelId );
 
@@ -307,19 +299,19 @@ public class LoggingRegistry {
     for ( LoggingObjectInterface o : this.map.values() ) {
       if ( ( includeGeneral ) || ( !o.getObjectType().equals( LoggingObjectType.GENERAL ) ) ) {
         out.append( o.getContainerObjectId() );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getLogChannelId() );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getObjectType().name() );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getObjectName() );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getParent() != null ? o.getParent().getLogChannelId() : "-" );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getParent() != null ? o.getParent().getObjectType().name() : "-" );
-        out.append( "\t" );
+        out.append( '\t' );
         out.append( o.getParent() != null ? o.getParent().getObjectName() : "-" );
-        out.append( "\n" );
+        out.append( '\n' );
       }
     }
     return out.toString();
@@ -332,11 +324,16 @@ public class LoggingRegistry {
    */
   public void removeIncludingChildren( String logChannelId ) {
     synchronized ( this.syncObject ) {
+      // Collect all Log Channel IDs that are descendants of the given one
       List<String> children = getLogChannelChildren( logChannelId );
-      for ( String child : children ) {
-        this.map.remove( child );
-      }
-      this.map.remove( logChannelId );
+
+      // Remove from the Registry's Map
+      children.forEach( s -> this.map.remove( s ) );
+
+      // Remove from the Registry's PurgeQueue
+      this.registerPurgeQueue.removeIf( loi -> children.contains( loi.getLogChannelId() ) );
+
+      // Remove from the Registry Children's Map - well, technically this removes ALL orphans :-)
       removeOrphans();
     }
   }
@@ -444,8 +441,7 @@ public class LoggingRegistry {
    */
   public void removeLogChannelFileWriterBuffer( String id ) {
     synchronized ( this.syncObject ) {
-      Set<String> bufferIds = this.fileWriterBuffers.keySet();
-      for ( String bufferId : bufferIds ) {
+      for ( String bufferId : this.fileWriterBuffers.keySet() ) {
         if ( getLogChannelChildren( id ).contains( bufferId ) ) {
           this.fileWriterBuffers.remove( bufferId );
         }
@@ -465,8 +461,6 @@ public class LoggingRegistry {
 
       purgeTimerCount = 0;
       purgedObjectCount = 0;
-      foundCounter = 0;
-
 
       if ( purgeTimer != null ) {
         purgeTimer.cancel();
@@ -478,43 +472,51 @@ public class LoggingRegistry {
   }
 
   /**
-   * Method that performs the clean up the Registry on the PurgeTimerTasks.
+   * Method that performs the cleanup the Registry on the PurgeTimerTasks.
    */
   private void purgeRegistry() {
 
-    if ( ( maxSize > 0 ) && ( !registerPurgeQueue.isEmpty() )
-            && ( map.size() > maxSize ) ) {
+    if ( ( maxSize > 0 )
+            && ( ( map.size() > maxSize ) || ( registerPurgeQueue.size() > maxSize ) ) ) {
 
       synchronized ( syncObject ) {
-        int cutCount = (int) ( ( map.size() ) - ( maxSize - maxSize * .10 ) );
-        int cutCounter = 0;
-        int limitCounter = 0; // prevent locking loops
-
         Set<String> channelsNotToRemove = getLogChannelFileWriterBufferIds();
 
-        logDebug( String.format( "LoggingRegistry Stats:%n   CutCount= %d | channelsNotToRemoveSize= %d | MapSize= %d | PurgeQueueSize= %d ",
-          cutCount, channelsNotToRemove.size(), map.size(), registerPurgeQueue.size() ) );
+        logDebug( String.format( "LoggingRegistry Stats:%n   MapSize= %d | PurgeQueueSize= %d | ChannelsNotToRemoveSize= %d | MaxSize= %d",
+          map.size(), registerPurgeQueue.size(), channelsNotToRemove.size(), maxSize ) );
 
-        if ( channelsNotToRemove.size() >= (int) ( maxSize * .90 ) ) {
-          // No point to attempt purge channels there's more "active" channels that can be safely removed.
+        // Let's start by cleaning the Registry's PurgeQueue by removing already purged objects
+        // If this is not done, these objects will not be able to be garbage collected!
+        registerPurgeQueue.removeIf( it -> !map.containsKey( it.getLogChannelId() ) );
+
+        // The goal is to drop the size to 90% of the maximum configured or, if higher, 110% of the currently
+        // "active" channels (the extra 10% is to not completely eradicate all other objects)
+        int cutCount = (int) ( map.size() - Math.max( 0.9 * maxSize, 1.1 * channelsNotToRemove.size() ) );
+
+        if ( cutCount <= 0 ) {
+          // No point to attempt purge channels as there are more "active" channels that can be safely removed.
           logBasic( "Logging Registry is unable to purge LogChannels since there are too many active channels. "
             + "We recommend increasing the LoggingRegistry Size "
             + "(KETTLE_MAX_LOGGING_REGISTRY_SIZE) in kettle.properties." );
         } else {
+          int limitSize = registerPurgeQueue.size(); // Never attempt to iterate more than the Size of the queue.
+          int limitCounter = 0; // prevent locking loops
+          int cutCounter = 0;
 
           // Avoid attempting to remove channels that can not be removed.
-          cutCount = cutCount - channelsNotToRemove.size();
-          int limitSize = registerPurgeQueue.size(); // Never attempt to iterator longer than the Size of the queue.
+          cutCount -= channelsNotToRemove.size();
 
           // Attempt to purge LogChannels based on CutCount. Limit Size prevents looping longer than the size of the queue.
           do {
-
             if ( purgeObject( channelsNotToRemove ) ) {
               cutCounter++;
             }
             limitCounter++;
 
           } while ( !registerPurgeQueue.isEmpty() && cutCounter < cutCount && limitCounter < limitSize );
+
+          logDebug( String.format( "LoggingRegistry Stats:%n   MapSize= %d | PurgeQueueSize= %d | CutCounter= %d | limitCounter= %d",
+            map.size(), registerPurgeQueue.size(), cutCounter, limitCounter ) );
         }
 
         removeOrphans();
@@ -522,8 +524,8 @@ public class LoggingRegistry {
       }
     }
 
-    logDebug( String.format( "LoggingRegistry Stats:%n    FoundCount= %d | MapSize= %d | PurgeCount= %d | PurgeObjectCount= %d ",
-      foundCounter, map.size(), purgeTimerCount, purgedObjectCount ) );
+    logDebug( String.format( "LoggingRegistry Stats:%n   MapSize= %d | PurgeQueueSize= %d | PurgeCount= %d | PurgeObjectCount= %d ",
+      map.size(), registerPurgeQueue.size(), purgeTimerCount, purgedObjectCount ) );
   }
 
   /**
@@ -543,10 +545,12 @@ public class LoggingRegistry {
 
       // Only Objects that are tied to a buffer can be purged.
       if ( !channelsNotToRemove.contains( objId ) ) {
-        // Object safe to remove!
-        map.remove( objId );
-        purgedObjectCount++;
-        result = true;
+        // Object is safe to remove, but the counter for purged objects will only be incremented if it is really
+        // removed from the map as it's possible for the object to not exist on the map.
+        if ( null != map.remove( objId ) ) {
+          purgedObjectCount++;
+          result = true;
+        }
       } else {
         // Object can't be removed right now add it back to the queue to remove it later
         registerPurgeQueue.add( obj );
