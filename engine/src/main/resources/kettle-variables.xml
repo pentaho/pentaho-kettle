@@ -590,6 +590,15 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>System-wide flag to keep legacy behavior on json input step. See PDI-19445 and PDI-18521 for details.
+      Y - Uses the old behaviour before 8.3.0.10
+      N - Uses the correct behavior implemented on PDI-18521 after 8.3.0.10
+    </description>
+    <variable>KETTLE_COMPATIBILITY_JSON_INPUT_LEGACY_MODE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>This environment variable is used to define which calculation method is to be used by the 'Add a Checksum' step:
       "BYTES" (default) - based on Byte representation of fields; as in versions since 8.1
       "PENTAHO_STRINGS" - based on Pentaho String representation of fields (applying format masks); as in versions until 7.1
