@@ -264,4 +264,12 @@ public class JmsProducerTest {
     trans.waitUntilFinished();
     verify( jmsContext ).close();
   }
+
+  @Test
+  public void testProcessRow() throws Exception {
+
+    doReturn( null ).when( step ).getRow();
+
+    assertFalse( step.processRow( meta, data ) );
+  }
 }
