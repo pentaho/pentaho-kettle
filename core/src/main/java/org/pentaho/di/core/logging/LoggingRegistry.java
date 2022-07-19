@@ -144,7 +144,11 @@ public class LoggingRegistry {
     // Existing not found attempt to register the logging Source.
     synchronized ( this.syncObject ) {
 
-      String logChannelId = UUID.randomUUID().toString();
+      String logChannelId;
+      do {
+        logChannelId = UUID.randomUUID().toString();
+      } while( !this.map.containsKey( logChannelId ) );
+
       loggingSource.setLogChannelId( logChannelId );
 
       this.map.put( logChannelId, loggingSource );
