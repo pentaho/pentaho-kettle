@@ -411,7 +411,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       try {
         if ( fileObject instanceof LocalFile ) {
           // fileObject.isReadable wrongly returns true in windows file system even if not readable
-          return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
+          return Files.isReadable( fileObject.getPath().toAbsolutePath() );
         }
         return fileObject.isReadable();
       } catch ( FileSystemException e ) {
