@@ -12,7 +12,6 @@
 
   <artifactId>excel-plugins-impl</artifactId>
   <name>PDI Excel Plugins Impl</name>
-
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -29,7 +28,23 @@
       <artifactId>jackcess</artifactId>
       <scope>compile</scope>
     </dependency>
-
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-metaverse-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.mockito</groupId>
