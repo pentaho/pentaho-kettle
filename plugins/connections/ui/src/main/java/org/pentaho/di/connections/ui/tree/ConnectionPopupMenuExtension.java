@@ -55,8 +55,8 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
   private ConnectionDelegate vfsConnectionDelegate;
   private ConnectionTreeItem vfsConnectionTreeItem;
 
-  public ConnectionPopupMenuExtension( ConnectionDelegate connectionDelegate ) {
-    this.vfsConnectionDelegate = connectionDelegate;
+  public ConnectionPopupMenuExtension() {
+    this.vfsConnectionDelegate = ConnectionDelegate.getInstance();
   }
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object extension )
