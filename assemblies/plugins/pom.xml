@@ -36,7 +36,7 @@
     <postgresql-db-bulk-loader-plugin.version>${project.version}</postgresql-db-bulk-loader-plugin.version>
     <rss-plugin.version>${project.version}</rss-plugin.version>
     <infobright-bulk-loader-plugin.version>${project.version}</infobright-bulk-loader-plugin.version>
-	<excel-plugin.version>${project.version}</excel-plugin.version>
+    <excel-plugin.version>${project.version}</excel-plugin.version>
     <ldap-plugin.version>${project.version}</ldap-plugin.version>
     <ivw-bulk-loader-plugin.version>${project.version}</ivw-bulk-loader-plugin.version>
     <edi2xml-plugin.version>${project.version}</edi2xml-plugin.version>
@@ -56,8 +56,9 @@
     <metastore-locator-plugin.version>${project.version}</metastore-locator-plugin.version>
     <repository-locator-plugin.version>${project.version}</repository-locator-plugin.version>
     <file-open-save-new-plugin.version>${project.version}</file-open-save-new-plugin.version>
-	<mysql-bulk-load-plugin.version>${project.version}</mysql-bulk-load-plugin.version>
+    <mysql-bulk-load-plugin.version>${project.version}</mysql-bulk-load-plugin.version>
     <repositories-plugin.version>${project.version}</repositories-plugin.version>
+    <connections-plugin.version>${project.version}</connections-plugin.version>
   </properties>
 
   <dependencies>
@@ -569,6 +570,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>repositories-plugin</artifactId>
       <version>${repositories-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>connections-plugin</artifactId>
+      <version>${connections-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
