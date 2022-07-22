@@ -23,41 +23,30 @@ package org.pentaho.di.trans.step.mqtt;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
 public class MQTTConsumerTest {
-  @Mock LogChannelInterfaceFactory logChannelFactory;
-  @Mock LogChannelInterface logChannel;
-
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   private Trans trans;
 
   @BeforeClass
   public static void setupClass() throws Exception {
-    KettleClientEnvironment.init();
     PluginRegistry.addPluginType( StepPluginType.getInstance() );
-    PluginRegistry.init();
     if ( !Props.isInitialized() ) {
       Props.init( 0 );
     }
@@ -69,13 +58,6 @@ public class MQTTConsumerTest {
 
   @Before
   public void setup() throws Exception {
-    MockitoAnnotations.initMocks( this );
-    KettleLogStore.setLogChannelInterfaceFactory( logChannelFactory );
-    when( logChannelFactory.create( any(), any() ) ).thenReturn( logChannel );
-    when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
-    // Line below added to avoid `org.mockito.exceptions.misusing.UnnecessaryStubbingException` from being thrown
-    logChannelFactory.create( StringUtil.EMPTY_STRING );
-
     TransMeta transMeta = new TransMeta( getClass().getResource( "/ConsumeRows.ktr" ).getPath() );
     trans = new Trans( transMeta );
     trans.setVariable( "mqttServer", "127.0.0.1:1883" );
