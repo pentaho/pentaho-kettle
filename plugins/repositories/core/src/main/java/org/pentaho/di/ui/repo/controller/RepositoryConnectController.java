@@ -155,7 +155,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
             e.printStackTrace();
           }
           addDatabase( databaseMeta );
-          System.out.println("after adding database meta");
           future.complete( databaseMeta.getName() );
         } else {
           DatabaseDialog.showDatabaseExistsDialog( spoonSupplier.get().getShell(), databaseMeta );
@@ -281,8 +280,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   public RepositoryMeta createRepository( String id, Map<String, Object> items ) {
-    System.out.println("inside create repo method !");
-    System.out.println("id here :"+id);
     RepositoryMeta repositoryMeta;
     try {
       repositoryMeta = pluginRegistry.loadClass( RepositoryPluginType.class, id, RepositoryMeta.class );
@@ -475,7 +472,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     }
   }
 
-  private boolean testRepository( Repository repository ) {
+  public boolean testRepository( Repository repository ) {
     ExecutorService executorService = ExecutorUtil.getExecutor();
     Future<Boolean> future = executorService.submit( () -> {
       ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();

@@ -2,8 +2,6 @@ package org.pentaho.di.ui.repo.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.*;
@@ -16,7 +14,9 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 import org.pentaho.di.ui.spoon.Spoon;
+
 import java.util.function.Supplier;
+
 
 public class RepositoryConnectionSWT extends Dialog {
 
@@ -56,7 +56,7 @@ public class RepositoryConnectionSWT extends Dialog {
     props.setLook( shell );
     shell.setLayout( new FormLayout() );
     shell.setText( "Repository Connection" );
-    shell.setImage(LOGO);
+    shell.setImage( LOGO );
 
     try {
 
@@ -84,7 +84,7 @@ public class RepositoryConnectionSWT extends Dialog {
       lblPassword.setLayoutData( new FormDataBuilder().top( txt_username, 10 ).left( 5, 0 ).result() );
       lblPassword.setText( "Password:" );
 
-      txt_passwd = new Text( shell, SWT.BORDER );
+      txt_passwd = new Text( shell, SWT.PASSWORD );
       props.setLook( txt_passwd );
       txt_passwd.setLayoutData( new FormDataBuilder().top( lblPassword ).left( 5, 0 ).right( 95, 0 ).result() );
 
@@ -100,14 +100,9 @@ public class RepositoryConnectionSWT extends Dialog {
       btnHelp.setText( "help" );
       btnHelp.addListener( SWT.Selection, new Listener() {
         public void handleEvent( Event event ) {
-          System.out.println( "help button clicked" );
-          System.out.println( "help url :" + HELP_URL );
           Program.launch( HELP_URL );
-
         }
       } );
-
-
 
 
       //********* login btn call implementation ***********
@@ -117,28 +112,24 @@ public class RepositoryConnectionSWT extends Dialog {
           str_username = txt_username.getText();
           str_passwd = txt_passwd.getText();
 
-          if ( str_repoName.isEmpty() ) {
-            System.out.println( "blank ip reponame" );
-
-          }
           if ( str_username.isEmpty() ) {
-            System.out.println( "blank ip username" );
-            MessageBox messageBox = new MessageBox(getParent().getShell(), SWT.OK |
-                    SWT.ICON_WARNING |SWT.CANCEL);
-            messageBox.setMessage("Enter the User Name");
+            MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
+              SWT.ICON_ERROR | SWT.CANCEL );
+            messageBox.setMessage( "user name can not be blank" );
             messageBox.open();
           }
           if ( str_passwd.isEmpty() ) {
-            System.out.println( "blank password" );
-
+            MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
+              SWT.ICON_ERROR | SWT.CANCEL );
+            messageBox.setMessage( "password can not be blank" );
+            messageBox.open();
           } else {
-            System.out.println( "not blank ip username and password" );
             callLoginEndPoint( str_repoName, str_username, str_passwd );
           }
         }
       } );
       shell.pack();
-      shell.setMinimumSize( 500, 250 );
+      shell.setMinimumSize( 500, 300 );
       shell.open();
       while ( !shell.isDisposed() ) {
         if ( !display.readAndDispatch() ) {
@@ -152,22 +143,16 @@ public class RepositoryConnectionSWT extends Dialog {
 
   void callLoginEndPoint( String str_repoName, String str_username, String str_passwd ) {
 
-    try{
-    if(RepositoryConnectController.getInstance().isRelogin()==true) {
-      System.out.println("relogin is true");
-      RepositoryConnectController.getInstance().reconnectToRepository(str_repoName, str_username, str_passwd);
-    }
-    else {
-      System.out.println("fresh login detected");
-      RepositoryConnectController.getInstance().connectToRepository(str_repoName, str_username, str_passwd);
-    }
-      System.out.println( "repo connection successful" );
+    try {
+      if ( RepositoryConnectController.getInstance().isRelogin() == true ) {
+        RepositoryConnectController.getInstance().reconnectToRepository( str_repoName, str_username, str_passwd );
+      } else {
+        RepositoryConnectController.getInstance().connectToRepository( str_repoName, str_username, str_passwd );
+      }
       shell.close();
     } catch ( Exception e ) {
       System.out.println( e );
-      System.out.println( "catch block of repoendpoints" );
     }
-    System.out.println( "login end points calls ended" );
   }
 
   @Override
