@@ -55,7 +55,7 @@ public class RepositoryConnectionSWT extends Dialog {
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE );
     props.setLook( shell );
     shell.setLayout( new FormLayout() );
-    shell.setText( "Repository Connection" );
+    shell.setText( LOGIN_TITLE );
     shell.setImage( LOGO );
 
     try {

@@ -237,7 +237,7 @@ public class RepositoryConnectMenu {
             System.out.println("repoconnectcontroller getPlugins : "+repoConnectController.getPlugins());
 
             //new RepositoryManagerSWT(spoon.getShell()).createDialog(repoConnectController);
-            new RepositoryManagerSWT(spoon.getShell(),repoConnectController).createDialog(repoConnectController);
+            new RepositoryManagerSWT(spoon.getShell()).createDialog();
 
             renderAndUpdate();
           }
