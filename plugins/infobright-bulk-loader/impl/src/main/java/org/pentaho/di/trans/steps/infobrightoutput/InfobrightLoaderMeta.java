@@ -55,7 +55,7 @@ import com.infobright.io.InfobrightNamedPipeLoader;
         description = "BaseStep.TypeTooltipDesc.InfobrightOutput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
         image = "BLKIB.svg",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/Infobright+Loader",
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/display/EAI/Infobright%20Loader",
         i18nPackageName = "org.pentaho.di.trans.steps.infobrightoutput" )
 public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInterface {
 
