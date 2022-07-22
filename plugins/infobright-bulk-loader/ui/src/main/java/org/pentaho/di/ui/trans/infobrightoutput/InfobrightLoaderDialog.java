@@ -66,7 +66,7 @@ import com.infobright.io.InfobrightNamedPipeLoader;
  * Dialog box for the Infobright loader.
  */
 @PluginDialog( id = "InfobrightOutput", image = "BLKIB.svg", pluginType = PluginDialog.PluginType.STEP,
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/InfoBright+Bulk+Loader" )
+        documentationUrl = "https://pentaho-community.atlassian.net/wiki/display/EAI/Infobright%20Loader" )
 public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialogInterface {
 
   private static Class<?> PKG = InfobrightLoaderMeta.class; // for i18n purposes, needed by Translator2!!
