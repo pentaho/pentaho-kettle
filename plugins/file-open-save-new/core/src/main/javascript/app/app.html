@@ -1,0 +1,94 @@
+<modals></modals>
+<error ng-show="vm.showError"
+    error-type="vm.errorType"
+    error-files="vm.errorFiles"
+    error-folder="vm.selectedFiles.length === 0 ? vm.folder : vm.selectedFiles[0]"
+    on-error-confirm="vm.confirmError()"
+    on-error-cancel="vm.cancelError()"
+    key class="noselect"></error>
+<loading ng-show="vm.loading" title="vm.loadingTitle" message="vm.loadingMessage"></loading>
+<div class="dialogWrapper noselect" ng-class="[vm.state.current.name, {hasError : vm.showError}]" ng-hide="vm.loading">
+  <div class="header">
+    <div class="headerTop">
+      <div class="headerTitle headerText">
+        {{::vm.headerTitle}}
+      </div>
+      <search
+          placeholder="vm.placeholder"
+          on-search="vm.doSearch(searchValue)"
+          on-blur="vm.storeRecentSearch()"
+          autofill="vm.recentSearches"
+          search-value="vm.searchString"
+          searching="vm.searching"></search>
+    </div>
+    <div class="headerBottom flex">
+      <addressbar path="vm.breadcrumbPath"
+          on-select="vm.selectFolderByPath(path)"
+          on-enter="vm.openPath(path)"
+          class="flex">
+      </addressbar>
+      <filecontrols files="vm.fileList"
+          folder="vm.folder"
+          selected-files="vm.selectedFiles"
+          on-add-folder="vm.onAddFolder()"
+          on-delete-files="vm.onDeleteFiles()"
+          on-up-directory="vm.onUpDirectory()"
+          on-refresh-folder="vm.onRefreshFolder()"
+      ></filecontrols>
+    </div>
+  </div>
+  <div id="middle" class="middle">
+    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder" scroll-to-folder>
+      <folder auto-expand="vm.autoExpand"
+          on-open="vm.openFolder(openFolder)"
+          on-select="vm.selectFolder(selectedFolder, true)"
+          selected-folder="vm.folder"
+          ng-class="{dark: vm.selectedFiles.length !== 0}"
+          on-move="vm.onMoveFiles(from, to)"
+          on-copy="vm.onCopyFiles(from, to)"
+          on-delete="vm.onDeleteFiles([folder])"
+          tree="vm.tree"></folder>
+    </div>
+
+    <div class="fileArea" ng-class="{scroll: vm.isCardView}">
+      <div class="fileAreaMessageView" ng-if="!vm.loading && vm.fileAreaMessage">
+        {{vm.fileAreaMessage}}
+      </div>
+      <card ng-if="vm.isCardView"
+          recent-files="vm.fileList"
+          folder="vm.folder"
+          on-click="vm.onSelectFile(file)"
+          on-select="vm.onHighlight(selectedFile)"
+          selected-file="vm.file"
+          resize-cards="true"></card>
+      <files ng-show="vm.isFileView"
+          filter="vm.selectedFilter"
+          folder="vm.folder"
+          files="vm.fileList"
+          selected-files="vm.selectedFiles"
+          on-select-file="vm.onSelectFile(file)"
+          on-highlight="vm.onHighlight(selectedFiles)"
+          on-rename="vm.onRenameFile(file, newPath)"
+          on-move="vm.onMoveFiles(from, to)"
+          on-copy="vm.onCopyFiles(from, to)"
+          on-add-folder="vm.onAddFolder()"
+          on-create-folder="vm.onCreateFolder(folder)"
+          on-delete="vm.onDeleteFiles(files)"
+          loading="vm.fileLoading"
+          show-additional="vm.searchResults.length>0"></files>
+    </div>
+  </div>
+  <filebar
+      state="vm.state"
+      path="vm.folder.path"
+      filename="vm.fileToSave"
+      selected-file="vm.myfile"
+      file-types="vm.fileTypes"
+      default-filter="vm.defaultFilter"
+      on-select-filter="vm.onSelectFilter(filter)"
+      on-open-click="vm.onOpenClick()"
+      on-save-click="vm.onSaveClick()"
+      on-cancel-click="vm.onCancelClick()"
+  ></filebar>
+  <div>{{vm.debug}}</div>
+</div>

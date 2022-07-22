@@ -1,0 +1,106 @@
+<loading ng-show="vm.loading" show-text="false"></loading>
+<div id="filesWrapper" class="filesWrapper" selected-file="vm.selectedFile" resize-files="vm.files">
+  <div id="headerWrapper" class="headerWrapper">
+    <table class="headerTable">
+      <thead>
+      <tr>
+        <th class="nameCell" ng-click="vm.sortFiles(vm._name)">
+          <div class="headerLabel">
+            {{::vm.nameHeader}}
+          </div>
+          <div class="sortWrapper">
+            <div class="sort"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._name,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._name}"></div>
+          </div>
+        </th>
+        <th class="typeCell" ng-click="vm.sortFiles(vm._type)">
+          <div class="headerLabel">
+            {{::vm.typeHeader}}
+          </div>
+          <div class="sortWrapper">
+            <div class="sort"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._type,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._type}"></div>
+          </div>
+        </th>
+        <th class="dateCell" ng-click="vm.sortFiles(vm._date)">
+          <div class="headerLabel">
+            {{::vm.modifiedHeader}}
+          </div>
+          <div class="sortWrapper">
+            <div class="sort"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._date,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._date}"></div>
+          </div>
+        </th>
+      </tr>
+      </thead>
+    </table>
+  </div>
+  <div ng-model="vm.files" scroll-to-folder key ng-hide="vm.loading" id="bodyWrapper" class="bodyWrapper" context="filesFolderContext" ng-right-click="vm.onRightClick($event, null)">
+    <table id="filesTableBody" ng-class="{'additional': vm.showAdditional}" ng-body-click="vm.onBodyClick(e, id)">
+      <tbody>
+      <tr ng-repeat="file in vm.files | orderBy: file: vm.sortReverse: vm.compareFiles "
+          ng-if="!file.hidden"
+          ng-click="vm.fileFilter(file) ? vm.onClick($event, file) : false"
+          ng-right-click="vm.fileFilter(file) ? vm.onRightClick($event, file) : false"
+          ng-dblclick="vm.fileFilter(file) ? vm.commitFile($event, file) : false"
+          ng-class="{selected: vm.isSelected(file), 'non-selectable': !vm.fileFilter(file), highlighted: vm.isHighlighted(file)}"
+          title="{{file.name}}&#013;{{file.path}}"
+          drop
+          on-drop="vm.onDrop(from, to)"
+          file="file"
+          context="filesFileContext">
+        <td class="nameCell"
+            ng-model="vm.selectedFiles"
+            drag
+            file="file">
+          <div class="fileTypeIcon"
+              ng-style="{'background-image': vm.getIcon(file)}"></div>
+          <div class="fileName">
+            <edit value="file.name"
+                  editing="file.editing"
+                  on-error="vm.onError()"
+                  on-complete="vm.rename(file, current, previous)"
+                  auto="file.autoEdit"
+                  on-start="vm.onStart(file)"
+                  new="file.new"
+                  count="vm.selectedFiles.length"></edit>
+          </div>
+          <div class="fileLocation">
+            {{file.path}}
+          </div>
+        </td>
+        <td class="typeCell">
+          <div class="fileType">
+            {{file.type}}
+          </div>
+        </td>
+        <td class="dateCell">
+          <div class="fileModified">
+            <span>{{file.date | date: 'MM/dd/yy hh:mm a'}}</span>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="filesFileContext" class="context-menu" ng-show="vm.showFileContext()">
+    <ul>
+      <li ng-click="vm.onDeleteClick()">Delete</li>
+      <li ng-click="vm.onRenameClick()" ng-show="vm.highlighted.length==1">Rename</li>
+      <li class="divider"></li>
+      <li ng-click="vm.onCopyStart()">Copy</li>
+      <li ng-click="vm.onCut()">Cut</li>
+      <li ng-click="vm.onPaste()" ng-show="vm.canPaste()">Paste</li>
+    </ul>
+  </div>
+  <div id="filesFolderContext" class="context-menu" ng-show="vm.showFolderContext()">
+    <ul>
+      <li ng-click="vm.onAddFolderClick()">Add Folder</li>
+      <li class="divider" ng-show="vm.canPaste()"></li>
+      <li ng-click="vm.onPasteFolder()" ng-show="vm.canPaste()">Paste</li>
+    </ul>
+  </div>
+</div>

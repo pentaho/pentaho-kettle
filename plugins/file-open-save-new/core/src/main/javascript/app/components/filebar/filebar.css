@@ -1,0 +1,56 @@
+filebar {
+  padding: 20px 30px 30px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -webkit-flex;
+}
+
+filebar #fileName,
+filebar #fileFilter {
+  display: flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -webkit-flex;
+}
+
+filebar div#fileName {
+  margin-left: 40px;
+}
+
+filebar #fileTypeLabel {
+  margin-left: 30px;
+}
+
+filebar #fileFilterSelect {
+  width: 150px;
+  margin-right: 30px;
+}
+
+filebar label {
+  line-height: 35px;
+  margin-right: 10px;
+}
+
+filebar input {
+  flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  -webkit-flex: 1;
+  height: 35px !important;
+}
+
+filebar #btnHelp {
+  cursor: pointer;
+  background-image: url("../../img/help.svg");
+  background-repeat: no-repeat;
+  background-position: left center;
+  position: relative;
+  padding-top: 5px;
+  padding-left: 25px;
+  line-height: 25px;
+}

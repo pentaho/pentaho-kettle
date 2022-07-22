@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="32" height="32" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Time.S_D" clip-path="url(#clip-path)">
+    <rect id="Rectangle_974" data-name="Rectangle 974" width="32" height="32" fill="none"/>
+    <g id="StepCompleted-16">
+      <rect id="Rectangle_974-2" data-name="Rectangle 974-2" width="32" height="32" fill="none"/>
+      <circle id="Ellipse_236" data-name="Ellipse 236" cx="8" cy="8" r="8" transform="translate(8 8)" fill="none"/>
+    </g>
+    <g id="Group_5772" data-name="Group 5772">
+      <g id="Group_50" data-name="Group 50">
+        <g id="Path_56" data-name="Path 56">
+          <path id="Path_3058" data-name="Path 3058" d="M16,24h0a8.024,8.024,0,0,1-8-8H8a8.024,8.024,0,0,1,8-8h0a8.024,8.024,0,0,1,8,8h0A8.024,8.024,0,0,1,16,24Z" fill="none"/>
+          <path id="Path_3059" data-name="Path 3059" d="M16,23a7.023,7.023,0,1,0-4.943-2.057A6.953,6.953,0,0,0,16,23m0,1a8,8,0,1,1,8-8A8.024,8.024,0,0,1,16,24Z" fill="#414141"/>
+        </g>
+      </g>
+    </g>
+    <path id="Path_3060" data-name="Path 3060" d="M18.646,19.354,15.5,16.207V11h1v4.793l2.854,2.854Z" fill="#414141"/>
+  </g>
+</svg>

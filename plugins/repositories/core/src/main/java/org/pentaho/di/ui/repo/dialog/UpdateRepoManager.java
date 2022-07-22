@@ -68,6 +68,7 @@ public class UpdateRepoManager extends Shell {
 		text_reponame = new Text(this, SWT.BORDER);
 		text_reponame.setBounds(37, 165, 297, 31);
 		text_reponame.setText(reponame);
+		text_reponame.setEditable(false);
 		
 		Label lblRepoUrl = new Label(this, SWT.NONE);
 		lblRepoUrl.setBounds(37, 218, 81, 25);

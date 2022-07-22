@@ -1,0 +1,57 @@
+<!-- Overwrite Warning Modal -->
+<modal id="overwrite-warning" style="width:600px" class="noselect">
+  <div class="title headerText">
+    {{title}}
+  </div>
+  <div class="body">
+    {{body}}
+  </div>
+  <div class="buttons">
+    <div style="float:left">
+      <label class="container">Apply to All
+        <input type="checkbox" id="apply-all">
+        <span class="checkmark"></span>
+      </label>
+    </div>
+    <button class="primary" value="replace">
+      <span>Replace</span>
+    </button>
+    <button class="secondary" value="stop">
+      <span>Stop</span>
+    </button>
+    <button class="secondary" value="keep">
+      <span>Keep Both</span>
+    </button>
+  </div>
+</modal>
+<!-- File Progress Modal -->
+<modal id="file-progress" style="width:600px" class="noselect">
+  <div class="title headerText">
+    {{title}}
+  </div>
+  <div class="body">
+    <div class="loading">
+      <img src="./img/busy_thin.gif" width="20" height="20" />
+    </div>
+    <div class="message">{{body}}</div>
+  </div>
+  <div class="buttons">
+    <button class="secondary" value="cancel">
+      <span>Cancel</span>
+    </button>
+  </div>
+</modal>
+<!-- Error Modal -->
+<modal id="error-dialog" class="noselect">
+  <div class="title headerText">
+    {{title}}
+  </div>
+  <div class="body">
+    {{body}}
+  </div>
+  <div class="buttons">
+    <button class="primary" value="close">
+      <span>{{::vm.closeLabel}}</span>
+    </button>
+  </div>
+</modal>

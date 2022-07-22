@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j2 Configuration                                                  -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!--
+   | For more configuration information and examples see the Apache Log4j
+   | website: https://logging.apache.org/log4j/2.x/manual/configuration.html
+ -->
+
+<Configuration name="PentahoKettle" status="ERROR" dest="out">
+   <Appenders>
+
+      <!-- ================================= -->
+      <!-- Preserve messages in a local file -->
+      <!-- ================================= -->
+
+      <!-- A time/date based rolling appender -->
+      <RollingFile name="PENTAHOFILE" fileName="logs/pdi.log" filePattern="'.'%d{yyyy-MM-dd}">
+         <PatternLayout>
+            <Pattern>%d %-5p [%c] %m%n</Pattern>
+         </PatternLayout>
+         <Policies>
+            <SizeBasedTriggeringPolicy size="20MB" />
+         </Policies>
+         <DefaultRolloverStrategy max="1"/>
+      </RollingFile>
+
+         <!-- ============================== -->
+         <!-- Append messages to the console -->
+         <!-- ============================== -->
+         <Console name="PENTAHOCONSOLE">
+            <ThresholdFilter level="INFO"/>
+            <PatternLayout>
+               <Pattern>%d{ABSOLUTE} %-5p [%c{1}] %m%n</Pattern>
+            </PatternLayout>
+         </Console>
+      </Appenders>
+      <!-- ================ -->
+      <!-- Limit categories -->
+      <!-- ================ -->
+      <Loggers>
+         <!-- ================ -->
+         <!-- Setup the Root category -->
+         <!-- ======================= -->
+
+         <Root level="ERROR">
+            <!-- <appender-ref ref="PENTAHOCONSOLE"/> -->
+            <!--<appender-ref ref="PENTAHOFILE"/>-->
+         </Root>
+      </Loggers>
+   </Configuration>

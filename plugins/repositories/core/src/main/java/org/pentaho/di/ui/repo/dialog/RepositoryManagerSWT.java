@@ -11,7 +11,6 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,31 +55,6 @@ public class RepositoryManagerSWT extends Shell {
 	 */
 	public RepositoryManagerSWT(Display display, RepositoryConnectController controller) {
 		super(display, SWT.SHELL_TRIM);
-/*
-		list fo fetched repos :
-		[{"isDefault":false,"displayName":"loc_repo",
-		"description":"Pentaho repository | http:\/\/localhost:8080\/pentaho",
-		"id":"PentahoEnterpriseRepository","url":"http:\/\/172.20.43.98:8080\/pentaho"
-		},
-		{
-		"isDefault":false,"displayName":"loc_repo_other",
-		"description":"Pentaho repository other | http:\/\/localhost:8080\/pentaho",
-		"id":"PentahoEnterpriseRepository","url":"http:\/\/172.20.43.98:8080\/pentaho"
-		}
-		]
-*/
-
-//		String[] ITEMS = { "A", "B", "C", "D" };
-
-/*
-
-		JSONArray arr = new JSONArray(obj);
-		for (int i = 0; i < arr.length(); i++) { // Walk through the Array.
-			JSONObject obj = arr.getJSONObject(i);
-			JSONArray arr2 = obj.getJSONArray("fileName");
-			// Do whatever.
-		}
-*/
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setBounds(10, 10, 907, 582);
@@ -93,19 +67,12 @@ public class RepositoryManagerSWT extends Shell {
 		list.setBounds(10, 60, 652, 496);
 
 		java.util.List<JSONObject> repolist = controller.getRepositories();
-		// Add the items, one by one
-/*		for (int i = 0, n = ITEMS.length; i < n; i++) {
-			list.add(ITEMS[i]);
-		}*/
 
 		Map<String,String> repodetailsmap = new HashMap<>();
 		for (int i = 0; i < repolist.size(); i++) {
 			System.out.println(" value of i:"+i+" "+repolist.get(i).get("displayName"));
 			String listitem="";
 			listitem=repolist.get(i).get("displayName").toString();
-			//+" ("+
-			//		repolist.get(i).get("url").toString()+")";
-//					"repo description :"+repolist.get(i).get("description").toString();
 			System.out.println("listitem :"+listitem);
 
 			repodetailsmap.put(repolist.get(i).get("displayName").toString(),repolist.get(i).get("url").toString()+"~"+repolist.get(i).get("description").toString());

@@ -1,0 +1,25 @@
+{
+  "name": "@pentaho/di-plugin-repositories",
+  "version": "${project.version}",
+  "description": "${project.description}",
+  "paths": {
+    "pentaho/di/plugin/repositories": "/"
+  },
+  "packages": [
+    {
+      "name": "pentaho/di/plugin/repositories",
+      "main": "app.module.js"
+    }
+  ],
+  "dependencies": {
+    "angular": "${angular.version}",
+    "angular-animate": "${angular.version}",
+    "angular-i18n": "${angular.version}",
+    "@uirouter/core": "${uirouter-core.version}",
+    "@uirouter/angularjs": "${uirouter-angularjs.version}",
+    "require-css": "${require-css.version}",
+    "requirejs-text": "${requirejs-text.version}",
+    "dojo": "${dojo.version}",
+    "jquery": "${jquery.version}"
+  }
+}

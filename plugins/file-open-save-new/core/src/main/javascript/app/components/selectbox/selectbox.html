@@ -1,0 +1,8 @@
+<div class="select" ng-body-click="vm.onBodyClick()">
+  <div>
+    <div class="selected_value" ng-click="vm.toggleOptions($event)">{{vm.selectedValue.label}}</div>
+    <ul id="select-options" class="options" ng-if="vm.isShowOptions">
+      <li ng-repeat="option in vm.options" ng-class="{'selected': option==vm.selectedValue}" ng-click="vm.selectOption(option)">{{option.label}}</li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+  <id>core-static</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources-filtered</directory>
+      <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
+      <includes>
+        <include>**/*.sh</include>
+      </includes>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources-filtered</directory>
+      <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
+      <excludes>
+        <exclude>**/*.sh</exclude>
+      </excludes>
+    </fileSet>
+    <!-- .sh files that need execution permissions -->
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>**/*.sh</include>
+      </includes>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <!-- the remaining static resources -->
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources</directory>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

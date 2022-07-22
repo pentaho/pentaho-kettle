@@ -1,0 +1,13 @@
+<div id="searchBox" ng-class="{searching: vm.searching}">
+  <input type="text"
+      id="searchBoxId"
+      placeholder="{{vm.placeholder}}"
+      ng-keyup="vm.doSearch($event)"
+      ng-model="vm.searchValue"
+      ng-blur="vm.blur()"
+      ng-focus="vm.focus()"/>
+  <div class="clearSearch" ng-mousedown="vm.clearSearch()" ng-if="vm.searchValue"></div>
+  <div class="recentSearches" ng-if="vm.showAutofill()">
+    <div ng-repeat="search in vm.autofill" ng-mousedown="vm.selectAutofill(search)" title="{{vm.getTooltip(search)}}">{{search}}</div>
+  </div>
+</div>

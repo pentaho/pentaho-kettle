@@ -16,8 +16,6 @@ public class ErrorDialogSWT extends Shell {
             this.errordialogshell.open();
             this.errordialogshell.layout();
 
-            System.out.println("error dialog called");
-
             MessageBox messageBox = new MessageBox(errordialogshell, SWT.OK |
                     SWT.ICON_WARNING |SWT.CANCEL);
             messageBox.setMessage("Enter the User Name");

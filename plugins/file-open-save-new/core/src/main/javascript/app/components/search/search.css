@@ -1,0 +1,115 @@
+/*!
+ * Copyright 2019 Hitachi Vantara. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+file-open-save-app #searchBox {
+  float:right;
+  position: relative;
+  overflow: hidden;
+}
+
+file-open-save-app #searchBox input {
+  width: 270px;
+  height: 34px;
+  background: url("../../img/Search.S_D_disabled.svg") no-repeat 0 center;
+  background-size: 32px 32px;
+  padding-left: 35px;
+  padding-right: 40px;
+}
+
+file-open-save-app #searchBox input:focus {
+  width: 270px;
+  height: 34px;
+  background: url("../../img/Search.S_D.svg") no-repeat 0 center;
+  background-size: 32px 32px;
+}
+
+file-open-save-app #searchBox .clearSearch {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: url("../../img/Close.S_D.svg") no-repeat center center;
+  right: 1px;
+  top: 1px;
+  background-size: 32px;
+  cursor: pointer;
+}
+
+file-open-save-app #searchBox .clearSearch:hover {
+  background-color: #f0f0f0;
+}
+
+file-open-save-app #searchBox.searching input {
+  background: url("../../img/busy_thin.gif") no-repeat 10px center;
+  background-size: 18px;
+}
+
+file-open-save-app #searchBox .recentSearches {
+  background-color: #ffffff;
+  -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  position: absolute;
+  left: 1px;
+  width: 266px;
+  padding: 5px 0;
+  z-index: 100;
+  border: 1px solid #f2f2f2;
+}
+
+file-open-save-app #searchBox .recentSearches div {
+  padding: 5px 10px 5px 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+file-open-save-app  #searchBox .recentSearches div:hover {
+  background-color: #E6EFF6;
+}
+
+/*HIDES THE X ON THE SEARCHBOX ON IE11*/
+file-open-save-app #searchBox input::-ms-clear {
+  display: none;
+  width:0;
+  height:0;
+}
+/*HIDES THE X ON THE SEARCHBOX ON IE11*/
+
+/*CHANGES THE COLOR OF THE PLACEHOLDER ON DIFFERENT BROWSERS*/
+file-open-save-app #searchBox input::-webkit-input-placeholder {
+  color: #999999;
+}
+
+file-open-save-app #searchBox input:-ms-input-placeholder {
+  color: #999999;
+}
+
+file-open-save-app #searchBox input:-moz-placeholder {
+  color: #999999;
+}
+
+file-open-save-app #searchBox input::-webkit-input-placeholder {
+  color: #CCCCCC;
+}
+
+file-open-save-app #searchBox input:focus:-ms-input-placeholder {
+  color: #CCCCCC;
+}
+
+file-open-save-app #searchBox input:focus::-moz-placeholder {
+  color: #CCCCCC;
+}
