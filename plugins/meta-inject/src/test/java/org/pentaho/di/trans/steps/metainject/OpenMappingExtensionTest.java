@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2022 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ package org.pentaho.di.trans.steps.metainject;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Created by Vasilina_Terehova on 3/31/2017.
@@ -42,7 +42,6 @@ public class OpenMappingExtensionTest {
 
   @Before
   public void setup() {
-    setKettleLogFactoryWithMock();
     transMeta = spy( new TransMeta() );
     stepMeta = mock( StepMeta.class );
     metaData = new Object[] { stepMeta, transMeta };
@@ -59,10 +58,4 @@ public class OpenMappingExtensionTest {
     assert ( transMeta.getName().contains( afterInjectionMessageAdded ) );
   }
 
-  private void setKettleLogFactoryWithMock() {
-    LogChannelInterfaceFactory logChannelInterfaceFactory = mock( LogChannelInterfaceFactory.class );
-    logChannelInterface = mock( LogChannelInterface.class );
-    when( logChannelInterfaceFactory.create( any() ) ).thenReturn( logChannelInterface );
-    KettleLogStore.setLogChannelInterfaceFactory( logChannelInterfaceFactory );
-  }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,13 +23,13 @@
 package org.pentaho.di.trans.streaming.common;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -37,6 +37,7 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -64,6 +65,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
 public class BaseStreamStepTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   private BaseStreamStep baseStreamStep;
 
   @Mock BaseStreamStepMeta meta;
@@ -119,8 +121,6 @@ public class BaseStreamStepTest {
     // Necessary since the Current.Directory may change when running non-locally.
     // Variables should all be set in variableizedStepMeta after init, with the caveat that
     // the substrans location must be set using the parents Current.Directory.
-    KettleEnvironment.init();
-
     File testFile = File.createTempFile( "testInitFilenameSubstitution", ".ktr",
       folder.getRoot() );
     try ( PrintWriter pw = new PrintWriter( testFile ) ) {
