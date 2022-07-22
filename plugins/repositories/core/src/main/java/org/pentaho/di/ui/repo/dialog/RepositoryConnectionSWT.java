@@ -84,7 +84,7 @@ public class RepositoryConnectionSWT extends Dialog {
       lblPassword.setLayoutData( new FormDataBuilder().top( txt_username, 10 ).left( 5, 0 ).result() );
       lblPassword.setText( "Password:" );
 
-      txt_passwd = new Text( shell, SWT.PASSWORD );
+      txt_passwd = new Text( shell, SWT.BORDER|SWT.PASSWORD );
       props.setLook( txt_passwd );
       txt_passwd.setLayoutData( new FormDataBuilder().top( lblPassword ).left( 5, 0 ).right( 95, 0 ).result() );
 
@@ -129,7 +129,7 @@ public class RepositoryConnectionSWT extends Dialog {
         }
       } );
       shell.pack();
-      shell.setMinimumSize( 500, 300 );
+      shell.setMinimumSize( 500, 400 );
       shell.open();
       while ( !shell.isDisposed() ) {
         if ( !display.readAndDispatch() ) {
