@@ -18,7 +18,7 @@ public class DeleteRepoManager extends Shell {
     private RepositoryConnectController controller;
 
 
-    public DeleteRepoManager(Map<String, String> repodetailsmap, String reponame) {
+    public DeleteRepoManager(Shell shell, Map<String, String> repodetailsmap, String reponame) {
 
         this.repodetailsmap=repodetailsmap;
         this.reponame=reponame;
@@ -26,7 +26,7 @@ public class DeleteRepoManager extends Shell {
     }
 
 
-    public  void deleteArepoManager(RepositoryConnectController controller) {
+    public  void deleteArepoManager() {
         this.controller=controller;
         System.out.println("method called deleteArepoManager");
 
