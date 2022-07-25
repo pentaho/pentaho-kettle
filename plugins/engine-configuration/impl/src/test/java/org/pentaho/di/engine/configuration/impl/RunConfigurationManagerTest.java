@@ -34,8 +34,6 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
-import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfiguration;
-import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
@@ -66,12 +64,7 @@ public class RunConfigurationManagerTest {
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreLocator );
 
-    SparkRunConfigurationProvider sparkRunConfigurationProvider =
-      new SparkRunConfigurationProvider( metastoreLocator );
-
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-    runConfigurationProviders.add( sparkRunConfigurationProvider );
-
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
     executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
 
@@ -81,19 +74,11 @@ public class RunConfigurationManagerTest {
     defaultRunConfiguration.setLocal( true );
 
     executionConfigurationManager.save( defaultRunConfiguration );
-
-    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
-    sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setDescription( "Spark Configuration Description" );
-    sparkRunConfiguration.setUrl( "127.0.0.1" );
-
-    executionConfigurationManager.save( sparkRunConfiguration );
   }
 
   @After
   public void tearDown() {
     executionConfigurationManager.delete( "Default Configuration" );
-    executionConfigurationManager.delete( "Spark Configuration" );
   }
 
 
@@ -101,7 +86,6 @@ public class RunConfigurationManagerTest {
   public void testGetTypes() {
     String[] types = executionConfigurationManager.getTypes();
     assertTrue( Arrays.asList( types ).contains( DefaultRunConfiguration.TYPE ) );
-    assertTrue( Arrays.asList( types ).contains( SparkRunConfiguration.TYPE ) );
   }
 
   @Test
@@ -153,12 +137,7 @@ public class RunConfigurationManagerTest {
   public void testGetRunConfigurationByType() {
     DefaultRunConfiguration defaultRunConfiguration =
       (DefaultRunConfiguration) executionConfigurationManager.getRunConfigurationByType( DefaultRunConfiguration.TYPE );
-
-    SparkRunConfiguration sparkRunConfiguration =
-      (SparkRunConfiguration) executionConfigurationManager.getRunConfigurationByType( SparkRunConfiguration.TYPE );
-
     assertNotNull( defaultRunConfiguration );
-    assertNotNull( sparkRunConfiguration );
   }
 
   @Test
@@ -175,11 +154,7 @@ public class RunConfigurationManagerTest {
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreLocator );
 
-    SparkRunConfigurationProvider sparkRunConfigurationProvider =
-      new SparkRunConfigurationProvider( metastoreLocator );
-
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-    runConfigurationProviders.add( sparkRunConfigurationProvider );
 
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
     executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
@@ -195,10 +170,6 @@ public class RunConfigurationManagerTest {
     DefaultRunConfiguration defaultRunConfiguration3 = new DefaultRunConfiguration();
     defaultRunConfiguration3.setName( "x" );
     executionConfigurationManager.save( defaultRunConfiguration3 );
-
-    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
-    sparkRunConfiguration.setName( "d" );
-    executionConfigurationManager.save( sparkRunConfiguration );
 
     DefaultRunConfiguration defaultRunConfiguration5 = new DefaultRunConfiguration();
     defaultRunConfiguration5.setName( "a" );

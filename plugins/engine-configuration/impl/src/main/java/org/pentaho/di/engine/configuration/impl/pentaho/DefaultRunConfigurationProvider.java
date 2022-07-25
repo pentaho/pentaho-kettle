@@ -31,7 +31,6 @@ import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.MetaStoreRunConfigurationFactory;
-import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
@@ -53,7 +52,7 @@ import java.util.List;
 public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFactory
   implements RunConfigurationProvider {
 
-  private Logger logger = LoggerFactory.getLogger( SparkRunConfigurationProvider.class );
+  private Logger logger = LoggerFactory.getLogger( DefaultRunConfigurationProvider.class );
   public static final String DEFAULT_CONFIG_NAME = "Pentaho local";
   private static String TYPE = "Pentaho";
   private List<String> supported = Arrays.asList( TransMeta.XML_TAG, JobMeta.XML_TAG );
