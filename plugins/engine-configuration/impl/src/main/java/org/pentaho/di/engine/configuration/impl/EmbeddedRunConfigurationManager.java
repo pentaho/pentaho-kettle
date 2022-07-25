@@ -27,7 +27,6 @@ package org.pentaho.di.engine.configuration.impl;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
-import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
 
@@ -41,12 +40,9 @@ public class EmbeddedRunConfigurationManager {
   public static RunConfigurationManager build( EmbeddedMetaStore embeddedMetaStore ) {
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ) );
-    SparkRunConfigurationProvider sparkRunConfigurationProvider =
-      new SparkRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ) );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     runConfigurationProviders.add( defaultRunConfigurationProvider );
-    runConfigurationProviders.add( sparkRunConfigurationProvider );
 
     return new RunConfigurationManager( runConfigurationProviders );
   }
