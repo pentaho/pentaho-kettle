@@ -273,7 +273,6 @@ import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
-import org.pentaho.di.ui.spoon.dialog.CapabilityManagerDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
 import org.pentaho.di.ui.spoon.dialog.MetaStoreExplorerDialog;
@@ -6342,10 +6341,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public void editCapabilities() {
-    CapabilityManagerDialog capabilityManagerDialog = new CapabilityManagerDialog( this.shell );
-    capabilityManagerDialog.open();
-  }
+
 
   public void editKettlePropertiesFile() {
     KettlePropertiesFileDialog dialog = new KettlePropertiesFileDialog( shell, SWT.NONE );

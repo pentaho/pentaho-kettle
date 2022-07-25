@@ -70,7 +70,6 @@ public class TransSupplierTest {
   @Test
   public void testWebsocketVersion() throws KettleException {
     props.setProperty( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
-    when( meta.getVariable( "engine" ) ).thenReturn( "spark" );
     when( meta.getVariable( "engine.url" ) ).thenReturn( "hostname:8080" );
     when( meta.nrTransHops() ).thenReturn( 0 );
     when( meta.getTransHop( 0 ) ).thenReturn( transHopMeta );
