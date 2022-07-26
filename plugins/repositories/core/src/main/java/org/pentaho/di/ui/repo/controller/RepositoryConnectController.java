@@ -328,13 +328,13 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     return list;
   }
 
-  public String getRepository( String name ) {
+  public JSONObject getRepository( String name ) {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
     if ( repositoryMeta != null ) {
       currentRepository = repositoryMeta;
-      return repositoryMeta.toJSONObject().toString();
+      return repositoryMeta.toJSONObject();
     }
-    return "";
+    return null;
   }
 
   public DatabaseMeta getDatabase( String name ) {

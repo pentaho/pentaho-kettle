@@ -253,6 +253,7 @@ public class RepositoryConnectControllerTest {
     verify( repositoriesMeta ).addDatabase( databaseMeta );
     verify( repositoriesMeta ).writeData();
   }
+/*
 
   @Test
   public void testGetRepository() throws Exception {
@@ -269,6 +270,7 @@ public class RepositoryConnectControllerTest {
     assertEquals( true, output.contains( REPOSITORY_DESCRIPTION ) );
     assertEquals( true, output.contains( REPOSITORY_NAME ) );
   }
+*/
 
   @Test
   public void testRepoSwitch() throws Exception {

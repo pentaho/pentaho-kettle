@@ -1,31 +1,30 @@
 package org.pentaho.di.ui.repo.dialog;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
-import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.repo.model.RepositoryModel;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class CreateRepoManager extends Shell {
-	private Text text_reponame;
-	private Text text_repourl;
-	private Text text_description;
-	private RepositoryConnectController newcontroller;
+	private Text text;
+	private Text text_1;
+	private Text text_2;
+	private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
+	private PropsUI props;
 
-	public CreateRepoManager() {
-
-		System.out.println("default constructor called");
-	}
-	/**
-	 * Launch the application.
-	 * @param
-	 * @param newcontroller
-	 */
-	public  void createArepoManager(RepositoryConnectController newcontroller) {
-		this.newcontroller=newcontroller;
-		System.out.println("method called createArepoManager");
+	public void createNewRepo() {
 		try {
 			Display display = Display.getDefault();
-			CreateRepoManager shell = new CreateRepoManager(display,newcontroller);
+			CreateRepoManager shell = new CreateRepoManager(display);
 			shell.open();
 			shell.layout();
 			while (!shell.isDisposed()) {
@@ -42,85 +41,73 @@ public class CreateRepoManager extends Shell {
 	 * Create the shell.
 	 * @param display
 	 */
-	public CreateRepoManager(Display display,RepositoryConnectController newcontroller) {
-		super(display, SWT.SHELL_TRIM);
-		
+	public CreateRepoManager(Display display) {
+		super(display, SWT.SHELL_TRIM );
+		this.props = PropsUI.getInstance();
+
 		Label lblRepoName = new Label(this, SWT.NONE);
-		lblRepoName.setBounds(37, 134, 240, 25);
-		lblRepoName.setText("Repo name");
-		
-		text_reponame = new Text(this, SWT.BORDER);
-		text_reponame.setBounds(37, 165, 297, 31);
-		
+		lblRepoName.setBounds(10, 10, 240, 25);
+		lblRepoName.setText("Display name");
+		props.setLook( lblRepoName );
+
+
+		text = new Text(this, SWT.BORDER);
+		text.setBounds(10, 41, 353, 31);
+		props.setLook( text );
+
 		Label lblRepoUrl = new Label(this, SWT.NONE);
-		lblRepoUrl.setBounds(37, 218, 81, 25);
-		lblRepoUrl.setText("Repo url");
-		
-		text_repourl = new Text(this, SWT.BORDER);
-		text_repourl.setBounds(37, 249, 297, 31);
-		
+		lblRepoUrl.setBounds(10, 90, 81, 25);
+		lblRepoUrl.setText("URL");
+		props.setLook( lblRepoUrl );
+
+		text_1 = new Text(this, SWT.BORDER);
+		text_1.setBounds(10, 121, 353, 31);
+		props.setLook( text_1 );
+
 		Label lblDescription = new Label(this, SWT.NONE);
-		lblDescription.setBounds(37, 297, 174, 25);
+		lblDescription.setBounds(10, 169, 174, 25);
 		lblDescription.setText("Description");
-		
-		text_description = new Text(this, SWT.BORDER);
-		text_description.setBounds(37, 328, 297, 31);
-		
+		props.setLook( lblDescription );
+
+		text_2 = new Text(this, SWT.BORDER | SWT.WRAP  | SWT.MULTI);
+		text_2.setBounds(10, 209, 353, 79);
+		props.setLook( text_2 );
+
 		Button btnCreate = new Button(this, SWT.NONE);
-		btnCreate.setBounds(37, 388, 105, 35);
+		btnCreate.setBounds(10, 387, 105, 35);
 		btnCreate.setText("create");
+		props.setLook( btnCreate );
 
-		createContents();
+		Button btnHelp = new Button(this, SWT.NONE);
+		btnHelp.setBounds(289, 529, 105, 35);
+		btnHelp.setText("Help");
+		props.setLook( btnHelp );
 
-		btnCreate.addListener(SWT.Selection, new Listener() {
-					public void handleEvent(Event event) {
-						System.out.println("button create pressed");
-
-						System.out.println("repo name :"+text_reponame.getText());
-
-						System.out.println("repo url :"+text_repourl.getText());
-						System.out.println("repo desc :"+text_description.getText());
-
-						RepositoryModel model = new RepositoryModel();
-						model.setId("PentahoEnterpriseRepository");
-						model.setDisplayName(text_reponame.getText());
-						model.setUrl(text_repourl.getText());
-						model.setDescription(text_description.getText());
-						model.setDefault(false);
-
-
-
-
-						try{
-							boolean connectionresult=false;
-							connectionresult = newcontroller.createRepository(model.getId(), newcontroller.modelToMap(model)) != null;
-							System.out.println("connection result :"+connectionresult);
-							System.out.println("repo creation successful");
-							getShell().close();
-						}
-						catch (Exception e){
-							System.out.println("some exception :"+e);
-						}
-
-
-
-
-							}
-						});
-
-					}
-
-			/**
-			 * Create contents of the shell.
-			 */
-			protected void createContents() {
-				setText("Login to repository");
-				setSize(739, 707);
-
-			}
-
+		Button btnCheckoxdefault = new Button(this, SWT.CHECK);
+		btnCheckoxdefault.addSelectionListener(new SelectionAdapter() {
 			@Override
-			protected void checkSubclass() {
-				// Disable the check that prevents subclassing of SWT components
+			public void widgetSelected(SelectionEvent arg0) {
 			}
-		}
+		});
+		btnCheckoxdefault.setBounds(10, 313, 297, 25);
+		btnCheckoxdefault.setText("Launch connection on startup");
+		props.setLook( btnCheckoxdefault );
+		createContents();
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents() {
+		setText("Create repository");
+		setSize(429, 634);
+		setImage( LOGO );
+		setBackground( new Color( getShell().getDisplay(), 255, 255, 255 ) );
+
+	}
+
+	@Override
+	protected void checkSubclass() {
+		// Disable the check that prevents subclassing of SWT components
+	}
+}

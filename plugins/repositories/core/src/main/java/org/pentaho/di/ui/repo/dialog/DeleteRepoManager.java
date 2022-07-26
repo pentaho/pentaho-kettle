@@ -1,11 +1,14 @@
+/*
 package org.pentaho.di.ui.repo.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.*;
+import org.json.simple.JSONObject;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -18,7 +21,7 @@ public class DeleteRepoManager extends Shell {
     private RepositoryConnectController controller;
 
 
-    public DeleteRepoManager(Shell shell, Map<String, String> repodetailsmap, String reponame) {
+    public DeleteRepoManager( Shell shell, List<JSONObject) {
 
         this.repodetailsmap=repodetailsmap;
         this.reponame=reponame;
@@ -49,10 +52,12 @@ public class DeleteRepoManager extends Shell {
         }
     }
 
-    /**
+    */
+/**
      * Create the shell.
      * @param display
-     */
+     *//*
+
     public DeleteRepoManager(Display display,RepositoryConnectController controller,Map<String, String> repodetailsmap, String reponame) {
         super(display, SWT.SHELL_TRIM);
 
@@ -108,9 +113,11 @@ public class DeleteRepoManager extends Shell {
         createContents();
     }
 
-    /**
+    */
+/**
      * Create contents of the shell.
-     */
+     *//*
+
     protected void createContents() {
         setText("SWT Application");
         setSize(1071, 634);
@@ -121,3 +128,4 @@ public class DeleteRepoManager extends Shell {
         // Disable the check that prevents subclassing of SWT components
     }
 }
+*/

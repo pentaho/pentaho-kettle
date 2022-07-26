@@ -139,7 +139,7 @@ public class RepositoryConnectMenu {
 */
         //new RepositoryDialog( spoon.getShell(), repoConnectController ).openCreation();
 //        Display display = Display.getDefault();
-        new RepositoryConnectionSWT( spoon.getShell() ).createDialog( "" );
+    //----    new RepositoryConnectionSWT( spoon.getShell() ).createDialog( "" );
         renderAndUpdate();
       }
     } );
