@@ -1855,18 +1855,24 @@ public class ConstTest {
   public void testToInt() {
     assertEquals( 123, Const.toInt( "123", -12 ) );
     assertEquals( -12, Const.toInt( "123f", -12 ) );
+    assertEquals( -12, Const.toInt( "", -12 ) );
+    assertEquals( -12, Const.toInt( null, -12 ) );
   }
 
   @Test
   public void testToLong() {
     assertEquals( 1447252914241L, Const.toLong( "1447252914241", -12 ) );
     assertEquals( -1447252914241L, Const.toLong( "1447252914241L", -1447252914241L ) );
+    assertEquals( -1447252914241L, Const.toLong( "", -1447252914241L ) );
+    assertEquals( -1447252914241L, Const.toLong( null, -1447252914241L ) );
   }
 
   @Test
   public void testToDouble() {
     Assert.assertEquals( 123.45, Const.toDouble( "123.45", -12.34 ), 1e-15 );
     Assert.assertEquals( -12.34, Const.toDouble( "123asd", -12.34 ), 1e-15 );
+    Assert.assertEquals( -12.34, Const.toDouble( "", -12.34 ), 1e-15 );
+    Assert.assertEquals( -12.34, Const.toDouble( null, -12.34 ), 1e-15 );
   }
 
   @Test

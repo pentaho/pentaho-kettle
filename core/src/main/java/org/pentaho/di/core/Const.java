@@ -1717,10 +1717,14 @@ public class Const {
    */
   public static int toInt( String str, int def ) {
     int retval;
-    try {
-      retval = Integer.parseInt( str );
-    } catch ( Exception e ) {
+    if ( str == null ) {
       retval = def;
+    } else {
+      try {
+        retval = Integer.parseInt( str );
+      } catch ( Exception e ) {
+        retval = def;
+      }
     }
     return retval;
   }
@@ -1736,10 +1740,14 @@ public class Const {
    */
   public static long toLong( String str, long def ) {
     long retval;
-    try {
-      retval = Long.parseLong( str );
-    } catch ( Exception e ) {
+    if ( str == null ) {
       retval = def;
+    } else {
+      try {
+        retval = Long.parseLong( str );
+      } catch ( Exception e ) {
+        retval = def;
+      }
     }
     return retval;
   }
@@ -1755,10 +1763,14 @@ public class Const {
    */
   public static double toDouble( String str, double def ) {
     double retval;
-    try {
-      retval = Double.parseDouble( str );
-    } catch ( Exception e ) {
+    if ( str == null ) {
       retval = def;
+    } else {
+      try {
+        retval = Double.parseDouble( str );
+      } catch ( Exception e ) {
+        retval = def;
+      }
     }
     return retval;
   }
