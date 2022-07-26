@@ -34,6 +34,8 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -47,6 +49,7 @@ public class ConnectionLifecycleListener implements LifecycleListener {
   private static final String OTHER = "other";
   private static final String FTP_SCHEMA = "ftp";
   private static final String HTTP_SCHEMA = "http";
+  private static final Logger logger = LoggerFactory.getLogger( ConnectionLifecycleListener.class );
 
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
@@ -57,7 +60,7 @@ public class ConnectionLifecycleListener implements LifecycleListener {
       Collection<MetastoreLocator> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocator.class );
       metastoreLocator = metastoreLocators.stream().findFirst().get();
     } catch ( Exception e ) {
-      LogChannel.GENERAL.logError( "Error getting MetastoreLocator", e );
+      logger.error( "Error getting MetastoreLocator", e );
       throw new IllegalStateException( e );
     }
   }

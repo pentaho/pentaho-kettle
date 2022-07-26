@@ -43,6 +43,18 @@ public class ConnectionDelegate {
 
   private static final int WIDTH = 630;
   private static final int HEIGHT = 630;
+  private static ConnectionDelegate instance;
+
+  private ConnectionDelegate() {
+    // no-op
+  }
+
+  public static ConnectionDelegate getInstance() {
+    if ( null == instance ) {
+      instance = new ConnectionDelegate();
+    }
+    return instance;
+  }
 
   public void openDialog() {
     ConnectionDialog connectionDialog = new ConnectionDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
