@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -112,9 +112,8 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
   @Metaverse.NodeLink ( nodeName = JMS_REDELIVERED_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
   public String jmsRedelivered = "jmsRedelivered";
 
-  @VisibleForTesting
   public JmsConsumerMeta() {
-    this( new JmsDelegate( singletonList( new ActiveMQProvider() ) ) );
+    this( new JmsDelegate() );
   }
 
   public JmsConsumerMeta( JmsDelegate jmsDelegate ) {
