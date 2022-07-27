@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,14 +41,18 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepOption;
 import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
+import org.pentaho.di.trans.step.jms.context.JmsProvider;
+import org.pentaho.di.trans.step.jms.context.WrappedWebsphereMQProvider;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metaverse.api.analyzer.kettle.annotations.Metaverse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.list;
 import static java.util.Collections.singletonList;
 import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 import static org.pentaho.di.i18n.BaseMessages.getString;
@@ -79,9 +83,8 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
   public static final String JMS_DESTINATION_METAVERSE = "JMS Destination";
   public static final String JMS_SERVER_METAVERSE = "JMS Server";
 
-  @VisibleForTesting
   public JmsProducerMeta() {
-    this( new JmsDelegate( singletonList( new ActiveMQProvider() ) ) );
+    this( new JmsDelegate() );
   }
 
   private static final String FIELD_TO_SEND = "FIELD_TO_SEND";
