@@ -4,6 +4,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -11,8 +13,13 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
+import org.pentaho.di.ui.repo.model.RepositoryModel;
 
 public class CreateRepoManager extends Shell {
 	private Text text;
@@ -20,6 +27,8 @@ public class CreateRepoManager extends Shell {
 	private Text text_2;
 	private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
 	private PropsUI props;
+	private LogChannelInterface log =
+		KettleLogStore.getLogChannelInterfaceFactory().create( CreateRepoManager.class );
 
 	public void createNewRepo() {
 		try {
@@ -75,12 +84,12 @@ public class CreateRepoManager extends Shell {
 
 		Button btnCreate = new Button(this, SWT.NONE);
 		btnCreate.setBounds(10, 387, 105, 35);
-		btnCreate.setText("create");
+		btnCreate.setText(" create ");
 		props.setLook( btnCreate );
 
 		Button btnHelp = new Button(this, SWT.NONE);
 		btnHelp.setBounds(289, 529, 105, 35);
-		btnHelp.setText("Help");
+		btnHelp.setText(" help ");
 		props.setLook( btnHelp );
 
 		Button btnCheckoxdefault = new Button(this, SWT.CHECK);
@@ -92,19 +101,34 @@ public class CreateRepoManager extends Shell {
 		btnCheckoxdefault.setBounds(10, 313, 297, 25);
 		btnCheckoxdefault.setText("Launch connection on startup");
 		props.setLook( btnCheckoxdefault );
-		createContents();
-	}
-
-	/**
-	 * Create contents of the shell.
-	 */
-	protected void createContents() {
 		setText("Create repository");
 		setSize(429, 634);
 		setImage( LOGO );
 		setBackground( new Color( getShell().getDisplay(), 255, 255, 255 ) );
 
+		btnCreate.addListener(SWT.Selection, new Listener() {
+			public void handleEvent( Event event) {
+
+				RepositoryModel model = new RepositoryModel();
+				model.setId("PentahoEnterpriseRepository");
+				model.setDisplayName(text.getText());
+				model.setUrl(text_1.getText());
+				model.setDescription(text_2.getText());
+				model.setDefault(false);
+
+				try{
+					boolean connectionresult=false;
+					connectionresult = RepositoryConnectController.getInstance().createRepository(model.getId(), RepositoryConnectController.getInstance().modelToMap(model)) != null;
+					getShell().close();
+				}
+				catch ( Exception e) {
+					log.logError( "Error creating repo", e );
+				}
+			}
+		});
+
 	}
+
 
 	@Override
 	protected void checkSubclass() {

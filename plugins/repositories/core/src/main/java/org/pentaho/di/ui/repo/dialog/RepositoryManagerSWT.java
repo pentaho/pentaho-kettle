@@ -9,12 +9,15 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.*;
 import org.json.simple.JSONObject;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
+
+import java.util.List;
 
 public class RepositoryManagerSWT extends Dialog {
 
@@ -55,7 +58,7 @@ public class RepositoryManagerSWT extends Dialog {
 			lblExistingRepos.setText("Existing repositories");
 
 
-			java.util.List<JSONObject> repolist = RepositoryConnectController.getInstance().getRepositories();
+			List<JSONObject> repolist = RepositoryConnectController.getInstance().getRepositories();
 
 
 			Table table = new Table(composite, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL);
@@ -166,7 +169,7 @@ public class RepositoryManagerSWT extends Dialog {
 					String selectedreponame = table.getItem(i).getText();
 					JSONObject selectedrepodetails =RepositoryConnectController.getInstance().getRepository( selectedreponame );
 
-					new UpdateRepoManager().repoManagerUpdate(selectedrepodetails);
+					new UpdateRepoManager(shell.getDisplay(),selectedrepodetails).updateRepo(selectedrepodetails);
 				}
 			});
 
@@ -175,7 +178,16 @@ public class RepositoryManagerSWT extends Dialog {
 				public void widgetSelected(SelectionEvent event) {
 
 					int i =table.getSelectionIndex();
-				//	new DeleteRepoManager(shell ,repolist,table.getItem(i).getText()).deleteArepoManager();
+					if(i<0){
+						MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
+							SWT.ICON_ERROR | SWT.CANCEL );
+						messageBox.setMessage( "select a repository to delete" );
+						messageBox.open();
+					}
+					String selectedreponame = table.getItem(i).getText();
+					JSONObject selectedrepodetails =RepositoryConnectController.getInstance().getRepository( selectedreponame );
+
+					new DeleteRepoManager(shell.getDisplay(),selectedrepodetails).deleteRepository(selectedrepodetails);
 				}
 			});
 
@@ -183,12 +195,12 @@ public class RepositoryManagerSWT extends Dialog {
 			shell.setMinimumSize( 900, 700 );
 			shell.open();
 			while (!shell.isDisposed()) {
-				if (!display.readAndDispatch()) {
+				if ( !display.readAndDispatch() ) {
 					display.sleep();
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch ( Exception e) {
+			log.logError( "Error ", e );
 		}
 	}
 
