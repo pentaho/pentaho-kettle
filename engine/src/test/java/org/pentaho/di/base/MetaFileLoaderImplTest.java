@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,10 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.base;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
@@ -46,7 +48,7 @@ import org.pentaho.metastore.api.IMetaStore;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -69,10 +71,17 @@ public class MetaFileLoaderImplTest {
   private BaseStepMeta baseStepMeta;
   private ObjectLocationSpecificationMethod specificationMethod;
   private String keyPath; //The absolute path used as part of the cachekey
+  private String oldSystemParam;
 
   @Before
   public void setUp() throws Exception {
+    oldSystemParam = System.getProperty( Const.KETTLE_USE_META_FILE_CACHE );
+    System.setProperty( Const.KETTLE_USE_META_FILE_CACHE, "Y" );
+  }
 
+  @After
+  public void tearDown() {
+    System.setProperty( Const.KETTLE_USE_META_FILE_CACHE, null == oldSystemParam ? "" : oldSystemParam );
   }
 
   @Test
