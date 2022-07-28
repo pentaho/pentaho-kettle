@@ -684,6 +684,21 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!--OSGi Dependencies-->
+    <!--Because of:-->
+    <!--pentaho-platform-core (PentahoSystem) and pdi-osgi-bridge-core (KarafLifecycleListener and OSGIPluginRegistryExtension)-->
+    <!--Still needed for a no-osgi build because of PentahoSystem dependency -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -738,15 +753,6 @@
               <artifactId>*</artifactId>
             </exclusion>
           </exclusions>
-        </dependency>
-
-        <!--OSGi Dependencies-->
-        <!--Because of:-->
-        <!--pentaho-platform-core (PentahoSystem) and pdi-osgi-bridge-core (KarafLifecycleListener and OSGIPluginRegistryExtension)-->
-        <dependency>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.core</artifactId>
-          <scope>compile</scope>
         </dependency>
 
         <!-- Karaf Dependencies -->

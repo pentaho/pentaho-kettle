@@ -89,7 +89,10 @@ public class JmsProducer extends BaseStep implements StepInterface {
     Object[] row = getRow();
 
     if ( null == row ) {
-      jmsContext.close();
+      //PDI-19549
+      if ( jmsContext != null ) {
+        jmsContext.close();
+      }
       setOutputDone();
       return false;  // indicates done
     }
