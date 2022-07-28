@@ -1,43 +1,31 @@
 package org.pentaho.di.ui.repo.dialog;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.*;
-import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.repo.model.RepositoryModel;
-
-import java.util.Map;
-import java.util.stream.Stream;
+import org.json.simple.JSONObject;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class UpdateRepoManager extends Shell {
-	private Text text_reponame;
-	private Text text_repourl;
-	private Text text_description;
-	Map<String, String> repodetailsmap;
-	String reponame;
-	private RepositoryConnectController controller;
+	private Text text;
+	private Text text_1;
+	private Text text_2;
+	private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
+	private PropsUI props;
+	boolean defaultflag;
 
-
-	public UpdateRepoManager(Map<String, String> repodetailsmap, String reponame) {
-
-		this.repodetailsmap=repodetailsmap;
-		this.reponame=reponame;
-		System.out.println("update default constructor called");
-	}
-
-
-	public  void updateArepoManager(RepositoryConnectController controller) {
-		this.controller=controller;
-		System.out.println("method called updateArepoManager");
-
-		Stream.of(repodetailsmap.keySet().toString())
-				.forEach(System.out::println);
-		System.out.println("reponame :"+reponame);
-		//System.out.println(" selection event in update : "+selectionEvent.getSource());
+	public void updateRepo( JSONObject selectedrepodetails ) {
 		try {
 			Display display = Display.getDefault();
-			UpdateRepoManager shell = new UpdateRepoManager(display,controller,repodetailsmap,reponame);
+			UpdateRepoManager shell = new UpdateRepoManager(display, selectedrepodetails);
 			shell.open();
 			shell.layout();
 			while (!shell.isDisposed()) {
@@ -50,76 +38,82 @@ public class UpdateRepoManager extends Shell {
 		}
 	}
 
-	/**
-	 * Create the shell.
-	 * @param display
-	 */
-	public UpdateRepoManager(Display display,RepositoryConnectController controller,Map<String, String> repodetailsmap, String reponame) {
-		super(display, SWT.SHELL_TRIM);
-
-		System.out.println("update repo manager constructor 2");
-		System.out.println("repo name :"+reponame);
-
+	public UpdateRepoManager(Display display, JSONObject selectedrepodetails) {
+		super(display, SWT.SHELL_TRIM );
+		this.props = PropsUI.getInstance();
 
 		Label lblRepoName = new Label(this, SWT.NONE);
-		lblRepoName.setBounds(37, 134, 240, 25);
-		lblRepoName.setText("Repo name");
+		lblRepoName.setBounds(10, 10, 240, 25);
+		lblRepoName.setText("Display name");
+		props.setLook( lblRepoName );
 
-		text_reponame = new Text(this, SWT.BORDER);
-		text_reponame.setBounds(37, 165, 297, 31);
-		text_reponame.setText(reponame);
-		
+
+		System.out.println("data:"+selectedrepodetails);
+
+
+
+		text = new Text(this, SWT.BORDER);
+		text.setBounds(10, 41, 353, 31);
+		props.setLook( text );
+		text.setText( selectedrepodetails.get( "displayName" ).toString() );
+		text.setEditable( false );
+
+
 		Label lblRepoUrl = new Label(this, SWT.NONE);
-		lblRepoUrl.setBounds(37, 218, 81, 25);
-		lblRepoUrl.setText("Repo url");
+		lblRepoUrl.setBounds(10, 90, 81, 25);
+		lblRepoUrl.setText("URL");
+		props.setLook( lblRepoUrl );
 
-		text_repourl = new Text(this, SWT.BORDER);
-		text_repourl.setBounds(37, 249, 297, 31);
-		text_repourl.setText(repodetailsmap.get(reponame).substring(0,repodetailsmap.get(reponame).indexOf("~")));
-		
+		text_1 = new Text(this, SWT.BORDER);
+		text_1.setBounds(10, 121, 353, 31);
+		props.setLook( text_1 );
+		text_1.setText( selectedrepodetails.get( "url" ).toString() );
+
+
 		Label lblDescription = new Label(this, SWT.NONE);
-		lblDescription.setBounds(37, 297, 174, 25);
+		lblDescription.setBounds(10, 169, 174, 25);
 		lblDescription.setText("Description");
+		props.setLook( lblDescription );
 
-		text_description = new Text(this, SWT.BORDER);
-		text_description.setBounds(37, 328, 297, 31);
-		text_description.setText(repodetailsmap.get(reponame).substring(repodetailsmap.get(reponame).lastIndexOf("~") + 1));
-		
-		Button btnUpdate = new Button(this, SWT.NONE);
-		btnUpdate.setBounds(37, 388, 105, 35);
-		btnUpdate.setText("update");
-		btnUpdate.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				System.out.println("clicked on update shell");
+		text_2 = new Text(this, SWT.BORDER | SWT.WRAP  | SWT.MULTI);
+		text_2.setBounds(10, 209, 353, 79);
+		props.setLook( text_2 );
+		text_2.setText( selectedrepodetails.get( "description" ).toString() );
 
-				RepositoryModel model = new RepositoryModel();
-				model.setId("PentahoEnterpriseRepository");
-				model.setDisplayName(text_reponame.getText());
-				model.setUrl(text_repourl.getText());
-				model.setDescription(text_description.getText());
-				model.setDefault(false);
-				model.setEdit(true);
-				model.setOriginalName(text_reponame.getText());
-				boolean updateresult= false;
-				updateresult=controller.updateRepository( model.getId(), controller.modelToMap( model ) );
-				System.out.println("update result :"+updateresult);
-				System.out.println("repo updation successful");
-				getShell().close();
 
+		Button btnCreate = new Button(this, SWT.NONE);
+		btnCreate.setBounds(10, 387, 105, 35);
+		btnCreate.setText(" update ");
+		props.setLook( btnCreate );
+
+		Button btnHelp = new Button(this, SWT.NONE);
+		btnHelp.setBounds(289, 529, 105, 35);
+		btnHelp.setText(" help ");
+		props.setLook( btnHelp );
+
+		Button btnCheckoxdefault = new Button(this, SWT.CHECK);
+		btnCheckoxdefault.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+
+				if (btnCheckoxdefault.getSelection())
+					defaultflag=true;
+				else
+					defaultflag=false;
 			}
 		});
+		btnCheckoxdefault.setBounds(10, 313, 297, 25);
+		btnCheckoxdefault.setText("Launch connection on startup");
+		//btnCheckoxdefault.setSelection( (Boolean) selectedrepodetails.get( "default" ) );
+		props.setLook( btnCheckoxdefault );
 
-		createContents();
+		setText("Update repository");
+		setSize(429, 634);
+		setImage( LOGO );
+		setBackground( new Color( getShell().getDisplay(), 255, 255, 255 ) );
+
 	}
 
-	/**
-	 * Create contents of the shell.
-	 */
-	protected void createContents() {
-		setText("SWT Application");
-		setSize(1071, 634);
-
-	}
 
 	@Override
 	protected void checkSubclass() {

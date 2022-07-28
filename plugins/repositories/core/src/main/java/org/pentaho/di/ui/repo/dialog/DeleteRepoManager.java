@@ -3,121 +3,75 @@ package org.pentaho.di.ui.repo.dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Label;
+import org.json.simple.JSONObject;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 
-import java.util.Map;
-import java.util.stream.Stream;
-
 public class DeleteRepoManager extends Shell {
-    private Text text_reponame;
-    private Text text_repourl;
-    private Text text_description;
-    Map<String, String> repodetailsmap;
-    String reponame;
-    private RepositoryConnectController controller;
 
+  private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
+  private PropsUI props;
 
-    public DeleteRepoManager(Map<String, String> repodetailsmap, String reponame) {
+  public void deleteRepository( JSONObject selectedrepodetails) {
+    try {
+      Display display = Display.getDefault();
 
-        this.repodetailsmap=repodetailsmap;
-        this.reponame=reponame;
-        System.out.println("delete default constructor called");
-    }
-
-
-    public  void deleteArepoManager(RepositoryConnectController controller) {
-        this.controller=controller;
-        System.out.println("method called deleteArepoManager");
-
-        Stream.of(repodetailsmap.keySet().toString())
-                .forEach(System.out::println);
-        System.out.println("reponame :"+reponame);
-        //System.out.println(" selection event in update : "+selectionEvent.getSource());
-        try {
-            Display display = Display.getDefault();
-            DeleteRepoManager shell = new DeleteRepoManager(display,controller,repodetailsmap,reponame);
-            shell.open();
-            shell.layout();
-            while (!shell.isDisposed()) {
-                if (!display.readAndDispatch()) {
-                    display.sleep();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+      DeleteRepoManager shell = new DeleteRepoManager(display, selectedrepodetails );
+      shell.open();
+      shell.layout();
+      while (!shell.isDisposed()) {
+        if (!display.readAndDispatch()) {
+          display.sleep();
         }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    /**
-     * Create the shell.
-     * @param display
-     */
-    public DeleteRepoManager(Display display,RepositoryConnectController controller,Map<String, String> repodetailsmap, String reponame) {
-        super(display, SWT.SHELL_TRIM);
+  /**
+   * Create the shell.
+   * @param display
+   * @param selectedrepodetails
+   */
+  public DeleteRepoManager( Display display, JSONObject selectedrepodetails ) {
+    super(display, SWT.SHELL_TRIM);
+    this.props = PropsUI.getInstance();
 
-        System.out.println("update repo manager constructor 2");
-        System.out.println("repo name :"+reponame);
+    Button btnDelete = new Button(this, SWT.NONE);
+    btnDelete.setBounds(342, 106, 105, 35);
+    btnDelete.setText("Delete");
 
+    Label lblDoYouWant = new Label(this, SWT.NONE);
+    lblDoYouWant.setBounds(10, 27, 447, 25);
+    lblDoYouWant.setText("do you want to delete the repository -"+selectedrepodetails.get( "displayName" ));
+    props.setLook( lblDoYouWant);
 
-        Label lblRepoName = new Label(this, SWT.NONE);
-        lblRepoName.setBounds(37, 134, 240, 25);
-        lblRepoName.setText("Repo name");
+    setText("Delete repository");
+    setSize(513, 228);
+    setImage( LOGO );
+    setBackground( new Color( getShell().getDisplay(), 255, 255, 255 ) );
 
-        text_reponame = new Text(this, SWT.BORDER);
-        text_reponame.setBounds(37, 165, 297, 31);
-        text_reponame.setText(reponame);
-        text_reponame.setEditable(false);
+    btnDelete.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent event) {
 
-        Label lblRepoUrl = new Label(this, SWT.NONE);
-        lblRepoUrl.setBounds(37, 218, 81, 25);
-        lblRepoUrl.setText("Repo url");
-
-        text_repourl = new Text(this, SWT.BORDER);
-        text_repourl.setBounds(37, 249, 297, 31);
-        text_repourl.setText(repodetailsmap.get(reponame).substring(0,repodetailsmap.get(reponame).indexOf("~")));
-        text_repourl.setEditable(false);
-
-        Label lblDescription = new Label(this, SWT.NONE);
-        lblDescription.setBounds(37, 297, 174, 25);
-        lblDescription.setText("Description");
-
-        text_description = new Text(this, SWT.BORDER);
-        text_description.setBounds(37, 328, 297, 31);
-        text_description.setText(repodetailsmap.get(reponame).substring(repodetailsmap.get(reponame).lastIndexOf("~") + 1));
-        text_description.setEditable(false);
+        boolean deleteresult= false;
+        deleteresult= RepositoryConnectController.getInstance().deleteRepository(selectedrepodetails.get( "displayName" ).toString());
+        getShell().close();
+      }
+    });
+  }
 
 
-        Button btnDelete = new Button(this, SWT.NONE);
-        btnDelete.setBounds(37, 388, 105, 35);
-        btnDelete.setText("delete");
-        btnDelete.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent event) {
-                System.out.println("clicked on delete shell");
-
-
-                boolean deleteresult= false;
-                deleteresult= controller.deleteRepository(text_reponame.getText());
-                System.out.println("delete result :"+deleteresult);
-                System.out.println("repo deletion successful");
-                getShell().close();
-
-            }
-        });
-
-        createContents();
-    }
-
-    /**
-     * Create contents of the shell.
-     */
-    protected void createContents() {
-        setText("SWT Application");
-        setSize(1071, 634);
-    }
-
-    @Override
-    protected void checkSubclass() {
-        // Disable the check that prevents subclassing of SWT components
-    }
+  @Override
+  protected void checkSubclass() {
+    // Disable the check that prevents subclassing of SWT components
+  }
 }
