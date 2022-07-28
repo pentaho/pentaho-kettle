@@ -43,6 +43,7 @@ BUILD_ORDER_REPORT: false
 
 # SCM
 SCM_CREDENTIALS_ID: github-buildguy
+SCM_API_TOKEN_CREDENTIALS_ID: github-api-token-buildguy
 DEFAULT_BRANCH: master
 
 # Version control properties
