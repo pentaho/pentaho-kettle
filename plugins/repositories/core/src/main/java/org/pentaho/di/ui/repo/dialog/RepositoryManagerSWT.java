@@ -4,160 +4,207 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
+import java.util.List;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class RepositoryManagerSWT extends Shell {
+public class RepositoryManagerSWT extends Dialog {
 
 	private Display display;
 	private Shell shell;
+	private PropsUI props;
 	private static Class<?> PKG = RepositoryConnectionSWT.class;
 	private static final String MANAGER_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Manager.Title" );
 	private LogChannelInterface log =
 			KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryManagerSWT.class );
 	private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
 
-	public RepositoryManagerSWT(Shell shell, RepositoryConnectController controller ) {
-		//  this.controller = controller;
-		this.shell = shell;
-		this.display = shell.getDisplay();
+	public RepositoryManagerSWT( Shell shell) {
+		super( shell, SWT.NONE );
+		this.props = PropsUI.getInstance();
 	}
 	/**
 	 * Launch the application.
 	 *
 	 */
-	public  void createDialog(RepositoryConnectController controller) {
+	public  void createDialog() {
+		Shell parent = getParent();
+		display = parent.getDisplay();
+
+		shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX );
+		props.setLook( shell );
+		shell.setLayout( new FormLayout() );
+		shell.setText( MANAGER_TITLE );
+		shell.setImage( LOGO );
+
 		try {
-			Display display = Display.getDefault();
-			RepositoryManagerSWT shell = new RepositoryManagerSWT(display,controller);
+
+			Composite composite = new Composite( shell, SWT.COLOR_GRAY );
+			composite.setBounds( 10, 10, 940, 582 );
+
+			Label lblExistingRepos = new Label( composite, SWT.BOLD );
+			lblExistingRepos.setBounds( 268, 21, 157, 25 );
+			lblExistingRepos.setText( "Existing repositories" );
+
+
+			List<JSONObject> repoLists = RepositoryConnectController.getInstance().getRepositories();
+
+
+			Table table = new Table( composite, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL );
+			table.setHeaderVisible( true );
+			table.setLinesVisible( true );
+			table.setBounds( 15, 60, 652, 496 );
+			int columnCount = 3;
+			TableColumn column_repoName= new TableColumn( table, SWT.NONE );
+				TableColumn column_repoURL =  new TableColumn( table, SWT.NONE );
+				TableColumn column_repoDesc = new TableColumn( table, SWT.NONE );
+			column_repoName.setText( " repo name " );
+			column_repoURL.setText( " repo url " );
+			column_repoDesc.setText( " repo desc " );
+
+			int itemCount = repoLists.size();
+			for ( int i = 0; i < itemCount; i++ ) {
+				TableItem item = new TableItem( table, SWT.NONE );
+
+				item.setText( new String[] {
+					repoLists.get( i ).get("displayName"  ).toString(),
+					repoLists.get( i ).get( "url" ).toString(),
+					 repoLists.get( i ).get( "description").toString()
+					 });
+			}
+
+			Listener paintListener = new Listener() {
+				public void handleEvent( Event event) {
+					switch ( event.type ) {
+						case SWT.MeasureItem: {
+							TableItem item = ( TableItem ) event.item;
+							String text = getText( item, event.index );
+							Point size = event.gc.textExtent( text );
+							event.width = size.x;
+							event.height = Math.max( event.height, size.y );
+							break;
+						}
+						case SWT.PaintItem: {
+							TableItem item = ( TableItem ) event.item;
+							String text = getText( item, event.index );
+							Point size = event.gc.textExtent( text );
+							int offset2 = event.index == 0 ? Math.max( 0, ( event.height - size.y ) / 2 ) : 0;
+							event.gc.drawText( text, event.x, event.y + offset2, true );
+							break;
+						}
+						case SWT.EraseItem: {
+							event.detail &= ~SWT.FOREGROUND;
+							break;
+						}
+					}
+				}
+
+				String getText( TableItem item, int column ) {
+					String text = item.getText( column );
+					if ( column != 0 ) {
+						int index = table.indexOf( item );
+						if ( ( index + column ) % 3 == 1 ) {
+							text += "\n";
+						}
+						if ( ( index + column ) % 3 == 2 ) {
+							text += "\n\n";
+						}
+					}
+					return text;
+				}
+			};
+			table.addListener( SWT.MeasureItem, paintListener );
+			table.addListener( SWT.PaintItem, paintListener );
+			table.addListener( SWT.EraseItem, paintListener );
+			for ( int i = 0; i < columnCount; i++ ) {
+				table.getColumn( i ).pack();
+			}
+
+			Button btnCreateNew = new Button( composite, SWT.NONE );
+			btnCreateNew.setBounds( 720, 126, 100, 35 );
+			btnCreateNew.setText("  Create new  ");
+			props.setLook( btnCreateNew );
+
+			Button btnUpdate = new Button( composite, SWT.NONE );
+			btnUpdate.setBounds( 720, 183, 100, 35 );
+			btnUpdate.setText( "   Update   " );
+			props.setLook( btnUpdate );
+
+			Button btnDelete = new Button( composite, SWT.NONE );
+			btnDelete.setBounds( 720, 251, 100, 35 );
+			btnDelete.setText( "  Delete   " );
+			props.setLook( btnDelete );
+
+			//********** button implementation for create new repo ***************
+			btnCreateNew.addListener(SWT.Selection, new Listener() {
+				public void handleEvent(Event event) {
+					new CreateRepoManager( shell.getDisplay()).createNewRepo();
+				}
+			});
+
+			//********** button implementation for update repo ***************
+			btnUpdate.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent event) {
+
+					int i = table.getSelectionIndex();
+					if( i < 0 ){
+						MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
+							SWT.ICON_ERROR | SWT.CANCEL );
+						messageBox.setMessage( "select a repository to update" );
+						messageBox.open();
+					}
+					String selectedRepoName = table.getItem(i).getText();
+					JSONObject selectedRepoNameJSON = RepositoryConnectController.getInstance().getRepository( selectedRepoName );
+
+					new UpdateRepoManager( shell.getDisplay(), selectedRepoNameJSON ).updateRepo( selectedRepoNameJSON);
+				}
+			} );
+
+			btnDelete.addSelectionListener( new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent event) {
+
+					int i = table.getSelectionIndex( );
+					if ( i < 0 ) {
+						MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK | SWT.ICON_ERROR | SWT.CANCEL );
+						messageBox.setMessage( "select a repository to delete" );
+						messageBox.open();
+					}
+					String selectedRepoName = table.getItem( i ).getText();
+					JSONObject selectedRepoDetails = RepositoryConnectController.getInstance( ).getRepository( selectedRepoName );
+
+					new DeleteRepoManager( shell.getDisplay(), selectedRepoDetails ).deleteRepository( selectedRepoDetails );
+				}
+			} );
+			shell.pack();
+			shell.setMinimumSize( 900, 700 );
 			shell.open();
-			shell.layout();
-			while (!shell.isDisposed()) {
-				if (!display.readAndDispatch()) {
+			while (!shell.isDisposed() ) {
+				if ( !display.readAndDispatch() ) {
 					display.sleep();
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch ( Exception e ) {
+			log.logError("Error ", e );
 		}
-	}
-
-	/**
-	 * Create the shell.
-	 * @param display
-	 */
-	public RepositoryManagerSWT(Display display, RepositoryConnectController controller) {
-		super(display, SWT.SHELL_TRIM);
-/*
-		list fo fetched repos :
-		[{"isDefault":false,"displayName":"loc_repo",
-		"description":"Pentaho repository | http:\/\/localhost:8080\/pentaho",
-		"id":"PentahoEnterpriseRepository","url":"http:\/\/172.20.43.98:8080\/pentaho"
-		},
-		{
-		"isDefault":false,"displayName":"loc_repo_other",
-		"description":"Pentaho repository other | http:\/\/localhost:8080\/pentaho",
-		"id":"PentahoEnterpriseRepository","url":"http:\/\/172.20.43.98:8080\/pentaho"
-		}
-		]
-*/
-
-//		String[] ITEMS = { "A", "B", "C", "D" };
-
-/*
-
-		JSONArray arr = new JSONArray(obj);
-		for (int i = 0; i < arr.length(); i++) { // Walk through the Array.
-			JSONObject obj = arr.getJSONObject(i);
-			JSONArray arr2 = obj.getJSONArray("fileName");
-			// Do whatever.
-		}
-*/
-
-		Composite composite = new Composite(this, SWT.NONE);
-		composite.setBounds(10, 10, 907, 582);
-
-		Label lblExistingRepos = new Label(composite, SWT.NONE);
-		lblExistingRepos.setBounds(268, 21, 147, 25);
-		lblExistingRepos.setText("Existing repos");
-
-		List list = new List(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
-		list.setBounds(10, 60, 652, 496);
-
-		java.util.List<JSONObject> repolist = controller.getRepositories();
-		// Add the items, one by one
-/*		for (int i = 0, n = ITEMS.length; i < n; i++) {
-			list.add(ITEMS[i]);
-		}*/
-
-		Map<String,String> repodetailsmap = new HashMap<>();
-		for (int i = 0; i < repolist.size(); i++) {
-			System.out.println(" value of i:"+i+" "+repolist.get(i).get("displayName"));
-			String listitem="";
-			listitem=repolist.get(i).get("displayName").toString();
-			//+" ("+
-			//		repolist.get(i).get("url").toString()+")";
-//					"repo description :"+repolist.get(i).get("description").toString();
-			System.out.println("listitem :"+listitem);
-
-			repodetailsmap.put(repolist.get(i).get("displayName").toString(),repolist.get(i).get("url").toString()+"~"+repolist.get(i).get("description").toString());
-
-			list.add(listitem);
-		}
-
-
-		Button btnCreateNew = new Button(composite, SWT.NONE);
-		btnCreateNew.setBounds(739, 126, 105, 35);
-		btnCreateNew.setText("  Create new  ");
-		
-		Button btnUpdate = new Button(composite, SWT.NONE);
-		btnUpdate.setBounds(739, 183, 105, 35);
-		btnUpdate.setText("   Update   ");
-		
-		Button btnDelete = new Button(composite, SWT.NONE);
-		btnDelete.setBounds(739, 251, 105, 35);
-		btnDelete.setText("  Delete   ");
-
-		btnCreateNew.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				System.out.println("clicked on create new repo button");
-				new CreateRepoManager().createArepoManager(controller);
-			}
-	});
-		btnUpdate.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				System.out.println("clicked on update new repo button");
-				int i =list.getSelectionIndex();
-				new UpdateRepoManager(repodetailsmap,list.getItem(i)).updateArepoManager(controller);
-			}
-		});
-
-		btnDelete.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				System.out.println("clicked on delete repo button");
-				int i =list.getSelectionIndex();
-				new DeleteRepoManager(repodetailsmap,list.getItem(i)).deleteArepoManager(controller);
-			}
-		});
-
-		createContents();
-	}
-
-	/**
-	 * Create contents of the shell.
-	 */
-	protected void createContents() {
-		setText(MANAGER_TITLE);
-		setSize(937, 646);
-		setImage(LOGO);
 	}
 
 	@Override
