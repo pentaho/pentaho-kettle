@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
 import org.pentaho.di.core.annotations.Step;
 @Step( id = "RssInput", name = "BaseStep.TypeLongDesc.RssInput",
         description = "BaseStep.TypeTooltipDesc.RssInput",
-        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
         image = "RIR.svg",
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Rss",
         i18nPackageName = "org.pentaho.di.trans.steps.rssinput" )
@@ -118,7 +118,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param inputFields
+   * @param urlInFieldin
    *          The urlInField to set.
    */
   public void seturlInField( boolean urlInFieldin ) {
