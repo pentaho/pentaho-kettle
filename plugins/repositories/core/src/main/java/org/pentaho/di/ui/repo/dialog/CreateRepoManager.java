@@ -126,7 +126,6 @@ public class CreateRepoManager extends Shell {
 				}
 			}
 		});
-
 	}
 
 

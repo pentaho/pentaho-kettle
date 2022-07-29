@@ -22,10 +22,10 @@ public class UpdateRepoManager extends Shell {
 	private PropsUI props;
 	boolean defaultflag;
 
-	public void updateRepo( JSONObject selectedrepodetails ) {
+	public void updateRepo( JSONObject selectedRepoDetails ) {
 		try {
 			Display display = Display.getDefault();
-			UpdateRepoManager shell = new UpdateRepoManager(display, selectedrepodetails);
+			UpdateRepoManager shell = new UpdateRepoManager( display, selectedRepoDetails );
 			shell.open();
 			shell.layout();
 			while (!shell.isDisposed()) {
@@ -38,47 +38,42 @@ public class UpdateRepoManager extends Shell {
 		}
 	}
 
-	public UpdateRepoManager(Display display, JSONObject selectedrepodetails) {
+	public UpdateRepoManager( Display display, JSONObject selectedRepoDetails ) {
 		super(display, SWT.SHELL_TRIM );
 		this.props = PropsUI.getInstance();
 
-		Label lblRepoName = new Label(this, SWT.NONE);
-		lblRepoName.setBounds(10, 10, 240, 25);
-		lblRepoName.setText("Display name");
+		Label lblRepoName = new Label( this, SWT.NONE );
+		lblRepoName.setBounds( 10, 10, 240, 25 );
+		lblRepoName.setText( "Display name" );
 		props.setLook( lblRepoName );
 
-
-		System.out.println("data:"+selectedrepodetails);
-
-
-
-		text = new Text(this, SWT.BORDER);
-		text.setBounds(10, 41, 353, 31);
+		text = new Text( this, SWT.BORDER );
+		text.setBounds( 10, 41, 353, 31 );
 		props.setLook( text );
-		text.setText( selectedrepodetails.get( "displayName" ).toString() );
+		text.setText( selectedRepoDetails.get( "displayName" ).toString() );
 		text.setEditable( false );
 
 
-		Label lblRepoUrl = new Label(this, SWT.NONE);
-		lblRepoUrl.setBounds(10, 90, 81, 25);
-		lblRepoUrl.setText("URL");
+		Label lblRepoUrl = new Label( this, SWT.NONE );
+		lblRepoUrl.setBounds(10, 90, 81, 25 );
+		lblRepoUrl.setText( "URL" );
 		props.setLook( lblRepoUrl );
 
-		text_1 = new Text(this, SWT.BORDER);
-		text_1.setBounds(10, 121, 353, 31);
+		text_1 = new Text( this, SWT.BORDER );
+		text_1.setBounds( 10, 121, 353, 31 );
 		props.setLook( text_1 );
-		text_1.setText( selectedrepodetails.get( "url" ).toString() );
+		text_1.setText( selectedRepoDetails.get( "url" ).toString() );
 
 
-		Label lblDescription = new Label(this, SWT.NONE);
-		lblDescription.setBounds(10, 169, 174, 25);
-		lblDescription.setText("Description");
+		Label lblDescription = new Label( this, SWT.NONE );
+		lblDescription.setBounds( 10, 169, 174, 25 );
+		lblDescription.setText( "Description" );
 		props.setLook( lblDescription );
 
 		text_2 = new Text(this, SWT.BORDER | SWT.WRAP  | SWT.MULTI);
-		text_2.setBounds(10, 209, 353, 79);
+		text_2.setBounds(10, 209, 353, 79 );
 		props.setLook( text_2 );
-		text_2.setText( selectedrepodetails.get( "description" ).toString() );
+		text_2.setText( selectedRepoDetails.get( "description" ).toString() );
 
 
 		Button btnCreate = new Button(this, SWT.NONE);
@@ -104,7 +99,6 @@ public class UpdateRepoManager extends Shell {
 		});
 		btnCheckoxdefault.setBounds(10, 313, 297, 25);
 		btnCheckoxdefault.setText("Launch connection on startup");
-		//btnCheckoxdefault.setSelection( (Boolean) selectedrepodetails.get( "default" ) );
 		props.setLook( btnCheckoxdefault );
 
 		setText("Update repository");

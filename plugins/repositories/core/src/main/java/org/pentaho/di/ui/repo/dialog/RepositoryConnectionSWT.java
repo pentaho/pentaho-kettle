@@ -4,7 +4,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.program.Program;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -121,7 +129,7 @@ public class RepositoryConnectionSWT extends Dialog {
           if ( str_passwd.isEmpty() ) {
             MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
               SWT.ICON_ERROR | SWT.CANCEL );
-            messageBox.setMessage( "password can not be blank" );
+            messageBox.setMessage( "password cannot be blank" );
             messageBox.open();
           } else {
             callLoginEndPoint( str_repoName, str_username, str_passwd );
@@ -142,7 +150,6 @@ public class RepositoryConnectionSWT extends Dialog {
   }
 
   void callLoginEndPoint( String str_repoName, String str_username, String str_passwd ) {
-
     try {
       if ( RepositoryConnectController.getInstance().isRelogin() == true ) {
         RepositoryConnectController.getInstance().reconnectToRepository( str_repoName, str_username, str_passwd );
