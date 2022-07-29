@@ -605,6 +605,18 @@
           </exclusions>
         </dependency>
         <dependency>
+          <groupId>pentaho</groupId>
+          <artifactId>pentaho-s3-vfs-plugin</artifactId>
+          <version>${big-data-plugin.version}</version>
+          <type>zip</type>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
           <groupId>org.pentaho.di.plugins</groupId>
           <artifactId>kettle-json-plugin</artifactId>
           <version>${pdi-json-plugin.version}</version>
