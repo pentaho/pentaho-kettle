@@ -87,8 +87,8 @@ public class RepositoryManagerSWT extends Dialog {
 
 				item.setText( new String[] {
 					repoLists.get( i ).get("displayName"  ).toString(),
-					repoLists.get( i ).get( " url " ).toString(),
-					 repoLists.get( i ).get( " description ").toString()
+					repoLists.get( i ).get( "url" ).toString(),
+					 repoLists.get( i ).get( "description").toString()
 					 });
 			}
 

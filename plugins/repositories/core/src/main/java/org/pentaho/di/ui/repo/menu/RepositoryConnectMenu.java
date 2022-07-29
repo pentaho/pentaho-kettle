@@ -198,7 +198,9 @@ public class RepositoryConnectMenu {
         managerItem.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
-            new RepositoryManagerSWT( spoon.getShell() ).createDialog();
+
+              new RepositoryManagerSWT( spoon.getShell() ).createDialog();
+
             renderAndUpdate();
           }
         } );
