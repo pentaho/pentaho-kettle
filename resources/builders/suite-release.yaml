@@ -67,6 +67,21 @@ buildProperties:
   SP_RELEASE_VERSION             : '202006'
   DO_AUTO_PATCH                  : false
 
+  # The generate-upgrade-csvs Maven profile in the installer-tool kicks off a process that collects the commits and filenames
+  # of every file maintenance branch's latest SP that are different from the pipeline project branch.  These are committed in
+  # git and pushed back to Github prior to the installer running the regular process to compute the upgrade paths.  The
+  # UPGRADE_FROM_##_VERSION below defines the branch source for analysis to establish the upgrade path.  The UPGRADE_FROM_##_TAG
+  # just helps define the name of the file that the upgrade installer expects to find.
+  UPGRADE_FROM_83_VERSION  : 8.3.0.27
+  UPGRADE_FROM_83_TAG      : 8.3.0.27-R
+  UPGRADE_FROM_92_VERSION  : 9.2.0.4
+  UPGRADE_FROM_92_TAG      : 9.2.0.4-R
+  UPGRADE_FROM_93_VERSION  : 9.3.0.0
+  UPGRADE_FROM_93_TAG      : 9.3.0.0-R
+  UPGRADE_FROM_94_VERSION  : master
+  UPGRADE_FROM_94_TAG      : 9.4.0.0-R
+
+
 jobGroups:
   200:
      - jobID           :  coding-standards
@@ -776,13 +791,75 @@ jobGroups:
        parallelize     :  true
        versionProperty :  pentaho.version
 
+  4700:
+     - jobID           :  generate-upgrade-csvs-from-8.3
+       scmUrl          :  https://github.com/smaring/pentaho-installer.git
+       scmBranch       :  DEVO-1656
+       directives      :
+                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_83_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_83_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
+                 test  :  test
+       root            :  installer-tool
+       testable        :  false
+
+  4800:
+     - jobID           :  generate-upgrade-csvs-from-9.2
+       scmUrl          :  https://github.com/smaring/pentaho-installer.git
+       scmBranch       :  DEVO-1656
+       directives      :  
+                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_92_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_92_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
+                 test  :  test
+       root            :  installer-tool
+       testable        :  false
+
+  4900:
+     - jobID           :  generate-upgrade-csvs-from-9.3
+       scmUrl          :  https://github.com/smaring/pentaho-installer.git
+       scmBranch       :  DEVO-1656
+       directives      :  
+                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_93_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_93_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
+                 test  :  test
+       root            :  installer-tool
+       testable        :  false
+
+  5000:
+     - jobID           :  generate-upgrade-csvs-from-9.4
+       scmUrl          :  https://github.com/smaring/pentaho-installer.git
+       scmBranch       :  DEVO-1656
+       directives      :  
+                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_94_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_94_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
+                 test  :  test
+       root            :  installer-tool
+       testable        :  false
+
+  5100:
+     - jobID           :  commit-push-upgrade-csvs
+       scmUrl          :  https://github.com/smaring/pentaho-installer.git
+       buildFramework  :  DSL_SCRIPT
+       script          :  |
+                          { -> 
+                            script {
+                              echo sh(script: 'env|sort', returnStdout: true)
+                              echo sh(script: 'pwd', returnStdout: true)
+                            }
+                            withCredentials([usernamePassword(credentialsId: '${SCM_CREDENTIALS_ID}', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD' )]) {
+                              sh '''
+                                cd builds/smaring.pentaho-installer.DEVO-1656/installer-tool
+                                git config user.email    "hv.buildguy@hitachivantara.com"
+                                git config user.name     "$GIT_USERNAME"
+                                git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/smaring/pentaho-installer.git
+                                ./commit-push-upgrade-csvs.sh DEVO-1656
+                              '''
+                            }
+                          }
+       testable        :  false
+     
+  5200:
      - jobID           :  installer-tool
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
        dockerImage     :  jenkins-build/installanywhere-installbuilder
        root            :  installer-tool
        versionProperty :  pentaho.version
 
-  4700:
      - jobID           :  patch-installers
        scmUrl          :  https://github.com/pentaho/pentaho-installer-v2.git
        buildFramework  :  DSL_SCRIPT
