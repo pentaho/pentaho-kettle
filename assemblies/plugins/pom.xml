@@ -59,6 +59,7 @@
     <mysql-bulk-load-plugin.version>${project.version}</mysql-bulk-load-plugin.version>
     <repositories-plugin.version>${project.version}</repositories-plugin.version>
     <connections-plugin.version>${project.version}</connections-plugin.version>
+    <meta-inject-plugin.version>${project.version}</meta-inject-plugin.version>
     <jms-streaming-plugin.version>${project.version}</jms-streaming-plugin.version>
     <mqtt-streaming-plugin.version>${project.version}</mqtt-streaming-plugin.version>
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
@@ -634,6 +635,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-avro-format-plugin</artifactId>
       <version>${pdi-avro-format-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>meta-inject-plugins</artifactId>
+      <version>${meta-inject-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
