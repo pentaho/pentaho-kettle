@@ -842,7 +842,7 @@ jobGroups:
                                 cd builds/pentaho.pentaho-installer.master/installer-tool
                                 git config user.email    "hv.buildguy@hitachivantara.com"
                                 git config user.name     "$GIT_USERNAME"
-                                git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/smaring/pentaho-installer.git
+                                git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/pentaho/pentaho-installer.git
                                 ./commit-push-upgrade-csvs.sh master
                               '''
                             }
@@ -855,13 +855,6 @@ jobGroups:
        dockerImage     :  jenkins-build/installanywhere-installbuilder
        root            :  installer-tool
        versionProperty :  pentaho.version
-
-     - jobID           :  patch-installers
-       scmUrl          :  https://github.com/pentaho/pentaho-installer-v2.git
-       buildFramework  :  DSL_SCRIPT
-       script          :  |
-         { -> echo "Don't build only here for branching/tagging" }
-       testable        :  false
    
      - jobID           :  jenkins-pipelines
        scmUrl          :  https://github.com/pentaho/jenkins-pipelines.git
