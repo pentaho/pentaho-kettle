@@ -33,11 +33,18 @@
       <artifactId>jackcess</artifactId>
       <scope>compile</scope>
     </dependency>
-    <!--<dependency>
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libbase</artifactId>
+      <version>${pentaho-reporting.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-core</artifactId>
       <version>${pentaho-reporting.version}</version>
-    </dependency>-->
+      <scope>provided</scope>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
