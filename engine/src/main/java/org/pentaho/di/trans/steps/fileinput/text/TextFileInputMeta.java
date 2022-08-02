@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -281,7 +281,8 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
       content.separator = XMLHandler.getTagValue( stepnode, "separator" );
       content.enclosure = XMLHandler.getTagValue( stepnode, "enclosure" );
       content.breakInEnclosureAllowed = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "enclosure_breaks" ) );
-      content.escapeCharacter = XMLHandler.getTagValue( stepnode, "escapechar" );
+      content.escapeCharacter = ( XMLHandler.getTagValue( stepnode, "escapechar" ) == null ?  ""
+              :  ( XMLHandler.getTagValue( stepnode, "escapechar" ) ) );
       content.header = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "header" ) );
       content.nrHeaderLines = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_headerlines" ), 1 );
       content.footer = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "footer" ) );
@@ -853,7 +854,8 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
       content.separator = rep.getStepAttributeString( id_step, "separator" );
       content.enclosure = rep.getStepAttributeString( id_step, "enclosure" );
       content.breakInEnclosureAllowed = rep.getStepAttributeBoolean( id_step, "enclosure_breaks" );
-      content.escapeCharacter = rep.getStepAttributeString( id_step, "escapechar" );
+      content.escapeCharacter = ( rep.getStepAttributeString( id_step, "escapechar" ) == null ?  ""
+              : ( rep.getStepAttributeString( id_step, "escapechar" ) ) );
       content.header = rep.getStepAttributeBoolean( id_step, "header" );
       content.nrHeaderLines = (int) rep.getStepAttributeInteger( id_step, "nr_headerlines" );
       content.footer = rep.getStepAttributeBoolean( id_step, "footer" );
