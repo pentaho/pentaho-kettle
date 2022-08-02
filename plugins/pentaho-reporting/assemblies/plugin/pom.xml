@@ -17,6 +17,10 @@
   <name>PDI Pentaho Reporting Plugins Distribution</name>
   <description></description>
 
+  <properties>
+    <pentaho-reporting.version>9.4.0.0-SNAPSHOT</pentaho-reporting.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
@@ -27,6 +31,17 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-reporting-plugins-ui</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <!-- Reporting dependencies -->
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libfonts</artifactId>
+      <version>${pentaho-reporting.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.reporting.engine</groupId>
+      <artifactId>classic-core</artifactId>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
   </dependencies>
 

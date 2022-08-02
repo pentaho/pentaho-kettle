@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.orabulkloader;
 
-import org.apache.poi.util.TempFile;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -91,9 +90,10 @@ public class OraBulkLoaderTest {
     oraBulkLoader = spy( new OraBulkLoader( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
       stepMockHelper.transMeta, stepMockHelper.trans ) );
 
-    tempControlFile = TempFile.createTempFile( "control", "test" );
+    String tmpDir = System.getProperty("java.io.tmpdir");
+    tempControlFile = File.createTempFile("control", "test", new File(tmpDir, "orafiles"));
     tempControlFile.deleteOnExit();
-    tempDataFile = TempFile.createTempFile( "data", "test" );
+    tempDataFile = File.createTempFile("data", "test", new File(tmpDir, "orafiles"));
     tempDataFile.deleteOnExit();
     tempControlFilepath = tempControlFile.getAbsolutePath();
     tempDataFilepath = tempDataFile.getAbsolutePath();
