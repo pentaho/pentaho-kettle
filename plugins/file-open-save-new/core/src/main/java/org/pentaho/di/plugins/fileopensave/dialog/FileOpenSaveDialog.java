@@ -98,6 +98,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
+import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
 import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
 import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
@@ -741,11 +742,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private void openFileSelector( File f ) {
-    path = f.getPath();
-    parentPath = f.getParent();
-    type = f.getType();
-    connection = this.fileDialogOperation.getConnection();
-    provider = f.getProvider();
+    setStateVariablesFromSelection( f );
   }
 
   private void setButtonOpenState() {
@@ -803,9 +800,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private void openStructuredSelectionPath( IStructuredSelection selection ) {
     IStructuredSelection selectedFileTreeViewer = selection.isEmpty() ? null : selection;
     if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof Directory ) {
-      path = ( (Directory) selectedFileTreeViewer.getFirstElement()).getPath();
-      parentPath = ( (Directory) selectedFileTreeViewer.getFirstElement()).getParent();
-      provider = ( (Directory) selectedFileTreeViewer.getFirstElement()).getProvider();
+      setStateVariablesFromSelection( selectedFileTreeViewer );
       name = null;
     } else if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof File ) {
       String tempName = ( (File) selectedFileTreeViewer.getFirstElement() ).getPath();
@@ -823,27 +818,33 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       } else {
         name = tempName;
       }
-      path = ( (File) selectedFileTreeViewer.getFirstElement()).getPath();
-      parentPath = ( (File) selectedFileTreeViewer.getFirstElement()).getParent();
-      provider = ( (File) selectedFileTreeViewer.getFirstElement()).getProvider();
-      if ( ( selectedFileTreeViewer.getFirstElement() ) instanceof RepositoryFile ) {
-        objectId = ( (RepositoryFile) selectedFileTreeViewer.getFirstElement() ).getObjectId();
-      }
+      setStateVariablesFromSelection( selectedFileTreeViewer );
     }
   }
   private void saveStructuredSelectionPath( IStructuredSelection selection ) {
     IStructuredSelection selectedFileTreeViewer = selection.isEmpty() ? null : selection;
-    if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof Directory ) {
-      path = ( (Directory) selectedFileTreeViewer.getFirstElement() ).getPath();
-      parentPath = ( (Directory) selectedFileTreeViewer.getFirstElement() ).getParent();
-      provider = ( (Directory) selectedFileTreeViewer.getFirstElement() ).getProvider();
-    } else if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof File ) {
-      path = ( (File)  selectedFileTreeViewer.getFirstElement() ).getPath();
-      parentPath = ( (File)  selectedFileTreeViewer.getFirstElement() ).getParent();
-      provider = ( (File)  selectedFileTreeViewer.getFirstElement() ).getProvider();
+    if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof File ) {
+      setStateVariablesFromSelection( selectedFileTreeViewer );
     }
   }
 
+  private void setStateVariablesFromSelection( IStructuredSelection selectedFileTreeViewer ) {
+    setStateVariablesFromSelection( (File) selectedFileTreeViewer.getFirstElement() );
+  }
+
+  private void setStateVariablesFromSelection( File f ) {
+    path = f.getPath();
+    parentPath = f.getParent();
+    provider = f.getProvider();
+    if ( f instanceof VFSFile ) {
+      connection = ( (VFSFile) f ).getConnection();
+      parentPath = ( (VFSFile) f ).getConnectionParentPath();
+      path = ( (VFSFile) f ).getConnectionPath();
+    }
+    if ( f instanceof RepositoryFile ) {
+      objectId = ( (RepositoryFile) f ).getObjectId();
+    }
+  }
 
 
   private boolean addFolder( String newFolderName ) {
