@@ -50,10 +50,22 @@
     <databricks.version>4.0.0</databricks.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <jface.version>3.22.0</jface.version>
+    <pentaho-metadata.version>9.4.0.0-SNAPSHOT</pentaho-metadata.version>
+    <xml-graphics-common.version>2.2</xml-graphics-common.version>
   </properties>
 
   <dependencies>
     <!-- kettle -->
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pentaho-metadata</artifactId>
+      <version>${pentaho-metadata.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>xmlgraphics-commons</artifactId>
+      <version>${xml-graphics-common.version}</version>
+    </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
@@ -281,79 +293,8 @@
 
     <!--  Pentaho reporting dependencies -->
     <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-drill-down</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-kettle</artifactId>
-      <version>${pentaho-reporting.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.woodstox</groupId>
-          <artifactId>wstx-asl</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-mondrian</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-olap4j</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-pmd</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-reportdesigner-parser</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-sampledata</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-scripting</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-toc</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-xpath</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>legacy-charts</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>legacy-functions</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>wizard-core</artifactId>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libformula</artifactId>
       <version>${pentaho-reporting.version}</version>
     </dependency>
 
