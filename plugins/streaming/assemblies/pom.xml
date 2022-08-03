@@ -17,6 +17,7 @@
   <name>Pentaho Streaming Plugin Assembly</name>
 
   <modules>
-    <module>feature</module>
+    <module>jms-plugin</module>
+    <module>mqtt-plugin</module>
   </modules>
 </project>
