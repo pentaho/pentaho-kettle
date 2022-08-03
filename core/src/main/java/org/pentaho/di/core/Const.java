@@ -1597,6 +1597,14 @@ public class Const {
   public static final String KETTLE_AUTO_UPDATE_SITE_FILE = "KETTLE_AUTO_UPDATE_SITE_FILE";
 
   /**
+   * If true, use a cache when loading Trans/Job/Step metas vs reading from file system/repository for each load.
+   * Note: cache is currently broken; variable spaces do not get replaced upon loads of the same meta, so parameters
+   * that have changed do not get updated.  This should be off by default.
+   */
+  public static final String KETTLE_USE_META_FILE_CACHE = "KETTLE_USE_META_FILE_CACHE";
+  public static final String KETTLE_USE_META_FILE_CACHE_DEFAULT = "N";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *
