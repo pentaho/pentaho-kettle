@@ -59,6 +59,7 @@
     <mysql-bulk-load-plugin.version>${project.version}</mysql-bulk-load-plugin.version>
     <repositories-plugin.version>${project.version}</repositories-plugin.version>
     <connections-plugin.version>${project.version}</connections-plugin.version>
+    <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
   </properties>
 
   <dependencies>
@@ -593,7 +594,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-s3-vfs-plugin</artifactId>
-      <version>${big-data-plugin.version}</version>
+      <version>${pentaho-s3-vfs-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
