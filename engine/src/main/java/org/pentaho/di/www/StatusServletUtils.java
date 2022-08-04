@@ -54,7 +54,7 @@ class StatusServletUtils {
     String mantleThemeCss = "mantleRuby.css";
 
     try {
-      String relativePathSeparator = ".." + File.separator + ".." + File.separator;
+      String relativePathSeparator = ".." + File.separator;
 
       // Read in currently set theme from pentaho.xml file
       String themeSetting = relativePathSeparator
@@ -63,7 +63,11 @@ class StatusServletUtils {
 
       // Check if file exists (may be different location depending on how server was started)
       if ( !f.exists() ) {
-        relativePathSeparator = ".." + File.separator;
+        //on loading pentaho by startup.bat or windows service, the relative paths are different. This is meant to allow both types of execution
+        relativePathSeparator = ".." + File.separator + ".." + File.separator;
+        themeSetting =  relativePathSeparator
+          + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
+        f = new File( themeSetting );
       }
 
       DocumentBuilderFactory dbFactory = XmlParserFactoryProducer.createSecureDocBuilderFactory();
