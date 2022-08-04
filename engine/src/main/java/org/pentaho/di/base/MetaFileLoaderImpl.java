@@ -326,7 +326,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
   }
 
   private T attemptCacheRead( String realFilename ) {
-    if ( "N".equalsIgnoreCase( System.getProperty( Const.KETTLE_USE_META_FILE_CACHE, Const.KETTLE_USE_META_FILE_CACHE_DEFAULT ) ) || metaFileCache == null ) {
+    if ( metaFileCache == null ) {
       return null;
     }
     return isTransMeta()
