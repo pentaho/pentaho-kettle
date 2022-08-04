@@ -791,63 +791,63 @@ jobGroups:
        parallelize     :  true
        versionProperty :  pentaho.version
 
-  4700:
-     - jobID           :  generate-upgrade-csvs-from-8.3
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       directives      :
-                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_83_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_83_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
-                 test  :  test
-       root            :  installer-tool
-       testable        :  false
+#  4700:
+#     - jobID           :  generate-upgrade-csvs-from-8.3
+#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+#       directives      :
+#                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_83_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_83_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
+#                 test  :  test
+#       root            :  installer-tool
+#       testable        :  false
 
-  4800:
-     - jobID           :  generate-upgrade-csvs-from-9.2
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       directives      :  
-                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_92_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_92_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
-                 test  :  test
-       root            :  installer-tool
-       testable        :  false
+#  4800:
+#     - jobID           :  generate-upgrade-csvs-from-9.2
+#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+#       directives      :  
+#                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_92_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_92_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
+#                 test  :  test
+#       root            :  installer-tool
+#       testable        :  false
 
-  4900:
-     - jobID           :  generate-upgrade-csvs-from-9.3
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       directives      :  
-                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_93_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_93_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
-                 test  :  test
-       root            :  installer-tool
-       testable        :  false
+#  4900:
+#     - jobID           :  generate-upgrade-csvs-from-9.3
+#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+#       directives      :  
+#                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_93_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_93_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
+#                 test  :  test
+#       root            :  installer-tool
+#       testable        :  false
 
-  5000:
-     - jobID           :  generate-upgrade-csvs-from-9.4
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       directives      :  
-                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_94_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_94_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
-                 test  :  test
-       root            :  installer-tool
-       testable        :  false
+#  5000:
+#     - jobID           :  generate-upgrade-csvs-from-9.4
+#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+#       directives      :  
+#                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_94_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_94_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
+#                 test  :  test
+#       root            :  installer-tool
+#       testable        :  false
 
-  5100:
-     - jobID           :  commit-push-upgrade-csvs
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       buildFramework  :  DSL_SCRIPT
-       script          :  |
-                          { -> 
-                            script {
-                              echo sh(script: 'env|sort', returnStdout: true)
-                              echo sh(script: 'pwd', returnStdout: true)
-                            }
-                            withCredentials([usernamePassword(credentialsId: '${SCM_CREDENTIALS_ID}', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD' )]) {
-                              sh '''
-                                cd builds/pentaho.pentaho-installer.master/installer-tool
-                                git config user.email    "hv.buildguy@hitachivantara.com"
-                                git config user.name     "$GIT_USERNAME"
-                                git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/pentaho/pentaho-installer.git
-                                ./commit-push-upgrade-csvs.sh master
-                              '''
-                            }
-                          }
-       testable        :  false
+#  5100:
+#     - jobID           :  commit-push-upgrade-csvs
+#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+#       buildFramework  :  DSL_SCRIPT
+#       script          :  |
+#                          { -> 
+#                            script {
+#                              echo sh(script: 'env|sort', returnStdout: true)
+#                              echo sh(script: 'pwd', returnStdout: true)
+#                            }
+#                            withCredentials([usernamePassword(credentialsId: '${SCM_CREDENTIALS_ID}', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD' )]) {
+#                              sh '''
+#                                cd builds/pentaho.pentaho-installer.master/installer-tool
+#                                git config user.email    "hv.buildguy@hitachivantara.com"
+#                                git config user.name     "$GIT_USERNAME"
+#                                git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/pentaho/pentaho-installer.git
+#                                ./commit-push-upgrade-csvs.sh master
+#                              '''
+#                            }
+#                          }
+#       testable        :  false
      
   5200:
      - jobID           :  installer-tool
