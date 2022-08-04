@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1746,7 +1746,7 @@ public class TransMeta extends AbstractMeta
 
     for ( int i = 0; i < stepMeta.length; i++ ) {
       RowMetaInterface flds = getStepFields( stepMeta[i] );
-      if ( flds != null ) {
+      if ( flds != null && !flds.isEmpty() ) {
         fields.mergeRowMeta( flds, stepMeta[i].getName() );
       }
     }
