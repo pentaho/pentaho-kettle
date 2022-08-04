@@ -96,6 +96,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
+import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
@@ -445,13 +446,32 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private void processOnSavePressed( File file ) {
     if ( file != null ) {
 
-      parentPath = file.getParent();
-      type = fileDialogOperation.getFileType();
-      if ( file instanceof Directory ) {
-        path = file.getPath();
-      } else {
-        path = file.getParent();
+      // Local File Provider
+      if ( file instanceof LocalFile ) {
+        parentPath = file.getParent();
+        if ( file instanceof Directory ) {
+          path = file.getPath();
+        } else {
+          path = file.getParent();
+        }
+      } else if ( file instanceof RepositoryFile ) {
+        path = null; // Path isn't used, only `parentPath` is used
+        if ( file instanceof Directory ) {
+          parentPath = file.getPath();
+        } else {
+          parentPath = file.getParent();
+        };
+      } else if ( file instanceof VFSFile ) {
+        connection = ( (VFSFile) file).getConnection();
+        parentPath = file.getParent();
+        if ( file instanceof Directory ) {
+          path = file.getPath();
+        } else {
+          path = file.getParent();
+        }
       }
+      // Properties needed for all file types
+      type = fileDialogOperation.getFileType();
       name = txtFileName.getText().contains( FILE_PERIOD ) ? txtFileName.getText().split(  "\\" + FILE_PERIOD )[0] : txtFileName.getText();
       provider = file.getProvider();
 
@@ -567,8 +587,30 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       new FlatButton( fileButtons, SWT.NONE ).setEnabledImage( rasterImage( "img/Refresh.S_D.svg", 32, 32 ) )
         .setDisabledImage( rasterImage( "img/Refresh.S_D_disabled.svg", 32, 32 ) )
         .setToolTipText( BaseMessages.getString( PKG, "file-open-save-plugin.app.refresh.button" ) )
-        .setLayoutData( new RowData() ).setEnabled( true );
-
+        .setLayoutData( new RowData() ).setEnabled( true ).addListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected( SelectionEvent selectionEvent ) {
+                  StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
+                  TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
+                  FileProvider fileProvider = null;
+                  if (!fileTableViewerSelection.isEmpty()) {
+                    FILE_CONTROLLER.clearCache( ( (File) fileTableViewerSelection.getFirstElement() ) );
+                    treeViewer.refresh(true);
+                    fileTableViewer.refresh( fileTableViewerSelection.getFirstElement() );
+                  } else if ( !treeViewerSelection.isEmpty() ) {
+                    treeViewer.refresh( treeViewerSelection.getFirstElement(), true);
+                    FILE_CONTROLLER.clearCache( ( (File) treeViewerSelection.getFirstElement() ) );
+                  } else {
+                    try{
+                      fileProvider = ProviderServiceService.INSTANCE.get().get(fileDialogOperation.getProvider());
+                      fileProvider.clearProviderCache();
+                      treeViewer.refresh(true);
+                    } catch (Exception ex) {
+                      // Ignored
+                    }
+                  }
+                }
+              });
     txtNav = new Text( buttons, SWT.BORDER );
 
     this.txtNav.setEditable( true );
@@ -617,7 +659,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.setExpandedState( selectedNode, true );
       }
       // Update the path that is selected
-      selectPath( selectedNode );
+      selectPath( selectedNode, false );
       // Clears the selection from fileTableViewer
       fileTableViewer.setSelection( new StructuredSelection() );
       processState();
@@ -700,6 +742,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         // Sets the name
         if ( txtFileName != null && !( selectedNode instanceof Directory ) ) {
           txtFileName.setText( ( (File) selectedNode ).getName() );
+          name = ( (File) selectedNode ).getName();
         }
         processState();
       }
@@ -880,7 +923,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       if ( fileProvider != null ) {
         fileProvider.createDirectory( parentPathOfSelection, (File) selection, newFolderName );
         FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
-        treeViewer.refresh( treeViewerDestination );
+        treeViewer.refresh( treeViewerDestination, true);
 
         selectPath( treeViewerDestination, false );
 
@@ -1002,6 +1045,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
       flatBtnAdd.setEnabled( false );
       processState();
+
     } else if ( selectedElement instanceof Directory ) {
       try {
         fileTableViewer.setInput( FILE_CONTROLLER.getFiles( (File) selectedElement, null, useCache ).stream().sorted(
