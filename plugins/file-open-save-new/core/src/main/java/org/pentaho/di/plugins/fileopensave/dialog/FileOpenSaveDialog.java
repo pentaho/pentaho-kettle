@@ -836,6 +836,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     path = f.getPath();
     parentPath = f.getParent();
     provider = f.getProvider();
+    type = f.getType();
     if ( f instanceof VFSFile ) {
       connection = ( (VFSFile) f ).getConnection();
       parentPath = ( (VFSFile) f ).getConnectionParentPath();
