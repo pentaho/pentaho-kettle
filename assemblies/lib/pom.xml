@@ -625,6 +625,19 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- pentaho-big-data-legacy-core is required in both artifacts because of the dependency in kafka streaming plugin -->
+    <!-- otherwise this is only needed by the big data plugin -->
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-big-data-legacy-core</artifactId>
+      <version>${big-data-plugin.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!--OSGi Dependencies-->
     <!--Because of:-->
     <!--pentaho-platform-core (PentahoSystem) and pdi-osgi-bridge-core (KarafLifecycleListener and OSGIPluginRegistryExtension)-->
@@ -677,17 +690,6 @@
           <groupId>org.pentaho</groupId>
           <artifactId>shim-api-core</artifactId>
           <version>${pentaho-hadoop-shims.version}</version>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>pentaho</groupId>
-          <artifactId>pentaho-big-data-legacy-core</artifactId>
-          <version>${big-data-plugin.version}</version>
           <exclusions>
             <exclusion>
               <groupId>*</groupId>
