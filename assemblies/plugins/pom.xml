@@ -642,7 +642,19 @@
         </exclusion>
       </exclusions>
     </dependency>
-</dependencies>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-streaming-kafka-plugin-zip</artifactId>
+      <version>${big-data-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
   <profiles>
     <profile>
       <id>standard</id>
