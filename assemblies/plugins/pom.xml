@@ -62,6 +62,7 @@
     <jms-streaming-plugin.version>${project.version}</jms-streaming-plugin.version>
     <mqtt-streaming-plugin.version>${project.version}</mqtt-streaming-plugin.version>
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
+    <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
   </properties>
 
   <dependencies>
@@ -621,6 +622,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-streaming-mqtt-plugin-zip</artifactId>
       <version>${mqtt-streaming-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pdi-avro-format-plugin</artifactId>
+      <version>${pdi-avro-format-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

@@ -1,0 +1,55 @@
+<step>
+    <name>Avro output</name>
+    <type>AvroOutput</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+        <method>none</method>
+        <schema_name />
+    </partitioning>
+    <filename>hdfs://username:password@cluster.host.internal:8020/user/out/avro_test/output.avro</filename>
+    <overrideOutput>N</overrideOutput>
+    <fields>
+        <field>
+            <path>ID</path>
+            <name>ID</name>
+            <type>3</type>
+            <precision>0</precision>
+            <scale>0</scale>
+            <nullable>Y</nullable>
+            <default />
+        </field>
+        <field>
+            <path>VAL</path>
+            <name>VAL</name>
+            <type>7</type>
+            <precision>0</precision>
+            <scale>0</scale>
+            <nullable>Y</nullable>
+            <default />
+        </field>
+    </fields>
+    <compression>NONE</compression>
+    <dateTimeFormat />
+    <dateInFileName>Y</dateInFileName>
+    <timeInFileName>Y</timeInFileName>
+    <schemaFilename />
+    <namespace>required</namespace>
+    <docValue />
+    <recordName>required</recordName>
+    <attributes />
+    <cluster_schema />
+    <remotesteps>
+        <input>
+        </input>
+        <output>
+        </output>
+    </remotesteps>
+    <GUI>
+        <xloc>592</xloc>
+        <yloc>192</yloc>
+        <draw>Y</draw>
+    </GUI>
+</step>
