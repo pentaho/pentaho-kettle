@@ -18,6 +18,7 @@
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
     <pentaho-mongodb-plugin.version>9.4.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
+    <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
 
     <pentaho-json.version>9.4.0.0-SNAPSHOT</pentaho-json.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
@@ -666,7 +667,6 @@
       <properties>
         <pdi-osgi-bridge.version>9.4.0.0-SNAPSHOT</pdi-osgi-bridge.version>
         <pentaho-hadoop-shims.version>9.4.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
-        <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
       </properties>
       <dependencies>
         <dependency>
