@@ -17,6 +17,7 @@
   <properties>
     <!-- plugins -->
     <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
+    <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-dummy-plugin.version>${project.version}</kettle-dummy-plugin.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
@@ -677,7 +678,6 @@
         </property>
       </activation>
       <properties>
-        <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
         <pdi-json-plugin.version>9.4.0.0-SNAPSHOT</pdi-json-plugin.version>
         <pdi-xml-plugin.version>9.4.0.0-SNAPSHOT</pdi-xml-plugin.version>
       </properties>
