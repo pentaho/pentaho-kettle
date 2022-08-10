@@ -1270,6 +1270,11 @@ public class Const {
   public static final String KETTLE_MAX_TAB_LENGTH = "KETTLE_MAX_TAB_LENGTH";
 
   /**
+   * A variable to log log info of logobjecttype GENERAL"
+   */
+  public static final String KETTLE_LOG_GENERAL_OBJECTS_TO_DI_LOGGER = "KETTLE_LOG_GENERAL_OBJECTS_TO_DI_LOGGER";
+
+  /**
    * A variable to configure VFS USER_DIR_IS_ROOT option: should be "true" or "false"
    * {@linkplain org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder#USER_DIR_IS_ROOT}
    */
