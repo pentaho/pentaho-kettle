@@ -615,4 +615,10 @@
     <default-value>N</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>This environment variable is used to log info of logobjecttype GENERAL </description>
+    <variable>KETTLE_LOG_GENERAL_OBJECTS_TO_DI_LOGGER</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
 </kettle-variables>
