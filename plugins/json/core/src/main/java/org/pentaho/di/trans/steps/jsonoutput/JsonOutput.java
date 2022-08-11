@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -225,8 +225,14 @@ public class JsonOutput extends BaseStep implements StepInterface {
   private void outPutRow( Object[] rowData ) throws KettleStepException {
     // We can now output an object
     data.jg = new JSONObject();
-    data.jg.put( data.realBlocName, data.ja );
-    String value = data.jg.toJSONString();
+    String value;
+    if ( data.realBlocName == "" ) {
+      value = data.ja.toJSONString();
+    } else {
+      data.jg.put( data.realBlocName, data.ja );
+      value = data.jg.toJSONString();
+    }
+
 
     if ( data.outputValue && data.outputRowMeta != null ) {
       Object[] outputRowData = RowDataUtil.addValueData( rowData, data.inputRowMetaSize, value );
