@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.providers.local;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
@@ -75,10 +76,15 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     return TYPE;
   }
 
+  @Override public Tree getTree() {
+    return getTree( new ArrayList<>() );
+  }
+
   /**
+   * @param connectionTypes
    * @return
    */
-  @Override public Tree getTree() {
+  @Override public Tree getTree( List<String> connectionTypes ) {
     LocalTree localTree = new LocalTree( NAME );
     List<LocalFile> rootFiles = new ArrayList<>();
     ArrayList<Path> paths = new ArrayList<>();
@@ -99,6 +105,11 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     localTree.setFiles( rootFiles );
 
     return localTree;
+  }
+
+  @Override public List<LocalFile> getFiles( LocalFile file, String filters, VariableSpace space )
+    throws FileException {
+    return null;
   }
 
   // TODO: Filter out certain files from root
@@ -141,9 +152,11 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
 
   /**
    * @param files
+   * @param space
    * @return
    */
-  public List<LocalFile> delete( List<LocalFile> files ) {
+  @Override
+  public List<LocalFile> delete( List<LocalFile> files, VariableSpace space ) {
     List<LocalFile> deletedFiles = new ArrayList<>();
     for ( LocalFile file : files ) {
       try {
@@ -158,10 +171,11 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
 
   /**
    * @param folder
+   * @param space
    * @return
    */
   @Override
-  public LocalFile add( LocalFile folder ) throws FileException {
+  public LocalFile add( LocalFile folder, VariableSpace space ) throws FileException {
     Path folderPath = Paths.get( folder.getPath() );
     if ( folderPath.toFile().exists() ) {
       throw new FileExistsException();
@@ -191,8 +205,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileException
    */
   @Override
-  public LocalFile rename( LocalFile file, String newPath, boolean overwrite ) throws FileException {
-    return doMove( file.getPath(), newPath, overwrite );
+  public LocalFile rename( LocalFile file, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
+    return doMove( file.getPath(), newPath, overwrite, space );
   }
 
   /**
@@ -203,8 +217,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileException
    */
   @Override
-  public LocalFile move( LocalFile file, String toPath, boolean overwrite ) throws FileException {
-    return doMove( file.getPath(), toPath, overwrite );
+  public LocalFile move( LocalFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
+    return doMove( file.getPath(), toPath, overwrite, space );
   }
 
   /**
@@ -214,7 +228,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    * @throws FileException
    */
-  private LocalFile doMove( String path, String newPath, boolean overwrite ) throws FileException {
+  private LocalFile doMove( String path, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
     try {
       Path movePath;
       if ( overwrite ) {
@@ -236,11 +250,12 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @param file
    * @param toPath
    * @param overwrite
+   * @param space
    * @return
    * @throws FileException
    */
   @Override
-  public LocalFile copy( LocalFile file, String toPath, boolean overwrite ) throws FileException {
+  public LocalFile copy( LocalFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
     try {
       Path newPath = Files.copy( Paths.get( file.getPath() ), Paths.get( toPath ), StandardCopyOption.REPLACE_EXISTING );
       if ( newPath.toFile().isDirectory() ) {
@@ -256,9 +271,10 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   /**
    * @param dir
    * @param path
+   * @param space
    * @return
    */
-  @Override public boolean fileExists( LocalFile dir, String path ) {
+  @Override public boolean fileExists( LocalFile dir, String path, VariableSpace space ) {
     return Paths.get( path ).toFile().exists();
   }
 
@@ -267,7 +283,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    */
   @Override
-  public InputStream readFile( LocalFile file ) {
+  public InputStream readFile( LocalFile file, VariableSpace space ) {
     try {
       return new BufferedInputStream( new FileInputStream( new File( file.getPath() ) ) );
     } catch ( FileNotFoundException e ) {
@@ -280,11 +296,12 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @param destDir
    * @param path
    * @param overwrite
+   * @param space
    * @return
    * @throws FileAlreadyExistsException
    */
   @Override
-  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, boolean overwrite )
+  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, boolean overwrite, VariableSpace space )
     throws FileException {
     try {
       Files.copy( inputStream, Paths.get( path ) );
@@ -313,7 +330,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    */
   @Override
-  public String getNewName( LocalFile destDir, String newPath ) {
+  public String getNewName( LocalFile destDir, String newPath, VariableSpace space ) {
     String extension = Utils.getExtension( newPath );
     String parent = Utils.getParent( newPath );
     String name = Utils.getName( newPath ).replace( "." + extension, "" );
@@ -338,7 +355,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     //Any local caches that this provider might use should be cleared here.
   }
 
-  @Override public LocalFile getFile( LocalFile file ) {
+  @Override public LocalFile getFile( LocalFile file, VariableSpace space ) {
     return null;
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
@@ -101,7 +102,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   @Override
-  public List<RepositoryFile> getFiles( RepositoryFile file, String filters ) {
+  public List<RepositoryFile> getFiles( RepositoryFile file, String filters, VariableSpace space ) {
     RepositoryDirectoryInterface repositoryDirectoryInterface =
       findDirectory( file.getType().equalsIgnoreCase( RepositoryDirectory.DIRECTORY ) ? file.getPath() : file.getParent() );
 
@@ -121,7 +122,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
 
   // TODO: (Result) objects should be created at the endpoint and these should throw appropriate exceptions
   @Override
-  public List<RepositoryFile> delete( List<RepositoryFile> files ) {
+  public List<RepositoryFile> delete( List<RepositoryFile> files, VariableSpace space ) {
     List<RepositoryFile> deletedFiles = new ArrayList<>();
     for ( RepositoryFile repositoryFile : files ) {
       try {
@@ -224,7 +225,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   @Override
-  public RepositoryFile add( RepositoryFile folder ) throws FileException {
+  public RepositoryFile add( RepositoryFile folder, VariableSpace space ) throws FileException {
     if ( hasDupeFolder( folder.getParent(), folder.getName() ) ) {
       throw new FileExistsException();
     }
@@ -259,7 +260,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   // TODO: Handle recents on rename/delete/etc.
-  @Override public RepositoryFile rename( RepositoryFile file, String newPath, boolean overwrite ) {
+  @Override public RepositoryFile rename( RepositoryFile file, String newPath, boolean overwrite, VariableSpace space ) {
     String newName = newPath.substring( newPath.lastIndexOf( "/" ) + 1 );
     try {
       return doRename( file, newName );
@@ -315,7 +316,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   @Override public RepositoryFile move( RepositoryFile file, String toPath,
-                                        boolean overwrite ) {
+                                        boolean overwrite, VariableSpace space ) {
     return null;
   }
 
@@ -337,7 +338,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   @Override public RepositoryFile copy( RepositoryFile file, String toPath,
-                                        boolean overwrite ) throws FileException {
+                                        boolean overwrite, VariableSpace space ) throws FileException {
     RepositoryElementInterface repositoryElementInterface = getObject( file.getObjectId(), file.getType() );
     if ( repositoryElementInterface != null ) {
       repositoryElementInterface.setName( Util.getName( toPath ) );
@@ -354,7 +355,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return repositoryFile;
   }
 
-  @Override public boolean fileExists( RepositoryFile dir, String path ) {
+  @Override public boolean fileExists( RepositoryFile dir, String path, VariableSpace space ) {
     RepositoryDirectoryInterface directoryInterface;
     try {
       directoryInterface = getRepository().findDirectory( dir.getPath() );
@@ -379,7 +380,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return file1.getProvider().equals( file2.getProvider() );
   }
 
-  @Override public InputStream readFile( RepositoryFile file ) throws FileException {
+  @Override public InputStream readFile( RepositoryFile file, VariableSpace space ) throws FileException {
     RepositoryElementInterface repositoryElementInterface = getObject( file.getObjectId(), file.getType() );
     if ( repositoryElementInterface != null ) {
       String xml = null;
@@ -403,7 +404,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   @Override
-  public RepositoryFile writeFile( InputStream inputStream, RepositoryFile destDir, String path, boolean overwrite )
+  public RepositoryFile writeFile( InputStream inputStream, RepositoryFile destDir, String path, boolean overwrite, VariableSpace space )
     throws FileException {
     RepositoryObjectType type = getType( path );
     String name = Util.getName( path ).replace( " ", "_" );
@@ -448,7 +449,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return null;
   }
 
-  @Override public String getNewName( RepositoryFile destDir, String newPath ) {
+  @Override public String getNewName( RepositoryFile destDir, String newPath, VariableSpace space ) {
     RepositoryDirectoryInterface directoryInterface = null;
     RepositoryObjectType type = getType( newPath );
     try {
@@ -605,7 +606,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     //Any local caches that this provider might use should be cleared here.
   }
 
-  @Override public RepositoryFile getFile( RepositoryFile file ) {
+  @Override public RepositoryFile getFile( RepositoryFile file, VariableSpace space ) {
     return null;
   }
 

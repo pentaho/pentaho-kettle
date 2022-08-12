@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,8 @@ import org.pentaho.di.connections.ui.dialog.ConnectionDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
@@ -116,7 +118,8 @@ public class ConnectionEndpoints {
   @Path( "/test" )
   @Consumes( { APPLICATION_JSON } )
   public Response testConnection( ConnectionDetails connectionDetails ) {
-    boolean valid = connectionManager.test( connectionDetails );
+    VariableSpace space = Variables.getADefaultVariableSpace();
+    boolean valid = connectionManager.test( connectionDetails, space );
     if ( valid ) {
       return Response.ok().build();
     } else {

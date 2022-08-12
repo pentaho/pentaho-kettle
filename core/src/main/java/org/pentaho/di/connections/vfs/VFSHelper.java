@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,18 +24,23 @@ package org.pentaho.di.connections.vfs;
 
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
+
+import java.util.function.Supplier;
 
 /**
  * Created by bmorrise on 2/13/19.
  */
 public class VFSHelper {
-  public static FileSystemOptions getOpts( String file, String connection ) {
+  public static FileSystemOptions getOpts( String file, String connection, VariableSpace space ){
     if ( connection != null ) {
       VFSConnectionDetails vfsConnectionDetails =
         (VFSConnectionDetails) ConnectionManager.getInstance().getConnectionDetails( file, connection );
       VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
         (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance().getConnectionProvider( file );
       if ( vfsConnectionDetails != null && vfsConnectionProvider != null ) {
+        vfsConnectionDetails.setSpace( space );
         return vfsConnectionProvider.getOpts( vfsConnectionDetails );
       }
     }

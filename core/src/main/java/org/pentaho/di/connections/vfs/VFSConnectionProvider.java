@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.connections.vfs;
 
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.di.connections.ConnectionProvider;
+import org.pentaho.di.core.variables.VariableSpace;
 
 import java.util.List;
 

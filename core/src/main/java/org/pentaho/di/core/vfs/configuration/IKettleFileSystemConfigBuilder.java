@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.core.vfs.configuration;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileSystemOptions;
+import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * @author cboyden
@@ -44,4 +45,12 @@ public interface IKettleFileSystemConfigBuilder {
    */
   public void setParameter( FileSystemOptions opts, String name, String value, String fullParameterName,
     String vfsUrl ) throws IOException;
+
+  default void setParameter( FileSystemOptions opts, String name, VariableSpace value, String vfsUrl ) {
+    //noop
+  }
+
+  default Object getVariableSpace( FileSystemOptions fileSystemOptions ) {
+    return null;
+  };
 }

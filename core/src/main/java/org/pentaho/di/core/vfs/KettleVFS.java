@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -251,7 +251,7 @@ public class KettleVFS {
 
     for ( String var : varList ) {
       if ( var.equalsIgnoreCase( CONNECTION ) && varSpace.getVariable( var ) != null ) {
-        FileSystemOptions fileSystemOptions = VFSHelper.getOpts( vfsFilename, varSpace.getVariable( var ) );
+        FileSystemOptions fileSystemOptions = VFSHelper.getOpts( vfsFilename, varSpace.getVariable( var ), varSpace );
         if ( fileSystemOptions != null ) {
           return fileSystemOptions;
         }
@@ -267,6 +267,9 @@ public class KettleVFS {
           throw new IOException( "FileSystemConfigBuilder could not parse parameter: " + var );
         }
       }
+    }
+    if ( scheme.equals("pvfs") ){
+      configBuilder.setParameter( fsOptions, "VariableSpace", varSpace, vfsFilename);
     }
     return fsOptions;
   }
@@ -605,4 +608,7 @@ public class KettleVFS {
     }
   }
 
+  private void serializeVariableSpace( VariableSpace space ) {
+    space.listVariables();
+  }
 }

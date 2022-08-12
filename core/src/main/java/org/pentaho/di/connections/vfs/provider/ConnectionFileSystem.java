@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,11 @@ import org.apache.commons.vfs2.provider.AbstractFileSystem;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
+import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
 
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -81,7 +84,13 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     String connectionName = ( (ConnectionFileName) abstractFileName ).getConnection();
     VFSConnectionDetails connectionDetails =
       (VFSConnectionDetails) connectionManager.get().getConnectionDetails( connectionName );
-
+    FileSystemOptions opts = super.getFileSystemOptions();
+    IKettleFileSystemConfigBuilder configBuilder = KettleFileSystemConfigBuilderFactory.getConfigBuilder
+      ( new Variables(), ConnectionFileProvider.SCHEME );
+    VariableSpace varSpace = (VariableSpace) configBuilder.getVariableSpace( super.getFileSystemOptions() );
+    if ( connectionDetails != null ) {
+      connectionDetails.setSpace( varSpace );
+    }
     String url = getUrl( abstractFileName, connectionDetails );
 
     AbstractFileObject fileObject = null;
@@ -89,9 +98,8 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
 
     if ( url != null ) {
       domain = connectionDetails.getDomain();
-      Variables variables = new Variables();
-      variables.setVariable( CONNECTION, connectionName );
-      fileObject = (AbstractFileObject) KettleVFS.getFileObject( url, variables );
+      varSpace.setVariable( CONNECTION, connectionName );
+      fileObject = (AbstractFileObject) KettleVFS.getFileObject( url, varSpace );
     }
 
     return new ConnectionFileObject( abstractFileName, this, fileObject, domain );

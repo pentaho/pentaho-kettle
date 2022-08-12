@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.plugins.fileopensave.controllers;
 
 import org.pentaho.di.core.util.Utils;
 
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
@@ -49,6 +51,7 @@ public class FileController {
 
   protected final FileCache fileCache;
   private final ProviderService providerService;
+  private VariableSpace space = Variables.getADefaultVariableSpace();
 
   public FileController( FileCache fileCache, ProviderService providerService ) {
     this.fileCache = fileCache;
@@ -104,7 +107,7 @@ public class FileController {
       if ( fileCache.containsKey( file ) && useCache ) {
         return fileCache.getFiles( file );
       } else {
-        List<File> files = fileProvider.getFiles( file, filters );
+        List<File> files = fileProvider.getFiles( file, filters, space );
         fileCache.setFiles( file, files );
         return files;
       }
@@ -116,7 +119,7 @@ public class FileController {
   public Boolean fileExists( File dir, String path ) {
     try {
       FileProvider<File> fileProvider = providerService.get( dir.getProvider() );
-      return fileProvider.fileExists( dir, path );
+      return fileProvider.fileExists( dir, path, space );
     } catch ( InvalidFileProviderException | FileException e ) {
       return false;
     }
@@ -125,7 +128,7 @@ public class FileController {
   public Result getNewName( File destDir, String newPath ) {
     try {
       FileProvider<File> fileProvider = providerService.get( destDir.getProvider() );
-      return Result.success( "", fileProvider.getNewName( destDir, newPath ) );
+      return Result.success( "", fileProvider.getNewName( destDir, newPath, space ) );
     } catch ( InvalidFileProviderException | FileException e ) {
       return null;
     }
@@ -134,7 +137,7 @@ public class FileController {
   public Result delete( List<File> files ) {
     try {
       FileProvider<File> fileProvider = providerService.get( files.get( 0 ).getProvider() );
-      List<File> deletedFiles = fileProvider.delete( files );
+      List<File> deletedFiles = fileProvider.delete( files, space );
       for ( File file : deletedFiles ) {
         fileCache.removeFile( fileProvider.getParent( file ), file );
       }
@@ -147,7 +150,7 @@ public class FileController {
   public Result add( File folder ) {
     try {
       FileProvider<File> fileProvider = providerService.get( folder.getProvider() );
-      File newFile = fileProvider.add( folder );
+      File newFile = fileProvider.add( folder, space );
       if ( newFile != null ) {
         fileCache.addFile( fileProvider.getParent( folder ), newFile );
         return Result.success( "", newFile );
@@ -164,7 +167,7 @@ public class FileController {
   public Result rename( File file, String newPath, boolean overwrite ) {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
-      File newFile = fileProvider.rename( file, newPath, overwrite );
+      File newFile = fileProvider.rename( file, newPath, overwrite, space );
       if ( newFile != null ) {
         fileCache.move( fileProvider.getParent( file ), file, fileProvider.getParent( newFile ), newFile );
       }
@@ -179,7 +182,7 @@ public class FileController {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
       File newFile;
       if ( fileProvider.isSame( file, destDir ) ) {
-        newFile = fileProvider.move( file, newPath, overwrite );
+        newFile = fileProvider.move( file, newPath, overwrite, space );
       } else {
         newFile = moveBetweenProviders( file, destDir, newPath, overwrite );
       }
@@ -197,7 +200,7 @@ public class FileController {
   public File getFile( File file ) {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
-      return fileProvider.getFile( file );
+      return fileProvider.getFile( file, space );
     } catch ( InvalidFileProviderException e ) {
       return null;
     }
@@ -208,7 +211,7 @@ public class FileController {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
       File newFile;
       if ( fileProvider.isSame( file, destDir ) ) {
-        newFile = fileProvider.copy( file, path, overwrite );
+        newFile = fileProvider.copy( file, path, overwrite, space );
       } else {
         newFile = copyFileBetweenProviders( file, destDir, path, overwrite );
       }
@@ -237,8 +240,8 @@ public class FileController {
 
   private File writeFile( FileProvider<File> fromFileProvider, FileProvider<File> toFileProvider, File file,
                           File destDir, String path, boolean overwrite ) throws FileException {
-    try ( InputStream inputStream = fromFileProvider.readFile( file ) ) {
-      return toFileProvider.writeFile( inputStream, destDir, path, overwrite );
+    try ( InputStream inputStream = fromFileProvider.readFile( file, space ) ) {
+      return toFileProvider.writeFile( inputStream, destDir, path, overwrite, space );
     } catch ( IOException e ) {
       return null;
     }

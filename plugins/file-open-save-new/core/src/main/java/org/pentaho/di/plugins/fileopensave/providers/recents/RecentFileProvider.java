@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.providers.recents;
 
 import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
@@ -77,27 +78,27 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     return recentTree;
   }
 
-  @Override public List<RecentFile> getFiles( RecentFile file, String filters ) throws FileException {
+  @Override public List<RecentFile> getFiles( RecentFile file, String filters, VariableSpace space ) throws FileException {
     return Collections.emptyList();
   }
 
-  @Override public List<RecentFile> delete( List<RecentFile> files ) throws FileException {
+  @Override public List<RecentFile> delete( List<RecentFile> files, VariableSpace space ) throws FileException {
     return Collections.emptyList();
   }
 
-  @Override public RecentFile add( RecentFile folder ) throws FileException {
+  @Override public RecentFile add( RecentFile folder, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile getFile( RecentFile file ) {
+  @Override public RecentFile getFile( RecentFile file, VariableSpace space ) {
     return null;
   }
 
-  @Override public boolean fileExists( RecentFile dir, String path ) throws FileException {
+  @Override public boolean fileExists( RecentFile dir, String path, VariableSpace space ) throws FileException {
     return false;
   }
 
-  @Override public String getNewName( RecentFile destDir, String newPath ) throws FileException {
+  @Override public String getNewName( RecentFile destDir, String newPath, VariableSpace space ) throws FileException {
     return null;
   }
 
@@ -105,23 +106,23 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     return false;
   }
 
-  @Override public RecentFile rename( RecentFile file, String newPath, boolean overwrite ) throws FileException {
+  @Override public RecentFile rename( RecentFile file, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile copy( RecentFile file, String toPath, boolean overwrite ) throws FileException {
+  @Override public RecentFile copy( RecentFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile move( RecentFile file, String toPath, boolean overwrite ) throws FileException {
+  @Override public RecentFile move( RecentFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public InputStream readFile( RecentFile file ) throws FileException {
+  @Override public InputStream readFile( RecentFile file, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile writeFile( InputStream inputStream, RecentFile destDir, String path, boolean overwrite )
+  @Override public RecentFile writeFile( InputStream inputStream, RecentFile destDir, String path, boolean overwrite, VariableSpace space )
     throws FileException {
     return null;
   }
