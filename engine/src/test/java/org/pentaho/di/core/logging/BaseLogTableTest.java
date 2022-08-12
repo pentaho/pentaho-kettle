@@ -30,79 +30,72 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.assertEquals;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith( PowerMockRunner.class )
 @PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { KettleLogStore.class, Utils.class, Const.class } )
+@PrepareForTest( { KettleLogStore.class, LoggingRegistry.class, Utils.class, Const.class } )
 public class BaseLogTableTest {
 
   @Test
-  public void testRemoveChannelFromBufferCallInGetLogBufferInFirstJobExecution() {
-    StringBuffer sb = new StringBuffer( "" );
-    LoggingBuffer lb = mock( LoggingBuffer.class );
-    doReturn( sb ).when( lb ).getBuffer( anyString(), anyBoolean() );
-
+  public void testSecondJobExecutionDoesNotReturnLogFromFirstExecution() throws Exception {
     mockStatic( KettleLogStore.class );
+    mockStatic( LoggingRegistry.class );
     mockStatic( Utils.class );
     mockStatic( Const.class );
+
+    LoggingBuffer lb = spy( new LoggingBuffer( 10 ) );
     when( KettleLogStore.getAppender() ).thenReturn( lb );
+    doCallRealMethod().when( lb ).getBuffer( anyString(), anyBoolean(), anyInt() );
+
+    LoggingRegistry lr = mock( LoggingRegistry.class );
+    when( LoggingRegistry.getInstance() ).thenReturn( lr );
+    doReturn( Arrays.asList( "1" ) ).when( lr ).getLogChannelChildren( anyString() );
+
+    Field privateLoggingRegistryField = LoggingBuffer.class.getDeclaredField( "loggingRegistry" );
+    privateLoggingRegistryField.setAccessible( true );
+    ReflectionUtils.setField( privateLoggingRegistryField, lb, lr );
+
+    List<BufferLine> bl = new ArrayList<>();
+    Field privateLBufferField = LoggingBuffer.class.getDeclaredField( "buffer" );
+    privateLBufferField.setAccessible( true );
+    ReflectionUtils.setField( privateLBufferField, lb, bl );
+
+    KettleLoggingEvent kLE1 = spy( KettleLoggingEvent.class );
+    LogMessage lm = new LogMessage( "First Job Execution Logging Event", "1", LogLevel.BASIC );
+    kLE1.setMessage( lm );
+    bl.add( new BufferLine( kLE1 ) );
 
     BaseLogTable baseLogTable = mock( BaseLogTable.class );
-    doCallRealMethod().when( baseLogTable ).getLogBuffer( any( VariableSpace.class ), anyString(), any( LogStatus.class ), anyString() );
+    doCallRealMethod().when( baseLogTable ).getLogBuffer( any( VariableSpace.class ), anyString(), any( LogStatus.class ), anyString(), anyInt() );
 
     VariableSpace vs = mock( VariableSpace.class );
 
-    String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, null );
-    String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.END, null );
+    String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 0 );
+    assertTrue( s1.contains( "First Job Execution Logging Event" ) );
 
-    assertEquals( Const.CR + "START" + Const.CR, s1 );
-    assertEquals( Const.CR + "START" + Const.CR, s1 + Const.CR + "END" + Const.CR, s2 );
+    KettleLoggingEvent kLE2 = spy( KettleLoggingEvent.class );
+    LogMessage lm2 = new LogMessage( "Second Job Execution Logging Event", "1", LogLevel.BASIC );
+    kLE2.setMessage( lm2 );
+    bl.add( new BufferLine( kLE2 ) );
 
-    verify( lb, times( 1 ) ).removeChannelFromBuffer( "1" );
-  }
-
-  @Test
-  public void testRemoveChannelFromBufferCallInGetLogBufferInRecursiveJobExecution() {
-    StringBuffer sb = new StringBuffer( "Event previously executed for the same Job" );
-    LoggingBuffer lb = mock( LoggingBuffer.class );
-    doReturn( sb ).when( lb ).getBuffer( anyString(), anyBoolean() );
-
-    mockStatic( KettleLogStore.class );
-    mockStatic( Utils.class );
-    mockStatic( Const.class );
-    when( KettleLogStore.getAppender() ).thenReturn( lb );
-
-    BaseLogTable baseLogTable = mock( BaseLogTable.class );
-    doCallRealMethod().when( baseLogTable ).getLogBuffer( any( VariableSpace.class ), anyString(), any( LogStatus.class ), anyString() );
-
-    VariableSpace vs = mock( VariableSpace.class );
-
-    String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, null );
-    String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.END, null );
-
-    //removeChannelFromBuffer function is void - need to simulate the behaviour here
-    s1 = s1.replace( "Event previously executed for the same Job", "" );
-    s2 = s2.replace( "Event previously executed for the same Job", "" );
-
-
-    assertEquals( Const.CR + "START" + Const.CR, s1 );
-    assertEquals( Const.CR + "START" + Const.CR, s1 + Const.CR + "END" + Const.CR, s2 );
-
-    verify( lb, times( 1 ) ).removeChannelFromBuffer( "1" );
-
+    String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 1 );
+    assertFalse( s2.contains( "First Job Execution Logging Event" ) );
+    assertTrue( s2.contains( "Second Job Execution Logging Event" ) );
   }
 
 }
