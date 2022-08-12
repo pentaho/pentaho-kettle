@@ -19,10 +19,45 @@
 
   <dependencies>
     <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-engine</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-ui-swt</artifactId>
+      <version>${pdi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-metaverse-api</artifactId>
+      <version>${pentaho-metaverse.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>meta-inject-plugins-impl</artifactId>
       <version>9.4.0.0-SNAPSHOT</version>
       <scope>compile</scope>
+    </dependency>
+
+    <!-- SWT it required to compile any version of any architecture will work -->
+    <dependency>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>
