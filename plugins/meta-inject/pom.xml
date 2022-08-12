@@ -28,7 +28,7 @@
     <blueprints-core.version>2.6.0</blueprints-core.version>
   </properties>
 
-<!--  <dependencyManagement>-->
+  <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>pentaho-kettle</groupId>
@@ -49,12 +49,6 @@
         <scope>provided</scope>
       </dependency>
 
-      <dependency>
-        <groupId>org.eclipse</groupId>
-        <artifactId>jface</artifactId>
-        <version>${jface.version}</version>
-        <scope>compile</scope>
-      </dependency>
       <!-- SWT is required to compile,inorder to work with architecture -->
       <dependency>
         <groupId>org.eclipse.swt</groupId>
@@ -69,19 +63,14 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-metaverse-api</artifactId>
-        <version>${pentaho-metaverse.version}</version>
+        <groupId>org.eclipse</groupId>
+        <artifactId>jface</artifactId>
+        <version>${jface.version}</version>
         <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.tinkerpop.blueprints</groupId>
-        <artifactId>blueprints-core</artifactId>
-        <version>${blueprints-core.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>*</groupId>
             <artifactId>*</artifactId>
+            <groupId>*</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -114,5 +103,5 @@
         </exclusions>
       </dependency>
     </dependencies>
- <!-- </dependencyManagement>-->
+  </dependencyManagement>
 </project>
