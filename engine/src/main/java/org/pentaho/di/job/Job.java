@@ -130,6 +130,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 
+  private int logBufferStartLine;
+
   private String containerObjectId;
 
   private JobMeta jobMeta;
@@ -456,6 +458,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   private Result execute() throws KettleException {
     try {
+      setInitialLogBufferStartLine();
+
       log.snap( Metrics.METRIC_JOB_START );
 
       setFinished( false );
@@ -2031,6 +2035,32 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   public void setLogLevel( LogLevel logLevel ) {
     this.logLevel = logLevel;
     log.setLogLevel( logLevel );
+  }
+
+  /**
+   * Gets the logBufferStartLine.
+   *
+   * @return logBufferStartLine
+   */
+  public int getLogBufferStartLine() {
+    return logBufferStartLine;
+  }
+
+  /**
+   * Sets the logBufferStartLine.
+   *
+   * @param lineNr
+   *          the log buffer starting line for this job
+   */
+  public void setLogBufferStartLine( int lineNr ) {
+    logBufferStartLine = lineNr;
+  }
+
+  /**
+   * Sets logBufferStartLine based on LoggingBuffer last line number
+   */
+  public void setInitialLogBufferStartLine() {
+    logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
   }
 
   /**
