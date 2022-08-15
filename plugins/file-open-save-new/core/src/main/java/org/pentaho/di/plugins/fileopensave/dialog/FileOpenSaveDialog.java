@@ -460,7 +460,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           parentPath = file.getPath();
         } else {
           parentPath = file.getParent();
-        };
+        }
       } else if ( file instanceof VFSFile ) {
         connection = ( (VFSFile) file).getConnection();
         parentPath = file.getParent();
@@ -587,30 +587,28 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       new FlatButton( fileButtons, SWT.NONE ).setEnabledImage( rasterImage( "img/Refresh.S_D.svg", 32, 32 ) )
         .setDisabledImage( rasterImage( "img/Refresh.S_D_disabled.svg", 32, 32 ) )
         .setToolTipText( BaseMessages.getString( PKG, "file-open-save-plugin.app.refresh.button" ) )
-        .setLayoutData( new RowData() ).setEnabled( true ).addListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected( SelectionEvent selectionEvent ) {
-                  StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
-                  TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
-                  FileProvider fileProvider = null;
-                  if (!fileTableViewerSelection.isEmpty()) {
-                    FILE_CONTROLLER.clearCache( ( (File) fileTableViewerSelection.getFirstElement() ) );
-                    treeViewer.refresh(true);
-                    fileTableViewer.refresh( fileTableViewerSelection.getFirstElement() );
-                  } else if ( !treeViewerSelection.isEmpty() ) {
-                    treeViewer.refresh( treeViewerSelection.getFirstElement(), true);
-                    FILE_CONTROLLER.clearCache( ( (File) treeViewerSelection.getFirstElement() ) );
-                  } else {
-                    try{
-                      fileProvider = ProviderServiceService.INSTANCE.get().get(fileDialogOperation.getProvider());
-                      fileProvider.clearProviderCache();
-                      treeViewer.refresh(true);
-                    } catch (Exception ex) {
-                      // Ignored
-                    }
-                  }
-                }
-              });
+        .setLayoutData( new RowData() ).setEnabled( true ).addListener( new SelectionAdapter() { @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+            StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
+            TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
+            FileProvider fileProvider = null;
+            if ( !fileTableViewerSelection.isEmpty() ) {
+              FILE_CONTROLLER.clearCache( ( (File) fileTableViewerSelection.getFirstElement() ) );
+              treeViewer.refresh( true );
+              fileTableViewer.refresh( fileTableViewerSelection.getFirstElement() );
+            } else if ( !treeViewerSelection.isEmpty() ) {
+              treeViewer.refresh( treeViewerSelection.getFirstElement(), true );
+              FILE_CONTROLLER.clearCache( ( (File) treeViewerSelection.getFirstElement() ) );
+            } else {
+              try {
+                fileProvider = ProviderServiceService.INSTANCE.get().get( fileDialogOperation.getProvider() );
+                fileProvider.clearProviderCache();
+                treeViewer.refresh( true );
+              } catch ( Exception ex ) {
+                // Ignored
+              }
+            }
+          }
+        } );
     txtNav = new Text( buttons, SWT.BORDER );
 
     this.txtNav.setEditable( true );
@@ -745,6 +743,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           name = ( (File) selectedNode ).getName();
         }
         processState();
+        txtNav.setText( getNavigationPath( (File) selectedNode ) );
       }
     } );
 
@@ -760,19 +759,17 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           path = ( (Directory) selection ).getPath();
           provider = ( (Directory) selection).getProvider();
         }
-
+        txtNav.setText( getNavigationPath( (File) selection ) );
       } else if ( selection instanceof File ) {
         File localFile = (File) selection;
         if ( command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE )
           || command.equalsIgnoreCase( FileDialogOperation.OPEN )
           || command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE_FOLDER ) ) {
+          txtNav.setText( getNavigationPath( localFile ) );
           String fileExtension = localFile.getPath().substring( localFile.getPath().lastIndexOf( FILE_PERIOD ) );
           if ( Utils.matches( fileExtension, typedComboBox.getSelection().getValue() ) ) {
-
             openFileSelector( localFile );
             getShell().dispose();
-          } else {
-            txtNav.setText( localFile.getPath() );
           }
         }
       }
@@ -924,7 +921,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       if ( fileProvider != null ) {
         fileProvider.createDirectory( parentPathOfSelection, (File) selection, newFolderName );
         FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
-        treeViewer.refresh( treeViewerDestination, true);
+        treeViewer.refresh( treeViewerDestination, true );
 
         selectPath( treeViewerDestination, false );
 
@@ -1039,7 +1036,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         path = null;
         name = null;
         if ( children.size() != 0 ) {
-          txtNav.setText( ( ( (File) children.get( 0 ) ).getPath() ) );
+          txtNav.setText( getNavigationPath( (File) children.get( 0 ) ) );
         } else {
           txtNav.setText( StringUtils.EMPTY );
         }
@@ -1071,7 +1068,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           }
         }
 
-        txtNav.setText( ( (Directory) selectedElement ).getPath() );
+
+        txtNav.setText( getNavigationPath( (File) selectedElement ) );
         flatBtnAdd.setEnabled( ( (Directory) selectedElement ).isCanAddChildren() );
 
         processState();
@@ -1083,6 +1081,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   }
 
+  protected String getNavigationPath( File file ) {
+    return file instanceof VFSFile ? ( (VFSFile) file ).getConnectionPath() : ( file ).getPath();
+  }
   protected static class FlatButton {
 
     private CLabel label;
