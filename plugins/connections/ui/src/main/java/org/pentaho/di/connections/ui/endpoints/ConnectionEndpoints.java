@@ -119,7 +119,8 @@ public class ConnectionEndpoints {
   @Consumes( { APPLICATION_JSON } )
   public Response testConnection( ConnectionDetails connectionDetails ) {
     VariableSpace space = Variables.getADefaultVariableSpace();
-    boolean valid = connectionManager.test( connectionDetails, space );
+    connectionDetails.setSpace( space );
+    boolean valid = connectionManager.test( connectionDetails );
     if ( valid ) {
       return Response.ok().build();
     } else {

@@ -23,6 +23,7 @@
 package org.pentaho.di.connections;
 
 import org.pentaho.di.connections.utils.EncryptUtils;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
