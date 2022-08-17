@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers;
 
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
@@ -62,11 +63,11 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     TestTree testTree = new TestTree( NAME );
     TestDirectory testDirectory = new TestDirectory();
     testDirectory.setPath( "/" );
-    testTree.setFiles( getFiles( testDirectory, null ) );
+    testTree.setFiles( getFiles( testDirectory, null, null ) );
     return testTree;
   }
 
-  @Override public List<TestFile> getFiles( TestFile file, String filters ) {
+  @Override public List<TestFile> getFiles( TestFile file, String filters, VariableSpace space ) {
     List<TestFile> files = new ArrayList<>();
     testFileSystem.get( file.getPath() ).forEach( testFile -> {
       if ( testFile instanceof TestDirectory ) {
@@ -78,7 +79,7 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return files;
   }
 
-  @Override public List<TestFile> delete( List<TestFile> files ) throws FileException {
+  @Override public List<TestFile> delete( List<TestFile> files, VariableSpace space ) throws FileException {
     List<TestFile> deletedFiles = new ArrayList<>();
     for ( TestFile testFile : files ) {
       if ( doDelete( testFile ) ) {
@@ -97,16 +98,16 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return false;
   }
 
-  @Override public TestFile add( TestFile folder ) throws FileException {
+  @Override public TestFile add( TestFile folder, VariableSpace space ) throws FileException {
     testFileSystem.get( folder.getParent() ).add( folder );
     return folder;
   }
 
-  @Override public boolean fileExists( TestFile dir, String path ) throws FileException {
+  @Override public boolean fileExists( TestFile dir, String path, VariableSpace space ) throws FileException {
     return findFile( dir, path ) != null;
   }
 
-  @Override public String getNewName( TestFile destDir, String newPath ) throws FileException {
+  @Override public String getNewName( TestFile destDir, String newPath, VariableSpace space ) throws FileException {
     return newPath + " " + 1;
   }
 
@@ -114,7 +115,7 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return file1.getProvider().equals( file2.getProvider() );
   }
 
-  @Override public TestFile rename( TestFile file, String newPath, boolean overwrite ) throws FileException {
+  @Override public TestFile rename( TestFile file, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
     TestFile findFile = findFile( file );
     if ( findFile != null ) {
       findFile.setPath( newPath );
@@ -124,7 +125,7 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return findFile;
   }
 
-  @Override public TestFile copy( TestFile file, String toPath, boolean overwrite )
+  @Override public TestFile copy( TestFile file, String toPath, boolean overwrite, VariableSpace space )
     throws FileException {
     TestFile findFile = findFile( file );
     if ( findFile != null ) {
@@ -142,20 +143,20 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return null;
   }
 
-  @Override public TestFile move( TestFile file, String toPath, boolean overwrite )
+  @Override public TestFile move( TestFile file, String toPath, boolean overwrite, VariableSpace space )
     throws FileException {
-    TestFile newFile = copy( file, toPath, overwrite );
+    TestFile newFile = copy( file, toPath, overwrite, space );
     if ( newFile != null ) {
       doDelete( newFile );
     }
     return newFile;
   }
 
-  @Override public InputStream readFile( TestFile file ) throws FileException {
+  @Override public InputStream readFile( TestFile file, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public TestFile writeFile( InputStream inputStream, TestFile destDir, String path, boolean overwrite )
+  @Override public TestFile writeFile( InputStream inputStream, TestFile destDir, String path, boolean overwrite, VariableSpace space )
     throws FileException {
     return null;
   }
@@ -244,7 +245,7 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     //Any local caches that this provider might use should be cleared here.
   }
 
-  @Override public TestFile getFile( TestFile file ) {
+  @Override public TestFile getFile( TestFile file, VariableSpace space ) {
     return null;
   }
 }

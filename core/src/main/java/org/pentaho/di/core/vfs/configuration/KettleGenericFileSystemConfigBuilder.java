@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.util.DelegatingFileSystemOptionsBuilder;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
@@ -136,5 +137,17 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
         throw new IOException( e.getLocalizedMessage(), e );
       }
     }
+  }
+
+  @Override
+  public void setParameter( FileSystemOptions opts, String name, VariableSpace value, String vfsUrl ) {
+    DelegatingFileSystemOptionsBuilder delegateFSOptionsBuilder =
+      new DelegatingFileSystemOptionsBuilder( KettleVFS.getInstance().getFileSystemManager() );
+      super.setParam( opts, "VariableSpace", value );
+  }
+
+  @Override
+  public Object getVariableSpace( FileSystemOptions fileSystemOptions ) {
+    return getParam( fileSystemOptions, "VariableSpace" );
   }
 }

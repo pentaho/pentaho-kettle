@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,11 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSRoot;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,9 +51,12 @@ public class OtherConnectionDetailsProvider extends BaseVFSConnectionProvider<Ot
     if ( otherConnectionDetails == null ) {
       return null;
     }
+
+    VariableSpace space = getSpace( otherConnectionDetails );
     StaticUserAuthenticator auth =
-            new StaticUserAuthenticator( otherConnectionDetails.getHost(), otherConnectionDetails.getUsername(),
-                    otherConnectionDetails.getPassword() );
+      new StaticUserAuthenticator( getVar( otherConnectionDetails.getHost(), space ),
+        getVar( otherConnectionDetails.getUsername(), space ),
+        getVar( otherConnectionDetails.getPassword(), space ) );
     FileSystemOptions opts = new FileSystemOptions();
     try {
       DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, auth );
@@ -61,8 +67,9 @@ public class OtherConnectionDetailsProvider extends BaseVFSConnectionProvider<Ot
   }
 
   @Override public List<VFSRoot> getLocations( OtherConnectionDetails vfsConnectionDetails ) {
-    String host = vfsConnectionDetails.getHost();
-    String port = vfsConnectionDetails.getPort();
+    VariableSpace space = getSpace( vfsConnectionDetails );
+    String host = getVar( vfsConnectionDetails.getHost(), space );
+    String port = getVar( vfsConnectionDetails.getPort(), space );
 
     String location = host + ( port != null && !port.equals( "" ) ? ":" + port : "" );
     return Collections.singletonList( new VFSRoot( location, null ) );

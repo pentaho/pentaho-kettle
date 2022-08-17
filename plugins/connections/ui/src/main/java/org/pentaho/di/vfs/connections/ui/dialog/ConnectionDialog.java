@@ -23,8 +23,6 @@ package org.pentaho.di.vfs.connections.ui.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,6 +37,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -49,7 +48,6 @@ import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.vfs.connections.ui.dialog.VFSDetailsCompositeHelper;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -89,8 +87,6 @@ public class ConnectionDialog extends Dialog {
 
   private Shell shell;
   private String connectionName;
-  private CTabFolder wTabFolder;
-  private CTabItem wConnectionTypeTab;
   private VFSDetailsComposite vfsDetailsComposite;
   private Composite wConnectionTypeComp;
   private VFSDetailsCompositeHelper helper;
@@ -145,7 +141,7 @@ public class ConnectionDialog extends Dialog {
     wTest.setText( BaseMessages.getString( PKG, "System.Button.Test" ) );
 
     Button[] buttons = new Button[] { wOK, wCancel, wTest };
-    BaseStepDialog.positionBottomButtons( shell, buttons, MARGIN, null );
+    BaseStepDialog.positionBottomRightButtons( shell, buttons, MARGIN, null );
 
     // Add listeners
     wOK.addListener( SWT.Selection, e -> ok() );
@@ -153,22 +149,22 @@ public class ConnectionDialog extends Dialog {
     wTest.addListener( SWT.Selection, e -> test() );
 
     // The rest stays above the buttons...
+    wConnectionTypeComp = new Composite( shell, SWT.BORDER );
+    props.setLook( wConnectionTypeComp );
 
-    wTabFolder = new CTabFolder( shell, SWT.BORDER );
-    props.setLook( wTabFolder, Props.WIDGET_STYLE_TAB );
+    FormLayout genLayout = new FormLayout();
+    genLayout.marginWidth = Const.FORM_MARGIN;
+    genLayout.marginHeight = Const.FORM_MARGIN;
+    wConnectionTypeComp.setLayout( genLayout );
 
     FormData fdTabFolder = new FormData();
     fdTabFolder.top = new FormAttachment( 0, MARGIN );
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.right = new FormAttachment( 100, 0 );
     fdTabFolder.bottom = new FormAttachment( wCancel, -MARGIN );
-    wTabFolder.setLayoutData( fdTabFolder );
+    wConnectionTypeComp.setLayoutData( fdTabFolder );
 
-    addConnectionTypeTab();
-
-    wConnectionTypeTab.setControl( wConnectionTypeComp );
-    wTabFolder.setSelection( 0 );
-
+    addHeaderWidgets();
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -187,31 +183,21 @@ public class ConnectionDialog extends Dialog {
     }
   }
 
-  private void addConnectionTypeTab() {
-    wConnectionTypeTab = new CTabItem( wTabFolder, SWT.NONE );
-    wConnectionTypeTab.setText( BaseMessages.getString( PKG, "ConnectionDialog.tabs.ConnectionType.Title" ) );
-
-    wConnectionTypeComp = new Composite( wTabFolder, SWT.NONE );
-    props.setLook( wConnectionTypeComp );
-
-    FormLayout genLayout = new FormLayout();
-    genLayout.marginWidth = Const.FORM_MARGIN;
-    genLayout.marginHeight = Const.FORM_MARGIN;
-    wConnectionTypeComp.setLayout( genLayout );
+  private void addHeaderWidgets() {
 
     // Connection Name
-    createLabel( "ConnectionDialog.ConnectionName.Label", null );
-    wName = createText( null );
+    Label wlName = createLabel( "ConnectionDialog.ConnectionName.Label", null );
+    wName = createText( wlName );
 
     // Connection Type
-    createLabel( "ConnectionDialog.ConnectionType.Label", wName );
-    wConnectionType = createCCombo( wName, 200 );
+    Label wlConnectionType = createLabel( "ConnectionDialog.ConnectionType.Label", wName );
+    wConnectionType = createCCombo( wlConnectionType, 200 );
     wConnectionType.setItems( connectionTypeChoices );
     wConnectionType.select( 0 );
 
     //Description
-    createLabel( "ConnectionDialog.Description.Label", wConnectionType );
-    wDescription = createMultilineText( wConnectionType );
+    Label wlDescription = createLabel( "ConnectionDialog.Description.Label", wConnectionType );
+    wDescription = createMultilineText( wlDescription );
     ( (FormData) wDescription.getLayoutData() ).height = wDescription.computeSize( SWT.DEFAULT, SWT.DEFAULT ).y * 3;
 
     setConnectionType();
@@ -268,8 +254,7 @@ public class ConnectionDialog extends Dialog {
     wScrolledComposite.setLayoutData( fdScrolledComp );
 
     HashSet<Control> skipControls = new HashSet<>();
-    skipControls.add( wScrolledComposite ); //We don't to adjust this composite
-    helper.adjustPlacement( wConnectionTypeComp, skipControls );
+    skipControls.add( wScrolledComposite ); //We don't want to adjust this composite
 
     // This composite will contain all the widgets specific to the connection type.  The wScrolledComposite will
     // let it scroll up/down.
@@ -393,8 +378,8 @@ public class ConnectionDialog extends Dialog {
     }
   }
 
-  private void createLabel( String key, Control topWidget ) {
-    helper.createLabel( wConnectionTypeComp, SWT.RIGHT | SWT.WRAP, key, topWidget );
+  private Label createLabel( String key, Control topWidget ) {
+    return helper.createLabel( wConnectionTypeComp, SWT.LEFT | SWT.WRAP, key, topWidget );
   }
 
   private Text createText( Control topWidget ) {

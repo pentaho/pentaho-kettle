@@ -75,8 +75,7 @@ public class VFSDetailsCompositeHelper {
   }
 
   /**
-   * Creates a label with the right side flush with "middle" minus the margin.  The label will be placed vertically so
-   * that its top is margin*2 below the topWidget specified.
+   * Creates a label attached to left side of the parent composite and below topWidget.
    *
    * @param composite The composite to draw the control on
    * @param flags     The SWT flags
@@ -95,8 +94,7 @@ public class VFSDetailsCompositeHelper {
   }
 
   /**
-   * Creates a Text control with the left side flush with "middle".  The label will be placed vertically so that its top
-   * is margin*2 below the topWidget specified.
+   * Creates a Text control to the left side of the parent composite and below the topWidget specified.
    *
    * @param composite T
    * @param flags     The SWT flags
@@ -113,8 +111,7 @@ public class VFSDetailsCompositeHelper {
   }
 
   /**
-   * Creates a TextVar control with the left side flush with "middle".  The label will be placed vertically so that its
-   * top is margin*2 below the topWidget specified.
+   * Creates a TextVar control to the left side of the parent composite and below the topWidget specified.
    *
    * @param variableSpace The variableSpace to be used when specifying varaibles
    * @param composite     T
@@ -133,8 +130,7 @@ public class VFSDetailsCompositeHelper {
   }
 
   /**
-   * Creates a CCombo control with the left side flush with "middle".  The label will be placed vertically so that its
-   * top is margin*2 below the topWidget specified.
+   * Creates a CCombo control to the left side of the parent composite and below the topWidget specified.
    *
    * @param composite The parent composite
    * @param flags     The SWT flags
@@ -174,7 +170,7 @@ public class VFSDetailsCompositeHelper {
   }
 
   /**
-   * This method places a title at the top of the composite recieved
+   * This method places a centered title at the top of the composite recieved
    * @param composite The composite holding the details
    * @param key The key to the message file
    * @param skipControls Controls that should not be lined up along a vertical column
@@ -221,29 +217,9 @@ public class VFSDetailsCompositeHelper {
     if ( width == 0 ) {
       formData.right = new FormAttachment( 100, -margin ); //Fill
     }
+    formData.left = new FormAttachment( 0, 0 );
     return formData;
   }
-
-  /**
-   * The width of the label area is not known until all the labels have been defined.  Once defined, this method must be
-   * called on the composite holding the labels to adjust the formData, taking into account the maxLabelWidth.
-   *
-   * @param composite    The composite whose children controls that must be adjusted
-   * @param skipControls Any controls that should not be adjusted.
-   */
-  public void adjustPlacement( Composite composite, Set<Control> skipControls ) {
-    Control lastLabel = null;
-    for ( Control c : composite.getChildren() ) {
-      if ( !skipControls.contains( c ) && c.getLayoutData() instanceof FormData ) {
-        if ( c instanceof Label ) {
-          ( (FormData) c.getLayoutData() ).right = new FormAttachment( 0, maxLabelWidth );
-          lastLabel = c;
-        } else {
-          ( (FormData) c.getLayoutData() ).left = new FormAttachment( lastLabel, margin * 2 );
-        }
-      }
-    }
-  }
-
+  
 }
 

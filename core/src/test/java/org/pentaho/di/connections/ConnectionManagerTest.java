@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.pentaho.di.connections.common.bucket.TestConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
@@ -214,7 +215,7 @@ public class ConnectionManagerTest {
 
   @Test
   public void testNullConnectionName() {
-    FileSystemOptions fileSystemOptions = VFSHelper.getOpts( "file://fakefile.ktr", null );
+    FileSystemOptions fileSystemOptions = VFSHelper.getOpts( "file://fakefile.ktr", null, null );
     Assert.assertNull( fileSystemOptions );
   }
 
@@ -249,6 +250,16 @@ public class ConnectionManagerTest {
     @Override public String getDescription() {
       return null;
     }
+
+    @Override public VariableSpace getSpace() {
+      return null;
+    }
+
+    @Override public void setSpace( VariableSpace space ) {
+
+    }
+
+
   }
 
 

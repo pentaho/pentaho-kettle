@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.api.providers;
 
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.ui.core.FileDialogOperation;
@@ -59,31 +60,31 @@ public interface FileProvider<T extends File> {
     return getTree();
   }
 
-  List<T> getFiles( T file, String filters ) throws FileException;
+  List<T> getFiles( T file, String filters, VariableSpace space ) throws FileException;
 
-  List<T> delete( List<T> files ) throws FileException;
+  List<T> delete( List<T> files, VariableSpace space ) throws FileException;
 
-  T add( T folder ) throws FileException;
+  T add( T folder, VariableSpace space ) throws FileException;
 
-  T getFile( T file );
+  T getFile( T file, VariableSpace space );
 
-  boolean fileExists( T dir, String path ) throws FileException;
+  boolean fileExists( T dir, String path, VariableSpace space ) throws FileException;
 
-  String getNewName( T destDir, String newPath ) throws FileException;
+  String getNewName( T destDir, String newPath, VariableSpace space ) throws FileException;
 
   String sanitizeName( T destDir, String newPath );
 
   boolean isSame( File file1, File file2 );
 
-  T rename( T file, String newPath, boolean overwrite ) throws FileException;
+  T rename( T file, String newPath, boolean overwrite, VariableSpace space ) throws FileException;
 
-  T copy( T file, String toPath, boolean overwrite ) throws FileException;
+  T copy( T file, String toPath, boolean overwrite, VariableSpace space ) throws FileException;
 
-  T move( T file, String toPath, boolean overwrite ) throws FileException;
+  T move( T file, String toPath, boolean overwrite, VariableSpace space ) throws FileException;
 
-  InputStream readFile( T file ) throws FileException;
+  InputStream readFile( T file, VariableSpace space ) throws FileException;
 
-  T writeFile( InputStream inputStream, T destDir, String path, boolean overwrite ) throws FileException;
+  T writeFile( InputStream inputStream, T destDir, String path, boolean overwrite, VariableSpace space ) throws FileException;
 
   T getParent( T file );
 

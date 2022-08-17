@@ -24,6 +24,7 @@ package org.pentaho.di.connections.ui;
 
 import org.pentaho.di.connections.annotations.Encrypted;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
@@ -33,6 +34,7 @@ import org.pentaho.metastore.persist.MetaStoreElementType;
 public class TestConnectionDetails implements VFSConnectionDetails {
 
   private static String TYPE = "test";
+  private VariableSpace space;
 
   @MetaStoreAttribute
   private String name;
@@ -66,6 +68,14 @@ public class TestConnectionDetails implements VFSConnectionDetails {
 
   public void setDescription( String description ) {
     this.description = description;
+  }
+
+  @Override public VariableSpace getSpace() {
+    return space;
+  }
+
+  @Override public void setSpace( VariableSpace space ) {
+    this.space = space;
   }
 
   public String getPassword() {
