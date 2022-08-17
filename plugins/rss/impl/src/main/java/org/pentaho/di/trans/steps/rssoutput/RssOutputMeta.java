@@ -60,7 +60,7 @@ import org.pentaho.di.core.annotations.Step;
  */
 @Step( id = "RssOutput", name = "BaseStep.TypeLongDesc.RssOutput",
         description = "BaseStep.TypeTooltipDesc.RssOutput",
-        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Ouput",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
         image = "RRO.svg",
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Rss",
         i18nPackageName = "org.pentaho.di.trans.steps.rssoutput" )
