@@ -65,6 +65,7 @@
     <mqtt-streaming-plugin.version>${project.version}</mqtt-streaming-plugin.version>
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
     <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
+    <pdi-xml-plugin.version>9.4.0.0-SNAPSHOT</pdi-xml-plugin.version>
   </properties>
 
   <dependencies>
@@ -668,6 +669,18 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pdi-xml-plugin</artifactId>
+      <version>${pdi-xml-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>
@@ -679,7 +692,6 @@
       </activation>
       <properties>
         <pdi-json-plugin.version>9.4.0.0-SNAPSHOT</pdi-json-plugin.version>
-        <pdi-xml-plugin.version>9.4.0.0-SNAPSHOT</pdi-xml-plugin.version>
       </properties>
       <dependencies>
         <dependency>
@@ -698,18 +710,6 @@
           <groupId>org.pentaho.di.plugins</groupId>
           <artifactId>kettle-json-plugin</artifactId>
           <version>${pdi-json-plugin.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di.plugins</groupId>
-          <artifactId>pdi-xml-plugin</artifactId>
-          <version>${pdi-xml-plugin.version}</version>
           <type>zip</type>
           <exclusions>
             <exclusion>
