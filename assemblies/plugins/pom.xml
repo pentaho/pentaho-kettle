@@ -65,6 +65,7 @@
     <mqtt-streaming-plugin.version>${project.version}</mqtt-streaming-plugin.version>
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
     <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
+    <pentaho-metaverse.version>9.4.0.0-SNAPSHOT</pentaho-metaverse.version>
     <pdi-xml-plugin.version>9.4.0.0-SNAPSHOT</pdi-xml-plugin.version>
   </properties>
 
@@ -673,6 +674,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-xml-plugin</artifactId>
       <version>${pdi-xml-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>metaverse-plugin</artifactId>
+      <version>${pentaho-metaverse.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
