@@ -67,6 +67,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -189,6 +191,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   // Top Right Buttons
   private FlatButton flatBtnAdd;
+
+  private FlatButton flatBtnRefresh;
 
   static {
     FILE_CONTROLLER = new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.INSTANCE.get() );
@@ -492,6 +496,17 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     Label lblSelect = new Label( headerComposite, SWT.LEFT );
     PropsUI.getInstance().setLook( lblSelect );
     lblSelect.setText( StringUtils.capitalize( shellTitle ) );
+    Font bigFont = new Font( getShell().getDisplay(),
+      Arrays.stream( lblSelect.getFont().getFontData() )
+        .<FontData>map(
+          fd -> {
+            fd.setHeight( 22 );
+            fd.setStyle( SWT.BOLD );
+            return fd; } )
+        .toArray( FontData[]::new ) );
+    lblSelect.setFont( bigFont );
+    getShell().addDisposeListener( (e) -> bigFont.dispose() );
+
 
     // TODO: Implement "Search Button" behavior
     final Color clrWhite = new Color( getShell().getDisplay(), 255, 255, 255 );
@@ -564,8 +579,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       .setLayoutData( new RowData() ).setEnabled( false ).addListener(
         new SelectionAdapter() {
           @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-            // TODO: Get text from i18 package
-            enterStringDialog = new EnterStringDialog( getShell(), StringUtils.EMPTY,  "Please provide a folder name", "New Folder Name" );
+            enterStringDialog = new EnterStringDialog( getShell(), StringUtils.EMPTY,
+                    BaseMessages.getString( PKG, "file-open-save-plugin.app.add-folder.shell-text" ),
+                    BaseMessages.getString( PKG, "file-open-save-plugin.app.add-folder.line-text" ) );
             String newFolderName = enterStringDialog.open();
 
             if ( StringUtils.isNotEmpty( newFolderName ) ) {
@@ -582,33 +598,17 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         .setToolTipText( BaseMessages.getString( PKG, "file-open-save-plugin.app.delete.button" ) )
         .setLayoutData( new RowData() ).setEnabled( false );
 
-    FlatButton
-      refreshButton =
+    flatBtnRefresh =
       new FlatButton( fileButtons, SWT.NONE ).setEnabledImage( rasterImage( "img/Refresh.S_D.svg", 32, 32 ) )
         .setDisabledImage( rasterImage( "img/Refresh.S_D_disabled.svg", 32, 32 ) )
         .setToolTipText( BaseMessages.getString( PKG, "file-open-save-plugin.app.refresh.button" ) )
-        .setLayoutData( new RowData() ).setEnabled( true ).addListener( new SelectionAdapter() { @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-            StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
-            TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
-            FileProvider fileProvider = null;
-            if ( !fileTableViewerSelection.isEmpty() ) {
-              FILE_CONTROLLER.clearCache( ( (File) fileTableViewerSelection.getFirstElement() ) );
-              treeViewer.refresh( true );
-              fileTableViewer.refresh( fileTableViewerSelection.getFirstElement() );
-            } else if ( !treeViewerSelection.isEmpty() ) {
-              treeViewer.refresh( treeViewerSelection.getFirstElement(), true );
-              FILE_CONTROLLER.clearCache( ( (File) treeViewerSelection.getFirstElement() ) );
-            } else {
-              try {
-                fileProvider = ProviderServiceService.INSTANCE.get().get( fileDialogOperation.getProvider() );
-                fileProvider.clearProviderCache();
-                treeViewer.refresh( true );
-              } catch ( Exception ex ) {
-                // Ignored
-              }
-            }
+        .setLayoutData( new RowData() ).setEnabled( true ).addListener( new SelectionAdapter() {
+          @Override
+          public void widgetSelected( SelectionEvent selectionEvent ) {
+            refreshDisplay( selectionEvent );
           }
         } );
+
     txtNav = new Text( buttons, SWT.BORDER );
 
     this.txtNav.setEditable( true );
@@ -618,6 +618,56 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       new FormDataBuilder().left( forwardButton.getLabel(), 10 ).right( fileButtons, -10 ).height( 32 ).result() );
 
     return buttons;
+  }
+
+  private void refreshDisplay( SelectionEvent selectionEvent ) {
+    StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
+    TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
+    FileProvider fileProvider = null;
+
+    // Refresh the current element of the treeViewer
+    if ( !treeViewerSelection.isEmpty() ) {
+      if ( treeViewerSelection.getFirstElement() instanceof Tree ) {
+        try {
+          fileProvider = ProviderServiceService.INSTANCE.get().get( ( (Tree) treeViewerSelection.getFirstElement() )
+            .getProvider() );
+        } catch ( Exception ex ) {
+          log.logDebug( "Unable to find provider" );
+        }
+        for ( Object file: ( (Tree) treeViewerSelection.getFirstElement()).getChildren() ) {
+          FILE_CONTROLLER.clearCache( (File) file );
+        }
+        treeViewer.collapseAll();
+      } else {
+        try {
+          fileProvider = ProviderServiceService.INSTANCE.get().get( ( (File) treeViewerSelection.getFirstElement() ).getProvider() );
+        } catch ( Exception ex ) {
+          log.logDebug( "Unable to find provider" );
+        }
+        FILE_CONTROLLER.clearCache( (File) ( treeViewerSelection.getFirstElement() ) );
+      }
+      if ( fileProvider != null ) {
+        fileProvider.clearProviderCache();
+      }
+      if ( treeViewerSelection.getFirstElement() instanceof File
+        && StringUtils.isBlank( ( (File) treeViewerSelection.getFirstElement() ).getParent() ) ) {
+        treeViewer.collapseAll();
+      }
+
+      treeViewer.refresh( treeViewerSelection.getFirstElement(), true );
+      fileTableViewer.refresh( true );
+      treeViewer.setSelection( treeViewerSelection, true );
+    } else if ( treeViewerSelection.isEmpty() && fileTableViewerSelection.isEmpty() ) {
+      try {
+        fileProvider = ProviderServiceService.INSTANCE.get().get( fileDialogOperation.getProvider() );
+        fileProvider.clearProviderCache();
+        treeViewer.setInput( FILE_CONTROLLER.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
+        treeViewer.refresh( true );
+        fileTableViewer.refresh( true );
+      } catch ( Exception ex ) {
+        // Ignored
+      }
+    }
   }
 
   private Composite createFilesBrowser( Composite parent ) {
@@ -654,6 +704,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       Object selectedNode = selection.getFirstElement();
       // Expand the selection in the treeviewer
       if ( selectedNode != null && !treeViewer.getExpandedState( selectedNode ) ) {
+        treeViewer.refresh( selectedNode, true );
         treeViewer.setExpandedState( selectedNode, true );
       }
       // Update the path that is selected
@@ -1262,6 +1313,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     @Override public void inputChanged( Viewer arg0, Object arg1, Object arg2 ) {
       // TODO Auto-generated method stub
+
 
     }
 
