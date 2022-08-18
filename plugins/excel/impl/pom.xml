@@ -15,6 +15,7 @@
 
   <properties>
     <poi.version>4.1.1</poi.version>
+    <platform.version>9.4.0.0-SNAPSHOT</platform.version>
   </properties>
 
   <dependencies>
@@ -82,6 +83,12 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-platform-core</artifactId>
+      <version>${platform.version}</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

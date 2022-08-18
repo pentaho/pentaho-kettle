@@ -92,7 +92,7 @@ public class RunConfigurationManagerTest {
   public void testLoad() {
     List<RunConfiguration> runConfigurations = executionConfigurationManager.load();
 
-    assertEquals( runConfigurations.size(), 3 ); //Includes default
+    assertEquals( 2, runConfigurations.size() ); //Includes default
   }
 
   @Test
@@ -102,7 +102,7 @@ public class RunConfigurationManagerTest {
       .load( "Default Configuration" );
 
     assertNotNull( defaultRunConfiguration );
-    assertEquals( defaultRunConfiguration.getName(), "Default Configuration" );
+    assertEquals( "Default Configuration", defaultRunConfiguration.getName() );
   }
 
   @Test
@@ -130,7 +130,6 @@ public class RunConfigurationManagerTest {
 
     assertTrue( names.contains( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) );
     assertTrue( names.contains( "Default Configuration" ) );
-    assertTrue( names.contains( "Spark Configuration" ) );
   }
 
   @Test
@@ -177,21 +176,19 @@ public class RunConfigurationManagerTest {
 
     List<RunConfiguration> runConfigurations = executionConfigurationManager.load();
 
-    assertEquals( runConfigurations.get( 0 ).getName(), DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME );
-    assertEquals( runConfigurations.get( 1 ).getName(), "a" );
-    assertEquals( runConfigurations.get( 2 ).getName(), "d" );
-    assertEquals( runConfigurations.get( 3 ).getName(), "f" );
-    assertEquals( runConfigurations.get( 4 ).getName(), "x" );
-    assertEquals( runConfigurations.get( 5 ).getName(), "z" );
+    assertEquals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME, runConfigurations.get( 0 ).getName() );
+    assertEquals( "a", runConfigurations.get( 1 ).getName() );
+    assertEquals( "f", runConfigurations.get( 2 ).getName() );
+    assertEquals( "x", runConfigurations.get( 3 ).getName() );
+    assertEquals( "z", runConfigurations.get( 4 ).getName() );
 
     List<String> names = executionConfigurationManager.getNames();
 
-    assertEquals( names.get( 0 ), DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME );
-    assertEquals( names.get( 1 ), "a" );
-    assertEquals( names.get( 2 ), "d" );
-    assertEquals( names.get( 3 ), "f" );
-    assertEquals( names.get( 4 ), "x" );
-    assertEquals( names.get( 5 ), "z" );
+    assertEquals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME, names.get( 0 ) );
+    assertEquals( "a", names.get( 1 ) );
+    assertEquals( "f", names.get( 2 ) );
+    assertEquals( "x", names.get( 3 ) );
+    assertEquals( "z", names.get( 4 ) );
   }
 
   private static MetastoreLocator createMetastoreLocator( IMetaStore memoryMetaStore ) {
