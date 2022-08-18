@@ -91,9 +91,9 @@ public class OraBulkLoaderTest {
       stepMockHelper.transMeta, stepMockHelper.trans ) );
 
     String tmpDir = System.getProperty("java.io.tmpdir");
-    tempControlFile = File.createTempFile("control", "test", new File(tmpDir, "orafiles"));
+    tempControlFile = File.createTempFile("control", "test" );
     tempControlFile.deleteOnExit();
-    tempDataFile = File.createTempFile("data", "test", new File(tmpDir, "orafiles"));
+    tempDataFile = File.createTempFile("data", "test" );
     tempDataFile.deleteOnExit();
     tempControlFilepath = tempControlFile.getAbsolutePath();
     tempDataFilepath = tempDataFile.getAbsolutePath();

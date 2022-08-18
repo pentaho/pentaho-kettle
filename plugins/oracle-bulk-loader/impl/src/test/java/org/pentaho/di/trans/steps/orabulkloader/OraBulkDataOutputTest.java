@@ -71,7 +71,7 @@ public class OraBulkDataOutputTest {
   public void testOpen() {
     try {
       String tmpDir = System.getProperty("java.io.tmpdir");
-      File tempFile = File.createTempFile("temp", "test", new File(tmpDir, "orafiles"));
+      File tempFile = File.createTempFile("orafiles", "test" );
       String tempFilePath = tempFile.getAbsolutePath();
       String dataFileVfsPath = "file:///" + tempFilePath;
       LocalFile tempFileObject = mock( LocalFile.class );
