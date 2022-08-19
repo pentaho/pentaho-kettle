@@ -191,6 +191,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected LogLevel logLevel = LogLevel.BASIC;
 
+  private int logBufferStartLine;
+
   /**
    * The container object id.
    */
@@ -588,6 +590,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     counters = new Hashtable<>();
 
     extensionDataMap = new HashMap<>();
+
+    logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
   }
 
   /**
@@ -5233,6 +5237,25 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public void setLogLevel( LogLevel logLevel ) {
     this.logLevel = logLevel;
     log.setLogLevel( logLevel );
+  }
+
+  /**
+   * Gets the logBufferStartLine.
+   *
+   * @return logBufferStartLine
+   */
+  public int getLogBufferStartLine() {
+    return logBufferStartLine;
+  }
+
+  /**
+   * Sets the logBufferStartLine.
+   *
+   * @param lineNr
+   *          the log buffer starting line for this transformation
+   */
+  public void setLogBufferStartLine( int lineNr ) {
+    logBufferStartLine = lineNr;
   }
 
   /**

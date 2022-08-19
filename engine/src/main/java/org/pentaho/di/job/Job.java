@@ -2037,11 +2037,22 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     log.setLogLevel( logLevel );
   }
 
+  /**
+   * Gets the logBufferStartLine.
+   *
+   * @return logBufferStartLine
+   */
   public int getLogBufferStartLine() {
     return logBufferStartLine;
   }
 
-  public void setLogBufferStartLine(int lineNr) {
+  /**
+   * Sets the logBufferStartLine.
+   *
+   * @param lineNr
+   *          the log buffer starting line for this job
+   */
+  public void setLogBufferStartLine( int lineNr ) {
     logBufferStartLine = lineNr;
   }
 
