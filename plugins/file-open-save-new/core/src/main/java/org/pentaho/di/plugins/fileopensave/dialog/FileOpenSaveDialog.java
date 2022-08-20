@@ -197,7 +197,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private FlatButton flatBtnUp;
 
   static {
-    FILE_CONTROLLER = new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.INSTANCE.get() );
+    FILE_CONTROLLER = new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.get() );
   }
 
   public FileOpenSaveDialog( Shell parentShell, int width, int height, LogChannelInterface logger ) {
@@ -653,7 +653,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     if ( !treeViewerSelection.isEmpty() ) {
       if ( treeViewerSelection.getFirstElement() instanceof Tree ) {
         try {
-          fileProvider = ProviderServiceService.INSTANCE.get().get( ( (Tree) treeViewerSelection.getFirstElement() )
+          fileProvider = ProviderServiceService.get().get( ( (Tree) treeViewerSelection.getFirstElement() )
             .getProvider() );
         } catch ( Exception ex ) {
           log.logDebug( "Unable to find provider" );
@@ -664,8 +664,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.collapseAll();
       } else {
         try {
-          fileProvider =
-            ProviderServiceService.INSTANCE.get().get( ( (File) treeViewerSelection.getFirstElement() ).getProvider() );
+          fileProvider = ProviderServiceService.get().get( ( (File) treeViewerSelection.getFirstElement() ).getProvider() );
         } catch ( Exception ex ) {
           log.logDebug( "Unable to find provider" );
         }
@@ -684,7 +683,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       treeViewer.setSelection( treeViewerSelection, true );
     } else if ( treeViewerSelection.isEmpty() && fileTableViewerSelection.isEmpty() ) {
       try {
-        fileProvider = ProviderServiceService.INSTANCE.get().get( fileDialogOperation.getProvider() );
+        fileProvider = ProviderServiceService.get().get( fileDialogOperation.getProvider() );
         fileProvider.clearProviderCache();
         treeViewer.setInput( FILE_CONTROLLER.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
         treeViewer.refresh( true );
@@ -1002,10 +1001,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
 
       if ( selection instanceof Directory ) {
-        fileProvider = ProviderServiceService.INSTANCE.get().get( ( (Directory) selection ).getProvider() );
+        fileProvider = ProviderServiceService.get().get( ( (Directory) selection ).getProvider() );
         parentPathOfSelection = ( (Directory) selection ).getPath();
       } else if ( selection instanceof File ) {
-        fileProvider = ProviderServiceService.INSTANCE.get().get( ( (File) selection ).getProvider() );
+        fileProvider = ProviderServiceService.get().get( ( (File) selection ).getProvider() );
         parentPathOfSelection = Paths.get( ( (File) selection ).getParent() ).getParent().toString();
       }
 

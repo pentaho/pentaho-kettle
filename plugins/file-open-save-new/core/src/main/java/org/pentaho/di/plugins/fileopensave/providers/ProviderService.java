@@ -46,4 +46,11 @@ public class ProviderService {
     return fileProviders;
   }
 
+  public void add( FileProvider fileProvider ) {
+    // only one provider for a given name and type
+    fileProviders.removeIf( p -> p.getType().equalsIgnoreCase( fileProvider.getType() )
+      && ( p.getName() == null || p.getName().equalsIgnoreCase( fileProvider.getName() ) ) );
+    fileProviders.add( fileProvider );
+  }
+
 }
