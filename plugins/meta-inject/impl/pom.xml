@@ -18,44 +18,37 @@
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
     <mockito.version>1.10.19</mockito.version>
     <powermock.version>1.6.3</powermock.version>
-    <platform.version>9.4.0.0-SNAPSHOT</platform.version>
   </properties>
 
     <dependencies>
-      <dependency>
-          <groupId>pentaho-kettle</groupId>
-          <artifactId>kettle-core</artifactId>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>pentaho-kettle</groupId>
-          <artifactId>kettle-engine</artifactId>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>com.healthmarketscience.jackcess</groupId>
-          <artifactId>jackcess</artifactId>
-          <scope>compile</scope>
-      </dependency>
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-engine</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.healthmarketscience.jackcess</groupId>
+            <artifactId>jackcess</artifactId>
+            <scope>compile</scope>
+        </dependency>
 
-      <dependency>
-          <groupId>pentaho-kettle</groupId>
-          <artifactId>kettle-ui-swt</artifactId>
-          <version>${pdi.version}</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>pentaho</groupId>
-          <artifactId>pentaho-metaverse-api</artifactId>
-          <version>${pentaho-metaverse.version}</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-platform-core</artifactId>
-        <version>${platform.version}</version>
-        <scope>provided</scope>
-      </dependency>
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-ui-swt</artifactId>
+            <version>${pdi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>pentaho</groupId>
+            <artifactId>pentaho-metaverse-api</artifactId>
+            <version>${pentaho-metaverse.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>pentaho-kettle</groupId>
