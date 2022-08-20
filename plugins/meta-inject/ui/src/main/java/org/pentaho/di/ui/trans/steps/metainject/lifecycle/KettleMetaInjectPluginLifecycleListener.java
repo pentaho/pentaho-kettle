@@ -18,13 +18,13 @@
  * limitations under the License.
  */
 
-package org.pentaho.di.trans.steps.metainject.lifecycle;
+package org.pentaho.di.ui.trans.steps.metainject.lifecycle;
 
 import org.pentaho.di.core.annotations.LifecyclePlugin;
 import org.pentaho.di.core.lifecycle.LifeEventHandler;
 import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleListener;
-import org.pentaho.di.trans.steps.metainject.analyzer.MetaInjectAnalyzer;
+import org.pentaho.di.ui.trans.steps.metainject.analyzer.MetaInjectAnalyzer;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 /**
