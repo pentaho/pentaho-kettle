@@ -817,8 +817,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           || command.equalsIgnoreCase( FileDialogOperation.OPEN )
           || command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE_FOLDER ) ) {
           txtNav.setText( getNavigationPath( localFile ) );
-          String fileExtension = localFile.getPath().substring( localFile.getPath().lastIndexOf( FILE_PERIOD ) );
-          if ( Utils.matches( fileExtension, typedComboBox.getSelection().getValue() ) ) {
+          String fileExtension = extractFileExtension( localFile.getPath() );
+          if ( isValidFileExtension( fileExtension ) ) {
             openFileSelector( localFile );
             getShell().dispose();
           }
@@ -899,12 +899,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       if ( command.equals( FileDialogOperation.SELECT_FILE )
         || command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE_FOLDER )
         || command.equals( FileDialogOperation.OPEN ) ) {
+
         if ( typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES ) ) {
           name = tempName;
           // Check for correct file type before assigning name value
         } else {
-          name =  Utils.matches( tempName.substring( tempName.lastIndexOf( FILE_PERIOD ) ),
-            typedComboBox.getSelection().getValue() ) ? tempName : null;
+          String fileExtension = extractFileExtension( tempName );
+          name = isValidFileExtension( fileExtension ) ? tempName : null;
         }
       } else {
         name = tempName;
@@ -912,6 +913,18 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       setStateVariablesFromSelection( selectedFileTreeViewer );
     }
   }
+
+  private boolean isValidFileExtension( String fileExtension ) {
+    return Utils.matches( fileExtension, typedComboBox.getSelection().getValue() )
+            || typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES );
+  }
+  private String extractFileExtension( String fullFilePath ) {
+    int lastIndexOfPeriod = fullFilePath.lastIndexOf( FILE_PERIOD );
+    String fileExtension = ( lastIndexOfPeriod == -1 )
+      ? StringUtils.EMPTY : fullFilePath.substring( lastIndexOfPeriod );
+    return fileExtension;
+  }
+
   private void saveStructuredSelectionPath( IStructuredSelection selection ) {
     IStructuredSelection selectedFileTreeViewer = selection.isEmpty() ? null : selection;
     if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof File ) {
@@ -1107,14 +1120,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           Object tableItemObject = fileTableItem.getData();
           if ( !( tableItemObject instanceof Directory ) ) {
             String fileName  = ( (File) tableItemObject ).getPath();
-            if ( fileName.lastIndexOf( FILE_PERIOD ) != -1 ) {
-              String fileExtension = fileName.substring( fileName.lastIndexOf( FILE_PERIOD ) );
-              if ( typedComboBox.getSelection().getId().equalsIgnoreCase( ALL_FILE_TYPES )
-                || Utils.matches( fileExtension, typedComboBox.getSelection().getValue() ) ) {
-                fileTableItem.setForeground( clrBlack );
-              } else {
-                fileTableItem.setForeground( clrGray );
-              }
+            String fileExtension = extractFileExtension( fileName );
+            boolean isValidFileExtension = isValidFileExtension( fileExtension );
+            if ( isValidFileExtension ) {
+              fileTableItem.setForeground( clrBlack );
+            } else {
+              fileTableItem.setForeground( clrGray );
             }
           }
         }
