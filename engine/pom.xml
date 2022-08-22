@@ -53,7 +53,6 @@
     <ldapjdk.version>20000524</ldapjdk.version>
     <monetdb-jdbc.version>2.8</monetdb-jdbc.version>
     <odfdom-java.version>0.8.6</odfdom-java.version>
-    <poi.version>4.1.1</poi.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <commons-math3.version>3.6.1</commons-math3.version>
     <xmlbeans.version>3.1.0</xmlbeans.version>
@@ -146,12 +145,7 @@
     <!-- Reporting dependencies -->
     <dependency>
       <groupId>org.pentaho.reporting.library</groupId>
-      <artifactId>libfonts</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-core</artifactId>
+      <artifactId>libformula</artifactId>
       <version>${pentaho-reporting.version}</version>
     </dependency>
 
@@ -431,39 +425,6 @@
       <groupId>org.odftoolkit</groupId>
       <artifactId>odfdom-java</artifactId>
       <version>${odfdom-java.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-      <version>${poi.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-ooxml</artifactId>
-      <version>${poi.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-ooxml-schemas</artifactId>
-      <version>${poi.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

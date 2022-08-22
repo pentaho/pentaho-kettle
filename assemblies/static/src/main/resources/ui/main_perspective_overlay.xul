@@ -11,14 +11,12 @@
 
         <menu id="file-new" visible="true"/>
         <menuitem id="file-open" visible="true"/>
-        <menuitem id="file-open-from-vfs" visible="true"/>
         <menu id="file-open-recent" visible="true"/>
         <menuitem id="file-close" visible="true"/>
         <menuitem id="file-close-all" visible="true"/>
         <menuseparator id="file-separator-1" visible="true"/>
         <menuitem id="file-save" visible="true"/>
         <menuitem id="file-save-as" visible="true"/>
-        <menuitem id="file-save-as-vfs" visible="true"/>
         <menuseparator id="file-separator-2" visible="true"/>
         <menuitem id="file-print" visible="true"/>
         <menuseparator id="file-separator-3" visible="true"/>

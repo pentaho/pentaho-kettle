@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
+ ***************************************************************************** */
 
 package org.pentaho.di.ui.repo.menu;
 
@@ -39,29 +39,37 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.repo.dialog.RepositoryDialog;
+import org.pentaho.di.ui.repo.dialog.CreateRepoManager;
+import org.pentaho.di.ui.repo.dialog.RepositoryConnectionSWT;
+import org.pentaho.di.ui.repo.dialog.RepositoryManagerSWT;
 import org.pentaho.di.ui.spoon.Spoon;
 
 public class RepositoryConnectMenu {
 
   private static Class<?> PKG = RepositoryConnectMenu.class;
-  private static LogChannelInterface log = KettleLogStore.getLogChannelInterfaceFactory().create(
-      RepositoryConnectMenu.class );
+  private static LogChannelInterface log =
+    KettleLogStore.getLogChannelInterfaceFactory().create(
+    RepositoryConnectMenu.class );
   private static final int MAX_REPO_NAME_PIXEL_LENGTH = 230;
 
-  private Spoon spoon;
-  private ToolBar toolBar;
+  private final Spoon spoon;
+  private final ToolBar toolBar;
   private ToolItem connectButton;
   private ToolItem connectDropdown;
   private RepositoriesMeta repositoriesMeta;
   private final RepositoryConnectController repoConnectController;
 
+  static RepositoryConnectController getRepoControllerInstance() {
+    return RepositoryConnectController.getInstance();
+  }
+
   public RepositoryConnectMenu( Spoon spoon, ToolBar toolBar, RepositoryConnectController repoConnectController ) {
     this.toolBar = toolBar;
     this.spoon = spoon;
-    this.repoConnectController = repoConnectController;
+    this.repoConnectController = getRepoControllerInstance();
     repoConnectController.addListener( this::renderAndUpdate );
   }
+
 
   public void update() {
     Rectangle rect = toolBar.getBounds();
@@ -113,20 +121,28 @@ public class RepositoryConnectMenu {
     spoon.setShellText();
   }
 
+  /**
+   * @implNote prompts to create new repository connection if there doesn't exist
+   * any.
+   */
   private void renderConnectButton() {
-    connectButton = new ToolItem( toolBar, toolBar.getItems().length );
+    this.connectButton = new ToolItem( toolBar, toolBar.getItems().length );
     connectButton.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Connect" ) );
     connectButton.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
-        new RepositoryDialog( spoon.getShell(), repoConnectController ).openCreation();
+        new CreateRepoManager( spoon.getShell().getDisplay() ).createNewRepo();
         renderAndUpdate();
       }
     } );
   }
 
+
+  /**
+   * @implNote prompts gui for connection to existing repository
+   */
   private void renderConnectDropdown() {
-    connectDropdown = new ToolItem( toolBar, SWT.DROP_DOWN, toolBar.getItems().length );
+    this.connectDropdown = new ToolItem( toolBar, SWT.DROP_DOWN, toolBar.getItems().length );
     connectDropdown.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Connect" ) );
     connectDropdown.addSelectionListener( new SelectionAdapter() {
       @Override
@@ -138,7 +154,8 @@ public class RepositoryConnectMenu {
             String truncatedName = truncateName( repositoriesMeta.getRepository( i ).getName() );
             item.setText( truncatedName );
             item.setData( repositoriesMeta.getRepository( i ).getName() );
-            if ( spoon.rep != null && spoon.getRepositoryName().equals( repositoriesMeta.getRepository( i ).getName() ) ) {
+            if ( spoon.rep != null && spoon.getRepositoryName()
+              .equals( repositoriesMeta.getRepository( i ).getName() ) ) {
               item.setSelection( true );
               continue;
             }
@@ -162,7 +179,7 @@ public class RepositoryConnectMenu {
                       log.logError( "Error connecting to repository", ke );
                     }
                   } else {
-                    new RepositoryDialog( spoon.getShell(), repoConnectController ).openLogin( repositoryMeta );
+                    new RepositoryConnectionSWT( spoon.getShell() ).createDialog( repoName );
                   }
                   renderAndUpdate();
                 }
@@ -171,13 +188,19 @@ public class RepositoryConnectMenu {
           }
         }
 
+        /**
+         * @implNote prompts repository manager gui for reps crud operations
+         *
+         */
         new MenuItem( connectionMenu, SWT.SEPARATOR );
         MenuItem managerItem = new MenuItem( connectionMenu, SWT.NONE );
         managerItem.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.RepositoryManager" ) );
         managerItem.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
-            new RepositoryDialog( spoon.getShell(), repoConnectController ).openManager();
+
+              new RepositoryManagerSWT( spoon.getShell() ).createDialog();
+
             renderAndUpdate();
           }
         } );
@@ -205,13 +228,11 @@ public class RepositoryConnectMenu {
 
         ToolItem item = (ToolItem) event.widget;
         Rectangle rect = item.getBounds();
-        org.eclipse.swt.graphics.Point pt =
-            item.getParent().toDisplay( new org.eclipse.swt.graphics.Point( rect.x, rect.y + rect.height ) );
-
+        Point pt =
+          item.getParent().toDisplay( new org.eclipse.swt.graphics.Point( rect.x, rect.y + rect.height ) );
         connectionMenu.setLocation( pt.x, pt.y );
         connectionMenu.setVisible( true );
       }
-
     } );
   }
 
@@ -222,7 +243,6 @@ public class RepositoryConnectMenu {
       gc.dispose();
       return name;
     }
-    String originalName = name;
     while ( gc.textExtent( name + "..." ).x > MAX_REPO_NAME_PIXEL_LENGTH ) {
       name = name.substring( 0, name.length() - 1 );
     }

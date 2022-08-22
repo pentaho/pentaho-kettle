@@ -30,6 +30,10 @@
       <artifactId>kettle-ui-swt</artifactId>
     </dependency>
     <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-platform-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
     </dependency>

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,21 +26,20 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
@@ -54,6 +53,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -62,6 +62,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
 public class MQTTProducerTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Mock MqttClient mqttClient;
   @Mock LogChannelInterfaceFactory logChannelFactory;
   @Mock LogChannelInterface logChannel;
@@ -75,13 +76,13 @@ public class MQTTProducerTest {
       MQTTProducerMeta.class,
       MQTTProducerMeta.class.getAnnotation( Step.class ),
       Collections.emptyList(), false, null );
-    KettleEnvironment.init();
   }
 
   @Before
   public void setup() throws Exception {
     KettleLogStore.setLogChannelInterfaceFactory( logChannelFactory );
     when( logChannelFactory.create( any(), any() ) ).thenReturn( logChannel );
+    lenient().when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
 
     TransMeta transMeta = new TransMeta( getClass().getResource( "/ProduceFourRows.ktr" ).getPath() );
     trans = new Trans( transMeta );

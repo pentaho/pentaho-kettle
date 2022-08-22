@@ -31,7 +31,22 @@
         </property>
       </activation>
       <modules>
-        <!--module>log4j</module-->
+        <module>monet-db-bulk-loader</module>
+        <module>postgresql-db-bulk-loader</module>
+        <module>oracle-bulk-loader</module>
+        <module>terafast-bulk-loader</module>
+        <module>infobright-bulk-loader</module>
+        <module>excel</module>
+        <module>ivw-bulk-loader</module>
+        <module>edi2xml</module>
+        <module>mysql-bulk-loader</module>
+        <module>yaml-input</module>
+        <module>metastore-locator</module>
+        <module>repository-locator</module>
+        <module>rss</module>
+        <module>pentaho-reporting</module>
+        <module>mondrianinput</module>
+        <module>avro-format</module>
       </modules>
     </profile>
 
@@ -75,6 +90,9 @@
         <module>ms-access</module>
         <module>xml</module>
         <module>streaming</module>
+        <module>metastore-locator</module>
+        <module>repository-locator</module>
+        <module>ldap</module>
       </modules>
     </profile>
 

@@ -43,8 +43,12 @@ public class RepositorySpoonPlugin implements SpoonPluginInterface {
 
   private RepositoryConnectController repositoryConnectController;
 
-  public RepositorySpoonPlugin( RepositoryConnectController repositoryConnectController ) {
-    this.repositoryConnectController = repositoryConnectController;
+  static RepositoryConnectController getRepoControllerInstance(){
+    return RepositoryConnectController.getInstance();
+  }
+
+  public RepositorySpoonPlugin() {
+    this.repositoryConnectController = getRepoControllerInstance();
   }
 
   @Override

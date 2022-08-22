@@ -111,7 +111,7 @@ public class VFSDirectory extends VFSFile implements Directory {
       return true;
     }
 
-    if ( !( obj instanceof VFSFile ) ) {
+    if ( !( obj instanceof VFSDirectory ) ) {
       return false;
     }
 

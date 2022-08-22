@@ -15,8 +15,7 @@
               command="spoon.newConnection()" />
           </menupopup>
         </menu>
-        <menuitem id="file-open" acceltext="CTRL-O" accesskey="ctrl-o" label="${Spoon.Menu.File.Open}" command="spoon.openFile()" />
-        <menuitem id="file-open-from-vfs" label="${Spoon.Menu.File.OpenVFS}" command="spoon.openFileNew()" />
+        <menuitem id="file-open" acceltext="CTRL-O" accesskey="ctrl-o" label="${Spoon.Menu.File.Open}" command="spoon.openFileNew()" />
         <menu id="file-open-recent" label="${Spoon.Menu.File.Open.Recent.Popup}">
           <menupopup id="file-open-recent-popup" />
         </menu>
@@ -26,22 +25,18 @@
 
         <menuseparator id="file-separator-1"/>
         <menuitem id="file-save" acceltext="CTRL-S" accesskey="ctrl-s" label="${Spoon.Menu.File.Save}" command="spoon.saveFile()" />
-        <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" command="spoon.saveFileAs()" />
-        <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveAsNew()" />        
+        <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" command="spoon.saveAsNew()" />
         <!-- <menuitem id="file-publish" label="${Spoon.Menu.File.Publish}"/> -->
         <menuseparator id="file-separator-2"/>
         <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
 
         <menuseparator id="file-separator-3"/>
         <menuitem id="file-import-from-xml" acceltext="CTRL-I" accesskey="ctrl-i" label="${Spoon.Menu.File.Import}"
-          command="spoon.importFile()" />
+          command="spoon.openFileNew()" />
         <menu id="file-export" label="${Spoon.Menu.File.Export.Popup}" >
           <menupopup id="export-popup">
             <menuitem id="file-export-to-xml" label="${Spoon.Menu.File.Export}" command="spoon.exportXMLFile()" />
             <menuitem id="file-export-all-to-xml" label="${Spoon.Menu.File.ExportAll}" command="spoon.exportAllXMLFile()" />
-            <!--
-            <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" disabled="false" />
-            -->
           </menupopup>
         </menu>
         <menuseparator id="file-separator-4"/>
@@ -174,10 +169,7 @@
         <menuseparator />
         <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
         <menuseparator />
-        <menuitem id="capability-manager" label="${Spoon.Menu.CapabilityManager}" command="spoon.editCapabilities()" />
-        <menuseparator />
         <menuitem id="help-plugins" label="${Spoon.Menu.ShowPluginInfo}" command="spoon.showPluginInfo()" />
-
       </menupopup>
     </menu>
 

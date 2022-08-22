@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -24,15 +24,14 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
-import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bmorrise on 5/4/17.
@@ -40,13 +39,10 @@ import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 public class EmbeddedRunConfigurationManager {
   public static RunConfigurationManager build( EmbeddedMetaStore embeddedMetaStore ) {
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
-    SparkRunConfigurationProvider sparkRunConfigurationProvider =
-      new SparkRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
+      new DefaultRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ) );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     runConfigurationProviders.add( defaultRunConfigurationProvider );
-    runConfigurationProviders.add( sparkRunConfigurationProvider );
 
     return new RunConfigurationManager( runConfigurationProviders );
   }

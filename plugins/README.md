@@ -23,11 +23,22 @@ __List of the current core plugins:__
 * log4j
 * lucid-db-streaming-loader
 * meta-inject
+* monet-db-bulk-loader
 * ms-access-bulk-loader
+* postgresql-db-bulk-loader
+* infobright-bulk-loader
+* excel
+* ivw-bulk-loader
+* edi2xml
 * engine-configuration
 * pur
 * repositories
 * salesforce
+* mysql-bulk-loader
+* ldap
+* yaml-input
+* pentaho-reporting
+* mondrianinput
 
 __Deprecated plugins:__
 

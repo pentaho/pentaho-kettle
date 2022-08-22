@@ -35,10 +35,10 @@ import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.spoon.Spoon;
 
 @ExtensionPoint(
-    id = "RequestLoginToRepositoryExtensionPoint",
-    extensionPointId = "RequestLoginToRepository",
-    description = "Handles login requests"
-  )
+  id = "RequestLoginToRepositoryExtensionPoint",
+  extensionPointId = "RequestLoginToRepository",
+  description = "Handles login requests"
+)
 public class RequestLoginToRepositoryExtensionPoint implements ExtensionPointInterface {
 
   private static Class<?> PKG = RequestLoginToRepositoryExtensionPoint.class;

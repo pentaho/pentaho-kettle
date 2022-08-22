@@ -1,0 +1,13 @@
+{
+  "namespace" : "TestNameSpace",
+  "type" : "record",
+  "name" : "TestnameRecord",
+  "doc" : "TestDocvalue",
+  "fields" : [ {
+    "name" : "FirstName",
+    "type" : [ "null", "string" ]
+  }, {
+    "name" : "Phone",
+    "type" : [ "null", "long" ]
+  } ]
+}

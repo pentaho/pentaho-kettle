@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -45,6 +45,14 @@ import org.pentaho.di.ui.spoon.Spoon;
 public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor {
 
   private static Class<?> PKG = DefaultRunConfigurationExecutor.class;
+  private static DefaultRunConfigurationExecutor instance;
+
+  public static DefaultRunConfigurationExecutor getInstance() {
+    if ( null == instance ) {
+      instance = new DefaultRunConfigurationExecutor();
+    }
+    return instance;
+  }
 
   @Override
   public void execute( RunConfiguration runConfiguration, ExecutionConfiguration executionConfiguration,

@@ -14,4 +14,67 @@
         <artifactId>pdi-core</artifactId>
         <version>9.4.0.0-SNAPSHOT</version>
     </parent>
+
+    <profiles>
+        <profile>
+            <id>standard</id>
+            <activation>
+                <property>
+                    <name>!no-osgi</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>assembly_package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <desciptor>${basedir}/src/assemblies/assembly.xml</desciptor>
+                                    </descriptors>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>no-osgi</id>
+            <activation>
+                <property>
+                    <name>no-osgi</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>assembly_package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <desciptor>${basedir}/src/assemblies/assembly-no-osgi.xml</desciptor>
+                                    </descriptors>
+                                    <appendAssemblyId>true</appendAssemblyId>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

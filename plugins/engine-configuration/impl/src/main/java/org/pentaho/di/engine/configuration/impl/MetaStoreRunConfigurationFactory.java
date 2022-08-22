@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -28,8 +28,8 @@ import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationFactory;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.persist.MetaStoreFactory;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
 import java.util.Collections;
 import java.util.List;

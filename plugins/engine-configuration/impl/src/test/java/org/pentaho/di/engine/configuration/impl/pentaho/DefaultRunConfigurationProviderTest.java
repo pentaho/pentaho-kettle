@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017 - 2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -30,7 +30,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,7 +52,7 @@ public class DefaultRunConfigurationProviderTest {
   @Before
   public void setup() {
     defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
+      new DefaultRunConfigurationProvider( metastoreLocator );
   }
 
   @Test

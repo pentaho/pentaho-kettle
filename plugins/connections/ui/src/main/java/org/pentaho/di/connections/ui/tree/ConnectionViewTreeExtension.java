@@ -36,8 +36,8 @@ public class ConnectionViewTreeExtension implements ExtensionPointInterface {
 
   private ConnectionDelegate connectionDelegate;
 
-  public ConnectionViewTreeExtension( ConnectionDelegate connectionDelegate ) {
-    this.connectionDelegate = connectionDelegate;
+  public ConnectionViewTreeExtension() {
+    this.connectionDelegate = ConnectionDelegate.getInstance();
   }
 
   @Override public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
