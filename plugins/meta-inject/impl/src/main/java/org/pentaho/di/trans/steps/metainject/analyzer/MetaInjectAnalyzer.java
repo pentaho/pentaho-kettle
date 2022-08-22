@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.metainject.analyzer;
+package org.pentaho.di.trans.steps.metainject.analyzer;
 
 import com.tinkerpop.blueprints.Vertex;
 import org.apache.commons.lang.StringUtils;

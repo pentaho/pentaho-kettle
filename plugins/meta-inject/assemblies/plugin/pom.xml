@@ -23,11 +23,6 @@
       <artifactId>meta-inject-plugins-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>meta-inject-plugins-ui</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
   </dependencies>
 
@@ -45,7 +40,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>meta-inject-plugins-impl,meta-inject-plugins-ui</excludeArtifactIds>
+              <excludeArtifactIds>meta-inject-plugins-impl</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>
