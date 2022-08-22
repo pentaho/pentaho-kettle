@@ -513,9 +513,17 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     this.roots = new HashMap<>();
   }
 
-  @Override public VFSFile createDirectory( String parentPath, VFSFile file, String newDirectoryName) {
-    file.setPath( file.getPath() + VFSFile.DELIMITER + newDirectoryName );
-    VFSFile createdDirectory = add( file );
-    return createdDirectory;
+  @Override public VFSFile createDirectory( String parentPath, VFSFile file, String newDirectoryName ) {
+    try {
+      FileObject fileObject = KettleVFS
+        .getFileObject( file.getPath() + VFSFile.DELIMITER + newDirectoryName, new Variables(),
+        VFSHelper.getOpts( file.getPath(), file.getConnection() ) );
+      fileObject.createFolder();
+
+      return VFSDirectory.create( parentPath, fileObject, file.getConnection(), file.getDomain() );
+    } catch ( KettleFileException | FileSystemException ignored ) {
+    // Ignored
+    }
+    return null;
   }
 }
