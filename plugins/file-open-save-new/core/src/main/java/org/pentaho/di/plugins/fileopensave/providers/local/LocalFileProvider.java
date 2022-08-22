@@ -22,7 +22,6 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.local;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
@@ -112,7 +111,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
 
   @Override public List<LocalFile> getFiles( LocalFile file, String filters, VariableSpace space )
     throws FileException {
-    return null;
+    return getFiles( file, filters );
   }
 
   // TODO: Filter out certain files from root
@@ -371,7 +370,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       newLocalFile = LocalFile.create( parentPath,
         Paths.get( file.getParent() + FileSystems.getDefault().getSeparator() + newFolderName ) );
     }
-    return this.add( newLocalFile );
+    return this.add( newLocalFile, null );
   }
 
   @Override public LocalFile getFile( LocalFile file, VariableSpace space ) {

@@ -522,7 +522,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
   @Override public VFSFile createDirectory( String parentPath, VFSFile file, String newDirectoryName) {
     file.setPath( file.getPath() + VFSFile.DELIMITER + newDirectoryName );
-    VFSFile createdDirectory = add( file );
+    VFSFile createdDirectory = add( file, null );
     return createdDirectory;
   }
 }

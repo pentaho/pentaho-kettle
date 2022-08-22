@@ -634,7 +634,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     throws FileException {
       RepositoryDirectory newRepositoryDirectory = RepositoryDirectory.build( parentPath, findDirectory( repositoryFile.getPath() ) );
       newRepositoryDirectory.setName( newDirectoryName );
-      RepositoryFile addRepositoryDirectoryResult = add( newRepositoryDirectory );
+      RepositoryFile addRepositoryDirectoryResult = add( newRepositoryDirectory, null );
     return addRepositoryDirectoryResult;
   }
 
