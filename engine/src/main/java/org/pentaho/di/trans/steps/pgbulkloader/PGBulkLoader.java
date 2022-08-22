@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 //
 //
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.sql.Connection;
@@ -484,6 +485,23 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+    meta = (PGBulkLoaderMeta) smi;
+    data = (PGBulkLoaderData) sdi;
+
+    try {
+      pgCopyOut.close();
+    } catch (  IOException e ) {
+      logError( "Error while closing the Postgres Output Stream", e.getMessage() );
+    }
+
+    if ( data.db != null ) {
+      data.db.close();
+    }
+    super.dispose( smi, sdi );
   }
 
 }
