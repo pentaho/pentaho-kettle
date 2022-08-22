@@ -31,7 +31,6 @@
     <jsr305.version>2.0.3</jsr305.version>
     <batik-js.version>1.8</batik-js.version>
     <cobertura-maven-plugin.version>2.6</cobertura-maven-plugin.version>
-    <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
     <mockito.version>1.10.19</mockito.version>
     <powermock.version>1.6.3</powermock.version>
     <commons-configuration.revision>1.9</commons-configuration.revision>
