@@ -18,7 +18,7 @@ package org.pentaho.di.repository.pur.provider;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.osgi.kettle.repository.locator.api.KettleRepositoryProvider;
+import org.pentaho.kettle.repository.locator.api.KettleRepositoryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
