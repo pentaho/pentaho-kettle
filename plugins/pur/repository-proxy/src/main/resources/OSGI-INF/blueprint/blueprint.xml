@@ -16,7 +16,7 @@
     <property name="locationUrl" value="${repos.url}"/>
   </bean>
 
-  <service interface="org.pentaho.osgi.kettle.repository.locator.api.KettleRepositoryProvider" ranking="150">
+  <service interface="org.pentaho.kettle.repository.locator.api.KettleRepositoryProvider" ranking="150">
     <description>
       This service supplies a PUR repository.
       The repository url location and the user and password used to connect to it are obtained from the following

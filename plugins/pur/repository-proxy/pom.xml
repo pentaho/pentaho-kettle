@@ -57,9 +57,10 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
+      <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-kettle-repository-locator-api</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Endorsed Standards Excluded from Java 11+ -->
