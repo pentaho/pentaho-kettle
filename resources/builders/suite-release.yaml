@@ -141,7 +141,7 @@ jobGroups:
      - jobID           :  reporting-libraries-lowdeps
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        versionProperty :  pentaho-reporting.version
-       directives      :  += -Plowdeps -Djavadoc
+       directives      :  += -Plowdeps 
        root            :  libraries
 
      - jobID           :  encryption-support
@@ -151,7 +151,7 @@ jobGroups:
   700:
      - jobID           :  reporting-engine-core
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Pcore -Djavadoc
+       directives      :  += -Pcore 
        root            :  engine
        versionProperty :  pentaho-reporting.version
 
@@ -200,18 +200,18 @@ jobGroups:
   1000:
      - jobID           :  mondrian-jar
        scmUrl          :  https://github.com/pentaho/mondrian.git
-       directives      :  += -P !workbench -P !assemblies -Djavadoc
+       directives      :  += -P !workbench -P !assemblies 
        versionProperty :  mondrian.version
 
      - jobID           :  platform-api
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-       directives      :  += -DskipDefault -P platform-api -Djavadoc
+       directives      :  += -DskipDefault -P platform-api 
        versionProperty :  platform.version
 
   1100:
      - jobID           :  pdi-engine-core
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
-       directives      :  += -DskipDefault -P base,plugins,lowdeps -Djavadoc
+       directives      :  += -DskipDefault -P base,plugins,lowdeps 
        versionProperty :  pdi.version
 
   1200:
@@ -313,7 +313,7 @@ jobGroups:
 
      - jobID           :  reporting-engine-extensions
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Pextensions -Djavadoc
+       directives      :  += -Pextensions 
        root            :  engine
        versionProperty :  pentaho-reporting.version
 
@@ -325,7 +325,7 @@ jobGroups:
   2100:
      - jobID           :  platform-base
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-       directives      :  += -DskipDefault -P platform-base -Djavadoc
+       directives      :  += -DskipDefault -P platform-base 
        parallelize     :  true
        archivable      :  true
        versionProperty :  platform.version
@@ -440,7 +440,7 @@ jobGroups:
 
      - jobID           :  platform-user-console
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-       directives      :  += -DskipDefault -P platform-user-console -Djavadoc
+       directives      :  += -DskipDefault -P platform-user-console 
        parallelize     :  false
        versionProperty :  platform.version
 
@@ -590,13 +590,13 @@ jobGroups:
 
      - jobID           :  pdi-weka-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining.git
-       directives      :  += -Djavadoc
+       directives      :  += 
        versionProperty :  pentaho-data-mining.version
 
   3700:
      - jobID           :  pdi-weka-plugins-ee
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining-ee.git
-       directives      :  += -Djavadoc
+       directives      :  += 
        versionProperty :  pentaho-data-mining.version
 
      - jobID           :  pir-plugin
@@ -657,7 +657,7 @@ jobGroups:
        
      - jobID           :  prd-assembly-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Pdesigner -Djavadoc -Dmaven.test.failure.ignore=true -Dno-osgi
+       directives      :  += -Pdesigner  -Dmaven.test.failure.ignore=true -Dno-osgi
        testable        :  false
        archivable      :  true
        versionProperty :  pentaho-reporting.version
