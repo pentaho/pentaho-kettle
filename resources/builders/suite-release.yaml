@@ -141,7 +141,7 @@ jobGroups:
      - jobID           :  reporting-libraries-lowdeps
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        versionProperty :  pentaho-reporting.version
-       directives      :  += -Plowdeps 
+       directives      :  += -Plowdeps
        root            :  libraries
 
      - jobID           :  encryption-support
@@ -151,7 +151,7 @@ jobGroups:
   700:
      - jobID           :  reporting-engine-core
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Pcore 
+       directives      :  += -Pcore
        root            :  engine
        versionProperty :  pentaho-reporting.version
 
@@ -200,18 +200,18 @@ jobGroups:
   1000:
      - jobID           :  mondrian-jar
        scmUrl          :  https://github.com/pentaho/mondrian.git
-       directives      :  += -P !workbench -P !assemblies 
+       directives      :  += -P !workbench -P !assemblies
        versionProperty :  mondrian.version
 
      - jobID           :  platform-api
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-       directives      :  += -DskipDefault -P platform-api 
+       directives      :  += -DskipDefault -P platform-api
        versionProperty :  platform.version
 
   1100:
      - jobID           :  pdi-engine-core
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
-       directives      :  += -DskipDefault -P base,plugins,lowdeps 
+       directives      :  += -DskipDefault -P base,plugins,lowdeps
        versionProperty :  pdi.version
 
   1200:
@@ -245,7 +245,7 @@ jobGroups:
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-plugin.git
        versionProperty :  pdi-dataservice-client-plugin.version
-       
+
      - jobID           :  big-data-hadoop-shims-api
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        directives      :  += -DskipDefault -P shim-api
@@ -266,7 +266,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        directives      :  += -DskipDefault -P common
        versionProperty :  pentaho-hadoop-shims.version
-       
+
   1420:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
@@ -313,7 +313,7 @@ jobGroups:
 
      - jobID           :  reporting-engine-extensions
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Pextensions 
+       directives      :  += -Pextensions
        root            :  engine
        versionProperty :  pentaho-reporting.version
 
@@ -325,7 +325,7 @@ jobGroups:
   2100:
      - jobID           :  platform-base
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-       directives      :  += -DskipDefault -P platform-base 
+       directives      :  += -DskipDefault -P platform-base
        parallelize     :  true
        archivable      :  true
        versionProperty :  platform.version
@@ -353,7 +353,7 @@ jobGroups:
      - jobID           :  metaverse-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-metaverse.git
        versionProperty :  pentaho-metaverse.version
-       
+
 #     - jobID           :  layout-editor
 #       scmUrl          :  https://github.com/pentaho/layout-editor.git
 #       versionProperty :  layout-editor.version
@@ -440,7 +440,7 @@ jobGroups:
 
      - jobID           :  platform-user-console
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-       directives      :  += -DskipDefault -P platform-user-console 
+       directives      :  += -DskipDefault -P platform-user-console
        parallelize     :  false
        versionProperty :  platform.version
 
@@ -478,10 +478,6 @@ jobGroups:
        versionProperty :  pentaho-cgg-plugin.version
 
   2900:
-     - jobID           :  pdi-daemon
-       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
-       versionProperty :  ael.version
-
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
        versionProperty :  pentaho-sparkl-plugin.version
@@ -556,7 +552,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-det.git
        directives      :  += -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-det.version
-       
+
      - jobID           :  big-data-plugin-features
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -DfeaturesOnly
@@ -590,13 +586,13 @@ jobGroups:
 
      - jobID           :  pdi-weka-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining.git
-       directives      :  += 
+       directives      :  +=
        versionProperty :  pentaho-data-mining.version
 
   3700:
      - jobID           :  pdi-weka-plugins-ee
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining-ee.git
-       directives      :  += 
+       directives      :  +=
        versionProperty :  pentaho-data-mining.version
 
      - jobID           :  pir-plugin
@@ -632,7 +628,7 @@ jobGroups:
        directives      :  += -Deula-wrap
        archivable      :  true
        versionProperty :  pdi-sap-hana-bulk-loader-plugin.version
-       
+
      - jobID           :  big-data-plugin-assembly
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -DassemblyOnly
@@ -654,7 +650,7 @@ jobGroups:
        archivable      :  true
        atomicScmCheckout: true
        versionProperty :  big-data-plugin.version
-       
+
      - jobID           :  prd-assembly-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        directives      :  += -Pdesigner  -Dmaven.test.failure.ignore=true -Dno-osgi
@@ -745,7 +741,7 @@ jobGroups:
        testable        :  false
        archivable      :  true
        versionProperty :  aggdesigner.version
-       
+
      - jobID           :  metadata-editor-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
        directives      :  += -Dno-osgi-eula-wrap -Dno-osgi
@@ -803,7 +799,7 @@ jobGroups:
 #  4800:
 #     - jobID           :  generate-upgrade-csvs-from-9.2
 #       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-#       directives      :  
+#       directives      :
 #                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_92_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_92_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
 #                 test  :  test
 #       root            :  installer-tool
@@ -812,7 +808,7 @@ jobGroups:
 #  4900:
 #     - jobID           :  generate-upgrade-csvs-from-9.3
 #       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-#       directives      :  
+#       directives      :
 #                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_93_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_93_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
 #                 test  :  test
 #       root            :  installer-tool
@@ -821,7 +817,7 @@ jobGroups:
 #  5000:
 #     - jobID           :  generate-upgrade-csvs-from-9.4
 #       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-#       directives      :  
+#       directives      :
 #                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_94_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_94_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
 #                 test  :  test
 #       root            :  installer-tool
@@ -832,7 +828,7 @@ jobGroups:
 #       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
 #       buildFramework  :  DSL_SCRIPT
 #       script          :  |
-#                          { -> 
+#                          { ->
 #                            script {
 #                              echo sh(script: 'env|sort', returnStdout: true)
 #                              echo sh(script: 'pwd', returnStdout: true)
@@ -848,14 +844,14 @@ jobGroups:
 #                            }
 #                          }
 #       testable        :  false
-     
+
 #  5200:
 #     - jobID           :  installer-tool
 #       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
 #       dockerImage     :  jenkins-build/installanywhere-installbuilder
 #       root            :  installer-tool
 #       versionProperty :  pentaho.version
-   
+
      - jobID           :  jenkins-pipelines
        scmUrl          :  https://github.com/pentaho/jenkins-pipelines.git
        scmBranch       :  ${RELEASE_VERSION}
