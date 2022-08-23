@@ -36,7 +36,6 @@
         <module>oracle-bulk-loader</module>
         <module>terafast-bulk-loader</module>
         <module>infobright-bulk-loader</module>
-        <module>excel</module>
         <module>ivw-bulk-loader</module>
         <module>edi2xml</module>
         <module>mysql-bulk-loader</module>
@@ -93,6 +92,7 @@
         <module>metastore-locator</module>
         <module>repository-locator</module>
         <module>ldap</module>
+        <module>excel</module>
       </modules>
     </profile>
 
