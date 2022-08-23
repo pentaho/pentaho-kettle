@@ -46,6 +46,7 @@
         <module>rss</module>
         <module>pentaho-reporting</module>
         <module>mondrianinput</module>
+        <module>avro-format</module>
       </modules>
     </profile>
 

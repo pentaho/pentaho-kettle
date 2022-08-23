@@ -13,6 +13,11 @@
   <artifactId>excel-plugins-impl</artifactId>
   <name>PDI Excel Plugins Impl</name>
 
+  <properties>
+    <poi.version>4.1.1</poi.version>
+    <platform.version>9.4.0.0-SNAPSHOT</platform.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -45,6 +50,45 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>${poi.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>${poi.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml-schemas</artifactId>
+      <version>${poi.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-platform-core</artifactId>
+      <version>${platform.version}</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

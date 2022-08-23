@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,11 +24,14 @@ package org.pentaho.di.trans.step.jms;
 
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.util.serialization.Sensitive;
+import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
+import org.pentaho.di.trans.step.jms.context.WrappedWebsphereMQProvider;
 import org.pentaho.metaverse.api.analyzer.kettle.annotations.Metaverse;
 
 import javax.jms.Destination;
 import javax.jms.JMSContext;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.pentaho.di.i18n.BaseMessages.getString;
@@ -109,6 +112,12 @@ public class JmsDelegate {
   public JmsDelegate( List<JmsProvider> jmsProviders ) {
     super();
     this.jmsProviders = jmsProviders;
+  }
+
+  public JmsDelegate() {
+    jmsProviders = new ArrayList<>();
+    jmsProviders.add( new ActiveMQProvider() );
+    jmsProviders.add( new WrappedWebsphereMQProvider() );
   }
 
   Destination getDestination( ) {

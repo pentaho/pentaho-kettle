@@ -22,7 +22,6 @@
 package org.pentaho.di.trans.steps.orabulkloader;
 
 import org.apache.commons.vfs2.provider.local.LocalFile;
-import org.apache.poi.util.TempFile;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -71,7 +70,8 @@ public class OraBulkDataOutputTest {
   @Test
   public void testOpen() {
     try {
-      File tempFile = TempFile.createTempFile( "temp", "test" );
+      String tmpDir = System.getProperty("java.io.tmpdir");
+      File tempFile = File.createTempFile("orafiles", "test" );
       String tempFilePath = tempFile.getAbsolutePath();
       String dataFileVfsPath = "file:///" + tempFilePath;
       LocalFile tempFileObject = mock( LocalFile.class );

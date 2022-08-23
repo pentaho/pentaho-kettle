@@ -12,6 +12,9 @@
 
   <artifactId>pentaho-reporting-plugins-ui</artifactId>
   <name>PDI Pentaho Reporting Plugins UI</name>
+  <properties>
+    <pentaho-reporting.version>9.4.0.0-SNAPSHOT</pentaho-reporting.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -35,7 +38,11 @@
       <artifactId>kettle-ui-swt</artifactId>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.pentaho.reporting.engine</groupId>
+      <artifactId>classic-core</artifactId>
+      <version>${pentaho-reporting.version}</version>
+    </dependency>
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency>
       <groupId>org.eclipse.swt</groupId>

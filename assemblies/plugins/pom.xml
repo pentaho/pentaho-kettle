@@ -17,6 +17,7 @@
   <properties>
     <!-- plugins -->
     <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
+    <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-dummy-plugin.version>${project.version}</kettle-dummy-plugin.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
@@ -59,6 +60,13 @@
     <mysql-bulk-load-plugin.version>${project.version}</mysql-bulk-load-plugin.version>
     <repositories-plugin.version>${project.version}</repositories-plugin.version>
     <connections-plugin.version>${project.version}</connections-plugin.version>
+    <meta-inject-plugin.version>${project.version}</meta-inject-plugin.version>
+    <jms-streaming-plugin.version>${project.version}</jms-streaming-plugin.version>
+    <mqtt-streaming-plugin.version>${project.version}</mqtt-streaming-plugin.version>
+    <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
+    <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
+    <pentaho-metaverse.version>9.4.0.0-SNAPSHOT</pentaho-metaverse.version>
+    <pdi-xml-plugin.version>9.4.0.0-SNAPSHOT</pdi-xml-plugin.version>
   </properties>
 
   <dependencies>
@@ -590,7 +598,103 @@
         </exclusion>
       </exclusions>
     </dependency>
-</dependencies>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-s3-vfs-plugin</artifactId>
+      <version>${pentaho-s3-vfs-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-streaming-jms-plugin-zip</artifactId>
+      <version>${jms-streaming-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-streaming-mqtt-plugin-zip</artifactId>
+      <version>${mqtt-streaming-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pdi-avro-format-plugin</artifactId>
+      <version>${pdi-avro-format-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>meta-inject-plugins</artifactId>
+      <version>${meta-inject-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-streaming-kafka-plugin-zip</artifactId>
+      <version>${big-data-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pdi-xml-plugin</artifactId>
+      <version>${pdi-xml-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>metaverse-plugin</artifactId>
+      <version>${pentaho-metaverse.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
   <profiles>
     <profile>
       <id>standard</id>
@@ -600,9 +704,7 @@
         </property>
       </activation>
       <properties>
-        <big-data-plugin.version>9.4.0.0-SNAPSHOT</big-data-plugin.version>
         <pdi-json-plugin.version>9.4.0.0-SNAPSHOT</pdi-json-plugin.version>
-        <pdi-xml-plugin.version>9.4.0.0-SNAPSHOT</pdi-xml-plugin.version>
       </properties>
       <dependencies>
         <dependency>
@@ -621,18 +723,6 @@
           <groupId>org.pentaho.di.plugins</groupId>
           <artifactId>kettle-json-plugin</artifactId>
           <version>${pdi-json-plugin.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di.plugins</groupId>
-          <artifactId>pdi-xml-plugin</artifactId>
-          <version>${pdi-xml-plugin.version}</version>
           <type>zip</type>
           <exclusions>
             <exclusion>
