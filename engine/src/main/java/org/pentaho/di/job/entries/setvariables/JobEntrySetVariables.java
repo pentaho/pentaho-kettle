@@ -255,9 +255,12 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
       if ( variableName != null ) {
         for ( int i = 0; i < variableName.length; i++ ) {
-          variables.add( variableName[ i ] );
-          variableValues.add( variableValue[ i ] );
-          variableTypes.add( variableType[ i ] );
+          if ( ( variables.contains( variableName[ i ] ) && replaceVars ) || !variables.contains(
+            variableName[ i ] ) ) {
+            variables.add( variableName[ i ] );
+            variableValues.add( variableValue[ i ] );
+            variableTypes.add( variableType[ i ] );
+          }
         }
       }
 
