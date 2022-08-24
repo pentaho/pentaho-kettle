@@ -30,7 +30,7 @@ buildProperties:
   PARALLEL_SIZE_ARCHIVE : 10
 
   MAVEN_DEFAULT_DIRECTIVES:
-    build: clean deploy -DskipTests 
+    build: clean deploy -DskipTests
     test: test
 
   JOB_ITEM_DEFAULTS :
@@ -166,7 +166,7 @@ jobGroups:
 
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-plugin.git
-       
+
      - jobID           :  big-data-hadoop-shims-api
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        directives      :  += -DskipDefault -P shim-api
@@ -183,14 +183,14 @@ jobGroups:
      - jobID           :  big-data-hadoop-shims-common
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        directives      :  += -DskipDefault -P common
-       
+
   1420:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        directives      :  += -DskipDefault -P all
        archivable      :  true
        root            :  shims
-       
+
   1500:
      - jobID           :  big-data-splunk-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
@@ -254,7 +254,7 @@ jobGroups:
 
      - jobID           :  metaverse-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-metaverse.git
-       
+
 #     - jobID           :  layout-editor
 #       scmUrl          :  https://github.com/pentaho/layout-editor.git
 
@@ -353,9 +353,6 @@ jobGroups:
        scmUrl          :  https://github.com/webdetails/cgg.git
 
   2900:
-     - jobID           :  pdi-daemon
-       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
-
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
 
@@ -413,7 +410,7 @@ jobGroups:
 
      - jobID           :  data-exploration
        scmUrl          :  https://github.com/pentaho/pentaho-det.git
-       
+
      - jobID           :  big-data-plugin-features
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -DfeaturesOnly
@@ -471,7 +468,7 @@ jobGroups:
      - jobID           :  pdi-sap-hana-bulk-loader-plugin
        scmUrl          :  https://github.com/pentaho/pdi-sap-hana-bulk-loader-plugin.git
        archivable      :  true
-       
+
      - jobID           :  big-data-plugin-assembly
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -DassemblyOnly
