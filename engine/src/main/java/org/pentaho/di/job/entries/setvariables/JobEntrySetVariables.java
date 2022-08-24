@@ -65,7 +65,7 @@ import org.w3c.dom.Node;
  * This defines a 'Set variables' job entry.
  *
  * @author Samatar Hassan
- * @since 06-05-2007
+ * @since 25-08-2022
  */
 public class JobEntrySetVariables extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntrySetVariables.class; // for i18n purposes, needed by Translator2!!
