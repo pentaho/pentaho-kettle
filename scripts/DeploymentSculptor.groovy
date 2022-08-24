@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-@GrabResolver(name='pentaho', root='https://nexus.pentaho.org/content/groups/omni')
+@GrabResolver(name='pentaho', root='https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/')
 @Grab('org.yaml:snakeyaml:1.18')
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.DumperOptions
