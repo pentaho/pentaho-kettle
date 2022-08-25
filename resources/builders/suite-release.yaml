@@ -698,17 +698,24 @@ jobGroups:
        versionProperty :  pentaho-reporting.version
 
   4200:
-     - jobID           :  pdi-client-assembly
+     - jobID           :  pdi-client-assembly-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
-       directives      :  += -DskipDefault -P assemblies
+       directives      :  += -DskipDefault -P assemblies -Dno-osgi
        testable        :  false
        archivable      :  true
        versionProperty :  pdi.version
 
   4300:
-     - jobID           :  pdi-client-assembly-ee
+     - jobID           :  pdi-client-assembly-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       directives      :  += -Deula-wrap
+       directives      :  += -Dno-osgi
+       testable        :  false
+       archivable      :  true
+       versionProperty :  pdi.version
+
+     - jobID           :  pdi-client-assembly
+       scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       directives      :  += -DskipDefault -P assemblies
        testable        :  false
        archivable      :  true
        versionProperty :  pdi.version
@@ -741,6 +748,13 @@ jobGroups:
        testable        :  false
        archivable      :  true
        versionProperty :  aggdesigner.version
+
+     - jobID           :  pdi-client-assembly-ee
+       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
+       directives      :  += -Deula-wrap
+       testable        :  false
+       archivable      :  true
+       versionProperty :  pdi.version
 
      - jobID           :  metadata-editor-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
