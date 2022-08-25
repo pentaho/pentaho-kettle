@@ -27,6 +27,8 @@
     <pentaho-metaverse.version>9.4.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>9.4.0.0-SNAPSHOT</platform.version>
     <pentaho-reporting.version>9.4.0.0-SNAPSHOT</pentaho-reporting.version>
+    <pdi-osgi-bridge.version>9.4.0.0-SNAPSHOT</pdi-osgi-bridge.version>
+    <pentaho-hadoop-shims.version>9.4.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
 
     <!-- third party -->
     <derbyclient.version>10.2.1.6</derbyclient.version>
@@ -646,6 +648,7 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
+      <version>${osgi.core.version}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -664,10 +667,6 @@
           <name>!no-osgi</name>
         </property>
       </activation>
-      <properties>
-        <pdi-osgi-bridge.version>9.4.0.0-SNAPSHOT</pdi-osgi-bridge.version>
-        <pentaho-hadoop-shims.version>9.4.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
-      </properties>
       <dependencies>
         <dependency>
           <groupId>pentaho</groupId>
