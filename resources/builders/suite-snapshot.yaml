@@ -490,7 +490,7 @@ jobGroups:
 
      - jobID           :  prd-assembly-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Pdesigner -Dmaven.test.failure.ignore=true -Dno-osgi
+       directives      :  += -Dno-osgi -Pdesigner -Dmaven.test.failure.ignore=true
        testable        :  false
        archivable      :  true
 
@@ -529,30 +529,32 @@ jobGroups:
        testable        :  false
 
   4200:
-     - jobID           :  pdi-client-assembly
+     - jobID           :  pdi-client-assembly-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
-       directives      :  += -DskipDefault -P assemblies
+       directives      :  += -DskipDefault -P assemblies -Dno-osgi
        testable        :  false
        archivable      :  true
 
   4300:
-     - jobID           :  pdi-client-assembly-ee
+     - jobID           :  pdi-client-assembly-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       testable        :  false
-       archivable      :  true
-
-     - jobID           :  metadata-editor-no-osgi
-       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
        directives      :  += -Dno-osgi
        testable        :  false
        archivable      :  true
 
-  4400:
-     - jobID           :  metadata-editor
-       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+     - jobID           :  pdi-client-assembly
+       scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
        directives      :
-                 build :  deploy -Drelease
+                 build :  deploy -DskipTests -Drelease -DskipDefault -P assemblies
                  test  :  test
+       testable        :  false
+       archivable      :  true
+
+  4400:
+     - jobID           :  metadata-editor-no-osgi
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       directives      :  += -Dno-osgi
+       testable        :  false
        archivable      :  true
 
      - jobID           :  platform-server-assembly
@@ -567,9 +569,11 @@ jobGroups:
        testable         : false
        archivable      :  true
 
-     - jobID           :  metadata-editor-ee-no-osgi
-       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       directives      :  += -Dno-osgi
+     - jobID           :  pdi-client-assembly-ee
+       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
+       directives      :
+                 build :  deploy -DskipTests -Drelease
+                 test  :  test
        testable        :  false
        archivable      :  true
 
@@ -580,11 +584,10 @@ jobGroups:
        testable        :  false
        archivable      :  true
 
-     - jobID           :  metadata-editor-ee
+     - jobID           :  metadata-editor-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       directives      :
-                 build :  deploy -Drelease
-                 test  :  test
+       directives      :  += -Dno-osgi
+       testable        :  false
        archivable      :  true
 
      - jobID           :  pad-assembly-ee
@@ -596,7 +599,22 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-sdk.git
        archivable      :  true
 
+     - jobID           :  metadata-editor
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       directives      :
+                 build :  deploy -Drelease
+                 test  :  test
+       archivable      :  true
+
   4600:
+     - jobID           :  metadata-editor-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
+       directives      :
+                 build :  deploy -Drelease
+                 test  :  test
+       archivable      :  true
+
+  4700:
      - jobID           :  installers
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
        dockerImage     :  jenkins-build/bitrock-installbuilder-8
