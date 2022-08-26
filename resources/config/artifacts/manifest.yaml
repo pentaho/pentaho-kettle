@@ -13,6 +13,7 @@ ee:
     client-tools:
         - pad-ee-${platform.version}-dist.zip
         - pdi-ee-client-${platform.version}-dist.zip
+        - pdi-ee-client-${platform.version}-no-osgi-dist.zip
         - pentaho-analysis-ee-${platform.version}-dist.zip
         - pentaho-big-data-ee-package-${platform.version}-dist.zip
         - pme-ee-${platform.version}-dist.zip
@@ -91,6 +92,7 @@ ce:
     client-tools:
         - pad-ce-${platform.version}.zip
         - pdi-ce-${platform.version}.zip
+        - pdi-ce-${platform.version}-no-osgi.zip        
         - pentaho-big-data-plugin-${platform.version}.zip
         - pme-ce-${platform.version}.zip
         - pme-ce-${platform.version}-no-osgi.zip
