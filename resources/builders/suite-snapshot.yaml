@@ -572,7 +572,7 @@ jobGroups:
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
        directives      :
-                 build :  deploy -DskipTests -Drelease
+                 build :  deploy -DskipTests
                  test  :  test
        testable        :  false
        archivable      :  true
