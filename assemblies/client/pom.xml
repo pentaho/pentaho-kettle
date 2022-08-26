@@ -16,10 +16,10 @@
 
   <properties>
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
-    <ael.version>9.4.0.0-SNAPSHOT</ael.version>
 
     <pentaho-launcher.version>9.4.0.0-SNAPSHOT</pentaho-launcher.version>
     <oss-licenses.version>9.4.0.0-SNAPSHOT</oss-licenses.version>
+    <pentaho-karaf.version>9.4.0.0-SNAPSHOT</pentaho-karaf.version>
 
     <!-- swt -->
     <org.eclipse.swt.gtk.linux.x86.version>3.108.0</org.eclipse.swt.gtk.linux.x86.version>
@@ -115,9 +115,6 @@
           <name>!no-osgi</name>
         </property>
       </activation>
-      <properties>
-        <pentaho-karaf.version>9.4.0.0-SNAPSHOT</pentaho-karaf.version>
-      </properties>
       <dependencies>
         <dependency>
           <groupId>org.pentaho.di</groupId>
