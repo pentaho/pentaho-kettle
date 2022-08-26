@@ -351,14 +351,14 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   @SuppressWarnings( "unchecked" )
-  public String getDatabases() {
+  public JSONArray getDatabases() {
     JSONArray list = new JSONArray();
     for ( int i = 0; i < repositoriesMeta.nrDatabases(); i++ ) {
       JSONObject databaseJSON = new JSONObject();
       databaseJSON.put( "name", repositoriesMeta.getDatabase( i ).getName() );
       list.add( databaseJSON );
     }
-    return list.toString();
+    return list;
   }
 
   public void connectToRepository() throws KettleException {

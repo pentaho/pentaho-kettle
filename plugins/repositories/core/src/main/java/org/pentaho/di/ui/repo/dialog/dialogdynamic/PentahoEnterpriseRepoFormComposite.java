@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repo.dialogdynamic;
+package org.pentaho.di.ui.repo.dialog.dialogdynamic;
 
 import java.util.Map;
 import org.eclipse.swt.SWT;

@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repo.dialogdynamic;
+package org.pentaho.di.ui.repo.dialog.dialogdynamic;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -6,16 +6,16 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.BaseRepositoryMeta;
-import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 
 import java.util.Map;
 
@@ -51,15 +51,26 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
     browseBtn.setLayoutData( new FormDataBuilder().left( txtLocation, LABEL_CONTROL_MARGIN ).top( lLoc, LABEL_CONTROL_MARGIN ).result() );
     props.setLook( browseBtn );
 
-    browseBtn.addSelectionListener( new SelectionAdapter() {
-      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        String location =RepositoryConnectController.getInstance().browse();
-        if(!Utils.isEmpty( location )){
-          txtLocation.setText( location );
-        }
-      }
-    } );
 
+
+  browseBtn.addSelectionListener( new SelectionAdapter() {
+    @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+      System.out.println("browse button clicked");
+
+      DirectoryDialog dialog = new DirectoryDialog(getShell());
+      dialog.setFilterPath("c:\\"); // Windows specific
+      String selectedDir= dialog.open();
+      if ( !Utils.isEmpty( selectedDir ) ) {
+        txtLocation.setText( selectedDir );
+      }
+      else{
+        MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
+          SWT.ICON_ERROR | SWT.CANCEL );
+        messageBox.setMessage( " select a directory" );
+        messageBox.open();
+      }
+    }
+  } );
     doNotModify = new Button( this, SWT.CHECK );
     // TODO: BaseMessages
     doNotModify.setText( "Do not modify items in this location" );
@@ -71,7 +82,6 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
         lsMod.modifyText( null );
       };
     } );
-
 
     showHidden = new Button( this, SWT.CHECK );
     // TODO: BaseMessages

@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repo.dialogdynamic;
+package org.pentaho.di.ui.repo.dialog.dialogdynamic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,28 +44,19 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.BaseRepositoryMeta;
-import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.repo.dialog.CreateRepoManager;
-import org.pentaho.di.ui.repo.dialogdynamic.BaseRepoFormComposite;
-import org.pentaho.di.ui.repo.dialogdynamic.PentahoEnterpriseRepoFormComposite;
-import org.pentaho.di.ui.repo.dialogdynamic.*;
-import org.pentaho.di.ui.repo.model.RepositoryModel;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 public class RepositoryManagerDialog extends Dialog {
@@ -258,9 +249,8 @@ public class RepositoryManagerDialog extends Dialog {
             case "KettleFileRepository":
               return Stream.of(
                 new RepositoryInfo( pi, new KettleFileRepoFormComposite( stackComposite, SWT.NONE ) ) );
-
             case "KettleDatabaseRepository":
-              return Stream.of( new RepositoryInfo( pi, new BaseRepoFormComposite( stackComposite, SWT.NONE ) {
+              return Stream.of( new RepositoryInfo( pi, new KettleDatabaseRepoFormComposite( stackComposite, SWT.NONE ) {
               } ) );
             default:
               return Stream.empty();
@@ -591,15 +581,12 @@ public class RepositoryManagerDialog extends Dialog {
   @SuppressWarnings( "unchecked" )
   private void onCreateRepository( String id, Map<String,Object> results ) {
 
-    RepositoryModel model = new RepositoryModel();
-    model.setId(results.get( "id" ).toString());
-    model.setDisplayName(results.get( "displayName" ).toString());
-    model.setUrl(results.get( "url" ).toString());
-    model.setDescription(results.get( "description" ).toString());
-    model.setDefault( (Boolean) results.get( "isDefault" ) );
+    System.out.println("results :"+results);
 
+    JSONObject j = new JSONObject();
+    j.putAll( results );
     try{
-      RepositoryConnectController.getInstance().createRepository(model.getId(), RepositoryConnectController.getInstance().modelToMap(model));
+      RepositoryConnectController.getInstance().createRepository(id,results);
       log.logBasic( "Repository: "+results.get( "displayName" )+ " creation successfully" );
     }
     catch ( Exception e) {
@@ -611,23 +598,15 @@ public class RepositoryManagerDialog extends Dialog {
 
   @SuppressWarnings( "unchecked" )
   private void onUpdateRepository( String id, Map<String,Object> results ) {
-//    JSONObject j = new JSONObject();
- //   j.putAll( results );
-   // System.out.println( "Update: " + j.toJSONString());
-    //TODO: Use RepoConnectController.updateRepository(id, results)
 
-    RepositoryModel model = new RepositoryModel();
-    model.setId(results.get( "id" ).toString());
-    model.setDisplayName(results.get( "displayName" ).toString());
-    model.setUrl(results.get( "url" ).toString());
-    model.setDescription(results.get( "description" ).toString());
-    model.setDefault( (Boolean) results.get( "isDefault" ) );
-    model.setEdit( true );
-    model.setOriginalName(results.get( "displayName" ).toString());
+    System.out.println("results :"+results);
+
+    JSONObject j = new JSONObject();
+    j.putAll( results );
 
     try {
       RepositoryConnectController.getInstance()
-        .updateRepository( id, RepositoryConnectController.getInstance().modelToMap( model ) );
+        .updateRepository( id, results );
       log.logBasic( "Repository update successful");
     }
     catch ( Exception e) {
