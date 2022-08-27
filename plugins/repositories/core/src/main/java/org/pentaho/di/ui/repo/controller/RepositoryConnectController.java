@@ -137,12 +137,10 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   public String createConnection() {
-    System.out.println("inside create db connection !");
     CompletableFuture<String> future = new CompletableFuture<>();
     spoonSupplier.get().getShell().getDisplay().asyncExec( () -> {
       DatabaseDialog databaseDialog = new DatabaseDialog( spoonSupplier.get().getShell(), new DatabaseMeta() );
       databaseDialog.open();
-      System.out.println("database dialog openned");
       DatabaseMeta databaseMeta = databaseDialog.getDatabaseMeta();
       if ( databaseMeta != null ) {
         if ( !isDatabaseWithNameExist( databaseMeta, true ) ) {
@@ -248,6 +246,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     return list.toString();
   }
 
+  // Pentaho repository update
   public boolean updateRepository( String id, Map<String, Object> items ) {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( (String) items.get( ORIGINAL_NAME ) );
     boolean isConnected = repositoryMeta == connectedRepository;
@@ -279,6 +278,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     return true;
   }
 
+  // Pentaho repository create
   public RepositoryMeta createRepository( String id, Map<String, Object> items ) {
     RepositoryMeta repositoryMeta;
     try {
@@ -308,6 +308,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     return repo1.toJSONObject().equals( repo2.toJSONObject() );
   }
 
+  //Pentaho repositories
   @SuppressWarnings( "unchecked" )
   public List<JSONObject> getRepositories() {
     String connected = null;
@@ -350,14 +351,14 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   @SuppressWarnings( "unchecked" )
-  public String getDatabases() {
+  public JSONArray getDatabases() {
     JSONArray list = new JSONArray();
     for ( int i = 0; i < repositoriesMeta.nrDatabases(); i++ ) {
       JSONObject databaseJSON = new JSONObject();
       databaseJSON.put( "name", repositoriesMeta.getDatabase( i ).getName() );
       list.add( databaseJSON );
     }
-    return list.toString();
+    return list;
   }
 
   public void connectToRepository() throws KettleException {
@@ -491,6 +492,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     }
   }
 
+  // Pentaho repository delete
   public boolean deleteRepository( String name ) {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
     int index = repositoriesMeta.indexOfRepository( repositoryMeta );
