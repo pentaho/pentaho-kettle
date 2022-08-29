@@ -133,7 +133,7 @@ public class RepositoryConnectMenu {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
         //new CreateRepoManager( spoon.getShell().getDisplay() ).createNewRepo();
-        new RepositoryManagerDialog(spoon.getShell()).open(700,600  );
+        new RepositoryManagerDialog(spoon.getShell()).open(700,635  );
         renderAndUpdate();
       }
     } );
@@ -203,7 +203,7 @@ public class RepositoryConnectMenu {
           public void widgetSelected( SelectionEvent selectionEvent ) {
 
 //              new RepositoryManagerSWT( spoon.getShell() ).createDialog();
-                new RepositoryManagerDialog(spoon.getShell()).open(700,600  );
+                new RepositoryManagerDialog(spoon.getShell()).open(700,635  );
             renderAndUpdate();
           }
         } );
