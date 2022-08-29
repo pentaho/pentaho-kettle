@@ -859,12 +859,12 @@ jobGroups:
 #                          }
 #       testable        :  false
 
-#  5200:
-#     - jobID           :  installer-tool
-#       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-#       dockerImage     :  jenkins-build/installanywhere-installbuilder
-#       root            :  installer-tool
-#       versionProperty :  pentaho.version
+  5200:
+     - jobID           :  installer-tool
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/installanywhere-installbuilder
+       root            :  installer-tool
+       versionProperty :  pentaho.version
 
      - jobID           :  jenkins-pipelines
        scmUrl          :  https://github.com/pentaho/jenkins-pipelines.git
