@@ -38,6 +38,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.CheckBoxVar;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
+import org.pentaho.di.ui.core.widget.PasswordVisibleTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 import java.util.Set;
@@ -160,6 +161,14 @@ public class VFSDetailsCompositeHelper {
     getProps().setLook( passwordTextVar );
     passwordTextVar.setLayoutData( getFormDataField( topWidget, width ) );
     return passwordTextVar;
+  }
+
+  public PasswordVisibleTextVar createPasswordVisibleTextVar( VariableSpace variableSpace, Composite composite, int flags,
+                                                              Control topWidget, int width ) {
+    PasswordVisibleTextVar PasswordVisibleTextVar = new PasswordVisibleTextVar( variableSpace, composite, flags );
+    getProps().setLook( PasswordVisibleTextVar );
+    PasswordVisibleTextVar.setLayoutData( getFormDataField( topWidget, width ) );
+    return PasswordVisibleTextVar;
   }
 
   public CheckBoxVar createCheckboxVar( VariableSpace variableSpace, Composite composite, Control topWidget ) {
