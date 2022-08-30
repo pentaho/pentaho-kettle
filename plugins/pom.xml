@@ -62,7 +62,6 @@
         <module>file-open-save</module>
         <module>file-open-save-new</module>
         <module>connections</module>
-        <module>get-fields</module>
         <module>repositories</module>
         <module>meta-inject</module>
         <module>engine-configuration</module>

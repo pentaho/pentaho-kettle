@@ -1,0 +1,183 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+package org.pentaho.di.ui.trans.steps.jsoninput.getfields;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tree;
+import org.junit.Assert;
+import org.junit.Test;
+import org.pentaho.di.trans.steps.jsoninput.json.Configuration;
+import org.pentaho.di.trans.steps.jsoninput.json.JsonSampler;
+import org.pentaho.di.trans.steps.jsoninput.json.node.ArrayNode;
+import org.pentaho.di.trans.steps.jsoninput.json.node.Node;
+import org.pentaho.di.trans.steps.jsoninput.json.node.ObjectNode;
+
+import java.io.InputStream;
+
+/**
+ * Created by bmorrise on 8/7/18.
+ */
+public class JsonSamplerTest {
+
+  public static final String ITEMARR = "itemarr: [\n";
+  public static final String ITEM_3_VALUE_3 = "item3: value3\n";
+  public static final String ITEM_1_VALUE_1 = "item1: value1\n";
+  public static final String ITEM_2_VALUE_2 = "item2: value2\n";
+  public static final String ITEM_3 = "item3: {\n";
+
+  @Test
+  public void testDedupeArray() throws Exception {
+    JsonSampler jsonSampler = new JsonSampler();
+    InputStream inputStream = this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/dedupe-test.json" );
+    final Tree tree = new Tree( new Shell(), SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
+    ArrayNode node = (ArrayNode) jsonSampler.sample( inputStream, tree );
+    Assert.assertEquals( "[\n"
+      + "{\n"
+      + ITEMARR
+      + "{\n"
+      + ITEM_1_VALUE_1
+      + ITEM_3_VALUE_3
+      + ITEM_2_VALUE_2
+      + "},\n"
+      + "],\n"
+      + ITEM_1_VALUE_1
+      + ITEM_3
+      + "item4: value4\n"
+      + "item5: value5\n"
+      + "item6: value6\n"
+      + "},\n"
+      + ITEM_2_VALUE_2
+      + "},\n"
+      + "],\n", node.toString() );
+  }
+
+  @Test
+  public void testDedupeObject() throws Exception {
+    JsonSampler jsonSampler = new JsonSampler();
+    InputStream inputStream = this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/dedupe-test2.json" );
+    final Tree tree = new Tree( new Shell(), SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
+    ObjectNode node = (ObjectNode) jsonSampler.sample( inputStream, tree );
+    Assert.assertEquals( "{\n"
+      +    "data: [\n"
+      +    "{\n"
+      + ITEMARR
+      +    "{\n"
+      + ITEM_1_VALUE_1
+      + ITEM_3_VALUE_3
+      + ITEM_2_VALUE_2
+      +    "},\n"
+      +    "],\n"
+      + ITEM_1_VALUE_1
+      + ITEM_3
+      +    "item4: true\n"
+      +    "item5: 1.0\n"
+      +    "item6: value6\n"
+      +    "},\n"
+      + ITEM_2_VALUE_2
+      +    "},\n"
+      +    "],\n"
+      +    "},\n", node.toString() );
+  }
+
+  @Test
+  public void testDedupeLines() throws Exception {
+    Configuration configuration = new Configuration();
+    configuration.setLines( 10 );
+    JsonSampler jsonSampler = new JsonSampler( configuration );
+    InputStream inputStream = this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/dedupe-test2.json" );
+    final Tree tree = new Tree( new Shell(), SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
+    Node node = jsonSampler.sample( inputStream, tree );
+    Assert.assertEquals( "{\n"
+      +    "data: [\n"
+      +    "{\n"
+      + ITEMARR
+      +    "{\n"
+      + ITEM_1_VALUE_1
+      + ITEM_3_VALUE_3
+      +    "},\n"
+      +    "],\n"
+      + ITEM_1_VALUE_1
+      + ITEM_3
+      +    "item4: true\n"
+      +    "item5: 1.0\n"
+      +    "},\n"
+      + ITEM_2_VALUE_2
+      +    "},\n"
+      +    "],\n"
+      +    "},\n", node.toString() );
+  }
+
+
+  @Test
+  public void testDedupeNestedArrays() throws Exception {
+    Configuration configuration = new Configuration();
+    JsonSampler jsonSampler = new JsonSampler( configuration );
+    InputStream inputStream = this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/dedupe-test3.json" );
+    final Tree tree = new Tree( new Shell(), SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
+    Node node = jsonSampler.sample( inputStream, tree );
+    Assert.assertEquals( "[\n"
+      +    "{\n"
+      +    "item: [\n"
+      +    "{\n"
+      +    "five: five\n"
+      +    "one: two\n"
+      +    "seven: example\n"
+      +    "nine: [\n"
+      +    "[\n"
+      +    "{\n"
+      +    "test: airplane\n"
+      +    "example: {\n"
+      +    "why: none\n"
+      +    "},\n"
+      +    "},\n"
+      +    "],\n"
+      +    "],\n"
+      +    "},\n"
+      +    "],\n"
+      +    "},\n"
+      +    "],\n", node.toString() );
+  }
+
+  @Test
+  public void testBigIntegerNode() throws Exception {
+    Configuration configuration = new Configuration();
+    JsonSampler jsonSampler = new JsonSampler( configuration );
+    InputStream inputStream = this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/bigint-test.json" );
+    final Tree tree = new Tree( new Shell(), SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
+    Node node = jsonSampler.sample( inputStream, tree );
+    Assert.assertEquals( "[\n"
+      +    "{\n"
+      + ITEMARR
+      +      "{\n"
+      +        "itemId: 373208832580648960\n"
+      +      "},\n"
+      +      "],\n"
+      +      "item1: 12345\n"
+      + ITEM_3
+      +        "item4: value4\n"
+      +      "},\n"
+      +    "},\n"
+      +    "],\n", node.toString() );
+  }
+}
