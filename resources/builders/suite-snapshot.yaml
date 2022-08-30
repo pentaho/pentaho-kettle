@@ -452,9 +452,6 @@ jobGroups:
      - jobID           :  pdi-scheduler-plugin
        scmUrl          :  https://github.com/pentaho/pdi-scheduler-plugin.git
 
-     - jobID           :  pdi-google-docs-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-google-docs-plugin.git
-
      - jobID           :  pdi-jms-plugin
        scmUrl          :  https://github.com/pentaho/pdi-jms-plugin.git
 

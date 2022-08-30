@@ -456,11 +456,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-scheduler-plugin.version
 
-     - jobID           :  pdi-google-docs-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-google-docs-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pdi-google-docs-plugin.version
-
      - jobID           :  pdi-jms-plugin
        scmUrl          :  https://github.com/pentaho/pdi-jms-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}

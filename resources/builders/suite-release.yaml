@@ -605,10 +605,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pdi-scheduler-plugin.git
        versionProperty :  pdi-scheduler-plugin.version
 
-     - jobID           :  pdi-google-docs-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-google-docs-plugin.git
-       versionProperty :  pdi-google-docs-plugin.version
-
      - jobID           :  pdi-jms-plugin
        scmUrl          :  https://github.com/pentaho/pdi-jms-plugin.git
        versionProperty :  pdi-jms-plugin.version
