@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,6 @@
 package org.pentaho.di.connections;
 
 import org.pentaho.di.connections.utils.EncryptUtils;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
@@ -160,14 +159,9 @@ public class ConnectionManager {
     }
     ConnectionProvider<T> connectionProvider =
       (ConnectionProvider<T>) connectionProviders.get( connectionDetails.getType() );
-    try {
-      if ( prepare ) {
-        connectionProvider.prepare( connectionDetails );
-      }
-    } catch ( KettleException e ) {
-      // Ignore the exception and save anyway.
+    if ( prepare && connectionProvider.prepare( connectionDetails ) == null ) {
+      return false;
     }
-
     if ( !saveElement( getMetaStoreFactory( metaStore, (Class<T>) connectionDetails.getClass() ),
       connectionDetails ) ) {
       return false;
@@ -195,7 +189,7 @@ public class ConnectionManager {
    * @return A boolean signifying the success of the test operation
    */
   @SuppressWarnings( "unchecked" )
-  public <T extends ConnectionDetails> boolean test( T connectionDetails ) throws KettleException {
+  public <T extends ConnectionDetails> boolean test( T connectionDetails ) {
     ConnectionProvider<T> connectionProvider =
       (ConnectionProvider<T>) connectionProviders.get( connectionDetails.getType() );
     return connectionProvider.test( connectionDetails );

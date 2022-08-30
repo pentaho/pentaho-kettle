@@ -44,13 +44,10 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.ui.dialog.ConnectionDeleteDialog;
-import org.pentaho.di.connections.ui.dialog.ConnectionRenameDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.connections.ui.dialog.VFSDetailsCompositeHelper;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -99,7 +96,6 @@ public class ConnectionDialog extends Dialog {
 
   private Composite wDetailsWrapperComp;
   private ScrolledComposite wScrolledComposite;
-  private String originalName;
 
   public ConnectionDialog( Shell shell, int width, int height ) {
     super( shell, SWT.NONE );
@@ -134,6 +130,7 @@ public class ConnectionDialog extends Dialog {
     shell.setLayout( formLayout );
 
     // First, add the buttons...
+    // Buttons
     Button wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
 
@@ -220,7 +217,6 @@ public class ConnectionDialog extends Dialog {
   private void setConnectionType() { // When first loaded
     if ( connectionName != null ) {
       connectionDetails = connectionManager.getConnectionDetails( connectionName );
-      originalName = connectionName;
       if ( connectionDetails != null ) {
         connectionTypeKey = connectionDetails.getType();
       }
@@ -228,7 +224,6 @@ public class ConnectionDialog extends Dialog {
     }
     connectionTypeKey = convertTypeLabelToKey( connectionTypeChoices[ 0 ] );
     connectionDetails = connectionManager.createConnectionDetails( connectionTypeKey );
-    originalName = null;
   }
 
   private void updateConnectionType( String connectionType ) {
@@ -332,19 +327,7 @@ public class ConnectionDialog extends Dialog {
   }
 
   private void ok() {
-    if ( validateEntries() ) {
-      if ( originalName != null && !originalName.equals( connectionDetails.getName() ) ) {
-        ConnectionRenameDialog connectionDeleteDialog = new ConnectionRenameDialog( spoonSupplier.get().getShell() );
-        int answer = connectionDeleteDialog.open( originalName, connectionDetails.getName() );
-        if ( answer == SWT.CANCEL ) {
-          return;
-        }
-        connectionManager.save( connectionDetails );
-        if ( answer == SWT.NO ) {
-          connectionManager.delete( originalName );
-        }
-      }
-      connectionManager.save( connectionDetails );
+    if ( validateEntries() && connectionManager.save( connectionDetails ) ) {
       refreshMenu();
       dispose();
     }
@@ -382,21 +365,14 @@ public class ConnectionDialog extends Dialog {
 
   private void test() {
     if ( validateEntries() ) {
-      boolean result = false;
+      boolean result = connectionManager.test( connectionDetails );
       MessageBox mb;
-      try {
-        result = connectionManager.test( connectionDetails );
-        if ( !result ) {
-          mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-          mb.setMessage( BaseMessages.getString( PKG, "ConnectionDialog.test.failure" ) );
-        } else {
-          mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-          mb.setMessage( BaseMessages.getString( PKG, "ConnectionDialog.test.success" ) );
-        }
-      } catch ( KettleException e ) {
+      if ( !result ) {
         mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage(
-          BaseMessages.getString( PKG, "ConnectionDialog.test.failure" ) + Const.CR + Const.CR + e.getMessage() );
+        mb.setMessage( BaseMessages.getString( PKG, "ConnectionDialog.test.failure" ) );
+      } else {
+        mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
+        mb.setMessage( BaseMessages.getString( PKG, "ConnectionDialog.test.success" ) );
       }
       mb.open();
     }

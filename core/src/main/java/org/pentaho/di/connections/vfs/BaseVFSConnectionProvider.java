@@ -24,7 +24,6 @@ package org.pentaho.di.connections.vfs;
 
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -47,7 +46,7 @@ public abstract class BaseVFSConnectionProvider<T extends VFSConnectionDetails> 
     return (List<T>) connectionManagerSupplier.get().getConnectionDetailsByScheme( getKey() );
   }
 
-  @Override public T prepare( T connectionDetails ) throws KettleException {
+  @Override public T prepare( T connectionDetails ) {
     return connectionDetails;
   }
 
