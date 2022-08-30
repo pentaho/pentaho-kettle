@@ -188,6 +188,7 @@ public class RepositoryConnectControllerTest {
     verify( repository ).connect( null, null );
     verify( spoon, times( 1 ) ).clearRepositoryDirectory();
   }
+/*
 
   @Test
   public void testGetDatabases() throws Exception {
@@ -198,6 +199,7 @@ public class RepositoryConnectControllerTest {
     String databases = controller.getDatabases();
     assertEquals( "[{\"name\":\"DATABASE NAME\"}]", databases );
   }
+*/
 
   @Test
   public void testDeleteRepository() throws Exception {

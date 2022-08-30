@@ -41,13 +41,6 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
     </dependency>
-    <!--
-    <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-metastore-locator-api</artifactId>
-        <version>${pdi.version}</version>
-    </dependency>
-     -->
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>file-open-save-new-api</artifactId>

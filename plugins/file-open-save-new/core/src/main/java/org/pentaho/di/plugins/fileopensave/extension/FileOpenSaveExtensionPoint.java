@@ -59,7 +59,7 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
   private final ProviderService providerService;
 
   public FileOpenSaveExtensionPoint() {
-    this( ProviderServiceService.INSTANCE.get() );
+    this( ProviderServiceService.get() );
   }
 
   public FileOpenSaveExtensionPoint( ProviderService providerService ) {

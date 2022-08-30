@@ -230,6 +230,19 @@ public class JobEntrySetVariablesTest {
     assertEquals( "someValue", entry.getVariable( "variableNotNull" ) );
   }
 
+  @Test
+  public void testJobEntrySetVariablesExecute_VARIABLE_TYPE_ROOT_JOB_VariableNotNull() throws Exception {
+    List<DatabaseMeta> databases = mock( List.class );
+    List<SlaveServer> slaveServers = mock( List.class );
+    Repository repository = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    entry.loadXML( getEntryNode( "variableNotNull", "someValue", "ROOT_JOB" ), databases, slaveServers, repository, metaStore );
+    assertNull( System.getProperty( "variableNotNull" )  );
+    entry.setVariableName( new String[]{"TEST1"} );
+    Result result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+  }
+
   //prepare xml for use
   public Node getEntryNode( String variable_name, String variable_value, String variable_type )
     throws ParserConfigurationException, SAXException, IOException {

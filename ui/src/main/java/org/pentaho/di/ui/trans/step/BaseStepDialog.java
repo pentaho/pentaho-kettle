@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -802,7 +802,7 @@ public class BaseStepDialog extends Dialog {
   }
 
   @VisibleForTesting
-  String showDbDialogUnlessCancelledOrValid( DatabaseMeta changing, DatabaseMeta origin ) {
+  public String showDbDialogUnlessCancelledOrValid( DatabaseMeta changing, DatabaseMeta origin ) {
     changing.shareVariablesWith( transMeta );
     DatabaseDialog cid = getDatabaseDialog( shell );
     cid.setDatabaseMeta( changing );
@@ -834,11 +834,11 @@ public class BaseStepDialog extends Dialog {
   }
 
   @VisibleForTesting
-  void showDbExistsDialog( DatabaseMeta changing ) {
+  public void showDbExistsDialog( DatabaseMeta changing ) {
     DatabaseDialog.showDatabaseExistsDialog( shell, changing );
   }
 
-  private void reinitConnectionDropDown( CCombo dropDown, String selected ) {
+  public void reinitConnectionDropDown( CCombo dropDown, String selected ) {
     dropDown.removeAll();
     addDatabases( dropDown );
     selectDatabase( dropDown, selected );
@@ -1483,7 +1483,7 @@ public class BaseStepDialog extends Dialog {
 
 
   @VisibleForTesting
-  class AddConnectionListener extends SelectionAdapter {
+  public class AddConnectionListener extends SelectionAdapter {
 
     private final CCombo wConnection;
 
@@ -1508,7 +1508,7 @@ public class BaseStepDialog extends Dialog {
   }
 
   @VisibleForTesting
-  class EditConnectionListener extends SelectionAdapter {
+  public class EditConnectionListener extends SelectionAdapter {
 
     private final CCombo wConnection;
 

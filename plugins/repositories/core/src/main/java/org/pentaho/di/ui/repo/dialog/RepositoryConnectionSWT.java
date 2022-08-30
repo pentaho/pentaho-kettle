@@ -70,8 +70,8 @@ public class RepositoryConnectionSWT extends Dialog {
 
       Label lblConnectTo = new Label( shell, SWT.NONE );
       props.setLook( lblConnectTo );
-      lblConnectTo.setLayoutData( new FormDataBuilder().top( 10, 0 ).left().result() );
-      lblConnectTo.setText( "Connect to :" );
+      lblConnectTo.setLayoutData( new FormDataBuilder().top( 10, 0 ).left(1,0).result() );
+      lblConnectTo.setText( " Connect to :" );
 
       Label lblRepoName = new Label( shell, SWT.NONE );
       props.setLook( lblRepoName );
@@ -98,14 +98,16 @@ public class RepositoryConnectionSWT extends Dialog {
 
       Button loginbtn = new Button( shell, SWT.NONE );
       props.setLook( loginbtn );
-      loginbtn.setLayoutData( new FormDataBuilder().top( txt_passwd ).result() );
-      loginbtn.setText( "login" );
+      loginbtn.setLayoutData( new FormDataBuilder().top( txt_passwd ).left(5,0).result() );
+      loginbtn.setText( "  login  " );
 
       //******************** HELP btn **********************************
       Button btnHelp = new Button( shell, SWT.ICON_INFORMATION );
+     // Image imageHelpIcon = new Image(display, "resources/app/img/help.svg");
       props.setLook( btnHelp );
-      btnHelp.setLayoutData( new FormDataBuilder().bottom().result() );
-      btnHelp.setText( "help" );
+      btnHelp.setLayoutData( new FormDataBuilder().bottom().right().result() );
+      btnHelp.setText( "  help  " );
+      //btnHelp.setImage( imageHelpIcon );
       btnHelp.addListener( SWT.Selection, new Listener() {
         public void handleEvent( Event event ) {
           Program.launch( HELP_URL );
@@ -123,13 +125,13 @@ public class RepositoryConnectionSWT extends Dialog {
           if ( str_username.isEmpty() ) {
             MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
               SWT.ICON_ERROR | SWT.CANCEL );
-            messageBox.setMessage( "user name can not be blank" );
+            messageBox.setMessage( "user name can not be blank!" );
             messageBox.open();
           }
-          if ( str_passwd.isEmpty() ) {
+          else if ( str_passwd.isEmpty() ) {
             MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
               SWT.ICON_ERROR | SWT.CANCEL );
-            messageBox.setMessage( "password cannot be blank" );
+            messageBox.setMessage( "password cannot be blank!" );
             messageBox.open();
           } else {
             callLoginEndPoint( str_repoName, str_username, str_passwd );
@@ -137,7 +139,7 @@ public class RepositoryConnectionSWT extends Dialog {
         }
       } );
       shell.pack();
-      shell.setMinimumSize( 500, 400 );
+      shell.setMinimumSize( 500, 370 );
       shell.open();
       while ( !shell.isDisposed() ) {
         if ( !display.readAndDispatch() ) {
@@ -145,7 +147,7 @@ public class RepositoryConnectionSWT extends Dialog {
         }
       }
     } catch ( Exception e ) {
-      e.printStackTrace();
+      log.logError( "Error occurred creating dialog",e );
     }
   }
 
@@ -156,9 +158,10 @@ public class RepositoryConnectionSWT extends Dialog {
       } else {
         RepositoryConnectController.getInstance().connectToRepository( str_repoName, str_username, str_passwd );
       }
+      log.logBasic( "Connection successful to repository %s",str_repoName );
       shell.close();
     } catch ( Exception e ) {
-      System.out.println( e );
+      log.logError( "Error connecting to repository ",e );
     }
   }
 
