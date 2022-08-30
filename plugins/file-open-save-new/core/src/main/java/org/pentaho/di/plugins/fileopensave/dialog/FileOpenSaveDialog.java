@@ -43,6 +43,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
@@ -160,6 +161,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   protected TreeViewer treeViewer;
   protected TableViewer fileTableViewer;
 
+  protected Text txtSearch;
   private static final FileController FILE_CONTROLLER;
 
   private Label lblComboFilter;
@@ -536,14 +538,21 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     RowData rd = new RowData();
     rd.width = 200;
-    Text txtSearch = new Text( searchComp, SWT.NONE );
+    txtSearch = new Text( searchComp, SWT.NONE );
     PropsUI.getInstance().setLook( txtSearch );
     txtSearch.setBackground( clrWhite );
     txtSearch.setLayoutData( rd );
+    txtSearch.addModifyListener( (event) -> {performSearch(event);});
 
     headerComposite.layout();
 
     return headerComposite;
+  }
+
+  private void performSearch(ModifyEvent event) {
+    IStructuredSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
+    selectPath( treeViewerSelection.getFirstElement() );
+    processState();
   }
 
   private Composite createButtonsBar( Composite parent ) {
@@ -736,6 +745,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       selectPath( selectedNode, false );
       // Clears the selection from fileTableViewer
       fileTableViewer.setSelection( new StructuredSelection() );
+      txtSearch.setText("");
       processState();
     } );
 
@@ -1141,11 +1151,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     } else if ( selectedElement instanceof Directory ) {
       try {
-        fileTableViewer.setInput( FILE_CONTROLLER.getFiles( (File) selectedElement, null, useCache ).stream().sorted(
-            Comparator.comparing( f -> f instanceof Directory, Boolean::compare ).reversed()
-              .thenComparing( Comparator.comparing( f -> ( (File) f ).getName(),
-                String.CASE_INSENSITIVE_ORDER ) ) )
-          .toArray() );
+        String searchString = txtSearch.getText();
+        fileTableViewer.setInput(FILE_CONTROLLER.getFiles((File) selectedElement, null, useCache).stream()
+                .filter(file -> searchString.isEmpty() || file.getName().toLowerCase().contains(searchString.toLowerCase()))
+                .sorted(Comparator.comparing(f -> f instanceof Directory, Boolean::compare).reversed()
+                        .thenComparing(Comparator.comparing(f -> ((File) f).getName(),
+                                String.CASE_INSENSITIVE_ORDER)))
+                .toArray());
 
         for ( TableItem fileTableItem : fileTableViewer.getTable().getItems() ) {
           Object tableItemObject = fileTableItem.getData();
