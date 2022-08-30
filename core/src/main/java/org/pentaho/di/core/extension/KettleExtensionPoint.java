@@ -118,8 +118,6 @@ public enum KettleExtensionPoint {
     SpoonOpenSaveRepository( "SpoonOpenSaveRepository", "Open the repository browser" ),
     SpoonOpenSaveNew( "SpoonOpenSaveNew", "Open the new file browser" ),
     SpoonBrowserFunction( "SpoonBrowserFunction", "Generic browser function handler" ),
-    GetFieldsExtension( "GetFieldsExtension", "Get Fields dialog" ),
-
     RepositoryImporterPatchTransStep( "RepositoryImporterPatchTransStep", "Patch the step in a transformation during repository import" ),
     RepositoryExporterPatchTransStep( "RepositoryExporterPatchTransStep", "Patch the step in a transformation during repository export" ),
     RequestLoginToRepository( "RequestLoginToRepository", "Request to login into repository" ),

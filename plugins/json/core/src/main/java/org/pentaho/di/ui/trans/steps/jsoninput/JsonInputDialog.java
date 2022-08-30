@@ -47,8 +47,6 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
@@ -61,7 +59,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputMeta;
-import org.pentaho.di.ui.core.GetFieldsDialogOperation;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -76,6 +73,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.jsoninput.getfields.GetFieldsDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1457,26 +1455,10 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
           TableItem item = wFields.table.getItem( i );
           paths.add( item.getText( 2 ) );
         }
-        GetFieldsDialogOperation getFieldsDialogOperation = new GetFieldsDialogOperation( shell, 540, 588, filename,
-                BaseMessages.getString( PKG, "JsonInput.GetFields.Dialog.Title" ), paths );
-        ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.GetFieldsExtension.id,
-                getFieldsDialogOperation );
 
-        int numRows = getFieldsDialogOperation.getPaths().size();
-        if ( numRows > 0 ) {
-          wFields.table.setItemCount( numRows );
-          for ( int i = 0; i < numRows; i++ ) {
-            String path = getFieldsDialogOperation.getPaths().get( i );
-            String[] values = path.split( ":" );
-            TableItem item = wFields.table.getItem( i );
-            item.setText( 1, values[0] );
-            item.setText( 2, values[1] );
-            item.setText( 3, values[2] );
-          }
-          wFields.removeEmptyRows();
-          wFields.setRowNums();
-          wFields.optWidth( true );
-        }
+        GetFieldsDialog getFieldsDialog = new GetFieldsDialog( shell );
+        getFieldsDialog.open( filename, paths, wFields );
+
       }
     } catch ( Exception e ) {
       log.logError( e.getMessage() );
