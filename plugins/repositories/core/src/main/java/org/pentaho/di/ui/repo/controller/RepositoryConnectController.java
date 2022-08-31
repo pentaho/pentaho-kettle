@@ -137,32 +137,27 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   public String createConnection() {
-    CompletableFuture<String> future = new CompletableFuture<>();
-    spoonSupplier.get().getShell().getDisplay().asyncExec( () -> {
-      DatabaseDialog databaseDialog = new DatabaseDialog( spoonSupplier.get().getShell(), new DatabaseMeta() );
-      databaseDialog.open();
-      DatabaseMeta databaseMeta = databaseDialog.getDatabaseMeta();
-      if ( databaseMeta != null ) {
-        if ( !isDatabaseWithNameExist( databaseMeta, true ) ) {
-          System.out.println("before adding database meta");
-          System.out.println("database meta :"+databaseMeta.getName());
-          System.out.println("database meta :"+databaseMeta.getRepositoryDirectory().getName());
-          try {
-            System.out.println("database meta :"+databaseMeta.getURL());
-          } catch (KettleDatabaseException e) {
-            e.printStackTrace();
-          }
-          addDatabase( databaseMeta );
-          future.complete( databaseMeta.getName() );
-        } else {
-          DatabaseDialog.showDatabaseExistsDialog( spoonSupplier.get().getShell(), databaseMeta );
+    DatabaseDialog databaseDialog = new DatabaseDialog( spoonSupplier.get().getShell(), new DatabaseMeta() );
+    databaseDialog.open();
+    DatabaseMeta databaseMeta = databaseDialog.getDatabaseMeta();
+    if ( databaseMeta != null ) {
+      if ( !isDatabaseWithNameExist( databaseMeta, true ) ) {
+        System.out.println("before adding database meta");
+        System.out.println("database meta :"+databaseMeta.getName());
+        System.out.println("database meta :"+databaseMeta.getRepositoryDirectory().getName());
+        try {
+          System.out.println("database meta :"+databaseMeta.getURL());
+        } catch (KettleDatabaseException e) {
+          e.printStackTrace();
         }
+        addDatabase( databaseMeta );
+      } else {
+        DatabaseDialog.showDatabaseExistsDialog( spoonSupplier.get().getShell(), databaseMeta );
       }
-      future.complete( "None" );
-    } );
+    }
     JSONObject jsonObject = new JSONObject();
     try {
-      jsonObject.put( "name", future.get() );
+      jsonObject.put( "name", databaseMeta.getName() );
       System.out.println("returned json object :"+jsonObject.toJSONString());
       return jsonObject.toJSONString();
     } catch ( Exception e ) {
@@ -172,25 +167,20 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   public String editDatabaseConnection( String database ) {
-    CompletableFuture<String> future = new CompletableFuture<>();
-    spoonSupplier.get().getShell().getDisplay().asyncExec( () -> {
-      DatabaseMeta databaseMeta = getDatabase( database );
-      String originalName = databaseMeta.getName();
-      DatabaseDialog databaseDialog = new DatabaseDialog( spoonSupplier.get().getShell(), databaseMeta );
-      databaseDialog.open();
-      if ( !isDatabaseWithNameExist( databaseMeta, false ) ) {
-        save();
-        future.complete( databaseMeta.getName() );
-      } else {
-        DatabaseDialog.showDatabaseExistsDialog( spoonSupplier.get().getShell(), databaseMeta );
-        databaseMeta.setName( originalName );
-        databaseMeta.setDisplayName( originalName );
-        future.complete( originalName );
-      }
-    } );
+    DatabaseMeta databaseMeta = getDatabase( database );
+    String originalName = databaseMeta.getName();
+    DatabaseDialog databaseDialog = new DatabaseDialog( spoonSupplier.get().getShell(), databaseMeta );
+    databaseDialog.open();
+    if ( !isDatabaseWithNameExist( databaseMeta, false ) ) {
+      save();
+    } else {
+      DatabaseDialog.showDatabaseExistsDialog( spoonSupplier.get().getShell(), databaseMeta );
+      databaseMeta.setName( originalName );
+      databaseMeta.setDisplayName( originalName );
+    }
     JSONObject jsonObject = new JSONObject();
     try {
-      jsonObject.put( "name", future.get() );
+      jsonObject.put( "name", databaseMeta.getName() );
       return jsonObject.toJSONString();
     } catch ( Exception e ) {
       jsonObject.put( "name", "None" );
@@ -199,13 +189,9 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   public boolean deleteDatabaseConnection( String database ) {
-    CompletableFuture<Boolean> future = new CompletableFuture<>();
-    spoonSupplier.get().getShell().getDisplay().asyncExec( () -> {
-      removeDatabase( database );
-      future.complete( true );
-    } );
     try {
-      return future.get();
+      removeDatabase( database );
+      return true;
     } catch ( Exception e ) {
       return false;
     }
