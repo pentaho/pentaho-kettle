@@ -708,14 +708,16 @@ jobGroups:
   4300:
      - jobID           :  pdi-client-assembly-ee-no-osgi
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       directives      :  += -Dno-osgi
+       directives      :  += -Dno-osgi -Dno-osgi-eula-wrap
        testable        :  false
        archivable      :  true
        versionProperty :  pdi.version
 
      - jobID           :  pdi-client-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
-       directives      :  += -DskipDefault -P assemblies
+       directives      :
+                 build :  deploy -Drelease -DskipDefault -P assemblies
+                 test  :  test
        testable        :  false
        archivable      :  true
        versionProperty :  pdi.version
@@ -751,7 +753,9 @@ jobGroups:
 
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       directives      :  += -Deula-wrap
+       directives      :
+                 build :  deploy -Drelease -Deula-wrap
+                 test  :  test
        testable        :  false
        archivable      :  true
        versionProperty :  pdi.version
