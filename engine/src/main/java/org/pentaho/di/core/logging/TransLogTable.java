@@ -421,7 +421,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
                 value = trans.getCurrentDate();
                 break;
               case LOG_FIELD:
-                value = getLogBuffer( trans, trans.getLogChannelId(), status, logSizeLimit );
+                value = getLogBuffer( trans, trans.getLogChannelId(), status, logSizeLimit, trans.getLogBufferStartLine() );
                 break;
               case EXECUTING_SERVER:
                 value = trans.getExecutingServer();

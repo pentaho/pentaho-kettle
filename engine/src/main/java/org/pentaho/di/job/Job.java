@@ -130,6 +130,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 
+  private int logBufferStartLine;
+
   private String containerObjectId;
 
   private JobMeta jobMeta;
@@ -305,6 +307,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.log = new LogChannel( this, parentLogging );
     this.logLevel = log.getLogLevel();
     this.log.setHooks( this );
+    this.logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
 
     if ( this.containerObjectId == null ) {
       this.containerObjectId = log.getContainerObjectId();
@@ -316,6 +319,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.log = new LogChannel( this );
     this.logLevel = log.getLogLevel();
     this.log.setHooks( this );
+    this.logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
   }
 
   /**
@@ -2031,6 +2035,25 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   public void setLogLevel( LogLevel logLevel ) {
     this.logLevel = logLevel;
     log.setLogLevel( logLevel );
+  }
+
+  /**
+   * Gets the logBufferStartLine.
+   *
+   * @return logBufferStartLine
+   */
+  public int getLogBufferStartLine() {
+    return logBufferStartLine;
+  }
+
+  /**
+   * Sets the logBufferStartLine.
+   *
+   * @param lineNr
+   *          the log buffer starting line for this job
+   */
+  public void setLogBufferStartLine( int lineNr ) {
+    logBufferStartLine = lineNr;
   }
 
   /**

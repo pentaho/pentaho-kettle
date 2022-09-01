@@ -492,17 +492,16 @@ public abstract class BaseLogTable {
     this.connectionName = connectionName;
   }
 
-  @VisibleForTesting
   protected String getLogBuffer( VariableSpace space, String logChannelId, LogStatus status, String limit ) {
+    return getLogBuffer( space, logChannelId, status, limit, 0 );
+  }
+
+  @VisibleForTesting
+  protected String getLogBuffer( VariableSpace space, String logChannelId, LogStatus status, String limit, int logBufferFrom ) {
 
     LoggingBuffer loggingBuffer = KettleLogStore.getAppender();
-    // if job is starting, then remove all previous events from buffer with that job logChannelId.
-    // Prevents recursive job calls logging issue.
-    if ( status.getStatus().equalsIgnoreCase( String.valueOf( LogStatus.START ) ) ) {
-      loggingBuffer.removeChannelFromBuffer( logChannelId );
-    }
 
-    StringBuffer buffer = loggingBuffer.getBuffer( logChannelId, true );
+    StringBuffer buffer = loggingBuffer.getBuffer( logChannelId, true, logBufferFrom );
 
     if ( Utils.isEmpty( limit ) ) {
       String defaultLimit = space.getVariable( Const.KETTLE_LOG_SIZE_LIMIT, null );
