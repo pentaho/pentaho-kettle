@@ -66,121 +66,127 @@ public class GetFieldsDialog extends Dialog {
     this.props = PropsUI.getInstance();
   }
 
-  public void open( String filename, List<String> paths, TableView wFields ) throws KettleFileException, IOException {
+  public void open( String filename, List<String> paths, TableView wFields ) throws KettleFileException {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
     Shell shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
-    props.setLook( shell );
-    shell.setLayout( new FormLayout() );
-    shell.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.header.DialogTitle" ) );
-    shell.setImage( LOGO );
-    shell.setSize( 453, 550 );
+    try {
+      props.setLook( shell );
+      shell.setLayout( new FormLayout() );
+      shell.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.header.DialogTitle" ) );
+      shell.setImage( LOGO );
+      shell.setSize( 453, 550 );
 
-    Monitor primary = display.getPrimaryMonitor();
-    Rectangle bounds = primary.getBounds();
-    Rectangle rect = shell.getBounds();
+      Monitor primary = display.getPrimaryMonitor();
+      Rectangle bounds = primary.getBounds();
+      Rectangle rect = shell.getBounds();
 
-    int x = bounds.x + ( bounds.width - rect.width ) / 2;
-    int y = bounds.y + ( bounds.height - rect.height ) / 2;
+      int x = bounds.x + ( bounds.width - rect.width ) / 2;
+      int y = bounds.y + ( bounds.height - rect.height ) / 2;
 
-    shell.setLocation( x, y );
+      shell.setLocation( x, y );
 
-    StyledText labelSelectFields = new StyledText( shell, SWT.NONE );
-    props.setLook( labelSelectFields );
-    labelSelectFields.setLayoutData( new FormDataBuilder().top( 3, 0 ).left( 2, 0 ).result() );
-    String label = BaseMessages.getString( PKG, "get-fields-plugin.app.header.title" );
-    labelSelectFields.setText( label );
-    StyleRange style1 = new StyleRange();
-    style1.start = 0;
-    style1.length = label.length();
-    style1.fontStyle = SWT.BOLD;
-    labelSelectFields.setStyleRange( style1 );
+      StyledText labelSelectFields = new StyledText( shell, SWT.NONE );
+      props.setLook( labelSelectFields );
+      labelSelectFields.setLayoutData( new FormDataBuilder().top( 3, 0 ).left( 2, 0 ).result() );
+      String label = BaseMessages.getString( PKG, "get-fields-plugin.app.header.title" );
+      labelSelectFields.setText( label );
+      StyleRange style1 = new StyleRange();
+      style1.start = 0;
+      style1.length = label.length();
+      style1.fontStyle = SWT.BOLD;
+      labelSelectFields.setStyleRange( style1 );
 
-    Text search = new Text( shell, SWT.SEARCH | SWT.ICON_CANCEL | SWT.CANCEL | SWT.ICON_SEARCH );
-    props.setLook( search );
-    search.setLayoutData( new FormDataBuilder().top( 2, 0 ).left( 65, 0 ).result() );
-    search.setMessage( BaseMessages.getString( PKG, "get-fields-plugin.app.header.search-parsed-fields.placeholder" ) );
+      Text search = new Text( shell, SWT.SEARCH | SWT.ICON_CANCEL | SWT.CANCEL | SWT.ICON_SEARCH );
+      props.setLook( search );
+      search.setLayoutData( new FormDataBuilder().top( 2, 0 ).left( 65, 0 ).result() );
+      search.setMessage( BaseMessages.getString( PKG, "get-fields-plugin.app.header.search-parsed-fields.placeholder" ) );
 
-    final Tree tree = new Tree( shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
-    props.setLook( tree );
-    tree.setLayoutData( new FormDataBuilder().top( search, 10 ).left( 2, 0 ).height( 360 ).width( 400 ).result() );
+      final Tree tree = new Tree( shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
+      props.setLook( tree );
+      tree.setLayoutData( new FormDataBuilder().top( search, 10 ).left( 2, 0 ).height( 360 ).width( 400 ).result() );
 
-    JsonSampler jsonSampler = new JsonSampler();
-    jsonSampler.sample( filename, tree );
+      JsonSampler jsonSampler = new JsonSampler();
+      jsonSampler.sample( filename, tree );
 
-    clearSelection = new Button( shell, SWT.PUSH );
-    clearSelection.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.clear-selection.label" ) );
-    props.setLook( clearSelection );
-    clearSelection.setLayoutData( new FormDataBuilder().top( tree, 5 ).left( 40, 0 ).result() );
+      clearSelection = new Button( shell, SWT.PUSH );
+      clearSelection.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.clear-selection.label" ) );
+      props.setLook( clearSelection );
+      clearSelection.setLayoutData( new FormDataBuilder().top( tree, 5 ).left( 40, 0 ).result() );
 
-    Label separator = new Label( shell, SWT.SEPARATOR | SWT.SHADOW_OUT | SWT.HORIZONTAL );
-    props.setLook( separator );
-    separator.setLayoutData( new FormDataBuilder().top( clearSelection, 5 ).left( 2, 0 ).width( 420 ).result() );
+      Label separator = new Label( shell, SWT.SEPARATOR | SWT.SHADOW_OUT | SWT.HORIZONTAL );
+      props.setLook( separator );
+      separator.setLayoutData( new FormDataBuilder().top( clearSelection, 5 ).left( 2, 0 ).width( 420 ).result() );
 
-    ok = new Button( shell, SWT.PUSH );
-    ok.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.ok.button" ) );
-    props.setLook( ok );
-    ok.setLayoutData( new FormDataBuilder().top( separator, 5 ).left( 80, 0 ).result() );
+      ok = new Button( shell, SWT.PUSH );
+      ok.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.ok.button" ) );
+      props.setLook( ok );
+      ok.setLayoutData( new FormDataBuilder().top( separator, 5 ).left( 80, 0 ).result() );
 
-    cancel = new Button( shell, SWT.PUSH );
-    cancel.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.cancel.button" ) );
-    props.setLook( cancel );
-    cancel.setLayoutData( new FormDataBuilder().top( separator, 5 ).left( ok, 5 ).result() );
+      cancel = new Button( shell, SWT.PUSH );
+      cancel.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.cancel.button" ) );
+      props.setLook( cancel );
+      cancel.setLayoutData( new FormDataBuilder().top( separator, 5 ).left( ok, 5 ).result() );
 
-    TreeItem item = tree.getItem( 0 );
-    paths.forEach( path -> jsonSampler.selectByPath( path, item ) );
+      TreeItem item = tree.getItem( 0 );
+      paths.forEach( path -> jsonSampler.selectByPath( path, item ) );
 
-    setExpanded( item );
+      setExpanded( item );
 
-    tree.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        if ( event.detail == SWT.CHECK ) {
-          TreeItem item = (TreeItem) event.item;
-          boolean checked = item.getChecked();
-          item.setChecked( checked );
-          if ( Objects.isNull( item.getData( "Key" ) ) ) {
-            checkItems( item, checked );
+      tree.addListener( SWT.Selection, new Listener() {
+        public void handleEvent( Event event ) {
+          if ( event.detail == SWT.CHECK ) {
+            TreeItem item = (TreeItem) event.item;
+            boolean checked = item.getChecked();
+            item.setChecked( checked );
+            if ( Objects.isNull( item.getData( "Key" ) ) ) {
+              checkItems( item, checked );
+            }
           }
         }
-      }
 
-      private void checkItems( TreeItem item, boolean checked ) {
-        TreeItem[] items = item.getItems();
-        for ( int i = 0; i < items.length; i++ ) {
-          item.getItem( i ).setChecked( checked );
+        private void checkItems( TreeItem item, boolean checked ) {
+          TreeItem[] items = item.getItems();
+          for ( int i = 0; i < items.length; i++ ) {
+            item.getItem( i ).setChecked( checked );
+          }
+        }
+      } );
+
+      search.addModifyListener( modifyEvent -> {
+        boolean isSearchInvalid = doSearch( item, search.getText(), Boolean.TRUE );
+        if ( isSearchInvalid ) {
+          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( BaseMessages.getString( PKG, "get-fields-plugin.app.unable-to-find.label" ) + " \"" + search.getText() + "\"" );
+          mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
+          mb.open();
+        }
+      } );
+
+      Listener okListener = e -> ok( jsonSampler, tree, shell, wFields );
+      ok.addListener( SWT.Selection, okListener );
+
+      Listener cancelListener = e -> shell.dispose();
+      cancel.addListener( SWT.Selection, cancelListener );
+
+      Listener clearSelectionListener = e -> clearSelection( item );
+      clearSelection.addListener( SWT.Selection, clearSelectionListener );
+
+      shell.open();
+
+      while ( !shell.isDisposed() ) {
+        if ( !display.readAndDispatch() ) {
+          display.sleep();
+          break;
         }
       }
-    } );
-
-    search.addModifyListener( modifyEvent -> {
-      boolean isSearchInvalid = doSearch( item, search.getText(), Boolean.TRUE );
-      if ( isSearchInvalid ) {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "get-fields-plugin.app.unable-to-find.label" ) + " \"" + search.getText() + "\"" );
-        mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
-        mb.open();
-      }
-    } );
-
-    Listener okListener = e -> ok( jsonSampler, tree, shell, wFields );
-    ok.addListener( SWT.Selection, okListener );
-
-    Listener cancelListener = e -> shell.dispose();
-    cancel.addListener( SWT.Selection, cancelListener );
-
-    Listener clearSelectionListener = e -> clearSelection( item );
-    clearSelection.addListener( SWT.Selection, clearSelectionListener );
-
-    shell.open();
-
-    while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() ) {
-        display.sleep();
-        break;
-      }
+    } catch ( IOException e ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "get-fields.plugin.app.unable-to-view.invalid.message" ) );
+      mb.setText( BaseMessages.getString( PKG, "get-fields.plugin.app.unable-to-view.invalid.header" ) );
+      mb.open();
     }
-
   }
 
   private boolean doSearch( TreeItem item, String data, boolean isSearchInvalid ) {
