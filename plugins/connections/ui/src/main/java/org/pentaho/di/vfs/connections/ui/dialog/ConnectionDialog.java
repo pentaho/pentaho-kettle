@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.ui.dialog.ConnectionDeleteDialog;
 import org.pentaho.di.connections.ui.dialog.ConnectionRenameDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
@@ -58,6 +57,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.HelpUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -145,6 +145,23 @@ public class ConnectionDialog extends Dialog {
 
     Button[] buttons = new Button[] { wOK, wCancel, wTest };
     BaseStepDialog.positionBottomRightButtons( shell, buttons, MARGIN, null );
+
+    String docUrl =
+      Const.getDocUrl( BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Help" ) );
+    String docTitle = BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Title" );
+    String docHeader = BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Header" );
+    Button btnHelp = new Button( shell, SWT.NONE );
+    btnHelp.setImage( GUIResource.getInstance().getImageHelpWeb() );
+    btnHelp.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
+    btnHelp.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.Help" ) );
+    BaseStepDialog.positionBottomLeftButtons( shell, new Button[] { btnHelp }, MARGIN, null );
+    btnHelp.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent evt ) {
+        HelpUtils.openHelpDialog( parent.getShell(), docTitle,
+          docUrl, docHeader );
+      }
+    } );
 
     // Add listeners
     wOK.addListener( SWT.Selection, e -> ok() );

@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.trans.step;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.Arrays;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -215,7 +214,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * A constant indicating a left button alignment.
    */
-  protected static final int BUTTON_ALIGNMENT_LEFT = 1;
+  public static final int BUTTON_ALIGNMENT_LEFT = 1;
 
   /**
    * A constant indicating a right button alignment.
@@ -378,6 +377,11 @@ public class BaseStepDialog extends Dialog {
   public static final void positionBottomRightButtons( Composite composite, Button[] buttons, int margin,
                                                        Control lastControl ) {
     positionBottomButtons( composite, buttons, margin, BUTTON_ALIGNMENT_RIGHT, lastControl );
+  }
+
+  public static final void positionBottomLeftButtons( Composite composite, Button[] buttons, int margin,
+                                          Control lastControl ) {
+    BaseStepDialog.positionBottomButtons( composite, buttons, margin, BUTTON_ALIGNMENT_LEFT, lastControl );
   }
 
   public static final void positionBottomButtons( Composite composite, Button[] buttons, int margin, int alignment,
