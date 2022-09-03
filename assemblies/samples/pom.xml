@@ -42,6 +42,7 @@
         </executions>
       </plugin>
       <!-- create the sample database, properties were read with properties-maven-plugin earlier -->
+      <!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>sql-maven-plugin</artifactId>
@@ -74,6 +75,7 @@
           </dependency>
         </dependencies>
       </plugin>
+      -->
     </plugins>
   </build>
 
