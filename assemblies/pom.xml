@@ -33,7 +33,7 @@
 
   <modules>
     <module>static</module>
-    <!--<module>samples</module>-->
+    <module>samples</module>
     <module>lib</module>
     <module>plugins</module>
     <module>client</module>
