@@ -70,6 +70,14 @@ public class GetFieldsDialog extends Dialog {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
+    if ( StringUtils.isBlank( filename ) ) {
+      MessageBox mb = new MessageBox( parent, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "get-fields.plugin.app.unable-to-view.no-input.message" ) );
+      mb.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.unable-to-view.label" ) );
+      mb.open();
+      return;
+    }
+
     Shell shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     try {
       props.setLook( shell );
@@ -181,6 +189,11 @@ public class GetFieldsDialog extends Dialog {
           break;
         }
       }
+    } catch ( KettleFileException e ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "get-fields.plugin.app.unable-to-access.message" ) );
+      mb.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.unable-to-access.label" ) );
+      mb.open();
     } catch ( IOException e ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "get-fields.plugin.app.unable-to-view.invalid.message" ) );
