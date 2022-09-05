@@ -66,7 +66,7 @@ import org.pentaho.di.core.annotations.Step;
  * @author Matt
  * @since on 6-sep-2006
  */
-@Step( id = "ExcelOuput", name = "BaseStep.TypeLongDesc.ExcelOutput",
+@Step( id = "ExcelOutput", name = "BaseStep.TypeLongDesc.ExcelOutput",
         description = "BaseStep.TypeTooltipDesc.ExcelOutput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
         image = "XLO.svg",

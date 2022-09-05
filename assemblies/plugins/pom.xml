@@ -335,7 +335,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>excel-plugins</artifactId>
       <version>${excel-plugin.version}</version>
