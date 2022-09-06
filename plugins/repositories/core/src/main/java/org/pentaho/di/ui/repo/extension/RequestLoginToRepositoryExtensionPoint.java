@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.repo.dialog.RepositoryDialog;
+import org.pentaho.di.ui.repo.dialog.RepositoryConnectionDialog;
 import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -75,8 +75,8 @@ public class RequestLoginToRepositoryExtensionPoint implements ExtensionPointInt
   }
 
   void loginToRepository( RepositoryMeta repositoryMeta, ILoginCallback loginCallback ) {
-    RepositoryDialog dialog = getRepositoryDialog();
-    boolean result = dialog.openLogin( repositoryMeta );
+    RepositoryConnectionDialog dialog = getRepositoryDialog();
+    boolean result = dialog.createDialog( repositoryMeta.getName());
     if ( result ) {
       loginCallback.onSuccess( repositoryConnectController.getConnectedRepositoryInstance() );
     } else {
@@ -84,8 +84,8 @@ public class RequestLoginToRepositoryExtensionPoint implements ExtensionPointInt
     }
   }
 
-  RepositoryDialog getRepositoryDialog() {
-    return new RepositoryDialog( getSpoon().getShell(), repositoryConnectController );
+  RepositoryConnectionDialog getRepositoryDialog() {
+    return new RepositoryConnectionDialog( getSpoon().getShell());
   }
 
   RepositoryMeta findRepositoryToConnect() {
