@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1008,16 +1008,17 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         return;
       }
     }
+    List<SourceToTargetMapping> preMappings = new ArrayList<>( mappings );
     EnterMappingDialog d =
       new EnterMappingDialog( TableOutputDialog.this.shell, sourceFields.getFieldNames(), targetFields
         .getFieldNames(), mappings );
     mappings = d.open();
-
     // mappings == null if the user pressed cancel
     //
     if ( mappings != null ) {
       // Clear and re-populate!
       //
+      isMappingModified( preMappings, mappings );
       wFields.table.removeAll();
       wFields.table.setItemCount( mappings.size() );
       for ( int i = 0; i < mappings.size(); i++ ) {
@@ -1030,7 +1031,21 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       wFields.optWidth( true );
     }
   }
-
+  private void isMappingModified( List<SourceToTargetMapping> preMappings, List<SourceToTargetMapping> postMapping ) {
+    boolean modified = false;
+    if ( preMappings.size() != postMapping.size() ) {
+      modified = true;
+    } else {
+      for ( int i = 0; i < preMappings.size(); i++ ) {
+        if ( preMappings.get( i ).getSourcePosition() != postMapping.get( i ).getSourcePosition() || preMappings.get( i ).getTargetPosition() != postMapping.get( i ).getTargetPosition() ) {
+          modified = true;
+        }
+      }
+    }
+    if ( modified ) {
+      input.setChanged();
+    }
+  }
   private void getSchemaNames() {
     DatabaseMeta databaseMeta = transMeta.findDatabase( wConnection.getText() );
     if ( databaseMeta != null ) {
