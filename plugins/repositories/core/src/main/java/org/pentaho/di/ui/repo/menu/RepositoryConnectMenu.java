@@ -39,10 +39,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.repo.dialog.CreateRepoManager;
-import org.pentaho.di.ui.repo.dialog.RepositoryConnectionSWT;
-import org.pentaho.di.ui.repo.dialog.RepositoryManagerSWT;
-import org.pentaho.di.ui.repo.dialog.dialogdynamic.RepositoryManagerDialog;
+import org.pentaho.di.ui.repo.dialog.RepositoryConnectionDialog;
+import org.pentaho.di.ui.repo.dialog.RepositoryManagerDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 
 public class RepositoryConnectMenu {
@@ -132,7 +130,6 @@ public class RepositoryConnectMenu {
     connectButton.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
-        //new CreateRepoManager( spoon.getShell().getDisplay() ).createNewRepo();
         new RepositoryManagerDialog(spoon.getShell()).open(700,635  );
         renderAndUpdate();
       }
@@ -181,8 +178,7 @@ public class RepositoryConnectMenu {
                       log.logError( "Error connecting to repository", ke );
                     }
                   } else {
-                    new RepositoryConnectionSWT( spoon.getShell() ).createDialog( repoName );
-                  //  new RepositoryManagerDialog(spoon.getShell()).open(700,600  );
+                    new RepositoryConnectionDialog( spoon.getShell() ).createDialog( repoName );
                   }
                   renderAndUpdate();
                 }
@@ -201,8 +197,6 @@ public class RepositoryConnectMenu {
         managerItem.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
-
-//              new RepositoryManagerSWT( spoon.getShell() ).createDialog();
                 new RepositoryManagerDialog(spoon.getShell()).open(700,635  );
             renderAndUpdate();
           }

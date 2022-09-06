@@ -188,7 +188,7 @@ public class RepositoryConnectControllerTest {
     verify( repository ).connect( null, null );
     verify( spoon, times( 1 ) ).clearRepositoryDirectory();
   }
-/*
+
 
   @Test
   public void testGetDatabases() throws Exception {
@@ -196,10 +196,10 @@ public class RepositoryConnectControllerTest {
     when( repositoriesMeta.getDatabase( 0 ) ).thenReturn( databaseMeta );
     when( databaseMeta.getName() ).thenReturn( DATABASE_NAME );
 
-    String databases = controller.getDatabases();
+    String databases = controller.getDatabases().toString();
     assertEquals( "[{\"name\":\"DATABASE NAME\"}]", databases );
   }
-*/
+
 
   @Test
   public void testDeleteRepository() throws Exception {

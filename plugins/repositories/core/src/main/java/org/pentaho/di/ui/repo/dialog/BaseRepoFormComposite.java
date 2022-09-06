@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repo.dialog.dialogdynamic;
+package org.pentaho.di.ui.repo.dialog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.BaseRepositoryMeta;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
@@ -34,6 +35,7 @@ public abstract class BaseRepoFormComposite extends Composite {
   protected Button chkDefault;
   protected String originalName;
   protected PropsUI props;
+  private static final Class<?> PKG = BaseRepoFormComposite.class;
 
   protected boolean changed = false;
   protected ModifyListener lsMod = ( e ) -> {
@@ -51,8 +53,7 @@ public abstract class BaseRepoFormComposite extends Composite {
     setLayout( layout );
 
     Label lDispName = new Label( this, SWT.NONE );
-    // TODO: BaseMessages
-    lDispName.setText( "Display name" );
+    lDispName.setText( BaseMessages.getString( PKG, "repositories.displayname.label" ));
     lDispName.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).result() );
     props.setLook( lDispName );
 
@@ -63,8 +64,7 @@ public abstract class BaseRepoFormComposite extends Composite {
     txtDisplayName.addModifyListener( lsMod );
 
     Label lDescription = new Label( this, SWT.None );
-    // TODO: BaseMessages
-    lDescription.setText( "Description" );
+    lDescription.setText( BaseMessages.getString( PKG, "repositories.description.label" ));
     lDescription.setLayoutData(
       new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( uiAfterDisplayName(), CONTROL_MARGIN ).result() );
     props.setLook( lDescription );
@@ -86,7 +86,6 @@ public abstract class BaseRepoFormComposite extends Composite {
         lsMod.modifyText( null );
       };
     } );
-
 
   }
 
@@ -125,7 +124,6 @@ public abstract class BaseRepoFormComposite extends Composite {
 
     Map<String, Object> res = new HashMap<>();
     if ( !Utils.isEmpty( originalName ) ) {
-      // TODO: Change this to RepoConnectController.ORIGINAL_NAME constant
       res.put( "originalName", originalName );
     }
     res.put( BaseRepositoryMeta.DISPLAY_NAME, txtDisplayName.getText() );

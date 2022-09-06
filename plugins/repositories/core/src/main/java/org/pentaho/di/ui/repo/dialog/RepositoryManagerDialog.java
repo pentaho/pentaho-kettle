@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repo.dialog.dialogdynamic;
+package org.pentaho.di.ui.repo.dialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
@@ -52,6 +53,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.BaseRepositoryMeta;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
@@ -84,8 +86,12 @@ public class RepositoryManagerDialog extends Dialog {
 
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
 
+  private static final Class<?> PKG = RepositoryManagerDialog.class;
+
   private LogChannelInterface log =
     KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryManagerDialog.class );
+
+  private static final String HELP_URL = Const.getDocUrl( "Products/Use_a_Pentaho_Repository_in_PDI" );
 
   public RepositoryManagerDialog( Shell parent ) {
     super( parent );
@@ -132,14 +138,12 @@ public class RepositoryManagerDialog extends Dialog {
 
 
     Button btnHelp = new Button( dialog, SWT.PUSH );
-//    btnHelp.setImage( new Image(dialog.getDisplay(), "app/img/help.svg"));
-    //TODO: BaseMessage
-    btnHelp.setText( "Help" );
+    btnHelp.setText(BaseMessages.getString( PKG, "repositories.help.label" ));
     btnHelp.setLayoutData( new FormDataBuilder().left( 0, 0 ).bottom( 100, 0 ).width( 80 ).height( 35 ).result() );
     props.setLook( btnHelp );
     btnHelp.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
-        //TODO: Call RepoConnectController.help();
+        Program.launch( HELP_URL );
       };
     } );
 
@@ -164,8 +168,7 @@ public class RepositoryManagerDialog extends Dialog {
     Button btnClose = new Button( closeComposite, SWT.PUSH );
     btnClose.setLayoutData( new FormDataBuilder().bottom( 100, 0 ).right( 100, 0 ).top( 0, 0 ).width( 80 ).result() );
     props.setLook( btnClose );
-    // TODO: Change to BaseMessages
-    btnClose.setText( "Close" );
+    btnClose.setText( BaseMessages.getString( PKG,"repositories.close.label" ));
     dialog.setDefaultButton( btnClose );
     btnClose.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -184,8 +187,7 @@ public class RepositoryManagerDialog extends Dialog {
 
 
     Button btnCancel = new Button( editorButtonsComposite, SWT.PUSH );
-    //TODO: BaseMessages
-    btnCancel.setText( "Cancel" );
+    btnCancel.setText( BaseMessages.getString( PKG,"repositories.cancel.label" ));
     btnCancel.setLayoutData( new FormDataBuilder().right( 100, 0 ).top( 0, 0 ).bottom( 100, 0 ).width( 80 ).result() );
     props.setLook( btnCancel );
     btnCancel.addSelectionListener( new SelectionAdapter() {
@@ -196,8 +198,7 @@ public class RepositoryManagerDialog extends Dialog {
     });
 
     Button btnSave = new Button( editorButtonsComposite, SWT.PUSH );
-    //TODO: BaseMessages
-    btnSave.setText( "Save" );
+    btnSave.setText(  BaseMessages.getString( PKG,"repositories.save.label" ) );
     props.setLook( btnSave );
     btnSave.setLayoutData( new FormDataBuilder().right( btnCancel, -5 ).top(0, 0 ).bottom( 100, 0 ).width( 80 ).result() );
     btnSave.addSelectionListener( new SelectionAdapter() {
@@ -224,16 +225,8 @@ public class RepositoryManagerDialog extends Dialog {
 
     repositoryInfos = new LinkedHashMap<>();
 
-    // TODO: Replace this with the code PluginRegistry.getInstance().getPlugins( RepositoryPluginType.class );,
-    // we will no longer use RepositoryConnectController.getPlugins(),
     List<PluginInterface> repoPlugins = PluginRegistry.getInstance().getPlugins( RepositoryPluginType.class );
 
-    /*
-    repoPlugins.add( new PluginInterfaceAdapter( "KettleDatabaseRepository", "Database Repository", "db" ) );
-    repoPlugins.add( new PluginInterfaceAdapter( "KettleFileRepository", "File Repository", "file" ) );
-    repoPlugins.add(
-      new PluginInterfaceAdapter( "PentahoEnterpriseRepository", "Pentaho Repository (Recommended)", "pentaho" ) );
-*/
     // Sort the repositories in display order (Pentaho, File, Database), assign their editor composite, convert to
     // RepositoryInfo, and store in hash
     repositoryInfos =
@@ -287,8 +280,7 @@ public class RepositoryManagerDialog extends Dialog {
     } );
 
     setToList = () -> {
-      // TODO: Base Messages
-      lblHeader.setText( "Repositories" );
+      lblHeader.setText( BaseMessages.getString( PKG,"repositories.repos.label" ));
       props.setLook( lblHeader );
       refreshList.run();
 
@@ -363,20 +355,17 @@ public class RepositoryManagerDialog extends Dialog {
     props.setLook( btnComp );
 
     btnAdd = new Button( btnComp, SWT.PUSH );
-    // TODO: BaseMessages
-    btnAdd.setText( "Add" );
+    btnAdd.setText( BaseMessages.getString( PKG,"repositories.add.label" ));
     btnAdd.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).result() );
     props.setLook( btnAdd );
 
     Button btnEdit = new Button( btnComp, SWT.PUSH );
-    // TODO: BaseMessages
-    btnEdit.setText( "Edit" );
+    btnEdit.setText( BaseMessages.getString( PKG,"repositories.edit.label" ));
     btnEdit.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( btnAdd, MARGIN ).result() );
     props.setLook( btnEdit );
 
     Button btnDelete = new Button( btnComp, SWT.PUSH );
-    // TODO: BaseMessages
-    btnDelete.setText( "Delete" );
+    btnDelete.setText( BaseMessages.getString( PKG,"repositories.delete.label" ));
     btnDelete.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( btnEdit, MARGIN ).result() );
     props.setLook( btnDelete );
 
@@ -386,7 +375,7 @@ public class RepositoryManagerDialog extends Dialog {
       .setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( btnDelete, 0 ).width( 80 ).result() );
     props.setLook( emptyLabel );
 
-    // TODO: PropsUI
+
     TableViewer repoList = new TableViewer( comp, SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION );
     repoList.getTable()
       .setLayoutData(
@@ -533,7 +522,6 @@ public class RepositoryManagerDialog extends Dialog {
 
     refreshList = () -> {
 
-      // TODO: Call the RepoConnectController.getRepositories() here
       List<JSONObject> repos = new ArrayList<>();
       repos = RepositoryConnectController.getInstance().getRepositories();
       try {
@@ -569,19 +557,17 @@ public class RepositoryManagerDialog extends Dialog {
           "}" ) );
 */
       } catch ( Exception e ) {
+        log.logError( "Error while fetching repo list",e );
       }
 
       // Sets the input to the list of repositories
       repoList.setInput( repos );
-
     };
     return comp;
   }
 
   @SuppressWarnings( "unchecked" )
   private void onCreateRepository( String id, Map<String,Object> results ) {
-
-    System.out.println("results :"+results);
 
     JSONObject j = new JSONObject();
     j.putAll( results );

@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repo.dialog.dialogdynamic;
+package org.pentaho.di.ui.repo.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -12,11 +12,11 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.BaseRepositoryMeta;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
-
 import java.util.Map;
 
 public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
@@ -24,6 +24,7 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
   protected Text txtLocation;
   protected  Button showHidden;
   protected  Button doNotModify;
+  private static final Class<?> PKG = KettleFileRepoFormComposite.class;
 
 
   public KettleFileRepoFormComposite( Composite parent, int style )
@@ -36,7 +37,7 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
     PropsUI props = PropsUI.getInstance();
 
     Label lLoc = new Label( this, SWT.NONE );
-    lLoc.setText( "Location" );
+    lLoc.setText( BaseMessages.getString( PKG, "repositories.location.label" ));
     lLoc.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( txtDisplayName, CONTROL_MARGIN ).result() );
     props.setLook( lLoc );
 
@@ -46,8 +47,7 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
     props.setLook( txtLocation );
 
     Button browseBtn = new Button( this,SWT.PUSH );
-    // TODO: BaseMessages
-    browseBtn.setText( "Browse" );
+    browseBtn.setText( BaseMessages.getString( PKG, "repositories.browse.label" ));
     browseBtn.setLayoutData( new FormDataBuilder().left( txtLocation, LABEL_CONTROL_MARGIN ).top( lLoc, LABEL_CONTROL_MARGIN ).result() );
     props.setLook( browseBtn );
 
@@ -55,7 +55,6 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
 
   browseBtn.addSelectionListener( new SelectionAdapter() {
     @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-      System.out.println("browse button clicked");
 
       DirectoryDialog dialog = new DirectoryDialog(getShell());
       dialog.setFilterPath("c:\\"); // Windows specific
@@ -72,8 +71,7 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
     }
   } );
     doNotModify = new Button( this, SWT.CHECK );
-    // TODO: BaseMessages
-    doNotModify.setText( "Do not modify items in this location" );
+    doNotModify.setText( BaseMessages.getString( PKG, "repositories.donotmodify.label" ) );
     doNotModify.setLayoutData(
       new FormDataBuilder().left( 0, 0 ).top( txtLocation, CONTROL_MARGIN ).result() );
     props.setLook( doNotModify );
@@ -84,8 +82,7 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
     } );
 
     showHidden = new Button( this, SWT.CHECK );
-    // TODO: BaseMessages
-    showHidden.setText( "Show hidden files" );
+    showHidden.setText( BaseMessages.getString( PKG, "repositories.showhidden.label" ) );
     showHidden.setLayoutData(
       new FormDataBuilder().left( 0, 0 ).top( doNotModify, CONTROL_MARGIN ).result() );
     props.setLook( showHidden );
@@ -125,5 +122,4 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
   protected boolean validateSaveAllowed() {
     return super.validateSaveAllowed() && !Utils.isEmpty( txtLocation.getText() );
   }
-
 }

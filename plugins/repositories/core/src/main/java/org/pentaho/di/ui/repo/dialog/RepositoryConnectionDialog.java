@@ -21,42 +21,36 @@ import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.spoon.Spoon;
 
-import java.util.function.Supplier;
-
-
-public class RepositoryConnectionSWT extends Dialog {
+/**
+ * @apiNote This class creates login dialog for repo login and performs login operation.
+ * @since Pentaho 9.4
+ */
+public class RepositoryConnectionDialog extends Dialog {
 
   private LogChannelInterface log =
-    KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryConnectionSWT.class );
+    KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryConnectionDialog.class );
 
-  private static Class<?> PKG = RepositoryConnectionSWT.class;
+  private static final Class<?> PKG = RepositoryConnectionDialog.class;
 
 
   private Text txt_username;
   private Text txt_passwd;
-  private String str_repoName;
-  private String str_username;
-  private String str_passwd;
   private Shell shell;
   private Display display;
   private PropsUI props;
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String LOGIN_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Login.Title" );
-  private Supplier<Spoon> spoonSupplier;
-  public static final String HELP_URL =
-    Const.getDocUrl( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Help" ) );
-  //public static final String HELP_URL ="Products/Use_a_Pentaho_Repository_in_PDI";
+  private static final String HELP_URL = Const.getDocUrl( "Products/Use_a_Pentaho_Repository_in_PDI" );
 
-  public RepositoryConnectionSWT( Shell shell ) {
+
+  public RepositoryConnectionDialog( Shell shell ) {
     super( shell, SWT.NONE );
     this.props = PropsUI.getInstance();
   }
 
 
-  public void createDialog( String str_repoName ) {
-    this.str_repoName = str_repoName;
+  public boolean createDialog( String str_repoName ) {
     Shell parent = getParent();
     display = parent.getDisplay();
 
@@ -71,7 +65,7 @@ public class RepositoryConnectionSWT extends Dialog {
       Label lblConnectTo = new Label( shell, SWT.NONE );
       props.setLook( lblConnectTo );
       lblConnectTo.setLayoutData( new FormDataBuilder().top( 10, 0 ).left(1,0).result() );
-      lblConnectTo.setText( " Connect to :" );
+      lblConnectTo.setText( BaseMessages.getString( PKG, "repositories.connectto.label" ) );
 
       Label lblRepoName = new Label( shell, SWT.NONE );
       props.setLook( lblRepoName );
@@ -81,7 +75,7 @@ public class RepositoryConnectionSWT extends Dialog {
       Label lblUserName = new Label( shell, SWT.NONE );
       props.setLook( lblUserName );
       lblUserName.setLayoutData( new FormDataBuilder().top( lblRepoName, 10 ).left( 5, 0 ).result() );
-      lblUserName.setText( "User name:" );
+      lblUserName.setText( BaseMessages.getString( PKG, "repositories.username.label" ));
 
       txt_username = new Text( shell, SWT.BORDER );
       props.setLook( txt_username );
@@ -90,7 +84,7 @@ public class RepositoryConnectionSWT extends Dialog {
       Label lblPassword = new Label( shell, SWT.NONE );
       props.setLook( lblPassword );
       lblPassword.setLayoutData( new FormDataBuilder().top( txt_username, 10 ).left( 5, 0 ).result() );
-      lblPassword.setText( "Password:" );
+      lblPassword.setText( BaseMessages.getString( PKG, "repositories.password.label" ));
 
       txt_passwd = new Text( shell, SWT.BORDER|SWT.PASSWORD );
       props.setLook( txt_passwd );
@@ -99,15 +93,15 @@ public class RepositoryConnectionSWT extends Dialog {
       Button loginbtn = new Button( shell, SWT.NONE );
       props.setLook( loginbtn );
       loginbtn.setLayoutData( new FormDataBuilder().top( txt_passwd ).left(5,0).result() );
-      loginbtn.setText( "  login  " );
+      loginbtn.setText(BaseMessages.getString( PKG, "repositories.login.label" ));
 
       //******************** HELP btn **********************************
       Button btnHelp = new Button( shell, SWT.ICON_INFORMATION );
-     // Image imageHelpIcon = new Image(display, "resources/app/img/help.svg");
       props.setLook( btnHelp );
       btnHelp.setLayoutData( new FormDataBuilder().bottom().right().result() );
-      btnHelp.setText( "  help  " );
-      //btnHelp.setImage( imageHelpIcon );
+      btnHelp.setText( BaseMessages.getString( PKG, "repositories.help.label" ) );
+
+      //******************* HELP btn call implementation ***************
       btnHelp.addListener( SWT.Selection, new Listener() {
         public void handleEvent( Event event ) {
           Program.launch( HELP_URL );
@@ -119,20 +113,14 @@ public class RepositoryConnectionSWT extends Dialog {
       loginbtn.addListener( SWT.Selection, new Listener() {
         public void handleEvent( Event event ) {
 
-          str_username = txt_username.getText();
-          str_passwd = txt_passwd.getText();
+          String str_username = txt_username.getText();
+          String str_passwd = txt_passwd.getText();
 
           if ( str_username.isEmpty() ) {
-            MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
-              SWT.ICON_ERROR | SWT.CANCEL );
-            messageBox.setMessage( "user name can not be blank!" );
-            messageBox.open();
+            messageBoxService( " User name cannot be blank!" );
           }
           else if ( str_passwd.isEmpty() ) {
-            MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
-              SWT.ICON_ERROR | SWT.CANCEL );
-            messageBox.setMessage( "password cannot be blank!" );
-            messageBox.open();
+            messageBoxService( " Password cannot be blank!" );
           } else {
             callLoginEndPoint( str_repoName, str_username, str_passwd );
           }
@@ -146,27 +134,34 @@ public class RepositoryConnectionSWT extends Dialog {
           display.sleep();
         }
       }
+      return true;
     } catch ( Exception e ) {
       log.logError( "Error occurred creating dialog",e );
+      return false;
     }
   }
 
-  void callLoginEndPoint( String str_repoName, String str_username, String str_passwd ) {
+  private boolean callLoginEndPoint( String str_repoName, String str_username, String str_passwd ) {
     try {
       if ( RepositoryConnectController.getInstance().isRelogin() == true ) {
         RepositoryConnectController.getInstance().reconnectToRepository( str_repoName, str_username, str_passwd );
-      } else {
+      }
+      else {
         RepositoryConnectController.getInstance().connectToRepository( str_repoName, str_username, str_passwd );
       }
-      log.logBasic( "Connection successful to repository %s",str_repoName );
+      log.logBasic( "Connection successful to repository "+str_repoName );
       shell.close();
+      return true;
     } catch ( Exception e ) {
       log.logError( "Error connecting to repository ",e );
+    return false;
     }
   }
 
-  @Override
-  protected void checkSubclass() {
-    // Disable the check that prevents subclassing of SWT components
+  private void messageBoxService(String msgText){
+    MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
+      SWT.ICON_ERROR | SWT.CANCEL );
+    messageBox.setMessage( msgText );
+    messageBox.open();
   }
 }
