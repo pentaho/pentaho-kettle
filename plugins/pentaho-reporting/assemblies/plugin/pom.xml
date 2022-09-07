@@ -59,7 +59,9 @@
             <configuration>
               <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>pentaho-reporting-plugins-impl,pentaho-reporting-plugins-ui</excludeArtifactIds>
+              <excludeGroupIds>org.apache.xmlgraphics,commons-codec,com.google.guava</excludeGroupIds>
+              <excludeArtifactIds>js,javax.mail,jakarta.xml.bind-api,jakarta.activation-api,jakarta.activation,httpcore,httpclient,ehcache-core,curvesapi,commons-math3,commons-logging,commons-io,commons-database-model,commons-compress,commons-collections4,commons-vfs2,antlr-complete,asm,
+                pentaho-reporting-plugins-impl,pentaho-reporting-plugins-ui</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>
