@@ -29,6 +29,8 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ContentViewer;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -49,6 +51,8 @@ import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -69,11 +73,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.TypedListener;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
@@ -483,7 +489,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
       // Properties needed for all file types
       type = fileDialogOperation.getFileType();
-      name = txtFileName.getText().contains( FILE_PERIOD ) ? txtFileName.getText().split( "\\" + FILE_PERIOD )[ 0 ] : txtFileName.getText();
+      name = txtFileName.getText().contains( FILE_PERIOD ) ? txtFileName.getText().split( "\\" + FILE_PERIOD )[ 0 ] :
+        txtFileName.getText();
       provider = file.getProvider();
 
       getShell().dispose();
@@ -641,7 +648,116 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     txtNav.setLayoutData(
       new FormDataBuilder().left( forwardButton.getLabel(), 10 ).right( fileButtons, -10 ).height( 32 ).result() );
 
+    txtNav.addTraverseListener( new TraverseListener() {
+      @Override public void keyTraversed( TraverseEvent traverseEvent ) {
+        if ( traverseEvent.detail == SWT.TRAVERSE_RETURN ) {
+
+          TreeSelection previousSelection =
+            treeViewer.getSelection().isEmpty() ? new TreeSelection() : (TreeSelection) treeViewer.getSelection();
+          boolean isFilePresent = false;
+
+          List<Object> children = new ArrayList<>();
+          if ( !previousSelection.isEmpty() ) {
+            Object fileOrTree = previousSelection.isEmpty() ? null : previousSelection.getFirstElement();
+            if ( fileOrTree == null ) {
+              return;
+            }
+
+            if ( fileOrTree instanceof Tree ) {
+              children = ( (Tree) fileOrTree ).getChildren();
+            } else if ( fileOrTree instanceof File ) {
+              TreePath[] treePaths = previousSelection.getPaths();
+              Object object = treePaths[ 0 ].getFirstSegment();
+              children = ( (Tree) object ).getChildren();
+            }
+
+
+          }
+
+
+          try {
+            String pathToSearchFor;
+            if ( txtNav.getText().endsWith( "/" ) || txtNav.getText().endsWith( "\\" ) ) {
+              pathToSearchFor = txtNav.getText().substring( 0, txtNav.getText().length() - 1 );
+            } else {
+              pathToSearchFor = txtNav.getText();
+            }
+            isFilePresent = searchForFileInTreeViewer( pathToSearchFor, children );
+          } catch ( FileException e ) {
+            // Ignore
+          }
+
+          if ( !isFilePresent ) {
+            treeViewer.setSelection( previousSelection );
+          }
+        }
+      }
+    } );
     return buttons;
+  }
+
+  public boolean searchForFileInTreeViewer( String path, List<Object> children ) throws FileException {
+    Optional<File> file = Optional.empty();
+    Optional<File> parent = Optional.empty();
+
+    if ( !children.isEmpty() ) {
+      List<File> childrenAsFiles = new ArrayList<>( children.size() );
+      for ( Object object : children ) {
+        childrenAsFiles.add( (File) object );
+      }
+      file = getFileMatch( path, childrenAsFiles );
+      while ( file.isPresent() ) {
+        if ( file.get() instanceof VFSFile && ( (VFSFile) file.get() ).getConnectionPath().equals( path ) ) {
+          break;
+        }
+        if ( file.get().getPath().equals( path ) ) {
+          break;
+        }
+        childrenAsFiles = FILE_CONTROLLER.getFiles( file.get(), null, true );
+        if ( file.isPresent() ) {
+          treeViewer.setSelection( new StructuredSelection( file.get() ), true );
+          parent = file;
+          file = getFileMatch( path, childrenAsFiles );
+        }
+      }
+    }
+    if ( file.isPresent() && !( file.get() instanceof Directory ) ) {
+      treeViewer.setSelection( new StructuredSelection( parent.get() ), true );
+      treeViewer.setExpandedState( parent.get(), true );
+      fileTableViewer.setSelection( new StructuredSelection( file.get() ), true );
+    } else if ( file.isPresent() ) {
+      treeViewer.setSelection( new StructuredSelection( file.get() ), true );
+      treeViewer.setExpandedState( file.get(), true );
+      fileTableViewer.setSelection( new StructuredSelection( file.get() ), true );
+    }
+    return file.isPresent();
+  }
+
+  private Optional<File> getFileMatch( String path, List<File> childrenAsFiles ) {
+    Optional<File> file;
+    if ( childrenAsFiles.get( 0 ) instanceof VFSFile ) {
+      file = childrenAsFiles.stream().filter( f -> {
+          boolean pathIsLonger = path.length() > ( (VFSFile) f ).getConnectionPath().length();
+          if ( pathIsLonger ) {
+            return path.startsWith( ( (VFSFile) f ).getConnectionPath() );
+          } else {
+            return ( (VFSFile) f ).getConnectionPath().startsWith( path );
+          }
+        } ).sorted(
+          ( f1, f2 ) -> ( (VFSFile) f2 ).getConnectionPath().length() - ( (VFSFile) f1 ).getConnectionPath().length() )
+        .filter( f -> path.contains( ( (VFSFile) f ).getConnectionPath() ) ).findFirst();
+    } else {
+      file = childrenAsFiles.stream().filter( f -> {
+          boolean pathIsLonger = path.length() > f.getPath().length();
+          if ( pathIsLonger ) {
+            return path.startsWith( f.getPath() );
+          } else {
+            return f.getPath().startsWith( path );
+          }
+        } ).sorted( ( f1, f2 ) -> f2.getPath().length() - f1.getPath().length() )
+        .filter( f -> path.contains( f.getPath() ) ).findFirst();
+    }
+    return file;
   }
 
   private void refreshDisplay( SelectionEvent selectionEvent ) {
