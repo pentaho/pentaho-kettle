@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,7 +48,7 @@ public class RepositoryConnectMenu {
   private static Class<?> PKG = RepositoryConnectMenu.class;
   private static LogChannelInterface log =
     KettleLogStore.getLogChannelInterfaceFactory().create(
-    RepositoryConnectMenu.class );
+      RepositoryConnectMenu.class );
   private static final int MAX_REPO_NAME_PIXEL_LENGTH = 230;
 
   private final Spoon spoon;
@@ -57,6 +57,8 @@ public class RepositoryConnectMenu {
   private ToolItem connectDropdown;
   private RepositoriesMeta repositoriesMeta;
   private final RepositoryConnectController repoConnectController;
+  private final int RepoManagerHeight = 650;
+  private final int RepoManagerWidth = 700;
 
   static RepositoryConnectController getRepoControllerInstance() {
     return RepositoryConnectController.getInstance();
@@ -130,7 +132,7 @@ public class RepositoryConnectMenu {
     connectButton.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
-        new RepositoryManagerDialog(spoon.getShell()).open(700,635  );
+        new RepositoryManagerDialog( spoon.getShell() ).open( RepoManagerWidth, RepoManagerHeight );
         renderAndUpdate();
       }
     } );
@@ -197,7 +199,7 @@ public class RepositoryConnectMenu {
         managerItem.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
-                new RepositoryManagerDialog(spoon.getShell()).open(700,635  );
+            new RepositoryManagerDialog( spoon.getShell() ).open( RepoManagerWidth, RepoManagerHeight );
             renderAndUpdate();
           }
         } );
