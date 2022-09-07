@@ -81,7 +81,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.core.annotations.PluginDialog;
 
-@PluginDialog( id = "ExcelOutput", image = "XLsvg", pluginType = PluginDialog.PluginType.STEP,
+@PluginDialog( id = "ExcelOutput", image = "XLO.svg", pluginType = PluginDialog.PluginType.STEP,
         documentationUrl = "Products/Microsoft_Excel_Output" )
 public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!
