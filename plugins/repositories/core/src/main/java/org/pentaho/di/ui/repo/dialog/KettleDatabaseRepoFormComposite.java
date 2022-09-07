@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.util.Utils;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
 
   private Combo dbListCombo;
-  protected Runnable dbListRefresh;
+  private Runnable dbListRefresh;
   private static final Class<?> PKG = KettleDatabaseRepoFormComposite.class;
 
   public KettleDatabaseRepoFormComposite( Composite parent, int style )
@@ -42,7 +43,8 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
 
     dbListCombo = new Combo(this, SWT.READ_ONLY);
     if(RepositoryConnectController.getInstance().getDatabases().isEmpty()){
-      dbListCombo.setItems( new String[] {"none"} );
+      //dbListCombo.setItems( new String[] {"none"} );
+      //dbListCombo.add( "NONE",0 );
     }
     else{
       ArrayList<String> listData = convertJSONArrayToList(RepositoryConnectController.getInstance().getDatabases());
@@ -66,7 +68,17 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
 
     updateDbConBtn.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        RepositoryConnectController.getInstance().editDatabaseConnection((dbListCombo.getItem(dbListCombo.getSelectionIndex())));
+        if(dbListCombo.getSelectionIndex() >-1) {
+          if ( !Utils.isEmpty( dbListCombo.getItem( dbListCombo.getSelectionIndex() ) ) ) {
+            RepositoryConnectController.getInstance()
+              .editDatabaseConnection( ( dbListCombo.getItem( dbListCombo.getSelectionIndex() ) ) );
+          } else {
+            messageBoxService( " select a db connection to edit!" );
+          }
+        }
+        else{
+          messageBoxService( " select a db connection to edit!" );
+        }
         dbListRefresh.run();
       }
     } );
@@ -78,7 +90,18 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
 
     deleteDbConBtn.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        RepositoryConnectController.getInstance().deleteDatabaseConnection(dbListCombo.getItem(dbListCombo.getSelectionIndex()));
+
+        if(dbListCombo.getSelectionIndex() > -1) {
+          if ( !Utils.isEmpty( dbListCombo.getItem( dbListCombo.getSelectionIndex() ) ) ) {
+            RepositoryConnectController.getInstance()
+              .deleteDatabaseConnection( dbListCombo.getItem( dbListCombo.getSelectionIndex() ) );
+          } else {
+            messageBoxService( " select a db connection to delete!" );
+          }
+        }
+        else{
+          messageBoxService( " select a db connection to delete!" );
+        }
         dbListRefresh.run();
       }
     } );
@@ -98,7 +121,7 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
   }
 
   private ArrayList<String> convertJSONArrayToList(JSONArray jsonArray){
-    ArrayList<String> listData = new ArrayList<String>();
+    ArrayList<String> listData = new ArrayList<>();
     if(!jsonArray.isEmpty()) {
       for (int i = 0; i < jsonArray.size(); i++) {
         listData.add(((JSONObject) jsonArray.get(i)).get("name").toString());
@@ -111,7 +134,6 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
   public Map<String,Object> toMap() {
     Map<String,Object> ret = super.toMap();
 
-    //TODO: Change to PurRepositoryMeta.REPOSITORY_TYPE_ID
     ret.put( BaseRepositoryMeta.ID, "KettleDatabaseRepository" );
     //TODO: Change to PurRepositoryMeta.URL
     ret.put( KettleDatabaseRepositoryMeta.DATABASE_CONNECTION,dbListCombo.getItem( dbListCombo.getSelectionIndex() ) );
@@ -127,6 +149,12 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
 
   @Override
   protected boolean validateSaveAllowed() {
-    return super.validateSaveAllowed() && !Utils.isEmpty( dbListCombo.getSelection().toString());
+    return super.validateSaveAllowed() && (dbListCombo.getSelectionIndex() > -1)  && !Utils.isEmpty( dbListCombo.getSelection().toString());
+  }
+  private void messageBoxService(String msgText){
+    MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
+      SWT.ICON_ERROR );
+    messageBox.setMessage( msgText );
+    messageBox.open();
   }
 }

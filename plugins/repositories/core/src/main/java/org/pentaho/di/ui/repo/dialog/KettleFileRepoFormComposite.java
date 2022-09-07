@@ -21,9 +21,9 @@ import java.util.Map;
 
 public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
 
-  protected Text txtLocation;
-  protected  Button showHidden;
-  protected  Button doNotModify;
+  private Text txtLocation;
+  private Button showHidden;
+  private Button doNotModify;
   private static final Class<?> PKG = KettleFileRepoFormComposite.class;
 
 
@@ -63,10 +63,7 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
         txtLocation.setText( selectedDir );
       }
       else{
-        MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
-          SWT.ICON_ERROR | SWT.CANCEL );
-        messageBox.setMessage( " select a directory" );
-        messageBox.open();
+        messageBoxService( " select a directory!" );
       }
     }
   } );
@@ -76,6 +73,7 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
       new FormDataBuilder().left( 0, 0 ).top( txtLocation, CONTROL_MARGIN ).result() );
     props.setLook( doNotModify );
     doNotModify.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( org.eclipse.swt.events.SelectionEvent e ) {
         lsMod.modifyText( null );
       };
@@ -87,6 +85,7 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
       new FormDataBuilder().left( 0, 0 ).top( doNotModify, CONTROL_MARGIN ).result() );
     props.setLook( showHidden );
     showHidden.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( org.eclipse.swt.events.SelectionEvent e ) {
         lsMod.modifyText( null );
       };
@@ -98,10 +97,8 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
   @Override
   public Map<String,Object> toMap() {
     Map<String,Object> ret = super.toMap();
-    
-    //TODO: Change to PurRepositoryMeta.REPOSITORY_TYPE_ID
+
     ret.put( BaseRepositoryMeta.ID, "KettleFileRepository" );
-    //TODO: Change to PurRepositoryMeta.URL
     ret.put( KettleFileRepositoryMeta.LOCATION, txtLocation.getText() );
     ret.put( KettleFileRepositoryMeta.SHOW_HIDDEN_FOLDERS,showHidden.getSelection() );
     ret.put( KettleFileRepositoryMeta.DO_NOT_MODIFY,doNotModify.getSelection());
@@ -121,5 +118,12 @@ public class KettleFileRepoFormComposite extends BaseRepoFormComposite {
   @Override
   protected boolean validateSaveAllowed() {
     return super.validateSaveAllowed() && !Utils.isEmpty( txtLocation.getText() );
+  }
+
+  private void messageBoxService(String msgText){
+    MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
+      SWT.ICON_ERROR );
+    messageBox.setMessage( msgText );
+    messageBox.open();
   }
 }

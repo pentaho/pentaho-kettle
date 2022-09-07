@@ -14,13 +14,12 @@ import org.pentaho.di.ui.core.PropsUI;
 
 public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
 
-  protected Text txtUrl;
-  protected PropsUI props;
+  private Text txtUrl;
+  private PropsUI props;
   
   public PentahoEnterpriseRepoFormComposite( Composite parent, int style )
   {
     super( parent, style );
-    this.props=PropsUI.getInstance();
   }
   
   @Override

@@ -25,7 +25,7 @@ public abstract class BaseRepoFormComposite extends Composite {
   protected static final int LABEL_CONTROL_MARGIN = 5;
   protected static final int CONTROL_MARGIN = 15;
 
-  protected FormLayout layout;
+  private FormLayout layout;
 
   // Passed by the outer control
   protected Button btnSave;
@@ -38,12 +38,12 @@ public abstract class BaseRepoFormComposite extends Composite {
   private static final Class<?> PKG = BaseRepoFormComposite.class;
 
   protected boolean changed = false;
-  protected ModifyListener lsMod = ( e ) -> {
+  protected ModifyListener lsMod =  e -> {
     changed = true;
     setSaveButtonEnabled();
   };
 
-  public BaseRepoFormComposite( Composite parent, int style ) {
+  protected BaseRepoFormComposite( Composite parent, int style ) {
     super( parent, style );
     this.props = PropsUI.getInstance();
 
@@ -82,6 +82,7 @@ public abstract class BaseRepoFormComposite extends Composite {
       new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( txtDescription, CONTROL_MARGIN ).result() );
     props.setLook( chkDefault );
     chkDefault.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( org.eclipse.swt.events.SelectionEvent e ) {
         lsMod.modifyText( null );
       };

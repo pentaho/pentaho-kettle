@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
@@ -34,8 +35,8 @@ public class RepositoryConnectionDialog extends Dialog {
   private static final Class<?> PKG = RepositoryConnectionDialog.class;
 
 
-  private Text txt_username;
-  private Text txt_passwd;
+  private Text txtUserName;
+  private Text txtPasswd;
   private Shell shell;
   private Display display;
   private PropsUI props;
@@ -50,7 +51,7 @@ public class RepositoryConnectionDialog extends Dialog {
   }
 
 
-  public boolean createDialog( String str_repoName ) {
+  public boolean createDialog( String strRepoName ) {
     Shell parent = getParent();
     display = parent.getDisplay();
 
@@ -70,30 +71,30 @@ public class RepositoryConnectionDialog extends Dialog {
       Label lblRepoName = new Label( shell, SWT.NONE );
       props.setLook( lblRepoName );
       lblRepoName.setLayoutData( new FormDataBuilder().top( lblConnectTo ).left( 5, 0 ).result() );
-      lblRepoName.setText( str_repoName );
+      lblRepoName.setText( strRepoName );
 
       Label lblUserName = new Label( shell, SWT.NONE );
       props.setLook( lblUserName );
       lblUserName.setLayoutData( new FormDataBuilder().top( lblRepoName, 10 ).left( 5, 0 ).result() );
       lblUserName.setText( BaseMessages.getString( PKG, "repositories.username.label" ));
 
-      txt_username = new Text( shell, SWT.BORDER );
-      props.setLook( txt_username );
-      txt_username.setLayoutData( new FormDataBuilder().top( lblUserName ).left( 5, 0 ).right( 95, 0 ).result() );
+      txtUserName = new Text( shell, SWT.BORDER );
+      props.setLook( txtUserName );
+      txtUserName.setLayoutData( new FormDataBuilder().top( lblUserName ).left( 5, 0 ).right( 95, 0 ).result() );
 
       Label lblPassword = new Label( shell, SWT.NONE );
       props.setLook( lblPassword );
-      lblPassword.setLayoutData( new FormDataBuilder().top( txt_username, 10 ).left( 5, 0 ).result() );
+      lblPassword.setLayoutData( new FormDataBuilder().top( txtUserName, 10 ).left( 5, 0 ).result() );
       lblPassword.setText( BaseMessages.getString( PKG, "repositories.password.label" ));
 
-      txt_passwd = new Text( shell, SWT.BORDER|SWT.PASSWORD );
-      props.setLook( txt_passwd );
-      txt_passwd.setLayoutData( new FormDataBuilder().top( lblPassword ).left( 5, 0 ).right( 95, 0 ).result() );
+      txtPasswd = new Text( shell, SWT.BORDER|SWT.PASSWORD );
+      props.setLook( txtPasswd );
+      txtPasswd.setLayoutData( new FormDataBuilder().top( lblPassword ).left( 5, 0 ).right( 95, 0 ).result() );
 
-      Button loginbtn = new Button( shell, SWT.NONE );
-      props.setLook( loginbtn );
-      loginbtn.setLayoutData( new FormDataBuilder().top( txt_passwd ).left(5,0).result() );
-      loginbtn.setText(BaseMessages.getString( PKG, "repositories.login.label" ));
+      Button loginBtn = new Button( shell, SWT.NONE );
+      props.setLook( loginBtn );
+      loginBtn.setLayoutData( new FormDataBuilder().top( txtPasswd ).left(5,0).result() );
+      loginBtn.setText(BaseMessages.getString( PKG, "repositories.login.label" ));
 
       //******************** HELP btn **********************************
       Button btnHelp = new Button( shell, SWT.ICON_INFORMATION );
@@ -103,6 +104,7 @@ public class RepositoryConnectionDialog extends Dialog {
 
       //******************* HELP btn call implementation ***************
       btnHelp.addListener( SWT.Selection, new Listener() {
+        @Override
         public void handleEvent( Event event ) {
           Program.launch( HELP_URL );
         }
@@ -110,19 +112,20 @@ public class RepositoryConnectionDialog extends Dialog {
 
 
       //********* login btn call implementation ***********
-      loginbtn.addListener( SWT.Selection, new Listener() {
+      loginBtn.addListener( SWT.Selection, new Listener() {
+        @Override
         public void handleEvent( Event event ) {
 
-          String str_username = txt_username.getText();
-          String str_passwd = txt_passwd.getText();
+          String strUserName = txtUserName.getText();
+          String strPasswd = txtPasswd.getText();
 
-          if ( str_username.isEmpty() ) {
+          if ( Utils.isEmpty( strUserName ) ) {
             messageBoxService( " User name cannot be blank!" );
           }
-          else if ( str_passwd.isEmpty() ) {
+          else if ( Utils.isEmpty( strPasswd ) ) {
             messageBoxService( " Password cannot be blank!" );
           } else {
-            callLoginEndPoint( str_repoName, str_username, str_passwd );
+            callLoginEndPoint( strRepoName, strUserName, strPasswd );
           }
         }
       } );
@@ -141,15 +144,15 @@ public class RepositoryConnectionDialog extends Dialog {
     }
   }
 
-  private boolean callLoginEndPoint( String str_repoName, String str_username, String str_passwd ) {
+  private boolean callLoginEndPoint( String strRepoName, String strUserName, String strPasswd ) {
     try {
       if ( RepositoryConnectController.getInstance().isRelogin() == true ) {
-        RepositoryConnectController.getInstance().reconnectToRepository( str_repoName, str_username, str_passwd );
+        RepositoryConnectController.getInstance().reconnectToRepository( strRepoName, strUserName, strPasswd );
       }
       else {
-        RepositoryConnectController.getInstance().connectToRepository( str_repoName, str_username, str_passwd );
+        RepositoryConnectController.getInstance().connectToRepository( strRepoName, strUserName, strPasswd );
       }
-      log.logBasic( "Connection successful to repository "+str_repoName );
+      log.logBasic( "Connection successful to repository "+strRepoName );
       shell.close();
       return true;
     } catch ( Exception e ) {
@@ -160,7 +163,7 @@ public class RepositoryConnectionDialog extends Dialog {
 
   private void messageBoxService(String msgText){
     MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
-      SWT.ICON_ERROR | SWT.CANCEL );
+      SWT.ICON_ERROR );
     messageBox.setMessage( msgText );
     messageBox.open();
   }
