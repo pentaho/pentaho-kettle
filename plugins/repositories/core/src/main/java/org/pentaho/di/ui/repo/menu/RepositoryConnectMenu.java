@@ -57,8 +57,8 @@ public class RepositoryConnectMenu {
   private ToolItem connectDropdown;
   private RepositoriesMeta repositoriesMeta;
   private final RepositoryConnectController repoConnectController;
-  private final int RepoManagerHeight = 650;
-  private final int RepoManagerWidth = 700;
+  private static final int REPOMANAGERHEIGHT = 650;
+  private static final int REPOMANAGERWIDTH= 700;
 
   static RepositoryConnectController getRepoControllerInstance() {
     return RepositoryConnectController.getInstance();
@@ -132,7 +132,7 @@ public class RepositoryConnectMenu {
     connectButton.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
-        new RepositoryManagerDialog( spoon.getShell() ).open( RepoManagerWidth, RepoManagerHeight );
+        new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT );
         renderAndUpdate();
       }
     } );
@@ -142,6 +142,7 @@ public class RepositoryConnectMenu {
   /**
    * @implNote prompts gui for connection to existing repository
    */
+  @SuppressWarnings( "squid:S3776" )
   private void renderConnectDropdown() {
     this.connectDropdown = new ToolItem( toolBar, SWT.DROP_DOWN, toolBar.getItems().length );
     connectDropdown.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Connect" ) );
@@ -199,7 +200,7 @@ public class RepositoryConnectMenu {
         managerItem.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
-            new RepositoryManagerDialog( spoon.getShell() ).open( RepoManagerWidth, RepoManagerHeight );
+            new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT );
             renderAndUpdate();
           }
         } );

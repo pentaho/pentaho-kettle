@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,6 +60,7 @@ public class RepositorySpoonStartExtensionPoint implements ExtensionPointInterfa
     return null;
   }
 
+  @SuppressWarnings( "squid:S3776" )
   @Override
   public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
     if ( !( object instanceof CommandLineOption[] ) ) {

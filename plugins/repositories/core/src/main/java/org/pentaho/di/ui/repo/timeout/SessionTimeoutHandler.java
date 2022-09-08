@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -79,12 +79,10 @@ public class SessionTimeoutHandler {
   }
 
   boolean showLoginScreen( RepositoryConnectController repositoryConnectController ) {
-    String message = BaseMessages.getString( PKG, "Repository.Reconnection.Message" );
     RepositoryConnectionDialog loginDialog = new RepositoryConnectionDialog( getSpoon().getShell());
     RepositoryMeta repositoryMeta = repositoryConnectController.getConnectedRepository();
     repositoryConnectController.setRelogin( true );
     return loginDialog.createDialog( repositoryMeta.getName() );
-    //    return loginDialog.openRelogin( repositoryMeta, message );
   }
 
   boolean lookupForConnectTimeoutError( Throwable root ) {

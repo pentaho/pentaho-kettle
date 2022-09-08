@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,6 +68,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Created by bmorrise on 5/3/16.
+ * modified by amit kumar 8/sep/22
  */
 @RunWith( MockitoJUnitRunner.class )
 public class RepositoryConnectControllerTest {
