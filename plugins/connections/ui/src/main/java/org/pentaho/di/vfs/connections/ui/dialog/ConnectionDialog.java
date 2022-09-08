@@ -288,13 +288,13 @@ public class ConnectionDialog extends Dialog {
       vfsDetailsComposite = (VFSDetailsComposite) connectionDetails.openDialog( wDetailsWrapperComp, props );
     }
 
-    wConnectionTypeComp.layout();
-
-    wDetailsWrapperComp.pack();
-    wScrolledComposite.setMinSize( wDetailsWrapperComp.computeSize( SWT.DEFAULT, SWT.DEFAULT ) );
-    wScrolledComposite.setContent( wDetailsWrapperComp );
-    wScrolledComposite.setExpandHorizontal( true );
+    wScrolledComposite.setExpandHorizontal( false );
     wScrolledComposite.setExpandVertical( true );
+    wScrolledComposite.setContent( wDetailsWrapperComp );
+    wDetailsWrapperComp.pack();
+    wScrolledComposite.setMinSize(
+      wDetailsWrapperComp.computeSize( wConnectionTypeComp.getClientArea().width, SWT.DEFAULT ) );
+    wConnectionTypeComp.layout();
   }
 
   private void transferFieldsFromOldToNew( ConnectionDetails connectionDetails,
@@ -393,6 +393,11 @@ public class ConnectionDialog extends Dialog {
     }
     if ( isEmpty( connectionDetails.getName() ) ) {
       return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.noName" );
+    }
+    ConnectionDetails attemptReadDetails = connectionManager.getConnectionDetails( connectionDetails.getName() );
+    if ( attemptReadDetails != null && attemptReadDetails.getType() != connectionDetails.getType() ) {
+      return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.sameNameOnDifferentType",
+        connectionDetails.getName(), convertKeyToTypeLabel( attemptReadDetails.getType() ) );
     }
     return vfsDetailsComposite.validate();
   }

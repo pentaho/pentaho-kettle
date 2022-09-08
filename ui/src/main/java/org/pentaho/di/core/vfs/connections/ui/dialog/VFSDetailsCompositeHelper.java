@@ -25,6 +25,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -163,7 +164,8 @@ public class VFSDetailsCompositeHelper {
     return passwordTextVar;
   }
 
-  public PasswordVisibleTextVar createPasswordVisibleTextVar( VariableSpace variableSpace, Composite composite, int flags,
+  public PasswordVisibleTextVar createPasswordVisibleTextVar( VariableSpace variableSpace, Composite composite,
+                                                              int flags,
                                                               Control topWidget, int width ) {
     PasswordVisibleTextVar PasswordVisibleTextVar = new PasswordVisibleTextVar( variableSpace, composite, flags );
     getProps().setLook( PasswordVisibleTextVar );
@@ -180,8 +182,9 @@ public class VFSDetailsCompositeHelper {
 
   /**
    * This method places a centered title at the top of the composite recieved
-   * @param composite The composite holding the details
-   * @param key The key to the message file
+   *
+   * @param composite    The composite holding the details
+   * @param key          The key to the message file
    * @param skipControls Controls that should not be lined up along a vertical column
    * @return
    */
@@ -224,11 +227,29 @@ public class VFSDetailsCompositeHelper {
       formData.top = new FormAttachment( topWidget, margin * 2 ); //Following Items
     }
     if ( width == 0 ) {
-      formData.right = new FormAttachment( 100, -margin ); //Fill
+      formData.right = new FormAttachment( 100, -margin - 9 ); //Fill but make sure scrollbar won't overlap hence subtracting 9 pixels
     }
     formData.left = new FormAttachment( 0, 0 );
     return formData;
   }
-  
+
+  /**
+   * Sets the Size of the Detail Composite to the track the Parent ScrolledComposites size.
+   *
+   * @param wComposite The DetailComposite
+   */
+  public static void setupCompositeResizeListener( Composite wComposite ) {
+    wComposite.getParent().addListener( SWT.Resize, arg0 -> {
+      updateScrollableRegion( wComposite );
+    } );
+  }
+
+  public static void updateScrollableRegion( Composite wComposite ) {
+    Rectangle r = wComposite.getParent().getClientArea();
+    if ( r.width != 0 ) {
+      wComposite.setSize( r.width, SWT.DEFAULT );
+    }
+  }
+
 }
 
