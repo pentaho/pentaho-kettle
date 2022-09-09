@@ -386,6 +386,7 @@ public class RepositoryManagerDialog extends Dialog {
     dialog.setLocation( ( ( widthManager - dialog.getSize().x ) / 2 ) + display.getClientArea().x,
       ( ( heightManager - dialog.getSize().y ) / 2 ) + display.getClientArea().y );
 
+    //gitexample change another change
 
     dialog.open();
 
