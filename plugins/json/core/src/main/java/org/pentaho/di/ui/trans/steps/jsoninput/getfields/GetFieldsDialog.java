@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.jsoninput.json.JsonSampler;
@@ -42,6 +43,7 @@ import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class GetFieldsDialog extends Dialog {
     this.props = PropsUI.getInstance();
   }
 
-  public void open( String filename, List<String> paths, TableView wFields ) throws KettleFileException {
+  public void open( String filename, List<String> paths, TableView wFields ) {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
@@ -81,14 +83,17 @@ public class GetFieldsDialog extends Dialog {
     Shell shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     try {
       props.setLook( shell );
-      shell.setLayout( new FormLayout() );
+      FormLayout formLayout = new FormLayout();
+      formLayout.marginWidth = Const.FORM_MARGIN;
+      formLayout.marginHeight = Const.FORM_MARGIN;
+      shell.setLayout( formLayout );
       shell.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.header.DialogTitle" ) );
       shell.setImage( LOGO );
-      shell.setSize( 453, 550 );
+      shell.setSize( 520, 700 );
 
-      Monitor primary = display.getPrimaryMonitor();
+      Monitor primary = parent.getMonitor();
       Rectangle bounds = primary.getBounds();
-      Rectangle rect = shell.getBounds();
+      Rectangle rect = shell.getClientArea();
 
       int x = bounds.x + ( bounds.width - rect.width ) / 2;
       int y = bounds.y + ( bounds.height - rect.height ) / 2;
@@ -97,7 +102,7 @@ public class GetFieldsDialog extends Dialog {
 
       StyledText labelSelectFields = new StyledText( shell, SWT.NONE );
       props.setLook( labelSelectFields );
-      labelSelectFields.setLayoutData( new FormDataBuilder().top( 3, 0 ).left( 2, 0 ).result() );
+      labelSelectFields.setLayoutData( new FormDataBuilder().top( 1, 0 ).result() );
       String label = BaseMessages.getString( PKG, "get-fields-plugin.app.header.title" );
       labelSelectFields.setText( label );
       StyleRange style1 = new StyleRange();
@@ -108,12 +113,12 @@ public class GetFieldsDialog extends Dialog {
 
       Text search = new Text( shell, SWT.SEARCH | SWT.ICON_CANCEL | SWT.CANCEL | SWT.ICON_SEARCH );
       props.setLook( search );
-      search.setLayoutData( new FormDataBuilder().top( 2, 0 ).left( 65, 0 ).result() );
+      search.setLayoutData( new FormDataBuilder().right( 100, 0 ).width( 200 ).result() );
       search.setMessage( BaseMessages.getString( PKG, "get-fields-plugin.app.header.search-parsed-fields.placeholder" ) );
 
       final Tree tree = new Tree( shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
       props.setLook( tree );
-      tree.setLayoutData( new FormDataBuilder().top( search, 10 ).left( 2, 0 ).height( 360 ).width( 400 ).result() );
+      tree.setLayoutData( new FormDataBuilder().top( labelSelectFields, Const.MARGIN ).left( 0, 0 ).right( 100, 0 ).bottom( 100, -85 ).result() );
 
       JsonSampler jsonSampler = new JsonSampler();
       jsonSampler.sample( filename, tree );
@@ -121,21 +126,19 @@ public class GetFieldsDialog extends Dialog {
       clearSelection = new Button( shell, SWT.PUSH );
       clearSelection.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.clear-selection.label" ) );
       props.setLook( clearSelection );
-      clearSelection.setLayoutData( new FormDataBuilder().top( tree, 5 ).left( 40, 0 ).result() );
+      BaseStepDialog.positionBottomButtons( shell, new Button[] { clearSelection }, 2, tree );
 
       Label separator = new Label( shell, SWT.SEPARATOR | SWT.SHADOW_OUT | SWT.HORIZONTAL );
       props.setLook( separator );
-      separator.setLayoutData( new FormDataBuilder().top( clearSelection, 5 ).left( 2, 0 ).width( 420 ).result() );
+      separator.setLayoutData( new FormDataBuilder().top( clearSelection, Const.MARGIN ).fullWidth().result() );
 
       ok = new Button( shell, SWT.PUSH );
       ok.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.ok.button" ) );
-      props.setLook( ok );
-      ok.setLayoutData( new FormDataBuilder().top( separator, 5 ).left( 80, 0 ).result() );
 
       cancel = new Button( shell, SWT.PUSH );
       cancel.setText( BaseMessages.getString( PKG, "get-fields-plugin.app.cancel.button" ) );
-      props.setLook( cancel );
-      cancel.setLayoutData( new FormDataBuilder().top( separator, 5 ).left( ok, 5 ).result() );
+
+      BaseStepDialog.positionBottomRightButtons( shell, new Button[] { ok, cancel }, 2, separator );
 
       TreeItem item = tree.getItem( 0 );
       paths.forEach( path -> jsonSampler.selectByPath( path, item ) );
