@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,10 +39,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.repo.dialog.CreateRepoManager;
-import org.pentaho.di.ui.repo.dialog.RepositoryConnectionSWT;
-import org.pentaho.di.ui.repo.dialog.RepositoryManagerSWT;
-import org.pentaho.di.ui.repo.dialog.dialogdynamic.RepositoryManagerDialog;
+import org.pentaho.di.ui.repo.dialog.RepositoryConnectionDialog;
+import org.pentaho.di.ui.repo.dialog.RepositoryManagerDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 
 public class RepositoryConnectMenu {
@@ -50,7 +48,7 @@ public class RepositoryConnectMenu {
   private static Class<?> PKG = RepositoryConnectMenu.class;
   private static LogChannelInterface log =
     KettleLogStore.getLogChannelInterfaceFactory().create(
-    RepositoryConnectMenu.class );
+      RepositoryConnectMenu.class );
   private static final int MAX_REPO_NAME_PIXEL_LENGTH = 230;
 
   private final Spoon spoon;
@@ -59,6 +57,8 @@ public class RepositoryConnectMenu {
   private ToolItem connectDropdown;
   private RepositoriesMeta repositoriesMeta;
   private final RepositoryConnectController repoConnectController;
+  private static final int REPOMANAGERHEIGHT = 650;
+  private static final int REPOMANAGERWIDTH= 700;
 
   static RepositoryConnectController getRepoControllerInstance() {
     return RepositoryConnectController.getInstance();
@@ -132,8 +132,7 @@ public class RepositoryConnectMenu {
     connectButton.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
-        //new CreateRepoManager( spoon.getShell().getDisplay() ).createNewRepo();
-        new RepositoryManagerDialog(spoon.getShell()).open(700,635  );
+        new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT );
         renderAndUpdate();
       }
     } );
@@ -142,7 +141,9 @@ public class RepositoryConnectMenu {
 
   /**
    * @implNote prompts gui for connection to existing repository
+   * @since pentaho 9.4
    */
+  @SuppressWarnings( "squid:S3776" )
   private void renderConnectDropdown() {
     this.connectDropdown = new ToolItem( toolBar, SWT.DROP_DOWN, toolBar.getItems().length );
     connectDropdown.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Connect" ) );
@@ -181,8 +182,7 @@ public class RepositoryConnectMenu {
                       log.logError( "Error connecting to repository", ke );
                     }
                   } else {
-                    new RepositoryConnectionSWT( spoon.getShell() ).createDialog( repoName );
-                  //  new RepositoryManagerDialog(spoon.getShell()).open(700,600  );
+                    new RepositoryConnectionDialog( spoon.getShell() ).createDialog( repoName );
                   }
                   renderAndUpdate();
                 }
@@ -193,7 +193,7 @@ public class RepositoryConnectMenu {
 
         /**
          * @implNote prompts repository manager gui for reps crud operations
-         *
+         * @since pentaho 9.4
          */
         new MenuItem( connectionMenu, SWT.SEPARATOR );
         MenuItem managerItem = new MenuItem( connectionMenu, SWT.NONE );
@@ -201,9 +201,7 @@ public class RepositoryConnectMenu {
         managerItem.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
-
-//              new RepositoryManagerSWT( spoon.getShell() ).createDialog();
-                new RepositoryManagerDialog(spoon.getShell()).open(700,635  );
+            new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT );
             renderAndUpdate();
           }
         } );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,18 +29,18 @@ import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
-import org.pentaho.di.ui.repo.dialog.RepositoryConnectionSWT;
-import org.pentaho.di.ui.repo.dialog.RepositoryDialog;
+import org.pentaho.di.ui.repo.dialog.RepositoryConnectionDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  * Created by bmorrise on 5/25/16.
+ * Modified by amit kumar on 8/sep/22.
  */
 @ExtensionPoint(
   id = "RepositoryOpenRecentExtensionPoint",
   extensionPointId = "OpenRecent",
   description = "Do or display login for default repository"
-  )
+)
 public class RepositoryOpenRecentFileExtensionPoint implements ExtensionPointInterface {
 
   private RepositoryConnectController repositoryConnectController;
@@ -49,25 +49,28 @@ public class RepositoryOpenRecentFileExtensionPoint implements ExtensionPointInt
     this.repositoryConnectController = RepositoryConnectController.getInstance();
   }
 
-  @Override public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
+  @SuppressWarnings( { "squid:S3776", "squid:S1066" } )
+  @Override
+  public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
     if ( !( object instanceof LastUsedFile ) ) {
       return;
     }
 
     LastUsedFile recentFile = (LastUsedFile) object;
 
+
     if ( recentFile.isSourceRepository() && !repositoryConnectController
       .isConnected( recentFile.getRepositoryName() ) ) {
       if ( getSpoon().promptForSave() ) {
         RepositoryMeta
-            repositoryMeta =
-            repositoryConnectController.getRepositoryMetaByName( recentFile.getRepositoryName() );
+          repositoryMeta =
+          repositoryConnectController.getRepositoryMetaByName( recentFile.getRepositoryName() );
         if ( repositoryMeta != null ) {
           if ( repositoryMeta.getId().equals( "KettleFileRepository" ) ) {
             getSpoon().closeRepository();
             repositoryConnectController.connectToRepository( repositoryMeta );
           } else {
-            new RepositoryConnectionSWT( getSpoon().getShell() ).createDialog( repositoryMeta.getName() );
+            new RepositoryConnectionDialog( getSpoon().getShell() ).createDialog( repositoryMeta.getName() );
           }
           if ( repositoryConnectController.isConnected( repositoryMeta.getName() ) ) {
             getSpoon().loadLastUsedFile( recentFile, repositoryMeta.getName() );

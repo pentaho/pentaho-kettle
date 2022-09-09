@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,6 +66,7 @@ import java.util.function.Supplier;
 
 /**
  * Created by bmorrise on 4/18/16.
+ * modified by amit kumar on 9/sep/22.
  */
 public class RepositoryConnectController implements IConnectedRepositoryInstance {
 
@@ -142,14 +143,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     DatabaseMeta databaseMeta = databaseDialog.getDatabaseMeta();
     if ( databaseMeta != null ) {
       if ( !isDatabaseWithNameExist( databaseMeta, true ) ) {
-        System.out.println("before adding database meta");
-        System.out.println("database meta :"+databaseMeta.getName());
-        System.out.println("database meta :"+databaseMeta.getRepositoryDirectory().getName());
-        try {
-          System.out.println("database meta :"+databaseMeta.getURL());
-        } catch (KettleDatabaseException e) {
-          e.printStackTrace();
-        }
         addDatabase( databaseMeta );
       } else {
         DatabaseDialog.showDatabaseExistsDialog( spoonSupplier.get().getShell(), databaseMeta );
@@ -158,7 +151,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     JSONObject jsonObject = new JSONObject();
     try {
       jsonObject.put( "name", databaseMeta.getName() );
-      System.out.println("returned json object :"+jsonObject.toJSONString());
       return jsonObject.toJSONString();
     } catch ( Exception e ) {
       jsonObject.put( "name", "None" );
@@ -363,7 +355,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
    * @throws KettleException
    */
   public void connectToRepository( String repositoryName, String username, String password ) throws KettleException {
-    System.out.println("inside controller of connect to repository");
     final RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
     if ( repositoryMeta != null ) {
       connectToRepository( repositoryMeta, username, password );
@@ -379,14 +370,12 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     }
     Spoon spoon = spoonSupplier.get();
     Runnable execute = () -> {
-      System.out.println("spoon update thread started...");
       if ( spoon.getRepository() != null ) {
         spoon.closeRepository();
       } else {
         spoon.closeAllJobsAndTransformations( true );
       }
       spoon.setRepository( repository );
-      System.out.println("repo updated");
       setConnectedRepository( repositoryMeta );
       fireListeners();
       spoon.updateTreeForActiveAbstractMetas();
