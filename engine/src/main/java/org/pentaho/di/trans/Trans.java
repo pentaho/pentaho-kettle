@@ -591,7 +591,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     extensionDataMap = new HashMap<>();
 
-    logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
   }
 
   /**
@@ -758,6 +757,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException if the transformation could not be prepared (initialized)
    */
   public void execute( String[] arguments ) throws KettleException {
+
+    // Isolated method call to avoid unnecessary unit tests issues [BACKLOG-36316 / PDI-19357]
+    setInitialLogBufferStartLine();
     prepareExecution( arguments );
     startThreads();
   }
@@ -5256,6 +5258,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public void setLogBufferStartLine( int lineNr ) {
     logBufferStartLine = lineNr;
+  }
+
+  /**
+   * Sets logBufferStartLine based on LoggingBuffer last line number
+   */
+  public void setInitialLogBufferStartLine() {
+    logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
   }
 
   /**
