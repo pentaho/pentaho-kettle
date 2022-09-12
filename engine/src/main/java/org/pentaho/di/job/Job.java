@@ -458,7 +458,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   private Result execute() throws KettleException {
     try {
-      this.logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
+      setInitialLogBufferStartLine();
 
       log.snap( Metrics.METRIC_JOB_START );
 
