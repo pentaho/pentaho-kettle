@@ -307,7 +307,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.log = new LogChannel( this, parentLogging );
     this.logLevel = log.getLogLevel();
     this.log.setHooks( this );
-    this.logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
 
     if ( this.containerObjectId == null ) {
       this.containerObjectId = log.getContainerObjectId();
@@ -319,7 +318,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.log = new LogChannel( this );
     this.logLevel = log.getLogLevel();
     this.log.setHooks( this );
-    this.logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
   }
 
   /**
@@ -460,6 +458,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   private Result execute() throws KettleException {
     try {
+      setInitialLogBufferStartLine();
+
       log.snap( Metrics.METRIC_JOB_START );
 
       setFinished( false );
@@ -2054,6 +2054,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   public void setLogBufferStartLine( int lineNr ) {
     logBufferStartLine = lineNr;
+  }
+
+  /**
+   * Sets logBufferStartLine based on LoggingBuffer last line number
+   */
+  public void setInitialLogBufferStartLine() {
+    logBufferStartLine = KettleLogStore.getAppender().getLastBufferLineNr();
   }
 
   /**
