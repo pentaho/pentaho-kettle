@@ -223,6 +223,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   List<Object> selectionHistory = new ArrayList<>();
 
+  int currentHistoryIndex;
+
   static {
     FILE_CONTROLLER = new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.get() );
   }
@@ -597,14 +599,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         .setEnabled( false ).addListener( new SelectionAdapter() {
           @Override public void widgetSelected( SelectionEvent selectionEvent ) {
             if ( !selectionHistory.isEmpty() ) {
-              int currentIndex;
-              TreeSelection currentPath = (TreeSelection) treeViewer.getSelection();
-              currentIndex = selectionHistory.indexOf( currentPath.getFirstElement() );
+              int currentIndex = currentHistoryIndex;
               if ( currentIndex > 0 ) {
                 Object previousPath = selectionHistory.get( currentIndex - 1 );
                 navigateBtnFlag = true;
                 treeViewer.setSelection( new StructuredSelection( previousPath ) );
                 flatBtnForward.setEnabled( true );
+                currentHistoryIndex--;
               } else {
                 flatBtnBack.setEnabled( false );
               }
@@ -623,14 +624,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           new SelectionAdapter() {
             @Override public void widgetSelected( SelectionEvent selectionEvent ) {
               if ( !selectionHistory.isEmpty() ) {
-                int currentIndex;
-                TreeSelection currentPath = (TreeSelection) treeViewer.getSelection();
-                currentIndex = selectionHistory.indexOf( currentPath.getFirstElement() );
+                int currentIndex = currentHistoryIndex;
                 if ( currentIndex >= 0 && currentIndex < selectionHistory.size() - 1 ) {
                   Object nextPath = selectionHistory.get( currentIndex + 1 );
                   navigateBtnFlag = true;
                   treeViewer.setSelection( new StructuredSelection( nextPath ) );
                   flatBtnBack.setEnabled( true );
+                  currentHistoryIndex++;
                 } else {
                   flatBtnForward.setEnabled( false );
                 }
@@ -807,6 +807,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   private void addSelectionHistoryItems( Object selectionNode ) {
     selectionHistory.add( selectionNode );
+    currentHistoryIndex = selectionHistory.size() - 1;
   }
 
   public boolean searchForFileInTreeViewer( String path, List<Object> children ) throws FileException {
