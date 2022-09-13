@@ -518,113 +518,18 @@
             </exclusions>
         </dependency>
 
-        <!--OSGi Dependency-->
-        <!--Because of:-->
-        <!--pentaho-platform-core (PentahoSystem) and pdi-osgi-bridge-core (KarafLifecycleListener and OSGIPluginRegistryExtension)-->
-        <!--Still needed even for a no-osgi build because of PentahoSystem dependency -->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
     </dependencies>
+
+
     <profiles>
+
         <profile>
-            <id>standard</id>
+            <id>default-no-osgi</id>
             <activation>
                 <property>
-                    <name>!no-osgi</name>
+                    <name>!osgi</name>
                 </property>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>pentaho</groupId>
-                    <artifactId>pdi-osgi-bridge-core</artifactId>
-                    <version>${pdi-osgi-bridge.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.pentaho</groupId>
-                    <artifactId>shim-api-core</artifactId>
-                    <version>${pentaho-hadoop-shims.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-
-                <!-- Karaf Dependencies -->
-                <dependency>
-                    <groupId>org.apache.karaf</groupId>
-                    <artifactId>org.apache.karaf.main</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.karaf</groupId>
-                    <artifactId>org.apache.karaf.util</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.karaf.jaas</groupId>
-                    <artifactId>org.apache.karaf.jaas.boot</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.karaf.diagnostic</groupId>
-                    <artifactId>org.apache.karaf.diagnostic.boot</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.karaf.specs</groupId>
-                    <artifactId>org.apache.karaf.specs.activator</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.karaf.specs</groupId>
-                    <artifactId>org.apache.karaf.specs.locator</artifactId>
-                    <version>${karaf.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
@@ -648,37 +553,139 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
-            <id>no-osgi</id>
-            <activation>
-                <property>
-                    <name>no-osgi</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>assembly_package</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <descriptors>
-                                        <desciptor>${basedir}/src/assemblies/assembly-no-osgi.xml</desciptor>
-                                    </descriptors>
-                                    <appendAssemblyId>true</appendAssemblyId>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+          <id>osgi</id>
+          <activation>
+              <property>
+                  <name>osgi</name>
+              </property>
+          </activation>
+          <dependencies>
+              <dependency>
+                  <groupId>pentaho</groupId>
+                  <artifactId>pdi-osgi-bridge-core</artifactId>
+                  <version>${pdi-osgi-bridge.version}</version>
+              </dependency>
+
+              <dependency>
+                  <groupId>org.pentaho</groupId>
+                  <artifactId>shim-api-core</artifactId>
+                  <version>${pentaho-hadoop-shims.version}</version>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>*</groupId>
+                          <artifactId>*</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+
+              <!-- Karaf Dependencies -->
+              <dependency>
+                  <groupId>org.apache.karaf</groupId>
+                  <artifactId>org.apache.karaf.main</artifactId>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>*</groupId>
+                          <artifactId>*</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+              <dependency>
+                  <groupId>org.apache.karaf</groupId>
+                  <artifactId>org.apache.karaf.util</artifactId>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>*</groupId>
+                          <artifactId>*</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+              <dependency>
+                  <groupId>org.apache.karaf.jaas</groupId>
+                  <artifactId>org.apache.karaf.jaas.boot</artifactId>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>*</groupId>
+                          <artifactId>*</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+              <dependency>
+                  <groupId>org.apache.karaf.diagnostic</groupId>
+                  <artifactId>org.apache.karaf.diagnostic.boot</artifactId>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>*</groupId>
+                          <artifactId>*</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+              <dependency>
+                  <groupId>org.apache.karaf.specs</groupId>
+                  <artifactId>org.apache.karaf.specs.activator</artifactId>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>*</groupId>
+                          <artifactId>*</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+              <dependency>
+                  <groupId>org.apache.karaf.specs</groupId>
+                  <artifactId>org.apache.karaf.specs.locator</artifactId>
+                  <version>${karaf.version}</version>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>*</groupId>
+                          <artifactId>*</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+
+              <!--OSGi Dependency-->
+              <!--Because of:-->
+              <!--pentaho-platform-core (PentahoSystem) and pdi-osgi-bridge-core (KarafLifecycleListener and OSGIPluginRegistryExtension)-->
+              <!--Still needed even for a no-osgi build because of PentahoSystem dependency -->
+              <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+          </dependencies>
+          <build>
+              <plugins>
+                  <plugin>
+                      <artifactId>maven-assembly-plugin</artifactId>
+                      <executions>
+                          <execution>
+                              <id>assembly_package</id>
+                              <phase>package</phase>
+                              <goals>
+                                  <goal>single</goal>
+                              </goals>
+                              <configuration>
+                                  <descriptors>
+                                      <desciptor>${basedir}/src/assemblies/assembly-osgi.xml</desciptor>
+                                  </descriptors>
+                                  <appendAssemblyId>true</appendAssemblyId>
+                              </configuration>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+
     </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -699,4 +706,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
