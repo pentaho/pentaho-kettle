@@ -80,11 +80,12 @@
   </build>
 
   <profiles>
+
     <profile>
-      <id>standard</id>
+      <id>default-no-osgi</id>
       <activation>
         <property>
-          <name>!no-osgi</name>
+          <name>!osgi</name>
         </property>
       </activation>
       <build>
@@ -110,11 +111,12 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
-      <id>no-osgi</id>
+      <id>osgi</id>
       <activation>
         <property>
-          <name>no-osgi</name>
+          <name>osgi</name>
         </property>
       </activation>
       <build>
@@ -130,7 +132,7 @@
                 </goals>
                 <configuration>
                   <descriptors>
-                    <desciptor>${basedir}/src/assemblies/assembly-no-osgi.xml</desciptor>
+                    <desciptor>${basedir}/src/assemblies/assembly-osgi.xml</desciptor>
                   </descriptors>
                   <appendAssemblyId>true</appendAssemblyId>
                 </configuration>
@@ -140,5 +142,6 @@
         </plugins>
       </build>
     </profile>
+
   </profiles>
 </project>

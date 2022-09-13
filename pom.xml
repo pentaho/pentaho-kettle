@@ -269,6 +269,7 @@
   </build>
 
   <profiles>
+
     <profile>
       <id>base</id>
       <activation>
@@ -285,6 +286,7 @@
         <module>utilities</module>
       </modules>
     </profile>
+
     <profile>
       <id>plugins</id>
       <activation>
@@ -296,6 +298,7 @@
         <module>plugins</module>
       </modules>
     </profile>
+
     <profile>
       <id>assemblies</id>
       <activation>
@@ -307,6 +310,47 @@
         <module>assemblies</module>
       </modules>
     </profile>
+
+    <profile>
+      <id>osgi</id>
+
+      <activation>
+        <property>
+          <name>osgi</name>
+        </property>
+      </activation>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <executions>
+              <execution>
+                <!-- override clean and don't delete the zips in target, this helps hadoop-addon and makes the pipeline cleaner
+                     if you really need a full cleaning run clean without activating this profile -->
+                <id>default-clean</id>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.directory}</directory>
+                      <followSymlinks>false</followSymlinks>
+                      <useDefaultExcludes>true</useDefaultExcludes>
+                      <excludes>
+                        <exclude>*.zip</exclude>
+                      </excludes>
+                    </fileset>
+                  </filesets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      
+    </profile>
+
   </profiles>
 
 
