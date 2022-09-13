@@ -13,13 +13,13 @@ ee:
     client-tools:
         - pad-ee-${platform.version}-dist.zip
         - pdi-ee-client-${platform.version}-dist.zip
-        - pdi-ee-client-${platform.version}-no-osgi-dist.zip
+        - pdi-ee-client-${platform.version}-hadoop-addon-dist.zip
         - pentaho-analysis-ee-${platform.version}-dist.zip
         - pentaho-big-data-ee-package-${platform.version}-dist.zip
         - pme-ee-${platform.version}-dist.zip
-        - pme-ee-${platform.version}-no-osgi-dist.zip
+        - pme-ee-${platform.version}-hadoop-addon-dist.zip
         - prd-ee-${platform.version}-dist.zip
-        - prd-ee-${platform.version}-no-osgi-dist.zip
+        - prd-ee-${platform.version}-hadoop-addon-dist.zip
         - psw-ee-${mondrian.version}-dist.zip
     installers:
         - pentaho-business-analytics-${platform.version}-x64.app.tar.gz
@@ -92,12 +92,15 @@ ce:
     client-tools:
         - pad-ce-${platform.version}.zip
         - pdi-ce-${platform.version}.zip
-        - pdi-ce-${platform.version}-no-osgi.zip        
+        - pdi-ce-${platform.version}-osgi.zip
+        - pdi-ce-${platform.version}-hadoop-addon.zip
         - pentaho-big-data-plugin-${platform.version}.zip
         - pme-ce-${platform.version}.zip
-        - pme-ce-${platform.version}-no-osgi.zip
+        - pme-ce-${platform.version}-osgi.zip
+        - pme-ce-${platform.version}-hadoop-addon.zip
         - prd-ce-${platform.version}.zip
-        - prd-ce-${platform.version}-no-osgi.zip
+        - prd-ce-${platform.version}-osgi.zip
+        - prd-ce-${platform.version}-hadoop-addon.zip
         - psw-ce-${mondrian.version}.zip
     plugins:
         - kettle-sdk-plugin-assembly-${platform.version}.zip

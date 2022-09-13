@@ -488,16 +488,15 @@ jobGroups:
        archivable      :  true
        atomicScmCheckout: true
 
-     - jobID           :  prd-assembly-no-osgi
+     - jobID           :  prd-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :  += -Dno-osgi -Pdesigner -Dmaven.test.failure.ignore=true
+       directives      :  += -Pdesigner -Dmaven.test.failure.ignore=true
        testable        :  false
        archivable      :  true
 
   4000:
-     - jobID           :  prd-assembly-ee-no-osgi
+     - jobID           :  prd-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
-       directives      :  += -Dno-osgi
        testable        :  false
        archivable      :  true
        testable        :  false
@@ -506,11 +505,9 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pdi-ee-plugin.git
        archivable      :  true
 
-     - jobID           :  prd-assembly
+     - jobID           :  prd-assembly-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
-       directives      :
-                 build :  deploy -Drelease -Pdesigner -Dmaven.test.failure.ignore=true
-                 test  :  test
+       directives      :  += -Dosgi -Pdesigner -Dmaven.test.failure.ignore=true
        root            :  assemblies/prd-ce
        archivable      :  true
 
@@ -519,43 +516,44 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pdi-operations-mart.git
        archivable      :  true
 
-     - jobID           :  prd-assembly-ee
+     - jobID           :  prd-assembly-ee-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
        root            :  assemblies/prd-ee
-       directives      :
-                 build :  deploy -Drelease
-                 test  :  test
+       directives      :  += -Dosgi
        archivable      :  true
        testable        :  false
 
   4200:
-     - jobID           :  pdi-client-assembly-no-osgi
+     - jobID           :  pdi-client-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
-       directives      :  += -DskipDefault -P assemblies -Dno-osgi
+       directives      :  += -DskipDefault -P assemblies
        testable        :  false
        archivable      :  true
 
   4300:
-     - jobID           :  pdi-client-assembly-ee-no-osgi
+     - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       directives      :  += -Dno-osgi
        testable        :  false
        archivable      :  true
 
-     - jobID           :  pdi-client-assembly
+     - jobID           :  pdi-client-assembly-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
-       directives      :
-                 build :  deploy -DskipTests -Drelease -DskipDefault -P assemblies
-                 test  :  test
+       directives      :  += -Dosgi -DskipDefault -P assemblies
        testable        :  false
        archivable      :  true
+
+     - jobID           :  metadata-editor
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       testable        :  false
+       archivable      :  true
+       versionProperty :  pentaho-metadata.version
 
   4400:
-     - jobID           :  metadata-editor-no-osgi
+     - jobID           :  metadata-editor-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
-       directives      :  += -Dno-osgi
-       testable        :  false
+       directives      :  += -Dosgi
        archivable      :  true
+       versionProperty :  pentaho-metadata.version
 
      - jobID           :  platform-server-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
@@ -569,11 +567,9 @@ jobGroups:
        testable         : false
        archivable      :  true
 
-     - jobID           :  pdi-client-assembly-ee
+     - jobID           :  pdi-client-assembly-ee-osgi
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       directives      :
-                 build :  deploy -DskipTests
-                 test  :  test
+       directives      :  += -Dosgi
        testable        :  false
        archivable      :  true
 
@@ -584,9 +580,8 @@ jobGroups:
        testable        :  false
        archivable      :  true
 
-     - jobID           :  metadata-editor-ee-no-osgi
+     - jobID           :  metadata-editor-ee
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       directives      :  += -Dno-osgi
        testable        :  false
        archivable      :  true
 
@@ -599,19 +594,15 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-sdk.git
        archivable      :  true
 
-     - jobID           :  metadata-editor
+     - jobID           :  metadata-editor-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
-       directives      :
-                 build :  deploy -Drelease
-                 test  :  test
+       directives      :  += -Dosgi 
        archivable      :  true
 
   4600:
-     - jobID           :  metadata-editor-ee
+     - jobID           :  metadata-editor-ee-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       directives      :
-                 build :  deploy -Drelease
-                 test  :  test
+       directives      :  += -Dosgi 
        archivable      :  true
 
   4700:
