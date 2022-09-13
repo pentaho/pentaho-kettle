@@ -1031,14 +1031,15 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       wFields.optWidth( true );
     }
   }
-  private void isMappingModified( List<SourceToTargetMapping> preMappings, List<SourceToTargetMapping> postMapping ) {
+  private void isMappingModified( List<SourceToTargetMapping> preMappings, List<SourceToTargetMapping> postMappings ) {
     boolean modified = false;
-    if ( preMappings.size() != postMapping.size() ) {
+    if ( preMappings.size() != postMappings.size() ) {
       modified = true;
     } else {
       for ( int i = 0; i < preMappings.size(); i++ ) {
-        if ( preMappings.get( i ).getSourcePosition() != postMapping.get( i ).getSourcePosition() || preMappings.get( i ).getTargetPosition() != postMapping.get( i ).getTargetPosition() ) {
+        if ( preMappings.get( i ).getSourcePosition() != postMappings.get( i ).getSourcePosition() || preMappings.get( i ).getTargetPosition() != postMappings.get( i ).getTargetPosition() ) {
           modified = true;
+          break;
         }
       }
     }
