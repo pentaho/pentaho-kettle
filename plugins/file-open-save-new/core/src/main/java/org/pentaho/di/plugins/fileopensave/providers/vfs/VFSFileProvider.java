@@ -472,8 +472,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    */
   @Override public String getNewName( VFSFile destDir, String newPath, VariableSpace space ) throws FileException {
     String extension = Utils.getExtension( newPath );
-    String parent = Utils.getParent( newPath );
-    String name = Utils.getName( newPath ).replace( "." + extension, "" );
+    String parent = Utils.getParent( newPath, "/" );
+    String name = Utils.getName( newPath, "/" ).replace( "." + extension, "" );
     int i = 1;
     String testName = sanitizeName( destDir, newPath );
     try {

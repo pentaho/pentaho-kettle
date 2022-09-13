@@ -36,6 +36,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
+import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -240,6 +241,9 @@ public class FileController {
 
   private File writeFile( FileProvider<File> fromFileProvider, FileProvider<File> toFileProvider, File file,
                           File destDir, String path, boolean overwrite ) throws FileException {
+    if (file instanceof Directory){
+      return null; //TODO: Handle scenario for copying directory between providers
+    }
     try ( InputStream inputStream = fromFileProvider.readFile( file, space ) ) {
       return toFileProvider.writeFile( inputStream, destDir, path, overwrite, space );
     } catch ( IOException e ) {
