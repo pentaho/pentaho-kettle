@@ -94,7 +94,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       Path kettleUserDataDirectoryPath = Paths.get( Const.getUserDataDirectory() );
       paths.add( kettleUserDataDirectoryPath );
     } else { */
-      FileSystems.getDefault().getRootDirectories().forEach( paths::add );
+    FileSystems.getDefault().getRootDirectories().forEach( paths::add );
     //}
     paths.forEach( path -> {
       LocalDirectory localDirectory = new LocalDirectory();
@@ -115,6 +115,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   }
 
   // TODO: Filter out certain files from root
+
   /**
    * @param file
    * @param filters
@@ -124,7 +125,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     List<LocalFile> files = new ArrayList<>();
     //TODO: Re-enable this when running on a SNAPSHOT build of Spoon
     /*
-    if ( Const.isRunningOnWebspoonMode() && !Paths.get( file.getPath() ).toAbsolutePath().startsWith( Paths.get( Const.getUserDataDirectory() ) ) ) {
+    if ( Const.isRunningOnWebspoonMode() && !Paths.get( file.getPath() ).toAbsolutePath().startsWith( Paths.get(
+    Const.getUserDataDirectory() ) ) ) {
       return files;
     }
     */
@@ -132,12 +134,12 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       paths.forEach( path -> {
         String name = path.getFileName().toString();
         try {
-          if ( path.toFile().isDirectory() && !Files.isHidden( path ) ) {
+          if ( path.toFile().isDirectory() ) {
             files.add( LocalDirectory.create( file.getPath(), path ) );
-          } else if ( !Files.isHidden( path ) && Utils.matches( name, filters ) ) {
+          } else if ( Utils.matches( name, filters ) ) {
             files.add( LocalFile.create( file.getPath(), path ) );
           }
-        } catch ( IOException e ) {
+        } catch ( Exception e ) {
           // Do nothing yet
         }
       } );
@@ -148,6 +150,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   }
 
   //TODO: Handle directories with files in them
+
   /**
    * @return
    */
@@ -210,7 +213,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileException
    */
   @Override
-  public LocalFile rename( LocalFile file, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
+  public LocalFile rename( LocalFile file, String newPath, boolean overwrite, VariableSpace space )
+    throws FileException {
     return doMove( file.getPath(), newPath, overwrite, space );
   }
 
@@ -262,7 +266,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   @Override
   public LocalFile copy( LocalFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
     try {
-      Path newPath = Files.copy( Paths.get( file.getPath() ), Paths.get( toPath ), StandardCopyOption.REPLACE_EXISTING );
+      Path newPath =
+        Files.copy( Paths.get( file.getPath() ), Paths.get( toPath ), StandardCopyOption.REPLACE_EXISTING );
       if ( newPath.toFile().isDirectory() ) {
         return LocalDirectory.create( newPath.getParent().toString(), newPath );
       } else {
@@ -306,7 +311,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileAlreadyExistsException
    */
   @Override
-  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, boolean overwrite, VariableSpace space )
+  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, boolean overwrite,
+                              VariableSpace space )
     throws FileException {
     try {
       Files.copy( inputStream, Paths.get( path ) );
