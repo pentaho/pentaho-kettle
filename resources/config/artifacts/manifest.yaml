@@ -92,14 +92,11 @@ ce:
     client-tools:
         - pad-ce-${platform.version}.zip
         - pdi-ce-${platform.version}.zip
-        - pdi-ce-${platform.version}-osgi.zip
         - pdi-ce-${platform.version}-hadoop-addon.zip
         - pentaho-big-data-plugin-${platform.version}.zip
         - pme-ce-${platform.version}.zip
-        - pme-ce-${platform.version}-osgi.zip
         - pme-ce-${platform.version}-hadoop-addon.zip
         - prd-ce-${platform.version}.zip
-        - prd-ce-${platform.version}-osgi.zip
         - prd-ce-${platform.version}-hadoop-addon.zip
         - psw-ce-${mondrian.version}.zip
     plugins:
