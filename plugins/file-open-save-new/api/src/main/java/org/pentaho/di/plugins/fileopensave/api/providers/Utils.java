@@ -73,11 +73,11 @@ public class Utils {
     return validExtensions.contains( extension );
   }
 
-  public static String getParent( String path ) {
-    return path.substring( 0, path.lastIndexOf( "/" ) );
+  public static String getParent( String path, String separator ) {
+    return path.substring( 0, path.lastIndexOf( separator) );
   }
 
-  public static String getName( String path ) {
-    return path.substring( path.lastIndexOf( "/" ), path.length() );
+  public static String getName( String path, String separator ) {
+    return path.substring( path.lastIndexOf( separator ), path.length() );
   }
 }

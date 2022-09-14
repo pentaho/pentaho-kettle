@@ -266,8 +266,22 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   @Override
   public LocalFile copy( LocalFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
     try {
-      Path newPath =
-        Files.copy( Paths.get( file.getPath() ), Paths.get( toPath ), StandardCopyOption.REPLACE_EXISTING );
+      Path newPath = Paths.get( toPath );
+      if ( file instanceof Directory ) {
+        Files.walk( Paths.get( file.getPath() ) )
+          .forEach( source -> {
+            Path destination = Paths.get( toPath, source.toString()
+              .substring( file.getPath().length() ) );
+            try {
+              Files.copy( source, destination );
+            } catch ( IOException e ) {
+              e.printStackTrace();
+            }
+          } );
+      } else {
+        newPath = Files.copy( Paths.get( file.getPath() ), Paths.get( toPath ), StandardCopyOption.REPLACE_EXISTING );
+        return LocalFile.create( newPath.getParent().toString(), newPath );
+      }
       if ( newPath.toFile().isDirectory() ) {
         return LocalDirectory.create( newPath.getParent().toString(), newPath );
       } else {
@@ -343,8 +357,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   @Override
   public String getNewName( LocalFile destDir, String newPath, VariableSpace space ) {
     String extension = Utils.getExtension( newPath );
-    String parent = Utils.getParent( newPath );
-    String name = Utils.getName( newPath ).replace( "." + extension, "" );
+    String parent = Utils.getParent( newPath, File.separator );
+    String name = Utils.getName( newPath, File.separator ).replace( "." + extension, "" );
     int i = 1;
     String testName = newPath;
     while ( Paths.get( testName ).toFile().exists() ) {

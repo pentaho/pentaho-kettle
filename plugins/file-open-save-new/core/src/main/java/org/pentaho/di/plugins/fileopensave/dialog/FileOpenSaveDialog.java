@@ -45,6 +45,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -72,6 +74,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -118,10 +122,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -150,6 +157,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   public static final String TYPE_PARAM = "type";
   private static final String ALL_FILE_TYPES = "ALL";
   private static final String FILE_PERIOD = ".";
+  private static final String PASTE_ACTION_SKIP = "skip";
+  private static final String PASTE_ACTION_REPLACE = "replace";
+  private static final String PASTE_ACTION_KEEP_BOTH = "keep-both";
   private FilterFileType[] validFileTypes;
   private String shellTitle = "Open";
   private String objectId;
@@ -172,6 +182,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   protected TableViewer fileTableViewer;
 
   protected Text txtSearch;
+  protected Set<File> selectedItems = new HashSet<>();
+
+  protected String pasteAction = null;
+  protected boolean isApplyToAll = false;
+
 
   private static final FileController FILE_CONTROLLER;
 
@@ -987,6 +1002,48 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     fileTableViewer = new TableViewer( sashForm, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION );
     PropsUI.getInstance().setLook( fileTableViewer.getTable() );
     fileTableViewer.getTable().setHeaderVisible( true );
+    Menu fileTableMenu = new Menu( fileTableViewer.getTable() );
+    MenuItem copyItem = new MenuItem( fileTableMenu, SWT.NONE );
+    copyItem.setText( "Copy" );
+    SelectionAdapter copyAdapter = new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        performCopy( e );
+      }
+    };
+    copyItem.addSelectionListener( copyAdapter );
+
+    MenuItem pasteItem = new MenuItem( fileTableMenu, SWT.NONE );
+    pasteItem.setText( "Paste" );
+    SelectionAdapter pasteAdapter = new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        performPaste();
+        refreshDisplay( e );
+      }
+    };
+    pasteItem.addSelectionListener( pasteAdapter );
+    fileTableViewer.getTable().setMenu( fileTableMenu );
+    fileTableViewer.getTable().addMenuDetectListener( new MenuDetectListener() {
+      @Override
+      public void menuDetected( MenuDetectEvent e ) {
+        pasteItem.setEnabled( false );
+        copyItem.setEnabled( false );
+        int selectionIndices[] = fileTableViewer.getTable().getSelectionIndices();
+        if ( selectionIndices.length > 0 ) {
+          copyItem.setEnabled( true );
+        }
+        if ( selectedItems.size() > 0 ) {
+          if ( selectionIndices.length == 0 ) {
+            pasteItem.setEnabled( true );
+          } else if ( StringUtils.equalsIgnoreCase(
+            fileTableViewer.getTable().getItem( selectionIndices[ 0 ] ).getText( 1 ), "Folder" ) ) {
+            pasteItem.setEnabled( true );
+          }
+        }
+      }
+
+    } );
     TableViewerColumn tvcName = new TableViewerColumn( fileTableViewer, SWT.NONE );
     tvcName.getColumn().setText( BaseMessages.getString( PKG, "file-open-save-plugin.files.name.header" ) );
     tvcName.getColumn().setWidth( 250 );
@@ -1101,6 +1158,96 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     sashForm.setWeights( new int[] { 1, 2 } );
 
     return browser;
+  }
+
+  private void performPaste() {
+    selectedItems.forEach( ( file ) -> {
+      Result result; //TODO: Use this result to propagate status of paste of each item.
+      File destFolder;
+      StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
+      IStructuredSelection treeViewerSelection = (IStructuredSelection) treeViewer.getSelection();
+      if ( fileTableViewerSelection.isEmpty() ) {
+        destFolder = (File) treeViewerSelection.getFirstElement();
+      } else {
+        destFolder = (File) fileTableViewerSelection.getFirstElement();
+      }
+      String newFilePath = getNewFilePath( file.getName(), destFolder );
+      if ( FILE_CONTROLLER.fileExists( destFolder, newFilePath ) == Boolean.TRUE ) {
+        if ( !isApplyToAll ) {
+          createPasteWarningDialog( file.getName() );
+        }
+        switch ( pasteAction ) {
+          case PASTE_ACTION_REPLACE:
+            copyFile( file, destFolder, newFilePath, true );
+            break;
+          case PASTE_ACTION_KEEP_BOTH:
+            if ( StringUtils.isNotEmpty( newFilePath ) ) {
+              result = FILE_CONTROLLER.getNewName( destFolder, newFilePath );
+              if ( result.getStatus() == Result.Status.SUCCESS ) {
+                FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(), false );
+              }
+            }
+            break;
+          case PASTE_ACTION_SKIP:
+          default:
+            log.logBasic( file.getName() + " is skipped" );
+        }
+      } else {
+        result = copyFile( file, destFolder, newFilePath, false );
+      }
+    } );
+    pasteAction = null;
+    isApplyToAll = false;
+    selectedItems.clear();
+  }
+
+  private String getNewFilePath( String fileName, File destFolder ) {
+    if ( destFolder instanceof Directory ) {
+      if ( destFolder instanceof LocalFile ) {
+        return destFolder.getPath() + java.io.File.separator + fileName;
+      } else {
+        return destFolder.getPath() + "/" + fileName;
+      }
+    }
+    return null;
+  }
+
+  private Result copyFile( File file, File destFolder, String path, boolean overwrite ) {
+    if ( StringUtils.isNotEmpty( path ) ) {
+      return FILE_CONTROLLER.copyFile( file, destFolder, path, overwrite );
+    }
+    return null;
+  }
+
+  private void createPasteWarningDialog( String fileName ) {
+    Map<String, PasteConfirmationDialog.ActionListener> actionListeners = new HashMap<>();
+    PasteConfirmationDialog.ActionListener skipListener = ( event, applyToAll ) -> {
+      isApplyToAll = applyToAll;
+      pasteAction = PASTE_ACTION_SKIP;
+    };
+
+    PasteConfirmationDialog.ActionListener keepBothListener = ( event, applyToAll ) -> {
+      isApplyToAll = applyToAll;
+      pasteAction = PASTE_ACTION_KEEP_BOTH;
+    };
+    PasteConfirmationDialog.ActionListener replaceListener = ( event, applyToAll ) -> {
+      isApplyToAll = applyToAll;
+      pasteAction = PASTE_ACTION_REPLACE;
+    };
+    actionListeners.put( BaseMessages.getString( PKG, "file-open-save-plugin.app.skip.button" ), skipListener );
+    actionListeners.put( BaseMessages.getString( PKG, "file-open-save-plugin.app.keepBoth.button" ), keepBothListener );
+    actionListeners.put( BaseMessages.getString( PKG, "file-open-save-plugin.app.replace.button" ), replaceListener );
+    PasteConfirmationDialog pasteConfirmationDialog = new PasteConfirmationDialog( getShell(), actionListeners );
+    pasteConfirmationDialog.open( fileName );
+  }
+
+
+  private void performCopy( SelectionEvent e ) {
+    selectedItems.clear();
+    for ( int index : fileTableViewer.getTable().getSelectionIndices() ) {
+      File file = (File) fileTableViewer.getTable().getItem( index ).getData();
+      selectedItems.add( file );
+    }
   }
 
   private void openFileSelector( File f ) {
