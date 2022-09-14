@@ -94,7 +94,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       Path kettleUserDataDirectoryPath = Paths.get( Const.getUserDataDirectory() );
       paths.add( kettleUserDataDirectoryPath );
     } else { */
-      FileSystems.getDefault().getRootDirectories().forEach( paths::add );
+    FileSystems.getDefault().getRootDirectories().forEach( paths::add );
     //}
     paths.forEach( path -> {
       LocalDirectory localDirectory = new LocalDirectory();
@@ -115,6 +115,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   }
 
   // TODO: Filter out certain files from root
+
   /**
    * @param file
    * @param filters
@@ -124,7 +125,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     List<LocalFile> files = new ArrayList<>();
     //TODO: Re-enable this when running on a SNAPSHOT build of Spoon
     /*
-    if ( Const.isRunningOnWebspoonMode() && !Paths.get( file.getPath() ).toAbsolutePath().startsWith( Paths.get( Const.getUserDataDirectory() ) ) ) {
+    if ( Const.isRunningOnWebspoonMode() && !Paths.get( file.getPath() ).toAbsolutePath().startsWith( Paths.get(
+    Const.getUserDataDirectory() ) ) ) {
       return files;
     }
     */
@@ -132,12 +134,12 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       paths.forEach( path -> {
         String name = path.getFileName().toString();
         try {
-          if ( path.toFile().isDirectory() && !Files.isHidden( path ) ) {
+          if ( path.toFile().isDirectory() ) {
             files.add( LocalDirectory.create( file.getPath(), path ) );
-          } else if ( !Files.isHidden( path ) && Utils.matches( name, filters ) ) {
+          } else if ( Utils.matches( name, filters ) ) {
             files.add( LocalFile.create( file.getPath(), path ) );
           }
-        } catch ( IOException e ) {
+        } catch ( Exception e ) {
           // Do nothing yet
         }
       } );
@@ -148,6 +150,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   }
 
   //TODO: Handle directories with files in them
+
   /**
    * @return
    */
@@ -210,7 +213,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileException
    */
   @Override
-  public LocalFile rename( LocalFile file, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
+  public LocalFile rename( LocalFile file, String newPath, boolean overwrite, VariableSpace space )
+    throws FileException {
     return doMove( file.getPath(), newPath, overwrite, space );
   }
 
@@ -281,7 +285,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       if (newPath.toFile().isDirectory()) {
         return LocalDirectory.create(newPath.getParent().toString(), newPath);
       } else {
-        return LocalFile.create(newPath.getParent().toString(), newPath);
+        return LocalFile.create( newPath.getParent().toString(), newPath );
       }
     } catch ( IOException e ) {
       return null;
@@ -321,7 +325,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileAlreadyExistsException
    */
   @Override
-  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, boolean overwrite, VariableSpace space )
+  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, boolean overwrite,
+                              VariableSpace space )
     throws FileException {
     try {
       Files.copy( inputStream, Paths.get( path ) );
@@ -352,8 +357,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   @Override
   public String getNewName( LocalFile destDir, String newPath, VariableSpace space ) {
     String extension = Utils.getExtension( newPath );
-    String parent = Utils.getParent( newPath, File.separator );
-    String name = Utils.getName( newPath, File.separator ).replace( "." + extension, "" );
+    String parent = Utils.getParent( newPath );
+    String name = Utils.getName( newPath ).replace( "." + extension, "" );
     int i = 1;
     String testName = newPath;
     while ( Paths.get( testName ).toFile().exists() ) {
