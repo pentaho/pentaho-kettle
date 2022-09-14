@@ -1002,42 +1002,43 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     fileTableViewer = new TableViewer( sashForm, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION );
     PropsUI.getInstance().setLook( fileTableViewer.getTable() );
     fileTableViewer.getTable().setHeaderVisible( true );
-    Menu fileTableMenu = new Menu(fileTableViewer.getTable());
-    MenuItem copyItem = new MenuItem(fileTableMenu, SWT.NONE);
-    copyItem.setText("Copy");
+    Menu fileTableMenu = new Menu( fileTableViewer.getTable() );
+    MenuItem copyItem = new MenuItem( fileTableMenu, SWT.NONE );
+    copyItem.setText( "Copy" );
     SelectionAdapter copyAdapter = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        performCopy(e);
+        performCopy( e );
       }
     };
     copyItem.addSelectionListener( copyAdapter );
 
-    MenuItem pasteItem = new MenuItem(fileTableMenu, SWT.NONE);
-    pasteItem.setText("Paste");
+    MenuItem pasteItem = new MenuItem( fileTableMenu, SWT.NONE );
+    pasteItem.setText( "Paste" );
     SelectionAdapter pasteAdapter = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         performPaste();
-        refreshDisplay(e);
+        refreshDisplay( e );
       }
     };
     pasteItem.addSelectionListener( pasteAdapter );
-    fileTableViewer.getTable().setMenu(fileTableMenu);
-    fileTableViewer.getTable().addMenuDetectListener(new MenuDetectListener() {
+    fileTableViewer.getTable().setMenu( fileTableMenu );
+    fileTableViewer.getTable().addMenuDetectListener( new MenuDetectListener() {
       @Override
       public void menuDetected( MenuDetectEvent e ) {
-        pasteItem.setEnabled(false);
-        copyItem.setEnabled(false);
+        pasteItem.setEnabled( false );
+        copyItem.setEnabled( false );
         int selectionIndices[] = fileTableViewer.getTable().getSelectionIndices();
         if ( selectionIndices.length > 0 ) {
-          copyItem.setEnabled(true);
+          copyItem.setEnabled( true );
         }
-        if(selectedItems.size() > 0){
+        if ( selectedItems.size() > 0 ) {
           if ( selectionIndices.length == 0 ) {
-            pasteItem.setEnabled(true);
-          } else if (StringUtils.equalsIgnoreCase(fileTableViewer.getTable().getItem(selectionIndices[0]).getText(1), "Folder")) {
-            pasteItem.setEnabled(true);
+            pasteItem.setEnabled( true );
+          } else if ( StringUtils.equalsIgnoreCase(
+            fileTableViewer.getTable().getItem( selectionIndices[ 0 ] ).getText( 1 ), "Folder" ) ) {
+            pasteItem.setEnabled( true );
           }
         }
       }
@@ -1160,49 +1161,49 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private void performPaste() {
-    selectedItems.forEach((file) -> {
+    selectedItems.forEach( ( file ) -> {
       Result result; //TODO: Use this result to propagate status of paste of each item.
       File destFolder;
-      StructuredSelection fileTableViewerSelection = (StructuredSelection) (fileTableViewer.getSelection());
+      StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
       IStructuredSelection treeViewerSelection = (IStructuredSelection) treeViewer.getSelection();
-      if (fileTableViewerSelection.isEmpty()) {
+      if ( fileTableViewerSelection.isEmpty() ) {
         destFolder = (File) treeViewerSelection.getFirstElement();
       } else {
         destFolder = (File) fileTableViewerSelection.getFirstElement();
       }
-      String newFilePath = getNewFilePath(file.getName(), destFolder);
-      if (FILE_CONTROLLER.fileExists(destFolder, newFilePath) == Boolean.TRUE) {
-        if (!isApplyToAll) {
-          createPasteWarningDialog(file.getName());
+      String newFilePath = getNewFilePath( file.getName(), destFolder );
+      if ( FILE_CONTROLLER.fileExists( destFolder, newFilePath ) == Boolean.TRUE ) {
+        if ( !isApplyToAll ) {
+          createPasteWarningDialog( file.getName() );
         }
-        switch (pasteAction) {
+        switch ( pasteAction ) {
           case PASTE_ACTION_REPLACE:
-            copyFile(file, destFolder, newFilePath, true);
+            copyFile( file, destFolder, newFilePath, true );
             break;
           case PASTE_ACTION_KEEP_BOTH:
-            if (StringUtils.isNotEmpty(newFilePath)) {
-              result = FILE_CONTROLLER.getNewName(destFolder, newFilePath);
-              if (result.getStatus() == Result.Status.SUCCESS) {
-                FILE_CONTROLLER.copyFile(file, destFolder, (String) result.getData(), false);
+            if ( StringUtils.isNotEmpty( newFilePath ) ) {
+              result = FILE_CONTROLLER.getNewName( destFolder, newFilePath );
+              if ( result.getStatus() == Result.Status.SUCCESS ) {
+                FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(), false );
               }
             }
             break;
           case PASTE_ACTION_SKIP:
           default:
-            log.logBasic(file.getName() + " is skipped");
+            log.logBasic( file.getName() + " is skipped" );
         }
       } else {
-        result = copyFile(file, destFolder, newFilePath, false);
+        result = copyFile( file, destFolder, newFilePath, false );
       }
-    });
+    } );
     pasteAction = null;
     isApplyToAll = false;
     selectedItems.clear();
   }
 
-  private String getNewFilePath(String fileName, File destFolder) {
-    if (destFolder instanceof Directory) {
-      if (destFolder instanceof LocalFile) {
+  private String getNewFilePath( String fileName, File destFolder ) {
+    if ( destFolder instanceof Directory ) {
+      if ( destFolder instanceof LocalFile ) {
         return destFolder.getPath() + java.io.File.separator + fileName;
       } else {
         return destFolder.getPath() + "/" + fileName;
@@ -1211,41 +1212,41 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     return null;
   }
 
-  private Result copyFile(File file, File destFolder, String path, boolean overwrite) {
-    if (StringUtils.isNotEmpty(path)) {
-      return FILE_CONTROLLER.copyFile(file, destFolder, path, overwrite);
+  private Result copyFile( File file, File destFolder, String path, boolean overwrite ) {
+    if ( StringUtils.isNotEmpty( path ) ) {
+      return FILE_CONTROLLER.copyFile( file, destFolder, path, overwrite );
     }
     return null;
   }
 
-  private void createPasteWarningDialog(String fileName) {
+  private void createPasteWarningDialog( String fileName ) {
     Map<String, PasteConfirmationDialog.ActionListener> actionListeners = new HashMap<>();
-    PasteConfirmationDialog.ActionListener skipListener = (event, applyToAll) -> {
+    PasteConfirmationDialog.ActionListener skipListener = ( event, applyToAll ) -> {
       isApplyToAll = applyToAll;
-      pasteAction = PASTE_ACTION_SKIP ;
+      pasteAction = PASTE_ACTION_SKIP;
     };
 
-    PasteConfirmationDialog.ActionListener keepBothListener = (event, applyToAll) -> {
+    PasteConfirmationDialog.ActionListener keepBothListener = ( event, applyToAll ) -> {
       isApplyToAll = applyToAll;
-      pasteAction = PASTE_ACTION_KEEP_BOTH ;
+      pasteAction = PASTE_ACTION_KEEP_BOTH;
     };
-    PasteConfirmationDialog.ActionListener replaceListener = (event, applyToAll) -> {
+    PasteConfirmationDialog.ActionListener replaceListener = ( event, applyToAll ) -> {
       isApplyToAll = applyToAll;
-      pasteAction = PASTE_ACTION_REPLACE ;
+      pasteAction = PASTE_ACTION_REPLACE;
     };
-    actionListeners.put(BaseMessages.getString(PKG,"file-open-save-plugin.app.skip.button"),skipListener);
-    actionListeners.put(BaseMessages.getString(PKG,"file-open-save-plugin.app.keepBoth.button"),keepBothListener);
-    actionListeners.put(BaseMessages.getString(PKG,"file-open-save-plugin.app.replace.button"),replaceListener);
-    PasteConfirmationDialog pasteConfirmationDialog = new PasteConfirmationDialog(getShell(), actionListeners);
+    actionListeners.put( BaseMessages.getString( PKG, "file-open-save-plugin.app.skip.button" ), skipListener );
+    actionListeners.put( BaseMessages.getString( PKG, "file-open-save-plugin.app.keepBoth.button" ), keepBothListener );
+    actionListeners.put( BaseMessages.getString( PKG, "file-open-save-plugin.app.replace.button" ), replaceListener );
+    PasteConfirmationDialog pasteConfirmationDialog = new PasteConfirmationDialog( getShell(), actionListeners );
     pasteConfirmationDialog.open( fileName );
   }
 
 
-  private void performCopy(SelectionEvent e) {
+  private void performCopy( SelectionEvent e ) {
     selectedItems.clear();
-    for (int index : fileTableViewer.getTable().getSelectionIndices()) {
-      File file = (File) fileTableViewer.getTable().getItem(index).getData();
-      selectedItems.add(file);
+    for ( int index : fileTableViewer.getTable().getSelectionIndices() ) {
+      File file = (File) fileTableViewer.getTable().getItem( index ).getData();
+      selectedItems.add( file );
     }
   }
 
