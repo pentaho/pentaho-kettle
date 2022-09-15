@@ -394,7 +394,7 @@
                         copyFile = false;
                         j++;
                       }
-                      ZipEntry readmeEntry = new ZipEntry( "README" );
+                      ZipEntry readmeEntry = new ZipEntry( "data-integration/README" );
                       zipOutputStream.putNextEntry( readmeEntry );
                       IOUtils.copy( new FileInputStream( new File ( "${project.basedir}/src/main/docs/addon.README" ) ), zipOutputStream );
                       zipOutputStream.closeEntry();
