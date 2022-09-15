@@ -79,6 +79,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLFormatter;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -2783,6 +2784,10 @@ public class TransMeta extends AbstractMeta
     // OK, try to load using the VFS stuff...
     Document doc = null;
     try {
+      if (parentVariableSpace == null ) {
+        parentVariableSpace = new Variables();
+      }
+
       final FileObject transFile = KettleVFS.getFileObject( fname, parentVariableSpace );
       if ( !transFile.exists() ) {
         throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.InvalidXMLPath", fname ) );
