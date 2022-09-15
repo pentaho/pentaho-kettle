@@ -128,7 +128,7 @@ public class NeoviewDatabaseMetaTest {
       "PRESERVE", "WHERE", "EXTERNAL", "PRIMARY", "WHILE", "EXTRACT", "PRIOR", "WITH", "FALSE", "PRIVATE",
       "WITHOUT", "FETCH", "PRIVILEGES", "WORK", "FIRST", "PROCEDURE", "WRITE", "FLOAT", "PROTECTED", "YEAR",
       "ZONE" }, nativeMeta.getReservedWords() );
-    assertEquals( "http://docs.hp.com/en/busintellsol.html", nativeMeta.getExtraOptionsHelpText() );
+    assertEquals( "https://www.hpe.com/psnow/doc/c01850029", nativeMeta.getExtraOptionsHelpText() );
     assertEquals( 4028, nativeMeta.getMaxVARCHARLength() );
 
   }
