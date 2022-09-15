@@ -311,7 +311,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     newShell.setImage( logo );
     newShell.setText( shellTitle );
     PropsUI.getInstance().setLook( newShell );
-    newShell.setMinimumSize( 545, 458 );
+    newShell.setMinimumSize( 845, 458 );
   }
 
   @Override protected Point getInitialSize() {
@@ -462,8 +462,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     btnSave = new Button( parent, SWT.NONE );
     btnSave.setEnabled( false );
 
-    filenameLabel.setLayoutData( new FormDataBuilder().top( select, 20 ).right( txtFileName, -5 ).result() );
-    txtFileName.setLayoutData( new FormDataBuilder().top( select, 20 ).right( lblComboFilter, -15 ).result() );
+    filenameLabel.setLayoutData( new FormDataBuilder().top( select, 20 ).left( parent, 110 ).result() );
+    txtFileName.setLayoutData( new FormDataBuilder().top( select, 20 ).left( filenameLabel, 10 )
+      .right( lblComboFilter, -15 ).result() );
     lblComboFilter.setLayoutData(
       new FormDataBuilder().top( select, 20 ).right( typedComboBox.viewer.getCombo(), -5 ).result() );
     typedComboBox.viewer.getCombo()
