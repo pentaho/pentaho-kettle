@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -63,6 +64,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+
 public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
   public PanCommandExecutor( Class<?> pkgClazz ) {
@@ -95,6 +97,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         setMetaStore( createDefaultMetastore() );
       }
 
+      ConnectionManager.getInstance().setMetastoreSupplier( () -> getMetaStore() );
       logDebug( "Pan.Log.StartingToLookOptions" );
 
       // Read kettle transformation specified
