@@ -47,6 +47,7 @@ import org.w3c.dom.Node;
   getNaturalCategoriesOrder = {
     "BaseStep.Category.Input",
     "BaseStep.Category.Output",
+    "BaseStep.Category.MetadataDiscovery",
     "BaseStep.Category.Streaming",
     "BaseStep.Category.Transform",
     "BaseStep.Category.Utility",
@@ -69,7 +70,6 @@ import org.w3c.dom.Node;
     "BaseStep.Category.Mapping",
     "BaseStep.Category.Bulk",
     "BaseStep.Category.Inline",
-    "BaseStep.Category.MetadataDiscovery",
     "BaseStep.Category.Experimental",
     "BaseStep.Category.Deprecated" },
   i18nPackageClass = StepInterface.class )
