@@ -20,12 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>excel-plugins-impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>excel-plugins-ui</artifactId>
+      <artifactId>excel-plugins-core</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -44,7 +39,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>excel-plugins-impl,excel-plugins-ui</excludeArtifactIds>
+              <excludeArtifactIds>excel-plugins-core</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>

@@ -19,8 +19,7 @@
   <url>http://www.pentaho.com/</url>
 
   <modules>
-    <module>impl</module>
-    <module>ui</module>
+    <module>core</module>
     <module>assemblies</module>
   </modules>
 
