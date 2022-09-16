@@ -360,8 +360,9 @@ public class ConnectionDialog extends Dialog {
         if ( answer == SWT.NO ) {
           connectionManager.delete( originalName );
         }
+      } else {
+        connectionManager.save( connectionDetails );
       }
-      connectionManager.save( connectionDetails );
       refreshMenu();
       dispose();
     }
