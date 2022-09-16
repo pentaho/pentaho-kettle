@@ -501,36 +501,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   private void processOnSavePressed( File file ) {
     if ( file != null ) {
-
-      // Local File Provider
-      if ( file instanceof LocalFile ) {
-        parentPath = file.getParent();
-        if ( file instanceof Directory ) {
-          path = file.getPath();
-        } else {
-          path = file.getParent();
-        }
-      } else if ( file instanceof RepositoryFile ) {
-        path = null; // Path isn't used, only `parentPath` is used
-        if ( file instanceof Directory ) {
-          parentPath = file.getPath();
-        } else {
-          parentPath = file.getParent();
-        }
-      } else if ( file instanceof VFSFile ) {
-        connection = ( (VFSFile) file ).getConnection();
-        parentPath = file.getParent();
-        if ( file instanceof Directory ) {
-          path = file.getPath();
-        } else {
-          path = file.getParent();
-        }
+      setStateVariablesFromSelection( file );
+      if ( file instanceof RepositoryFile ) {
+        path = null; // this path gets ignored; only parentPath used for repo files
       }
       // Properties needed for all file types
-      type = fileDialogOperation.getFileType();
       name = txtFileName.getText().contains( FILE_PERIOD ) ? txtFileName.getText().split( "\\" + FILE_PERIOD )[ 0 ] :
         txtFileName.getText();
-      provider = file.getProvider();
 
       getShell().dispose();
     } else {
@@ -1148,7 +1125,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           txtNav.setText( getNavigationPath( localFile ) );
           String fileExtension = extractFileExtension( localFile.getPath() );
           if ( isValidFileExtension( fileExtension ) ) {
-            openFileSelector( localFile );
+            setStateVariablesFromSelection( localFile );
             getShell().dispose();
           }
         }
@@ -1251,10 +1228,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     }
   }
 
-  private void openFileSelector( File f ) {
-    setStateVariablesFromSelection( f );
-  }
-
   private void setButtonOpenState() {
     if ( btnOpen != null && !getShell().isDisposed() ) {
       openStructuredSelectionPath( (IStructuredSelection) treeViewer.getSelection() );
@@ -1310,7 +1283,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private void openStructuredSelectionPath( IStructuredSelection selection ) {
     IStructuredSelection selectedFileTreeViewer = selection.isEmpty() ? null : selection;
     if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof Directory ) {
-      setStateVariablesFromSelection( selectedFileTreeViewer );
+      setStateVariablesFromSelection( (File) selectedFileTreeViewer.getFirstElement() );
       name = null;
     } else if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof File ) {
       String tempName = ( (File) selectedFileTreeViewer.getFirstElement() ).getPath();
@@ -1329,7 +1302,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       } else {
         name = tempName;
       }
-      setStateVariablesFromSelection( selectedFileTreeViewer );
+      setStateVariablesFromSelection( (File) selectedFileTreeViewer.getFirstElement() );
     }
   }
 
@@ -1348,26 +1321,46 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private void saveStructuredSelectionPath( IStructuredSelection selection ) {
     IStructuredSelection selectedFileTreeViewer = selection.isEmpty() ? null : selection;
     if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof File ) {
-      setStateVariablesFromSelection( selectedFileTreeViewer );
+      setStateVariablesFromSelection( (File) selectedFileTreeViewer.getFirstElement() );
     }
-  }
-
-  private void setStateVariablesFromSelection( IStructuredSelection selectedFileTreeViewer ) {
-    setStateVariablesFromSelection( (File) selectedFileTreeViewer.getFirstElement() );
   }
 
   private void setStateVariablesFromSelection( File f ) {
-    path = f.getPath();
-    parentPath = f.getParent();
-    provider = f.getProvider();
     type = f.getType();
-    if ( f instanceof VFSFile ) {
-      connection = ( (VFSFile) f ).getConnection();
-      parentPath = ( (VFSFile) f ).getConnectionParentPath();
-      path = ( (VFSFile) f ).getConnectionPath();
+    provider = f.getProvider();
+    name = f.getName();
+    connection = ( f instanceof VFSFile ) ? ( (VFSFile) f ).getConnection() : null;
+    objectId = ( f instanceof RepositoryFile ) ? ( (RepositoryFile) f ).getObjectId() : null;
+
+    if ( isSaveState() ) {
+      path = ( f instanceof Directory ) ? f.getPath() : f.getParent();
+      try {
+        File parentFile = ProviderServiceService.get().get( provider ).getParent( f );
+        if ( null != parentFile ) {
+          parentPath = parentFile.getParent();
+        } else {
+          parentPath = f.getParent();
+        }
+      } catch ( InvalidFileProviderException e ) {
+        new ErrorDialog( getShell(), "Error",
+          "Error getting parent of parent file", e, false );
+      }
+      if ( f instanceof VFSFile ) {
+        path =
+          ( f instanceof Directory ) ? ( (VFSFile) f ).getConnectionPath() : ( (VFSFile) f ).getConnectionParentPath();
+        parentPath = path;
+      }
+    } else {
+      path = f.getPath();
+      parentPath = f.getParent();
+      if ( f instanceof VFSFile ) {
+        path = ( (VFSFile) f ).getConnectionPath();
+        parentPath = ( (VFSFile) f ).getConnectionParentPath();
+      }
     }
     if ( f instanceof RepositoryFile ) {
-      objectId = ( (RepositoryFile) f ).getObjectId();
+      // path should be null, but we don't set this null until the end; it's used as an internal state variable too much
+      parentPath = ( f instanceof Directory ) ? f.getPath() : f.getParent();
     }
   }
 
