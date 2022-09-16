@@ -26,8 +26,7 @@
     <dependencySet>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>org.pentaho.di.plugins:excel-plugins-impl:jar</include>
-        <include>org.pentaho.di.plugins:excel-plugins-ui:jar</include>
+        <include>org.pentaho.di.plugins:excel-plugins-core:jar</include>
       </includes>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>

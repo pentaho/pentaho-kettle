@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1791,7 +1791,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // create callback functions for welcome
       Runnable openFileFunction = new Runnable() {
         public void run() {
-          Spoon.this.openFile();
+          try {
+            Spoon.this.openFileNew();
+          } catch (Exception e) {
+            log.logError( Const.getStackTracker( e ) );
+            throw new RuntimeException(e);
+          }
         }
       };
       Runnable newTransFunction = new Runnable() {
