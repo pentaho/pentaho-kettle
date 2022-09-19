@@ -235,11 +235,14 @@ public class KettleVFS {
     return vfsFilename.replaceAll( ":[^:@/]+@", ":<password>@" );
   }
 
-  private static FileSystemOptions buildFsOptions( VariableSpace varSpace, FileSystemOptions sourceOptions,
+  private static FileSystemOptions buildFsOptions( VariableSpace parentVariableSpace, FileSystemOptions sourceOptions,
                                                    String vfsFilename, String scheme ) throws IOException {
-    if ( varSpace == null || vfsFilename == null ) {
-      // We cannot extract settings from a non-existant variable space
+    VariableSpace varSpace = parentVariableSpace;
+    if ( vfsFilename == null ) {
       return null;
+    }
+    if ( varSpace == null ) {
+      varSpace = defaultVariableSpace;
     }
 
     IKettleFileSystemConfigBuilder configBuilder =
@@ -268,8 +271,8 @@ public class KettleVFS {
         }
       }
     }
-    if ( scheme.equals("pvfs") ){
-      configBuilder.setParameter( fsOptions, "VariableSpace", varSpace, vfsFilename);
+    if ( scheme.equals( "pvfs" ) ) {
+      configBuilder.setParameter( fsOptions, "VariableSpace", varSpace, vfsFilename );
     }
     return fsOptions;
   }
