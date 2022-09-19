@@ -8,11 +8,4 @@
     <version-browser-classname/>
   </registry-extension>
 
-  <registry-extension id="ServicePluginRegistry">
-    <description>Used to init the service plugin type</description>
-    <classname>org.pentaho.di.core.service.PluginServiceLoaderRegistryExtension</classname>
-    <meta-classname/>
-    <version-browser-classname/>
-  </registry-extension>
-
 </registry-extensions>

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.core.service.ServiceProviderPluginType;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -81,7 +82,7 @@ public class KettleClientEnvironment {
       ValueMetaPluginType.getInstance(),
       DatabasePluginType.getInstance(),
       ExtensionPointPluginType.getInstance(),
-      TwoWayPasswordEncoderPluginType.getInstance() ) );
+      TwoWayPasswordEncoderPluginType.getInstance(), ServiceProviderPluginType.getInstance() ) );
   }
 
   public static synchronized void init( List<PluginTypeInterface> pluginsToLoad ) throws KettleException {
