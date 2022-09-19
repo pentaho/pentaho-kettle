@@ -439,6 +439,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } else {
       createOpenLayout( parent, select );
     }
+    treeViewer.setSelection( new StructuredSelection( treeViewer.getTree().getItem( 0 ).getData()) );
+    flatBtnBack.setEnabled( false );
     return parent;
   }
 
@@ -619,9 +621,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
               if ( currentIndex > 0 ) {
                 Object previousPath = selectionHistory.get( currentIndex - 1 );
                 navigateBtnFlag = true;
+                currentHistoryIndex--;
                 treeViewer.setSelection( new StructuredSelection( previousPath ) );
                 flatBtnForward.setEnabled( true );
-                currentHistoryIndex--;
               } else {
                 flatBtnBack.setEnabled( false );
               }
@@ -635,7 +637,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       new FlatButton( buttons, SWT.NONE ).setEnabledImage( rasterImage( "img/Forwards.S_D.svg", 32, 32 ) )
         .setDisabledImage( rasterImage( "img/Forwards.S_D_disabled.svg", 32, 32 ) )
         .setToolTipText( BaseMessages.getString( PKG, "file-open-save-plugin.app.forward.button" ) )
-        .setEnabled( true ).setLayoutData( new FormDataBuilder().left( flatBtnBack.getLabel(), 0 ).result() )
+        .setEnabled( false ).setLayoutData( new FormDataBuilder().left( flatBtnBack.getLabel(), 0 ).result() )
         .addListener(
           new SelectionAdapter() {
             @Override public void widgetSelected( SelectionEvent selectionEvent ) {
@@ -644,9 +646,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
                 if ( currentIndex >= 0 && currentIndex < selectionHistory.size() - 1 ) {
                   Object nextPath = selectionHistory.get( currentIndex + 1 );
                   navigateBtnFlag = true;
+                  currentHistoryIndex++;
                   treeViewer.setSelection( new StructuredSelection( nextPath ) );
                   flatBtnBack.setEnabled( true );
-                  currentHistoryIndex++;
+                  flatBtnForward.setEnabled( currentHistoryIndex != selectionHistory.size() - 1 );
                 } else {
                   flatBtnForward.setEnabled( false );
                 }
@@ -972,9 +975,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     treeViewer.addPostSelectionChangedListener( e -> {
       IStructuredSelection selection = (IStructuredSelection) e.getSelection();
       flatBtnUp.setEnabled( hasParentFolder( selection ) );
-      if ( selectionHistory != null ) {
-        flatBtnBack.setEnabled( selectionHistory.size() > 0 );
-      }
       Object selectedNode = selection.getFirstElement();
       // Expand the selection in the treeviewer
       if ( selectedNode != null && !treeViewer.getExpandedState( selectedNode ) ) {
@@ -986,6 +986,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       // Clears the selection from fileTableViewer
       fileTableViewer.setSelection( new StructuredSelection() );
       txtSearch.setText( "" );
+      if ( selectionHistory != null ) {
+        flatBtnBack.setEnabled( currentHistoryIndex != 0 );
+      }
       processState();
     } );
 
@@ -1602,13 +1605,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         parentPath = null;
         path = null;
         name = null;
-        if ( children.size() != 0 ) {
-          txtNav.setText( getNavigationPath( (File) children.get( 0 ) ) );
-        } else {
-          txtNav.setText( StringUtils.EMPTY );
-        }
+        txtNav.setText( ( (Tree<?>) selectedElement ).getName() );
       }
-      flatBtnAdd.setEnabled( false );
       processState();
 
     } else if ( selectedElement instanceof Directory ) {
