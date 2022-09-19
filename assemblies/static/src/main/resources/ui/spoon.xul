@@ -26,7 +26,7 @@
     <menuitem id="menubar-new-trans" label="${Spoon.Menubar.File.NewTrans}" command="spoon.newTransFile()" image="images/spoongraph.svg"/>
     <menuseparator />
     <menuitem id="menubar-new-database" label="${Spoon.Menubar.File.NewDatabaseConn}" command="spoon.newConnection()" image="images/CNC.svg"/>
-    <menuitem label="${Spoon.Menubar.File.NewSlave}" command="spoon.newSlaveServer()" image="images/slave.svg"/>
+    <menuitem id="menubar-new-slave" label="${Spoon.Menubar.File.NewSlave}" command="spoon.newSlaveServer()" image="images/slave.svg"/>
   </menupopup>
   
   <deck flex="1" id="canvas-deck">

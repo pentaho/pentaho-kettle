@@ -363,6 +363,7 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -2720,7 +2721,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void newSlaveServer() {
-    newSlaveServer( (HasSlaveServersInterface) selectionObjectParent );
+    HasSlaveServersInterface hasSlaveServersInterface = getActiveHasSlaveServersInterface();
+    if ( Objects.isNull( hasSlaveServersInterface ) ) {
+      return;
+    }
+    newSlaveServer( hasSlaveServersInterface );
   }
 
   public void editTransformationPropertiesPopup() {
@@ -7059,6 +7064,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // Only enable certain menu-items if we need to.
         disableMenuItem( doc, "file-new-database", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "menubar-new-database", disableTransMenu && disableJobMenu );
+        disableMenuItem( doc, "menubar-new-slave", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave );
         disableMenuItem( doc, "toolbar-file-save", disableTransMenu
           && disableJobMenu && disableMetaMenu || disableSave );
@@ -7892,6 +7898,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * @return Either a TransMeta or JobMeta object
    */
   public HasDatabasesInterface getActiveHasDatabasesInterface() {
+    return getActiveTransformationOrJob();
+  }
+
+  public HasSlaveServersInterface getActiveHasSlaveServersInterface() {
+    return getActiveTransformationOrJob();
+  }
+
+  private AbstractMeta getActiveTransformationOrJob() {
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
       return transMeta;
