@@ -109,6 +109,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.WarningDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
@@ -387,12 +388,20 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     String[] fileFilters = StringUtils.isNotEmpty( fileDialogOperation.getFilter() )
       ? fileDialogOperation.getFilter().split( "," )
       : new String[] { ALL_FILE_TYPES };
+    if ( fileDialogOperation.isSaveCommand() && fileFilters.length == 1 ) {
+      FilterType filterType =
+        fileDialogOperation.getFileType().equalsIgnoreCase( "transformation" ) ? FilterType.KETTLE_TRANS :
+          FilterType.KETTLE_JOB;
+      fileFilters = ( filterType + "," + FilterType.XML + "," + FilterType.ALL ).split( "," );
+    }
+
     List<FilterFileType> filterFileTypes = new ArrayList<>();
     int indexOfDefault = 0;
     for ( int i = 0; i < fileFilters.length; i++ ) {
       int finalI = i;
+      String[] finalFileFilters = fileFilters;
       Optional<FilterFileType> optionalFileFilterType = Arrays.stream( validFileTypes )
-        .filter( filterFileType -> filterFileType.getId().equals( fileFilters[ finalI ] ) ).findFirst();
+        .filter( filterFileType -> filterFileType.getId().equals( finalFileFilters[ finalI ] ) ).findFirst();
       if ( optionalFileFilterType.isPresent() ) {
         filterFileTypes.add( optionalFileFilterType.get() );
         if ( fileFilters[ i ].equals( fileDialogOperation.getDefaultFilter() ) ) {
@@ -507,13 +516,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       if ( file instanceof RepositoryFile ) {
         path = null; // this path gets ignored; only parentPath used for repo files
       }
-      // Properties needed for all file types
-      name = txtFileName.getText().contains( FILE_PERIOD ) ? txtFileName.getText().split( "\\" + FILE_PERIOD )[ 0 ] :
-        txtFileName.getText();
-
+      if ( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.XML ) ) ) {
+        name = txtFileName.getText() + ".xml";
+      } else {
+        name = txtFileName.getText();
+      }
       getShell().dispose();
-    } else {
-      // TODO: Display something informing the user
+    } else {// TODO: Display something informing the user
     }
   }
 
@@ -1310,8 +1319,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private boolean isValidFileExtension( String fileExtension ) {
-    return Utils.matches( fileExtension, typedComboBox.getSelection().getValue() )
-      || typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES );
+    return  typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES )
+      || Utils.matches( fileExtension, typedComboBox.getSelection().getValue() );
   }
 
   private String extractFileExtension( String fullFilePath ) {
