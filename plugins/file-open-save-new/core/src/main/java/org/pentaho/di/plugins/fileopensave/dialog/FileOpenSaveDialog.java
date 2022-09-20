@@ -43,6 +43,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MenuDetectEvent;
@@ -540,7 +541,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     lblSelect.setFont( bigFont );
     getShell().addDisposeListener( ( e ) -> bigFont.dispose() );
 
-
     // TODO: Implement "Search Button" behavior
     final Color clrWhite = new Color( getShell().getDisplay(), 255, 255, 255 );
     Composite searchComp = new Composite( headerComposite, SWT.BORDER );
@@ -944,7 +944,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     treeViewer.setLabelProvider( labelProvider );
 
-    treeViewer.setContentProvider( new FileTreeContentProvider( FILE_CONTROLLER ) );
+    treeViewer.setContentProvider( new FileTreeContentProvider( FILE_CONTROLLER, this ) );
 
     // Load the various file types on the left
     treeViewer.setInput( FILE_CONTROLLER.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
@@ -1603,8 +1603,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       processState();
 
     } else if ( selectedElement instanceof Directory ) {
-      try {
-          String searchString = txtSearch.getText();
+      String searchString = txtSearch.getText();
+      BusyIndicator.showWhile( this.getShell().getDisplay(), () -> {
+        try {
           fileTableViewer.setInput( FILE_CONTROLLER.getFiles( (File) selectedElement, null, useCache ).stream()
             .filter(
               file -> searchString.isEmpty() || file.getName().toLowerCase().contains( searchString.toLowerCase() ) )
@@ -1612,36 +1613,39 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
               .thenComparing( Comparator.comparing( f -> ( (File) f ).getName(),
                 String.CASE_INSENSITIVE_ORDER ) ) )
             .toArray() );
+        } catch ( FileException e ) {
+          new ErrorDialog( getShell(), "Error",
+            "Error populating file table", e, false );
+        }
+      } );
 
-        for ( TableItem fileTableItem : fileTableViewer.getTable().getItems() ) {
-          Object tableItemObject = fileTableItem.getData();
-          if ( !( tableItemObject instanceof Directory ) ) {
-            String fileName = ( (File) tableItemObject ).getPath();
-            String fileExtension = extractFileExtension( fileName );
-            boolean isValidFileExtension = isValidFileExtension( fileExtension );
-            if ( isValidFileExtension ) {
-              fileTableItem.setForeground( clrBlack );
-            } else {
-              fileTableItem.setForeground( clrGray );
-            }
+      for ( TableItem fileTableItem : fileTableViewer.getTable().getItems() ) {
+        Object tableItemObject = fileTableItem.getData();
+        if ( !( tableItemObject instanceof Directory ) ) {
+          String fileName = ( (File) tableItemObject ).getPath();
+          String fileExtension = extractFileExtension( fileName );
+          boolean isValidFileExtension = isValidFileExtension( fileExtension );
+          if ( isValidFileExtension ) {
+            fileTableItem.setForeground( clrBlack );
+          } else {
+            fileTableItem.setForeground( clrGray );
           }
         }
-
-
-        txtNav.setText( getNavigationPath( (File) selectedElement ) );
-        flatBtnAdd.setEnabled( ( (Directory) selectedElement ).isCanAddChildren() );
-
-        processState();
-      } catch ( FileException e ) {
-        // TODO Auto-generated catch block
-        log.logBasic( e.getMessage() );
       }
+      txtNav.setText( getNavigationPath( (File) selectedElement ) );
+      flatBtnAdd.setEnabled( ( (Directory) selectedElement ).isCanAddChildren() );
+
+      processState();
     }
 
   }
 
   protected String getNavigationPath( File file ) {
     return file instanceof VFSFile ? ( (VFSFile) file ).getConnectionPath() : ( file ).getPath();
+  }
+
+  protected LogChannelInterface getLog() {
+    return log;
   }
 
   protected static class FlatButton {
@@ -1771,9 +1775,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   protected static class FileTreeContentProvider implements ITreeContentProvider {
 
     private final FileController fileController;
+    private final FileOpenSaveDialog parentDialog;
 
-    public FileTreeContentProvider( FileController fileController ) {
+    public FileTreeContentProvider( FileController fileController, FileOpenSaveDialog fileOpenSaveDialog ) {
       this.fileController = fileController;
+      this.parentDialog = fileOpenSaveDialog;
     }
 
     @Override public Object[] getElements( Object inputElement ) {
@@ -1789,13 +1795,19 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           return ( parentTree ).getChildren().toArray();
         }
       } else if ( parentElement instanceof Directory ) {
-        try {
-          return fileController.getFiles( (Directory) parentElement, null, true ).stream()
-            .filter( Directory.class::isInstance )
-            .sorted( Comparator.comparing( Entity::getName, String.CASE_INSENSITIVE_ORDER ) ).toArray();
-        } catch ( FileException e ) {
-          // TODO: Error message that something went wrong
-        }
+        List<File> childrenList = new ArrayList<>();
+        BusyIndicator.showWhile( parentDialog.getShell().getDisplay(), () -> {
+          try {
+            childrenList.addAll( fileController.getFiles( (Directory) parentElement, null, true ).stream()
+              .filter( Directory.class::isInstance )
+              .sorted( Comparator.comparing( Entity::getName, String.CASE_INSENSITIVE_ORDER ) )
+              .collect( Collectors.toList() ) );
+          } catch ( FileException e ) {
+            new ErrorDialog( parentDialog.getShell(), "Error",
+              "Error populating file tree", e, false );
+          }
+        } );
+        return childrenList.toArray();
       }
 
       return new Object[ 0 ];
