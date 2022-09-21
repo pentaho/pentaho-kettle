@@ -43,61 +43,6 @@
       <artifactId>classic-core</artifactId>
       <version>${pentaho-reporting.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-drill-down</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-scripting</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-toc</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-xpath</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-kettle</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-mondrian</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-olap4j</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-pmd</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-reportdesigner-parser</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-extensions-sampledata</artifactId>
-      <version>${pentaho-reporting.version}</version>
-    </dependency>
   </dependencies>
 
   <build>
@@ -114,68 +59,9 @@
             <configuration>
               <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <includeArtifactIds>
-                actionsequence-dom,
-                avalon-framework,
-                axis2-adb,
-                axis2-kernel,
-                barbecue,
-                barcode4j,
-                batik-gui-util,
-                bcmail-jdk14,
-                bsf,
-                bsh,
-                classic-core,
-                classic-extensions,
-                classic-extensions-drill-down,
-                classic-extensions-kettle,
-                classic-extensions-mondrian,
-                classic-extensions-olap4j,
-                classic-extensions-pmd,
-                classic-extensions-reportdesigner-parser,
-                classic-extensions-sampledata,
-                classic-extensions-scripting,
-                classic-extensions-toc,
-                classic-extensions-xpath,
-                commons-database-model,
-                commons-digester,
-                commons-lang3,
-                commons-xul-core,
-                flute,
-                groovy-all,
-                itext,
-                itext-rtf,
-                jackcess,
-                legacy-charts,
-                libbase,
-                libdocbundle,
-                libfonts,
-                libformat,
-                libformula,
-                libloader,
-                libpixie,
-                librepository,
-                libserializer,
-                libsparkline,
-                libswing,
-                libxml,
-                metastore,
-                mondrian,
-                pdi-engine-api,
-                pentaho-connections,
-                pentaho-encryption-support,
-                pentaho-metadata,
-                pentaho-platform-api,
-                pentaho-registry,
-                pentaho-service-coordinator,
-                poi,
-                poi-ooxml,
-                poi-ooxml-schemas,
-                reactive-streams,
-                rsyntaxtextarea,
-                sac,
-                wstx-asl
-              </includeArtifactIds>
+              <excludeGroupIds>org.apache.xmlgraphics,commons-codec,com.google.guava</excludeGroupIds>
+              <excludeArtifactIds>js,javax.mail,jakarta.xml.bind-api,jakarta.activation-api,jakarta.activation,httpcore,httpclient,ehcache-core,curvesapi,commons-math3,commons-logging,commons-io,commons-database-model,commons-compress,commons-collections4,commons-vfs2,antlr-complete,asm,
+                pentaho-reporting-plugins-impl,pentaho-reporting-plugins-ui</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>
