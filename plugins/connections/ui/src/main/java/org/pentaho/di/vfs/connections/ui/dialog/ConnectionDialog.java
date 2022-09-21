@@ -108,7 +108,9 @@ public class ConnectionDialog extends Dialog {
     props = PropsUI.getInstance();
     connectionTypes = connectionManager.getItems();
     connectionTypeChoices =
-      connectionTypes.stream().map( ConnectionManager.Type::getLabel ).sorted().toArray( String[]::new );
+      connectionTypes.stream().filter( connType -> !"other".equals( new String( connType.getValue() ) ) )
+        .map( ConnectionManager.Type::getLabel ).sorted().toArray( String[]::new );
+
     helper = new VFSDetailsCompositeHelper( PKG, props );
   }
 
