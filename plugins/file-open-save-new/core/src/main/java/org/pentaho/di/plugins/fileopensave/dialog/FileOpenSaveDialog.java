@@ -784,18 +784,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
               Object object = treePaths[ 0 ].getFirstSegment();
               children = ( (Tree) object ).getChildren();
             }
-
-
           }
-
 
           try {
             String pathToSearchFor;
-            if ( txtNav.getText().endsWith( "/" ) || txtNav.getText().endsWith( "\\" ) ) {
-              pathToSearchFor = txtNav.getText().substring( 0, txtNav.getText().length() - 1 );
-            } else {
-              pathToSearchFor = txtNav.getText();
-            }
+            pathToSearchFor = txtNav.getText();
+
             isFilePresent = searchForFileInTreeViewer( pathToSearchFor, children );
           } catch ( FileException e ) {
             // Ignore
@@ -826,6 +820,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
       file = getFileMatch( path, childrenAsFiles );
       while ( file.isPresent() ) {
+
+        if ( parent.isPresent() && ( path.endsWith( "/" ) || path.endsWith( "\\" ) ) ) {
+          path = path.substring( 0, path.length() - 1 );
+        }
+
         if ( file.get() instanceof VFSFile && ( (VFSFile) file.get() ).getConnectionPath().equals( path ) ) {
           break;
         }
