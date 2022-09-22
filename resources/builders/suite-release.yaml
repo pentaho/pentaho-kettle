@@ -210,7 +210,7 @@ jobGroups:
 
   1100:
      - jobID           :  pdi-engine-core
-       scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       scmUrl          :  https://github.com/hv-vamsi/pentaho-kettle.git
        directives      :  += -DskipDefault -P base,plugins,lowdeps
        versionProperty :  pdi.version
 
@@ -364,7 +364,7 @@ jobGroups:
        versionProperty :  pentaho-mongodb-plugin.version
 
      - jobID           :  pdi-core-plugins
-       scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       scmUrl          :  https://github.com/hv-vamsi/pentaho-kettle.git
        directives      :  += -DskipDefault -P highdeps
        root            :  plugins
        parallelize     :  false
@@ -691,7 +691,7 @@ jobGroups:
 
   4200:
      - jobID           :  pdi-client-assembly
-       scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       scmUrl          :  https://github.com/hv-vamsi/pentaho-kettle.git
        directives      :  += -DskipDefault -P assemblies
        testable        :  false
        archivable      :  true
@@ -706,7 +706,7 @@ jobGroups:
        versionProperty :  pdi.version
 
      - jobID           :  pdi-client-assembly-osgi
-       scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       scmUrl          :  https://github.com/hv-vamsi/pentaho-kettle.git
        directives      :  += -Dosgi -DskipDefault -P assemblies
        testable        :  false
        archivable      :  true
