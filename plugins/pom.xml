@@ -43,7 +43,6 @@
         <module>metastore-locator</module>
         <module>repository-locator</module>
         <module>rss</module>
-        <module>pentaho-reporting</module>
         <module>mondrianinput</module>
         <module>avro-format</module>
       </modules>
@@ -92,6 +91,7 @@
         <module>repository-locator</module>
         <module>ldap</module>
         <module>excel</module>
+        <module>pentaho-reporting</module>
       </modules>
     </profile>
 
