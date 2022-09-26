@@ -36,6 +36,7 @@ import org.json.simple.JSONObject;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
@@ -98,10 +99,10 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
             RepositoryConnectController.getInstance()
               .editDatabaseConnection( ( dbListCombo.getItem( dbListCombo.getSelectionIndex() ) ) );
           } else {
-            messageBoxService( " select a DB connection to edit!" );
+            messageBoxService( " Select a DB connection to edit!" );
           }
         } else {
-          messageBoxService( " select a DB connection to edit!" );
+          messageBoxService( " Select a DB connection to edit!" );
         }
         dbListRefresh.run();
       }
@@ -118,13 +119,19 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
 
         if ( dbListCombo.getSelectionIndex() > -1 ) {
           if ( !Utils.isEmpty( dbListCombo.getItem( dbListCombo.getSelectionIndex() ) ) ) {
-            RepositoryConnectController.getInstance()
-              .deleteDatabaseConnection( dbListCombo.getItem( dbListCombo.getSelectionIndex() ) );
+            String deleteMessage = String.format( "Are you sure you wish to remove the '%s' DB connection?", dbListCombo.getItem( dbListCombo.getSelectionIndex() ) );
+            MessageBox delBox = new MessageBox( getParent().getShell(), SWT.ICON_WARNING | SWT.YES | SWT.NO );
+            delBox.setText( BaseMessages.getString( PKG, "repositories.deldbconn.label" ) );
+            delBox.setMessage( deleteMessage );
+            if ( SWT.YES == delBox.open() ){
+              RepositoryConnectController.getInstance()
+                  .deleteDatabaseConnection( dbListCombo.getItem( dbListCombo.getSelectionIndex() ) );
+            }
           } else {
-            messageBoxService( " select a DB connection to delete!" );
+            messageBoxService( " Select a DB connection to delete!" );
           }
         } else {
-          messageBoxService( " select a DB connection to delete!" );
+          messageBoxService( " Select a DB connection to delete!" );
         }
         dbListRefresh.run();
       }
@@ -167,6 +174,7 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
   @Override
   public void populate( JSONObject source ) {
     super.populate( source );
+    dbListCombo.setText( (String) source.getOrDefault( KettleDatabaseRepositoryMeta.DATABASE_CONNECTION, "" ) );
   }
 
   @Override
@@ -175,10 +183,11 @@ public class KettleDatabaseRepoFormComposite extends BaseRepoFormComposite {
       dbListCombo.getSelection().toString() );
   }
 
-  private void messageBoxService( String msgText ) {
+  private MessageBox messageBoxService( String msgText ) {
     MessageBox messageBox = new MessageBox( getParent().getShell(), SWT.OK |
       SWT.ICON_ERROR );
     messageBox.setMessage( msgText );
     messageBox.open();
+    return messageBox;
   }
 }

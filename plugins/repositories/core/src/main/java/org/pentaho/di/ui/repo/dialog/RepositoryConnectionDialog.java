@@ -23,6 +23,10 @@
 package org.pentaho.di.ui.repo.dialog;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.program.Program;
@@ -62,6 +66,7 @@ public class RepositoryConnectionDialog extends Dialog {
   private static final String LOGIN_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Login.Title" );
   private static final String HELP_URL =
     Const.getDocUrl( BaseMessages.getString( PKG, "repositories.repohelpurl.label" ) );
+  String flagMessageBlank = "                                                    ";
 
 
   public RepositoryConnectionDialog( Shell shell ) {
@@ -69,19 +74,17 @@ public class RepositoryConnectionDialog extends Dialog {
     this.props = PropsUI.getInstance();
   }
 
-
   public boolean createDialog( String strRepoName ) {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE );
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX);
     props.setLook( shell );
     shell.setLayout( new FormLayout() );
     shell.setText( LOGIN_TITLE );
     shell.setImage( LOGO );
 
     try {
-
       Label lblConnectTo = new Label( shell, SWT.NONE );
       props.setLook( lblConnectTo );
       lblConnectTo.setLayoutData( new FormDataBuilder().top( 10, 0 ).left( 1, 0 ).result() );
@@ -110,9 +113,15 @@ public class RepositoryConnectionDialog extends Dialog {
       props.setLook( txtPasswd );
       txtPasswd.setLayoutData( new FormDataBuilder().top( lblPassword ).left( 5, 0 ).right( 95, 0 ).result() );
 
+      Label lblFlag = new Label( shell, SWT.NONE );
+      props.setLook( lblFlag );
+      lblFlag.setLayoutData( new FormDataBuilder().top( txtPasswd, 10 ).left( 5, 0 ).result() );
+
+      lblFlag.setText( flagMessageBlank );
+
       Button loginBtn = new Button( shell, SWT.NONE );
       props.setLook( loginBtn );
-      loginBtn.setLayoutData( new FormDataBuilder().top( txtPasswd ).left( 5, 0 ).result() );
+      loginBtn.setLayoutData( new FormDataBuilder().top( lblFlag ).left( 5, 0 ).result() );
       loginBtn.setText( BaseMessages.getString( PKG, "repositories.login.label" ) );
 
       //******************** HELP btn **********************************
@@ -121,28 +130,74 @@ public class RepositoryConnectionDialog extends Dialog {
       btnHelp.setLayoutData( new FormDataBuilder().bottom().right().result() );
       btnHelp.setText( BaseMessages.getString( PKG, "repositories.help.label" ) );
 
-      //******************* HELP btn call implementation ***************
+      //******************* HELP btn call implementation starts ***************
       btnHelp.addListener( SWT.Selection, event ->
         Program.launch( HELP_URL ) );
+      //********* txt password enter login call implementation starts ***********
+
+      txtPasswd.addKeyListener( new KeyAdapter() {
+        @Override
+        public void keyPressed( KeyEvent e ) {
+          if ( e.keyCode == SWT.CR ) {
+            {
+              String strUserName = txtUserName.getText();
+              String strPasswd = txtPasswd.getText();
+
+              if ( Utils.isEmpty( strUserName ) ) {
+                messageBoxService( " User name cannot be blank!" );
+              } else if ( Utils.isEmpty( strPasswd ) ) {
+                messageBoxService( " Password cannot be blank!" );
+              } else {
+                //set indicator flag
+                lblFlag.setForeground( new Color( lblFlag.getDisplay(), 0, 153, 76 ) );
+                lblFlag.setText( "Please wait while connecting . . ." );
+                loginBtn.setEnabled( false );
+
+                BusyIndicator.showWhile( loginBtn.getDisplay(), () ->
+                  callLoginEndPoint( strRepoName, strUserName, strPasswd )
+                );
+
+                //set indicator flag
+                lblFlag.setText( flagMessageBlank );
+                loginBtn.setEnabled( true );
+
+                //********* txt password enter login call implementation starts ***********
+              }
+            }
+          }
+        }
+      } );
 
 
-      //********* login btn call implementation ***********
+      //login btn call implementation starts ********************
       loginBtn.addListener( SWT.Selection, event ->
       {
-
         String strUserName = txtUserName.getText();
         String strPasswd = txtPasswd.getText();
 
+        //login execution code starts here ****************************************
         if ( Utils.isEmpty( strUserName ) ) {
           messageBoxService( " User name cannot be blank!" );
         } else if ( Utils.isEmpty( strPasswd ) ) {
           messageBoxService( " Password cannot be blank!" );
         } else {
-          callLoginEndPoint( strRepoName, strUserName, strPasswd );
+          //set indicator flag
+          lblFlag.setForeground( new Color( lblFlag.getDisplay(), 0, 153, 76 ) );
+          lblFlag.setText( "Please wait while connecting . . ." );
+          loginBtn.setEnabled( false );
+
+          BusyIndicator.showWhile( loginBtn.getDisplay(),
+            () -> callLoginEndPoint( strRepoName, strUserName, strPasswd ) );
+
+          //set indicator flag
+          lblFlag.setText( flagMessageBlank );
+          loginBtn.setEnabled( true );
+          //********** login execution code ends here****************************************
         }
       } );
+
       shell.pack();
-      shell.setMinimumSize( 500, 370 );
+      shell.setMinimumSize( 500, 450 );
 
       //opening shell in center
       int width = display.getClientArea().width;
@@ -163,7 +218,7 @@ public class RepositoryConnectionDialog extends Dialog {
     }
   }
 
-  private boolean callLoginEndPoint( String strRepoName, String strUserName, String strPasswd ) {
+  public boolean callLoginEndPoint( String strRepoName, String strUserName, String strPasswd ) {
     try {
       if ( RepositoryConnectController.getInstance().isRelogin() ) {
         RepositoryConnectController.getInstance().reconnectToRepository( strRepoName, strUserName, strPasswd );
@@ -175,7 +230,7 @@ public class RepositoryConnectionDialog extends Dialog {
       return true;
     } catch ( Exception e ) {
       log.logError( "Error connecting to repository ", e );
-      messageBoxService( "Repository connection unsuccessful. Please check connection details and credentials." );
+      messageBoxService( "Repository connection unsuccessful. Please check logs." );
       return false;
     }
   }
