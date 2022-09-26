@@ -135,7 +135,7 @@ public class RepositoryManagerDialog extends Dialog {
 
     display = getParent().getDisplay();
 
-    dialog = new Shell( display, SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.DIALOG_TRIM );
+    dialog = new Shell( getParent(), SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.DIALOG_TRIM );
 
     dialog.setSize( width, height );
     dialog.setImage( LOGO );
