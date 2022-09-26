@@ -80,6 +80,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.TypedListener;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
@@ -101,6 +102,7 @@ import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
+import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
 import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
 import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
@@ -449,10 +451,173 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } else {
       createOpenLayout( parent, select );
     }
-    treeViewer.setSelection( new StructuredSelection( treeViewer.getTree().getItem( 0 ).getData()) );
+    treeViewer.setSelection( new StructuredSelection( treeViewer.getTree().getItem( 0 ).getData() ) );
     flatBtnBack.setEnabled( false );
+
+    select.setFocus();
+    setPreviousSelection();
+
     return parent;
   }
+
+  private void setPreviousSelection() {
+    String targetPath = this.fileDialogOperation.getPath();
+    String[] targetPathArray;
+    // Sets navigation to previous selection
+    if ( StringUtils.isNotEmpty( targetPath ) ) {
+      FileProvider fileProvider = null;
+      if ( StringUtils.isNotEmpty( this.fileDialogOperation.getProvider() ) ) {
+        try {
+          ProviderFilterType providerFilterType =
+            ProviderFilterType.valueOf( this.fileDialogOperation.getProvider().toUpperCase() );
+          fileProvider = ProviderServiceService.get().get( providerFilterType.toString() );
+        } catch ( InvalidFileProviderException e ) {
+          // Ignore
+        }
+      }
+      if ( fileProvider != null ) {
+        char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
+        // URL and Linux File Paths
+        targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
+
+        Tree tree = fileProvider.getTree();
+        TreeItem[] treeItems = treeViewer.getTree().getItems();
+        Tree selectedTree = null;
+        for ( TreeItem currentTreeItem : treeItems ) {
+          Object currentObject = currentTreeItem.getData();
+          if ( currentObject instanceof Tree && ( (Tree) currentObject ).getName().equals( fileProvider.getName() ) ) {
+            selectedTree = (Tree) currentObject;
+            break;
+          }
+        }
+        if ( selectedTree != null ) {
+          ISelection structuredSelection = new StructuredSelection( selectedTree );
+          treeViewer.setSelection( structuredSelection, true );
+          List<File> children = tree.getChildren();
+          // Sort by increasing length
+          sortFileList( children );
+          File currentFile;
+
+          int targetPathArrayIndex;
+
+          // Skip the single "/" when accessing repository
+          if ( !children.isEmpty() && children.get( 0 ) instanceof RepositoryFile ) {
+            targetPathArrayIndex = 1;
+          } else {
+            targetPathArrayIndex = 0;
+          }
+
+          do {
+            currentFile = null;
+
+            if ( targetPathArrayIndex == targetPathArray.length ) {
+              break;
+            }
+            for ( File file : children ) {
+              if ( isFileEqual( file, targetPathArray[ targetPathArrayIndex ] ) ) {
+                currentFile = file;
+                break;
+              }
+            }
+            if ( currentFile instanceof Directory ) {
+              treeViewer.setSelection( new StructuredSelection( currentFile ), true );
+              treeViewer.setExpandedState( currentFile, true );
+              try {
+                children = FILE_CONTROLLER.getFiles( currentFile, null, true );
+                // Sort in increasing order
+                sortFileList( children );
+                targetPathArrayIndex++;
+              } catch ( FileException e ) {
+                // Ignore
+              }
+            }
+          } while ( currentFile != null );
+        }
+      }
+    }
+  }
+
+  private boolean isFileEqual( File file, String fileName ) {
+    boolean isFileEqual = false;
+    if ( file instanceof VFSFile ) {
+      if ( file instanceof VFSLocation ) {
+        String pathName = ( (VFSLocation) file ).getConnectionPath();
+        pathName = pathName.substring( 0, pathName.length() - 1 ); // Removes last "/" for comparison
+        isFileEqual = pathName.equals( fileName );
+      } else if ( ( (VFSFile) file ).getConnectionPath().equals( fileName ) ) {
+        isFileEqual = true;
+      }
+    } else if ( file.getPath().equals( fileName ) ) {
+      isFileEqual = true;
+    }
+    return isFileEqual;
+  }
+
+  // Sorts file list in increasing order by path length
+  private void sortFileList( List<File> children ) {
+    if ( children.get( 0 ) instanceof VFSFile ) {
+      children.sort(
+        ( f1, f2 ) -> ( (VFSFile) f2 ).getConnectionPath().length() - ( ( (VFSFile) f1 ).getConnectionPath()
+          .length() ) );
+    } else {
+      children.sort( ( f1, f2 ) -> ( f2 ).getPath().length() - ( ( f1 ).getPath().length() ) );
+    }
+  }
+
+  private String[] getStringsAtEachDirectory( String targetPath, char pathSplitter ) {
+    String[] targetPathArray;
+
+    int currentTargetPathArrayIndex = 0;
+    if ( pathSplitter == '\\' ) {
+      int arraySize = targetPath.split( "\\\\" ).length + 1;
+      targetPathArray = new String[ arraySize ];
+      for ( int i = 0; i < targetPath.length(); i++ ) {
+        if ( targetPath.charAt( i ) == pathSplitter || i == targetPath.length() - 1 ) {
+          targetPathArray[ currentTargetPathArrayIndex ] = targetPath.substring( 0, i + 1 );
+          currentTargetPathArrayIndex++;
+        }
+      }
+    } else {
+      // VFS File Path
+      if ( targetPath.contains( "pvfs://" ) || targetPath.contains( "hc://" ) ) {
+        int indexOfDoubleSlash = targetPath.indexOf( "//" ) + 2;
+        int arraySize = targetPath.substring( indexOfDoubleSlash ).split( String.valueOf( pathSplitter ) ).length;
+        targetPathArray = new String[ arraySize ];
+
+        for ( int i = indexOfDoubleSlash; i < targetPath.length(); i++ ) {
+          if ( targetPath.charAt( i ) == pathSplitter ) {
+            targetPathArray[ currentTargetPathArrayIndex ] = targetPath.substring( 0, i );
+            currentTargetPathArrayIndex++;
+          }
+        }
+      } else {
+        // Repository or Linux File Path
+        int arraySize = targetPath.split( String.valueOf( pathSplitter ) ).length;
+        targetPathArray = new String[ arraySize ];
+        targetPathArray[ currentTargetPathArrayIndex ] = String.valueOf( pathSplitter );
+        currentTargetPathArrayIndex++;
+        for ( int i = currentTargetPathArrayIndex; i < targetPath.length(); i++ ) {
+          if ( targetPath.charAt( i ) == pathSplitter ) {
+            targetPathArray[ currentTargetPathArrayIndex ] = targetPath.substring( 0, i );
+            currentTargetPathArrayIndex++;
+          }
+        }
+      }
+      targetPathArray[ currentTargetPathArrayIndex ] = targetPath;
+    }
+    return targetPathArray;
+  }
+
+  private String createFileNameFromPath( String filePath ) {
+    String tempName = null;
+    if ( filePath != null && filePath.contains( "/" ) ) {
+      tempName = filePath.substring( filePath.lastIndexOf( '/' ) + 1 );
+    } else if ( filePath != null && filePath.contains( "\\" ) ) {
+      tempName = filePath.substring( filePath.lastIndexOf( '\\' ) + 1 );
+    }
+    return tempName;
+  }
+
 
   private void clearState() {
     parentPath = null;
@@ -1297,7 +1462,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       setStateVariablesFromSelection( (File) selectedFileTreeViewer.getFirstElement() );
       name = null;
     } else if ( selectedFileTreeViewer != null && selectedFileTreeViewer.getFirstElement() instanceof File ) {
-      String tempName = ( (File) selectedFileTreeViewer.getFirstElement() ).getPath();
+      String tempName = createFileNameFromPath( ( (File) selectedFileTreeViewer.getFirstElement() ).getPath() );
 
       if ( command.equals( FileDialogOperation.SELECT_FILE )
         || command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE_FOLDER )
