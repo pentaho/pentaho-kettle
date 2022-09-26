@@ -27,6 +27,7 @@ import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.locator.api.MetastoreProvider;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Created by bryan on 3/29/16.
@@ -42,7 +43,9 @@ public class RepositoryMetastoreProvider implements MetastoreProvider, ServicePr
   public RepositoryMetastoreProvider() {
     try {
       Collection<KettleRepositoryLocator> repositoryLocators = PluginServiceLoader.loadServices( KettleRepositoryLocator.class );
-      kettleRepositoryLocator = repositoryLocators.stream().findFirst().get();
+      Optional<KettleRepositoryLocator> kettleRepositoryLocatorOptional = repositoryLocators.stream().findFirst();
+      if ( kettleRepositoryLocatorOptional.isPresent() )
+        kettleRepositoryLocator = repositoryLocators.stream().findFirst().get();
     } catch ( KettlePluginException e ) {
       e.printStackTrace();
     }
