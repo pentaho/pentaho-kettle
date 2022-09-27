@@ -489,9 +489,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
         if ( !isPentahoRepository ) {
           populateFiles( repositoryDirectory, rootDirectory, FILTER );
         }
-        for ( RepositoryFile child : repositoryDirectory.getChildren() ) {
-          repositoryTree.addChild( child );
-        }
+        repositoryTree.addChild( repositoryDirectory );
         return repositoryTree;
       } catch ( Exception e ) {
         return null;
