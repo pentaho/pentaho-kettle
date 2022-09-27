@@ -109,12 +109,12 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.0-428</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pdi-engine-api</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.0-428</version>
     </dependency>
 
     <!-- Pentaho dependencies -->
@@ -141,7 +141,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.0-428</version>
     </dependency>
 
     <!-- Reporting dependencies -->
@@ -926,7 +926,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.0-428</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
