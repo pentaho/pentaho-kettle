@@ -160,12 +160,15 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
           } catch ( KettleException e ) {
             // try to load from repository, this trans may have been developed locally and later uploaded to the
             // repository
-            if ( isTransMeta() ) {
-              theMeta = rep == null ? (T) new TransMeta( realFilename, metaStore, null, true,
-                jobEntryBase.getParentVariableSpace(), null ) : getMetaFromRepository( rep, r, realFilename, tmpSpace );
-              if ( theMeta != null ) {
-                idContainer[ 0 ] = realFilename;
-              }
+            if ( rep == null ) {
+              theMeta = isTransMeta()
+                      ? (T) new TransMeta( realFilename, metaStore, null, true, jobEntryBase.getParentVariableSpace(), null )
+                      : (T) new JobMeta( jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore, null );
+            } else {
+              theMeta = getMetaFromRepository( rep, r, realFilename, tmpSpace );
+            }
+            if ( theMeta != null ) {
+              idContainer[ 0 ] = realFilename;
             }
           }
           break;
