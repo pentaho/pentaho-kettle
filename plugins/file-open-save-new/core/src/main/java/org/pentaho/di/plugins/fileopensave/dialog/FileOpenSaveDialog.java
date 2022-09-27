@@ -51,6 +51,7 @@ import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -1198,6 +1199,26 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
 
     } );
+
+    // Mouse Listner added to capture an event when the user click on empty space on Dialogue which deselects the file/folder
+    fileTableViewer.getTable().addMouseListener( new MouseListener() {
+
+      @Override
+      public void mouseDoubleClick( MouseEvent mouseEvent ) {
+      }
+
+      @Override
+      public void mouseDown( MouseEvent mouseEvent ) {
+        if ( fileTableViewer.getTable().getItem( new Point( mouseEvent.x, mouseEvent.y ) ) == null ) {
+          fileTableViewer.getTable().deselectAll();
+        }
+      }
+
+      @Override
+      public void mouseUp( MouseEvent e ) {
+      }
+    } );
+
     TableViewerColumn tvcName = new TableViewerColumn( fileTableViewer, SWT.NONE );
     tvcName.getColumn().setText( BaseMessages.getString( PKG, "file-open-save-plugin.files.name.header" ) );
     tvcName.getColumn().setWidth( 250 );
