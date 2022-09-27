@@ -45,16 +45,18 @@ public class RepositoryMetastoreProvider implements MetastoreProvider, ServicePr
       Collection<KettleRepositoryLocator> repositoryLocators = PluginServiceLoader.loadServices( KettleRepositoryLocator.class );
       Optional<KettleRepositoryLocator> kettleRepositoryLocatorOptional = repositoryLocators.stream().findFirst();
       if ( kettleRepositoryLocatorOptional.isPresent() )
-        kettleRepositoryLocator = repositoryLocators.stream().findFirst().get();
+        kettleRepositoryLocator = repositoryLocators.stream().findFirst().orElse(null );
     } catch ( KettlePluginException e ) {
       e.printStackTrace();
     }
   }
 
   @Override public IMetaStore getMetastore() {
-    Repository repository = kettleRepositoryLocator.getRepository();
-    if ( repository != null ) {
-      return repository.getMetaStore();
+    if ( kettleRepositoryLocator != null ) {
+      Repository repository = kettleRepositoryLocator.getRepository();
+      if ( repository != null ) {
+        return repository.getMetaStore();
+      }
     }
     return null;
   }
