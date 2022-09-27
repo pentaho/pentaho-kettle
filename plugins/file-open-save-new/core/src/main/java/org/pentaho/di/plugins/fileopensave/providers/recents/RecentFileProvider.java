@@ -30,7 +30,9 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.spoon.Spoon;
 
 import java.io.InputStream;
 import java.util.Calendar;
@@ -68,8 +70,17 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
 
     PropsUI propsUI = getPropsUI();
     Date dateThreshold = getDateThreshold();
-    List<LastUsedFile> lastUsedFiles = propsUI.getLastUsedFiles().stream().filter(
-      lastUsedFile -> !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
+    List<LastUsedFile> lastUsedFiles;
+    final Spoon spoonInstance = Spoon.getInstance();
+    if ( spoonInstance.rep == null ) {
+      lastUsedFiles = propsUI.getLastUsedFiles().stream()
+              .filter( lastUsedFile -> !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
+    } else {
+      IUser userInfo = spoonInstance.rep.getUserInfo();
+      String repoAndUser = spoonInstance.rep.getName() + ":" + ( userInfo != null ? userInfo.getLogin() : "" );
+      lastUsedFiles = propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() ).stream()
+              .filter( lastUsedFile -> !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
+    }
 
     for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
       recentTree.addChild( RecentFile.create( lastUsedFile ) );

@@ -115,6 +115,7 @@ import org.pentaho.di.ui.core.dialog.WarningDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 import java.io.BufferedReader;
@@ -1120,7 +1121,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     treeViewer.setContentProvider( new FileTreeContentProvider( FILE_CONTROLLER, this ) );
 
     // Load the various file types on the left
-    treeViewer.setInput( FILE_CONTROLLER.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
+    if ( Spoon.getInstance().rep != null ) {
+      String repositoryFilter = ProviderFilterType.REPOSITORY + "," + ProviderFilterType.RECENTS;
+      treeViewer.setInput( FILE_CONTROLLER.load( repositoryFilter ).toArray() );
+    } else {
+      treeViewer.setInput( FILE_CONTROLLER.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
+    }
 
     treeViewer.addPostSelectionChangedListener( e -> {
       IStructuredSelection selection = (IStructuredSelection) e.getSelection();
