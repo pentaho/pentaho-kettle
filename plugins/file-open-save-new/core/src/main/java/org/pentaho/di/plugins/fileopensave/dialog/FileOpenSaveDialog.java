@@ -1806,7 +1806,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       String searchString = txtSearch.getText();
       BusyIndicator.showWhile( this.getShell().getDisplay(), () -> {
         try {
-          fileTableViewer.setInput( FILE_CONTROLLER.getFiles( (File) selectedElement, null, useCache ).stream()
+          String currentFilters = typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES ) ? null
+            : typedComboBox.getSelection().getValue();
+          if ( StringUtils.isNotEmpty( currentFilters )) {
+            currentFilters = currentFilters.replace( "\\", "" );
+          }
+          fileTableViewer.setInput( FILE_CONTROLLER.getFiles( (File) selectedElement, currentFilters, useCache ).stream()
             .filter(
               file -> searchString.isEmpty() || file.getName().toLowerCase().contains( searchString.toLowerCase() ) )
             .sorted( Comparator.comparing( f -> f instanceof Directory, Boolean::compare ).reversed()
