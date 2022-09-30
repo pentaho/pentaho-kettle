@@ -59,6 +59,7 @@ public class RepositoryConnectionDialog extends Dialog {
 
   private static final Class<?> PKG = RepositoryConnectionDialog.class;
 
+
   private Shell shell;
 
   private PropsUI props;
@@ -78,7 +79,7 @@ public class RepositoryConnectionDialog extends Dialog {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX);
+    shell = new Shell( parent, SWT.DIALOG_TRIM );
     props.setLook( shell );
     shell.setLayout( new FormLayout() );
     shell.setText( LOGIN_TITLE );
@@ -116,25 +117,41 @@ public class RepositoryConnectionDialog extends Dialog {
       Label lblFlag = new Label( shell, SWT.NONE );
       props.setLook( lblFlag );
       lblFlag.setLayoutData( new FormDataBuilder().top( txtPasswd, 10 ).left( 5, 0 ).result() );
-
       lblFlag.setText( flagMessageBlank );
 
+      //******************** LOGIN btn **********************************
       Button loginBtn = new Button( shell, SWT.NONE );
       props.setLook( loginBtn );
-      loginBtn.setLayoutData( new FormDataBuilder().top( lblFlag ).left( 5, 0 ).result() );
+      loginBtn.setLayoutData( new FormDataBuilder().top( lblFlag ).left( 83, 0 ).result() );
       loginBtn.setText( BaseMessages.getString( PKG, "repositories.login.label" ) );
 
       //******************** HELP btn **********************************
-      Button btnHelp = new Button( shell, SWT.ICON_INFORMATION );
+      Button btnHelp = new Button( shell, SWT.NONE );
       props.setLook( btnHelp );
-      btnHelp.setLayoutData( new FormDataBuilder().bottom().right().result() );
+      btnHelp.setLayoutData( new FormDataBuilder().top( lblFlag ).left( 5, 0 ).result() );
       btnHelp.setText( BaseMessages.getString( PKG, "repositories.help.label" ) );
+
+
+      //******************** CANCEL btn **********************************
+      Button cnclBtn = new Button( shell, SWT.NONE );
+      props.setLook( cnclBtn );
+      cnclBtn.setLayoutData( new FormDataBuilder().top( lblFlag ).left( 67, 0 ).result() );
+      cnclBtn.setText( BaseMessages.getString( PKG, "repositories.cancel.label" ) );
+
+      //******************* CANCEL btn call implementation starts ***************
+      cnclBtn.addListener( SWT.Selection, event ->
+      {
+        shell.dispose();
+        shell.close();
+      } );
 
       //******************* HELP btn call implementation starts ***************
       btnHelp.addListener( SWT.Selection, event ->
         Program.launch( HELP_URL ) );
-      //********* txt password enter login call implementation starts ***********
+      //******************* HELP btn call implementation ends *****************
 
+
+      //********* txt password enter login call implementation starts ***********
       txtPasswd.addKeyListener( new KeyAdapter() {
         @Override
         public void keyPressed( KeyEvent e ) {
@@ -161,15 +178,14 @@ public class RepositoryConnectionDialog extends Dialog {
                 lblFlag.setText( flagMessageBlank );
                 loginBtn.setEnabled( true );
 
-                //********* txt password enter login call implementation starts ***********
               }
             }
           }
         }
       } );
+      //********* txt password enter login call implementation ends ***********
 
-
-      //login btn call implementation starts ********************
+      //*********** login btn call implementation starts ********************
       loginBtn.addListener( SWT.Selection, event ->
       {
         String strUserName = txtUserName.getText();
@@ -197,13 +213,15 @@ public class RepositoryConnectionDialog extends Dialog {
       } );
 
       shell.pack();
-      shell.setMinimumSize( 500, 450 );
+      shell.setMinimumSize( 500, 400 );
 
-      //opening shell in center
+      //********** opening shell in center starts ****************************
       int width = display.getClientArea().width;
       int height = display.getClientArea().height;
       shell.setLocation( ( ( width - shell.getSize().x ) / 2 ) + display.getClientArea().x,
         ( ( height - shell.getSize().y ) / 2 ) + display.getClientArea().y );
+      //********** opening shell in center ends ****************************
+
 
       shell.open();
       while ( !shell.isDisposed() ) {
