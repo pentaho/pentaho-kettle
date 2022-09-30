@@ -651,6 +651,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     txtFileName.addModifyListener( modifyEvent -> processState() );
 
+    // Pre-populates passed-in name
+    if (StringUtils.isNotEmpty( this.fileDialogOperation.getFilename() ) ) {
+      txtFileName.setText( fileDialogOperation.getFilename() );
+    }
     PropsUI.getInstance().setLook( btnSave );
     btnSave.setLayoutData( new FormDataBuilder().top( select, 20 ).right( btnCancel, -15 ).result() );
     btnSave.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.save.button" ) );
