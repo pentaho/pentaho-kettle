@@ -58,7 +58,6 @@
       <modules>
         <module>core</module>
         <module>core-ui</module>
-        <module>file-open-save</module>
         <module>file-open-save-new</module>
         <module>connections</module>
         <module>repositories</module>
