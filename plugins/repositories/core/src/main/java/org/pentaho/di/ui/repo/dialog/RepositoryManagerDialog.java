@@ -565,7 +565,6 @@ public class RepositoryManagerDialog extends Dialog {
               onDeleteRepository( name );
               refreshList.run();
             }
-
           }
         }
       }
