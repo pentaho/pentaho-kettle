@@ -22,8 +22,11 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.repository.model;
 
+import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
+import org.pentaho.di.plugins.fileopensave.providers.recents.RecentFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
+import org.pentaho.di.repository.ObjectId;
 
 import java.util.Objects;
 
@@ -41,6 +44,21 @@ public class RepositoryFile extends RepositoryObject implements File {
 
   public RepositoryFile() {
     // Necessary for JSON marshalling
+  }
+
+  public static RepositoryFile create( LastUsedFile lastUsedFile, final ObjectId objectId ) {
+    RepositoryFile repositoryFile = new RepositoryFile();
+    repositoryFile.setType( lastUsedFile.isTransformation() ? TRANSFORMATION : JOB );
+    repositoryFile.setDate( lastUsedFile.getLastOpened() );
+    repositoryFile.setRoot( RecentFileProvider.NAME );
+    repositoryFile.setName( lastUsedFile.getFilename() );
+    repositoryFile.setParent( lastUsedFile.getDirectory() );
+    repositoryFile.setPath( lastUsedFile.getDirectory() + DELIMITER + lastUsedFile.getFilename() );
+    repositoryFile.setRepository( lastUsedFile.getRepositoryName() );
+    repositoryFile.setUsername( lastUsedFile.getUsername() );
+    repositoryFile.setObjectId( objectId.getId() );
+
+    return repositoryFile;
   }
 
   public String getUsername() {
