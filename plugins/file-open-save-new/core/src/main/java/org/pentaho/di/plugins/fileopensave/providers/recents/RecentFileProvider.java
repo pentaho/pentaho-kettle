@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.providers.recents;
 
 import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
@@ -30,7 +31,10 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
+import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
+import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryTree;
 import org.pentaho.di.repository.IUser;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -66,7 +70,7 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
   }
 
   @Override public Tree getTree() {
-    RecentTree recentTree = new RecentTree( NAME );
+    Tree recentTree;
 
     PropsUI propsUI = getPropsUI();
     Date dateThreshold = getDateThreshold();
@@ -74,16 +78,32 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     final Spoon spoonInstance = Spoon.getInstance();
     if ( spoonInstance.rep == null ) {
       lastUsedFiles = propsUI.getLastUsedFiles().stream()
-              .filter( lastUsedFile -> !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
+              .filter( lastUsedFile -> !lastUsedFile.isSourceRepository() && !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
+      recentTree = new RecentTree( NAME );
+      for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
+        recentTree.addChild( RecentFile.create( lastUsedFile ) );
+      }
     } else {
       IUser userInfo = spoonInstance.rep.getUserInfo();
       String repoAndUser = spoonInstance.rep.getName() + ":" + ( userInfo != null ? userInfo.getLogin() : "" );
       lastUsedFiles = propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() ).stream()
               .filter( lastUsedFile -> !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
-    }
+      recentTree = new RepositoryTree( NAME );
 
-    for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
-      recentTree.addChild( RecentFile.create( lastUsedFile ) );
+      for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
+        ObjectId objectID;
+        try {
+          if ( lastUsedFile.isTransformation() ) {
+            objectID = spoonInstance.rep.getTransformationID( lastUsedFile.getFilename(), spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
+          } else {
+            objectID = spoonInstance.rep.getJobId( lastUsedFile.getFilename(), spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
+          }
+        } catch ( KettleException e ) {
+          objectID = null;
+        }
+
+        recentTree.addChild( RepositoryFile.create( lastUsedFile, objectID ) );
+      }
     }
 
     return recentTree;
