@@ -4667,8 +4667,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
     } else {
       if ( meta.getFilename() != null ) {
+        String pathSplitter = meta.getFilename().contains( "/" ) ? "/" : "\\";
         fileDialogOperation
-          .setPath( meta.getFilename().substring( 0, meta.getFilename().lastIndexOf( File.separator ) ) );
+          .setPath( meta.getFilename().substring( 0, meta.getFilename().lastIndexOf( pathSplitter ) ) );
       }
     }
     if ( meta instanceof VariableSpace ) {
