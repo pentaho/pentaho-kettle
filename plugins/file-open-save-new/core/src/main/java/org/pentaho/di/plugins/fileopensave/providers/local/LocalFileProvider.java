@@ -168,13 +168,31 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     List<LocalFile> deletedFiles = new ArrayList<>();
     for ( LocalFile file : files ) {
       try {
-        Files.delete( Paths.get( file.getPath() ) );
+        // Changed deletion logic to java.io.File as java.nio.file.Files will delete only empty folders
+        File indexFile = new File( file.getPath() );
+        if(indexFile.isDirectory()) {
+          deleteFolder(indexFile);
+        }
+        else {
+          indexFile.delete();
+        }
         deletedFiles.add( file );
-      } catch ( IOException ignored ) {
+      } catch ( Exception ignored ) {
         // Don't add file to deleted array
       }
     }
     return deletedFiles;
+  }
+
+  public void deleteFolder(File file){
+    for (File subFile : file.listFiles()) {
+      if(subFile.isDirectory()) {
+        deleteFolder(subFile);
+      } else {
+        subFile.delete();
+      }
+    }
+    file.delete();
   }
 
   /**
