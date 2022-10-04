@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -148,8 +148,8 @@ public class StringEvaluatorTest {
       evaluator.evaluateString( string );
     }
     assertFalse( evaluator.getStringEvaluationResults().isEmpty() );
-    assertTrue( evaluator.getAdvicedResult().getConversionMeta().isNumber() );
-    assertTrue( mask.equals( evaluator.getAdvicedResult().getConversionMeta().getConversionMask() ) );
+    assertTrue( evaluator.getAdvicedResult().getConversionMeta().isNumeric() );
+    assertEquals( mask, evaluator.getAdvicedResult().getConversionMeta().getConversionMask() );
   }
 
   /////////////////////////////////////
@@ -158,6 +158,46 @@ public class StringEvaluatorTest {
   @Test
   public void testNumberWithPoint() {
     testNumber( "#.#", "1.1" );
+  }
+
+  @Test
+  public void testNumberWithDecimals() {
+    testNumber( "#.00", "1.11" );
+  }
+
+  @Test
+  public void testColumnOfVaryingScale() {
+    testNumber( "#.000", "1.1", "1.999", "1.23" );
+  }
+
+  @Test
+  public void testExponentialInteger() {
+    testNumber( "#", "123E100" );
+  }
+
+  @Test
+  public void testExponentialFraction() {
+    testNumber("#.00", "-1.232E1" );
+  }
+
+  @Test
+  public void testMixOfExponentsFractionsAndIntegers() {
+    //The -456.230 forces 3 digit fractions even though the last digit was 0.  Why would have the 0 in the text
+    // if we didn't want that placeholder?
+    testNumber("#.000", "1.232E1", "-456.230", "123" );
+  }
+
+  @Test
+  public void testMixOfExponentsFractionsIntegersAndGrouping() {
+    testNumber("#,##0.00;(#,##0.00)", "1.232E1", "-456.230", "123", "1,111.1" );
+  }
+
+  @Test
+  public void testMixOfExponentsFractionsIntegersAndGrouping2() {
+    //There is no grouping mask to try in the evaluator that tests for both 3 decimal places and grouping.
+    //Because of this, the only masks that do not error are "#,###,###.#:.," and "#,##0.00;(#,##0.00) : .,".
+    //Both of these masks truncate but the later truncates less of the entries so it get selected.
+    testNumber("#,##0.00;(#,##0.00)", "1.232E1", "-456.234", "123", "1,111.1" );
   }
 
   @Test
@@ -188,8 +228,8 @@ public class StringEvaluatorTest {
       evaluator.evaluateString( string );
     }
     assertFalse( evaluator.getStringEvaluationResults().isEmpty() );
-    assertTrue( evaluator.getAdvicedResult().getConversionMeta().isNumber() );
-    assertTrue( mask.equals( evaluator.getAdvicedResult().getConversionMeta().getConversionMask() ) );
+    assertTrue( evaluator.getAdvicedResult().getConversionMeta().isNumeric() );
+    assertEquals( mask, evaluator.getAdvicedResult().getConversionMeta().getConversionMask() );
   }
 
   /////////////////////////////////////
@@ -225,8 +265,8 @@ public class StringEvaluatorTest {
     for ( String string : strings ) {
       evaluator.evaluateString( string );
     }
-    assertTrue( evaluator.getStringEvaluationResults().isEmpty() );
-    assertTrue( evaluator.getAdvicedResult().getConversionMeta().isString() );
+    assertTrue( evaluator.getAdvicedResult().getConversionMeta().isNumeric() );
+    assertTrue( evaluator.getAdvicedResult().getConversionMeta().getConversionMask().contains( "(" ) );
   }
 
   /////////////////////////////////////
