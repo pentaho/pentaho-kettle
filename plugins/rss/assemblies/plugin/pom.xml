@@ -44,7 +44,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>ms-access-plugins-impl,ms-access-plugins-ui</excludeArtifactIds>
+              <excludeArtifactIds>rss-plugins-impl,rss-plugins-ui</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>
