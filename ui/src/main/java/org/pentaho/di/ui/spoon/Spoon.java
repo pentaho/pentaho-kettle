@@ -509,6 +509,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
           BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME" ) );
 
+  private static final String FILE_WELCOME_PAGE_NO_OSGI = Const
+          .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
+                  BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME_NO_OSGI" ) );
+
+  private static final String SYSTEM_FOLDER = Const
+          .safeAppendDirectory( BasePropertyHandler.getProperty( "systemDirBase", "system/" ), "" );
+
   public static final String DOCUMENTATION_URL = Const
       .getDocUrl( BasePropertyHandler.getProperty( "documentationUrl" ) );
 
@@ -1817,13 +1824,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       // see if we are in webstart mode
       String webstartRoot = System.getProperty( "spoon.webstartroot" );
+      String fileName = FILE_WELCOME_PAGE_NO_OSGI;
+      File osgiFolder = new File( SYSTEM_FOLDER );
+      if( osgiFolder.exists() )
+        fileName = FILE_WELCOME_PAGE;
       if ( webstartRoot != null ) {
-        URL url = new URL( webstartRoot + '/' + FILE_WELCOME_PAGE );
+        URL url = new URL( webstartRoot + '/' + fileName );
         // ./docs/English/tips/index.htm
         addSpoonBrowser( STRING_WELCOME_TAB_NAME, url.toString(), true, listener, functions, false );
       } else {
         // see if we can find the welcome file on the file system
-        File file = new File( FILE_WELCOME_PAGE );
+        File file = new File( fileName );
         if ( file.exists() ) {
           // ./docs/English/tips/index.htm
           addSpoonBrowser( STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString(), true, listener, functions, false );
