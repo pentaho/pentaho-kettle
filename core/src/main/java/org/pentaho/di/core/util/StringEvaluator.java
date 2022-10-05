@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -233,6 +234,11 @@ public class StringEvaluator {
             cmm.incrementNrNull();
           } else {
             cmm.incrementSuccesses();
+            if ( cmm.getConversionMeta().isBigNumber() ) {
+              if ( cmm.getConversionMeta().getPrecision() < ( (BigDecimal) object ).scale() ) {
+                cmm.incrementTruncations();
+              }
+            }
           }
           if ( cmm.getMin() == null || cmm.getConversionMeta().compare( cmm.getMin(), object ) > 0 ) {
             cmm.setMin( object );
@@ -273,7 +279,7 @@ public class StringEvaluator {
 
   private boolean containsNumber() {
     for ( StringEvaluationResult result : evaluationResults ) {
-      if ( result.getConversionMeta().isNumber() && result.getNrSuccesses() > 0 ) {
+      if ( result.getConversionMeta().isBigNumber() && result.getNrSuccesses() > 0 ) {
         return true;
       }
     }
@@ -357,10 +363,13 @@ public class StringEvaluator {
           }
         };
       } else {
-        // want the shortest format mask for numerics & integers
+        // want the shortest format mask for numerics & integers with least truncation count
         compare = new Comparator<StringEvaluationResult>() {
           @Override
           public int compare( StringEvaluationResult r1, StringEvaluationResult r2 ) {
+            if ( r1.getNrTruncations() != r2.getNrTruncations() ) {
+              return r1.getNrTruncations() - r2.getNrTruncations();
+            } ;
             Integer length1 =
                 r1.getConversionMeta().getConversionMask() == null ? 0 : r1
                 .getConversionMeta().getConversionMask().length();
@@ -414,8 +423,8 @@ public class StringEvaluator {
         evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
       }
 
-      EvalResultBuilder numberUsBuilder = new EvalResultBuilder( "number-us", ValueMetaInterface.TYPE_NUMBER, 15, trimType, ".", "," );
-      EvalResultBuilder numberEuBuilder = new EvalResultBuilder( "number-eu", ValueMetaInterface.TYPE_NUMBER, 15, trimType, ",", "." );
+      EvalResultBuilder numberUsBuilder = new EvalResultBuilder( "number-us", ValueMetaInterface.TYPE_BIGNUMBER, 15, trimType, ".", "," );
+      EvalResultBuilder numberEuBuilder = new EvalResultBuilder( "number-eu", ValueMetaInterface.TYPE_BIGNUMBER, 15, trimType, ",", "." );
 
       for ( String format : getNumberFormats() ) {
 
