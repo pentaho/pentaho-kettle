@@ -482,7 +482,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
         // URL and Linux File Paths
         targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
-
+        if (targetPathArray == null ) return;
         Tree tree = fileProvider.getTree();
         TreeItem[] treeItems = treeViewer.getTree().getItems();
         Tree selectedTree = null;
@@ -596,6 +596,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       } else {
         // Repository or Linux File Path
         int arraySize = targetPath.split( String.valueOf( pathSplitter ) ).length;
+        if( arraySize == 0 ) return null;
         targetPathArray = new String[ arraySize ];
         targetPathArray[ currentTargetPathArrayIndex ] = String.valueOf( pathSplitter );
         currentTargetPathArrayIndex++;
