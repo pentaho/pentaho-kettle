@@ -101,8 +101,9 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
         } catch ( KettleException e ) {
           objectID = null;
         }
-
-        recentTree.addChild( RepositoryFile.create( lastUsedFile, objectID ) );
+        if ( objectID != null ) {
+          recentTree.addChild( RepositoryFile.create( lastUsedFile, objectID ) );
+        }
       }
     }
 
