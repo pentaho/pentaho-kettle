@@ -4618,10 +4618,30 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  /**
+   * Used when importing content from an xml file. We only expect to import the content from local
+   * or from a vfs store
+   * @throws Exception
+   */
+  public void importFileFromXML() throws Exception {
+    openFileNew(ProviderFilterType.LOCAL.toString() + "," +  ProviderFilterType.VFS);
+  }
+
   public void openFileNew() throws Exception {
+    String providerFilter = ProviderFilterType.ALL_PROVIDERS.toString();
+    // Check if we are connected to the repository, then only give option to either load from
+    // repository or from recent list
+
+    if ( Spoon.getInstance().rep != null ) {
+      providerFilter = ProviderFilterType.REPOSITORY + "," + ProviderFilterType.RECENTS;
+    }
+    openFileNew(providerFilter);
+  }
+
+  public void openFileNew( String providerFilter ) throws Exception {
     FileDialogOperation fileDialogOperation =
-      getFileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
-    fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
+            getFileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
+    fileDialogOperation.setProviderFilter( providerFilter );
     if ( !Utils.isEmpty( lastFileOpened ) ) {
       // Test for Windows vs Linux/Remote parent path
       int parentIndex = lastFileOpened.lastIndexOf( '\\' );
@@ -4637,7 +4657,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       fileDialogOperation.setFilter( FilterType.KETTLE_FILES + "," + FilterType.XML + "," + FilterType.ALL );
       fileDialogOperation.setDefaultFilter( FilterType.KETTLE_FILES.toString() );
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
-        fileDialogOperation );
+              fileDialogOperation );
       String path = fileDialogOperation.getPath();
       if ( fileDialogOperation.getRepositoryObject() != null ) {
         RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
@@ -4657,11 +4677,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+
   public boolean saveAsNew() {
     return saveAsNew( null, false );
   }
 
-  public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export ) {
+  public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export) {
+    String providerFilter = ProviderFilterType.ALL_PROVIDERS.toString();
+    // Check if we are connected to the repository, then only give option to either load from
+    // repository or from recent list
+
+    if ( Spoon.getInstance().rep != null ) {
+      providerFilter = ProviderFilterType.REPOSITORY + "," + ProviderFilterType.RECENTS;
+    }
+    return saveAsNew( inputMeta, export, providerFilter );
+  }
+
+  public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export, String providerFilter ) {
     EngineMetaInterface meta = inputMeta;
     if ( meta == null ) {
       meta = getActiveMeta();
@@ -4673,8 +4705,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       getFileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
     fileDialogOperation.setFileType( fileType );
     fileDialogOperation.setFilename( meta.getName() );
-    fileDialogOperation.setProviderFilter( ProviderFilterType.ALL_PROVIDERS.toString() );
-    if ( rep != null && meta.getRepositoryDirectory() != null ) {
+    fileDialogOperation.setProviderFilter( providerFilter );
+    if ( !export && rep != null && meta.getRepositoryDirectory() != null ) {
       fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
     } else {
       if ( meta.getFilename() != null ) {
@@ -4693,7 +4725,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( meta instanceof VariableSpace && fileDialogOperation.getConnection() != null ) {
         ( (VariableSpace) meta ).setVariable( CONNECTION, fileDialogOperation.getConnection() );
       }
-      if ( fileDialogOperation.getRepositoryObject() != null ) {
+      if ( !export && fileDialogOperation.getRepositoryObject() != null ) {
         RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
         final RepositoryDirectoryInterface originalDir = meta.getRepositoryDirectory();
         final String originalName = meta.getName();
@@ -5966,7 +5998,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     try {
       XmlExportHelper.swapTables( transMeta );
-      return saveAsNew( transMeta, export );
+      return saveAsNew( transMeta, export, ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS );
     } finally {
       transMeta.setTransLogTable( origTransLogTable );
       transMeta.setStepLogTable( origStepLogTable );
@@ -5985,7 +6017,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     try {
       XmlExportHelper.swapTables( jobMeta );
-      return saveAsNew( jobMeta, export );
+      return saveAsNew( jobMeta, export , ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS );
     } finally {
       jobMeta.setJobLogTable( origJobLogTable );
       jobMeta.setJobEntryLogTable( originEntryLogTable );

@@ -175,6 +175,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private String type;
   private String connection;
   private String provider;
+  private String providerFilter;
   private String command = FileDialogOperation.OPEN;
   private FileDialogOperation fileDialogOperation = new FileDialogOperation( command );
 
@@ -625,6 +626,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     parentPath = null;
     type = null;
     provider = null;
+    providerFilter = null;
     path = null;
   }
 
@@ -1094,6 +1096,15 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     }
   }
 
+
+  public String getProviderFilter() {
+    return providerFilter;
+  }
+
+  public void setProviderFilter(String providerFilter) {
+    this.providerFilter = providerFilter;
+  }
+
   private Composite createFilesBrowser( Composite parent ) {
     clrGray = getShell().getDisplay().getSystemColor( SWT.COLOR_GRAY );
     clrBlack = getShell().getDisplay().getSystemColor( SWT.COLOR_BLACK );
@@ -1121,12 +1132,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     treeViewer.setContentProvider( new FileTreeContentProvider( FILE_CONTROLLER, this ) );
 
     // Load the various file types on the left
-    if ( Spoon.getInstance().rep != null ) {
-      String repositoryFilter = ProviderFilterType.REPOSITORY + "," + ProviderFilterType.RECENTS;
-      treeViewer.setInput( FILE_CONTROLLER.load( repositoryFilter ).toArray() );
-    } else {
-      treeViewer.setInput( FILE_CONTROLLER.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
-    }
+    treeViewer.setInput( FILE_CONTROLLER.load( providerFilter ).toArray() );
 
     treeViewer.addPostSelectionChangedListener( e -> {
       IStructuredSelection selection = (IStructuredSelection) e.getSelection();
