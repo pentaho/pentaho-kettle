@@ -78,7 +78,9 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     final Spoon spoonInstance = Spoon.getInstance();
     if ( spoonInstance.rep == null ) {
       lastUsedFiles = propsUI.getLastUsedFiles().stream()
-              .filter( lastUsedFile -> !lastUsedFile.isSourceRepository() && !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
+        .filter(
+          lastUsedFile -> !lastUsedFile.isSourceRepository() && !lastUsedFile.getLastOpened().before( dateThreshold ) )
+        .collect( Collectors.toList() );
       recentTree = new RecentTree( NAME );
       for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
         recentTree.addChild( RecentFile.create( lastUsedFile ) );
@@ -87,24 +89,9 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
       IUser userInfo = spoonInstance.rep.getUserInfo();
       String repoAndUser = spoonInstance.rep.getName() + ":" + ( userInfo != null ? userInfo.getLogin() : "" );
       lastUsedFiles = propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() ).stream()
-              .filter( lastUsedFile -> !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
+        .filter( lastUsedFile -> !lastUsedFile.getLastOpened().before( dateThreshold ) ).collect( Collectors.toList() );
       recentTree = new RepositoryTree( NAME );
-
-      for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
-        ObjectId objectID;
-        try {
-          if ( lastUsedFile.isTransformation() ) {
-            objectID = spoonInstance.rep.getTransformationID( lastUsedFile.getFilename(), spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
-          } else {
-            objectID = spoonInstance.rep.getJobId( lastUsedFile.getFilename(), spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
-          }
-        } catch ( KettleException e ) {
-          objectID = null;
-        }
-        if ( objectID != null ) {
-          recentTree.addChild( RepositoryFile.create( lastUsedFile, objectID ) );
-        }
-      }
+      getLastUsedFile( lastUsedFiles, spoonInstance, recentTree );
     }
 
     return recentTree;
@@ -179,5 +166,25 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     Calendar calendar = Calendar.getInstance();
     calendar.add( Calendar.DATE, -30 );
     return calendar.getTime();
+  }
+
+  private void getLastUsedFile( List<LastUsedFile> lastUsedFiles, Spoon spoonInstance, Tree recentTree ) {
+    for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
+      ObjectId objectID;
+      try {
+        if ( lastUsedFile.isTransformation() ) {
+          objectID = spoonInstance.rep.getTransformationID( lastUsedFile.getFilename(),
+            spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
+        } else {
+          objectID = spoonInstance.rep.getJobId( lastUsedFile.getFilename(),
+            spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
+        }
+      } catch ( KettleException e ) {
+        objectID = null;
+      }
+      if ( objectID != null ) {
+        recentTree.addChild( RepositoryFile.create( lastUsedFile, objectID ) );
+      }
+    }
   }
 }
