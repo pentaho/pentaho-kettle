@@ -32,7 +32,7 @@
 
         <menuseparator id="file-separator-3"/>
         <menuitem id="file-import-from-xml" acceltext="CTRL-I" accesskey="ctrl-i" label="${Spoon.Menu.File.Import}"
-          command="spoon.openFileNew()" />
+          command="spoon.importFileFromXML()" />
         <menu id="file-export" label="${Spoon.Menu.File.Export.Popup}" >
           <menupopup id="export-popup">
             <menuitem id="file-export-to-xml" label="${Spoon.Menu.File.Export}" command="spoon.exportXMLFile()" />
