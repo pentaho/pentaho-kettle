@@ -192,6 +192,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   protected Set<File> selectedItems = new HashSet<>();
 
   protected String pasteAction = null;
+  protected boolean isCutActionSelected = false;
   protected boolean isApplyToAll = false;
 
 
@@ -1192,26 +1193,64 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
     };
     pasteItem.addSelectionListener( pasteAdapter );
-    fileTableViewer.getTable().setMenu( fileTableMenu );
+
+    MenuItem cutItem = new MenuItem( fileTableMenu, SWT.NONE );
+    cutItem.setText( "Cut" );
+
+    SelectionAdapter cutAdapter = new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        performCut( e );
+      }
+    };
+    cutItem.addSelectionListener( cutAdapter );
+
+    MenuItem deleteItem = new MenuItem( fileTableMenu, SWT.NONE );
+    deleteItem.setText( "Delete" );
+
+    SelectionAdapter deleteAdapter = new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        performDelete( e );
+      }
+    };
+    deleteItem.addSelectionListener( deleteAdapter );
+
+    if ( Spoon.getInstance().rep == null ) {
+      fileTableViewer.getTable().setMenu( fileTableMenu );
+    }
+
     fileTableViewer.getTable().addMenuDetectListener( new MenuDetectListener() {
       @Override
       public void menuDetected( MenuDetectEvent e ) {
         pasteItem.setEnabled( false );
         copyItem.setEnabled( false );
+        cutItem.setEnabled( false );
+        deleteItem.setEnabled( false );
         int selectionIndices[] = fileTableViewer.getTable().getSelectionIndices();
         if ( selectionIndices.length > 0 ) {
           copyItem.setEnabled( true );
+          cutItem.setEnabled( true );
+          deleteItem.setEnabled( true );
         }
         if ( selectedItems.size() > 0 ) {
           if ( selectionIndices.length == 0 ) {
-            pasteItem.setEnabled( true );
+            IStructuredSelection treeViewerSelection = (IStructuredSelection) treeViewer.getSelection();
+            File destFolder = (File) treeViewerSelection.getFirstElement();
+            if ( !StringUtils.equalsIgnoreCase( destFolder.getName(),
+              selectedItems.stream().findFirst().get().getName() ) ) {
+              pasteItem.setEnabled( true );
+            }
           } else if ( StringUtils.equalsIgnoreCase(
             fileTableViewer.getTable().getItem( selectionIndices[ 0 ] ).getText( 1 ), "Folder" ) ) {
-            pasteItem.setEnabled( true );
+            if ( !StringUtils.equalsIgnoreCase(
+              fileTableViewer.getTable().getItem( selectionIndices[ 0 ] ).getText( 0 ),
+              selectedItems.stream().findFirst().get().getName() ) ) {
+              pasteItem.setEnabled( true );
+            }
           }
         }
       }
-
     } );
 
     // Mouse Listner added to capture an event when the user click on empty space on Dialogue which deselects the file/folder
@@ -1349,43 +1388,81 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     return browser;
   }
 
+  private void performDelete( SelectionEvent e ) {
+    selectedItems.clear();
+    for ( int index : fileTableViewer.getTable().getSelectionIndices() ) {
+      File file = (File) fileTableViewer.getTable().getItem( index ).getData();
+      selectedItems.add( file );
+    }
+    FILE_CONTROLLER.delete( new ArrayList<File>( selectedItems ) );
+    refreshDisplay( e );
+
+  }
+
+  private void performCut( SelectionEvent e ) {
+    selectedItems.clear();
+    for ( int index : fileTableViewer.getTable().getSelectionIndices() ) {
+      File file = (File) fileTableViewer.getTable().getItem( index ).getData();
+      fileTableViewer.getTable().getItem( index ).setGrayed( true );
+      selectedItems.add( file );
+      isCutActionSelected = true;
+    }
+  }
+
   private void performPaste() {
     selectedItems.forEach( ( file ) -> {
       Result result; //TODO: Use this result to propagate status of paste of each item.
       File destFolder;
       StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
       IStructuredSelection treeViewerSelection = (IStructuredSelection) treeViewer.getSelection();
+      boolean deleteCutFileFlag = true;
       if ( fileTableViewerSelection.isEmpty() ) {
         destFolder = (File) treeViewerSelection.getFirstElement();
       } else {
         destFolder = (File) fileTableViewerSelection.getFirstElement();
       }
       String newFilePath = getNewFilePath( file.getName(), destFolder );
+
       if ( FILE_CONTROLLER.fileExists( destFolder, newFilePath ) == Boolean.TRUE ) {
-        if ( !isApplyToAll ) {
-          createPasteWarningDialog( file.getName() );
-        }
-        switch ( pasteAction ) {
-          case PASTE_ACTION_REPLACE:
-            copyFile( file, destFolder, newFilePath, true );
-            break;
-          case PASTE_ACTION_KEEP_BOTH:
-            if ( StringUtils.isNotEmpty( newFilePath ) ) {
-              result = FILE_CONTROLLER.getNewName( destFolder, newFilePath );
-              if ( result.getStatus() == Result.Status.SUCCESS ) {
-                FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(), false );
+        if ( !isCutActionSelected ) {
+          if ( !isApplyToAll ) {
+            createPasteWarningDialog( file.getName() );
+          }
+          switch ( pasteAction ) {
+            case PASTE_ACTION_REPLACE:
+              copyFile( file, destFolder, newFilePath, true );
+              break;
+            case PASTE_ACTION_KEEP_BOTH:
+              if ( StringUtils.isNotEmpty( newFilePath ) ) {
+                result = FILE_CONTROLLER.getNewName( destFolder, newFilePath );
+                if ( result.getStatus() == Result.Status.SUCCESS ) {
+                  FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(), false );
+                }
               }
-            }
-            break;
-          case PASTE_ACTION_SKIP:
-          default:
-            log.logBasic( file.getName() + " is skipped" );
+              break;
+            case PASTE_ACTION_SKIP:
+            default:
+              log.logBasic( file.getName() + " is skipped" );
+          }
+        } else {
+          if ( file.getParent() == destFolder.getPath() ) {
+            deleteCutFileFlag = false;
+          }
         }
+
       } else {
         result = copyFile( file, destFolder, newFilePath, false );
       }
+
+      if ( isCutActionSelected && deleteCutFileFlag ) {
+        List<File> cutFiles = new ArrayList<File>();
+        cutFiles.add( file );
+        FILE_CONTROLLER.delete( cutFiles );
+      }
     } );
+
     pasteAction = null;
+    isCutActionSelected = false;
     isApplyToAll = false;
     selectedItems.clear();
   }
