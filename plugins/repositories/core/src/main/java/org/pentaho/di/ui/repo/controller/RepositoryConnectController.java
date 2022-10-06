@@ -30,7 +30,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -98,7 +97,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   private List<RepositoryContollerListener> listeners = new ArrayList<>();
   private boolean relogin = false;
   private Shell parentShell;
-
   private static final RepositoryConnectController controller = new RepositoryConnectController();
 
   public static RepositoryConnectController getInstance(){
@@ -143,14 +141,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     DatabaseMeta databaseMeta = databaseDialog.getDatabaseMeta();
     if ( databaseMeta != null ) {
       if ( !isDatabaseWithNameExist( databaseMeta, true ) ) {
-        System.out.println("before adding database meta");
-        System.out.println("database meta :"+databaseMeta.getName());
-        System.out.println("database meta :"+databaseMeta.getRepositoryDirectory().getName());
-        try {
-          System.out.println("database meta :"+databaseMeta.getURL());
-        } catch (KettleDatabaseException e) {
-          e.printStackTrace();
-        }
         addDatabase( databaseMeta );
       } else {
         DatabaseDialog.showDatabaseExistsDialog( spoonSupplier.get().getShell(), databaseMeta );
@@ -159,7 +149,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     JSONObject jsonObject = new JSONObject();
     try {
       jsonObject.put( "name", databaseMeta.getName() );
-      System.out.println("returned json object :"+jsonObject.toJSONString());
       return jsonObject.toJSONString();
     } catch ( Exception e ) {
       jsonObject.put( "name", "None" );
@@ -364,7 +353,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
    * @throws KettleException
    */
   public void connectToRepository( String repositoryName, String username, String password ) throws KettleException {
-    System.out.println("inside controller of connect to repository");
     final RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
     if ( repositoryMeta != null ) {
       connectToRepository( repositoryMeta, username, password );
@@ -374,30 +362,21 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   public void connectToRepository( RepositoryMeta repositoryMeta, String username, String password ) throws KettleException {
     final Repository repository = loadRepositoryObject( repositoryMeta.getId() );
     repository.init( repositoryMeta );
-    repositoryConnect( repository, username, password );
+    repository.connect( username, password );
     if ( username != null ) {
       getPropsUI().setLastRepositoryLogin( username );
     }
     Spoon spoon = spoonSupplier.get();
-    Runnable execute = () -> {
-      System.out.println("spoon update thread started...");
-      if ( spoon.getRepository() != null ) {
+    if ( spoon.getRepository() != null ) {
         spoon.closeRepository();
-      } else {
-        spoon.closeAllJobsAndTransformations( true );
-      }
-      spoon.setRepository( repository );
-      System.out.println("repo updated");
-      setConnectedRepository( repositoryMeta );
-      fireListeners();
-      spoon.updateTreeForActiveAbstractMetas();
-      spoon.clearRepositoryDirectory();
-    };
-    if ( spoon.getShell() != null ) {
-      spoon.getShell().getDisplay().asyncExec( execute );
     } else {
-      execute.run();
+        spoon.closeAllJobsAndTransformations( true );
     }
+    spoon.setRepository( repository );
+    setConnectedRepository( repositoryMeta );
+    fireListeners();
+    spoon.updateTreeForActiveAbstractMetas();
+    spoon.clearRepositoryDirectory();
   }
 
   private Repository loadRepositoryObject( String id ) throws KettleException {
@@ -432,32 +411,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
       repository.disconnect();
     }
     repository.init( repositoryMeta );
-    repositoryConnect( repository, username, password );
-  }
-
-  private void repositoryConnect( Repository repository, String username, String password ) throws KettleException {
-    ExecutorService executorService = ExecutorUtil.getExecutor();
-    Future<KettleException> future = executorService.submit( () -> {
-      ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-      try {
-        Thread.currentThread().setContextClassLoader( Trans.class.getClassLoader() );
-        repository.connect( username, password );
-      } catch ( KettleException e ) {
-        return e;
-      } finally {
-        Thread.currentThread().setContextClassLoader( currentClassLoader );
-      }
-      return null;
-    } );
-
-    try {
-      KettleException exception = future.get();
-      if ( exception != null ) {
-        throw exception;
-      }
-    } catch ( InterruptedException | ExecutionException e ) {
-      throw new KettleException();
-    }
+    repository.connect( username, password );
   }
 
   public boolean testRepository( Repository repository ) {

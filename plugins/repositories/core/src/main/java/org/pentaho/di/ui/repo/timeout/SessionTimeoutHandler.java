@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 import org.pentaho.di.ui.repo.dialog.RepositoryConnectionDialog;
