@@ -421,7 +421,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     typedComboBox.addSelectionListener( ( typedComboBox, newSelection ) -> {
       IStructuredSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
-      selectPath( treeViewerSelection.getFirstElement() );
+      selectPath( treeViewerSelection.getFirstElement(), false );
       processState();
     } );
 
