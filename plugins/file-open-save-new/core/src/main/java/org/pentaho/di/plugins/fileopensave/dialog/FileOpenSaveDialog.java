@@ -529,8 +529,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
               try {
                 children = FILE_CONTROLLER.getFiles( currentFile, null, true );
                 // Sort in increasing order
-                if(children.size()>0) {
-                  sortFileList(children);
+                if ( children.size() > 0 ) {
+                  sortFileList( children );
                 }
                 targetPathArrayIndex++;
               } catch ( FileException e ) {
