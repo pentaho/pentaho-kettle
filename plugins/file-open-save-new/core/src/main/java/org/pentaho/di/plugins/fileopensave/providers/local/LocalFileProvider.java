@@ -170,10 +170,9 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       try {
         // Changed deletion logic to java.io.File as java.nio.file.Files will delete only empty folders
         File indexFile = new File( file.getPath() );
-        if(indexFile.isDirectory()) {
-          deleteFolder(indexFile);
-        }
-        else {
+        if ( indexFile.isDirectory() ) {
+          deleteFolder( indexFile );
+        } else {
           indexFile.delete();
         }
         deletedFiles.add( file );
