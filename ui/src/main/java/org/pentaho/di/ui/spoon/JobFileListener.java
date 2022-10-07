@@ -83,6 +83,7 @@ public class JobFileListener implements FileListener, ConnectionListener {
         if ( spoon.getRepository() != null ) {
           jobMeta = fixLinks( jobMeta );
         }
+        jobMeta.setChanged(true);
       } else {
         jobMeta.clearChanged();
       }

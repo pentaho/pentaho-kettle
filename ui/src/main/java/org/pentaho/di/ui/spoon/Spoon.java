@@ -4377,7 +4377,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         try {
           FileDialogOperation fileDialogOperation =
             new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
+          fileDialogOperation.setProviderFilter( evaluateFileBrowserProviderFilter() );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveNew.id,
             fileDialogOperation );
           if ( fileDialogOperation.getRepositoryObject() != null ) {
             RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
@@ -4624,10 +4625,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * @throws Exception
    */
   public void importFileFromXML() throws Exception {
-    openFileNew(ProviderFilterType.LOCAL.toString() + "," +  ProviderFilterType.VFS);
+    openFileNew(ProviderFilterType.LOCAL.toString() + "," +  ProviderFilterType.VFS, true);
   }
 
-  public void openFileNew() throws Exception {
+  private String evaluateFileBrowserProviderFilter()  {
     String providerFilter = ProviderFilterType.ALL_PROVIDERS.toString();
     // Check if we are connected to the repository, then only give option to either load from
     // repository or from recent list
@@ -4635,10 +4636,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( Spoon.getInstance().rep != null ) {
       providerFilter = ProviderFilterType.REPOSITORY + "," + ProviderFilterType.RECENTS;
     }
-    openFileNew(providerFilter);
+    return providerFilter;
   }
 
-  public void openFileNew( String providerFilter ) throws Exception {
+  public void openFileNew() throws Exception {
+    openFileNew( evaluateFileBrowserProviderFilter(), false);
+  }
+
+  public void openFileNew( String providerFilter, boolean importFile ) throws Exception {
     FileDialogOperation fileDialogOperation =
             getFileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
     fileDialogOperation.setProviderFilter( providerFilter );
@@ -4667,7 +4672,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       } else if ( path != null ) {
         Variables variables = new Variables();
         variables.setVariable( CONNECTION, fileDialogOperation.getConnection() );
-        openFile( path, variables, false );
+        openFile( path, variables, importFile );
         lastFileOpened = path;
         lastFileOpenedConnection = fileDialogOperation.getConnection();
         lastFileOpenedProvider = fileDialogOperation.getProvider();
@@ -4783,11 +4788,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return fileType;
   }
 
-  public void openFile( String filename, boolean importfile ) {
-    openFile( filename, null, importfile );
+  public void openFile( String filename, boolean importFile ) {
+    openFile( filename, null, importFile );
   }
 
-  public void openFile( String filename, VariableSpace variableSpace, boolean importfile ) {
+  public void openFile( String filename, VariableSpace variableSpace, boolean importFile ) {
     // Open the XML and see what's in there.
     // We expect a single <transformation> or <job> root at this time...
 
@@ -4853,9 +4858,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         try {
           String connection = variableSpace != null ? variableSpace.getVariable( CONNECTION ) : null;
           if ( listener instanceof ConnectionListener ) {
-            loaded = ( (ConnectionListener) listener ).open( root, filename, connection, importfile );
+            loaded = ( (ConnectionListener) listener ).open( root, filename, connection, importFile );
           } else {
-            loaded = listener.open( root, filename, importfile );
+            loaded = listener.open( root, filename, importFile );
           }
         } catch ( KettleMissingPluginsException e ) {
           log.logError( e.getMessage(), e );
@@ -5333,14 +5338,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     String activePerspectiveId = activePerspective.getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
-
-    if ( meta.getFilename() != null ) {
-      saved = save( meta, meta.getFilename(), export );
-    } else if ( rep != null && etlPerspective && meta.getObjectId() != null ) {
+    if ( rep != null && etlPerspective ) {
+      if ( meta.getObjectId() == null ) {
+        meta.setFilename( null );
+      }
       saved = saveToRepository( meta );
     } else {
-      if ( meta.canSave() ) {
-        saved = saveAsNew();
+      if ( meta.getFilename() != null ) {
+        saved = save( meta, meta.getFilename(), export );
+      } else {
+        if ( meta.canSave() ) {
+          saved = saveFileAs( meta );
+        }
       }
     }
 
@@ -5401,7 +5410,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
           //Set the filename so it can be used as the default filename in the save dialog
           fileDialogOperation.setFilename( meta.getFilename() );
-          ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveRepository.id,
+          fileDialogOperation.setProviderFilter( evaluateFileBrowserProviderFilter() );
+          ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
             fileDialogOperation );
           if ( fileDialogOperation.getRepositoryObject() != null ) {
             RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
