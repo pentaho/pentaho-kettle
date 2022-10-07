@@ -375,6 +375,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public static final String CONNECTION = "connection";
   private static final String XML_EXTENSION = "xml";
+  public static final String SPOON_DIALOG_PROMPT_OVERWRITE_FILE = "Spoon.Dialog.PromptOverwriteFile.";
+  public static final String MESSAGE = ".Message";
+  public static final String SPOON_DIALOG_PROMPT_OVERWRITE_FILE_TITLE = "Spoon.Dialog.PromptOverwriteFile.Title";
   private static Class<?> PKG = Spoon.class;
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Spoon", LoggingObjectType.SPOON,
@@ -4731,23 +4734,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         ( (VariableSpace) meta ).setVariable( CONNECTION, fileDialogOperation.getConnection() );
       }
       if ( !export && fileDialogOperation.getRepositoryObject() != null ) {
-        RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
-        final RepositoryDirectoryInterface originalDir = meta.getRepositoryDirectory();
-        final String originalName = meta.getName();
-        final ObjectId originalObjectId = meta.getObjectId();
-        final String originalFilename = meta.getFilename();
-        meta.setObjectId( null );
-        meta.setFilename( null );
-        meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
-        meta.setName( repositoryObject.getName() );
-        saved = saveToRepositoryConfirmed( meta );
-        if ( !saved ) {
-          // if the object wasn't successfully saved, set the name and directory back to their original values
-          meta.setRepositoryDirectory( originalDir );
-          meta.setName( originalName );
-          meta.setObjectId( originalObjectId );
-          meta.setFilename( originalFilename );
-        }
+        saved = performRepoSave( meta, fileType, fileDialogOperation );
       } else if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
         String filename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
         lastFileOpened = filename;
@@ -4766,6 +4753,45 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     return saved;
+  }
+
+  private boolean performRepoSave( EngineMetaInterface meta, String fileType, FileDialogOperation fileDialogOperation ) throws KettleException {
+    boolean saved = false;
+    RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
+    final RepositoryDirectoryInterface originalDir = meta.getRepositoryDirectory();
+    if ( canRepoSaveOrOverwrite( meta, fileType, repositoryObject, originalDir ) ) {
+      final String originalName = meta.getName();
+      final ObjectId originalObjectId = meta.getObjectId();
+      final String originalFilename = meta.getFilename();
+      meta.setObjectId( null );
+      meta.setFilename( null );
+      meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
+      meta.setName( repositoryObject.getName() );
+      saved = saveToRepositoryConfirmed( meta );
+      if ( !saved ) {
+        // if the object wasn't successfully saved, set the name and directory back to their original values
+        meta.setRepositoryDirectory( originalDir );
+        meta.setName( originalName );
+        meta.setObjectId( originalObjectId );
+        meta.setFilename( originalFilename );
+      }
+    }
+    return saved;
+  }
+
+  private boolean canRepoSaveOrOverwrite( EngineMetaInterface meta, String fileType, RepositoryObject repositoryObject, RepositoryDirectoryInterface originalDir ) throws KettleException {
+    if ( rep.exists( repositoryObject.getName(), originalDir, StringUtils.equals( FileDialogOperation.TRANSFORMATION, fileType ) ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
+      // "This file already exists.  Do you want to overwrite it?"
+      mb.setMessage( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE + meta.getFileType()
+              + MESSAGE, Const.createName( repositoryObject.getName() ) ) );
+      // "This file already exists!"
+      mb.setText( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE_TITLE ) );
+      if ( mb.open() == SWT.NO ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void addFileListener( FileListener listener ) {
@@ -6092,10 +6118,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( f.exists() ) {
           MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
           // "This file already exists.  Do you want to overwrite it?"
-          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile." + meta.getFileType()
-            + ".Message", Const.createName( filename ) ) );
+          mb.setMessage( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE + meta.getFileType()
+            + MESSAGE, Const.createName( filename ) ) );
           // "This file already exists!"
-          mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile.Title" ) );
+          mb.setText( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE_TITLE ) );
           id = mb.open();
         }
       } catch ( Exception e ) {
@@ -6190,9 +6216,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( f.exists() ) {
           MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
           // "This file already exists.  Do you want to overwrite it?"
-          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile." + meta.getFileType()
-            + ".Message", Const.createName( filename ) ) );
-          mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile.Title" ) );
+          mb.setMessage( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE + meta.getFileType()
+            + MESSAGE, Const.createName( filename ) ) );
+          mb.setText( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE_TITLE ) );
           id = mb.open();
         }
       } catch ( Exception e ) {
