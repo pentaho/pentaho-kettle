@@ -553,7 +553,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       } else if ( ( (VFSFile) file ).getConnectionPath().equals( fileName ) ) {
         isFileEqual = true;
       }
-    } else if ( file.getPath().equals( fileName ) ) {
+    } else if ( file.getPath().equals( fileName )
+            ||  ( (fileName != null && fileName.length()  > 0 )
+              && file.getPath().equals( fileName.substring( 0, fileName.length() - 1 ) ) ) ) { // Removes last "/" for comparison
       isFileEqual = true;
     }
     return isFileEqual;
@@ -575,7 +577,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     int currentTargetPathArrayIndex = 0;
     if ( pathSplitter == '\\' ) {
-      int arraySize = targetPath.split( "\\\\" ).length + 1;
+      int arraySize = targetPath.split( "\\\\" ).length;
       targetPathArray = new String[ arraySize ];
       for ( int i = 0; i < targetPath.length(); i++ ) {
         if ( targetPath.charAt( i ) == pathSplitter || i == targetPath.length() - 1 ) {
