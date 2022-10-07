@@ -14,6 +14,11 @@
 
   <servers>
     <server>
+      <id>pentaho.resolve.repo</id>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
+    </server>
+    <server>
       <id>pentaho.public.release.repo</id>
       <username>${env.NEXUS_DEPLOY_USER}</username>
       <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
