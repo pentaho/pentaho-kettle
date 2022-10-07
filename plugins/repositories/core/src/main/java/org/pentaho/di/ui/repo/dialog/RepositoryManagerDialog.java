@@ -429,6 +429,12 @@ public class RepositoryManagerDialog extends Dialog {
     btnDelete.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( btnEdit, MARGIN ).result() );
     props.setLook( btnDelete );
 
+    Button btnConnect = new Button( btnComp, SWT.PUSH );
+    btnConnect.setText( BaseMessages.getString( PKG, "repositories.connect.label" ) );
+    btnConnect.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( btnDelete, MARGIN ).result() );
+    props.setLook( btnConnect );
+
+
     // Empty label to enforce a minimum width
     Label emptyLabel = new Label( btnComp, SWT.NONE );
     emptyLabel
@@ -531,6 +537,21 @@ public class RepositoryManagerDialog extends Dialog {
     } );
 
 
+    // Listener for the connect button
+    btnConnect.addSelectionListener( new SelectionAdapter() {
+      @SuppressWarnings( "unchecked" )
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        IStructuredSelection sel = repoList.getStructuredSelection();
+        if ( !sel.isEmpty() ) {
+          JSONObject item = (JSONObject) sel.getFirstElement();
+
+          new RepositoryConnectionDialog( dialog.getShell() ).createDialog( item.get( "displayName" ).toString() );
+
+        }
+      }
+    } );
+
     // Listener for the edit button
     btnEdit.addSelectionListener( new SelectionAdapter() {
       @SuppressWarnings( "unchecked" )
@@ -584,6 +605,7 @@ public class RepositoryManagerDialog extends Dialog {
 
       btnEdit.setEnabled( enabled );
       btnDelete.setEnabled( enabled );
+      btnConnect.setEnabled( enabled );
     };
 
     // Fire this once to disable things initially
