@@ -5348,7 +5348,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         saved = save( meta, meta.getFilename(), export );
       } else {
         if ( meta.canSave() ) {
-          saved = saveFileAs( meta );
+          saved = saveAsNew(meta, export);
         }
       }
     }
