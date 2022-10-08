@@ -4636,7 +4636,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // Check if we are connected to the repository, then only give option to either load from
     // repository or from recent list
 
-    if ( Spoon.getInstance().rep != null ) {
+    if ( Spoon.getInstance() != null && Spoon.getInstance().rep != null ) {
       providerFilter = ProviderFilterType.REPOSITORY + "," + ProviderFilterType.RECENTS;
     }
     return providerFilter;
@@ -4691,14 +4691,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export) {
-    String providerFilter = ProviderFilterType.ALL_PROVIDERS.toString();
-    // Check if we are connected to the repository, then only give option to either load from
-    // repository or from recent list
-
-    if ( Spoon.getInstance().rep != null ) {
-      providerFilter = ProviderFilterType.REPOSITORY + "," + ProviderFilterType.RECENTS;
-    }
-    return saveAsNew( inputMeta, export, providerFilter );
+    return saveAsNew( inputMeta, export, evaluateFileBrowserProviderFilter() );
   }
 
   public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export, String providerFilter ) {
@@ -4788,10 +4781,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // "This file already exists!"
       mb.setText( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE_TITLE ) );
       if ( mb.open() == SWT.YES ) {
+        // user wants to overwrite the file
         return true;
+      } else {
+        // user does wants to overwrite the file
+        return false;
       }
     }
-    return false;
+    // the file does not exist
+    return true;
   }
 
   public void addFileListener( FileListener listener ) {
