@@ -4787,7 +4787,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               + MESSAGE, Const.createName( repositoryObject.getName() ) ) );
       // "This file already exists!"
       mb.setText( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE_TITLE ) );
-      if ( mb.open() == SWT.NO ) {
+      if ( mb.open() == SWT.YES ) {
         return true;
       }
     }
