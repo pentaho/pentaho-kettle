@@ -372,7 +372,7 @@ import java.util.stream.Collectors;
  */
 public class Spoon extends ApplicationWindow implements AddUndoPositionInterface, TabListener, SpoonInterface,
   OverwritePrompter, PDIObserver, LifeEventHandler, XulEventSource, XulEventHandler, PartitionSchemasProvider {
-
+  private static final String userHomeDir = System.getProperty( "user.home" );
   public static final String CONNECTION = "connection";
   private static final String XML_EXTENSION = "xml";
   public static final String SPOON_DIALOG_PROMPT_OVERWRITE_FILE = "Spoon.Dialog.PromptOverwriteFile.";
@@ -4694,6 +4694,28 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return saveAsNew( inputMeta, export, evaluateFileBrowserProviderFilter() );
   }
 
+  private void setFileOperatioPathForNonRepositoryFile(FileDialogOperation fileDialogOperation, EngineMetaInterface meta) {
+    if ( meta.getFilename() != null ) {
+      // The file exist and the user has invoked as SaveAs operation. Set the path to the folder the current file exist
+      String pathSplitter = meta.getFilename().contains( "/" ) ? "/" : "\\";
+      fileDialogOperation
+              .setPath( meta.getFilename().substring( 0, meta.getFilename().lastIndexOf( pathSplitter ) ) );
+    } else if( meta.getName() != null ) {
+      // This is the first time user is saving this file.
+      if ( !Utils.isEmpty( lastFileOpened ) ) {
+        //User has opened a file previously, set the save folder be the last file opened folder
+        int parentIndex = lastFileOpened.lastIndexOf('\\');
+        if (parentIndex == -1) {
+          parentIndex = lastFileOpened.lastIndexOf('/');
+        }
+        String folder = lastFileOpened.substring(0, parentIndex);
+        fileDialogOperation.setPath( folder );
+      } else {
+        //User has not opened any file so set the session to the user's home folder
+        fileDialogOperation.setPath( userHomeDir );
+      }
+    }
+  }
   public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export, String providerFilter ) {
     EngineMetaInterface meta = inputMeta;
     if ( meta == null ) {
@@ -4710,11 +4732,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( !export && rep != null && meta.getRepositoryDirectory() != null ) {
       fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
     } else {
-      if ( meta.getFilename() != null ) {
-        String pathSplitter = meta.getFilename().contains( "/" ) ? "/" : "\\";
-        fileDialogOperation
-          .setPath( meta.getFilename().substring( 0, meta.getFilename().lastIndexOf( pathSplitter ) ) );
-      }
+      setFileOperatioPathForNonRepositoryFile(fileDialogOperation, meta);
     }
     if ( meta instanceof VariableSpace ) {
       fileDialogOperation.setConnection( ( (VariableSpace) meta ).getVariable( CONNECTION ) );
