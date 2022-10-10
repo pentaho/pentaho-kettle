@@ -1176,7 +1176,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     fileTableViewer.getTable().setHeaderVisible( true );
     Menu fileTableMenu = new Menu( fileTableViewer.getTable() );
     MenuItem copyItem = new MenuItem( fileTableMenu, SWT.NONE );
-    copyItem.setText( "Copy" );
+    copyItem.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.copy" ) );
     SelectionAdapter copyAdapter = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
@@ -1186,7 +1186,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     copyItem.addSelectionListener( copyAdapter );
 
     MenuItem pasteItem = new MenuItem( fileTableMenu, SWT.NONE );
-    pasteItem.setText( "Paste" );
+    pasteItem.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.paste" ) );
     SelectionAdapter pasteAdapter = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
@@ -1197,7 +1197,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     pasteItem.addSelectionListener( pasteAdapter );
 
     MenuItem cutItem = new MenuItem( fileTableMenu, SWT.NONE );
-    cutItem.setText( "Cut" );
+    cutItem.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.cut" ) );
 
     SelectionAdapter cutAdapter = new SelectionAdapter() {
       @Override
@@ -1208,7 +1208,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     cutItem.addSelectionListener( cutAdapter );
 
     MenuItem deleteItem = new MenuItem( fileTableMenu, SWT.NONE );
-    deleteItem.setText( "Delete" );
+    deleteItem.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.delete" ) );
 
     SelectionAdapter deleteAdapter = new SelectionAdapter() {
       @Override
@@ -1217,6 +1217,17 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
     };
     deleteItem.addSelectionListener( deleteAdapter );
+
+    MenuItem renameItem = new MenuItem( fileTableMenu, SWT.NONE );
+    renameItem.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.rename" ) );
+
+    SelectionAdapter renameAdapter = new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        performRename( e );
+      }
+    };
+    renameItem.addSelectionListener( renameAdapter );
 
     if ( Spoon.getInstance().rep == null ) {
       fileTableViewer.getTable().setMenu( fileTableMenu );
@@ -1229,11 +1240,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         copyItem.setEnabled( false );
         cutItem.setEnabled( false );
         deleteItem.setEnabled( false );
+        renameItem.setEnabled( false );
         int selectionIndices[] = fileTableViewer.getTable().getSelectionIndices();
         if ( selectionIndices.length > 0 ) {
           copyItem.setEnabled( true );
           cutItem.setEnabled( true );
           deleteItem.setEnabled( true );
+          renameItem.setEnabled( true );
         }
         if ( selectedItems.size() > 0 ) {
           if ( selectionIndices.length == 0 ) {
@@ -1390,6 +1403,18 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     return browser;
   }
 
+  private void performRename( SelectionEvent e ) {
+    selectedItems.clear();
+    for ( int index : fileTableViewer.getTable().getSelectionIndices() ) {
+      File file = (File) fileTableViewer.getTable().getItem( index ).getData();
+      selectedItems.add( file );
+    }
+    selectedItems.forEach( ( file ) -> {
+      createRenameDialog( file );
+    } );
+    refreshDisplay( e );
+  }
+
   private void performDelete( SelectionEvent e ) {
     selectedItems.clear();
     for ( int index : fileTableViewer.getTable().getSelectionIndices() ) {
@@ -1485,6 +1510,17 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       return FILE_CONTROLLER.copyFile( file, destFolder, path, overwrite );
     }
     return null;
+  }
+
+  private void createRenameDialog( File file ) {
+    RenameDialog renameDialog = new RenameDialog( getShell() );
+    String renameValue = renameDialog.open( file.getName() );
+    if ( renameValue != null ) {
+      String filename = file.getName();
+      String fileExtention =
+        filename.lastIndexOf( "." ) != -1 ? filename.substring( filename.lastIndexOf( "." ), filename.length() ) : null;
+      FILE_CONTROLLER.rename( file, file.getParent() + java.io.File.separator + renameValue, true );
+    }
   }
 
   private void createPasteWarningDialog( String fileName ) {
