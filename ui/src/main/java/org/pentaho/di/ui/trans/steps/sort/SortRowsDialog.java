@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,9 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.sort.SortRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.CheckBoxVar;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -185,17 +188,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     fdSortDir.right = new FormAttachment( wbSortDir, -margin );
     wSortDir.setLayoutData( fdSortDir );
 
-    wbSortDir.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent arg0 ) {
-        DirectoryDialog dd = new DirectoryDialog( shell, SWT.NONE );
-        dd.setFilterPath( wSortDir.getText() );
-        String dir = dd.open();
-        if ( dir != null ) {
-          wSortDir.setText( dir );
-        }
-      }
-    } );
+    wbSortDir.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSortDir, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wSortDir.addModifyListener( new ModifyListener() {

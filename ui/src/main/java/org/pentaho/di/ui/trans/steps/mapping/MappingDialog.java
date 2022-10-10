@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.mapping;
 
-import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -57,7 +56,6 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -76,20 +74,20 @@ import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.WarningDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.util.DialogHelper;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.MappingUtil;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
-import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -313,15 +311,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     fdBrowse.top = new FormAttachment( wlPath, Const.isOSX() ? 0 : 5 );
     wbBrowse.setLayoutData( fdBrowse );
 
-    wbBrowse.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        if ( repository != null ) {
-          selectRepositoryTrans();
-        } else {
-          selectFileTrans();
-        }
-      }
-    } );
+    wbBrowse.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wPath, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.KETTLE_TRANS, FilterType.XML, FilterType.ALL }, FilterType.KETTLE_TRANS  ) ) );
 
     //
     // Add a tab folder for the parameters and various input and output
@@ -412,71 +404,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         ConstUI.LARGE_ICON_SIZE );
   }
 
-  private void selectRepositoryTrans() {
-    RepositoryObject repositoryObject = DialogHelper.selectRepositoryObject( "*.ktr", log );
-
-    try {
-      if ( repositoryObject != null ) {
-        loadRepositoryTrans( repositoryObject.getName(), repositoryObject.getRepositoryDirectory() );
-        String path = DialogUtils
-          .getPath( transMeta.getRepositoryDirectory().getPath(), mappingTransMeta.getRepositoryDirectory().getPath() );
-        String fullPath = ( path.equals( "/" ) ? "/" : path + "/" ) + mappingTransMeta.getName();
-        wPath.setText( fullPath );
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-      }
-    } catch ( KettleException ke ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "MappingDialog.ErrorSelectingObject.DialogTitle" ),
-        BaseMessages.getString( PKG, "MappingDialog.ErrorSelectingObject.DialogMessage" ), ke );
-    }
-  }
-
   private void loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
     // Read the transformation...
     //
     mappingTransMeta =
       repository.loadTransformation( transMeta.environmentSubstitute( transName ), repdir, null, true, null );
     mappingTransMeta.clearChanged();
-  }
-
-  private void selectFileTrans() {
-    String curFile = transMeta.environmentSubstitute( wPath.getText() );
-
-    FileObject root = null;
-
-    String parentFolder = null;
-    try {
-      parentFolder =
-        KettleVFS.getFileObject( transMeta.environmentSubstitute( transMeta.getFilename() ) ).getParent().toString();
-    } catch ( Exception e ) {
-      // Take no action
-    }
-
-    try {
-      root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
-
-      VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
-      FileObject file =
-        vfsFileChooser.open(
-          shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
-          VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-      if ( file == null ) {
-        return;
-      }
-      String fileName = file.getName().toString();
-      if ( fileName != null ) {
-        loadFileTrans( fileName );
-        if ( parentFolder != null && fileName.startsWith( parentFolder ) ) {
-          fileName = fileName.replace( parentFolder, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-        }
-        wPath.setText( fileName );
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-      }
-    } catch ( IOException | KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle" ),
-        BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
-    }
   }
 
   private void loadFileTrans( String fname ) throws KettleException {
