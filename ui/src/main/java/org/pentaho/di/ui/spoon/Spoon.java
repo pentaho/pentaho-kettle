@@ -4628,7 +4628,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * @throws Exception
    */
   public void importFileFromXML() throws Exception {
-    openFileNew(ProviderFilterType.LOCAL.toString() + "," +  ProviderFilterType.VFS, true);
+    openFileNew(ProviderFilterType.LOCAL.toString() + "," +  ProviderFilterType.VFS
+        , FilterType.XML + "," + FilterType.KETTLE_TRANS
+            + "," + FilterType.KETTLE_JOB + "," + FilterType.ALL , true, FileDialogOperation.IMPORT ) ;	
   }
 
   private String evaluateFileBrowserProviderFilter()  {
@@ -4643,12 +4645,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void openFileNew() throws Exception {
-    openFileNew( evaluateFileBrowserProviderFilter(), false);
+    openFileNew( evaluateFileBrowserProviderFilter(), FilterType.KETTLE_FILES.toString(), false
+		, FileDialogOperation.OPEN );
   }
 
-  public void openFileNew( String providerFilter, boolean importFile ) throws Exception {
+  public void openFileNew( String providerFilter, String fileFilterType, boolean importFile, String command ) throws Exception {
     FileDialogOperation fileDialogOperation =
-            getFileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
+            getFileDialogOperation( command, FileDialogOperation.ORIGIN_SPOON );
     fileDialogOperation.setProviderFilter( providerFilter );
     if ( !Utils.isEmpty( lastFileOpened ) ) {
       // Test for Windows vs Linux/Remote parent path
@@ -4662,7 +4665,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       fileDialogOperation.setProvider( lastFileOpenedProvider );
     }
     try {
-      fileDialogOperation.setFilter( FilterType.KETTLE_FILES + "," + FilterType.XML + "," + FilterType.ALL );
+      fileDialogOperation.setFilter( fileFilterType );
       fileDialogOperation.setDefaultFilter( FilterType.KETTLE_FILES.toString() );
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
               fileDialogOperation );
@@ -4685,54 +4688,80 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-
-  public boolean saveAsNew() {
-    return saveAsNew( null, false );
-  }
-
-  public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export) {
-    return saveAsNew( inputMeta, export, evaluateFileBrowserProviderFilter() );
-  }
-
-  private void setFileOperatioPathForNonRepositoryFile(FileDialogOperation fileDialogOperation, EngineMetaInterface meta) {
-    if ( meta.getFilename() != null ) {
-      // The file exist and the user has invoked as SaveAs operation. Set the path to the folder the current file exist
-      String pathSplitter = meta.getFilename().contains( "/" ) ? "/" : "\\";
-      fileDialogOperation
-              .setPath( meta.getFilename().substring( 0, meta.getFilename().lastIndexOf( pathSplitter ) ) );
-    } else if( meta.getName() != null ) {
-      // This is the first time user is saving this file.
-      if ( !Utils.isEmpty( lastFileOpened ) ) {
-        //User has opened a file previously, set the save folder be the last file opened folder
-        int parentIndex = lastFileOpened.lastIndexOf('\\');
-        if (parentIndex == -1) {
-          parentIndex = lastFileOpened.lastIndexOf('/');
-        }
-        String folder = lastFileOpened.substring(0, parentIndex);
-        fileDialogOperation.setPath( folder );
-      } else {
-        //User has not opened any file so set the session to the user's home folder
-        fileDialogOperation.setPath( userHomeDir );
+  private String deriveFileFilterFromFileType( String fileType ) {
+    if (fileType != null) {
+      if (fileType.equalsIgnoreCase(FileDialogOperation.TRANSFORMATION)
+              || fileType.equalsIgnoreCase(LastUsedFile.FILE_TYPE_TRANSFORMATION)) {
+        return FilterType.KETTLE_TRANS.toString();
+      } else if (fileType.equalsIgnoreCase(FileDialogOperation.JOB)
+              || fileType.equalsIgnoreCase(LastUsedFile.FILE_TYPE_JOB)) {
+        return FilterType.KETTLE_JOB.toString();
       }
     }
+    return fileType;
   }
-  public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export, String providerFilter ) {
+  
+  public boolean saveAsNew() {
+    return saveAsNew( null, false, FileDialogOperation.SAVE_AS );
+  }
+
+  public boolean saveAsNew( EngineMetaInterface inputMeta, boolean export, String command) {
     EngineMetaInterface meta = inputMeta;
     if ( meta == null ) {
       meta = getActiveMeta();
     }
     String fileType = meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION )
-      ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
+            ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
 
+    return saveAsNew( meta, export, evaluateFileBrowserProviderFilter(), fileType, command );
+  }
+
+  private void setFileOperatioPathForNonRepositoryFile(FileDialogOperation fileDialogOperation
+          , EngineMetaInterface meta, boolean export) {
+    // Check if user is exporting a file
+    if (export && lastFileOpenedProvider.equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString())) {
+      // Sine the last opened path is from repository and user can only export to local or vfs, set the
+      // path to the user's home folder
+      fileDialogOperation.setPath(userHomeDir);
+      fileDialogOperation.setProvider(ProviderFilterType.LOCAL.toString());
+    } else {
+      if (meta.getFilename() != null) {
+        // The file exist and the user has invoked as SaveAs operation. Set the path to the folder the current file exist
+        String pathSplitter = meta.getFilename().contains("/") ? "/" : "\\";
+        fileDialogOperation
+                .setPath(meta.getFilename().substring(0, meta.getFilename().lastIndexOf(pathSplitter)));
+      } else if (meta.getName() != null) {
+        // This is the first time user is saving this file.
+        if (!Utils.isEmpty(lastFileOpened)) {
+          //User has opened a file previously, set the save folder be the last file opened folder
+          int parentIndex = lastFileOpened.lastIndexOf('\\');
+          if (parentIndex == -1) {
+            parentIndex = lastFileOpened.lastIndexOf('/');
+          }
+          String folder = lastFileOpened.substring(0, parentIndex);
+          fileDialogOperation.setPath(folder);
+          fileDialogOperation.setProvider(lastFileOpenedProvider);
+        } else {
+          //User has not opened any file so set the session to the user's home folder
+          fileDialogOperation.setPath(userHomeDir);
+          fileDialogOperation.setProvider(ProviderFilterType.LOCAL.toString());
+        }
+      }
+    }
+  }
+  
+  public boolean saveAsNew( EngineMetaInterface meta, boolean export, String providerFilter
+          , String fileFilterType, String command ) {
     FileDialogOperation fileDialogOperation =
-      getFileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
-    fileDialogOperation.setFileType( fileType );
+            getFileDialogOperation( command, FileDialogOperation.ORIGIN_SPOON );
+    fileDialogOperation.setFileType( fileFilterType );
+    fileDialogOperation.setFilter( deriveFileFilterFromFileType( fileFilterType ) );
     fileDialogOperation.setFilename( meta.getName() );
     fileDialogOperation.setProviderFilter( providerFilter );
     if ( !export && rep != null && meta.getRepositoryDirectory() != null ) {
       fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
     } else {
-      setFileOperatioPathForNonRepositoryFile(fileDialogOperation, meta);
+      setFileOperatioPathForNonRepositoryFile(fileDialogOperation, meta, export );
     }
     if ( meta instanceof VariableSpace ) {
       fileDialogOperation.setConnection( ( (VariableSpace) meta ).getVariable( CONNECTION ) );
@@ -4740,12 +4769,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean saved = false;
     try {
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
-        fileDialogOperation );
+              fileDialogOperation );
       if ( meta instanceof VariableSpace && fileDialogOperation.getConnection() != null ) {
         ( (VariableSpace) meta ).setVariable( CONNECTION, fileDialogOperation.getConnection() );
       }
       if ( !export && fileDialogOperation.getRepositoryObject() != null ) {
-        saved = performRepoSave( meta, fileType, fileDialogOperation );
+        saved = performRepoSave( meta, fileFilterType, fileDialogOperation );
       } else if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
         String filename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
         lastFileOpened = filename;
@@ -5390,7 +5419,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         saved = save( meta, meta.getFilename(), export );
       } else {
         if ( meta.canSave() ) {
-          saved = saveAsNew(meta, export);
+          saved = saveAsNew(meta, export, FileDialogOperation.SAVE_AS);
         }
       }
     }
@@ -5716,7 +5745,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean exportXMLFile() {
-    return saveXMLFile( true );
+    return saveXMLFile( true, FilterType.XML + "," + FilterType.ALL, FileDialogOperation.EXPORT );
   }
 
   /**
@@ -6029,21 +6058,21 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public boolean saveXMLFile( boolean export ) {
+  public boolean saveXMLFile( boolean export, String fileFilterType, String command ) {
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
-      return saveTransAsXmlFile( transMeta, export );
+      return saveTransAsXmlFile( transMeta, export, fileFilterType + "," + FilterType.KETTLE_TRANS, command );
     }
 
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
-      return saveJobAsXmlFile( jobMeta, export );
+      return saveJobAsXmlFile( jobMeta, export, fileFilterType + "," + FilterType.KETTLE_JOB, command );
     }
 
     return false;
   }
 
-  private boolean saveTransAsXmlFile( TransMeta transMeta, boolean export ) {
+  private boolean saveTransAsXmlFile( TransMeta transMeta, boolean export, String fileFilterType, String command ) {
     TransLogTable origTransLogTable = transMeta.getTransLogTable();
     StepLogTable origStepLogTable = transMeta.getStepLogTable();
     PerformanceLogTable origPerformanceLogTable = transMeta.getPerformanceLogTable();
@@ -6052,7 +6081,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     try {
       XmlExportHelper.swapTables( transMeta );
-      return saveAsNew( transMeta, export, ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS );
+      return saveAsNew( transMeta, export, ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS
+              , fileFilterType, command );
     } finally {
       transMeta.setTransLogTable( origTransLogTable );
       transMeta.setStepLogTable( origStepLogTable );
@@ -6063,7 +6093,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
 
-  private boolean saveJobAsXmlFile( JobMeta jobMeta, boolean export ) {
+  private boolean saveJobAsXmlFile( JobMeta jobMeta, boolean export, String fileFilterType, String command ) {
     JobLogTable origJobLogTable = jobMeta.getJobLogTable();
     JobEntryLogTable originEntryLogTable = jobMeta.getJobEntryLogTable();
     ChannelLogTable originChannelLogTable = jobMeta.getChannelLogTable();
@@ -6071,7 +6101,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     try {
       XmlExportHelper.swapTables( jobMeta );
-      return saveAsNew( jobMeta, export , ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS );
+      return saveAsNew( jobMeta, export , ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS
+              , fileFilterType, command );
     } finally {
       jobMeta.setJobLogTable( origJobLogTable );
       jobMeta.setJobEntryLogTable( originEntryLogTable );
