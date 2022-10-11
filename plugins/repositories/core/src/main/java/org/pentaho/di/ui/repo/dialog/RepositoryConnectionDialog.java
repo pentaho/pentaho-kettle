@@ -27,6 +27,8 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.program.Program;
@@ -46,6 +48,8 @@ import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
+
+import java.util.Arrays;
 
 /**
  * @author amit kumar
@@ -92,7 +96,13 @@ public class RepositoryConnectionDialog extends Dialog {
     try {
       Label lblConnectTo = new Label( shell, SWT.NONE );
       props.setLook( lblConnectTo );
-      lblConnectTo.setLayoutData( new FormDataBuilder().top( 10, 0 ).left( 1, 0 ).result() );
+      lblConnectTo.setLayoutData( new FormDataBuilder().top( 10, 0 ).left( 5, 0 ).result() );
+      Font fontConnectTo = new Font( display, Arrays.stream( lblConnectTo.getFont().getFontData() ).<FontData>map( fd -> {
+        fd.setHeight( 16 );
+        fd.setStyle( SWT.BOLD );
+        return fd;
+      } ).toArray( FontData[]::new ) );
+      lblConnectTo.setFont( fontConnectTo );
       lblConnectTo.setText( BaseMessages.getString( PKG, "repositories.connectto.label" ) );
 
       Label lblRepoName = new Label( shell, SWT.NONE );
