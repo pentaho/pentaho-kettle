@@ -49,6 +49,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -99,6 +100,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
+import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
@@ -128,6 +130,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -135,6 +138,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -421,7 +425,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     typedComboBox.addSelectionListener( ( typedComboBox, newSelection ) -> {
       IStructuredSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
-      selectPath( treeViewerSelection.getFirstElement(), false );
+      selectPath( treeViewerSelection.getFirstElement() );
       processState();
     } );
 
@@ -753,14 +757,40 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     PropsUI.getInstance().setLook( txtSearch );
     txtSearch.setBackground( clrWhite );
     txtSearch.setLayoutData( rd );
-    txtSearch.addModifyListener( (event) -> {performSearch(event);});
+    txtSearch.addTraverseListener( traverseEvent -> {
+      if ( traverseEvent.detail == SWT.TRAVERSE_RETURN ) {
+        performSearch();
+      }
+    } );
+
+    FlatButton flatBtnClr =
+      new FlatButton( searchComp, SWT.NONE ).setEnabledImage( rasterImage( "img/Close.S_D.svg", 25, 25 ) )
+        .setDisabledImage( rasterImage( "img/Close.S_D_disabled.svg", 25, 25 ) ).setEnabled( true )
+        .setLayoutData( new RowData() ).addListener(
+          new SelectionAdapter() {
+            @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+              if ( StringUtils.isEmpty( txtSearch.getText() ) ) {
+                return;
+              }
+
+              txtSearch.setText( "" );
+              restorePriorSearchState();
+            }
+          } );
+    txtSearch.addModifyListener( modifyEvent -> flatBtnClr.setEnabled( !StringUtils.isEmpty( txtSearch.getText() ) ) );
 
     headerComposite.layout();
 
     return headerComposite;
   }
 
-  private void performSearch(ModifyEvent event) {
+  private void performSearch() {
+    IStructuredSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
+    selectPath( treeViewerSelection.getFirstElement(), false, true );
+    processState();
+  }
+
+  private void restorePriorSearchState() {
     IStructuredSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
     selectPath( treeViewerSelection.getFirstElement() );
     processState();
@@ -1072,7 +1102,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.collapseAll();
       } else {
         try {
-          fileProvider = ProviderServiceService.get().get( ( (File) treeViewerSelection.getFirstElement() ).getProvider() );
+          fileProvider =
+            ProviderServiceService.get().get( ( (File) treeViewerSelection.getFirstElement() ).getProvider() );
         } catch ( Exception ex ) {
           log.logDebug( "Unable to find provider" );
         }
@@ -1150,7 +1181,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.setExpandedState( selectedNode, true );
       }
       // Update the path that is selected
-      selectPath( selectedNode, false );
+      selectPath( selectedNode );
       // Clears the selection from fileTableViewer
       fileTableViewer.setSelection( new StructuredSelection() );
       txtSearch.setText( "" );
@@ -1373,6 +1404,25 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       Object selection = ( (IStructuredSelection) e.getSelection() ).getFirstElement();
 
       if ( selection instanceof Directory ) {
+        List<Directory> parentDirectories = new ArrayList<>();
+        Directory directory = (Directory) selection;
+        while( directory != null && !treeViewer.getExpandedState( directory ) ) {
+          parentDirectories.add( directory );
+          try {
+            File file = FILE_CONTROLLER.getParent( directory );
+            if( file instanceof Directory )
+              directory = ( Directory ) file;
+            else
+              break;
+          } catch (InvalidFileProviderException ex) {
+            throw new RuntimeException(ex);
+          }
+        }
+        for ( int i = parentDirectories.size()-1; i >= 0; i-- ) {
+          treeViewer.refresh( parentDirectories.get(i), true );
+          treeViewer.setExpandedState( parentDirectories.get(i), true );
+        }
+        selectPath( selection,true, false );
         treeViewer.setExpandedState( selection, true );
         treeViewer.setSelection( new StructuredSelection( selection ), true );
 
@@ -1633,7 +1683,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private boolean isValidFileExtension( String fileExtension ) {
-    return  typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES )
+    return typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES )
       || Utils.matches( fileExtension, typedComboBox.getSelection().getValue() );
   }
 
@@ -1704,21 +1754,21 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         return;
       }
       FileProvider fileProvider = null;
-      if ( fileTableViewerSelection.getFirstElement()  instanceof File ) {
+      if ( fileTableViewerSelection.getFirstElement() instanceof File ) {
         fileProvider = ProviderServiceService.get().get( ( (File) selection.get( 0 ) ).getProvider() );
       }
 
       if ( fileProvider != null ) {
         List<File> selectionList = new ArrayList<>();
-        for ( Object file: selection ) {
+        for ( Object file : selection ) {
           selectionList.add( (File) file );
         }
-        Result result= FILE_CONTROLLER.delete( selectionList );
+        Result result = FILE_CONTROLLER.delete( selectionList );
         List<File> filesToDelete = (List<File>) result.getData();
         if ( filesToDelete.size() > 0 ) {
           FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
           treeViewer.refresh( treeViewerDestination, true );
-          selectPath( treeViewerDestination, false );
+          selectPath( treeViewerDestination );
           treeViewer.setSelection( treeViewerSelection, true );
         } else {
           throw new FileException();
@@ -1748,13 +1798,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     String messageBefore;
     String messageAfter;
     if ( StringUtils.equalsIgnoreCase( fileType, "file" ) && fileSelectionCount == 1 ) {
-      messageBefore = BaseMessages.getString( PKG, "file-open-save-plugin.error.delete-" + fileType + ".message");
+      messageBefore = BaseMessages.getString( PKG, "file-open-save-plugin.error.delete-" + fileType + ".message" );
       messageAfter = "?";
     } else {
-      messageBefore = BaseMessages.getString( PKG, "file-open-save-plugin.error.delete-" + fileType + ".before.message");
-      messageAfter = BaseMessages.getString( PKG, "file-open-save-plugin.error.delete-" + fileType + ".after.message");
+      messageBefore =
+        BaseMessages.getString( PKG, "file-open-save-plugin.error.delete-" + fileType + ".before.message" );
+      messageAfter = BaseMessages.getString( PKG, "file-open-save-plugin.error.delete-" + fileType + ".after.message" );
     }
-    sb.append( messageBefore  );
+    sb.append( messageBefore );
     sb.append( " " );
     if ( fileSelectionCount > 1 ) {
       sb.append( fileSelectionCount );
@@ -1763,7 +1814,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       sb.append( fileName );
       sb.append( " " );
     }
-    sb.append( messageAfter  );
+    sb.append( messageAfter );
     messageList.add( String.valueOf( sb ) );
     return messageList;
   }
@@ -1803,7 +1854,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
         treeViewer.refresh( treeViewerDestination, true );
 
-        selectPath( treeViewerDestination, false );
+        selectPath( treeViewerDestination );
 
         IStructuredSelection selectionAsStructuredSelection = new StructuredSelection( treeViewerDestination );
         treeViewer.setSelection( selectionAsStructuredSelection, true );
@@ -1906,10 +1957,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   protected void selectPath( Object selectedElement ) {
-    selectPath( selectedElement, true );
+    selectPath( selectedElement, true, false );
   }
 
-  protected void selectPath( Object selectedElement, boolean useCache ) {
+  protected void selectPath( Object selectedElement, boolean useCache, boolean search ) {
 
     if ( selectedElement instanceof Tree ) {
 
@@ -1925,6 +1976,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       processState();
 
     } else if ( selectedElement instanceof Directory ) {
+      if( !search ){
+        txtSearch.setText( "" );
+      }
       String searchString = txtSearch.getText();
       BusyIndicator.showWhile( this.getShell().getDisplay(), () -> {
         try {
@@ -1933,9 +1987,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           if ( StringUtils.isNotEmpty( currentFilters )) {
             currentFilters = currentFilters.replace( "\\", "" );
           }
-          fileTableViewer.setInput( FILE_CONTROLLER.getFiles( (File) selectedElement, currentFilters, useCache ).stream()
-            .filter(
-              file -> searchString.isEmpty() || file.getName().toLowerCase().contains( searchString.toLowerCase() ) )
+          List<File> files = search ?
+                  FILE_CONTROLLER.searchFiles( (File) selectedElement, currentFilters, searchString ):
+                  FILE_CONTROLLER.getFiles( (File) selectedElement, currentFilters, useCache );
+          fileTableViewer.setInput( files.stream()
             .sorted( Comparator.comparing( f -> f instanceof Directory, Boolean::compare ).reversed()
               .thenComparing( Comparator.comparing( f -> ( (File) f ).getName(),
                 String.CASE_INSENSITIVE_ORDER ) ) )

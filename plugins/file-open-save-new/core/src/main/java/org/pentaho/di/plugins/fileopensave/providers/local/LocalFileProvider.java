@@ -45,7 +45,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -112,6 +116,62 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   @Override public List<LocalFile> getFiles( LocalFile file, String filters, VariableSpace space )
     throws FileException {
     return getFiles( file, filters );
+  }
+
+  @Override
+  public List<LocalFile> searchFiles( LocalFile file, String filters, String searchString, VariableSpace space ) {
+
+    final List<LocalFile> files = new ArrayList<>();
+    FileVisitor<Path> visitor = new FileVisitor<Path>() {
+      @Override
+      public FileVisitResult preVisitDirectory( Path dir, BasicFileAttributes attrs ) throws IOException {
+        return Files.isReadable( dir ) ? FileVisitResult.CONTINUE : FileVisitResult.SKIP_SUBTREE ;
+      }
+
+      @Override
+      public FileVisitResult visitFile( Path file, BasicFileAttributes attrs ) throws IOException {
+        if ( Files.isReadable( file ) ) {
+          addReadableFiles( files, file, searchString, filters );
+          return FileVisitResult.CONTINUE;
+        }
+        return FileVisitResult.SKIP_SUBTREE;
+      }
+
+      @Override
+      public FileVisitResult visitFileFailed( Path file, IOException exc ) throws IOException {
+        return FileVisitResult.SKIP_SUBTREE;
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory( Path dir, IOException exc ) throws IOException {
+        if ( Files.isReadable( dir ) ) {
+          addReadableFiles( files, dir, searchString, filters );
+          return FileVisitResult.CONTINUE;
+        }
+        return FileVisitResult.SKIP_SUBTREE;
+      }
+    };
+
+    try {
+      Files.walkFileTree( Paths.get( file.getPath() ), visitor );
+    } catch ( IOException e ) {
+      return Collections.emptyList();
+    }
+
+    return files;
+  }
+
+  private void addReadableFiles( List<LocalFile> files, Path path, String searchString, String filters ) {
+    if( path.getFileName() != null && Files.isReadable( path ) ){
+      String name = path.getFileName().toString();
+      if ( Utils.matches( name, searchString ) || name.toLowerCase().contains( searchString.toLowerCase() ) ) {
+        if ( path.toFile().isDirectory() ) {
+          files.add( LocalDirectory.create( Utils.getParent( path.toString(), FileSystems.getDefault().getSeparator() ), path ) );
+        } else if ( Utils.matches( name, filters ) ) {
+          files.add( LocalFile.create( Utils.getParent( path.toString(), FileSystems.getDefault().getSeparator() ), path ) );
+        }
+      }
+    }
   }
 
   // TODO: Filter out certain files from root
@@ -390,7 +450,14 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   }
 
   @Override public LocalFile getParent( LocalFile file ) {
-    return null;
+    for( Path path : FileSystems.getDefault().getRootDirectories() ){
+      if( file.getParent() == null
+              || path.toString().equals( file.getParent() )
+              || path.toString().equals( file.getParent() + FileSystems.getDefault().getSeparator() ) )
+        return null;
+    }
+    return LocalDirectory.create( Utils.getParent( file.getParent(), FileSystems.getDefault().getSeparator() ),
+            Paths.get( file.getParent() ) );
   }
 
   public void clearProviderCache() {

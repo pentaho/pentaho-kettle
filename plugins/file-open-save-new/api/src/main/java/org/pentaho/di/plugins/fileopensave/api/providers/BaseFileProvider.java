@@ -22,8 +22,14 @@
 
 package org.pentaho.di.plugins.fileopensave.api.providers;
 
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.ui.core.FileDialogOperation;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class BaseFileProvider<T extends File> implements FileProvider<T> {
   @Override public String sanitizeName( T destDir, String newPath ) {
@@ -35,5 +41,15 @@ public abstract class BaseFileProvider<T extends File> implements FileProvider<T
     fileDialogOperation.setFilename( fileDetails.getName() );
     fileDialogOperation.setConnection( fileDetails.getConnection() );
     fileDialogOperation.setProvider( fileDetails.getProvider() );
+  }
+
+  @Override public List<T> searchFiles( T file, String filters, String searchString, VariableSpace space )
+    throws FileException {
+    List<T> files = getFiles( file, filters, space );
+
+    return files.stream()
+      .filter( resultFile -> StringUtils.isEmpty( searchString )
+        || Utils.matches( file.getName(), searchString ) )
+      .collect( Collectors.toList() );
   }
 }
