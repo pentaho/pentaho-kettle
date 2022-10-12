@@ -396,12 +396,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       ? fileDialogOperation.getFilter().split( "," )
       : new String[] { ALL_FILE_TYPES };
     if ( fileDialogOperation.isSaveCommand() && fileFilters.length == 1 ) {
-      FilterType filterType =
-        fileDialogOperation.getFileType().equalsIgnoreCase( "transformation" ) ? FilterType.KETTLE_TRANS :
-          FilterType.KETTLE_JOB;
-      fileFilters = ( filterType + "," + FilterType.XML + "," + FilterType.ALL ).split( "," );
+      if (fileDialogOperation.getFileType() != null) {
+        FilterType filterType = fileDialogOperation.getFileType().equalsIgnoreCase("transformation")
+            ? FilterType.KETTLE_TRANS : fileDialogOperation.getFileType().equalsIgnoreCase("job")
+                ? FilterType.KETTLE_JOB : null;
+        fileFilters = ( ( filterType != null ? filterType: "" ) + "," + FilterType.XML + "," + FilterType.ALL).split(",");
+      }
     }
-
     List<FilterFileType> filterFileTypes = new ArrayList<>();
     int indexOfDefault = 0;
     for ( int i = 0; i < fileFilters.length; i++ ) {
