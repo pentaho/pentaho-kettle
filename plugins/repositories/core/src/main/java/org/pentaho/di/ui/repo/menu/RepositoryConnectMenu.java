@@ -132,7 +132,8 @@ public class RepositoryConnectMenu {
     connectButton.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
-        new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT );
+        new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT,
+          spoon.getRepositoryName() );
         renderAndUpdate();
       }
     } );
@@ -200,7 +201,8 @@ public class RepositoryConnectMenu {
         managerItem.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
-            new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT );
+            new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT,
+              spoon.getRepositoryName() );
             renderAndUpdate();
           }
         } );
