@@ -45,6 +45,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.Import;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.AbstractRepository;
@@ -103,6 +104,7 @@ import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedReposi
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.soap.SOAPFaultException;
+import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -164,6 +166,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   private static final String FOLDER_SLAVE_SERVERS = "slaveServers"; //$NON-NLS-1$
 
   private static final String FOLDER_DATABASES = "databases"; //$NON-NLS-1$
+
+  private static final String SYSTEM_FOLDER = Const
+          .safeAppendDirectory( BasePropertyHandler.getProperty( "systemDirBase", "system/" ), "" );
 
   // ~ Instance fields =================================================================================================
   /**
@@ -1492,13 +1497,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public List<DatabaseMeta> readDatabases() throws KettleException {
     readWriteLock.readLock().lock();
     try {
+      boolean hasOsgiFolder = new File( SYSTEM_FOLDER ).exists();
       List<RepositoryFile> children = getAllFilesOfType( null, RepositoryObjectType.DATABASE, false );
       List<DatabaseMeta> dbMetas = new ArrayList<DatabaseMeta>();
 
       for ( RepositoryFile file : children ) {
         DataNode node;
         node = pur.getDataForRead( file.getId(), NodeRepositoryFileData.class ).getNode();
-
+        if ( !hasOsgiFolder && StringUtils.equals( node.getProperty( "TYPE" ).getString(), "KettleThin" ) ) {
+          log.logDetailed( "Unable to find database {" + file.getName() + "}" );
+          continue;
+        }
         DatabaseMeta databaseMeta = (DatabaseMeta) databaseMetaTransformer.dataNodeToElement( node );
         databaseMeta.setName( file.getTitle() );
         dbMetas.add( databaseMeta );
