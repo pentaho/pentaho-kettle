@@ -473,7 +473,7 @@ public class SpoonTest {
     doCallRealMethod().when( spoon ).saveToFile( mockJobMeta );
     doCallRealMethod().when( spoon ).saveToFile( mockJobMeta, false );
     doReturn( true ).when( spoon ).saveFileAs( mockJobMeta );
-    doReturn( true ).when( spoon ).saveAsNew( mockJobMeta, false );
+    doReturn( true ).when( spoon ).saveAsNew( mockJobMeta, false, FileDialogOperation.SAVE_AS );
     assertTrue( spoon.saveToFile( mockJobMeta ) );
     verify( mockJobMeta ).setRepository( spoon.rep );
     verify( mockJobMeta ).setMetaStore( spoon.metaStore );
@@ -503,7 +503,7 @@ public class SpoonTest {
 
     // now mock mockJobMeta.canSave() to return true, such that saveFileAs is called (also mocked to return true)
     doReturn( true ).when( mockJobMeta ).canSave();
-    doReturn( true ).when( spoon ).saveAsNew( mockJobMeta, false );
+    doReturn( true ).when( spoon ).saveAsNew( mockJobMeta, false, FileDialogOperation.SAVE_AS );
     spoon.saveToFile( mockJobMeta );
     // and verify that renameTabs is called
     verify( spoon.delegates.tabs ).renameTabs();

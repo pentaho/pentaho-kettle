@@ -38,10 +38,11 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.FileDialogOperation;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -76,9 +77,9 @@ public class SpoonExportXmlTest {
 
     when( spoon.getActiveTransformation() ).thenReturn( transMeta );
     when( spoon.saveXMLFile( any( TransMeta.class ), anyBoolean() ) ).thenReturn( true );
-    when( spoon.saveXMLFile( anyBoolean() ) ).thenCallRealMethod();
+    when( spoon.saveXMLFile( anyBoolean(), anyString(), anyString() ) ).thenCallRealMethod();
 
-    spoon.saveXMLFile( true );
+    spoon.saveXMLFile( true, FilterType.XML.toString(), FileDialogOperation.EXPORT);
 
     tablesCommonValuesEqual( originTransLogTable, transMeta.getTransLogTable() );
     assertEquals( originTransLogTable.getLogInterval(), transMeta.getTransLogTable().getLogInterval() );
@@ -106,8 +107,11 @@ public class SpoonExportXmlTest {
     when( spoon.getActiveTransformation() ).thenReturn( null );
     when( spoon.getActiveJob() ).thenReturn( jobMeta );
     when( spoon.saveXMLFile( any( JobMeta.class ), anyBoolean() ) ).thenReturn( true );
-    when( spoon.saveXMLFile( anyBoolean() ) ).thenCallRealMethod();
-    spoon.saveXMLFile( true );
+    when( spoon.saveXMLFile( anyBoolean(), anyString(), anyString() ) ).thenCallRealMethod();
+
+    spoon.saveXMLFile( true, FilterType.XML.toString(), FileDialogOperation.EXPORT);
+
+
 
     tablesCommonValuesEqual( originJobLogTable, jobMeta.getJobLogTable() );
     assertEquals( originJobLogTable.getLogInterval(), jobMeta.getJobLogTable().getLogInterval() );

@@ -340,7 +340,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     btnOpen.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
 
-        if ( command.equals( FileDialogOperation.SELECT_FILE ) || command.equals( FileDialogOperation.OPEN ) ) {
+        if ( command.equals( FileDialogOperation.SELECT_FILE ) || command.equals( FileDialogOperation.OPEN )
+                || command.equals( FileDialogOperation.IMPORT ) ) {
           if ( StringUtils.isNotEmpty( name ) ) {
             getShell().dispose();
           }
@@ -393,14 +394,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     typedComboBox = new TypedComboBox<>( parent );
 
     String[] fileFilters = StringUtils.isNotEmpty( fileDialogOperation.getFilter() )
-      ? fileDialogOperation.getFilter().split( "," )
-      : new String[] { ALL_FILE_TYPES };
-    if ( fileDialogOperation.isSaveCommand() && fileFilters.length == 1 ) {
-      FilterType filterType =
-        fileDialogOperation.getFileType().equalsIgnoreCase( "transformation" ) ? FilterType.KETTLE_TRANS :
-          FilterType.KETTLE_JOB;
-      fileFilters = ( filterType + "," + FilterType.XML + "," + FilterType.ALL ).split( "," );
-    }
+            ? fileDialogOperation.getFilter().split( "," )
+            : new String[] { ALL_FILE_TYPES };
 
     List<FilterFileType> filterFileTypes = new ArrayList<>();
     int indexOfDefault = 0;
@@ -698,6 +693,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
       if ( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.XML ) ) ) {
         name = txtFileName.getText() + ".xml";
+      } else if ( fileDialogOperation.getCommand().equalsIgnoreCase(FileDialogOperation.EXPORT ) ) {
+          if( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.KETTLE_TRANS ) ) ) {
+            name = txtFileName.getText() + ".ktr";
+          } else if( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.KETTLE_JOB ) ) ) {
+            name = txtFileName.getText() + ".kjb";
+          }
       } else {
         name = txtFileName.getText();
       }
@@ -1376,7 +1377,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.setExpandedState( selection, true );
         treeViewer.setSelection( new StructuredSelection( selection ), true );
 
-        if ( command.contains( FileDialogOperation.SAVE ) || command.equals( FileDialogOperation.SELECT_FOLDER ) ) {
+        if ( command.contains( FileDialogOperation.SAVE ) || command.equals( FileDialogOperation.SELECT_FOLDER )
+                || command.equals( FileDialogOperation.EXPORT )  ) {
           parentPath = ( (Directory) selection ).getParent();
           path = ( (Directory) selection ).getPath();
           provider = ( (Directory) selection ).getProvider();
@@ -1386,6 +1388,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         File localFile = (File) selection;
         if ( command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE )
           || command.equalsIgnoreCase( FileDialogOperation.OPEN )
+          || command.equalsIgnoreCase( FileDialogOperation.IMPORT )
           || command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE_FOLDER ) ) {
           txtNav.setText( getNavigationPath( localFile ) );
           String fileExtension = extractFileExtension( localFile.getPath() );
@@ -1564,7 +1567,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         btnOpen.setEnabled( StringUtils.isNotEmpty( path ) || StringUtils.isNotEmpty( name ) );
       } else if ( command.equals( FileDialogOperation.SELECT_FOLDER ) ) {
         btnOpen.setEnabled( StringUtils.isNotEmpty( path ) && StringUtils.isEmpty( name ) );
-      } else if ( command.equals( FileDialogOperation.SELECT_FILE ) || command.equals( FileDialogOperation.OPEN ) ) {
+      } else if ( command.equals( FileDialogOperation.SELECT_FILE ) || command.equals( FileDialogOperation.OPEN )
+              || command.equals( FileDialogOperation.IMPORT ) ) {
         btnOpen.setEnabled( StringUtils.isNotEmpty( name ) );
       } else {
         btnOpen.setEnabled( false );
@@ -1573,8 +1577,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private boolean isSaveState() {
-    return command.equals( FileDialogOperation.SAVE )
-      || command.equals( FileDialogOperation.SAVE_TO ) || command.equals( FileDialogOperation.SAVE_TO_FILE_FOLDER );
+    return fileDialogOperation.isSaveCommand();
   }
 
   private void processState() {
@@ -1586,18 +1589,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     if ( isSaveState() && txtFileName != null && !getShell().isDisposed() ) {
       // If the path set by the treeViewer; use the left-hand values
       saveStructuredSelectionPath( (IStructuredSelection) treeViewer.getSelection() );
-
       // If the path is set by the fileTableViewer override the treeViewer values (use the right-hand values)
       saveStructuredSelectionPath( (IStructuredSelection) fileTableViewer.getSelection() );
-
-
       if ( StringUtils.isNotEmpty( path ) ) {
-
-
-        if ( ( command.equals( FileDialogOperation.SAVE_TO_FILE_FOLDER )
-          || command.equals( FileDialogOperation.SAVE )
-          || command.equals( FileDialogOperation.SAVE_TO ) )
-          && StringUtils.isNotEmpty( txtFileName.getText() ) ) {
+        if ( fileDialogOperation.isSaveCommand() && StringUtils.isNotEmpty( txtFileName.getText() ) ) {
           btnSave.setEnabled( true );
         }
       } else {
@@ -1616,7 +1611,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
       if ( command.equals( FileDialogOperation.SELECT_FILE )
         || command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE_FOLDER )
-        || command.equals( FileDialogOperation.OPEN ) ) {
+        || command.equals( FileDialogOperation.OPEN )  || command.equals( FileDialogOperation.IMPORT ) ) {
 
         if ( typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES ) ) {
           name = tempName;
