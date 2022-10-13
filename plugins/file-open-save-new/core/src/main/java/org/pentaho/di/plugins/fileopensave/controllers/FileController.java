@@ -27,6 +27,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
+import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by bmorrise on 2/13/19.
@@ -111,6 +113,22 @@ public class FileController {
         List<File> files = fileProvider.getFiles( file, filters, space );
         fileCache.setFiles( file, files );
         return files;
+      }
+    } catch ( InvalidFileProviderException e ) {
+      return Collections.emptyList();
+    }
+  }
+
+  public List<File> searchFiles( File file, String filters, String searchString ) throws FileException {
+    try {
+      FileProvider<File> fileProvider = providerService.get( file.getProvider() );
+      if( LocalFileProvider.TYPE.equals( fileProvider.getType() ) )
+        return fileProvider.searchFiles( file, filters, searchString, space );
+      else{
+       return getFiles( file, filters, true ).stream()
+                .filter( f -> org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), searchString)
+                        || f.getName().toLowerCase().contains( searchString.toLowerCase() ))
+                .collect(Collectors.toList());
       }
     } catch ( InvalidFileProviderException e ) {
       return Collections.emptyList();
@@ -241,7 +259,7 @@ public class FileController {
 
   private File writeFile( FileProvider<File> fromFileProvider, FileProvider<File> toFileProvider, File file,
                           File destDir, String path, boolean overwrite ) throws FileException {
-    if (file instanceof Directory){
+    if ( file instanceof Directory ) {
       return null; //TODO: Handle scenario for copying directory between providers
     }
     try ( InputStream inputStream = fromFileProvider.readFile( file, space ) ) {
@@ -257,5 +275,10 @@ public class FileController {
       delete( Collections.singletonList( file ) );
     }
     return newFile;
+  }
+
+  public File getParent(Directory directory) throws InvalidFileProviderException {
+    FileProvider fileProvider = providerService.get( directory.getProvider() );
+    return fileProvider.getParent( directory );
   }
 }

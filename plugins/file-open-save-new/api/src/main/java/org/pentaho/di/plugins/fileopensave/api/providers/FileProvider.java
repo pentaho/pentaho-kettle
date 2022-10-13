@@ -63,6 +63,8 @@ public interface FileProvider<T extends File> {
 
   List<T> getFiles( T file, String filters, VariableSpace space ) throws FileException;
 
+  List<T> searchFiles( T file, String filters, String searchString, VariableSpace space ) throws FileException;
+
   List<T> delete( List<T> files, VariableSpace space ) throws FileException;
 
   T add( T folder, VariableSpace space ) throws FileException;
