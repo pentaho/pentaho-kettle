@@ -32,6 +32,12 @@
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-core</artifactId>
       <version>${pentaho-reporting.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Test dependencies -->
