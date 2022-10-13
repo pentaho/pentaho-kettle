@@ -33,6 +33,9 @@ public class FileDialogOperation {
   public static final String SAVE_TO_FILE_FOLDER = "saveToFileFolder";
 
   public static final String EXPORT = "export";
+
+  public static final String EXPORT_ALL = "exportAll";
+
   public static final String IMPORT = "import";
   public static final String ORIGIN_SPOON = "spoon";
   public static final String ORIGIN_OTHER = "other";
@@ -201,7 +204,7 @@ public class FileDialogOperation {
   public boolean isSaveCommand() {
     return ( command.equalsIgnoreCase( SAVE ) || command.equalsIgnoreCase( SAVE_TO )
       || command.equalsIgnoreCase( SAVE_AS ) || command.equalsIgnoreCase( SAVE_TO_FILE_FOLDER )
-            || command.equalsIgnoreCase( EXPORT) );
+            || command.equalsIgnoreCase( EXPORT) || command.equalsIgnoreCase( EXPORT_ALL) );
   }
 
 }

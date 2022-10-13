@@ -699,6 +699,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           } else if( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.KETTLE_JOB ) ) ) {
             name = txtFileName.getText() + ".kjb";
           }
+      } else if ( fileDialogOperation.getCommand().equalsIgnoreCase(FileDialogOperation.EXPORT_ALL ) ) {
+        name = txtFileName.getText() + ".zip";
       } else {
         name = txtFileName.getText();
       }
@@ -1378,7 +1380,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.setSelection( new StructuredSelection( selection ), true );
 
         if ( command.contains( FileDialogOperation.SAVE ) || command.equals( FileDialogOperation.SELECT_FOLDER )
-                || command.equals( FileDialogOperation.EXPORT )  ) {
+                || command.equals( FileDialogOperation.EXPORT ) || command.equals( FileDialogOperation.EXPORT_ALL ) ) {
           parentPath = ( (Directory) selection ).getParent();
           path = ( (Directory) selection ).getPath();
           provider = ( (Directory) selection ).getProvider();
