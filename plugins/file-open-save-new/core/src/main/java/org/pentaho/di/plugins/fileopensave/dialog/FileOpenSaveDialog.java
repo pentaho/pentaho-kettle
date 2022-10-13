@@ -1796,7 +1796,15 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
 
       if ( fileProvider != null ) {
-        fileProvider.createDirectory( parentPathOfSelection, (File) selection, newFolderName );
+        File file = fileProvider.createDirectory( parentPathOfSelection, (File) selection, newFolderName );
+        if ( file == null ) {
+          Listener cancel = event -> { /* do nothing close dialog */ };
+          Map<String, Listener> listenerMap = new LinkedHashMap<>();
+          listenerMap.put( BaseMessages.getString( "System.Button.Cancel" ), cancel );
+          warningDialog = new WarningDialog( getShell(), BaseMessages.getString( PKG, "file-open-save-plugin.error.unable-to-create-folder.title" ),
+                  BaseMessages.getString( PKG, "file-open-save-plugin.error.unable-to-create-folder.message" ), listenerMap );
+          warningDialog.open();
+        }
         FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
         treeViewer.refresh( treeViewerDestination, true );
 
@@ -1822,7 +1830,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
     } catch ( Exception ex ) {
       new ErrorDialog( getShell(), "Error",
-        BaseMessages.getString( PKG, "file-open-save-plugin.error.unable-to-move-file.message" ), ex, false );
+        BaseMessages.getString( PKG, "file-open-save-plugin.error.unable-to-create-folder.title" ), ex, false );
     }
     return false;
   }
