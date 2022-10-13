@@ -4719,18 +4719,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private void setFileOperatioPathForNonRepositoryFile(FileDialogOperation fileDialogOperation
           , EngineMetaInterface meta, boolean export) {
     // Check if user is exporting a file
-    if (export && lastFileOpenedProvider.equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString())) {
+    if (export && !Utils.isEmpty( lastFileOpenedProvider ) && lastFileOpenedProvider.equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString())) {
       // Sine the last opened path is from repository and user can only export to local or vfs, set the
       // path to the user's home folder
       fileDialogOperation.setPath(userHomeDir);
       fileDialogOperation.setProvider(ProviderFilterType.LOCAL.toString());
     } else {
-      if (meta.getFilename() != null) {
+      if ( !StringUtils.isEmpty(meta.getFilename() ) ) {
         // The file exist and the user has invoked as SaveAs operation. Set the path to the folder the current file exist
         String pathSplitter = meta.getFilename().contains("/") ? "/" : "\\";
         fileDialogOperation
                 .setPath(meta.getFilename().substring(0, meta.getFilename().lastIndexOf(pathSplitter)));
-      } else if (meta.getName() != null) {
+      } else if ( !StringUtils.isEmpty( meta.getName() ) ) {
         // This is the first time user is saving this file.
         if (!Utils.isEmpty(lastFileOpened)) {
           //User has opened a file previously, set the save folder be the last file opened folder
@@ -5761,76 +5761,56 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return; // nothing to do here, prevent an NPE
     }
 
-    // ((VariableSpace)resourceExportInterface).getVariable("Internal.Transformation.Filename.Directory");
-
-    // Ask the user for a zip file to export to:
-    //
     try {
       String zipFilename = null;
-      while ( Utils.isEmpty( zipFilename ) ) {
-        FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setText( BaseMessages.getString( PKG, "Spoon.ExportResourceSelectZipFile" ) );
-        dialog.setFilterExtensions( new String[] { "*.zip;*.ZIP", "*" } );
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "System.FileType.ZIPFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ), } );
-        setFilterPath( dialog );
-        if ( dialog.open() != null ) {
-          lastDirOpened = dialog.getFilterPath();
-          zipFilename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-          FileObject zipFileObject = KettleVFS.getFileObject( zipFilename );
-          if ( zipFileObject.exists() ) {
-            MessageBox box = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL );
-            box
-              .setMessage( BaseMessages
-                .getString( PKG, "Spoon.ExportResourceZipFileExists.Message", zipFilename ) );
-            box.setText( BaseMessages.getString( PKG, "Spoon.ExportResourceZipFileExists.Title" ) );
-            int answer = box.open();
-            if ( answer == SWT.CANCEL ) {
-              return;
-            }
-            if ( answer == SWT.NO ) {
-              zipFilename = null;
-            }
+      FileDialogOperation fileDialogOperation =
+              getFileDialogOperation(FileDialogOperation.EXPORT_ALL, FileDialogOperation.ORIGIN_SPOON);
+      fileDialogOperation.setFileType(FilterType.ZIP.toString());
+      fileDialogOperation.setFilter(FilterType.ZIP.toString());
+      fileDialogOperation.setProviderFilter(ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS);
+      setFileOperatioPathForNonRepositoryFile(fileDialogOperation, (EngineMetaInterface) resourceExportInterface, true);
+      ExtensionPointHandler.callExtensionPoint(getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
+              fileDialogOperation);
+
+      if (fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null) {
+        zipFilename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
+        lastFileOpened = zipFilename;
+        lastFileOpenedConnection = fileDialogOperation.getConnection();
+        lastFileOpenedProvider = fileDialogOperation.getProvider();
+        FileObject zipFileObject = KettleVFS.getFileObject(zipFilename);
+        if (zipFileObject.exists()) {
+          MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL);
+          box.setMessage(BaseMessages.getString(PKG, "Spoon.ExportResourceZipFileExists.Message", zipFilename));
+          box.setText(BaseMessages.getString(PKG, "Spoon.ExportResourceZipFileExists.Title"));
+          int answer = box.open();
+          if (answer == SWT.CANCEL) {
+            return;
           }
-        } else {
-          return;
+          if (answer == SWT.NO) {
+            zipFilename = null;
+          }
+        }
+        if (!Utils.isEmpty(zipFilename)) {
+          // Export the resources linked to the currently loaded file...
+          TopLevelResource topLevelResource =
+                  ResourceUtil.serializeResourceExportInterface(
+                          zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStore);
+          String message =
+                  ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(), resourceExportInterface);
+
+          EnterTextDialog enterTextDialog =
+                  new EnterTextDialog(
+                          shell, BaseMessages.getString(PKG, "Spoon.Dialog.ResourceSerialized"), BaseMessages.getString(
+                          PKG, "Spoon.Dialog.ResourceSerializedSuccesfully"), message);
+          enterTextDialog.setReadOnly();
+          enterTextDialog.open();
         }
       }
-
-      // Export the resources linked to the currently loaded file...
-      //
-      TopLevelResource topLevelResource =
-        ResourceUtil.serializeResourceExportInterface(
-          zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStore );
-      String message =
-        ResourceUtil.getExplanation( zipFilename, topLevelResource.getResourceName(), resourceExportInterface );
-
-      /*
-       * // Add the ZIP file as a repository to the repository list... // RepositoriesMeta repositoriesMeta = new
-       * RepositoriesMeta(); repositoriesMeta.readData();
-       *
-       * KettleFileRepositoryMeta fileRepositoryMeta = new KettleFileRepositoryMeta(
-       * KettleFileRepositoryMeta.REPOSITORY_TYPE_ID, "Export " + baseFileName, "Export to file : " + zipFilename,
-       * "zip://" + zipFilename + "!"); fileRepositoryMeta.setReadOnly(true); // A ZIP file is read-only int nr = 2;
-       * String baseName = fileRepositoryMeta.getName(); while
-       * (repositoriesMeta.findRepository(fileRepositoryMeta.getName()) != null) { fileRepositoryMeta.setName(baseName +
-       * " " + nr); nr++; }
-       *
-       * repositoriesMeta.addRepository(fileRepositoryMeta); repositoriesMeta.writeData();
-       */
-
-      // Show some information concerning all this work...
-
-      EnterTextDialog enterTextDialog =
-        new EnterTextDialog(
-          shell, BaseMessages.getString( PKG, "Spoon.Dialog.ResourceSerialized" ), BaseMessages.getString(
-            PKG, "Spoon.Dialog.ResourceSerializedSuccesfully" ), message );
-      enterTextDialog.setReadOnly();
-      enterTextDialog.open();
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.Error" ), BaseMessages.getString(
-        PKG, "Spoon.ErrorExportingFile" ), e );
+    } catch (KettleException e) {
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Error"), BaseMessages.getString(
+                PKG, "Spoon.ErrorExportingFile"), e);
+    } catch (FileSystemException e) {
+      throw new RuntimeException(e);
     }
   }
 
