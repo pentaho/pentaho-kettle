@@ -130,7 +130,7 @@ public class RepositoryManagerDialog extends Dialog {
   }
 
   @SuppressWarnings( "squid:S3776" )
-  public void open( int width, int height ) {
+  public void open( int width, int height, String connectedRepositoryName ) {
     // complexity suppressed because UI need it
 
     display = getParent().getDisplay();
@@ -259,7 +259,7 @@ public class RepositoryManagerDialog extends Dialog {
     stackComposite.setBackground( display.getSystemColor( SWT.COLOR_WHITE ) );
 
 
-    Composite repoListComp = buildRepoListComposite( stackComposite );
+    Composite repoListComp = buildRepoListComposite( stackComposite, connectedRepositoryName );
     props.setLook( repoListComp );
 
     repositoryInfos = new LinkedHashMap<>();
@@ -400,7 +400,7 @@ public class RepositoryManagerDialog extends Dialog {
   }
 
   @SuppressWarnings( "squid:S3776" )
-  private Composite buildRepoListComposite( Composite parent ) {
+  private Composite buildRepoListComposite( Composite parent, String connectedRepositoryName ) {
     // complexity suppressed because UI need it
 
     Composite comp = new Composite( parent, SWT.NONE );
@@ -593,6 +593,7 @@ public class RepositoryManagerDialog extends Dialog {
 
     ISelectionChangedListener scl = sce -> {
       boolean enabled = true;
+      boolean disabled = false;
       if ( repoList.getStructuredSelection().isEmpty() ) {
         enabled = false;
       } else {
@@ -606,6 +607,10 @@ public class RepositoryManagerDialog extends Dialog {
       btnEdit.setEnabled( enabled );
       btnDelete.setEnabled( enabled );
       btnConnect.setEnabled( enabled );
+
+      if ( connectedRepositoryName != null ) {
+        btnConnect.setEnabled( disabled );
+      }
     };
 
     // Fire this once to disable things initially

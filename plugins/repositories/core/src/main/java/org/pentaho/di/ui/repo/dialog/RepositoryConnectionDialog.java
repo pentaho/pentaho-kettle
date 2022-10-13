@@ -232,6 +232,9 @@ public class RepositoryConnectionDialog extends Dialog {
       }
       log.logBasic( "Connection successful to repository " + strRepoName );
       shell.dispose();
+      if ( getParent() != null && getParent().toString().equalsIgnoreCase( "Shell {Repository Manager}" ) ) {
+        getParent().dispose();
+      }
       return true;
     } catch ( Exception e ) {
       log.logError( "Error connecting to repository ", e );
