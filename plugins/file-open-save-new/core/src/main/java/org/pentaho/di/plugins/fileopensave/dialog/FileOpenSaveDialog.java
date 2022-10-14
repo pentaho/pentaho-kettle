@@ -48,8 +48,6 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -100,7 +98,6 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
-import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
@@ -130,7 +127,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -138,7 +134,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -695,21 +690,21 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       if ( file instanceof RepositoryFile ) {
         path = null; // this path gets ignored; only parentPath used for repo files
       }
-      if ( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.XML ) ) ) {
-        name = txtFileName.getText() + ".xml";
-      } else if ( fileDialogOperation.getCommand().equalsIgnoreCase(FileDialogOperation.EXPORT ) ) {
-          if( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.KETTLE_TRANS ) ) ) {
-            name = txtFileName.getText() + ".ktr";
-          } else if( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.KETTLE_JOB ) ) ) {
-            name = txtFileName.getText() + ".kjb";
-          }
-      } else if ( fileDialogOperation.getCommand().equalsIgnoreCase(FileDialogOperation.EXPORT_ALL ) ) {
-        name = txtFileName.getText() + ".zip";
+      String fileName = txtFileName.getText();
+      if ( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.XML ) ) && !fileName.endsWith( ".xml" ) ) {
+        name = fileName + ".xml";
+      } else if ( fileDialogOperation.getCommand().equalsIgnoreCase( FileDialogOperation.EXPORT ) ) {
+        if ( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.KETTLE_TRANS ) ) && !fileName.endsWith( ".ktr" ) ) {
+          name = fileName + ".ktr";
+        } else if ( typedComboBox.getSelection().getId().equalsIgnoreCase( String.valueOf( FilterType.KETTLE_JOB ) ) && !fileName.endsWith( ".kjb" ) ) {
+          name = fileName + ".kjb";
+        }
+      } else if ( fileDialogOperation.getCommand().equalsIgnoreCase( FileDialogOperation.EXPORT_ALL ) ) {
+        name = fileName + ".zip";
       } else {
-        name = txtFileName.getText();
+        name = fileName;
       }
       getShell().dispose();
-    } else {// TODO: Display something informing the user
     }
   }
 
