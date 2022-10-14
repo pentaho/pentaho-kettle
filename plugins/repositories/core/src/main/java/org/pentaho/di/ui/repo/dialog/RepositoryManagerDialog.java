@@ -60,6 +60,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -68,6 +69,8 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
+import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -130,7 +133,7 @@ public class RepositoryManagerDialog extends Dialog {
   }
 
   @SuppressWarnings( "squid:S3776" )
-  public void open( int width, int height, String connectedRepositoryName ) {
+  public void open( int width, int height, String connectedRepositoryName, RepositoriesMeta repositoriesMeta ) {
     // complexity suppressed because UI need it
 
     display = getParent().getDisplay();
@@ -259,7 +262,7 @@ public class RepositoryManagerDialog extends Dialog {
     stackComposite.setBackground( display.getSystemColor( SWT.COLOR_WHITE ) );
 
 
-    Composite repoListComp = buildRepoListComposite( stackComposite, connectedRepositoryName );
+    Composite repoListComp = buildRepoListComposite( stackComposite, connectedRepositoryName, repositoriesMeta );
     props.setLook( repoListComp );
 
     repositoryInfos = new LinkedHashMap<>();
@@ -400,7 +403,8 @@ public class RepositoryManagerDialog extends Dialog {
   }
 
   @SuppressWarnings( "squid:S3776" )
-  private Composite buildRepoListComposite( Composite parent, String connectedRepositoryName ) {
+  private Composite buildRepoListComposite( Composite parent, String connectedRepositoryName,
+                                            RepositoriesMeta repositoriesMeta ) {
     // complexity suppressed because UI need it
 
     Composite comp = new Composite( parent, SWT.NONE );
@@ -546,7 +550,19 @@ public class RepositoryManagerDialog extends Dialog {
         if ( !sel.isEmpty() ) {
           JSONObject item = (JSONObject) sel.getFirstElement();
 
-          new RepositoryConnectionDialog( dialog.getShell() ).createDialog( item.get( "displayName" ).toString() );
+          String repoName = item.get( "displayName" ).toString();
+          RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
+          if ( repositoryMeta.getId()
+            .equals( BaseMessages.getString( PKG, "repositories.kettleFileRepository.name" ) ) ) {
+            try {
+              RepositoryConnectController.getInstance().connectToRepository( repositoryMeta );
+              dialog.dispose();
+            } catch ( KettleException ke ) {
+              log.logError( BaseMessages.getString( PKG, "repositories.kettleFileRepositoryConnect.exception" ), ke );
+            }
+          } else {
+            new RepositoryConnectionDialog( dialog.getShell() ).createDialog( repoName );
+          }
 
         }
       }

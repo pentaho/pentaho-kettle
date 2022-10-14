@@ -133,7 +133,7 @@ public class RepositoryConnectMenu {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
         new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT,
-          spoon.getRepositoryName() );
+          spoon.getRepositoryName(), repositoriesMeta );
         renderAndUpdate();
       }
     } );
@@ -202,7 +202,7 @@ public class RepositoryConnectMenu {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
             new RepositoryManagerDialog( spoon.getShell() ).open( REPOMANAGERWIDTH, REPOMANAGERHEIGHT,
-              spoon.getRepositoryName() );
+              spoon.getRepositoryName(), repositoriesMeta );
             renderAndUpdate();
           }
         } );
