@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.events.dialog.extension.ExtensionPointWrapper;
 import org.pentaho.di.ui.core.events.dialog.extension.SpoonOpenExtensionPointWrapper;
+import org.pentaho.di.ui.spoon.Spoon;
 
 import java.io.File;
 import java.util.Arrays;
@@ -300,6 +301,10 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     String providerFilterString = ArrayUtils.isEmpty( cleanedFilters )
       ? ProviderFilterType.DEFAULT.toString()
       : String.join( ",", cleanedFilters );
+
+    if ( Spoon.getInstance() != null && Spoon.getInstance().rep != null ) {
+      providerFilterString = ProviderFilterType.REPOSITORY + "," + ProviderFilterType.RECENTS;
+    }
 
     fileDialogOperation.setProviderFilter( providerFilterString );
   }
