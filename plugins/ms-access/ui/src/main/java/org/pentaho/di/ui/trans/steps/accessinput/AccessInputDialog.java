@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.ui.trans.steps.accessinput;
 
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.Table;
 import java.io.File;
 import java.util.List;
 import java.util.Set;
@@ -43,10 +46,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -55,15 +56,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.PluginDialog;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -78,15 +79,15 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
-import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.Table;
 
 @PluginDialog( id = "AccessInput", image = "ACI.svg", pluginType = PluginDialog.PluginType.STEP,
   documentationUrl = "http://wiki.pentaho.com/display/EAI/Access+Input" )
@@ -1049,39 +1050,10 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     } );
 
     // Listen to the Browse... button
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        if ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) ) {
-          DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-          if ( wFilename.getText() != null ) {
-            String fpath = ""; // StringUtil.environmentSubstitute(wFilename.getText());
-            dialog.setFilterPath( fpath );
-          }
+    wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+        new FilterType[] { FilterType.ACCDB, FilterType.MDB, FilterType.ALL }, FilterType.ACCDB  ) ) );
 
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath();
-            wFilename.setText( str );
-          }
-        } else {
-          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-          dialog.setFilterExtensions( new String[] { "*.mdb;*.MDB;*.accdb;*.ACCDB", "*" } );
-          if ( wFilename.getText() != null ) {
-            String fname = ""; // StringUtil.environmentSubstitute(wFilename.getText());
-            dialog.setFileName( fname );
-          }
-
-          dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "AccessInputDialog.FileType.AccessFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-            wFilename.setText( str );
-          }
-        }
-      }
-    } );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {

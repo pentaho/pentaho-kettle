@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,7 +40,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -57,6 +56,10 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.accessoutput.AccessOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -381,26 +384,9 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
     } );
 
     // Listen to the Browse... button
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setFilterExtensions( new String[] { "*.mdb;*.MDB;*.accdb;*.ACCDB", "*" } );
-
-        if ( !Utils.isEmpty( wFilename.getText() ) ) {
-          String fname = transMeta.environmentSubstitute( wFilename.getText() );
-          dialog.setFileName( fname );
-        }
-
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "AccessOutputDialog.FileType.AccessFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-
-        if ( dialog.open() != null ) {
-          String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-          wFilename.setText( str );
-        }
-      }
-    } );
+    wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
+        new FilterType[] { FilterType.ACCDB, FilterType.MDB, FilterType.ALL }, FilterType.ACCDB ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {

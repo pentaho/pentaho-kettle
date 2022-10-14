@@ -46,10 +46,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -80,16 +78,16 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.excelinput.ExcelInputField;
-import org.pentaho.di.trans.steps.excelinput.ExcelInputMeta;
-import org.pentaho.di.trans.steps.excelinput.SpreadSheetType;
-import org.pentaho.di.trans.steps.excelinput.WorkbookFactory;
 import org.pentaho.di.ui.core.dialog.EnterListDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -313,6 +311,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
   private Text wSizeFieldName;
   private FormData fdSizeFieldName;
 
+  private SelectionAdapterFileDialogTextVar selectionAdapterFileDialogTextVar;
+
   public ExcelInputDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
     input = (ExcelInputMeta) in;
@@ -408,6 +408,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wSpreadSheetType.setEditable( true );
     props.setLook( wSpreadSheetType );
     wSpreadSheetType.addModifyListener( lsMod );
+    wSpreadSheetType.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        setSpreadSheetFilters();
+      }
+    } );
     fdSpreadSheetType = new FormData();
     fdSpreadSheetType.left = new FormAttachment( middle, 0 );
     fdSpreadSheetType.right = new FormAttachment( 100, 0 );
@@ -1155,59 +1161,13 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       }
     } );
 
-    // Listen to the Browse... button
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        if ( !Utils.isEmpty( wFilemask.getText() ) || !Utils
-          .isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a directory!
-          DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-          if ( wFilename.getText() != null ) {
-            String fpath = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFilterPath( fpath );
-          }
+    //Listen to the Browse... button
+    selectionAdapterFileDialogTextVar = new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+        new FilterType[] { FilterType.XLS, FilterType.ALL},
+        FilterType.XLS ) );
 
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath();
-            wFilename.setText( str );
-          }
-        } else {
-          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-          String[] extentions = new String[] { "*.xls;*.XLS", "*" };
-          SpreadSheetType type = SpreadSheetType.getStpreadSheetTypeByDescription( wSpreadSheetType.getText() );
-          switch ( type ) {
-            case POI:
-              extentions = new String[] { "*.xls;*.XLS;*.xlsx;*.XLSX", "*" };
-              break;
-            case SAX_POI:
-              extentions = new String[] { "*.xlsx;*.XLSX", "*" };
-              break;
-            case ODS:
-              extentions = new String[] { "*.ods;*.ODS;", "*" };
-              break;
-            case JXL:
-            default:
-              extentions = new String[] { "*.xls;*.XLS", "*" };
-              break;
-          }
-
-          dialog.setFilterExtensions( extentions );
-          if ( wFilename.getText() != null ) {
-            String fname = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFileName( fname );
-          }
-
-          dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "ExcelInputDialog.FilterNames.ExcelFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-            wFilename.setText( str );
-          }
-        }
-      }
-    } );
+    wbbFilename.addSelectionListener( selectionAdapterFileDialogTextVar );
 
     // Get a list of the sheetnames.
     wbGetSheets.addSelectionListener( new SelectionAdapter() {
@@ -1248,6 +1208,28 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       }
     }
     return stepname;
+  }
+  private void setSpreadSheetFilters() {
+    SelectionAdapterOptions sOptions = selectionAdapterFileDialogTextVar.getSelectionOptions();
+    FilterType[] filters;
+    SpreadSheetType type = SpreadSheetType.getStpreadSheetTypeByDescription( wSpreadSheetType.getText() );
+    switch ( type ) {
+      case POI:
+        filters = new FilterType[] { FilterType.XLS, FilterType.XLSX, FilterType.ALL };
+        break;
+      case SAX_POI:
+        filters = new FilterType[] { FilterType.XLSX, FilterType.ALL };
+        break;
+      case ODS:
+        filters = new FilterType[] { FilterType.ODS, FilterType.ALL };
+        break;
+      case JXL:
+      default:
+        filters = new FilterType[] { FilterType.XLS, FilterType.ALL };
+        break;
+    }
+    sOptions.setFilters( filters );
+    sOptions.setDefaultFilter( sOptions.getFilters()[0] );
   }
 
   public void setFlags() {

@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -49,7 +48,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -69,10 +67,12 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.exceloutput.ExcelField;
-import org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -933,6 +933,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
       }
     } );
 
+    wbTempDir.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wTempDirectory, transMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+
     // ///////////////////////////////
     // START OF Template Group GROUP //
     // ///////////////////////////////
@@ -1277,22 +1280,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdbImage.right = new FormAttachment( 100, 0 );
     fdbImage.top = new FormAttachment( wHeaderAlignment, margin );
     wbImage.setLayoutData( fdbImage );
-    wbImage.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.png", "*.*" } );
-        if ( wImage.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wImage.getText() ) );
-        }
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "ExcelOutputDialog.FileType.PNGFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          wImage.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
-        }
-      }
-    } );
+
 
     // Image line
     wlImage = new Label( wFontHeaderGroup, SWT.RIGHT );
@@ -1312,6 +1300,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdImage.top = new FormAttachment( wHeaderAlignment, margin );
     fdImage.right = new FormAttachment( wbImage, -margin );
     wImage.setLayoutData( fdImage );
+
+    wbImage.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wImage, transMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.PNG, FilterType.ALL }, FilterType.PNG  ) ) );
 
     fdFontHeaderGroup = new FormData();
     fdFontHeaderGroup.left = new FormAttachment( 0, margin );
@@ -1602,41 +1594,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
       }
     } );
 
-    wbFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setFilterExtensions( new String[] { "*.xls", "*.*" } );
-        if ( wFilename.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
-        }
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          wFilename.setText( dialog.getFilterPath()
-            + System.getProperty( "file.separator" ) + dialog.getFileName() );
-        }
-      }
-    } );
+    wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
-    wbTemplateFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.xls", "*.*" } );
-        if ( wTemplateFilename.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wTemplateFilename.getText() ) );
-        }
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          wTemplateFilename.setText( dialog.getFilterPath()
-            + System.getProperty( "file.separator" ) + dialog.getFileName() );
-        }
-      }
-    } );
+    wbTemplateFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wTemplateFilename, transMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.XLS, FilterType.ALL }, FilterType.XLS  ) ) );
+
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
