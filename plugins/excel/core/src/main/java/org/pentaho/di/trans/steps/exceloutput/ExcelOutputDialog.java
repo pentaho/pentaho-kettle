@@ -73,6 +73,10 @@ import org.pentaho.di.trans.steps.exceloutput.ExcelField;
 import org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -80,6 +84,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.core.annotations.PluginDialog;
+import org.pentaho.di.ui.util.DialogHelper;
+
 @PluginDialog( id = "ExcelOutput", image = "XLO.svg", pluginType = PluginDialog.PluginType.STEP,
         documentationUrl = "Products/Microsoft_Excel_Output" )
 public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInterface {
@@ -1602,42 +1608,12 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
       }
     } );
 
-    wbFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setFilterExtensions( new String[] { "*.xls", "*.*" } );
-        if ( wFilename.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
-        }
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          wFilename.setText( dialog.getFilterPath()
-            + System.getProperty( "file.separator" ) + dialog.getFileName() );
-        }
-      }
-    } );
-
-    wbTemplateFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.xls", "*.*" } );
-        if ( wTemplateFilename.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wTemplateFilename.getText() ) );
-        }
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          wTemplateFilename.setText( dialog.getFilterPath()
-            + System.getProperty( "file.separator" ) + dialog.getFileName() );
-        }
-      }
-    } );
-
+    wbFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log, wFilename
+        ,transMeta, SelectionOperation.SAVE_TO_FILE_FOLDER, new FilterType[] { FilterType.XLS, FilterType.XLSX
+            , FilterType.ALL }, FilterType.XLS ) );
+    wTemplateFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log
+        , wFilename, transMeta, SelectionOperation.SAVE_TO_FILE_FOLDER, new FilterType[] { FilterType.XLS
+             , FilterType.XLSX, FilterType.ALL }, FilterType.XLS ) );
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
       @Override

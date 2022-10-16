@@ -66,14 +66,13 @@ import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.DialogHelper;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.ParameterTableHelper;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
@@ -246,11 +245,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     fdBrowse.left = new FormAttachment( wPath, 5 );
     fdBrowse.top = new FormAttachment( wlPath, Const.isOSX() ? 0 : 5 );
     wbBrowse.setLayoutData( fdBrowse );
-
-    wbBrowse.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wPath, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
-        new FilterType[] { FilterType.KETTLE_TRANS, FilterType.XML, FilterType.ALL }, FilterType.KETTLE_TRANS  ) ) );
-
+    wbBrowse.addSelectionListener(DialogHelper.constructSelectionAdapterFileDialogTextVarForKettleFile(log, wPath, transMeta,
+        SelectionOperation.FILE_OR_FOLDER, FilterType.KETTLE_TRANS, repository ) );
     //
     // Add a tab folder for the parameters and various input and output
     // streams

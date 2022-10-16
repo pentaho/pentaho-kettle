@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -104,6 +104,7 @@ import org.pentaho.di.ui.trans.step.common.CsvInputAwareImportProgressDialog;
 import org.pentaho.di.ui.trans.step.common.CsvInputAwareStepDialog;
 import org.pentaho.di.ui.trans.step.common.GetFieldsCapableStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
+import org.pentaho.di.ui.util.DialogHelper;
 
 public class CsvInputDialog extends BaseStepDialog implements StepDialogInterface,
   GetFieldsCapableStepDialog<CsvInputMeta>, CsvInputAwareStepDialog {
@@ -683,11 +684,10 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     if ( wbbFilename != null ) {
       // Listen to the browse button next to the file name
-      wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-        new SelectionAdapterOptions( SelectionOperation.FILE,
-          new String[] { FilterType.CSV_TXT.toString(), FilterType.CSV.toString(), FilterType.TXT.toString(),
-            FilterType.ALL.toString() }, FilterType.CSV_TXT.toString(),
-          new String[] { ProviderFilterType.LOCAL.toString() }, false ) ) );
+      wbbFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log
+          , wFilename, transMeta, SelectionOperation.FILE, new FilterType[] { FilterType.CSV_TXT
+              , FilterType.CSV, FilterType.TXT, FilterType.ALL }, FilterType.CSV_TXT ) );
+
     }
 
     // Detect X or ALT-F4 or something that kills this window...

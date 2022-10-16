@@ -263,14 +263,21 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     }
   }
 
-  void setProvider( FileDialogOperation fileDialogOperation ) {
-    if ( ( fileDialogOperation.getProviderFilter() == null
-         || fileDialogOperation.getProviderFilter().contains( ProviderFilterType.REPOSITORY.toString() )
-         || fileDialogOperation.getProviderFilter().contains( ProviderFilterType.ALL_PROVIDERS.toString() ) )
-         && isConnectedToRepository() ) {
-      fileDialogOperation.setProvider( ProviderFilterType.REPOSITORY.toString() );
-    } else {
-      fileDialogOperation.setProvider( "" );
+  void setProvider( FileDialogOperation op ) {
+    if ( op.getProviderFilter() == null ) {
+      if ( op.getConnection() != null ) {
+        op.setProvider( ProviderFilterType.VFS.toString() );
+      } else if ( isConnectedToRepository() ) {
+        op.setProvider( ProviderFilterType.REPOSITORY.toString() );
+      } else {
+        op.setProvider( ProviderFilterType.LOCAL.toString() );
+      }
+    } else if ( op.getProviderFilter().equalsIgnoreCase(ProviderFilterType.DEFAULT.toString()) ) {
+      if ( op.getConnection() != null ) {
+        op.setProvider( ProviderFilterType.VFS.toString() );
+      } else {
+        op.setProvider( ProviderFilterType.LOCAL.toString() );
+      }
     }
   }
 

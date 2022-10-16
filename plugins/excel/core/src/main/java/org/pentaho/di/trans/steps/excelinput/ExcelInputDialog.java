@@ -90,6 +90,10 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -100,6 +104,8 @@ import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListenerFactory;
 import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 import org.pentaho.di.core.annotations.PluginDialog;
+import org.pentaho.di.ui.util.DialogHelper;
+
 @PluginDialog( id = "ExcelInput", image = "XLI.svg", pluginType = PluginDialog.PluginType.STEP,
         documentationUrl = "Products/Microsoft_Excel_Input" )
 public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterface {
@@ -1155,59 +1161,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       }
     } );
 
+
     // Listen to the Browse... button
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        if ( !Utils.isEmpty( wFilemask.getText() ) || !Utils
-          .isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a directory!
-          DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-          if ( wFilename.getText() != null ) {
-            String fpath = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFilterPath( fpath );
-          }
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath();
-            wFilename.setText( str );
-          }
-        } else {
-          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-          String[] extentions = new String[] { "*.xls;*.XLS", "*" };
-          SpreadSheetType type = SpreadSheetType.getStpreadSheetTypeByDescription( wSpreadSheetType.getText() );
-          switch ( type ) {
-            case POI:
-              extentions = new String[] { "*.xls;*.XLS;*.xlsx;*.XLSX", "*" };
-              break;
-            case SAX_POI:
-              extentions = new String[] { "*.xlsx;*.XLSX", "*" };
-              break;
-            case ODS:
-              extentions = new String[] { "*.ods;*.ODS;", "*" };
-              break;
-            case JXL:
-            default:
-              extentions = new String[] { "*.xls;*.XLS", "*" };
-              break;
-          }
-
-          dialog.setFilterExtensions( extentions );
-          if ( wFilename.getText() != null ) {
-            String fname = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFileName( fname );
-          }
-
-          dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "ExcelInputDialog.FilterNames.ExcelFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-            wFilename.setText( str );
-          }
-        }
-      }
-    } );
+    wbbFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log
+        , wFilename, transMeta, SelectionOperation.FILE, new FilterType[] { FilterType.XLS
+            , FilterType.XLSX, FilterType.ODS, FilterType.ALL }, FilterType.XLS ) );
 
     // Get a list of the sheetnames.
     wbGetSheets.addSelectionListener( new SelectionAdapter() {

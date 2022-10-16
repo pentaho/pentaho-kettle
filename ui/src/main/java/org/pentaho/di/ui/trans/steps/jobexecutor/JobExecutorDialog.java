@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,11 @@
 
 package org.pentaho.di.ui.trans.steps.jobexecutor;
 
-import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -55,7 +53,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
@@ -69,19 +66,17 @@ import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorParameters;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.*;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.DialogHelper;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.ParameterTableHelper;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
-import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public class JobExecutorDialog extends BaseStepDialog implements StepDialogInterface {
@@ -248,16 +243,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     fdBrowse.left = new FormAttachment( wPath, 5 );
     fdBrowse.top = new FormAttachment( wlPath, Const.isOSX() ? 0 : 5 );
     wbBrowse.setLayoutData( fdBrowse );
-
-    wbBrowse.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        if ( repository != null ) {
-          selectRepositoryJob();
-        } else {
-          selectFileJob();
-        }
-      }
-    } );
+    wbBrowse.addSelectionListener(DialogHelper.constructSelectionAdapterFileDialogTextVarForKettleFile(log, wPath, transMeta,
+        SelectionOperation.FILE_OR_FOLDER, FilterType.KETTLE_JOB, repository ) );
 
     //
     // Add a tab folder for the parameters and various input and output
@@ -359,24 +346,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         ConstUI.LARGE_ICON_SIZE );
   }
 
-  private void selectRepositoryJob() {
-    RepositoryObject repositoryObject = DialogHelper.selectRepositoryObject( "*.kjb", log );
 
-    try {
-      if ( repositoryObject != null ) {
-        loadRepositoryJob( repositoryObject.getName(), repositoryObject.getRepositoryDirectory() );
-        String path = DialogUtils
-          .getPath( transMeta.getRepositoryDirectory().getPath(), executorJobMeta.getRepositoryDirectory().getPath() );
-        String fullPath = ( path.equals( "/" ) ? "/" : path + "/" ) + executorJobMeta.getName();
-        wPath.setText( fullPath );
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-      }
-    } catch ( KettleException ke ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogTitle" ),
-        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogMessage" ), ke );
-    }
-  }
 
   private void loadRepositoryJob( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
     // Read the transformation...
@@ -386,47 +356,6 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     // version
     executorJobMeta.clearChanged();
   }
-
-  private void selectFileJob() {
-    String curFile = transMeta.environmentSubstitute( wPath.getText() );
-
-    FileObject root = null;
-
-    String parentFolder = null;
-    try {
-      parentFolder =
-        KettleVFS.getFileObject( transMeta.environmentSubstitute( transMeta.getFilename() ) ).getParent().toString();
-    } catch ( Exception e ) {
-      // Take no action
-    }
-
-    try {
-      root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
-
-      VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
-      FileObject file =
-        vfsFileChooser.open(
-          shell, null, Const.STRING_JOB_FILTER_EXT, Const.getJobFilterNames(),
-          VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-      if ( file == null ) {
-        return;
-      }
-      String fileName = file.getName().toString();
-      if ( fileName != null ) {
-        loadFileJob( fileName );
-        if ( parentFolder != null && fileName.startsWith( parentFolder ) ) {
-          fileName = fileName.replace( parentFolder, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-        }
-        wPath.setText( fileName );
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-      }
-    } catch ( IOException | KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingJobformation.DialogTitle" ),
-        BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingJobformation.DialogMessage" ), e );
-    }
-  }
-
   private void loadFileJob( String fname ) throws KettleException {
     executorJobMeta = new JobMeta( transMeta.environmentSubstitute( fname ), repository );
     executorJobMeta.clearChanged();

@@ -461,19 +461,18 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   private void setPreviousSelection() {
     String targetPath = this.fileDialogOperation.getPath();
+    if ( StringUtils.isNotEmpty( targetPath ) ) {
+      // If the path is file, set the parent to be the target path
+      java.io.File filePath = new java.io.File(targetPath);
+      if ( filePath.isFile() ) {
+        targetPath = filePath.getParent();
+      }
+    }
+
     String[] targetPathArray;
     // Sets navigation to previous selection
     if ( StringUtils.isNotEmpty( targetPath ) ) {
-      FileProvider fileProvider = null;
-      if ( StringUtils.isNotEmpty( this.fileDialogOperation.getProvider() ) ) {
-        try {
-          ProviderFilterType providerFilterType =
-            ProviderFilterType.valueOf( this.fileDialogOperation.getProvider().toUpperCase() );
-          fileProvider = ProviderServiceService.get().get( providerFilterType.toString() );
-        } catch ( InvalidFileProviderException e ) {
-          // Ignore
-        }
-      }
+      FileProvider fileProvider = determineProviderFromFilePath( this.fileDialogOperation );
       if ( fileProvider != null ) {
         char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
         // URL and Linux File Paths
@@ -581,7 +580,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         }
       }
     } else {
-      // VFS File Path
+      // For  VFS File Path
       if ( targetPath.contains( "pvfs://" ) || targetPath.contains( "hc://" ) ) {
         int indexOfDoubleSlash = targetPath.indexOf( "//" ) + 2;
         int arraySize = targetPath.substring( indexOfDoubleSlash ).split( String.valueOf( pathSplitter ) ).length;
@@ -1639,6 +1638,41 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     String fileExtension = ( lastIndexOfPeriod == -1 )
       ? StringUtils.EMPTY : fullFilePath.substring( lastIndexOfPeriod );
     return fileExtension;
+  }
+
+  private FileProvider determineProviderFromFilePath(FileDialogOperation fileDialogOperation) {
+    try {
+      String targetPath = fileDialogOperation.getPath();
+      if ( StringUtils.isNotEmpty( targetPath ) ) {
+        // If the path is file, set the parent to be the target path
+        java.io.File filePath = new java.io.File(targetPath);
+        if ( filePath.isFile() ) {
+          boolean isKettleFile = filePath.getName() !=  null && (filePath.getName().contains( FilterType.KTR.toString())
+                          || filePath.getName().contains( FilterType.KJB.toString() ) );
+          // Path is a file. It is coming from browse that is embedded in steps and job entry
+          if ( fileDialogOperation.getProvider() == null ) {
+            // Since the provider is null this could be local provider
+            return ProviderServiceService.get().get(ProviderFilterType.LOCAL.toString());
+          } else if ( !isKettleFile && fileDialogOperation.getProvider().equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString())) {
+            // It is user file which is not a transformation or job and the user is connected to repository.
+            // Default the provider to local
+            return ProviderServiceService.get().get(ProviderFilterType.LOCAL.toString());
+          } else if ( fileDialogOperation.getProvider().equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString()) ) {
+            // It is a kettle transformation or job and user is connected to repository, set the provider to repository
+            return ProviderServiceService.get().get(ProviderFilterType.REPOSITORY.toString());
+          }
+        }
+        // Set the provider file dialog operation.
+        ProviderFilterType providerFilterType =
+                ProviderFilterType.valueOf( fileDialogOperation.getProvider().toUpperCase() );
+        return ProviderServiceService.get().get( providerFilterType.toString() );
+      }
+      // Path is null so there can't be a provider
+      return null;
+
+    } catch ( InvalidFileProviderException e ) {
+        return null;
+    }
   }
 
   private void saveStructuredSelectionPath( IStructuredSelection selection ) {
