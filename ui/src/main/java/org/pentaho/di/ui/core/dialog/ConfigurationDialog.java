@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -367,17 +368,29 @@ public abstract class ConfigurationDialog extends Dialog {
 
     // Bottom buttons and separator
 
-    alwaysShowOption = new Button( cContainer, SWT.CHECK );
+    // Place all the bottom check, separator, and buttons in a composite to contain them laid out top to bottom
+    Composite bContainer = new Composite( cContainer, SWT.NONE );
+    props.setLook( bContainer );
+    //Anchor the new bottom container at the bottom of the screen, taking the entire width (no explicit top)
+    bContainer.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).bottom( 100, 0 ).result() );
+    bContainer.setLayout( new FormLayout() );
+    
+    /* Make the bottom of the tabFolder the top of the bContainer - It will now fill the area between it's existing
+       top and the top of the bContainer */
+    fd_tabFolder.bottom = new FormAttachment( bContainer, -Const.FORM_MARGIN );
+    
+    alwaysShowOption = new Button( bContainer, SWT.CHECK );
     props.setLook( alwaysShowOption );
     alwaysShowOption.setSelection( abstractMeta.isAlwaysShowRunOptions() );
     alwaysShowOption.setToolTipText( BaseMessages.getString( PKG, prefix + ".alwaysShowOption" ) );
     FormData fd_alwaysShowOption = new FormData();
     fd_alwaysShowOption.left = new FormAttachment( 0, Const.FORM_MARGIN );
-    fd_alwaysShowOption.top = new FormAttachment( tabFolder, Const.FORM_MARGIN );
+    //fd_alwaysShowOption.top = new FormAttachment( tabFolder, Const.FORM_MARGIN );
+    fd_alwaysShowOption.top = new FormAttachment( 0, Const.FORM_MARGIN );
     alwaysShowOption.setLayoutData( fd_alwaysShowOption );
     alwaysShowOption.setText( BaseMessages.getString( PKG, prefix + ".AlwaysOption.Value" ) );
 
-    wCancel = new Button( cContainer, SWT.PUSH );
+    wCancel = new Button( bContainer, SWT.PUSH );
     FormData fd_wCancel = new FormData();
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
     wCancel.addSelectionListener( new SelectionAdapter() {
@@ -386,7 +399,7 @@ public abstract class ConfigurationDialog extends Dialog {
       }
     } );
 
-    wOK = new Button( cContainer, SWT.PUSH );
+    wOK = new Button( bContainer, SWT.PUSH );
     FormData fd_wOK = new FormData();
     fd_wOK.top = new FormAttachment( wCancel, 0, SWT.TOP );
     fd_wOK.right = new FormAttachment( wCancel, -Const.FORM_MARGIN );
@@ -398,7 +411,7 @@ public abstract class ConfigurationDialog extends Dialog {
       }
     } );
 
-    Button btnHelp = new Button( cContainer, SWT.NONE );
+    Button btnHelp = new Button( bContainer, SWT.NONE );
     btnHelp.setImage( GUIResource.getInstance().getImageHelpWeb() );
     btnHelp.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
     btnHelp.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.Help" ) );
@@ -411,7 +424,7 @@ public abstract class ConfigurationDialog extends Dialog {
       }
     } );
 
-    Label separator = new Label( cContainer, SWT.SEPARATOR | SWT.HORIZONTAL );
+    Label separator = new Label( bContainer, SWT.SEPARATOR | SWT.HORIZONTAL );
     if ( Const.isLinux() ) {
       fd_wCancel.top = new FormAttachment( separator, 10 );
     } else {
