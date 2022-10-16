@@ -4732,24 +4732,31 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 .setPath(meta.getFilename().substring(0, meta.getFilename().lastIndexOf(pathSplitter)));
       } else if ( !StringUtils.isEmpty( meta.getName() ) ) {
         // This is the first time user is saving this file.
-        if (!Utils.isEmpty(lastFileOpened)) {
+        if ( lastFileOpenedProvider.equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString()) && rep == null ) {
+          // User has not opened any file but the lastOpenProvier was repository and use is not connected to the
+          // repository so set the session to the user's home folder
+          defaultFileDialogOperationToUserHome( fileDialogOperation );
+        } else if (!Utils.isEmpty(lastFileOpened) ) {
           //User has opened a file previously, set the save folder be the last file opened folder
           int parentIndex = lastFileOpened.lastIndexOf('\\');
           if (parentIndex == -1) {
             parentIndex = lastFileOpened.lastIndexOf('/');
           }
           String folder = lastFileOpened.substring(0, parentIndex);
-          fileDialogOperation.setPath(folder);
-          fileDialogOperation.setProvider(lastFileOpenedProvider);
+          fileDialogOperation.setPath( folder );
+          fileDialogOperation.setProvider( lastFileOpenedProvider );
         } else {
           //User has not opened any file so set the session to the user's home folder
-          fileDialogOperation.setPath(userHomeDir);
-          fileDialogOperation.setProvider(ProviderFilterType.LOCAL.toString());
+          defaultFileDialogOperationToUserHome( fileDialogOperation );
         }
       }
     }
   }
-  
+
+  private void defaultFileDialogOperationToUserHome( FileDialogOperation fileDialogOperation ) {
+    fileDialogOperation.setPath(userHomeDir);
+    fileDialogOperation.setProvider(ProviderFilterType.LOCAL.toString());
+  }
   public boolean saveAsNew( EngineMetaInterface meta, boolean export, String providerFilter
           , String fileFilterType, String command ) {
     FileDialogOperation fileDialogOperation =
@@ -4798,8 +4805,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private boolean performRepoSave( EngineMetaInterface meta, String fileType, FileDialogOperation fileDialogOperation ) throws KettleException {
     boolean saved = false;
     RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
-    final RepositoryDirectoryInterface originalDir = meta.getRepositoryDirectory();
-    if ( canRepoSaveOrOverwrite( meta, fileType, repositoryObject, originalDir ) ) {
+     if ( canRepoSaveOrOverwrite( meta, fileType, repositoryObject ) ) {
       final String originalName = meta.getName();
       final ObjectId originalObjectId = meta.getObjectId();
       final String originalFilename = meta.getFilename();
@@ -4810,7 +4816,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       saved = saveToRepositoryConfirmed( meta );
       if ( !saved ) {
         // if the object wasn't successfully saved, set the name and directory back to their original values
-        meta.setRepositoryDirectory( originalDir );
+        meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
         meta.setName( originalName );
         meta.setObjectId( originalObjectId );
         meta.setFilename( originalFilename );
@@ -4819,8 +4825,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return saved;
   }
 
-  private boolean canRepoSaveOrOverwrite( EngineMetaInterface meta, String fileType, RepositoryObject repositoryObject, RepositoryDirectoryInterface originalDir ) throws KettleException {
-    if ( rep.exists( repositoryObject.getName(), originalDir, StringUtils.equals( FileDialogOperation.TRANSFORMATION, fileType ) ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) ) {
+  private boolean canRepoSaveOrOverwrite( EngineMetaInterface meta, String fileType, RepositoryObject repositoryObject ) throws KettleException {
+    if ( rep.exists( repositoryObject.getName(), repositoryObject.getRepositoryDirectory(), StringUtils.equals( FileDialogOperation.TRANSFORMATION, fileType ) ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) ) {
       MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
       // "This file already exists.  Do you want to overwrite it?"
       mb.setMessage( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE + meta.getFileType()
