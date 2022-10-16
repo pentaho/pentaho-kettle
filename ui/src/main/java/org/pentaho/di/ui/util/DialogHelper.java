@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,34 +22,45 @@
 
 package org.pentaho.di.ui.util;
 
+import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.FileDialogOperation;
+import org.pentaho.di.ui.core.events.dialog.*;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 /**
  * Created by bmorrise on 8/17/17.
  */
 public class DialogHelper {
-
-  public static RepositoryObject selectRepositoryObject( String filter, LogChannel log ) {
-    try {
-      FileDialogOperation fileDialogOperation =
-        new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_OTHER );
-      if ( !Utils.isEmpty( filter ) ) {
-        fileDialogOperation.setFilter( filter );
-      }
-      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
-        fileDialogOperation );
-      return (RepositoryObject) fileDialogOperation.getRepositoryObject();
-    } catch ( KettleException ke ) {
-      // Ignore
+  public static SelectionAdapterFileDialogTextVar constructSelectionAdapterFileDialogTextVarForKettleFile( LogChannel log
+          , TextVar wPath, AbstractMeta meta, SelectionOperation selectionOperation, FilterType filterType, Repository repository ) {
+    if ( repository != null ) {
+      ProviderFilterType[] providerFilterTypes = new ProviderFilterType[2];
+      providerFilterTypes[0] = ProviderFilterType.RECENTS;
+      providerFilterTypes[1] = ProviderFilterType.REPOSITORY;
+      return new SelectionAdapterFileDialogTextVar( log, wPath, meta
+              , new SelectionAdapterOptions( selectionOperation, new FilterType[]{ filterType, FilterType.XML
+              , FilterType.ALL }, filterType, providerFilterTypes ) );
     }
-
-    return null;
+    return new SelectionAdapterFileDialogTextVar( log, wPath, meta,
+            new SelectionAdapterOptions( selectionOperation,
+                    new FilterType[]{ filterType, FilterType.XML, FilterType.ALL }, filterType ) );
   }
 
+  public static SelectionAdapterFileDialogTextVar constructSelectionAdapterFileDialogTextVarForUserFile( LogChannel log
+      ,TextVar wPath, AbstractMeta meta, SelectionOperation selectionOperation, FilterType[] filterTypes
+          , FilterType defaultFilterType ) {
+      ProviderFilterType[] providerFilterTypes = new ProviderFilterType[1];
+      providerFilterTypes[0] = ProviderFilterType.DEFAULT;
+     return new SelectionAdapterFileDialogTextVar( log, wPath, meta
+         ,new SelectionAdapterOptions( selectionOperation, filterTypes, defaultFilterType, providerFilterTypes ) );
+    }
 }
