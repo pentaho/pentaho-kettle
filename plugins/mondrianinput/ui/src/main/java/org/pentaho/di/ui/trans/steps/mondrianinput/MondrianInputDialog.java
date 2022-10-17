@@ -42,7 +42,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -61,6 +60,10 @@ import org.pentaho.di.trans.steps.mondrianinput.MondrianInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -336,28 +339,10 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
     wStepname.addSelectionListener( lsDef );
     wCatalog.addSelectionListener( lsDef );
 
-    if ( wbbFilename != null ) {
       // Listen to the browse button next to the file name
-      wbbFilename.addSelectionListener( new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent e ) {
-          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-          dialog.setFilterExtensions( new String[] { "*.xml", "*" } );
-          if ( wCatalog.getText() != null ) {
-            String fname = transMeta.environmentSubstitute( wCatalog.getText() );
-            dialog.setFileName( fname );
-          }
-
-          dialog.setFilterNames( new String[] {
-            BaseMessages.getString( "System.FileType.XMLFiles" ),
-            BaseMessages.getString( "System.FileType.AllFiles" ) } );
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-            wCatalog.setText( str );
-          }
-        }
-      } );
-    }
+    wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wCatalog, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.XML, FilterType.ALL }, FilterType.XML ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {

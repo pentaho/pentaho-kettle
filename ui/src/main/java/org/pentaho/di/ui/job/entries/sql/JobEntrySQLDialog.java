@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,7 +42,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -58,6 +57,10 @@ import org.pentaho.di.job.entries.sql.JobEntrySQL;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -257,19 +260,9 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
       }
     } );
 
-    wbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.sql", "*.txt", "*" } );
-        if ( wFilename.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wFilename.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES );
-        if ( dialog.open() != null ) {
-          wFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.SQL, FilterType.TXT, FilterType.ALL }, FilterType.SQL  ) ) );
 
     // Send one SQL Statement?
     wlUseOneStatement = new Label( shell, SWT.RIGHT );

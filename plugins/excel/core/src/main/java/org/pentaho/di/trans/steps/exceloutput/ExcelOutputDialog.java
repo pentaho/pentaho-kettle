@@ -1319,6 +1319,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdImage.right = new FormAttachment( wbImage, -margin );
     wImage.setLayoutData( fdImage );
 
+    wbImage.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wImage, transMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.PNG, FilterType.ALL }, FilterType.PNG  ) ) );
+
     fdFontHeaderGroup = new FormData();
     fdFontHeaderGroup.left = new FormAttachment( 0, margin );
     fdFontHeaderGroup.top = new FormAttachment( 0, margin );

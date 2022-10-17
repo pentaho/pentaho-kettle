@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -66,6 +65,10 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rest.RestMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
@@ -800,20 +803,6 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdbTrustStoreFile.top = new FormAttachment( 0, 0 );
     wbTrustStoreFile.setLayoutData( fdbTrustStoreFile );
 
-    wbTrustStoreFile.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setFilterExtensions( new String[] { "*.*" } );
-        if ( wTrustStoreFile.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wTrustStoreFile.getText() ) );
-        }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          wTrustStoreFile.setText( dialog.getFilterPath()
-            + System.getProperty( "file.separator" ) + dialog.getFileName() );
-        }
-      }
-    } );
 
     wTrustStoreFile = new TextVar( transMeta, gSSLTrustStore, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wTrustStoreFile );
@@ -823,6 +812,10 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdTrustStoreFile.top = new FormAttachment( 0, margin );
     fdTrustStoreFile.right = new FormAttachment( wbTrustStoreFile, -margin );
     wTrustStoreFile.setLayoutData( fdTrustStoreFile );
+
+    wbTrustStoreFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wTrustStoreFile, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // TrustStorePassword line
     wlTrustStorePassword = new Label( gSSLTrustStore, SWT.RIGHT );
