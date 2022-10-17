@@ -42,10 +42,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -78,6 +76,10 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -238,6 +240,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
   private ModifyListener lsMod;
 
   private boolean gotPreviousfields = false;
+  private SelectionAdapterFileDialogTextVar selectionAdapterFileDialogTextVar;
 
   public static final int[] dateLengths = new int[] { 23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6 };
 
@@ -1164,48 +1167,13 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
       }
     } );
 
-    // Listen to the Browse... button
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        if ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a directory!
-          DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-          if ( wFilename.getText() != null ) {
-            String fpath = "";
-            dialog.setFilterPath( fpath );
-          }
+    selectionAdapterFileDialogTextVar = new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
+        new SelectionAdapterOptions( SelectionOperation.FILE,
+          new FilterType[] { FilterType.PROP, FilterType.ALL},
+           FilterType.PROP ) );
 
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath();
-            wFilename.setText( str );
-          }
-        } else {
-          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
+    wbbFilename.addSelectionListener( selectionAdapterFileDialogTextVar );
 
-          if ( PropertyInputMeta.getFileTypeByDesc( wFileType.getText() ) == PropertyInputMeta.FILE_TYPE_PROPERTY ) {
-            dialog.setFilterExtensions( new String[] { "*.properties;*.PROPERTIES", "*" } );
-            dialog.setFilterNames( new String[] {
-              BaseMessages.getString( PKG, "PropertyInputDialog.FileType.PropertiesFiles" ),
-              BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-          } else {
-            dialog.setFilterExtensions( new String[] { "*.ini;*.INI", "*" } );
-            dialog.setFilterNames( new String[] {
-              BaseMessages.getString( PKG, "PropertyInputDialog.FileType.INIFiles" ),
-              BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-          }
-
-          if ( wFilename.getText() != null ) {
-            String fname = "";
-            dialog.setFileName( fname );
-          }
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-            wFilename.setText( str );
-          }
-        }
-      }
-    } );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -1248,6 +1216,12 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     wlInclINIsection.setEnabled( active );
     wInclINIsection.setEnabled( active );
     setIncludeSection();
+    SelectionAdapterOptions sOptions = selectionAdapterFileDialogTextVar.getSelectionOptions();
+    String defaultValue = String.valueOf(
+      PropertyInputMeta.getFileTypeByDesc( wFileType.getText() )
+        == PropertyInputMeta.FILE_TYPE_INI ? FilterType.INI : FilterType.PROP );
+    sOptions.getFilters()[0] = defaultValue;
+    sOptions.setDefaultFilter( defaultValue );
   }
 
   private void setEncodings() {

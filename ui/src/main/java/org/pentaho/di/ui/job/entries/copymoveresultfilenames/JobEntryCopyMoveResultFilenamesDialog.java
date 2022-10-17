@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -51,6 +50,9 @@ import org.pentaho.di.job.entries.copymoveresultfilenames.JobEntryCopyMoveResult
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -266,19 +268,8 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
       }
     } );
 
-    wbFoldername.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wFoldername.getText() != null ) {
-          dialog.setFilterPath( jobMeta.environmentSubstitute( wFoldername.getText() ) );
-        }
-
-        String dir = dialog.open();
-        if ( dir != null ) {
-          wFoldername.setText( dir );
-        }
-      }
-    } );
+    wbFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFoldername, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Create destination folder
     wlCreateDestinationFolder = new Label( shell, SWT.RIGHT );

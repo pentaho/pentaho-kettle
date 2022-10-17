@@ -32,7 +32,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -66,9 +65,12 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.terafastbulkloader.TeraFastMeta;
-import org.pentaho.di.ui.core.SimpleFileSelection;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.PluginWidgetFactory;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -370,11 +372,21 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     this.wStepname.addSelectionListener( this.lsDef );
     final String allFileTypes = BaseMessages.getString( PKG, "TeraFastDialog.Filetype.All" );
     this.wbControlFile
-      .addSelectionListener( new SimpleFileSelection( this.shell, this.wControlFile, allFileTypes ) );
-    this.wbDataFile.addSelectionListener( new SimpleFileSelection( this.shell, this.wDataFile, allFileTypes ) );
-    this.wbFastLoadPath.addSelectionListener( new SimpleFileSelection(
-      this.shell, this.wFastLoadPath, allFileTypes ) );
-    this.wbLogFile.addSelectionListener( new SimpleFileSelection( this.shell, this.wLogFile, allFileTypes ) );
+      .addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wControlFile, transMeta,
+        new SelectionAdapterOptions( SelectionOperation.FILE,
+          new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
+
+    this.wbDataFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wDataFile, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
+
+    this.wbFastLoadPath.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFastLoadPath, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
+
+    this.wbLogFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wLogFile, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     this.wDoMapping.addListener( SWT.Selection, event -> generateMappings());
 

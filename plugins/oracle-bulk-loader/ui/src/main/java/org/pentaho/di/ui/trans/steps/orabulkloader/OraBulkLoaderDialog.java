@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -81,6 +80,10 @@ import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -978,89 +981,29 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     };
     new Thread( runnable ).start();
 
-    wbSqlldr.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wSqlldr.getText() != null ) {
-          dialog.setFileName( wSqlldr.getText() );
-        }
-        dialog.setFilterNames( ALL_FILETYPES );
-        if ( dialog.open() != null ) {
-          wSqlldr.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbSqlldr.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSqlldr, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
-    wbControlFile.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wControlFile.getText() != null ) {
-          dialog.setFileName( wControlFile.getText() );
-        }
-        dialog.setFilterNames( ALL_FILETYPES );
-        if ( dialog.open() != null ) {
-          wControlFile.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbControlFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wLogFile, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
-    wbDataFile.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wDataFile.getText() != null ) {
-          dialog.setFileName( wDataFile.getText() );
-        }
-        dialog.setFilterNames( ALL_FILETYPES );
-        if ( dialog.open() != null ) {
-          wDataFile.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbDataFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wDataFile, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
-    wbLogFile.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wLogFile.getText() != null ) {
-          dialog.setFileName( wLogFile.getText() );
-        }
-        dialog.setFilterNames( ALL_FILETYPES );
-        if ( dialog.open() != null ) {
-          wLogFile.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbLogFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wLogFile, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
-    wbBadFile.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wBadFile.getText() != null ) {
-          dialog.setFileName( wBadFile.getText() );
-        }
-        dialog.setFilterNames( ALL_FILETYPES );
-        if ( dialog.open() != null ) {
-          wBadFile.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbBadFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wBadFile, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
-    wbDiscardFile.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wDiscardFile.getText() != null ) {
-          dialog.setFileName( wDiscardFile.getText() );
-        }
-        dialog.setFilterNames( ALL_FILETYPES );
-        if ( dialog.open() != null ) {
-          wDiscardFile.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbDiscardFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wDiscardFile, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Add listeners
     lsOK = new Listener() {

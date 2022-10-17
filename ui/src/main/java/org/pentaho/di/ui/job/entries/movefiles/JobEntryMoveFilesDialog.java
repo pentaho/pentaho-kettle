@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,10 +37,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -57,6 +55,10 @@ import org.pentaho.di.job.entries.movefiles.JobEntryMoveFiles;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -445,24 +447,6 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     fdbSourceDirectory.top = new FormAttachment( wSettings, margin );
     wbSourceDirectory.setLayoutData( fdbSourceDirectory );
 
-    wbSourceDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wSourceFileFolder.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wSourceFileFolder.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wSourceFileFolder.setText( dir );
-        }
-
-      }
-    } );
 
     // Browse Source files button ...
     wbSourceFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
@@ -500,19 +484,12 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
       }
     } );
 
-    wbSourceFileFolder.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wSourceFileFolder.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wSourceFileFolder.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES );
-        if ( dialog.open() != null ) {
-          wSourceFileFolder.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbSourceFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL}, FilterType.ALL  ) ) );
+
+    wbSourceDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Destination
     wlDestinationFileFolder = new Label( wGeneralComp, SWT.RIGHT );
@@ -532,25 +509,6 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     fdbDestinationDirectory.right = new FormAttachment( 100, 0 );
     fdbDestinationDirectory.top = new FormAttachment( wSourceFileFolder, margin );
     wbDestinationDirectory.setLayoutData( fdbDestinationDirectory );
-
-    wbDestinationDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wDestinationFileFolder.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wDestinationFileFolder.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wDestinationFileFolder.setText( dir );
-        }
-
-      }
-    } );
 
     // Browse Destination file browse button ...
     wbDestinationFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
@@ -572,19 +530,12 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     fdDestinationFileFolder.right = new FormAttachment( wbSourceFileFolder, -55 );
     wDestinationFileFolder.setLayoutData( fdDestinationFileFolder );
 
-    wbDestinationFileFolder.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wDestinationFileFolder.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wDestinationFileFolder.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES );
-        if ( dialog.open() != null ) {
-          wDestinationFileFolder.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbDestinationFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFileFolder, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
+
+    wbDestinationDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFileFolder, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Buttons to the right of the screen...
     wbdSourceFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
@@ -1052,19 +1003,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
       }
     } );
 
-    wbDestinationFolder.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wDestinationFolder.getText() != null ) {
-          dialog.setFilterPath( jobMeta.environmentSubstitute( wDestinationFolder.getText() ) );
-        }
-
-        String dir = dialog.open();
-        if ( dir != null ) {
-          wDestinationFolder.setText( dir );
-        }
-      }
-    } );
+    wbDestinationFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFolder, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Create destination folder/parent folder
     wlCreateMoveToFolder = new Label( wMoveToGroup, SWT.RIGHT );

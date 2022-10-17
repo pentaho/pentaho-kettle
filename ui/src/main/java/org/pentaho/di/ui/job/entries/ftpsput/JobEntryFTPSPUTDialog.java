@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -56,6 +55,9 @@ import org.pentaho.di.job.entries.ftpsput.JobEntryFTPSPUT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
@@ -785,24 +787,8 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
       }
     };
 
-    wbLocalDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wLocalDirectory.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wLocalDirectory.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wLocalDirectory.setText( dir );
-        }
-
-      }
-    } );
+    wbLocalDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wLocalDirectory, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     wCancel.addListener( SWT.Selection, lsCancel );
     wOK.addListener( SWT.Selection, lsOK );
