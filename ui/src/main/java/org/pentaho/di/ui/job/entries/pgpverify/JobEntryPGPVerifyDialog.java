@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,10 @@ import org.pentaho.di.job.entries.pgpverify.JobEntryPGPVerify;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -345,37 +349,9 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
       }
     } );
 
-    wbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        try {
-          FileObject fileName = null;
-
-          try {
-            String curFile = wFilename.getText();
-
-            if ( curFile.trim().length() > 0 ) {
-              fileName =
-                KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                  jobMeta.environmentSubstitute( wFilename.getText() ) );
-            } else {
-              fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-            }
-
-          } catch ( FileSystemException ex ) {
-            fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-          }
-
-          VfsFileChooserDialog vfsFileChooser =
-            Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
-
-          FileObject selected =
-            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-          wFilename.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
-        } catch ( FileSystemException ex ) {
-          ex.printStackTrace();
-        }
-      }
-    } );
+    wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
     // Whenever something changes, set the tooltip to the expanded version:
     wGPGLocation.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
@@ -383,37 +359,9 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
       }
     } );
 
-    wbGPGLocation.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        try {
-          FileObject fileName = null;
-
-          try {
-            String curFile = wGPGLocation.getText();
-
-            if ( curFile.trim().length() > 0 ) {
-              fileName =
-                KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                  jobMeta.environmentSubstitute( wGPGLocation.getText() ) );
-            } else {
-              fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-            }
-
-          } catch ( FileSystemException ex ) {
-            fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-          }
-
-          VfsFileChooserDialog vfsFileChooser =
-            Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
-
-          FileObject selected =
-            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-          wGPGLocation.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
-        } catch ( FileSystemException ex ) {
-          ex.printStackTrace();
-        }
-      }
-    } );
+    wbGPGLocation.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wGPGLocation, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
     fdSettings = new FormData();
     fdSettings.left = new FormAttachment( 0, margin );
     fdSettings.top = new FormAttachment( wName, margin );

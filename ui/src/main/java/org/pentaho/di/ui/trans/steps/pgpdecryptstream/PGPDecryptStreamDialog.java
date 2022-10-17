@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,7 +38,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -54,6 +53,10 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.pgpdecryptstream.PGPDecryptStreamMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -179,19 +182,6 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     fdbbGpgExe.top = new FormAttachment( wStepname, margin );
     wbbGpgExe.setLayoutData( fdbbGpgExe );
 
-    wbbGpgExe.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wGPGLocation.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wGPGLocation.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES );
-        if ( dialog.open() != null ) {
-          wGPGLocation.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
 
     wGPGLocation = new TextVar( transMeta, wGPGGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wGPGLocation.setToolTipText( BaseMessages.getString( PKG, "PGPDecryptStreamDialog.GPGLocationField.Tooltip" ) );
@@ -202,6 +192,10 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     fdGPGLocation.top = new FormAttachment( wStepname, margin * 2 );
     fdGPGLocation.right = new FormAttachment( wbbGpgExe, -margin );
     wGPGLocation.setLayoutData( fdGPGLocation );
+
+    wbbGpgExe.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wGPGLocation, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Passphrase fieldname ...
     wlPassphrase = new Label( wGPGGroup, SWT.RIGHT );
