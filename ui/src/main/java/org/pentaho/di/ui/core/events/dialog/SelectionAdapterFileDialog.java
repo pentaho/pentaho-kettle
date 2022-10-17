@@ -130,7 +130,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
    * Getter for SelectionAdapterOptions
    * @return
    */
-  SelectionAdapterOptions getSelectionOptions( ) {
+  public SelectionAdapterOptions getSelectionOptions() {
     return options;
   }
 

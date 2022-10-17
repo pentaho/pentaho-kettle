@@ -49,7 +49,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -69,8 +68,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.exceloutput.ExcelField;
-import org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
@@ -1283,22 +1280,6 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdbImage.right = new FormAttachment( 100, 0 );
     fdbImage.top = new FormAttachment( wHeaderAlignment, margin );
     wbImage.setLayoutData( fdbImage );
-    wbImage.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.png", "*.*" } );
-        if ( wImage.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wImage.getText() ) );
-        }
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "ExcelOutputDialog.FileType.PNGFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          wImage.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
-        }
-      }
-    } );
 
     // Image line
     wlImage = new Label( wFontHeaderGroup, SWT.RIGHT );
@@ -1318,6 +1299,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdImage.top = new FormAttachment( wHeaderAlignment, margin );
     fdImage.right = new FormAttachment( wbImage, -margin );
     wImage.setLayoutData( fdImage );
+
+    wbImage.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wImage, transMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.PNG, FilterType.ALL }, FilterType.PNG  ) ) );
 
     fdFontHeaderGroup = new FormData();
     fdFontHeaderGroup.left = new FormAttachment( 0, margin );
@@ -1608,12 +1593,12 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
       }
     } );
 
-    wbFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log, wFilename
-        ,transMeta, SelectionOperation.SAVE_TO_FILE_FOLDER, new FilterType[] { FilterType.XLS, FilterType.XLSX
-            , FilterType.ALL }, FilterType.XLS ) );
-    wTemplateFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log
-        , wFilename, transMeta, SelectionOperation.SAVE_TO_FILE_FOLDER, new FilterType[] { FilterType.XLS
-             , FilterType.XLSX, FilterType.ALL }, FilterType.XLS ) );
+    wbFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log, wFilename,
+      transMeta, SelectionOperation.SAVE_TO_FILE_FOLDER, new FilterType[] { FilterType.XLS, FilterType.XLSX, FilterType.ALL }, FilterType.XLS ) );
+    wbTemplateFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log, wTemplateFilename,
+      transMeta, SelectionOperation.SAVE_TO_FILE_FOLDER, new FilterType[] { FilterType.XLS, FilterType.XLSX, FilterType.ALL }, FilterType.XLS ) );
+    wbTempDir.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log, wTempDirectory,
+      transMeta, SelectionOperation.FOLDER, new FilterType[] { FilterType.ALL }, FilterType.ALL ) );
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
       @Override

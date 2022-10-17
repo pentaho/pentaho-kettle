@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,9 +25,7 @@ package org.pentaho.di.ui.job.entries.getpop;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
 import javax.mail.Folder;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -48,7 +46,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -58,9 +55,9 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.getpop.JobEntryGetPOP;
@@ -69,6 +66,9 @@ import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
@@ -700,24 +700,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdbDirectory.top = new FormAttachment( wServerSettings, margin );
     wbDirectory.setLayoutData( fdbDirectory );
 
-    wbDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wOutputDirectory.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wOutputDirectory.getText() ) );
-        }
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wOutputDirectory.setText( dir );
-        }
-
-      }
-    } );
-
     wOutputDirectory = new TextVar( jobMeta, wTargetFolder, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wOutputDirectory );
     wOutputDirectory.setToolTipText( BaseMessages.getString( PKG, "JobGetPOP.OutputDirectory.Tooltip" ) );
@@ -727,6 +709,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdOutputDirectory.top = new FormAttachment( wServerSettings, margin );
     fdOutputDirectory.right = new FormAttachment( wbDirectory, -margin );
     wOutputDirectory.setLayoutData( fdOutputDirectory );
+
+    wbDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wOutputDirectory, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Create local folder
     wlcreateLocalFolder = new Label( wTargetFolder, SWT.RIGHT );
@@ -867,24 +852,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdbAttachmentFolder.top = new FormAttachment( wDifferentFolderForAttachment, margin );
     wbAttachmentFolder.setLayoutData( fdbAttachmentFolder );
 
-    wbAttachmentFolder.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wAttachmentFolder.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wAttachmentFolder.getText() ) );
-        }
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wAttachmentFolder.setText( dir );
-        }
-
-      }
-    } );
-
     wAttachmentFolder = new TextVar( jobMeta, wTargetFolder, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wAttachmentFolder );
     wAttachmentFolder.setToolTipText( BaseMessages.getString( PKG, "JobGetPOP.AttachmentFolder.Tooltip" ) );
@@ -894,6 +861,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdAttachmentFolder.top = new FormAttachment( wDifferentFolderForAttachment, margin );
     fdAttachmentFolder.right = new FormAttachment( wbAttachmentFolder, -margin );
     wAttachmentFolder.setLayoutData( fdAttachmentFolder );
+
+    wbAttachmentFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wAttachmentFolder, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Limit attached files
     wlAttachmentWildcard = new Label( wTargetFolder, SWT.RIGHT );
