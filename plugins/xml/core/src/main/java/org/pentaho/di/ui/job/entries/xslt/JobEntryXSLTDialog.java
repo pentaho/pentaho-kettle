@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,10 +37,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -58,6 +56,10 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.steps.xslt.XsltMeta;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -290,6 +292,10 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     fdxmlFilename.right = new FormAttachment( wbxmlFilename, -margin );
     wxmlFilename.setLayoutData( fdxmlFilename );
 
+    wbxmlFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxmlFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML  ) ) );
+
     // Whenever something changes, set the tooltip to the expanded version:
     wxmlFilename.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
@@ -297,19 +303,6 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
       }
     } );
 
-    wbxmlFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
-        if ( wxmlFilename.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wxmlFilename.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES_XML );
-        if ( dialog.open() != null ) {
-          wxmlFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
 
     // Filename 2 line
     wlxslFilename = new Label( wFiles, SWT.RIGHT );
@@ -336,6 +329,10 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     fdxslFilename.right = new FormAttachment( wbxslFilename, -margin );
     wxslFilename.setLayoutData( fdxslFilename );
 
+    wbxslFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxslFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL, FilterType.XSL}, FilterType.XSL  ) ) );
+
     // Whenever something changes, set the tooltip to the expanded version:
     wxslFilename.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
@@ -343,19 +340,6 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
       }
     } );
 
-    wbxslFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.xsl;*.XSL", "*.xslt;*.XSLT", "*" } );
-        if ( wxslFilename.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wxslFilename.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES_XSL );
-        if ( dialog.open() != null ) {
-          wxslFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
 
     // Browse Source folders button ...
     wbOutputDirectory = new Button( wFiles, SWT.PUSH | SWT.CENTER );
@@ -365,25 +349,6 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     fdbOutputDirectory.right = new FormAttachment( 100, 0 );
     fdbOutputDirectory.top = new FormAttachment( wXSLTFactory, margin );
     wbOutputDirectory.setLayoutData( fdbOutputDirectory );
-
-    wbOutputDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wOutputFilename.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wOutputFilename.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wOutputFilename.setText( dir );
-        }
-
-      }
-    } );
 
     // OutputFilename
     wlOutputFilename = new Label( wFiles, SWT.RIGHT );
@@ -403,24 +368,6 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     fdbMovetoDirectory.right = new FormAttachment( 100, 0 );
     fdbMovetoDirectory.top = new FormAttachment( wxslFilename, margin );
     wbMovetoDirectory.setLayoutData( fdbMovetoDirectory );
-    wbMovetoDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wOutputFilename.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wOutputFilename.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wOutputFilename.setText( dir );
-        }
-
-      }
-    } );
 
     wOutputFilename = new TextVar( jobMeta, wFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wOutputFilename );
@@ -430,6 +377,12 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     fdOutputFilename.top = new FormAttachment( wxslFilename, margin );
     fdOutputFilename.right = new FormAttachment( wbMovetoDirectory, -margin );
     wOutputFilename.setLayoutData( fdOutputFilename );
+
+    wbOutputDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wOutputFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+
+    wbMovetoDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wOutputFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wOutputFilename.addModifyListener( new ModifyListener() {

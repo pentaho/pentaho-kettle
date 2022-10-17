@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -55,6 +54,9 @@ import org.pentaho.di.job.entries.ftpsget.JobEntryFTPSGet;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -783,24 +785,6 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     fdbTargetDirectory.right = new FormAttachment( 100, 0 );
     fdbTargetDirectory.top = new FormAttachment( wRemoteSettings, margin );
     wbTargetDirectory.setLayoutData( fdbTargetDirectory );
-    wbTargetDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wTargetDirectory.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wTargetDirectory.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wTargetDirectory.setText( dir );
-        }
-
-      }
-    } );
 
     wTargetDirectory = new TextVar( jobMeta, wLocalSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wTargetDirectory );
@@ -812,6 +796,8 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     fdTargetDirectory.right = new FormAttachment( wbTargetDirectory, -margin );
     wTargetDirectory.setLayoutData( fdTargetDirectory );
 
+    wbTargetDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetDirectory, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
     // Create multi-part file?
     wlAddDate = new Label( wLocalSettings, SWT.RIGHT );
     wlAddDate.setText( BaseMessages.getString( PKG, "JobFTPS.AddDate.Label" ) );
