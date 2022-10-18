@@ -4719,7 +4719,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private void setFileOperatioPathForNonRepositoryFile(FileDialogOperation fileDialogOperation
           , EngineMetaInterface meta, boolean export) {
     // Check if user is exporting a file
-    if (export && !Utils.isEmpty( lastFileOpenedProvider ) && lastFileOpenedProvider.equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString())) {
+    if (export && !Utils.isEmpty( lastFileOpenedProvider ) && lastFileOpenedProvider
+        .equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString())) {
       // Sine the last opened path is from repository and user can only export to local or vfs, set the
       // path to the user's home folder
       fileDialogOperation.setPath(userHomeDir);
@@ -4732,11 +4733,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 .setPath(meta.getFilename().substring(0, meta.getFilename().lastIndexOf(pathSplitter)));
       } else if ( !StringUtils.isEmpty( meta.getName() ) ) {
         // This is the first time user is saving this file.
-        if ( lastFileOpenedProvider.equalsIgnoreCase(ProviderFilterType.REPOSITORY.toString()) && rep == null ) {
+        if ( !Utils.isEmpty( lastFileOpenedProvider )  && lastFileOpenedProvider
+            .equalsIgnoreCase( ProviderFilterType.REPOSITORY.toString() ) && rep == null ) {
           // User has not opened any file but the lastOpenProvier was repository and use is not connected to the
           // repository so set the session to the user's home folder
           defaultFileDialogOperationToUserHome( fileDialogOperation );
-        } else if (!Utils.isEmpty(lastFileOpened) ) {
+        } else if ( !Utils.isEmpty( lastFileOpened ) ) {
           //User has opened a file previously, set the save folder be the last file opened folder
           int parentIndex = lastFileOpened.lastIndexOf('\\');
           if (parentIndex == -1) {
