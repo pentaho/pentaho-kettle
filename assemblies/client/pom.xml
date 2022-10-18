@@ -341,14 +341,14 @@
 
                     try {                    
                     
-                      File noOsgiZip = new File( "${project.build.directory}/${project.artifactId}-${project.version}.zip" );
+                      File noOsgiZip = new File( project.build.directory.toString() + "/${project.artifactId}-${project.version}.zip" );
                       if ( !noOsgiZip.exists() ) {
-                        println("ERROR: ${project.build.directory}/${project.artifactId}-${project.version}.zip not found");
+                        println("ERROR: " + project.build.directory.toString() + "/${project.artifactId}-${project.version}.zip not found");
                         throw new RuntimeException( 
                           "ensure you have not run 'clean' prior to executing this profile and that you've executed the 'default' profile");
                       }
                     
-                      File osgiZip = new File( "${project.build.directory}/${project.artifactId}-${project.version}-osgi.zip" );
+                      File osgiZip = new File( project.build.directory.toString() + "/${project.artifactId}-${project.version}-osgi.zip" );
                     
                       int i = 0;
                       Map<String,Long> noOsgiZipFileChecksumMap = new HashMap<String,Long>();
@@ -363,7 +363,7 @@
                       ZipOutputStream zipOutputStream = 
                         new ZipOutputStream( 
                           new FileOutputStream( 
-                            new File( "${project.build.directory}/${project.artifactId}-${project.version}-hadoop-addon.zip" )
+                            new File( project.build.directory.toString() + "/${project.artifactId}-${project.version}-hadoop-addon.zip" )
                           )
                         );
 
@@ -396,13 +396,13 @@
                       }
                       ZipEntry readmeEntry = new ZipEntry( "data-integration/HADOOP_ADDON_README" );
                       zipOutputStream.putNextEntry( readmeEntry );
-                      IOUtils.copy( new FileInputStream( new File ( "${project.basedir}/src/main/docs/addon.README" ) ), zipOutputStream );
+                      IOUtils.copy( new FileInputStream( new File ( project.basedir.toString() + "/src/main/docs/addon.README" ) ), zipOutputStream );
                       ZipEntry batchFileEntry = new ZipEntry( "data-integration/uninstall-hadoop-addon.bat" );
                       zipOutputStream.putNextEntry( batchFileEntry );
-                      IOUtils.copy( new FileInputStream( new File ( "${project.basedir}/src/main/resources-addon/uninstall-hadoop-addon.bat" ) ), zipOutputStream );
+                      IOUtils.copy( new FileInputStream( new File ( project.basedir.toString() + "/src/main/resources-addon/uninstall-hadoop-addon.bat" ) ), zipOutputStream );
                       ZipEntry shellFileEntry = new ZipEntry( "data-integration/uninstall-hadoop-addon.sh" );
                       zipOutputStream.putNextEntry( shellFileEntry );
-                      IOUtils.copy( new FileInputStream( new File ( "${project.basedir}/src/main/resources-addon/uninstall-hadoop-addon.sh" ) ), zipOutputStream );
+                      IOUtils.copy( new FileInputStream( new File ( project.basedir.toString() + "/src/main/resources-addon/uninstall-hadoop-addon.sh" ) ), zipOutputStream );
 
                       zipOutputStream.closeEntry();
 
