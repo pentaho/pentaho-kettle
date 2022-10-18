@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,16 +25,18 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.ui.core.FileDialogOperation;
@@ -181,7 +183,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     FileDialogOperation fileDialogOperation = createFileDialogOperation( selectionOperation );
 
     setProviderFilters( fileDialogOperation, providerFilters );
-    setProvider( fileDialogOperation );
+    setConnection( fileDialogOperation, initialFile );
+    setProvider( fileDialogOperation, initialFile );
 
     String connectionFilter = connectionFilterTypes.stream()
       .map( Enum::toString ).collect( Collectors.joining( "," ) );
@@ -263,21 +266,34 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     }
   }
 
-  void setProvider( FileDialogOperation op ) {
+  void setProvider( FileDialogOperation op, FileObject initalFile ) {
     if ( op.getProviderFilter() == null ) {
       if ( op.getConnection() != null ) {
         op.setProvider( ProviderFilterType.VFS.toString() );
       } else if ( isConnectedToRepository() ) {
         op.setProvider( ProviderFilterType.REPOSITORY.toString() );
+      } else if ( ConnectionFileProvider.SCHEME.equalsIgnoreCase( initalFile.getURI().getScheme() ) ) {
+        op.setProvider( ProviderFilterType.VFS.toString() );
+      } else if ( "hc".equalsIgnoreCase( initalFile.getURI().getScheme() ) ) {
+        op.setProvider( ProviderFilterType.CLUSTERS.toString() );
       } else {
         op.setProvider( ProviderFilterType.LOCAL.toString() );
       }
-    } else if ( op.getProviderFilter().equalsIgnoreCase(ProviderFilterType.DEFAULT.toString()) ) {
+    } else if ( op.getProviderFilter().equalsIgnoreCase( ProviderFilterType.DEFAULT.toString() ) ) {
       if ( op.getConnection() != null ) {
         op.setProvider( ProviderFilterType.VFS.toString() );
+      } else if ( "hc".equalsIgnoreCase( initalFile.getURI().getScheme() ) ) {
+        op.setProvider( ProviderFilterType.CLUSTERS.toString() );
       } else {
         op.setProvider( ProviderFilterType.LOCAL.toString() );
       }
+    }
+  }
+
+  void setConnection( FileDialogOperation op, FileObject initialFile ) {
+    if ( op.getConnection() == null && ConnectionFileProvider.SCHEME.equalsIgnoreCase( initialFile.getURI().getScheme() ) ) {
+      // pvfs connection format is pvfs://<connection_name>/<connection_path>, so extract connection_name
+      op.setConnection( ((ConnectionFileName) initialFile.getName()).getConnection() );
     }
   }
 

@@ -462,7 +462,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     String targetPath = this.fileDialogOperation.getPath();
     if ( StringUtils.isNotEmpty( targetPath ) ) {
       // If the path is file, set the parent to be the target path
-      java.io.File filePath = new java.io.File(targetPath);
+      if ( targetPath.startsWith( "file:///" ) ) {
+        targetPath = targetPath.substring( 7 );
+      }
+      java.io.File filePath = new java.io.File( targetPath );
       if ( filePath.isFile() ) {
         targetPath = filePath.getParent();
       }
@@ -525,11 +528,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
                 if ( children.size() > 0 ) {
                   sortFileList( children );
                 }
-                targetPathArrayIndex++;
               } catch ( FileException e ) {
                 // Ignore
               }
             }
+            targetPathArrayIndex++;
           } while ( currentFile != null );
         }
       }
