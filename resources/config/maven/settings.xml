@@ -116,10 +116,12 @@
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
           </releases>
           <snapshots>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
           </snapshots>
         </repository>
       </repositories>
@@ -131,10 +133,12 @@
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
           </releases>
           <snapshots>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
           </snapshots>
         </pluginRepository>
       </pluginRepositories>
