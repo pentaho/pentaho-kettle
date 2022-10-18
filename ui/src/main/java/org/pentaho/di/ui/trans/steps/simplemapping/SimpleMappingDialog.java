@@ -273,6 +273,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
 
     wbBrowse.addSelectionListener(DialogHelper.constructSelectionAdapterFileDialogTextVarForKettleFile(log, wPath, transMeta,
         SelectionOperation.FILE_OR_FOLDER,FilterType.KETTLE_TRANS, repository ) );
+        
     //
     // Add a tab folder for the parameters and various input and output
     // streams

@@ -82,7 +82,6 @@ import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.util.DialogHelper;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.MappingUtil;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
@@ -309,8 +308,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     fdBrowse.left = new FormAttachment( wPath, 5 );
     fdBrowse.top = new FormAttachment( wlPath, Const.isOSX() ? 0 : 5 );
     wbBrowse.setLayoutData( fdBrowse );
+
     wbBrowse.addSelectionListener(DialogHelper.constructSelectionAdapterFileDialogTextVarForKettleFile(log, wPath, transMeta,
         SelectionOperation.FILE_OR_FOLDER, FilterType.KETTLE_TRANS, repository ) );
+        
     //
     // Add a tab folder for the parameters and various input and output
     // streams
@@ -399,7 +400,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       .getImage( shell.getDisplay(), getClass().getClassLoader(), "MAP.svg", ConstUI.LARGE_ICON_SIZE,
         ConstUI.LARGE_ICON_SIZE );
   }
-
 
   private void loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
     // Read the transformation...
