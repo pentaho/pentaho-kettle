@@ -71,6 +71,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.BaseRepositoryMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -549,11 +550,15 @@ public class RepositoryManagerDialog extends Dialog {
         IStructuredSelection sel = repoList.getStructuredSelection();
         if ( !sel.isEmpty() ) {
           JSONObject item = (JSONObject) sel.getFirstElement();
-
           String repoName = item.get( "displayName" ).toString();
           RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
-          if ( repositoryMeta.getId()
+          if ( item.get( "id" ).toString()
             .equals( BaseMessages.getString( PKG, "repositories.kettleFileRepository.name" ) ) ) {
+            if ( repositoryMeta == null ) {
+              repositoryMeta =
+                new KettleFileRepositoryMeta( item.get( "id" ).toString(), item.get( "displayName" ).toString(),
+                  item.get( "description" ).toString(), item.get( "location" ).toString() );
+            }
             try {
               RepositoryConnectController.getInstance().connectToRepository( repositoryMeta );
               dialog.dispose();
@@ -563,7 +568,6 @@ public class RepositoryManagerDialog extends Dialog {
           } else {
             new RepositoryConnectionDialog( dialog.getShell() ).createDialog( repoName );
           }
-
         }
       }
     } );
