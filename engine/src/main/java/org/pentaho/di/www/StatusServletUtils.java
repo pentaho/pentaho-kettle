@@ -28,6 +28,7 @@ import org.pentaho.ui.xul.util.XmlParserFactoryProducer;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,10 +46,10 @@ class StatusServletUtils {
   private StatusServletUtils() {
   }
 
+  @Deprecated
   @SuppressWarnings( "javasecurity:S2083" )
   // root is ultimately derived from the servlet uri, which must be correct otherwise we couldn't have ended up here
   static String getPentahoStyles( String root ) {
-    StringBuilder sb = new StringBuilder();
     String themeName = "ruby"; // default pentaho theme
     String themeCss = "globalRuby.css";
     String mantleThemeCss = "mantleRuby.css";
@@ -63,17 +64,16 @@ class StatusServletUtils {
 
       // Check if file exists (may be different location depending on how server was started)
       if ( !f.exists() ) {
-        //on loading pentaho by startup.bat or windows service, the relative paths are different. This is meant to allow both types of execution
+        //on loading pentaho by startup.bat or windows service, the relative paths are different. This is meant to
+        // allow both types of execution
         relativePathSeparator = ".." + File.separator + ".." + File.separator;
-        themeSetting =  relativePathSeparator
+        themeSetting = relativePathSeparator
           + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
         f = new File( themeSetting );
       }
 
-      DocumentBuilderFactory dbFactory = XmlParserFactoryProducer.createSecureDocBuilderFactory();
-      DocumentBuilder db = dbFactory.newDocumentBuilder();
-      Document doc = db.parse( f );
-      themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
+      themeName = buildThemeName( themeName, f );
+
 
       // Get theme CSS file
       String themeDirStr = relativePathSeparator
@@ -105,11 +105,123 @@ class StatusServletUtils {
       LogChannel.GENERAL.logError( e.getMessage(), e );
     }
 
+    return buildCssPath( root, themeName, themeCss, mantleThemeCss );
+  }
+
+  private static String buildCssPath( String root, String themeName, String themeCss,
+                                 String mantleThemeCss ) {
+    StringBuilder sb = new StringBuilder();
     sb.append( LINK_HTML_PREFIX ).append( root ).append( "/content/common-ui/resources/themes/" ).append( themeName )
       .append( "/" ).append( themeCss ).append( "\"/>" );
     sb.append( LINK_HTML_PREFIX ).append( root ).append( "/mantle/themes/" ).append( themeName ).append( "/" )
       .append( mantleThemeCss ).append( "\"/>" );
     sb.append( LINK_HTML_PREFIX ).append( root ).append( "/mantle/MantleStyle.css\"/>" );
     return sb.toString();
+  }
+
+  private static String buildThemeName( String themeName, File f )
+    throws ParserConfigurationException, SAXException, IOException {
+    DocumentBuilderFactory dbFactory = XmlParserFactoryProducer.createSecureDocBuilderFactory();
+    DocumentBuilder db = dbFactory.newDocumentBuilder();
+    Document doc = db.parse( f );
+    themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
+    return themeName;
+  }
+
+  static String getPentahoStyles( final ServletContext context, String root ) {
+
+    if ( context == null ) {
+      return getPentahoStyles( root );
+    }
+
+    StringBuilder sb = new StringBuilder();
+    String themeName = "ruby"; // default pentaho theme
+    String themeCss = "globalRuby.css";
+    String mantleThemeCss = "mantleRuby.css";
+    String solutionPath = getSolutionPath( context, root );
+    try {
+
+      String themeSettingPath = solutionPath + File.separator + "system" + File.separator + "pentaho.xml";
+
+      File f = new File( themeSettingPath );
+
+      themeName = buildThemeName( themeName, f );
+
+      // Get theme CSS file
+      String themeDirStr = solutionPath + File.separator + "system" + File.separator
+        + "common-ui" + File.separator + "resources" + File.separator
+        + "themes" + File.separator + themeName + File.separator;
+      File themeDir = new File( themeDirStr );
+      for ( File fName : Optional.ofNullable( themeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
+        if ( fName.getName().contains( ".css" ) ) {
+          themeCss = fName.getName();
+          break;
+        }
+      }
+
+      String webappsPath = getWebappsPath( root );
+
+      // Get mantle theme CSS file
+      String mantleThemeDirStr = webappsPath + File.separator + "mantle" + File.separator
+        + "themes" + File.separator + themeName + File.separator;
+      File mantleThemeDir = new File( mantleThemeDirStr );
+      for ( File fName : Optional.ofNullable( mantleThemeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
+        if ( fName.getName().contains( ".css" ) ) {
+          mantleThemeCss = fName.getName();
+          break;
+        }
+      }
+    } catch ( ParserConfigurationException | IOException | SAXException e ) {
+      LogChannel.GENERAL.logError( e.getMessage(), e );
+    }
+
+    return buildCssPath( root, themeName, themeCss, mantleThemeCss );
+  }
+
+  private static String getWebappsPath( String root ) {
+
+    String oneLvlUp = ".." + File.separator;
+
+    //we expect the folder to exist in the tomcat/webapps folder
+    //we try two levels up
+    String webapAppsPath = oneLvlUp + oneLvlUp + root;
+    File webappsFolder = new File( webapAppsPath );
+    if ( webappsFolder.exists() && "webapps".equals( webappsFolder.getName() ) ) {
+      return webapAppsPath;
+    } else {
+      //if not, we move three levels up
+      webapAppsPath = oneLvlUp + webapAppsPath;
+      return webapAppsPath;
+    }
+  }
+
+  private static String getSolutionPath( ServletContext context, String root ) {
+
+    if ( context != null ) {
+      String rootPath = context.getInitParameter( "solution-path" );
+      if ( rootPath != null && !rootPath.isEmpty() ) {
+        File file = new File( rootPath );
+        if ( file.isDirectory() ) {
+          return rootPath;
+        }
+      }
+    }
+    //if we can't find the configured value, we get the value from runtime system relative path
+    File file = new File( "temp.xml" );
+    file.deleteOnExit();
+    int ps;
+    String solutionPath = "";
+
+    try {
+      ps = file.getCanonicalPath().lastIndexOf( "pentaho-server" );
+      solutionPath =
+        file.getCanonicalPath().substring( 0, ps ) + "pentaho-server" + File.separator + "pentaho-solutions";
+    } catch ( IOException e ) {
+      e.printStackTrace();
+    }
+
+    return solutionPath;
+
+
   }
 }
