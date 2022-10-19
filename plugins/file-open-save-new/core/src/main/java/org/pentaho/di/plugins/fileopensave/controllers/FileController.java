@@ -108,7 +108,9 @@ public class FileController {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
       if ( fileCache.containsKey( file ) && useCache ) {
-        return fileCache.getFiles( file );
+        return fileCache.getFiles( file ).stream()
+          .filter( f -> f instanceof Directory || org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), filters ) )
+          .collect( Collectors.toList() );
       } else {
         List<File> files = fileProvider.getFiles( file, filters, space );
         fileCache.setFiles( file, files );
