@@ -23,13 +23,13 @@ buildProperties:
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
-  RELEASE_VERSION                : 9.4.0.0
-  DEPLOYMENT_FOLDER              : 9.4-QAT
+  RELEASE_VERSION                : 9.5.0.0
+  DEPLOYMENT_FOLDER              : 9.5-QAT
   RELEASE_MODE                   : true
   DEFAULT_BRANCH                 : master
-  SUITE_BUILD_RESOURCES_BRANCH   : 9.4.0.0
+  SUITE_BUILD_RESOURCES_BRANCH   : 9.5.0.0
   SERVICEPACK_BRANCH             : master
-  JENKINS_FOLDER_NAME            : '9.4'
+  JENKINS_FOLDER_NAME            : '9.5'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/open-jdk/11
@@ -79,7 +79,7 @@ buildProperties:
   UPGRADE_FROM_93_VERSION  : 9.3.0.0
   UPGRADE_FROM_93_TAG      : 9.3.0.0-R
   UPGRADE_FROM_94_VERSION  : master
-  UPGRADE_FROM_94_TAG      : 9.4.0.0-R
+  UPGRADE_FROM_94_TAG      : 9.5.0.0-R
 
 
 jobGroups:
@@ -817,7 +817,7 @@ jobGroups:
 #       testable        :  false
 
 #  4830:
-#     - jobID           :  generate-upgrade-csvs-from-9.4
+#     - jobID           :  generate-upgrade-csvs-from-9.5
 #       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
 #       directives      :
 #                 build :  verify -Dupgrade-from.version=${UPGRADE_FROM_94_VERSION} -Dupgrade-from.tag=${UPGRADE_FROM_94_TAG} -Dgithub-token=${SCM_API_TOKEN} -Dgenerate-upgrade-csvs -DskipTests
