@@ -4630,7 +4630,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void importFileFromXML() throws Exception {
     openFileNew(ProviderFilterType.LOCAL.toString() + "," +  ProviderFilterType.VFS
         , FilterType.XML + "," + FilterType.KETTLE_TRANS
-            + "," + FilterType.KETTLE_JOB + "," + FilterType.ALL , true, FileDialogOperation.IMPORT ) ;	
+            + "," + FilterType.KETTLE_JOB + "," + FilterType.ALL , true, FileDialogOperation.IMPORT );
   }
 
   private String evaluateFileBrowserProviderFilter()  {
@@ -4700,7 +4700,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     return fileType;
   }
-  
+
   public boolean saveAsNew() {
     return saveAsNew( null, false, FileDialogOperation.SAVE_AS );
   }
@@ -5486,6 +5486,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           FileDialogOperation fileDialogOperation = getFileDialogOperation( FileDialogOperation.SAVE,
             FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setFileType( fileType );
+          fileDialogOperation.setFilter( deriveFileFilterFromFileType( fileType ) );
           fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
           //Set the filename so it can be used as the default filename in the save dialog
           String fileName = ( meta.getFilename() == null || meta.getFilename().length() == 0 )
