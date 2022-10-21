@@ -2094,8 +2094,15 @@ public class TransDialog extends Dialog {
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
+    String fullPath = null;
+    //get the trans filename and see if it's a repo file or local file
+    if( transMeta.getFilename() != null)
+      fullPath= transMeta.getFilename();
+    else
+      fullPath = ( rep!=null ) ? transMeta.getRepositoryDirectory() + "/" + transMeta.getName()
+            + transMeta.getRepositoryElementType().getExtension() : transMeta.getFilename();
     wTransname.setText( Const.NVL( transMeta.getName(), "" ) );
-    wTransFilename.setText( Const.NVL( transMeta.getFilename(), "" ) );
+    wTransFilename.setText( Const.NVL( fullPath, "" ) );
     wTransdescription.setText( Const.NVL( transMeta.getDescription(), "" ) );
     wExtendeddescription.setText( Const.NVL( transMeta.getExtendedDescription(), "" ) );
     wTransversion.setText( Const.NVL( transMeta.getTransversion(), "" ) );

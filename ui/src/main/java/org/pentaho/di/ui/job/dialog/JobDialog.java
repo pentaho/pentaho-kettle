@@ -1400,8 +1400,15 @@ public class JobDialog extends Dialog {
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
+    String fullPath = null;
+    //get the job filename and see if it's a repo file or local file
+    if( jobMeta.getFilename() != null)
+      fullPath= jobMeta.getFilename();
+    else
+      fullPath = ( rep != null ) ? jobMeta.getRepositoryDirectory() + "/" + jobMeta.getName()
+            + jobMeta.getRepositoryElementType().getExtension() : jobMeta.getFilename();
     wJobname.setText( Const.NVL( jobMeta.getName(), "" ) );
-    wJobFilename.setText( Const.NVL( jobMeta.getFilename(), "" ) );
+    wJobFilename.setText( Const.NVL( fullPath, "" ) );
     wJobdescription.setText( Const.NVL( jobMeta.getDescription(), "" ) );
     wExtendeddescription.setText( Const.NVL( jobMeta.getExtendedDescription(), "" ) );
     wJobversion.setText( Const.NVL( jobMeta.getJobversion(), "" ) );
