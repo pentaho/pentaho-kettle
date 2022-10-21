@@ -28,6 +28,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
+import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
@@ -109,7 +110,9 @@ public class FileController {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
       if ( fileCache.containsKey( file ) && useCache ) {
         return fileCache.getFiles( file ).stream()
-          .filter( f -> f instanceof Directory || org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), filters ) )
+          .filter( f -> f instanceof Directory
+            || ( f instanceof RepositoryFile && ( (RepositoryFile) f).passesTypeFilter( filters ) )
+            || org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), filters ) )
           .collect( Collectors.toList() );
       } else {
         List<File> files = fileProvider.getFiles( file, filters, space );

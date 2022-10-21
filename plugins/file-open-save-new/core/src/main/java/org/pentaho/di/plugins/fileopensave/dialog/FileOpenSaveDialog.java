@@ -667,17 +667,22 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     btnSave.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
         StructuredSelection structuredSelection;
+        StructuredSelection treeSelection;
 
         if ( fileTableViewer.getSelection().isEmpty() ) {
           structuredSelection = (StructuredSelection) treeViewer.getSelection();
+          treeSelection = structuredSelection;
         } else {
           structuredSelection = (StructuredSelection) fileTableViewer.getSelection();
+          treeSelection = (StructuredSelection) treeViewer.getSelection();
         }
 
         if ( structuredSelection.getFirstElement() instanceof File
           && txtFileName.getText() != null
           && StringUtils.isNotEmpty( txtFileName.getText() ) ) {
           processOnSavePressed( (File) structuredSelection.getFirstElement() );
+          // clear the parent directory from the cache so the file shows up on next dialog open
+          FILE_CONTROLLER.clearCache( (File) ( treeSelection ).getFirstElement() );
         }
       }
     } );
