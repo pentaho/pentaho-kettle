@@ -983,7 +983,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
           // In the Base Folder...
           // Folders..only if include subfolders
           if ( Currentfile.getType() == FileType.FOLDER ) {
-            if ( include_subfolders && move_empty_folders && Utils.isEmpty( wildcard ) ) {
+            if ( include_subfolders && move_empty_folders && (Utils.isEmpty( realWildcard) ) ) {
               entrystatus =
                 MoveFile( shortfilename, Currentfile, file_name, movetofolderfolder, parentJob, result );
             }
