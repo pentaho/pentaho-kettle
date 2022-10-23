@@ -46,9 +46,6 @@ public class VFSFile extends BaseEntity implements File {
   private String connection;
   private String domain;
 
-  @Override public String getType() {
-    return TYPE;
-  }
 
   @Override public String getProvider() {
     return VFSFileProvider.TYPE;
@@ -88,8 +85,22 @@ public class VFSFile extends BaseEntity implements File {
 
   public static VFSFile create( String parent, FileObject fileObject, String connection, String domain ) {
     VFSFile vfsFile = new VFSFile();
-    vfsFile.setName( fileObject.getName().getBaseName() );
-    vfsFile.setPath( fileObject.getName().getURI() );
+    String filename = null;
+    if ( fileObject != null && fileObject.getName() != null ) {
+      filename = fileObject.getName().getBaseName();
+    }
+
+    if ( !Utils.isEmpty( filename ) ) {
+      if ( filename.endsWith( KTR ) ) {
+        vfsFile.setType( TRANSFORMATION );
+      } else if ( filename.endsWith( KJB ) ) {
+        vfsFile.setType(JOB);
+      }
+    }
+    vfsFile.setName( filename );
+    if ( fileObject != null && fileObject.getName() != null ) {
+      vfsFile.setPath( fileObject.getName().getURI() );
+    }
     vfsFile.setParent( parent );
     if ( connection != null ) {
       vfsFile.setConnection( connection );
@@ -98,7 +109,9 @@ public class VFSFile extends BaseEntity implements File {
     vfsFile.setDomain( domain != null ? domain : "" );
     vfsFile.setCanEdit( true );
     try {
-      vfsFile.setDate( new Date( fileObject.getContent().getLastModifiedTime() ) );
+      if ( fileObject != null && fileObject.getContent() != null ) {
+        vfsFile.setDate( new Date( fileObject.getContent().getLastModifiedTime() ) );
+      }
     } catch ( FileSystemException ignored ) {
       vfsFile.setDate( new Date() );
     }

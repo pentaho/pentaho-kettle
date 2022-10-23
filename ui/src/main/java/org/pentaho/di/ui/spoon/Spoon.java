@@ -4659,10 +4659,21 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( parentIndex == -1 ) {
         parentIndex = lastFileOpened.lastIndexOf( '/' );
       }
-      String folder = lastFileOpened.substring( 0, parentIndex );
-      fileDialogOperation.setPath( folder );
-      fileDialogOperation.setConnection( lastFileOpenedConnection );
-      fileDialogOperation.setProvider( lastFileOpenedProvider );
+
+      if ( parentIndex > 0 ) {
+        // We are able to find the index of forward or backward slash set the folder to be the path before slash
+        String folder = lastFileOpened.substring( 0, parentIndex );
+        fileDialogOperation.setPath( folder );
+        fileDialogOperation.setConnection( lastFileOpenedConnection );
+        fileDialogOperation.setProvider( lastFileOpenedProvider );
+      } else {
+        // We were unable to find the folder path from the last file opened. We will set the file open dialog to
+        // default to user's home
+        defaultFileDialogOperationToUserHome( fileDialogOperation );
+      }
+    } else {
+      // Unable to find last open file so setting the file open browser to user's home
+      defaultFileDialogOperationToUserHome( fileDialogOperation );
     }
     try {
       fileDialogOperation.setFilter( fileFilterType );
