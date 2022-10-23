@@ -29,9 +29,6 @@ import org.pentaho.di.plugins.fileopensave.providers.recents.RecentFileProvider;
 
 public class RecentFile extends BaseEntity implements File {
 
-  private static final String TRANSFORMATION = "transformation";
-  private static final String JOB = "job";
-
   private String type;
   private String repository;
   private String username;

@@ -219,6 +219,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private Image imgFolder;
   private Image imgDisk;
   private Image imgFile;
+  private Image imgTrans;
+  private Image imgJob;
 
   // Dialogs
 
@@ -1155,6 +1157,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     imgFolder = rasterImage( "img/file_icons/Archive.S_D.svg", 25, 25 );
     imgDisk = rasterImage( "img/Disk.S_D.svg", 25, 25 );
     imgFile = rasterImage( "img/file_icons/Doc.S_D.svg", 25, 25 );
+    imgTrans = rasterImage( "img/file_icons/Transformation.S_D.svg", 25, 25 );
+    imgJob = rasterImage( "img/file_icons/Job.S_D.svg", 25, 25 );
     Composite browser = new Composite( parent, SWT.NONE );
     PropsUI.getInstance().setLook( browser );
     GridLayout gridLayout = new GridLayout();
@@ -1338,7 +1342,16 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( element instanceof Directory ) {
           return imgFolder;
         } else if ( element instanceof File ) {
-          return imgFile;
+           File file = ( File ) element;
+           if( file != null && file.getType() != null ) {
+             if ( file.getType().equals( File.TRANSFORMATION) ) {
+               return imgTrans;
+             } else if ( file.getType().equals(File.JOB) ) {
+               return imgJob;
+             } else {
+               return imgFile;
+             }
+           }
         }
         return null;
       }
