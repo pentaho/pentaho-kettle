@@ -36,10 +36,7 @@ import java.util.Objects;
  */
 public class RepositoryFile extends RepositoryObject implements File {
 
-  public static final String TRANSFORMATION = "transformation";
-  public static final String JOB = "job";
-  public static final String KTR = ".ktr";
-  public static final String KJB = ".kjb";
+
   public static final String DELIMITER = "/";
   private String username;
 
