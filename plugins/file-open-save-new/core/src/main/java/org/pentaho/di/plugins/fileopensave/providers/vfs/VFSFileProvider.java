@@ -147,7 +147,12 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance()
         .getConnectionProvider( vfsConnectionDetails.getType() );
 
-    List<VFSRoot> vfsRoots = vfsConnectionProvider.getLocations( vfsConnectionDetails );
+    List<VFSRoot> vfsRoots = new ArrayList<>();
+    try {
+      vfsRoots = vfsConnectionProvider.getLocations( vfsConnectionDetails );
+    } catch ( Exception e ) {
+      throw new FileException( "Error getting VFS locations. Check your credentials and for connectivity." + e.getMessage(), e );
+    }
     if ( vfsRoots.isEmpty() ) {
       throw new FileNotFoundException( file.getPath(), file.getProvider() );
     }
