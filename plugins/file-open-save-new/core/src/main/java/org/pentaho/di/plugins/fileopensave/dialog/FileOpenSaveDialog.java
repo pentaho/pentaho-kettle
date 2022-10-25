@@ -1428,10 +1428,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           parentDirectories.add( directory );
           try {
             File file = FILE_CONTROLLER.getParent( directory );
-            if( file instanceof Directory )
-              directory = ( Directory ) file;
-            else
+            if ( file instanceof Directory && StringUtils.isNotEmpty( file.getPath() ) ) {
+              directory = (Directory) file;
+            } else {
               break;
+            }
           } catch (InvalidFileProviderException ex) {
             throw new RuntimeException(ex);
           }
