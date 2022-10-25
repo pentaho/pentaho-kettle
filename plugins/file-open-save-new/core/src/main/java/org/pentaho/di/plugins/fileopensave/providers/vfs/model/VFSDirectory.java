@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
@@ -116,9 +117,9 @@ public class VFSDirectory extends VFSFile implements Directory {
     }
 
     VFSDirectory compare = (VFSDirectory) obj;
+    // This comparison depends on `getProvider()` to always return a hardcoded value
     return compare.getProvider().equals( getProvider() )
-      && ( ( compare.getConnection() == null && getConnection() == null ) || compare.getConnection()
-      .equals( getConnection() ) )
-      && ( ( compare.getPath() == null && getPath() == null ) || compare.getPath().equals( getPath() ) );
+      && StringUtils.equals( compare.getConnection(), getConnection() )
+      && StringUtils.equals( compare.getPath(), getPath() );
   }
 }
