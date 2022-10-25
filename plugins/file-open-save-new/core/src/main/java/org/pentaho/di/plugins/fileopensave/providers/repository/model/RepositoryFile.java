@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.repository.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
@@ -139,8 +140,9 @@ public class RepositoryFile extends RepositoryObject implements File {
     }
 
     RepositoryFile compare = (RepositoryFile) obj;
+    // This comparison depends on `getProvider()` to always return a hardcoded value
     return compare.getProvider().equals( getProvider() )
-      && ( ( compare.getPath() == null && getPath() == null ) || compare.getPath().equals( getPath() ) );
+      && StringUtils.equals( compare.getPath(), getPath() );
   }
 
   // TODO: fix repository files so that the extension is populated consistently in the two build methods
