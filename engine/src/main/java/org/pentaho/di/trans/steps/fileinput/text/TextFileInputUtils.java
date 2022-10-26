@@ -861,15 +861,15 @@ public class TextFileInputUtils {
               String replace = inf.content.escapeCharacter + enclosure;
               String replaceWith = enclosure;
 
-              pol = Const.replace(pol, replace, replaceWith);
+              pol = Const.replace( pol, replace, replaceWith );
             }
 
-            contains_escaped_escape = pol.contains(inf.content.escapeCharacter + inf.content.escapeCharacter);
+            contains_escaped_escape = !Utils.isEmpty( inf.content.escapeCharacter ) && pol.contains( inf.content.escapeCharacter + inf.content.escapeCharacter );
             if ( contains_escaped_escape ) {
               String replace = inf.content.escapeCharacter + inf.content.escapeCharacter;
               String replaceWith = inf.content.escapeCharacter;
 
-              pol = Const.replace(pol, replace, replaceWith);
+              pol = Const.replace( pol, replace, replaceWith );
             }
           }
 
