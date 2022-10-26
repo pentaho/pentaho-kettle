@@ -83,15 +83,16 @@ public class LocalFile extends BaseEntity implements File {
   
   @Override
   public boolean equals( Object obj ) {
-    if( obj == this ) {
+    if ( obj == this ) {
       return true;
     }
-    
-    if( !(obj instanceof LocalFile )) {
+
+    if ( !( obj instanceof LocalFile ) ) {
       return false;
     }
-    
+
     LocalFile compare = (LocalFile) obj;
+    // This comparison depends on `getProvider()` to always return a hardcoded value
     return compare.getProvider().equals( getProvider() ) && Objects.equals( getPath(), compare.getPath() );
   }
 }
