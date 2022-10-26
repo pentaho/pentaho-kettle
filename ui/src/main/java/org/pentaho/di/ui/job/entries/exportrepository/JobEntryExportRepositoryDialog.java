@@ -500,7 +500,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     // Browse Source folders button ...
     wbTargetFilename = new Button( wTarget, SWT.PUSH | SWT.CENTER );
     props.setLook( wbTargetFilename );
-    wbTargetFilename.setText( BaseMessages.getString( PKG, "JobExportRepository.BrowseFiles.Label" ) );
+    wbTargetFilename.setText( BaseMessages.getString( PKG, "JobExportRepository.BrowseFolders.Label" ) );
     fdbTargetFilename = new FormData();
     fdbTargetFilename.right = new FormAttachment( 100, 0 );
     fdbTargetFilename.top = new FormAttachment( wSettings, margin );
@@ -510,7 +510,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     // Browse Source files button ...
     wbTargetFoldername = new Button( wTarget, SWT.PUSH | SWT.CENTER );
     props.setLook( wbTargetFoldername );
-    wbTargetFoldername.setText( BaseMessages.getString( PKG, "JobExportRepository.BrowseFolders.Label" ) );
+    wbTargetFoldername.setText( BaseMessages.getString( PKG, "JobExportRepository.BrowseFiles.Label" ) );
     fdbTargetFoldername = new FormData();
     fdbTargetFoldername.right = new FormAttachment( wbTargetFilename, -margin );
     fdbTargetFoldername.top = new FormAttachment( wSettings, margin );
@@ -527,11 +527,11 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     fdTargetFilename.right = new FormAttachment( wbTargetFoldername, -margin );
     wTargetFilename.setLayoutData( fdTargetFilename );
 
-    wbTargetFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
+    wbTargetFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
             new SelectionAdapterOptions( SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML  ) ) );
 
-    wbTargetFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
+    wbTargetFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
             new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // create folder or parent folder?

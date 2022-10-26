@@ -37,7 +37,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -1093,20 +1092,8 @@ public class JobEntryPGPEncryptFilesDialog extends JobEntryDialog implements Job
       }
     } );
 
-    wbDestinationFolder.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wDestinationFolder.getText() != null ) {
-          dialog.setFilterPath( jobMeta.environmentSubstitute( wDestinationFolder.getText() ) );
-        }
-
-        String dir = dialog.open();
-        if ( dir != null ) {
-          wDestinationFolder.setText( dir );
-        }
-      }
-    } );
+    wbDestinationFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFolder, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Create destination folder/parent folder
     wlCreateMoveToFolder = new Label( wMoveToGroup, SWT.RIGHT );
