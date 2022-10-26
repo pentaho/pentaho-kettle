@@ -500,7 +500,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     // Browse Source folders button ...
     wbTargetFilename = new Button( wTarget, SWT.PUSH | SWT.CENTER );
     props.setLook( wbTargetFilename );
-    wbTargetFilename.setText( BaseMessages.getString( PKG, "JobExportRepository.BrowseFolders.Label" ) );
+    wbTargetFilename.setText( BaseMessages.getString( PKG, "JobExportRepository.BrowseFiles.Label" ) );
     fdbTargetFilename = new FormData();
     fdbTargetFilename.right = new FormAttachment( 100, 0 );
     fdbTargetFilename.top = new FormAttachment( wSettings, margin );
@@ -510,7 +510,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     // Browse Source files button ...
     wbTargetFoldername = new Button( wTarget, SWT.PUSH | SWT.CENTER );
     props.setLook( wbTargetFoldername );
-    wbTargetFoldername.setText( BaseMessages.getString( PKG, "JobExportRepository.BrowseFiles.Label" ) );
+    wbTargetFoldername.setText( BaseMessages.getString( PKG, "JobExportRepository.BrowseFolders.Label" ) );
     fdbTargetFoldername = new FormData();
     fdbTargetFoldername.right = new FormAttachment( wbTargetFilename, -margin );
     fdbTargetFoldername.top = new FormAttachment( wSettings, margin );
