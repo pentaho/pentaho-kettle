@@ -1036,19 +1036,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
       }
     } );
 
-    wbDestinationFolder.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wDestinationFolder.getText() != null ) {
-          dialog.setFilterPath( jobMeta.environmentSubstitute( wDestinationFolder.getText() ) );
-        }
-
-        String dir = dialog.open();
-        if ( dir != null ) {
-          wDestinationFolder.setText( dir );
-        }
-      }
-    } );
+    wbDestinationFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFolder, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Create destination folder/parent folder
     wlCreateMoveToFolder = new Label( wMoveToGroup, SWT.RIGHT );

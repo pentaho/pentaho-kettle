@@ -527,11 +527,11 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     fdTargetFilename.right = new FormAttachment( wbTargetFoldername, -margin );
     wTargetFilename.setLayoutData( fdTargetFilename );
 
-    wbTargetFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
+    wbTargetFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
             new SelectionAdapterOptions( SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML  ) ) );
 
-    wbTargetFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
+    wbTargetFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
             new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // create folder or parent folder?

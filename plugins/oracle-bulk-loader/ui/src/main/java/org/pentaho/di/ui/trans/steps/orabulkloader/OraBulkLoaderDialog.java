@@ -985,7 +985,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
       new SelectionAdapterOptions( SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
-    wbControlFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wLogFile, transMeta,
+    wbControlFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wControlFile, transMeta,
       new SelectionAdapterOptions( SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 

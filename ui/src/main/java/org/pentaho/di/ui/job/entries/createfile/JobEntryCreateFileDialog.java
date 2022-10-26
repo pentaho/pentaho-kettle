@@ -184,7 +184,7 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
       new SelectionAdapterOptions( SelectionOperation.SAVE,
-        new FilterType[] { FilterType.TXT, FilterType.ALL }, FilterType.TXT  ) ) );
+        new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     wlAbortExists = new Label( shell, SWT.RIGHT );
     wlAbortExists.setText( BaseMessages.getString( PKG, "JobCreateFile.FailIfExists.Label" ) );
