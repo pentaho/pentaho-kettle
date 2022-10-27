@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,6 @@
 
 package org.pentaho.di.ui.job.entries.pgpverify;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -45,20 +43,21 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.pgpverify.JobEntryPGPVerify;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 /**
  * This defines a PGP verify job entry.
@@ -304,39 +303,9 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
       }
     } );
 
-    wbDetachedFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        try {
-          FileObject DetachedFilename = null;
-
-          try {
-            String curFile = wDetachedFilename.getText();
-
-            if ( curFile.trim().length() > 0 ) {
-              DetachedFilename =
-                KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                  jobMeta.environmentSubstitute( wDetachedFilename.getText() ) );
-            } else {
-              DetachedFilename =
-                KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-            }
-
-          } catch ( FileSystemException ex ) {
-            DetachedFilename =
-              KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-          }
-
-          VfsFileChooserDialog vfsFileChooser =
-            Spoon.getInstance().getVfsFileChooserDialog( DetachedFilename.getParent(), DetachedFilename );
-
-          FileObject selected =
-            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-          wDetachedFilename.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
-        } catch ( FileSystemException ex ) {
-          ex.printStackTrace();
-        }
-      }
-    } );
+    wbDetachedFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDetachedFilename, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wFilename.addModifyListener( new ModifyListener() {
@@ -345,37 +314,9 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
       }
     } );
 
-    wbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        try {
-          FileObject fileName = null;
-
-          try {
-            String curFile = wFilename.getText();
-
-            if ( curFile.trim().length() > 0 ) {
-              fileName =
-                KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                  jobMeta.environmentSubstitute( wFilename.getText() ) );
-            } else {
-              fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-            }
-
-          } catch ( FileSystemException ex ) {
-            fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-          }
-
-          VfsFileChooserDialog vfsFileChooser =
-            Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
-
-          FileObject selected =
-            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-          wFilename.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
-        } catch ( FileSystemException ex ) {
-          ex.printStackTrace();
-        }
-      }
-    } );
+    wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
     // Whenever something changes, set the tooltip to the expanded version:
     wGPGLocation.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
@@ -383,37 +324,9 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
       }
     } );
 
-    wbGPGLocation.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        try {
-          FileObject fileName = null;
-
-          try {
-            String curFile = wGPGLocation.getText();
-
-            if ( curFile.trim().length() > 0 ) {
-              fileName =
-                KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                  jobMeta.environmentSubstitute( wGPGLocation.getText() ) );
-            } else {
-              fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-            }
-
-          } catch ( FileSystemException ex ) {
-            fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-          }
-
-          VfsFileChooserDialog vfsFileChooser =
-            Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
-
-          FileObject selected =
-            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-          wGPGLocation.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
-        } catch ( FileSystemException ex ) {
-          ex.printStackTrace();
-        }
-      }
-    } );
+    wbGPGLocation.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wGPGLocation, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
     fdSettings = new FormData();
     fdSettings.left = new FormAttachment( 0, margin );
     fdSettings.top = new FormAttachment( wName, margin );

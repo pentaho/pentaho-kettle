@@ -51,6 +51,10 @@ import org.pentaho.di.job.entries.filesexist.JobEntryFilesExist;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -182,25 +186,6 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
     fdbDirectory.top = new FormAttachment( wName, margin );
     wbDirectory.setLayoutData( fdbDirectory );
 
-    wbDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wFilename.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wFilename.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wFilename.setText( dir );
-        }
-
-      }
-    } );
-
     wbFilename = new Button( shell, SWT.PUSH | SWT.CENTER );
     props.setLook( wbFilename );
     wbFilename.setText( BaseMessages.getString( PKG, "JobFilesExist.BrowseFiles.Label" ) );
@@ -234,19 +219,12 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
       }
     } );
 
-    wbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wFilename.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wFilename.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES );
-        if ( dialog.open() != null ) {
-          wFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.TXT, FilterType.ALL }, FilterType.TXT ) ) );
+
+    wbDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Buttons to the right of the screen...
     wbdFilename = new Button( shell, SWT.PUSH | SWT.CENTER );

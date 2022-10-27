@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -64,6 +63,10 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.xslt.XsltMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -590,25 +593,9 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // Listen to the Browse... button
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.xsl;*.XSL", "*.xslt;.*XSLT", "*" } );
-        if ( wXSLFilename.getText() != null ) {
-          String fname = transMeta.environmentSubstitute( wXSLFilename.getText() );
-          dialog.setFileName( fname );
-        }
-
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "XsltDialog.FileType" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-
-        if ( dialog.open() != null ) {
-          String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-          wXSLFilename.setText( str );
-        }
-      }
-    } );
+    wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wXSLFilename, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.XSL, FilterType.ALL }, FilterType.XSL  ) ) );
 
     wTabFolder.setSelection( 0 );
 

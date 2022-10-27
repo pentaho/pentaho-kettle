@@ -64,6 +64,11 @@ import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogText;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -336,23 +341,6 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     fdbFilename.right = new FormAttachment( 100, -margin );
     fdbFilename.top = new FormAttachment( wUseKey, margin );
     wbFilename.setLayoutData( fdbFilename );
-    wbFilename.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setFilterExtensions( new String[] { "*.pem", "*" } );
-        if ( wPrivateKey.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wPrivateKey.getText() ) );
-        }
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "System.FileType.PEMFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          wPrivateKey.setText( dialog.getFilterPath()
-            + System.getProperty( "file.separator" ) + dialog.getFileName() );
-        }
-      }
-    } );
 
     // Private key
     wPrivateKey =
@@ -366,6 +354,10 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     fdPrivateKey.top = new FormAttachment( wUseKey, margin );
     fdPrivateKey.right = new FormAttachment( wbFilename, -margin );
     wPrivateKey.setLayoutData( fdPrivateKey );
+
+    wbFilename.addSelectionListener( new SelectionAdapterFileDialogText( log, wPrivateKey.getTextWidget(), transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.PEM, FilterType.ALL }, FilterType.PEM ) ) );
 
     // Passphraseline
     wPassphrase =

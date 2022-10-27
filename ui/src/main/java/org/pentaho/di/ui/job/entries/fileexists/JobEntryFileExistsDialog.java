@@ -51,6 +51,10 @@ import org.pentaho.di.job.entries.fileexists.JobEntryFileExists;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -187,37 +191,9 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
       }
     } );
 
-    wbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        try {
-          FileObject fileName = null;
-
-          try {
-            String curFile = wFilename.getText();
-
-            if ( curFile.trim().length() > 0 ) {
-              fileName =
-                KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                  jobMeta.environmentSubstitute( wFilename.getText() ) );
-            } else {
-              fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-            }
-
-          } catch ( FileSystemException ex ) {
-            fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
-          }
-
-          VfsFileChooserDialog vfsFileChooser =
-            Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
-
-          FileObject selected =
-            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-          wFilename.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
-        } catch ( FileSystemException ex ) {
-          ex.printStackTrace();
-        }
-      }
-    } );
+    wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL }, FilterType.TXT ) ) );
 
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );

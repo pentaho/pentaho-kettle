@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,7 +40,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -61,6 +60,10 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.mail.MailMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -1548,24 +1551,6 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdbSourceFolder.right = new FormAttachment( 100, 0 );
     fdbSourceFolder.top = new FormAttachment( wDynamicWildcardField, 2 * margin );
     wbSourceFolder.setLayoutData( fdbSourceFolder );
-    wbSourceFolder.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wSourceFileFoldername.getText() != null ) {
-          ddialog.setFilterPath( transMeta.environmentSubstitute( wSourceFileFoldername.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wSourceFileFoldername.setText( dir );
-        }
-
-      }
-    } );
 
     // Browse source file button ...
     wbFileFoldername = new Button( wOriginFiles, SWT.PUSH | SWT.CENTER );
@@ -1592,19 +1577,13 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       }
     } );
 
-    wbFileFoldername.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wSourceFileFoldername.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wSourceFileFoldername.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES );
-        if ( dialog.open() != null ) {
-          wSourceFileFoldername.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbSourceFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSourceFileFoldername, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+
+    wbFileFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSourceFileFoldername, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
+
 
     // Include sub folders
     wlincludeSubFolders = new Label( wOriginFiles, SWT.RIGHT );

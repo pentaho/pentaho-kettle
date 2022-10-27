@@ -46,10 +46,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -80,10 +78,6 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.excelinput.ExcelInputField;
-import org.pentaho.di.trans.steps.excelinput.ExcelInputMeta;
-import org.pentaho.di.trans.steps.excelinput.SpreadSheetType;
-import org.pentaho.di.trans.steps.excelinput.WorkbookFactory;
 import org.pentaho.di.ui.core.dialog.EnterListDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -91,7 +85,7 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogText;
 import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -101,7 +95,6 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
-import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListenerFactory;
 import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.ui.util.DialogHelper;
@@ -1688,8 +1681,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wWarningDestDir.setLayoutData( fdWarningDestDir );
 
     // Listen to the Browse... button
-    wbbWarningDestDir.addSelectionListener( DirectoryDialogButtonListenerFactory.getSelectionAdapter(
-      shell, wWarningDestDir ) );
+    wbbWarningDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wWarningDestDir, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvWarningDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(
@@ -1756,8 +1749,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wErrorDestDir.setLayoutData( fdErrorDestDir );
 
     // Listen to the Browse... button
-    wbbErrorDestDir.addSelectionListener( DirectoryDialogButtonListenerFactory.getSelectionAdapter(
-      shell, wErrorDestDir ) );
+    wbbErrorDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wErrorDestDir, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvErrorDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(
@@ -1824,8 +1817,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wLineNrDestDir.setLayoutData( fdLineNrDestDir );
 
     // Listen to the Browse... button
-    wbbLineNrDestDir.addSelectionListener( DirectoryDialogButtonListenerFactory.getSelectionAdapter(
-      shell, wLineNrDestDir ) );
+    wbbLineNrDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wLineNrDestDir, transMeta,
+      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvLineNrDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(

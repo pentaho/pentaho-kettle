@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -49,6 +48,10 @@ import org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -206,19 +209,9 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
       }
     } );
 
-    wbxmlFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
-        if ( wxmlFilename.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wxmlFilename.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES_XML );
-        if ( dialog.open() != null ) {
-          wxmlFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbxmlFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxmlFilename, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.XML, FilterType.ALL }, FilterType.XML ) ) );
 
     // Filename 2 line
     wlxsdFilename = new Label( shell, SWT.RIGHT );
@@ -252,19 +245,9 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
       }
     } );
 
-    wbxsdFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.xsd;*.XSD", "*" } );
-        if ( wxsdFilename.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wxsdFilename.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES_XSD );
-        if ( dialog.open() != null ) {
-          wxsdFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbxsdFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxsdFilename, jobMeta,
+      new SelectionAdapterOptions( SelectionOperation.FILE,
+        new FilterType[] { FilterType.XSD, FilterType.ALL }, FilterType.XSD  ) ) );
 
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );

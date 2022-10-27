@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,10 +37,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -66,6 +64,10 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -420,11 +422,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     fdbFoldername.right = new FormAttachment( 100, 0 );
     fdbFoldername.top = new FormAttachment( wExportType, 0 );
     wbFoldername.setLayoutData( fdbFoldername );
-    wbFoldername.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        displaydirectoryList();
-      }
-    } );
 
     wFoldername = new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wFoldername );
@@ -434,6 +431,9 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     fdFoldername.top = new FormAttachment( wExportType, margin );
     fdFoldername.right = new FormAttachment( wbFoldername, -margin );
     wFoldername.setLayoutData( fdFoldername );
+
+    wbFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFoldername, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wFoldername.addModifyListener( new ModifyListener() {
@@ -506,24 +506,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     fdbTargetFilename.top = new FormAttachment( wSettings, margin );
     wbTargetFilename.setLayoutData( fdbTargetFilename );
 
-    wbTargetFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wTargetFilename.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wTargetFilename.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wTargetFilename.setText( dir );
-        }
-
-      }
-    } );
 
     // Browse Source files button ...
     wbTargetFoldername = new Button( wTarget, SWT.PUSH | SWT.CENTER );
@@ -533,19 +515,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     fdbTargetFoldername.right = new FormAttachment( wbTargetFilename, -margin );
     fdbTargetFoldername.top = new FormAttachment( wSettings, margin );
     wbTargetFoldername.setLayoutData( fdbTargetFoldername );
-    wbTargetFoldername.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setFilterExtensions( new String[] { "*.xml", ".*" } );
-        if ( wTargetFilename.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wTargetFilename.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES );
-        if ( dialog.open() != null ) {
-          wTargetFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+
     // Target filename line
     wTargetFilename = new TextVar( jobMeta, wTarget, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wTargetFilename );
@@ -556,6 +526,13 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     fdTargetFilename.top = new FormAttachment( wSettings, margin );
     fdTargetFilename.right = new FormAttachment( wbTargetFoldername, -margin );
     wTargetFilename.setLayoutData( fdTargetFilename );
+
+    wbTargetFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML  ) ) );
+
+    wbTargetFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // create folder or parent folder?
     wlcreateFolder = new Label( wTarget, SWT.RIGHT );

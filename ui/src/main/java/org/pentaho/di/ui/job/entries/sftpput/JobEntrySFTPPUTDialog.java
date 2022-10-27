@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,10 +39,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -59,6 +57,10 @@ import org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
@@ -445,19 +447,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     fdKeyFilename.right = new FormAttachment( wbKeyFilename, -margin );
     wKeyFilename.setLayoutData( fdKeyFilename );
 
-    wbKeyFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.pem", "*" } );
-        if ( wKeyFilename.getText() != null ) {
-          dialog.setFileName( jobMeta.environmentSubstitute( wKeyFilename.getText() ) );
-        }
-        dialog.setFilterNames( FILETYPES );
-        if ( dialog.open() != null ) {
-          wKeyFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
+    wbKeyFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wKeyFilename, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FILE,
+                    new FilterType[] { FilterType.ALL, FilterType.PEM  }, FilterType.PEM  ) ) );
 
     // keyfilePass line
     wkeyfilePass =
@@ -701,24 +693,6 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     fdbLocalDirectory.right = new FormAttachment( 100, 0 );
     fdbLocalDirectory.top = new FormAttachment( wgetPreviousFiles, margin );
     wbLocalDirectory.setLayoutData( fdbLocalDirectory );
-    wbLocalDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wLocalDirectory.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wLocalDirectory.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wLocalDirectory.setText( dir );
-        }
-
-      }
-    } );
 
     wLocalDirectory = new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wLocalDirectory );
@@ -729,6 +703,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     fdLocalDirectory.top = new FormAttachment( wgetPreviousFiles, margin );
     fdLocalDirectory.right = new FormAttachment( wbLocalDirectory, -margin );
     wLocalDirectory.setLayoutData( fdLocalDirectory );
+
+    wbLocalDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wLocalDirectory, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Wildcard line
     wlWildcard = new Label( wSourceFiles, SWT.RIGHT );
@@ -818,24 +795,6 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     fdbMovetoDirectory.top = new FormAttachment( wAfterFTPPut, margin );
     wbMovetoDirectory.setLayoutData( fdbMovetoDirectory );
 
-    wbMovetoDirectory.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DirectoryDialog ddialog = new DirectoryDialog( shell, SWT.OPEN );
-        if ( wDestinationFolder.getText() != null ) {
-          ddialog.setFilterPath( jobMeta.environmentSubstitute( wDestinationFolder.getText() ) );
-        }
-
-        // Calling open() will open and run the dialog.
-        // It will return the selected directory, or
-        // null if user cancels
-        String dir = ddialog.open();
-        if ( dir != null ) {
-          // Set the text box to the new selection
-          wDestinationFolder.setText( dir );
-        }
-
-      }
-    } );
 
     wDestinationFolder =
       new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
@@ -847,6 +806,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     fdDestinationFolder.top = new FormAttachment( wAfterFTPPut, margin );
     fdDestinationFolder.right = new FormAttachment( wbMovetoDirectory, -margin );
     wDestinationFolder.setLayoutData( fdDestinationFolder );
+
+    wbMovetoDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFolder, jobMeta,
+            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wDestinationFolder.addModifyListener( new ModifyListener() {
