@@ -5638,6 +5638,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( versionOk ) {
           SaveProgressDialog spd = new SaveProgressDialog( shell, rep, meta, versionComment );
           if ( spd.open() ) {
+            //Now save the filename to meta
+            meta.setFilename( fullPath );
             saved = true;
             if ( !props.getSaveConfirmation() ) {
               MessageDialogWithToggle md =
