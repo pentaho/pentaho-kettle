@@ -5517,6 +5517,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             final String oldName = meta.getName();
             meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
             meta.setName( repositoryObject.getName() );
+            meta.setFilename( getJobTransfFullPath(meta) );
             final boolean saved = saveToRepositoryConfirmed( meta );
             // rename the tab only if the meta object was successfully saved
             if ( saved ) {
