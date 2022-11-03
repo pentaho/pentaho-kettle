@@ -5712,8 +5712,8 @@ public class TransMeta extends AbstractMeta
         // The directory of the transformation
         FileName fileDir = fileName.getParent();
         variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI() );
-      } catch ( KettleFileException e ) {
-        log.logError( "Unexpected error setting internal filename variables!", e );
+      } catch ( Exception e ) {
+        //log.logError( "Unexpected error setting internal filename variables!", e );
 
         variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "" );
         variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "" );
