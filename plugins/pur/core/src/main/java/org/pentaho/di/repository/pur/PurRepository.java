@@ -3214,6 +3214,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
         jobMeta = new EEJobMeta();
         jobMeta.setName( file.getTitle() );
+        jobMeta.setFilename( file.getPath() );
         jobMeta.setDescription( file.getDescription() );
         jobMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
         jobMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
@@ -3255,9 +3256,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         } else {
           file = pur.getFileById( idTransformation.getId() );
         }
-
         transMeta = new EETransMeta();
         transMeta.setName( file.getTitle() );
+        transMeta.setFilename( file.getPath() );
         transMeta.setDescription( file.getDescription() );
         transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
         transMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
