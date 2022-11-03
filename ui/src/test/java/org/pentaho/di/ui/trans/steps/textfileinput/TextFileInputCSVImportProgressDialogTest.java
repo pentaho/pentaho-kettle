@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,7 +81,7 @@ public class TextFileInputCSVImportProgressDialogTest {
 
   @Test
   public void fileDOSFormatTestWithNoEnclosures() throws Exception {
-    TextFileInputField[] inputFileFields = createInputFileFields( "String", "Number", "Boolean", "Date" );
+    TextFileInputField[] inputFileFields = createInputFileFields( "String", "BigNumber", "Boolean", "Date" );
     String fileContent = "String, int, boolean, date\r\n"
       + "レコード名1,1.7976E308,true,9999/12/31 23:59:59.999,\r\n"
       + "\"あa1\",123456789,false,2016/1/5 12:00:00.000\r\n";
@@ -91,7 +91,7 @@ public class TextFileInputCSVImportProgressDialogTest {
 
   @Test
   public void fileDOSFormatTestWithEnclosures() throws Exception {
-    TextFileInputField[] inputFileFields = createInputFileFields( "String", "Number", "Boolean", "Date" );
+    TextFileInputField[] inputFileFields = createInputFileFields( "String", "BigNumber", "Boolean", "Date" );
     String fileContent = "String, int, boolean, date\r\n"
       + "\"レコ\r\n"
       + "ード名1\",1.7976E308,true,9999/12/31 23:59:59.999,\r\n"
@@ -103,7 +103,7 @@ public class TextFileInputCSVImportProgressDialogTest {
 
   @Test
   public void fileUnixFormatTestWithNoEnclosures() throws Exception {
-    TextFileInputField[] inputFileFields = createInputFileFields( "String", "Number", "Boolean", "Date" );
+    TextFileInputField[] inputFileFields = createInputFileFields( "String", "BigNumber", "Boolean", "Date" );
     String fileContent = "String, int, boolean, date\n"
       + "レコード名1,1.7976E308,true,9999/12/31 23:59:59.999,\n"
       + "\"あa1\",123456789,false,2016/1/5 12:00:00.000\n";
@@ -113,7 +113,7 @@ public class TextFileInputCSVImportProgressDialogTest {
 
   @Test
   public void fileUnixFormatTestWithEnclosures() throws Exception {
-    TextFileInputField[] inputFileFields = createInputFileFields( "String", "Number", "Boolean", "Date" );
+    TextFileInputField[] inputFileFields = createInputFileFields( "String", "BigNumber", "Boolean", "Date" );
     String fileContent = "String, int, boolean, date\n"
       + "\"レコ\n"
       + "ード名1\",1.7976E308,true,9999/12/31 23:59:59.999,\n"
@@ -125,7 +125,7 @@ public class TextFileInputCSVImportProgressDialogTest {
 
   @Test
   public void fileMixFormatTestWithNoEnclosures() throws Exception {
-    TextFileInputField[] inputFileFields = createInputFileFields( "String", "Number", "Boolean", "Date" );
+    TextFileInputField[] inputFileFields = createInputFileFields( "String", "BigNumber", "Boolean", "Date" );
     String fileContent = "String, int, boolean, date\n"
       + "レコード名1,1.7976E308,true,9999/12/31 23:59:59.999,\r\n"
       + "\"あa1\",123456789,false,2016/1/5 12:00:00.000\r\n";
@@ -135,7 +135,7 @@ public class TextFileInputCSVImportProgressDialogTest {
 
   @Test
   public void fileMixFormatTestWithEnclosures() throws Exception {
-    TextFileInputField[] inputFileFields = createInputFileFields( "String", "Number", "Boolean", "Date" );
+    TextFileInputField[] inputFileFields = createInputFileFields( "String", "BigNumber", "Boolean", "Date" );
     String fileContent = "String, int, boolean, date\r\n"
       + "\"レコ\n"
       + "ード名1\",1.7976E308,true,9999/12/31 23:59:59.999,\n"
@@ -149,10 +149,10 @@ public class TextFileInputCSVImportProgressDialogTest {
     initiateVariables( fileContent, inputFileFields, fileFormat );
     String result = textFileCSVImportProgressDialog.doScan( monitor );
 
-    assertEquals( ValueMetaFactory.getValueMetaName( meta.getInputFields()[0].getType() ), inputFileFields[0].getName() );
-    assertEquals( ValueMetaFactory.getValueMetaName( meta.getInputFields()[1].getType() ), inputFileFields[1].getName() );
-    assertEquals( ValueMetaFactory.getValueMetaName( meta.getInputFields()[2].getType() ), inputFileFields[2].getName() );
-    assertEquals( ValueMetaFactory.getValueMetaName( meta.getInputFields()[3].getType() ), inputFileFields[3].getName() );
+    assertEquals( inputFileFields[0].getName(), ValueMetaFactory.getValueMetaName( meta.getInputFields()[0].getType() ) );
+    assertEquals( inputFileFields[1].getName(), ValueMetaFactory.getValueMetaName( meta.getInputFields()[1].getType() ) );
+    assertEquals( inputFileFields[2].getName(), ValueMetaFactory.getValueMetaName( meta.getInputFields()[2].getType() ) );
+    assertEquals( inputFileFields[3].getName(), ValueMetaFactory.getValueMetaName( meta.getInputFields()[3].getType() ) );
   }
 
   private void initiateVariables( String fileContent, TextFileInputField[] inputFileFields, int fileFormat ) throws Exception {

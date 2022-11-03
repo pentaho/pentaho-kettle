@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,8 @@ public class StringEvaluationResult {
   private int nrNull;
   private int nrSuccesses;
   private int nrFailures;
+  private int nrTruncations;
+  private int nrExponentValues;
 
   public StringEvaluationResult( ValueMetaInterface conversionMeta ) {
     this.conversionMeta = conversionMeta;
@@ -165,4 +167,25 @@ public class StringEvaluationResult {
     this.nrFailures = nrFailures;
   }
 
+  public int getNrTruncations() {
+    return nrTruncations;
+  }
+
+  public void setNrTruncations( int nrTruncations ) {
+    this.nrTruncations = nrTruncations;
+  }
+
+  public void incrementTruncations( ) {
+    nrTruncations++;
+  }
+
+  public int getNrExponentValues() {
+    return nrExponentValues;
+  }
+
+  public void setNrExponentValues( int nrExponentValues ) {
+    this.nrExponentValues = nrExponentValues;
+  }
+
+  public void incrementExponentValues( ) { nrExponentValues++; }
 }
