@@ -426,6 +426,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         .replace( '\\', '*' )
         .replace( '|', ',' )
         .replace( "$", "" );
+      if( element.getLabel().contains( "*." ) ){
+        return element.getLabel();
+      }
       return element.getLabel() + " (" + fileExtensions + ")";
     } );
 
