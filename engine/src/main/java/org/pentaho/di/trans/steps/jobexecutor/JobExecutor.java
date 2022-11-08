@@ -222,6 +222,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobStart.id, data.executorJob );
 
+    data.executorJob.setInitialLogBufferStartLine();
     data.executorJob.beginProcessing();
 
     Result result = new Result();

@@ -353,7 +353,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
                 value = job.getCurrentDate();
                 break;
               case LOG_FIELD:
-                value = getLogBuffer( job, job.getLogChannelId(), status, logSizeLimit );
+                value = getLogBuffer( job, job.getLogChannelId(), status, logSizeLimit, job.getLogBufferStartLine() );
                 break;
               case EXECUTING_SERVER:
                 value = job.getExecutingServer();

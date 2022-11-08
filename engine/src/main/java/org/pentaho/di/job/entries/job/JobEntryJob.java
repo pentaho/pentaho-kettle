@@ -1001,6 +1001,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           job.setSourceRows( sourceRows );
 
           // Don't forget the logging...
+          job.setInitialLogBufferStartLine();
           job.beginProcessing();
 
           // Link the job with the sub-job

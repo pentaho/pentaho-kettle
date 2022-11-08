@@ -4278,6 +4278,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       @Override
       public void run() {
         try {
+
+          trans.setInitialLogBufferStartLine();
           trans.prepareExecution( args );
 
           // Do we capture data?
