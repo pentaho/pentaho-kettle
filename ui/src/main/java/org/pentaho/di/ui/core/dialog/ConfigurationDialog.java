@@ -84,7 +84,7 @@ public abstract class ConfigurationDialog extends Dialog {
   protected Composite cContainer;
   protected Composite cRunConfiguration;
   protected CCombo wRunConfiguration;
-  protected ScrolledComposite scContainer;
+  //protected ScrolledComposite scContainer;
 
   private TableView wParams;
   private Display display;
@@ -221,7 +221,8 @@ public abstract class ConfigurationDialog extends Dialog {
     shell.setImage( img );
     shell.setLayout( new FormLayout() );
     shell.setText( BaseMessages.getString( PKG, prefix + ".Shell.Title" ) );
-
+    
+    /*
     scContainer = new ScrolledComposite( shell, SWT.NONE | SWT.H_SCROLL | SWT.V_SCROLL );
     scContainer.setLayout( new FormLayout() );
     FormData fd = new FormData();
@@ -232,11 +233,18 @@ public abstract class ConfigurationDialog extends Dialog {
     scContainer.setLayoutData( fd );
     scContainer.setExpandHorizontal( true );
     scContainer.setExpandVertical( true );
-    cContainer = new Composite( scContainer, SWT.NONE );
-    scContainer.setContent( cContainer );
-    cContainer.setLayout( new FormLayout() );
-    cContainer.setBackground( shell.getBackground() );
-    cContainer.setParent( scContainer );
+    */
+    cContainer = new Composite( shell, SWT.NONE );
+    cContainer.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( 0, 0 ).bottom( 100, 0).result() );
+    //scContainer.setContent( cContainer );
+    FormLayout cLayout = new FormLayout();
+    cLayout.marginWidth = Const.FORM_MARGIN;
+    cLayout.marginHeight = Const.FORM_MARGIN;
+    cContainer.setLayout( cLayout );
+    
+    //cContainer.setBackground( shell.getBackground() );
+    props.setLook( cContainer );
+    //cContainer.setParent( scContainer );
   }
 
   protected void optionsSectionLayout( Class<?> PKG, String prefix ) {
@@ -299,7 +307,7 @@ public abstract class ConfigurationDialog extends Dialog {
     String[] namedParams = abstractMeta.listParameters();
     int nrParams = namedParams.length;
     wParams =
-        new TableView( abstractMeta, parametersComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams,
+        new TableView( abstractMeta, parametersComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, cParams,
             nrParams, false, null, props, false );
     FormData fdParams = new FormData();
     fdParams.top = new FormAttachment( 0, Const.FORM_MARGIN );
@@ -351,7 +359,7 @@ public abstract class ConfigurationDialog extends Dialog {
 
     int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;
     wVariables =
-        new TableView( abstractMeta, variablesComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables,
+        new TableView( abstractMeta, variablesComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, cVariables,
             nrVariables, false, null, props, false );
 
     FormData fdVariables = new FormData();
@@ -446,14 +454,20 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   protected void openDialog() {
+    
     shell.pack();
-    scContainer.setMinSize( cContainer.computeSize( SWT.DEFAULT, SWT.DEFAULT ) );
+    //scContainer.setMinSize( cContainer.computeSize( SWT.DEFAULT, SWT.DEFAULT ) );
     // Set the focus on the OK button
     wOK.setFocus();
-
+    
     Rectangle shellBounds = getParent().getBounds();
-    Point dialogSize = shell.getSize();
+    
+    //Force the dialog to take 60% of the display height
+    shell.setSize( shell.getSize().x, (int) (shellBounds.height * 0.6d) );
 
+    Point dialogSize = shell.getSize();
+    
+    //Center the dialog in the screen
     shell.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y
         + ( shellBounds.height - dialogSize.y ) / 2 );
 
