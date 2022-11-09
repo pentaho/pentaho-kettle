@@ -228,6 +228,11 @@ public class StringEvaluatorTest {
   }
 
   @Test
+  public void testNumbersThatCouldBeEUorUS() {
+    testNumber("#.######", "-81.706865", "-81.718452" );
+  }
+
+  @Test
   public void testMixOfExponentsFractionsIntegersAndGrouping3() {
     // Adding the (1234.1) to the values forces the parens mask to parse the value.  Since the parens mask is intended
     // for currency we use 0's in the fraction instead of #'s.  See the default masks.  Note that the comma group
