@@ -46,6 +46,7 @@ import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.Variables;
 
 /**
  * This class evaluates strings and extracts a data type. It allows you to criteria after which the analysis should be
@@ -67,6 +68,9 @@ public class StringEvaluator {
   private String[] dateFormats;
   private String[] numberFormats;
   private String exponentChar = "E";
+  private static final String KETTLE_STRING_EVALUATOR_PREFERRED_LOCALE_PROPERTY = "KETTLE_STRING_EVALUATOR_PREFERRED_LOCALE";
+  private String preferredNumericFormatType; //EU or US
+  private String preferredGroupDecimalSymbols;
 
   private static final String[] DEFAULT_NUMBER_FORMATS = new String[]
     {
@@ -108,6 +112,16 @@ public class StringEvaluator {
   public StringEvaluator( boolean tryTrimming, String[] numberFormats, String[] dateFormats, boolean autoScaling ) {
     this.tryTrimming = tryTrimming;
     this.autoScaling = autoScaling;
+
+    Variables variables = new Variables();
+    variables.initializeVariablesFrom( null );
+    preferredNumericFormatType = variables.getVariable( KETTLE_STRING_EVALUATOR_PREFERRED_LOCALE_PROPERTY );
+    if ( !"EU".equals(preferredNumericFormatType) ) {
+      preferredNumericFormatType = "US";
+      preferredGroupDecimalSymbols = ".,";
+    } else {
+      preferredGroupDecimalSymbols = ",.";
+    }
 
     values = new HashSet<String>();
     evaluationResults = new ArrayList<StringEvaluationResult>();
@@ -396,8 +410,8 @@ public class StringEvaluator {
           }
         };
       } else {
-        // Prefer exponents if the raw data had them.  Otherwise we want the shortest format mask for numerics &
-        // integers with least truncation count.
+        // Prefer exponents if the raw data had them.  Otherwise choose the least truncated, otherwise check the
+        // preferred US/EU type, Otherwise we want the shortest format mask for numerics & integers.
         compare = new Comparator<StringEvaluationResult>() {
           @Override
           public int compare( StringEvaluationResult r1, StringEvaluationResult r2 ) {
@@ -409,6 +423,9 @@ public class StringEvaluator {
                 .getConversionMask().contains( exponentChar ) ) {
                 return r1.getConversionMeta().getConversionMask().contains( exponentChar ) ? -1 : 1;
               }
+            }
+            if ( !r1.getConversionMeta().getGroupingSymbol().equals( r2.getConversionMeta().getGroupingSymbol() ) ) {
+              return r1.getConversionMeta().getDecimalSymbol().equals( preferredGroupDecimalSymbols.substring( 0, 1 ) ) ? -1 : 1;
             }
             Integer length1 =
               r1.getConversionMeta().getConversionMask() == null ? 0 : r1
