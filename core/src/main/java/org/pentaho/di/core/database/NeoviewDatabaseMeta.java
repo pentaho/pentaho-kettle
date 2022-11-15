@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -377,7 +377,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getExtraOptionsHelpText() {
-    return "http://docs.hp.com/en/busintellsol.html";
+    return "https://www.hpe.com/psnow/doc/c01850029";
   }
 
   @Override
