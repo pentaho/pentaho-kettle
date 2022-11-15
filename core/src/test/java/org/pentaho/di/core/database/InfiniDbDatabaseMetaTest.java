@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -97,7 +97,7 @@ public class InfiniDbDatabaseMetaTest extends MySQLDatabaseMetaTest {
     assertEquals( "`", nativeMeta.getStartQuote() );
     assertEquals( "`", nativeMeta.getEndQuote() );
     assertTrue( nativeMeta.needsToLockAllTables() );
-    assertEquals( "http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-configuration-properties.html", nativeMeta.getExtraOptionsHelpText() );
+    assertEquals( "https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-configuration-properties.html", nativeMeta.getExtraOptionsHelpText() );
     assertArrayEquals( new String[] { "mysql-connector-java-3.1.14-bin.jar" }, nativeMeta.getUsedLibraries() ); // this is way wrong
     assertTrue( nativeMeta.isSystemTable( "sysTest" ) );
     assertTrue( nativeMeta.isSystemTable( "dtproperties" ) );
