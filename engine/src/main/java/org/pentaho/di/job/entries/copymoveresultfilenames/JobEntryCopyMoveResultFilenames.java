@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.copymoveresultfilenames;
 
+import org.apache.commons.vfs2.AllFileSelector;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
@@ -34,7 +35,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileUtil;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -596,7 +596,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
         if ( ( !filexists ) || ( filexists && isOverwriteFile() ) ) {
           if ( getAction().equals( "copy" ) ) {
             // Copy file
-            FileUtil.copyContent( sourcefile, destinationfile );
+            destinationfile.copyFrom( sourcefile, new AllFileSelector() );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
                 PKG, "JobEntryCopyMoveResultFilenames.log.CopiedFile", sourcefile.toString(), destinationFolder ) );
