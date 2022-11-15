@@ -419,7 +419,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    * @return extra help text on the supported options on the selected database platform.
    */
   @Override public String getExtraOptionsHelpText() {
-    return "http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-configuration-properties.html";
+    return "https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-configuration-properties.html";
   }
 
   @Override public String[] getUsedLibraries() {
