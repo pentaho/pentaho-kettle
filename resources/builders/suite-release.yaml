@@ -866,11 +866,14 @@ jobGroups:
                             }
                             withCredentials([usernamePassword(credentialsId: '${SCM_CREDENTIALS_ID}', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD' )]) {
                               sh '''
+                                echo "pwd: "
+                                pwd
                                 git config user.email    "hv.buildguy@hitachivantara.com"
                                 git config user.name     "$GIT_USERNAME"
                                 git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/pentaho/jenkins-pipelines.git
+                                git status
                                 git commit --untracked-files=no -m "[CLEANUP] versioning applied" ./resources/config/suite-release.versions
-                                git tag ${{ env.RELEASE_VERSION }}-R
+                                git tag ${{ env.RELEASE_VERSION }}-${{ env.RELEASE_BUILD_NUMBER }}-R
                                 git push https://$GIT_USERNAME:$GIT_PASSWORD@github.com/pentaho/jenkins-pipelines.git ${{ env.RELEASE_VERSION }}-R
                               '''
                             }
