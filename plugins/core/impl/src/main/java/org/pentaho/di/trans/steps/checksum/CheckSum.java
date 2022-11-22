@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -263,10 +263,6 @@ public class CheckSum extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "CheckSum.Error.ResultFieldMissing" ) );
-        return false;
-      }
-      if ( meta.isCompatibilityMode() && CheckSumMeta.TYPE_SHA256.equals( meta.getCheckSumType() ) ) {
-        logError( BaseMessages.getString( PKG, "CheckSumMeta.CheckResult.CompatibilityModeSHA256Error" ) );
         return false;
       }
       return true;
