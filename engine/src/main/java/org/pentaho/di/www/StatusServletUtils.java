@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,15 +38,20 @@ import java.util.Optional;
 
 class StatusServletUtils {
 
+  public static final String PENTAHO_SOLUTIONS_PATH_COMPONENT = "pentaho-solutions";
+  public static final String RESOURCES_PATH_COMPONENT = "resources";
   @SuppressWarnings( "squid:S1075" ) static final String RESOURCES_PATH = "/content/common-ui/resources/themes";
   @SuppressWarnings( "squid:S1075" ) static final String STATIC_PATH = "/static";
+  private static final String SYSTEM_PATH_COMPONENT = "system";
+  private static final String PENTAHO_XML_FILENAME = "pentaho.xml";
   static final String PENTAHO_ROOT = "/pentaho";
   private static final String LINK_HTML_PREFIX = "<link rel=\"stylesheet\" type=\"text/css\" href=\"";
+  public static final String THEMES_PATH_COMPONENT = "themes";
 
   private StatusServletUtils() {
   }
 
-  @Deprecated
+
   @SuppressWarnings( "javasecurity:S2083" )
   // root is ultimately derived from the servlet uri, which must be correct otherwise we couldn't have ended up here
   static String getPentahoStyles( String root ) {
@@ -58,28 +63,29 @@ class StatusServletUtils {
       String relativePathSeparator = ".." + File.separator;
 
       // Read in currently set theme from pentaho.xml file
+
       String themeSetting = relativePathSeparator
-        + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
+        + PENTAHO_SOLUTIONS_PATH_COMPONENT + File.separator + SYSTEM_PATH_COMPONENT + File.separator + PENTAHO_XML_FILENAME;
       File f = new File( themeSetting );
 
       // Check if file exists (may be different location depending on how server was started)
       if ( !f.exists() ) {
-        //on loading pentaho by startup.bat or windows service, the relative paths are different. This is meant to
+        //on loading pentaho by startup.bat or Windows service, the relative paths are different. This is meant to
         // allow both types of execution
         relativePathSeparator = ".." + File.separator + ".." + File.separator;
         themeSetting = relativePathSeparator
-          + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
+          + PENTAHO_SOLUTIONS_PATH_COMPONENT + File.separator + SYSTEM_PATH_COMPONENT + File.separator + PENTAHO_XML_FILENAME;
         f = new File( themeSetting );
       }
 
-      themeName = buildThemeName( themeName, f );
+      themeName = buildThemeName( f );
 
 
       // Get theme CSS file
       String themeDirStr = relativePathSeparator
-        + "pentaho-solutions" + File.separator + "system" + File.separator
-        + "common-ui" + File.separator + "resources" + File.separator
-        + "themes" + File.separator + themeName + File.separator;
+        + PENTAHO_SOLUTIONS_PATH_COMPONENT + File.separator + SYSTEM_PATH_COMPONENT + File.separator
+        + "common-ui" + File.separator + RESOURCES_PATH_COMPONENT + File.separator
+        + THEMES_PATH_COMPONENT + File.separator + themeName + File.separator;
       File themeDir = new File( themeDirStr );
       for ( File fName : Optional.ofNullable( themeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
         if ( fName.getName().contains( ".css" ) ) {
@@ -93,7 +99,7 @@ class StatusServletUtils {
 
       // Get mantle theme CSS file
       String mantleThemeDirStr = relativePathSeparator + "webapps" + root + File.separator + "mantle" + File.separator
-        + "themes" + File.separator + themeName + File.separator;
+        + THEMES_PATH_COMPONENT + File.separator + themeName + File.separator;
       File mantleThemeDir = new File( mantleThemeDirStr );
       for ( File fName : Optional.ofNullable( mantleThemeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
         if ( fName.getName().contains( ".css" ) ) {
@@ -119,13 +125,12 @@ class StatusServletUtils {
     return sb.toString();
   }
 
-  private static String buildThemeName( String themeName, File f )
+  private static String buildThemeName( File f )
     throws ParserConfigurationException, SAXException, IOException {
     DocumentBuilderFactory dbFactory = XmlParserFactoryProducer.createSecureDocBuilderFactory();
     DocumentBuilder db = dbFactory.newDocumentBuilder();
     Document doc = db.parse( f );
-    themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
-    return themeName;
+    return doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
   }
 
   static String getPentahoStyles( final ServletContext context, String root ) {
@@ -134,23 +139,22 @@ class StatusServletUtils {
       return getPentahoStyles( root );
     }
 
-    StringBuilder sb = new StringBuilder();
     String themeName = "ruby"; // default pentaho theme
     String themeCss = "globalRuby.css";
     String mantleThemeCss = "mantleRuby.css";
-    String solutionPath = getSolutionPath( context, root );
+    String solutionPath = getSolutionPath( context );
     try {
 
-      String themeSettingPath = solutionPath + File.separator + "system" + File.separator + "pentaho.xml";
+      String themeSettingPath = solutionPath + File.separator + SYSTEM_PATH_COMPONENT + File.separator + PENTAHO_XML_FILENAME;
 
       File f = new File( themeSettingPath );
 
-      themeName = buildThemeName( themeName, f );
+      themeName = buildThemeName( f );
 
       // Get theme CSS file
-      String themeDirStr = solutionPath + File.separator + "system" + File.separator
-        + "common-ui" + File.separator + "resources" + File.separator
-        + "themes" + File.separator + themeName + File.separator;
+      String themeDirStr = solutionPath + File.separator + SYSTEM_PATH_COMPONENT + File.separator
+        + "common-ui" + File.separator + RESOURCES_PATH_COMPONENT + File.separator
+        + THEMES_PATH_COMPONENT + File.separator + themeName + File.separator;
       File themeDir = new File( themeDirStr );
       for ( File fName : Optional.ofNullable( themeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
         if ( fName.getName().contains( ".css" ) ) {
@@ -163,7 +167,7 @@ class StatusServletUtils {
 
       // Get mantle theme CSS file
       String mantleThemeDirStr = webappsPath + File.separator + "mantle" + File.separator
-        + "themes" + File.separator + themeName + File.separator;
+        + THEMES_PATH_COMPONENT + File.separator + themeName + File.separator;
       File mantleThemeDir = new File( mantleThemeDirStr );
       for ( File fName : Optional.ofNullable( mantleThemeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
         if ( fName.getName().contains( ".css" ) ) {
@@ -184,18 +188,16 @@ class StatusServletUtils {
 
     //we expect the folder to exist in the tomcat/webapps folder
     //we try two levels up
-    String webapAppsPath = oneLvlUp + oneLvlUp + root;
-    File webappsFolder = new File( webapAppsPath );
-    if ( webappsFolder.exists() && "webapps".equals( webappsFolder.getName() ) ) {
-      return webapAppsPath;
-    } else {
+    String webAppsPath = oneLvlUp + oneLvlUp + root;
+    File webappsFolder = new File( webAppsPath );
+    if (!webappsFolder.exists() || !"webapps".equals(webappsFolder.getName())) {
       //if not, we move three levels up
-      webapAppsPath = oneLvlUp + webapAppsPath;
-      return webapAppsPath;
+      webAppsPath = oneLvlUp + webAppsPath;
     }
+    return webAppsPath;
   }
 
-  private static String getSolutionPath( ServletContext context, String root ) {
+  private static String getSolutionPath( ServletContext context ) {
 
     if ( context != null ) {
       String rootPath = context.getInitParameter( "solution-path" );
@@ -215,7 +217,7 @@ class StatusServletUtils {
     try {
       ps = file.getCanonicalPath().lastIndexOf( "pentaho-server" );
       solutionPath =
-        file.getCanonicalPath().substring( 0, ps ) + "pentaho-server" + File.separator + "pentaho-solutions";
+        file.getCanonicalPath().substring( 0, ps ) + "pentaho-server" + File.separator + PENTAHO_SOLUTIONS_PATH_COMPONENT;
     } catch ( IOException e ) {
       e.printStackTrace();
     }
