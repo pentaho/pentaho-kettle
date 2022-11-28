@@ -513,7 +513,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     } else if ( nextStep != null
       && resultFilesTargetStepMeta != null && nextStep.equals( resultFilesTargetStepMeta ) ) {
       if ( !Utils.isEmpty( resultFilesFileNameField ) ) {
-        ValueMetaInterface value = new ValueMetaString( "filename", 255, 0 );
+        ValueMetaInterface value = new ValueMetaString( resultFilesFileNameField, 255, 0 );
         row.addValueMeta( value );
       }
     } else if ( nextStep != null
