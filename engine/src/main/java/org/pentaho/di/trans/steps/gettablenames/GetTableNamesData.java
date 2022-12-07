@@ -24,6 +24,8 @@ package org.pentaho.di.trans.steps.gettablenames;
 
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.step.BaseDatabaseStepData;
+import org.pentaho.di.trans.step.BaseDatabaseStepMeta;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -32,8 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @since 03-Juin-2008
  *
  */
-public class GetTableNamesData extends BaseStepData implements StepDataInterface {
-  public Database db;
+public class GetTableNamesData extends BaseDatabaseStepData implements StepDataInterface {
   public String realTableNameFieldName;
   public String realObjectTypeFieldName;
   public String realIsSystemObjectFieldName;

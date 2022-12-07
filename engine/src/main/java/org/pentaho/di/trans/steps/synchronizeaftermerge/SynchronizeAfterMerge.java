@@ -42,11 +42,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 
 /**
  * Performs an insert/update/delete depending on the value of a field.
@@ -54,7 +50,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Samatar
  * @since 13-10-2008
  */
-public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
+public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInterface {
 
   private static Class<?> PKG = SynchronizeAfterMergeMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -859,6 +855,10 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
             return false;
           }
         }
+        if ( meta.getDatabaseMeta() == null ) {
+          logError( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Init.ConnectionMissing", getStepname() ) );
+          return false;
+        }
 
         data.databaseMeta = meta.getDatabaseMeta();
 
@@ -884,20 +884,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           }
         }
 
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Init.ConnectionMissing", getStepname() ) );
-          return false;
-        }
-        data.db = new Database( this, meta.getDatabaseMeta() );
-        data.db.shareVariablesWith( this );
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-        data.db.setCommit( data.commitSize );
+        connectToDatabaseOrAssignDataSource( meta, data );
+        data.db.setCommitSize( data.commitSize );
 
         return true;
       } catch ( KettleException ke ) {
@@ -906,6 +894,11 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
       }
     }
     return false;
+  }
+
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -970,8 +963,6 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
             logError( "Unexpected error rolling back the database connection.", e );
           }
         }
-
-        data.db.disconnect();
       }
     }
   }

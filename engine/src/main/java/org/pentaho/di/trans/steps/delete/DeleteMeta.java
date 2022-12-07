@@ -48,11 +48,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -63,7 +59,7 @@ import org.w3c.dom.Node;
  * @since 28-March-2006
  */
 @InjectionSupported( localizationPrefix = "Delete.Injection.", groups = "FIELDS" )
-public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
+public class DeleteMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = DeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String TAG_4_SPACES = "    ";

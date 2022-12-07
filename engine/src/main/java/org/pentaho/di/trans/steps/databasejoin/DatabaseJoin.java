@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.databasejoin;
 import java.sql.ResultSet;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -34,11 +33,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 
 /**
  * Use values from input streams to joins with values in a database. Freehand SQL can be used to do this.
@@ -46,7 +41,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 26-apr-2003
  */
-public class DatabaseJoin extends BaseStep implements StepInterface {
+public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = DatabaseJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   private final ReentrantLock dbLock = new ReentrantLock();
@@ -228,21 +223,9 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
       dbLock.lock();
       try {
-        data.db = new Database( this, meta.getDatabaseMeta() );
-        data.db.shareVariablesWith( this );
 
         try {
-          if ( getTransMeta().isUsingUniqueConnections() ) {
-            synchronized ( getTrans() ) {
-              data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-            }
-          } else {
-            data.db.connect( getPartitionID() );
-          }
-
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "DatabaseJoin.Log.ConnectedToDB" ) );
-          }
+          connectToDatabaseOrAssignDataSource( meta, data );
 
           String sql = meta.getSql();
           if ( meta.isVariableReplace() ) {
@@ -270,13 +253,15 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
+  }
+
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     final DatabaseJoinData data = (DatabaseJoinData) sdi;
     dbLock.lock();
     try {
-      if ( data.db != null ) {
-        data.db.disconnect();
-      }
       super.dispose( smi, sdi );
     } finally {
       dbLock.unlock();

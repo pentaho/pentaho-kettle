@@ -50,13 +50,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepIOMeta;
-import org.pentaho.di.trans.step.StepIOMetaInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -74,7 +68,7 @@ import java.util.List;
  *
  */
 @InjectionSupported( localizationPrefix = "TableInputMeta.Injection." )
-public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
+public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private List<? extends SharedObjectInterface> databases;
@@ -129,6 +123,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the database.
    */
+  @Override
   public DatabaseMeta getDatabaseMeta() {
     return databaseMeta;
   }

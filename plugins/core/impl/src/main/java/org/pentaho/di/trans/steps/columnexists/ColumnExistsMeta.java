@@ -43,11 +43,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -59,7 +55,7 @@ import org.w3c.dom.Node;
 @Step( id = "ColumnExists", i18nPackageName = "org.pentaho.di.trans.steps.columnexists", name = "ColumnExists.Name",
     description = "ColumnExists.Description",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup" )
-public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface {
+public class ColumnExistsMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** database connection */
@@ -87,7 +83,7 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface 
   /**
    * @return Returns the database.
    */
-  public DatabaseMeta getDatabase() {
+  public DatabaseMeta getDatabaseMeta() {
     return database;
   }
 
@@ -95,7 +91,7 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface 
    * @param database
    *          The database to set.
    */
-  public void setDatabase( DatabaseMeta database ) {
+  public void setDatabaseMeta( DatabaseMeta database ) {
     this.database = database;
   }
 

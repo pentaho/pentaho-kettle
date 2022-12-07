@@ -701,6 +701,7 @@ public class DatabaseTest {
     when( meta.getMaximumPoolSize() ).thenReturn( 1 );
 
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
+    doThrow( new UnsupportedOperationException() ).when( provider ).getPooledDataSourceFromMeta( meta, DatasourceType.POOLED );
     Database db = new Database( log, meta );
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
     try {
@@ -764,6 +765,7 @@ public class DatabaseTest {
     when( meta.isNeedUpdate() ).thenReturn( false );
 
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
+    doThrow( new UnsupportedOperationException() ).when( provider ).getPooledDataSourceFromMeta( meta, DatasourceType.POOLED );
     Database db = new Database( log, meta );
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
     try {

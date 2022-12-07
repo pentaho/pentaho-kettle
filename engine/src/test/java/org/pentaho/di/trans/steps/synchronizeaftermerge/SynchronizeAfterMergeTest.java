@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -42,7 +43,7 @@ public class SynchronizeAfterMergeTest {
   private static final String STEP_NAME = "Sync";
 
   @Test
-  public void initWithCommitSizeVariable() {
+  public void initWithCommitSizeVariable() throws KettleDatabaseException {
     StepMeta stepMeta = mock( StepMeta.class );
     doReturn( STEP_NAME ).when( stepMeta ).getName();
     doReturn( 1 ).when( stepMeta ).getCopies();
@@ -66,6 +67,7 @@ public class SynchronizeAfterMergeTest {
     doCallRealMethod().when( step ).setTransMeta( any( TransMeta.class ) );
     doCallRealMethod().when( step ).setStepMeta( any( StepMeta.class ) );
     doCallRealMethod().when( step ).init( any( StepMetaInterface.class ), any( StepDataInterface.class ) );
+    doCallRealMethod().when( step ).connectToDatabaseOrAssignDataSource(  any(), any()  );
     doReturn( stepMeta ).when( step ).getStepMeta();
     doReturn( transMeta ).when( step ).getTransMeta();
     doReturn( "120" ).when( step ).environmentSubstitute( "${commit.size}" );

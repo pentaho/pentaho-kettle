@@ -2009,7 +2009,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         for ( SharedObjectInterface obj : value ) {
           SharedObjectInterface newValueItem;
           if ( obj instanceof DatabaseMeta ) {
-            DatabaseMeta databaseMeta = (DatabaseMeta) ( (DatabaseMeta) obj ).clone();
+            DatabaseMeta databaseMeta = (DatabaseMeta) ( (DatabaseMeta) obj ).deepClone( true );
             databaseMeta.setObjectId( ( (DatabaseMeta) obj ).getObjectId() );
             databaseMeta.setChangedDate( obj.getChangedDate() );
             databaseMeta.clearChanged();
@@ -2859,7 +2859,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         case DATABASE:
           origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.DATABASE );
           if ( !remove ) {
-            elementToUpdate = (RepositoryElementInterface) ( (DatabaseMeta) element ).clone();
+            elementToUpdate = (RepositoryElementInterface) ( (DatabaseMeta) element ).deepClone( true );
           }
           break;
         case SLAVE_SERVER:

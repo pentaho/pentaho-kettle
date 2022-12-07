@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,29 +20,11 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.tableexists;
+package org.pentaho.di.trans.step;
 
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseDatabaseStepData;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
 
-/**
- * @author Samatar
- * @since 03-Juin-2008
- *
- */
-public class TableExistsData extends BaseDatabaseStepData implements StepDataInterface {
-  public int indexOfTablename;
-  public String realSchemaname;
-  public RowMetaInterface outputRowMeta;
+public abstract class BaseDatabaseStepMeta extends BaseStepMeta {
 
-  public TableExistsData() {
-    super();
-    indexOfTablename = -1;
-    realSchemaname = null;
-    db = null;
-  }
-
+    public abstract DatabaseMeta getDatabaseMeta();
 }

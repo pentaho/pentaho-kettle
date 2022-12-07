@@ -23,18 +23,13 @@
 package org.pentaho.di.trans.steps.tableexists;
 
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 
 /**
  * Check if a table exists in a Database *
@@ -44,7 +39,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  *
  */
 
-public class TableExists extends BaseStep implements StepInterface {
+public class TableExists extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = TableExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableExistsMeta meta;
@@ -56,6 +51,7 @@ public class TableExists extends BaseStep implements StepInterface {
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+
     meta = (TableExistsMeta) smi;
     data = (TableExistsData) sdi;
 
@@ -137,26 +133,12 @@ public class TableExists extends BaseStep implements StepInterface {
         return false;
       }
 
-      data.db = new Database( this, meta.getDatabase() );
-      data.db.shareVariablesWith( this );
       if ( !Utils.isEmpty( meta.getSchemaname() ) ) {
         data.realSchemaname = environmentSubstitute( meta.getSchemaname() );
       }
 
       try {
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "TableExists.Log.ConnectedToDB" ) );
-        }
-
-        return true;
+        return connectToDatabaseOrAssignDataSource( meta, data );
       } catch ( KettleException e ) {
         logError( BaseMessages.getString( PKG, "TableExists.Log.DBException" ) + e.getMessage() );
         if ( data.db != null ) {
@@ -167,12 +149,16 @@ public class TableExists extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
+  }
+
+  protected boolean connectToDatabaseOnInit() {
+    return false;
+  }
+
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    meta = (TableExistsMeta) smi;
-    data = (TableExistsData) sdi;
-    if ( data.db != null ) {
-      data.db.disconnect();
-    }
     super.dispose( smi, sdi );
   }
 }

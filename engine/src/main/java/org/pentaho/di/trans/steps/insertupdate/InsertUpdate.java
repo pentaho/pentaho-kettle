@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,14 +52,14 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 26-apr-2003
  */
-public class InsertUpdate extends BaseStep implements StepInterface {
+public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
   private InsertUpdateMeta meta;
   private InsertUpdateData data;
 
   public InsertUpdate( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-                       Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -484,16 +484,8 @@ public class InsertUpdate extends BaseStep implements StepInterface {
           logError( BaseMessages.getString( PKG, "InsertUpdate.Init.ConnectionMissing", getStepname() ) );
           return false;
         }
-        data.db = new Database( this, meta.getDatabaseMeta() );
-        data.db.shareVariablesWith( this );
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-        data.db.setCommit( meta.getCommitSize( this ) );
+        connectToDatabaseOrAssignDataSource( meta, data );
+        data.db.setCommitSize(  meta.getCommitSize( this ) );
 
         return true;
       } catch ( KettleException ke ) {
@@ -502,6 +494,11 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       }
     }
     return false;
+  }
+
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -522,8 +519,6 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       } catch ( KettleDatabaseException e ) {
         logError( BaseMessages.getString( PKG, "InsertUpdate.Log.UnableToCommitConnection" ) + e.toString() );
         setErrors( 1 );
-      } finally {
-        data.db.disconnect();
       }
     }
     super.dispose( smi, sdi );

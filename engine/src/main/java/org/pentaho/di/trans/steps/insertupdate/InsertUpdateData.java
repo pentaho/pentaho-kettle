@@ -26,6 +26,8 @@ import java.sql.PreparedStatement;
 
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.step.BaseDatabaseStepData;
+import org.pentaho.di.trans.step.BaseDatabaseStepMeta;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -35,8 +37,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @author Matt
  * @since 24-jan-2005
  */
-public class InsertUpdateData extends BaseStepData implements StepDataInterface {
-  public Database db;
+public class InsertUpdateData extends BaseDatabaseStepData implements StepDataInterface {
 
   public int[] keynrs; // nr of keylookup -value in row...
   public int[] keynrs2; // nr of keylookup2-value in row...

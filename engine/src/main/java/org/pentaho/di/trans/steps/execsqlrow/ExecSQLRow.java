@@ -26,7 +26,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -35,11 +34,7 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 
 /**
  * Execute one or more SQL statements in a script, one time or parameterised (for every row)
@@ -47,7 +42,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 10-sep-2005
  */
-public class ExecSQLRow extends BaseStep implements StepInterface {
+public class ExecSQLRow extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ExecSQLRowMeta meta;
@@ -214,8 +209,6 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "Update.Log.UnableToCommitUpdateConnection" )
           + data.db + "] :" + e.toString() );
         setErrors( 1 );
-      } finally {
-        data.db.disconnect();
       }
     }
 
@@ -243,25 +236,13 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "ExecSQLRow.Init.ConnectionMissing", getStepname() ) );
         return false;
       }
-      data.db = new Database( this, meta.getDatabaseMeta() );
-      data.db.shareVariablesWith( this );
 
       // Connect to the database
       try {
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "ExecSQLRow.Log.ConnectedToDB" ) );
-        }
+        connectToDatabaseOrAssignDataSource( meta, data );
 
         if ( meta.getCommitSize() >= 1 ) {
-          data.db.setCommit( meta.getCommitSize() );
+          data.db.setCommitSize( meta.getCommitSize() );
         }
         return true;
       } catch ( KettleException e ) {
@@ -272,6 +253,11 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
     }
 
     return false;
+  }
+
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
   }
 
 }
