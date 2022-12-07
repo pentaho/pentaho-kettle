@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.BaseDatabaseStep;
 
 /**
  * Performs a lookup in a database table. If the key doesn't exist it inserts values into the table, otherwise it
@@ -52,7 +53,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 26-apr-2003
  */
-public class InsertUpdate extends BaseStep implements StepInterface {
+public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
   private InsertUpdateMeta meta;
@@ -469,29 +470,15 @@ public class InsertUpdate extends BaseStep implements StepInterface {
     data = (InsertUpdateData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      try {
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "InsertUpdate.Init.ConnectionMissing", getStepname() ) );
-          return false;
-        }
-        data.db = new Database( this, meta.getDatabaseMeta() );
-        data.db.shareVariablesWith( this );
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-        data.db.setCommit(  meta.getCommitSize( this ) );
-
-        return true;
-      } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "InsertUpdate.Log.ErrorOccurredDuringStepInitialize" )
-          + ke.getMessage() );
-      }
+      data.db.setCommitSize( meta.getCommitSize( this ) );
+      return true;
     }
     return false;
+  }
+
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -512,8 +499,6 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       } catch ( KettleDatabaseException e ) {
         logError( BaseMessages.getString( PKG, "InsertUpdate.Log.UnableToCommitConnection" ) + e.toString() );
         setErrors( 1 );
-      } finally {
-        data.db.disconnect();
       }
     }
     super.dispose( smi, sdi );

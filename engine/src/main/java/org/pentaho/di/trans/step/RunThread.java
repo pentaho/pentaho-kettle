@@ -54,6 +54,7 @@ public class RunThread implements Runnable {
       step.setRunning( true );
       step.getLogChannel().snap( Metrics.METRIC_STEP_EXECUTION_START );
 
+      step.beforeStartProcessing( meta, data );
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( "System.Log.StartingToRun" ) );
       }
@@ -94,6 +95,7 @@ public class RunThread implements Runnable {
         step.stopAll();
       }
     } finally {
+      step.afterFinishProcessing( meta, data );
       step.dispose( meta, data );
       step.getLogChannel().snap( Metrics.METRIC_STEP_EXECUTION_STOP );
       try {

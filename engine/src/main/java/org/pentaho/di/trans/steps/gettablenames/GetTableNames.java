@@ -25,21 +25,16 @@ package org.pentaho.di.trans.steps.gettablenames;
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 
 /**
  * Return tables name list from Database connection *
@@ -49,7 +44,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  *
  */
 
-public class GetTableNames extends BaseStep implements StepInterface {
+public class GetTableNames extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = GetTableNamesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GetTableNamesMeta meta;
@@ -423,49 +418,21 @@ public class GetTableNames extends BaseStep implements StepInterface {
       try {
         // Create the output row meta-data
         data.outputRowMeta = new RowMeta();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                      // metadata
-                                                                                                      // populated
-      } catch ( Exception e ) {
+        // get the metadata populated
+        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      } catch ( KettleException e ) {
         logError( "Error initializing step: " + e.toString() );
         logError( Const.getStackTracker( e ) );
         return false;
       }
-
-      data.db = new Database( this, meta.getDatabase() );
-      data.db.shareVariablesWith( this );
-      try {
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "GetTableNames.Log.ConnectedToDB" ) );
-        }
-
-        return true;
-      } catch ( KettleException e ) {
-        logError( BaseMessages.getString( PKG, "GetTableNames.Log.DBException" ) + e.getMessage() );
-        if ( data.db != null ) {
-          data.db.disconnect();
-        }
-      }
+      return true;
     }
     return false;
   }
 
-  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    meta = (GetTableNamesMeta) smi;
-    data = (GetTableNamesData) sdi;
-    if ( data.db != null ) {
-      data.db.disconnect();
-      data.db = null;
-    }
-    super.dispose( smi, sdi );
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
   }
 
 }
