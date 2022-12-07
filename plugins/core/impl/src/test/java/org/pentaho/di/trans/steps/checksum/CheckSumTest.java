@@ -618,7 +618,16 @@ public class CheckSumTest {
       results.getWritten().get( 0 )[ 2 ] );
   }
 
-  private Trans buildHexadecimalChecksumTrans( int checksumType, int evaluationMethod, boolean compatibilityMode,
+  @Test
+  public void test_pdi19690() throws Exception {
+    MockRowListener results =
+      executeHexTest( SHA256, CheckSumMeta.EVALUATION_METHOD_BYTES, false, null, string1Meta );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      results.getWritten().get( 0 )[ 1 ] );
+  }
+
+    private Trans buildHexadecimalChecksumTrans( int checksumType, int evaluationMethod, boolean compatibilityMode,
                                                String fieldSeparatorString, String[] fieldNames ) throws Exception {
     // Create a new transformation...
     TransMeta transMeta = new TransMeta();
