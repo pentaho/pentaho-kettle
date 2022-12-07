@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.pentaho.di.core.database.ConnectionPoolUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DataSourceNamingException;
 import org.pentaho.di.core.database.DataSourceProviderInterface;
@@ -201,6 +202,12 @@ public class DatabaseUtil implements DataSourceProviderInterface {
 
   @Override public DataSource invalidateNamedDataSource( String datasourceName, DatasourceType type )
     throws DataSourceNamingException {
-    return FoundDS.remove( datasourceName );
+
+    switch ( type ) {
+      case POOLED:
+        return ConnectionPoolUtil.removeDataSource( datasourceName );
+      default:
+        return FoundDS.remove( datasourceName );
+    }
   }
 }

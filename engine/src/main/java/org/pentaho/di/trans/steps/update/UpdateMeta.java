@@ -48,11 +48,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 
 import org.pentaho.di.trans.step.utils.RowMetaUtils;
 import org.pentaho.metastore.api.IMetaStore;
@@ -65,7 +61,7 @@ import java.util.List;
  *
  */
 @InjectionSupported( localizationPrefix = "UpdateMeta.Injection.", groups = { "KEYS", "UPDATES" } )
-public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
+public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = UpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
   private List<? extends SharedObjectInterface> databases;

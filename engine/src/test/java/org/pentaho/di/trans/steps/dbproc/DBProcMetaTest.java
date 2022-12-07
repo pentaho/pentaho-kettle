@@ -54,7 +54,7 @@ public class DBProcMetaTest implements InitializerInterface<StepMetaInterface> {
     KettleEnvironment.init();
     PluginRegistry.init( false );
     List<String> attributes =
-        Arrays.asList( "procedure", "resultName", "resultType", "autoCommit", "argumentType", "argument", "argumentDirection", "database" );
+        Arrays.asList( "procedure", "resultName", "resultType", "autoCommit", "argumentType", "argument", "argumentDirection", "databaseMeta" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();

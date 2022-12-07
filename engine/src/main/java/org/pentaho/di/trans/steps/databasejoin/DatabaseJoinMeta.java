@@ -47,15 +47,11 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface {
+public class DatabaseJoinMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = DatabaseJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** database connection */

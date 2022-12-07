@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.BaseDatabaseStep;
 
 /**
  * Performs a lookup in a database table. If the key doesn't exist it inserts values into the table, otherwise it
@@ -52,7 +53,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 26-apr-2003
  */
-public class InsertUpdate extends BaseStep implements StepInterface {
+public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
   private InsertUpdateMeta meta;
@@ -66,16 +67,16 @@ public class InsertUpdate extends BaseStep implements StepInterface {
   protected synchronized void lookupValues( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
     // OK, now do the lookup.
     // We need the lookupvalues for that.
-    Object[] lookupRow = new Object[data.lookupParameterRowMeta.size()];
+    Object[] lookupRow = new Object[ data.lookupParameterRowMeta.size() ];
     int lookupIndex = 0;
 
     for ( int i = 0; i < data.keynrs.length; i++ ) {
-      if ( data.keynrs[i] >= 0 ) {
-        lookupRow[lookupIndex] = row[data.keynrs[i]];
+      if ( data.keynrs[ i ] >= 0 ) {
+        lookupRow[ lookupIndex ] = row[ data.keynrs[ i ] ];
         lookupIndex++;
       }
-      if ( data.keynrs2[i] >= 0 ) {
-        lookupRow[lookupIndex] = row[data.keynrs2[i]];
+      if ( data.keynrs2[ i ] >= 0 ) {
+        lookupRow[ lookupIndex ] = row[ data.keynrs2[ i ] ];
         lookupIndex++;
       }
     }
@@ -102,9 +103,9 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       // The values to insert are those in the update section (all fields should be specified)
       // For the others, we have no definite mapping!
       //
-      Object[] insertRow = new Object[data.valuenrs.length];
+      Object[] insertRow = new Object[ data.valuenrs.length ];
       for ( int i = 0; i < data.valuenrs.length; i++ ) {
-        insertRow[i] = row[data.valuenrs[i]];
+        insertRow[ i ] = row[ data.valuenrs[ i ] ];
       }
 
       // Set the values on the prepared statement...
@@ -469,29 +470,15 @@ public class InsertUpdate extends BaseStep implements StepInterface {
     data = (InsertUpdateData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      try {
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "InsertUpdate.Init.ConnectionMissing", getStepname() ) );
-          return false;
-        }
-        data.db = new Database( this, meta.getDatabaseMeta() );
-        data.db.shareVariablesWith( this );
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-        data.db.setCommit(  meta.getCommitSize( this ) );
-
-        return true;
-      } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "InsertUpdate.Log.ErrorOccurredDuringStepInitialize" )
-          + ke.getMessage() );
-      }
+      data.db.setCommitSize( meta.getCommitSize( this ) );
+      return true;
     }
     return false;
+  }
+
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -512,8 +499,6 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       } catch ( KettleDatabaseException e ) {
         logError( BaseMessages.getString( PKG, "InsertUpdate.Log.UnableToCommitConnection" ) + e.toString() );
         setErrors( 1 );
-      } finally {
-        data.db.disconnect();
       }
     }
     super.dispose( smi, sdi );

@@ -93,6 +93,7 @@ public class TableOutputTest {
     doReturn( false ).when( tableOutputSpy ).isRowLevel();
     doReturn( false ).when( tableOutputSpy ).isDebug();
     doNothing().when( tableOutputSpy ).logDetailed( anyString() );
+    doReturn( "1" ).when( tableOutputSpy ).getStepExecutionId();
   }
 
   @Test

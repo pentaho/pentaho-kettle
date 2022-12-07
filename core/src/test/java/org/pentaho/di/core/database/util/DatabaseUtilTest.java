@@ -25,7 +25,11 @@ package org.pentaho.di.core.database.util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.database.ConnectionPoolUtil;
 import org.pentaho.di.core.database.DataSourceNamingException;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -145,16 +149,16 @@ public class DatabaseUtilTest {
   }
 
   @Test
-  public void testInvalidateNamedDataSource() throws DataSourceNamingException, NamingException {
+  public void testInvalidateNamedDataSource() throws KettleDatabaseException, NamingException {
     DatabaseUtil dsp = new DatabaseUtil();
     String namedDatasource = UUID.randomUUID().toString();
     DataSource dataSource = mock( DataSource.class );
 
-    assertEquals( null, dsp.invalidateNamedDataSource( namedDatasource, DatasourceType.POOLED ) );
+    assertEquals( null, dsp.invalidateNamedDataSource( namedDatasource, DatasourceType.JNDI ) );
     when( context.lookup( namedDatasource ) ).thenReturn( dataSource );
     DatabaseUtil.getDataSourceFromJndi( namedDatasource, context );
-    assertEquals( dataSource, dsp.invalidateNamedDataSource( namedDatasource, DatasourceType.POOLED ) );
-    assertEquals( null, dsp.invalidateNamedDataSource( namedDatasource, DatasourceType.POOLED ) );
+    assertEquals( dataSource, dsp.invalidateNamedDataSource( namedDatasource, DatasourceType.JNDI ) );
+    assertEquals( null, dsp.invalidateNamedDataSource( namedDatasource, DatasourceType.JNDI ) );
   }
 
 }

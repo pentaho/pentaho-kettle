@@ -38,11 +38,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -56,7 +52,7 @@ import java.util.List;
  * @author Matt Casters
  * @since 6-apr-2003
  */
-public class TableOutput extends BaseStep implements StepInterface {
+public class TableOutput extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = TableOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableOutputMeta meta;
@@ -481,13 +477,11 @@ public class TableOutput extends BaseStep implements StepInterface {
         // Batch updates are not supported on PostgreSQL (and look-a-likes)
         // together with error handling (PDI-366).
         // For these situations we can use savepoints to help out.
-        //
         data.useSafePoints =
           data.databaseMeta.getDatabaseInterface().useSafePoints() && getStepMeta().isDoingErrorHandling();
 
         // Get the boolean that indicates whether or not we can/should release
         // savepoints during data load.
-        //
         data.releaseSavepoint = dbInterface.releaseSavepoint();
 
         // Disable batch mode in case
@@ -495,7 +489,6 @@ public class TableOutput extends BaseStep implements StepInterface {
         // - if we need to pick up auto-generated keys
         // - if you are running the transformation as a single database transaction (unique connections)
         // - if we are reverting to save-points
-        //
         data.batchMode =
           meta.useBatchUpdate()
             && data.commitSize > 0 && !meta.isReturningGeneratedKeys()
@@ -503,34 +496,13 @@ public class TableOutput extends BaseStep implements StepInterface {
 
         // Per PDI-6211 : give a warning that batch mode operation in combination with step error handling can lead to
         // incorrectly processed rows.
-        //
         if ( getStepMeta().isDoingErrorHandling() && !dbInterface.supportsErrorHandlingOnBatchUpdates() ) {
           log.logMinimal( BaseMessages.getString(
             PKG, "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing" ) );
         }
 
-        if ( meta.getDatabaseMeta() == null ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "TableOutput.Exception.DatabaseNeedsToBeSelected" ) );
-        }
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "TableOutput.Init.ConnectionMissing", getStepname() ) );
-          return false;
-        }
-
         if ( !dbInterface.supportsStandardTableOutput() ) {
           throw new KettleException( dbInterface.getUnsupportedTableOutputMessage() );
-        }
-
-        data.db = new Database( this, meta.getDatabaseMeta() );
-        data.db.shareVariablesWith( this );
-
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
         }
 
         if ( log.isBasic() ) {
@@ -538,11 +510,10 @@ public class TableOutput extends BaseStep implements StepInterface {
         }
 
         // Postpone commit as long as possible. PDI-2091
-        //
         if ( data.commitSize == 0 ) {
           data.commitSize = Integer.MAX_VALUE;
         }
-        data.db.setCommit( data.commitSize );
+        data.db.setCommitSize( data.commitSize );
 
         if ( !meta.isPartitioningEnabled() && !meta.isTableNameInField() ) {
           data.tableName = environmentSubstitute( meta.getTableName() );
@@ -556,6 +527,11 @@ public class TableOutput extends BaseStep implements StepInterface {
       }
     }
     return false;
+  }
+
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
   }
 
   void truncateTable() throws KettleDatabaseException {
@@ -627,8 +603,6 @@ public class TableOutput extends BaseStep implements StepInterface {
             logError( "Unexpected error rolling back the database connection.", e );
           }
         }
-
-        data.db.disconnect();
       }
       super.dispose( smi, sdi );
     }

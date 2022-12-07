@@ -23,17 +23,15 @@
 package org.pentaho.di.trans.steps.execsqlrow;
 
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
+import org.pentaho.di.trans.step.BaseDatabaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * @author Matt
  * @since 20-jan-2005
  */
-public class ExecSQLRowData extends BaseStepData implements StepDataInterface {
-  public Database db;
+public class ExecSQLRowData extends BaseDatabaseStepData implements StepDataInterface {
   public Result result;
   public int indexOfSQLFieldname;
   public RowMetaInterface outputRowMeta;
