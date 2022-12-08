@@ -24,16 +24,16 @@ buildProperties:
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
   RELEASE_VERSION                : 9.5.0.0
-  DEPLOYMENT_FOLDER              : 9.5-QAT
+  DEPLOYMENT_FOLDER              : 9.5.0.0
   RELEASE_MODE                   : true
-  DEFAULT_BRANCH                 : master
+  DEFAULT_BRANCH                 : 9.5.0.0
   SUITE_BUILD_RESOURCES_BRANCH   : 9.5.0.0
-  SERVICEPACK_BRANCH             : master
+  SERVICEPACK_BRANCH             : 9.5.0.0
   JENKINS_FOLDER_NAME            : '9.5'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/open-jdk/11
-    scmBranch   : master
+    scmBranch   : 9.5.0.0
 
   # We need to override this until this pipeline is the nightly
   BUILD_HOSTING_ROOT: /build2/artifacts/hosted
