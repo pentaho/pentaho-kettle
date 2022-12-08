@@ -1205,6 +1205,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     }
   }
 
+  // Removed Extension Point as per BACKLOG-36769, is this method ever called?
   private void displaydirectoryList() {
     RepositoriesMeta repositoriesMeta = null;
     RepositoryMeta repositoryMeta = null;

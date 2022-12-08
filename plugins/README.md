@@ -4,7 +4,7 @@ __List of the current core plugins:__
 
 * aggregate-rows
 * elasticsearch-bulk-insert
-* file-open-save
+* file-open-save-new
 * get-previous-row-field
 * google-analytics
 * gp-bulk-loader
