@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -198,7 +198,26 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
+  public static boolean isNumeric( String strNum ) {
+    if ( strNum == null ) {
+      return false;
+    }
+    try {
+      int value = Integer.valueOf( strNum.trim() );
+      if ( value <= 0 ) {
+        return false;
+      }
+    } catch ( NumberFormatException nfe ) {
+      return false;
+    }
+    return true;
+  }
+
   public String getNbrPackets() {
+    if ( !isNumeric( nbrPackets ) ) {
+      logMinimal( BaseMessages.getString( PKG, " JobPing.WarningOnlyNumericValue", BaseMessages.getString( PKG, " JobPing.NrPackets.Label" ), 2 ) );
+      nbrPackets = "2";
+    }
     return nbrPackets;
   }
 
