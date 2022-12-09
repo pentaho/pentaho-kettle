@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -232,6 +232,14 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     wNbrPackets = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wNbrPackets );
     wNbrPackets.addModifyListener( lsMod );
+    wNbrPackets.addModifyListener( event -> {
+      String currentText = ((Text) event.getSource()).getText().trim();
+      boolean isNumber = JobEntryPing.isNumeric( currentText );
+      if ( !isNumber && !( currentText.equals( "" ) ) ) {
+        displayInfoMessage( BaseMessages.getString( PKG, "JobPing.NrPackets.Info" ) );
+        ((Text) event.getSource()).setText( "" );
+      }
+    } );
     fdNbrPackets = new FormData();
     fdNbrPackets.left = new FormAttachment( middle, 0 );
     fdNbrPackets.top = new FormAttachment( wTimeOut, margin );
@@ -297,6 +305,13 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
       }
     }
     return jobEntry;
+  }
+
+  public void displayInfoMessage( String infoMessage ) {
+    MessageBox box = new MessageBox( shell, SWT.OK );
+    box.setText( "INFO" );
+    box.setMessage( infoMessage );
+    box.open();
   }
 
   private void setPingType() {

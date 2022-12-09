@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.ClassRule;
+import org.junit.Test;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+
+import static org.junit.Assert.assertEquals;
+import static org.pentaho.di.core.util.Assert.assertFalse;
+import static org.pentaho.di.core.util.Assert.assertTrue;
 
 public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -63,4 +68,42 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
         "timeout", "setTimeOut" );
   }
 
+  private String[] valueList = {};
+
+  @Test
+  public void test_isNumeric_ForPositiveIntegers() {
+    valueList = new String[]{"22", "020", "   22   ", "2147483647"};
+    for (String value : valueList) {
+      assertTrue(JobEntryPing.isNumeric(value));
+    }
+  }
+
+  @Test
+  public void test_isNumeric_ForValueOtherThanPositiveIntegers() {
+    //Integer.MAX_VALUE = 2147483648
+    valueList = new String[]{"-2", "0", "\n", "5.05", "", "abc", "ab412c", "2147483648", "-", "?"};
+    for (String value : valueList) {
+      assertFalse(JobEntryPing.isNumeric(value));
+    }
+  }
+
+  @Test
+  public void test_isNumeric_ForNull() {
+    assertFalse(JobEntryPing.isNumeric(null));
+  }
+
+  @Test
+  public void test_getNbrPackets_ForValueOtherThanPositiveIntegers() {
+    JobEntryPing jpe = new JobEntryPing("Ping");
+    valueList = new String[]{"-2", "0", "5.05", "", "\n", "abc", "ab412c", "2147483648", "-", "?"};
+    for (String value : valueList) {
+      jpe.setNbrPackets(value);
+      assertEquals("2", jpe.getNbrPackets());
+    }
+  }
+
+  @Test
+  public void test_getNbrPackets_ForNull() {
+    assertFalse(JobEntryPing.isNumeric(null));
+  }
 }
