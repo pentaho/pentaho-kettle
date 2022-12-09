@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -803,5 +803,216 @@ public class TextFileOutputTest {
 
     // VERIFY
     assertNotNull( textFileOutput.data.writer );
+  }
+
+  @Test
+  public void testWriteEnclosedForValueMetaInterface() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = new byte[1];
+    data.binaryEnclosure = new byte[1];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureFixDisabled(false);
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface =getValueMetaInterface();
+    assertFalse(textFileOutput.isWriteEnclosureForValueMetaInterface(valueMetaInterface));
+  }
+
+  @Test
+  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureForced() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = new byte[1];
+    data.binaryEnclosure = new byte[1];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureForced(true);
+    meta.setPadded(true);
+    meta.setEnclosureFixDisabled(false);
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface = getValueMetaInterface();
+    assertTrue(textFileOutput.isWriteEnclosureForValueMetaInterface(valueMetaInterface));
+  }
+
+  @Test
+  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureFixDisabled() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binaryEnclosure = new byte[1];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureForced(false);
+    meta.setEnclosureFixDisabled(true);
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface = getValueMetaInterface();
+    assertFalse(textFileOutput.isWriteEnclosureForValueMetaInterface(valueMetaInterface));
+  }
+
+  @Test
+  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureForcedAndEnclosureFixDisabled() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binaryEnclosure = new byte[]{101};
+    data.binarySeparator = new byte[]{101};
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureForced(false);
+    meta.setEnclosureFixDisabled(false);
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface = getValueMetaInterface();
+    assertTrue(textFileOutput.isWriteEnclosureForValueMetaInterface(valueMetaInterface));
+  }
+
+  @Test
+  public void testWriteEnclosureForFieldName() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = new byte[1];
+    data.binaryEnclosure = new byte[1];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface = getValueMetaInterface();
+    assertFalse(textFileOutput.isWriteEnclosureForFieldName(valueMetaInterface, "fieldName"));
+  }
+
+  @Test
+  public void testWriteEnclosureForFieldNameWithEnclosureForced() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = new byte[1];
+    data.binaryEnclosure = new byte[1];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureForced(true);
+    meta.setEnclosureFixDisabled(false);
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface = getValueMetaInterface();
+    assertTrue(textFileOutput.isWriteEnclosureForFieldName(valueMetaInterface, "fieldName"));
+  }
+
+  @Test
+  public void testWriteEnclosureForFieldNameWithoutEnclosureFixDisabled() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = new byte[1];
+    data.binaryEnclosure = new byte[1];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureForced(false);
+    meta.setEnclosureFixDisabled(true);
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface = getValueMetaInterface();
+    assertFalse(textFileOutput.isWriteEnclosureForFieldName(valueMetaInterface, "fieldName"));
+  }
+
+  @Test
+  public void testWriteEnclosureForFieldNameWithEnclosureFixDisabled() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = new byte[]{102};
+    data.binaryEnclosure = new byte[]{102};
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureForced(false);
+    meta.setEnclosureFixDisabled(false);
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface = getValueMetaInterface();
+    assertTrue(textFileOutput.isWriteEnclosureForFieldName(valueMetaInterface, "fieldName"));
+  }
+
+  @Test
+  public void testWriteEnclosed() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binaryEnclosure = new byte[1];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureForced(true);
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    ValueMetaBase valueMetaInterface = getValueMetaInterface();
+    valueMetaInterface.setType(ValueMetaInterface.TYPE_NUMBER);
+    assertFalse(textFileOutput.isWriteEnclosed(valueMetaInterface));
+    assertFalse(textFileOutput.isWriteEnclosed(null));
+  }
+
+  @Test
+  public void testWriteEnclosureForWriteFieldWithSeparator() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = new byte[1];
+    data.binaryEnclosure = new byte[1];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    byte[] str = new byte[1];
+    assertTrue(textFileOutput.isWriteEnclosureForWriteField(str));
+  }
+
+  @Test
+  public void testWriteEnclosureForWriteFieldWithoutSeparator() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    byte[] str = new byte[1];
+    assertFalse(textFileOutput.isWriteEnclosureForWriteField(str));
+  }
+
+  @Test
+  public void testWriteEnclosureForWriteFieldWithEnclosureForced() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    data.binarySeparator = new byte[1];
+    TextFileOutputMeta meta = getTextFileOutputMeta();
+    meta.setEnclosureForced(true);
+    meta.setPadded(true);
+    meta.setEnclosureFixDisabled(true);
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput = getTextFileOutput(data, meta);
+    byte[] str = new byte[1];
+    assertFalse(textFileOutput.isWriteEnclosureForWriteField(str));
+  }
+
+  public TextFileOutput getTextFileOutput(TextFileOutputData data,TextFileOutputMeta meta) {
+    TextFileOutput textFileOutput =
+            new TextFileOutputTestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta,
+                    stepMockHelper.trans );
+    textFileOutput.meta = meta;
+    textFileOutput.data = data;
+    textFileOutput.setVariable( "endvar", "this is the end" );
+    textFileOutput.writeEndedLine();
+    textFileOutput.setVariable( "endvar", "this is the end" );
+    textFileOutput.writeEndedLine();
+    return textFileOutput;
+  }
+
+  public TextFileOutputMeta getTextFileOutputMeta() {
+    TextFileOutputMeta meta = new TextFileOutputMeta();
+    meta.setEndedLine( "${endvar}" );
+    meta.setDefault();
+    meta.setEnclosureForced(false);
+    meta.setPadded(false);
+    meta.setEncoding( StandardCharsets.UTF_8.name() );
+    return meta;
+  }
+
+  public ValueMetaBase getValueMetaInterface() {
+    ValueMetaBase valueMetaInterface = new ValueMetaBase( "test", ValueMetaInterface.TYPE_STRING );
+    String inputEncode = StandardCharsets.UTF_8.name();
+    valueMetaInterface.setStringEncoding( inputEncode );
+    valueMetaInterface.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    valueMetaInterface.setStorageMetadata( new ValueMetaString() );
+    return valueMetaInterface;
   }
 }
