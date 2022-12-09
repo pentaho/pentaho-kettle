@@ -215,6 +215,17 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     return result;
   }
 
+  /**
+   * ******************************************************************
+   * DO NOT MERGE ME
+   * ******************************************************************
+   */
+
+  public static boolean isFoo( String str ) {
+   return str != null && str.equalsIgnoreCase( "foo" );
+  }
+
+
   public String getNbrPackets() {
     if ( !isNumeric( nbrPackets ) ) {
       logMinimal( BaseMessages.getString( PKG, "JobPing.WarningOnlyNumericValue",

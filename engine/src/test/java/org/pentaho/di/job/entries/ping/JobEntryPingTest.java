@@ -106,4 +106,16 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
   public void test_getNbrPackets_ForNull() {
     assertFalse(JobEntryPing.isNumeric(null));
   }
+
+  /**
+   * ******************************************************************
+   * DO NOT MERGE ME
+   * ******************************************************************
+   */
+  @Test
+  public void test_isFoo() {
+    assertFalse( JobEntryPing.isFoo( "bar" ) );
+    assertTrue( JobEntryPing.isFoo( "foo" ) );
+  }
+
 }
