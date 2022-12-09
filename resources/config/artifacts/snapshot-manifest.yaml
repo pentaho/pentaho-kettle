@@ -13,15 +13,12 @@ ee:
     client-tools:
         - pad-ee-${platform.version}.zip
         - pdi-ee-client-${platform.version}.zip
-        - pdi-ee-client-${platform.version}-osgi.zip
         - pdi-ee-client-${platform.version}-hadoop-addon.zip
         - pentaho-analysis-ee-${platform.version}.zip
         - pentaho-big-data-ee-package-${platform.version}.zip
         - pme-ee-${platform.version}.zip
-        - pme-ee-${platform.version}-osgi.zip
         - pme-ee-${platform.version}-hadoop-addon.zip
         - prd-ee-${platform.version}.zip
-        - prd-ee-${platform.version}-osgi.zip
         - prd-ee-${platform.version}-hadoop-addon.zip
         - psw-ee-${mondrian.version}.zip
     installers:
@@ -50,9 +47,9 @@ ee:
         - pentaho-server-ee-${platform.version}.zip
         - pentaho-server-manual-ee-${platform.version}.zip
     shims:
-        - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.kar
-        - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
-        - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}-dist.zip
@@ -67,14 +64,11 @@ ce:
     client-tools:
         - pad-ce-${platform.version}.zip
         - pdi-ce-${platform.version}.zip
-        - pdi-ce-${platform.version}-osgi.zip
         - pdi-ce-${platform.version}-hadoop-addon.zip
         - pentaho-big-data-plugin-${platform.version}.zip
         - pme-ce-${platform.version}.zip
-        - pme-ce-${platform.version}-osgi.zip
         - pme-ce-${platform.version}-hadoop-addon.zip
         - prd-ce-${platform.version}.zip
-        - prd-ce-${platform.version}-osgi.zip
         - prd-ce-${platform.version}-hadoop-addon.zip
         - psw-ce-${mondrian.version}.zip
     plugins:
@@ -87,3 +81,16 @@ ce:
 
 # Testable items, but not customer hand-off items
 not-for-release:
+    - pdi-ee-client-${platform.version}-osgi.zip
+    - pme-ee-${platform.version}-osgi.zip
+    - prd-ee-${platform.version}-osgi.zip
+    - pdi-ce-${platform.version}-osgi.zip
+    - pme-ce-${platform.version}-osgi.zip
+    - prd-ce-${platform.version}-osgi.zip
+    - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.zip
+    - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.zip
+    - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.zip
+    - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.zip
+    - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}.zip
+    - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.zip
+    - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.zip
