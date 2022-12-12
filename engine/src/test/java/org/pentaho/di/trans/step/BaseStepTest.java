@@ -76,6 +76,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.www.SocketRepository;
 
+// FIXME debugging to see if wingman errors out on same test
 @Ignore("wingman code coverage throwing 'Process Exit Code: 137'")
 @RunWith ( MockitoJUnitRunner.class )
 public class BaseStepTest {
