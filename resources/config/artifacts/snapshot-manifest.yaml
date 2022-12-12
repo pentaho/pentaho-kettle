@@ -87,10 +87,10 @@ not-for-release:
     - pdi-ce-${platform.version}-osgi.zip
     - pme-ce-${platform.version}-osgi.zip
     - prd-ce-${platform.version}-osgi.zip
-    - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.zip
-    - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.zip
-    - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.zip
-    - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.zip
-    - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}.zip
-    - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.zip
-    - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.zip
+    - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.kar
+    - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
+    - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.kar
+    - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.kar
+    - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}.kar
+    - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
+    - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
