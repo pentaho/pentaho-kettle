@@ -69,41 +69,58 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
   }
 
   private String[] valueList = {};
+  JobEntryPing jEPing = new JobEntryPing( "Ping" );
 
   @Test
   public void test_isNumeric_ForPositiveIntegers() {
-    valueList = new String[]{"22", "020", "   22   ", "2147483647"};
-    for (String value : valueList) {
-      assertTrue(JobEntryPing.isNumeric(value));
+    valueList = new String[]{ "22", "020", "   22   ", "2147483647" };
+    for ( String value : valueList ) {
+      assertTrue( JobEntryPing.isNumeric( value ) );
     }
   }
 
   @Test
   public void test_isNumeric_ForValueOtherThanPositiveIntegers() {
     //Integer.MAX_VALUE = 2147483648
-    valueList = new String[]{"-2", "0", "\n", "5.05", "", "abc", "ab412c", "2147483648", "-", "?"};
-    for (String value : valueList) {
-      assertFalse(JobEntryPing.isNumeric(value));
+    valueList = new String[]{ "-2", "0", "\n", "5.05", "", "abc", "ab412c", "2147483648", "-", "?" };
+    for ( String value : valueList ) {
+      assertFalse(JobEntryPing.isNumeric( value ));
     }
   }
 
   @Test
   public void test_isNumeric_ForNull() {
-    assertFalse(JobEntryPing.isNumeric(null));
+    assertFalse( JobEntryPing.isNumeric( null ) );
   }
 
   @Test
   public void test_getNbrPackets_ForValueOtherThanPositiveIntegers() {
-    JobEntryPing jpe = new JobEntryPing("Ping");
-    valueList = new String[]{"-2", "0", "5.05", "", "\n", "abc", "ab412c", "2147483648", "-", "?"};
-    for (String value : valueList) {
-      jpe.setNbrPackets(value);
-      assertEquals("2", jpe.getNbrPackets());
+    valueList = new String[]{ "-2", "0", "5.05", "", "\n", "abc", "ab412c", "2147483648", "-", "?" };
+    for ( String value : valueList ) {
+      jEPing.setNbrPackets( value );
+      assertEquals( "2", jEPing.getNbrPackets() );
     }
   }
 
   @Test
   public void test_getNbrPackets_ForNull() {
-    assertFalse(JobEntryPing.isNumeric(null));
+    jEPing.setNbrPackets( null );
+    assertEquals( "2", jEPing.getNbrPackets() );
   }
+
+  @Test
+  public void test_getTimeOut_ForValueOtherThanPositiveIntegers() {
+    valueList = new String[]{"-2", "0", "5.05", "", "\n", "abc", "ab412c", "2147483648", "-", "?"};
+    for ( String value : valueList ) {
+      jEPing.setTimeOut( value );
+      assertEquals( "3000", jEPing.getTimeOut() );
+    }
+  }
+
+  @Test
+  public void test_getTimeOut_ForNull() {
+    jEPing.setTimeOut( null );
+    assertEquals( "3000", jEPing.getTimeOut() );
+  }
+
 }

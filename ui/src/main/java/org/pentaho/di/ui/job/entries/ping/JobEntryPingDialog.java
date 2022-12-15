@@ -117,6 +117,16 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         jobEntry.setChanged();
       }
     };
+
+    ModifyListener lsValidate = event -> {
+      String currentText = ((Text) event.getSource()).getText().trim();
+      boolean isNumber = JobEntryPing.isNumeric( currentText );
+      if ( !isNumber && !( currentText.equals( "" ) ) ) {
+        displayInfoMessage( BaseMessages.getString( PKG, "JobPing.NumericInfo" ) );
+        ((Text) event.getSource()).setText( "" );
+      }
+    };
+
     changed = jobEntry.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -213,6 +223,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     wlTimeOut.setToolTipText( BaseMessages.getString( PKG, "JobPing.TimeOut.Tooltip" ) );
     props.setLook( wTimeOut );
     wTimeOut.addModifyListener( lsMod );
+    wTimeOut.addModifyListener( lsValidate );
     fdTimeOut = new FormData();
     fdTimeOut.left = new FormAttachment( middle, 0 );
     fdTimeOut.top = new FormAttachment( wPingType, margin );
@@ -232,14 +243,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     wNbrPackets = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wNbrPackets );
     wNbrPackets.addModifyListener( lsMod );
-    wNbrPackets.addModifyListener( event -> {
-      String currentText = ((Text) event.getSource()).getText().trim();
-      boolean isNumber = JobEntryPing.isNumeric( currentText );
-      if ( !isNumber && !( currentText.equals( "" ) ) ) {
-        displayInfoMessage( BaseMessages.getString( PKG, "JobPing.NrPackets.Info" ) );
-        ((Text) event.getSource()).setText( "" );
-      }
-    } );
+    wNbrPackets.addModifyListener( lsValidate );
     fdNbrPackets = new FormData();
     fdNbrPackets.left = new FormAttachment( middle, 0 );
     fdNbrPackets.top = new FormAttachment( wTimeOut, margin );

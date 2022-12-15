@@ -245,6 +245,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public String getTimeOut() {
+    if ( !isNumeric( timeout ) ) {
+      logMinimal( BaseMessages.getString( PKG, "JobPing.WarningOnlyNumericValue",
+              BaseMessages.getString( PKG, "JobPing.TimeOut.Label" ), defaultTimeOut ) );
+      timeout = defaultTimeOut;
+    }
     return timeout;
   }
 
