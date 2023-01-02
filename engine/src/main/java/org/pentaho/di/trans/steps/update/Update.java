@@ -477,21 +477,9 @@ public class Update extends BaseDatabaseStep implements StepInterface {
     data = (UpdateData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "Update.Init.ConnectionMissing", getStepname() ) );
-        return false;
-      }
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
+      data.db.setCommitSize( meta.getCommitSize( this ) );
 
-        data.db.setCommitSize( meta.getCommitSize( this ) );
-
-        return true;
-      } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "Update.Log.ErrorOccurred" ) + ke.getMessage() );
-        setErrors( 1 );
-        stopAll();
-      }
+      return true;
     }
     return false;
   }

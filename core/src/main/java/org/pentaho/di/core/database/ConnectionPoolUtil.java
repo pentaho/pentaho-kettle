@@ -103,6 +103,7 @@ public class ConnectionPoolUtil {
     return dataSources.remove( name );
   }
 
+  @Deprecated
   public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId )
     throws Exception {
 

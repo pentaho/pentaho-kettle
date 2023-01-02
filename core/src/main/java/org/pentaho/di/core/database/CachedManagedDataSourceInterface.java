@@ -24,6 +24,7 @@ package org.pentaho.di.core.database;
 
 
 import javax.sql.DataSource;
+import java.util.List;
 
 public interface CachedManagedDataSourceInterface extends DataSource {
 
@@ -45,16 +46,33 @@ public interface CachedManagedDataSourceInterface extends DataSource {
 
   /**
    * Sets the owner of this Datasource
+   * @param ownerList
+   */
+  void setInUseBy( List<String> ownerList );
+
+  /**
+   * Adds an owner to this Datasource
    * @param ownerName
    */
-  void setInUseBy( String ownerName );
+  void addInUseBy( String ownerName );
+
+  /**
+   * Removes an owner to this Datasource
+   * @param ownerName
+   */
+  void removeInUseBy( String ownerName );
 
   /**
    * Receives an object and calculates its hash
    * @param dataSource
+   */
+  String getHash( Object dataSource );
+
+  /**
+   * Sets the Datasource hash
    * @return
    */
-  String calculateDSHash( Object dataSource );
+  void setHash();
 
   /**
    * Try to invalidate the Datasource

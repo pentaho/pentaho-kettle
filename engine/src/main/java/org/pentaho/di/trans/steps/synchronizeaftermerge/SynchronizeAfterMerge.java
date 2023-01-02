@@ -846,52 +846,38 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
     data = (SynchronizeAfterMergeData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      try {
-        meta.normalizeAllocationFields();
-        data.realSchemaName = environmentSubstitute( meta.getSchemaName() );
-        if ( meta.istablenameInField() ) {
-          if ( Utils.isEmpty( meta.gettablenameField() ) ) {
-            logError( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.Error.TableFieldnameEmpty" ) );
-            return false;
-          }
-        }
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Init.ConnectionMissing", getStepname() ) );
+      meta.normalizeAllocationFields();
+      data.realSchemaName = environmentSubstitute( meta.getSchemaName() );
+      if ( meta.istablenameInField() ) {
+        if ( Utils.isEmpty( meta.gettablenameField() ) ) {
+          logError( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.Error.TableFieldnameEmpty" ) );
           return false;
         }
-
-        data.databaseMeta = meta.getDatabaseMeta();
-
-        // if we are using Oracle then set releaseSavepoint to false
-        if ( data.databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta ) {
-          data.releaseSavepoint = false;
-        }
-
-        data.commitSize = Integer.parseInt( environmentSubstitute( meta.getCommitSize() ) );
-        data.batchMode = data.commitSize > 0 && meta.useBatchUpdate();
-
-        // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
-        //
-        data.specialErrorHandling =
-            getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates();
-
-        data.supportsSavepoints = meta.getDatabaseMeta().getDatabaseInterface().useSafePoints();
-
-        if ( data.batchMode && data.specialErrorHandling ) {
-          data.batchMode = false;
-          if ( log.isBasic() ) {
-            logBasic( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.BatchModeDisabled" ) );
-          }
-        }
-
-        connectToDatabaseOrAssignDataSource( meta, data );
-        data.db.setCommitSize( data.commitSize );
-
-        return true;
-      } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.ErrorOccurredDuringStepInitialize" ) + ke
-            .getMessage() );
       }
+      data.databaseMeta = meta.getDatabaseMeta();
+
+      // if we are using Oracle then set releaseSavepoint to false
+      if ( data.databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta ) {
+        data.releaseSavepoint = false;
+      }
+      data.commitSize = Integer.parseInt( environmentSubstitute( meta.getCommitSize() ) );
+      data.batchMode = data.commitSize > 0 && meta.useBatchUpdate();
+
+      // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
+      data.specialErrorHandling =
+              getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates();
+
+      data.supportsSavepoints = meta.getDatabaseMeta().getDatabaseInterface().useSafePoints();
+
+      if ( data.batchMode && data.specialErrorHandling ) {
+        data.batchMode = false;
+        if ( log.isBasic() ) {
+          logBasic( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.BatchModeDisabled" ) );
+        }
+      }
+      data.db.setCommitSize( data.commitSize );
+
+      return true;
     }
     return false;
   }

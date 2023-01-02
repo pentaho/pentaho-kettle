@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.databasejoin;
 import java.sql.ResultSet;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -48,7 +49,7 @@ public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
 
   public DatabaseJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
-    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans, true );
   }
 
   private void lookupValues( DatabaseJoinMeta meta, DatabaseJoinData data,
@@ -58,7 +59,7 @@ public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
     try {
       if ( first ) {
         first = false;
-
+        prepareSQL( meta, data );
         data.outputRowMeta = rowMeta.clone();
         meta.getFields(
             data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
@@ -212,45 +213,36 @@ public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
 
+    dbLock.lock();
+
     final DatabaseJoinMeta meta = (DatabaseJoinMeta) smi;
     final DatabaseJoinData data = (DatabaseJoinData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "DatabaseJoin.Init.ConnectionMissing", getStepname() ) );
-        return false;
-      }
+      data.db.setQueryLimit( meta.getRowLimit() );
 
-      dbLock.lock();
-      try {
-
-        try {
-          connectToDatabaseOrAssignDataSource( meta, data );
-
-          String sql = meta.getSql();
-          if ( meta.isVariableReplace() ) {
-            sql = environmentSubstitute( sql );
-          }
-          // Prepare the SQL statement
-          data.pstmt = data.db.prepareSQL( sql );
-          if ( log.isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "DatabaseJoin.Log.SQLStatement", sql ) );
-          }
-          data.db.setQueryLimit( meta.getRowLimit() );
-
-          return true;
-        } catch ( KettleException e ) {
-          logError( BaseMessages.getString( PKG, "DatabaseJoin.Log.DatabaseError" ) + e.getMessage(), e );
-          if ( data.db != null ) {
-            data.db.disconnect();
-          }
-        }
-      } finally {
-        dbLock.unlock();
-      }
+      return true;
     }
+    dbLock.unlock();
 
     return false;
+  }
+
+  private void prepareSQL( DatabaseJoinMeta meta, DatabaseJoinData data ) throws KettleDatabaseException {
+    try {
+      String sql = meta.getSql();
+      if ( meta.isVariableReplace() ) {
+        sql = environmentSubstitute( sql );
+      }
+      // Prepare the SQL statement
+      data.pstmt = data.db.prepareSQL( sql );
+      if ( log.isDebug() ) {
+        logDebug( BaseMessages.getString( PKG, "DatabaseJoin.Log.SQLStatement", sql ) );
+      }
+    } catch ( KettleException e ) {
+      logError( BaseMessages.getString( PKG, "DatabaseJoin.Log.DatabaseError" ) + e.getMessage() );
+      throw e;
+    }
   }
 
   @Override

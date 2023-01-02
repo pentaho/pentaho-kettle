@@ -67,7 +67,7 @@ public class SynchronizeAfterMergeTest {
     doCallRealMethod().when( step ).setTransMeta( any( TransMeta.class ) );
     doCallRealMethod().when( step ).setStepMeta( any( StepMeta.class ) );
     doCallRealMethod().when( step ).init( any( StepMetaInterface.class ), any( StepDataInterface.class ) );
-    doCallRealMethod().when( step ).connectToDatabaseOrAssignDataSource(  any(), any()  );
+    doCallRealMethod().when( step ).connectToDatabaseOrInitDataSource(  any(), any()  );
     doReturn( stepMeta ).when( step ).getStepMeta();
     doReturn( transMeta ).when( step ).getTransMeta();
     doReturn( "120" ).when( step ).environmentSubstitute( "${commit.size}" );

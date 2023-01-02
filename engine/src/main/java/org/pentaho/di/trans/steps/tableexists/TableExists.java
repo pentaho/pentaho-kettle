@@ -132,19 +132,10 @@ public class TableExists extends BaseDatabaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "TableExists.Error.ResultFieldMissing" ) );
         return false;
       }
-
       if ( !Utils.isEmpty( meta.getSchemaname() ) ) {
         data.realSchemaname = environmentSubstitute( meta.getSchemaname() );
       }
-
-      try {
-        return connectToDatabaseOrAssignDataSource( meta, data );
-      } catch ( KettleException e ) {
-        logError( BaseMessages.getString( PKG, "TableExists.Log.DBException" ) + e.getMessage() );
-        if ( data.db != null ) {
-          data.db.disconnect();
-        }
-      }
+      return true;
     }
     return false;
   }
@@ -152,10 +143,6 @@ public class TableExists extends BaseDatabaseStep implements StepInterface {
   @Override
   protected Class<?> getPKG() {
     return PKG;
-  }
-
-  protected boolean connectToDatabaseOnInit() {
-    return false;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {

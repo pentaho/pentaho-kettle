@@ -139,7 +139,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   private int rowlimit;
   private int commitsize;
-  private boolean commitSizeWasSet;
 
   private Connection connection;
 
@@ -350,7 +349,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * @return Returns the dataSource.
    */
-  public DataSource getDataSource() { return dataSource; }
+  public DataSource getDataSource( String partitionId ) throws KettleDatabaseException {
+    if ( dataSource == null ) {
+      initializeConnectionDataSource( partitionId );
+    }
+    return dataSource;
+  }
 
   /**
    * Open the database connection.
@@ -447,16 +451,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     if ( databaseMeta == null ) {
       throw new KettleDatabaseException( "No valid database connection defined!" );
     }
-    if ( dataSource == null ) {
-      getConnectionDataSource( partitionId );
-    }
 
     try {
-
       if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
-        this.connection = dataSource.getConnection();
+        this.connection = getDataSource( partitionId ).getConnection();
       } else if ( databaseMeta.isUsingConnectionPool() ) {
-        this.connection = dataSource.getConnection();
+        this.connection = getDataSource( partitionId ).getConnection();
         if ( getConnection().getAutoCommit() != isAutoCommit() ) {
           setAutoCommit( isAutoCommit() );
         }
@@ -481,10 +481,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
-  public void getConnectionDataSource( String partitionId ) throws KettleDatabaseException {
-    if ( databaseMeta == null ) {
-      throw new KettleDatabaseException( "No valid database connection defined!" );
-    }
+  public void initializeConnectionDataSource( String partitionId ) throws KettleDatabaseException {
 
     try {
       DataSourceProviderInterface dsp = DataSourceProviderFactory.getDataSourceProviderInterface();
@@ -496,28 +493,26 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
       if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
         this.dataSource = getJNDIDataSource( dsp );
-      } else {
-        if ( databaseMeta.isUsingConnectionPool() ) {
-          getPoolingDataSource( partitionId, dsp );
-        }
+      } else if ( databaseMeta.isUsingConnectionPool() ) {
+        this.dataSource = getPoolingDataSource( partitionId, dsp );
       }
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Error occurred while trying to retrieve the DataSource", e );
     }
   }
 
-  private void getPoolingDataSource( String partitionId, DataSourceProviderInterface dsp ) throws Exception {
+  private DataSource getPoolingDataSource( String partitionId, DataSourceProviderInterface dsp ) throws Exception {
     if ( databaseMeta.isNeedUpdate() ) {
       dsp.invalidateNamedDataSource( ConnectionPoolUtil.getDataSourceName( databaseMeta, partitionId ), DatasourceType.POOLED );
       databaseMeta.setNeedUpdate( false );
     }
     try {
-      dataSource = dsp.getPooledDataSourceFromMeta( databaseMeta, DatasourceType.POOLED );
+      return dsp.getPooledDataSourceFromMeta( databaseMeta, DatasourceType.POOLED );
     } catch ( UnsupportedOperationException e ) {
       // UnsupportedOperationException is happen at DatabaseUtil doesn't support pooled DS, use legacy routine
       // NullPointerException is happen when we will try to run the transformation on the remote server but
       // server does not have such databases, so will using legacy routine as well
-      dataSource = ConnectionPoolUtil.getDataSource( log, databaseMeta, partitionId );
+      return ConnectionPoolUtil.getDataSource( log, databaseMeta, partitionId );
     }
   }
 
@@ -736,7 +731,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       // Always close the connection, irrespective of what happens above...
       try {
         if ( dataSource instanceof CachedManagedDataSourceInterface ) {
-          ((CachedManagedDataSourceInterface) dataSource).tryInvalidateDataSource( ownerName );
+          ((CachedManagedDataSourceInterface) dataSource).removeInUseBy( ownerName );
         }
         dataSource = null;
         closeConnectionOnly();
@@ -836,13 +831,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
-  public boolean commitSizeWasSet() {
-    return commitSizeWasSet;
-  }
-
   public void setCommitSize( int size ) {
     commitsize = size;
-    commitSizeWasSet = true;
   }
 
   public void setAutoCommit( boolean useAutoCommit ) throws KettleDatabaseException {
@@ -5115,6 +5105,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public void setOwnerName( String name ) {
     ownerName = name;
+    if ( dataSource instanceof CachedManagedDataSourceInterface ) {
+      ( (CachedManagedDataSourceInterface) dataSource ).addInUseBy( ownerName );
+    }
   }
 
   public String getOwnerName() {

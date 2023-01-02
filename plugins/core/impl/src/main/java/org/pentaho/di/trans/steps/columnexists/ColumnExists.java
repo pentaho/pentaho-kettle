@@ -182,16 +182,7 @@ public class ColumnExists extends BaseDatabaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "ColumnExists.Error.ResultFieldMissing" ) );
         return false;
       }
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
-
-        return true;
-      } catch ( KettleException e ) {
-        logError( BaseMessages.getString( PKG, "ColumnExists.Log.DBException" ) + e.getMessage() );
-        if ( data.db != null ) {
-          data.db.disconnect();
-        }
-      }
+      return true;
     }
     return false;
   }

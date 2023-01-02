@@ -290,25 +290,11 @@ public class DynamicSQLRow extends BaseDatabaseStep implements StepInterface {
     data = (DynamicSQLRowData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "DynamicSQLRow.Init.ConnectionMissing", getStepname() ) );
-        return false;
-      }
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
+      data.db.setCommitSize( 100 ); // we never get a commit, but it just turns off auto-commit.
+      data.db.setQueryLimit( meta.getRowLimit() );
 
-        data.db.setCommitSize( 100 ); // we never get a commit, but it just turns off auto-commit.
-        data.db.setQueryLimit( meta.getRowLimit() );
-
-        return true;
-      } catch ( KettleException e ) {
-        logError( BaseMessages.getString( PKG, "DynamicSQLRow.Log.DatabaseError" ) + e.getMessage() );
-        if ( data.db != null ) {
-          data.db.disconnect();
-        }
-      }
+      return true;
     }
-
     return false;
   }
 

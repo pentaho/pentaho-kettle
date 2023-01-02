@@ -372,41 +372,14 @@ public class LucidDBStreamingLoader extends BaseDatabaseStep implements StepInte
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (LucidDBStreamingLoaderMeta) smi;
     data = (LucidDBStreamingLoaderData) sdi;
-    // implementation for DDB28
-    // System.out.println("ZZZZZZZZZZZ" + getTransMeta().getName() + "
-    // "+getStepname() + " " + getTrans().getBatchId() + "" +
-    // System.getProperty("user.name"));
     if ( super.init( smi, sdi ) ) {
-
       try {
-
-        // 1. Initialize databases connection.
-        if ( log.isDebug() ) {
-          logDebug( "Connecting to LucidDB..." );
-        }
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString(
-            PKG, "LucidDBStreamingLoaderDialog.Init.ConnectionMissing", getStepname() ) );
-          return false;
-        }
-        connectToDatabaseOrAssignDataSource( meta, data );
-
         data.db.setAutoCommit( true );
-
-      } catch ( NumberFormatException e ) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        logError( e.getMessage() );
-        return false;
-
+        return true;
       } catch ( KettleDatabaseException e ) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
         logError( e.getMessage() );
-        return false;
       }
-
-      return true;
     }
     return false;
   }

@@ -198,26 +198,13 @@ public class DBProc extends BaseDatabaseStep implements StepInterface {
         data.readsRows = true;
       }
 
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
-
-        if ( !meta.isAutoCommit() ) {
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "DBProc.Log.AutoCommit" ) );
-          }
-          data.db.setCommitSize( 9999 );
-        }
+      if ( !meta.isAutoCommit() ) {
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "DBProc.Log.ConnectedToDB" ) );
+          logDetailed( BaseMessages.getString( PKG, "DBProc.Log.AutoCommit" ) );
         }
-
-        return true;
-      } catch ( KettleException e ) {
-        logError( BaseMessages.getString( PKG, "DBProc.Log.DBException" ) + e.getMessage() );
-        if ( data.db != null ) {
-          data.db.disconnect();
-        }
+        data.db.setCommitSize( 9999 );
       }
+      return true;
     }
     return false;
   }

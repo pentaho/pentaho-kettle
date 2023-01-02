@@ -669,23 +669,10 @@ public class CombinationLookup extends BaseDatabaseStep implements StepInterface
       data.realSchemaName = environmentSubstitute( meta.getSchemaName() );
       data.realTableName = environmentSubstitute( meta.getTableName() );
 
-      if ( meta.getCacheSize() > 0 ) {
-        data.cache = new HashMap<RowMetaAndData, Long>( (int) ( meta.getCacheSize() * 1.5 ) );
-      } else {
-        data.cache = new HashMap<RowMetaAndData, Long>();
-      }
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "CombinationLookup.Init.ConnectionMissing", getStepname() ) );
-        return false;
-      }
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
-        data.db.setCommitSize( meta.getCommitSize() );
+      data.cache = meta.getCacheSize() > 0 ? new HashMap<>( (int) ( meta.getCacheSize() * 1.5 ) ) : new HashMap<>();
 
-        return true;
-      } catch ( KettleDatabaseException dbe ) {
-        logError( BaseMessages.getString( PKG, "CombinationLookup.Log.UnableToConnectDB" ) + dbe.getMessage() );
-      }
+      data.db.setCommitSize( meta.getCommitSize() );
+      return true;
     }
     return false;
   }

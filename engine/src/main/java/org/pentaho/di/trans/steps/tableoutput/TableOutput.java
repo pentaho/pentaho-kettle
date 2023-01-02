@@ -471,23 +471,17 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
       try {
         data.commitSize = Integer.parseInt( environmentSubstitute( meta.getCommitSize() ) );
 
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "TableOutput.Init.ConnectionMissing", getStepname() ) );
-          return false;
-        }
         data.databaseMeta = meta.getDatabaseMeta();
         DatabaseInterface dbInterface = data.databaseMeta.getDatabaseInterface();
 
         // Batch updates are not supported on PostgreSQL (and look-a-likes)
         // together with error handling (PDI-366).
         // For these situations we can use savepoints to help out.
-        //
         data.useSafePoints =
           data.databaseMeta.getDatabaseInterface().useSafePoints() && getStepMeta().isDoingErrorHandling();
 
         // Get the boolean that indicates whether or not we can/should release
         // savepoints during data load.
-        //
         data.releaseSavepoint = dbInterface.releaseSavepoint();
 
         // Disable batch mode in case
@@ -495,7 +489,6 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
         // - if we need to pick up auto-generated keys
         // - if you are running the transformation as a single database transaction (unique connections)
         // - if we are reverting to save-points
-        //
         data.batchMode =
           meta.useBatchUpdate()
             && data.commitSize > 0 && !meta.isReturningGeneratedKeys()
@@ -503,7 +496,6 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
 
         // Per PDI-6211 : give a warning that batch mode operation in combination with step error handling can lead to
         // incorrectly processed rows.
-        //
         if ( getStepMeta().isDoingErrorHandling() && !dbInterface.supportsErrorHandlingOnBatchUpdates() ) {
           log.logMinimal( BaseMessages.getString(
             PKG, "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing" ) );
@@ -512,8 +504,6 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
         if ( !dbInterface.supportsStandardTableOutput() ) {
           throw new KettleException( dbInterface.getUnsupportedTableOutputMessage() );
         }
-
-        connectToDatabaseOrAssignDataSource( meta, data );
 
         if ( log.isBasic() ) {
           logBasic( "Connected to database [" + meta.getDatabaseMeta() + "] (commit=" + data.commitSize + ")" );
@@ -536,11 +526,6 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
         setErrors( 1 );
       }
     }
-    return false;
-  }
-
-  @Override
-  protected boolean connectToDatabaseOnInit() {
     return false;
   }
 

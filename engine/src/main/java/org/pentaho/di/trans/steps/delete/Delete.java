@@ -219,25 +219,9 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
     data = (DeleteData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "Delete.Init.ConnectionMissing", getStepname() ) );
-        return false;
-      }
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
         data.db.setCommitSize( meta.getCommitSize( this ) );
         return true;
-      } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "Delete.Log.ErrorOccurred" ) + ke.getMessage() );
-        setErrors( 1 );
-        stopAll();
-      }
     }
-    return false;
-  }
-
-  @Override
-  protected boolean connectToDatabaseOnInit() {
     return false;
   }
 

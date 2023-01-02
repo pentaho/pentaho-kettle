@@ -320,36 +320,18 @@ public class TableInput extends BaseDatabaseStep implements StepInterface {
 
       if ( super.init( smi, sdi ) ) {
         // Verify some basic things first...
-        //
-        boolean passed = true;
         if ( Utils.isEmpty( meta.getSQL() ) ) {
           logError( BaseMessages.getString( PKG, "TableInput.Exception.SQLIsNeeded" ) );
-          passed = false;
-        }
-
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "TableInput.Exception.DatabaseConnectionsIsNeeded" ) );
-          passed = false;
-        }
-        if ( !passed ) {
           return false;
         }
-        try {
-          connectToDatabaseOrAssignDataSource( meta, data );
-          data.infoStream = meta.getStepIOMeta().getInfoStreams().get( 0 );
-          data.db.setQueryLimit( Const.toInt( environmentSubstitute( meta.getRowLimit() ), 0 ) );
+        data.infoStream = meta.getStepIOMeta().getInfoStreams().get( 0 );
+        data.db.setQueryLimit( Const.toInt( environmentSubstitute( meta.getRowLimit() ), 0 ) );
 
-          if ( meta.getDatabaseMeta().isRequiringTransactionsOnQueries() ) {
-            data.db.setCommitSize( 100 ); // needed for PGSQL it seems...
-          }
-          return true;
-        } catch ( KettleDatabaseException e ) {
-          logError( BaseMessages.getString( PKG, "TableInput.Log.ErrorOccurred", e.getMessage() ) );
-          setErrors( 1 );
-          stopAll();
+        if ( meta.getDatabaseMeta().isRequiringTransactionsOnQueries() ) {
+          data.db.setCommitSize( 100 ); // needed for PGSQL it seems...
         }
+        return true;
       }
-
       return false;
     } finally {
       dbLock.unlock();
@@ -359,11 +341,6 @@ public class TableInput extends BaseDatabaseStep implements StepInterface {
   @Override
   protected Class<?> getPKG() {
     return PKG;
-  }
-
-  @Override
-  protected boolean connectToDatabaseOnInit() {
-    return false;
   }
 
   public boolean isWaitingForData() {

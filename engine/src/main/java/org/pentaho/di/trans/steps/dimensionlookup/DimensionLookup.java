@@ -1705,18 +1705,9 @@ public class DimensionLookup extends BaseDatabaseStep implements StepInterface {
       if ( meta.isUsingStartDateAlternative() ) {
         data.startDateChoice = meta.getStartDateAlternative();
       }
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "DimensionLookup.Init.ConnectionMissing", getStepname() ) );
-        return false;
-      }
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
-        data.db.setCommitSize( meta.getCommitSize() );
+      data.db.setCommitSize( meta.getCommitSize() );
 
-        return true;
-      } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "DimensionLookup.Log.ErrorOccurredInProcessing" ) + ke.getMessage() );
-      }
+      return true;
     }
     return false;
   }

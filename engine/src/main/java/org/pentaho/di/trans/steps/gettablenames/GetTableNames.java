@@ -418,24 +418,14 @@ public class GetTableNames extends BaseDatabaseStep implements StepInterface {
       try {
         // Create the output row meta-data
         data.outputRowMeta = new RowMeta();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                      // metadata
-                                                                                                      // populated
-      } catch ( Exception e ) {
+        // get the metadata populated
+        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      } catch ( KettleException e ) {
         logError( "Error initializing step: " + e.toString() );
         logError( Const.getStackTracker( e ) );
         return false;
       }
-
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
-        return true;
-      } catch ( KettleException e ) {
-        logError( BaseMessages.getString( PKG, "GetTableNames.Log.DBException" ) + e.getMessage() );
-        if ( data.db != null ) {
-          data.db.disconnect();
-        }
-      }
+      return true;
     }
     return false;
   }

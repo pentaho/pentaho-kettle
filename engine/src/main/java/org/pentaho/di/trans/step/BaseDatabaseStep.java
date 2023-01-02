@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.step;
 
-import org.pentaho.di.core.database.CachedManagedDataSourceInterface;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -43,7 +42,7 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
    *
    * False by default
    */
-  protected boolean connectToDatabaseOnInit;
+  private boolean connectToDatabaseOnInit;
 
   public BaseDatabaseStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     this( stepMeta, stepDataInterface, copyNr, transMeta, trans, false );
@@ -55,7 +54,41 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
-    return super.init( smi, sdi );
+    if ( !super.init( smi, sdi ) ) {
+      return false;
+    }
+    if ( !hasValidTypes( smi, sdi ) ) {
+      return false;
+    }
+    BaseDatabaseStepMeta meta = (BaseDatabaseStepMeta) smi;
+    BaseDatabaseStepData data = (BaseDatabaseStepData) sdi;
+    if ( meta.getDatabaseMeta() == null ) {
+      logError( BaseMessages.getString( getPKG(), "BaseDatabaseStep.Init.ConnectionMissing", getStepname() ) );
+      return false;
+    }
+
+    try {
+      connectToDatabaseOrInitDataSource( meta, data );
+      return true;
+    } catch ( KettleDatabaseException e ) {
+      logError( BaseMessages.getString( getPKG(), "BaseDatabaseStep.Log.ErrorOccurred", e.getMessage() ) );
+      setErrors( 1 );
+      stopAll();
+    }
+    return false;
+  }
+
+  private boolean hasValidTypes( StepMetaInterface smi, StepDataInterface sdi ) {
+    boolean isValid = true;
+    if ( !( smi instanceof BaseDatabaseStepMeta ) ) {
+      log.logError( "StepMetaInterface is of type [" + sdi.getClass() + "], expected type BaseDatabaseStepMeta. Unable to initialize step" );
+      isValid = false;
+    }
+    if ( !( sdi instanceof BaseDatabaseStepData ) ) {
+      log.logError( "StepDataInterface is of type [" + sdi.getClass() + "], expected type BaseDatabaseStepData. Unable to initialize step" );
+      isValid = false;
+    }
+    return isValid;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -64,15 +97,20 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
       if ( data.db != null ) {
         data.db.disconnect();
       }
+    } else {
+      log.logBasic( "StepDataInterface is of type [" + sdi.getClass() + "], expected type BaseDatabaseStepData. Unable to disconnect from possible DB in use" );
     }
+
     super.dispose( smi, sdi );
   }
 
   public boolean beforeStartProcessing( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     if ( !( sdi instanceof BaseDatabaseStepData ) ) {
+      log.logBasic( "StepDataInterface is of type [" + sdi.getClass() + "], expected type BaseDatabaseStepData. Unable to connect to DB" );
       return false;
     }
     BaseDatabaseStepData data = (BaseDatabaseStepData) sdi;
+    // Connection might have been made on step init, if connectToDatabaseOnInit was set to true
     if ( data.db.getConnection() != null ) {
       return true;
     }
@@ -80,14 +118,14 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
     return true;
   }
 
-  public boolean connectToDatabaseOrAssignDataSource( BaseDatabaseStepMeta meta, BaseDatabaseStepData data ) throws KettleDatabaseException {
+  public boolean connectToDatabaseOrInitDataSource( BaseDatabaseStepMeta meta, BaseDatabaseStepData data ) throws KettleDatabaseException {
     data.db = new Database( this, meta.getDatabaseMeta() );
     data.db.shareVariablesWith( this );
     try {
-      if ( connectToDatabaseOnInit() ) {
-        return connectToDatabase(  data );
+      if ( isConnectToDatabaseOnInit() ) {
+        return connectToDatabase( data );
       } else {
-        return getConnDataSource( data );
+        return initializeConnectionDataSource( data );
       }
     } catch ( KettleDatabaseException e ) {
       throw e;
@@ -107,9 +145,7 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( getPKG(), "TableInput.Log.ConnectedToDatabase" ) );
       }
-      if ( data.db.commitSizeWasSet() ) {
-        data.db.setAutoCommit();
-      }
+      data.db.setAutoCommit();
 
       return true;
     } catch ( KettleDatabaseException e ) {
@@ -117,12 +153,9 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
     }
   }
 
-  private boolean getConnDataSource( BaseDatabaseStepData data ) throws KettleDatabaseException {
-    data.db.getConnectionDataSource( getPartitionID() );
-    if ( data.db.getDataSource() instanceof CachedManagedDataSourceInterface ) {
-      data.db.setOwnerName( getTrans().getContainerObjectId() + "-" + getObjectId().getId() );
-      ( (CachedManagedDataSourceInterface) data.db.getDataSource() ).setInUseBy( data.db.getOwnerName() );
-    }
+  private boolean initializeConnectionDataSource( BaseDatabaseStepData data ) throws KettleDatabaseException {
+    data.db.initializeConnectionDataSource( getPartitionID() );
+    data.db.setOwnerName( getTrans().getContainerObjectId() + "-" + getObjectId().getId() );
     return true;
   }
 
@@ -132,7 +165,7 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
    */
   protected abstract Class<?> getPKG();
 
-  protected boolean connectToDatabaseOnInit() {
+  protected boolean isConnectToDatabaseOnInit() {
     return connectToDatabaseOnInit;
   }
 }

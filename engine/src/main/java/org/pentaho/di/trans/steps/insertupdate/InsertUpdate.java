@@ -479,19 +479,8 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
     data = (InsertUpdateData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      try {
-        if ( meta.getDatabaseMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "InsertUpdate.Init.ConnectionMissing", getStepname() ) );
-          return false;
-        }
-        connectToDatabaseOrAssignDataSource( meta, data );
-        data.db.setCommitSize(  meta.getCommitSize( this ) );
-
-        return true;
-      } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "InsertUpdate.Log.ErrorOccurredDuringStepInitialize" )
-          + ke.getMessage() );
-      }
+      data.db.setCommitSize( meta.getCommitSize( this ) );
+      return true;
     }
     return false;
   }

@@ -232,26 +232,11 @@ public class ExecSQLRow extends BaseDatabaseStep implements StepInterface {
     data = (ExecSQLRowData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( meta.getDatabaseMeta() == null ) {
-        logError( BaseMessages.getString( PKG, "ExecSQLRow.Init.ConnectionMissing", getStepname() ) );
-        return false;
+      if ( meta.getCommitSize() >= 1 ) {
+        data.db.setCommitSize( meta.getCommitSize() );
       }
-
-      // Connect to the database
-      try {
-        connectToDatabaseOrAssignDataSource( meta, data );
-
-        if ( meta.getCommitSize() >= 1 ) {
-          data.db.setCommitSize( meta.getCommitSize() );
-        }
-        return true;
-      } catch ( KettleException e ) {
-        logError( BaseMessages.getString( PKG, "ExecSQLRow.Log.ErrorOccurred" ) + e.getMessage() );
-        setErrors( 1 );
-        stopAll();
-      }
+      return true;
     }
-
     return false;
   }
 
