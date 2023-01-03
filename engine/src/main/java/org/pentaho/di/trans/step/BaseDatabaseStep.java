@@ -155,7 +155,7 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
 
   private boolean initializeConnectionDataSource( BaseDatabaseStepData data ) throws KettleDatabaseException {
     data.db.initializeConnectionDataSource( getPartitionID() );
-    data.db.setOwnerName( getTrans().getContainerObjectId() + "-" + getObjectId().getId() );
+    data.db.setOwnerName( getStepExecutionId() );
     return true;
   }
 
@@ -167,5 +167,9 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
 
   protected boolean isConnectToDatabaseOnInit() {
     return connectToDatabaseOnInit;
+  }
+
+  public String getStepExecutionId() {
+    return getTrans().getContainerObjectId() + "-" + getObjectId().getId();
   }
 }
