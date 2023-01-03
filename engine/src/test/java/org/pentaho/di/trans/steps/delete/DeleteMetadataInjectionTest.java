@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,10 +42,10 @@ public class DeleteMetadataInjectionTest extends BaseMetadataInjectionTest<Delet
     check( "TARGET_SCHEMA", () -> meta.getSchemaName() );
     check( "TARGET_TABLE", () -> meta.getTableName() );
     check( "COMMIT_SIZE", () -> meta.getCommitSizeVar() );
-    check( "TABLE_NAME_FIELD", () -> meta.getKeyLookup()[0] );
-    check( "COMPARATOR", () -> meta.getKeyCondition()[0] );
-    check( "STREAM_FIELDNAME_1", () -> meta.getKeyStream()[0] );
-    check( "STREAM_FIELDNAME_2", () -> meta.getKeyStream2()[0] );
+    check( "TABLE_NAME_FIELD", () -> meta.getKeyFields()[0].getKeyLookup() );
+    check( "COMPARATOR", () -> meta.getKeyFields()[0].getKeyCondition() );
+    check( "STREAM_FIELDNAME_1", () -> meta.getKeyFields()[0].getKeyStream() );
+    check( "STREAM_FIELDNAME_2", () -> meta.getKeyFields()[0].getKeyStream2() );
     skipPropertyTest( "CONNECTIONNAME" );
   }
 }

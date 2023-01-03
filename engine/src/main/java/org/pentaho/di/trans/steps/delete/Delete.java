@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Delete data in a database table.
  *
+ *
  * @author Tom
  * @since 28-March-2006
  */
@@ -64,7 +65,7 @@ public class Delete extends BaseStep implements StepInterface {
     Object[] deleteRow = new Object[data.deleteParameterRowMeta.size()];
     int deleteIndex = 0;
 
-    for ( int i = 0; i < meta.getKeyStream().length; i++ ) {
+    for ( int i = 0; i < meta.getKeyFields().length; i++ ) {
       if ( data.keynrs[i] >= 0 ) {
         deleteRow[deleteIndex] = row[data.keynrs[i]];
         deleteIndex++;
@@ -108,36 +109,41 @@ public class Delete extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       data.schemaTable =
-        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
-          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+              meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+                      environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       // lookup the values!
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "Delete.Log.CheckingRow" ) + getInputRowMeta().getString( r ) );
       }
 
-      data.keynrs = new int[meta.getKeyStream().length];
-      data.keynrs2 = new int[meta.getKeyStream().length];
-      for ( int i = 0; i < meta.getKeyStream().length; i++ ) {
-        data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getKeyStream()[i] );
+      // TODO: maybe handle if the fields in lookupFields are null
+      int len = meta.getKeyFields().length;
+      data.keynrs = new int[len];
+      data.keynrs2 = new int[len];
+      for ( int i = 0; i < len; i++ ) {
+        data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getKeyFields()[i].getKeyStream() );
         if ( data.keynrs[i] < 0 && // couldn't find field!
-          !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
-          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
+                !"IS NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) && // No field needed!
+                !"IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) // No field needed!
         ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired", meta
-            .getKeyStream()[i] ) );
+          throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired",
+                  meta.getKeyFields()[i].getKeyStream() ) );
         }
-        data.keynrs2[i] = meta.getKeyStream2().length == 0 ? -1
-          : getInputRowMeta().indexOfValue( meta.getKeyStream2()[i] );
+
+        data.keynrs2[i] = ( meta.getKeyFields()[i].getKeyStream2() != null
+                && meta.getKeyFields()[i].getKeyStream2().length() > 0 )
+                ? getInputRowMeta().indexOfValue( meta.getKeyFields()[i].getKeyStream2() ) : -1;
         if ( data.keynrs2[i] < 0 && // couldn't find field!
-          "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
+                "BETWEEN".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) // 2 fields needed!
         ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired", meta
-            .getKeyStream2()[i] ) );
+          throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired",
+                  meta.getKeyFields()[i].getKeyStream2() ) );
         }
 
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "Delete.Log.FieldInfo", meta.getKeyStream()[i] ) + data.keynrs[i] );
+          logDebug( BaseMessages.getString( PKG, "Delete.Log.FieldInfo",
+                  meta.getKeyFields()[i].getKeyStream() ) + data.keynrs[i] );
         }
       }
 
@@ -185,21 +191,21 @@ public class Delete extends BaseStep implements StepInterface {
 
     sql += "WHERE ";
 
-    for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
+    for ( int i = 0; i < meta.getKeyFields().length; i++ ) {
       if ( i != 0 ) {
         sql += "AND   ";
       }
-      sql += databaseMeta.quoteField( meta.getKeyLookup()[i] );
-      if ( "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
+      sql += databaseMeta.quoteField( meta.getKeyFields()[i].getKeyLookup() );
+      if ( "BETWEEN".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) ) {
         sql += " BETWEEN ? AND ? ";
-        data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream()[i] ) );
-        data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream2()[i] ) );
-      } else if ( "IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] )
-        || "IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
-        sql += " " + meta.getKeyCondition()[i] + " ";
+        data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[i].getKeyStream() ) );
+        data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[i].getKeyStream2() ) );
+      } else if ( "IS NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() )
+              || "IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) ) {
+        sql += " " + meta.getKeyFields()[i].getKeyCondition() + " ";
       } else {
-        sql += " " + meta.getKeyCondition()[i] + " ? ";
-        data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream()[i] ) );
+        sql += " " + meta.getKeyFields()[i].getKeyCondition() + " ? ";
+        data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[i].getKeyStream() ) );
       }
     }
 
@@ -265,7 +271,7 @@ public class Delete extends BaseStep implements StepInterface {
         data.db.closeUpdate();
       } catch ( KettleDatabaseException e ) {
         logError( BaseMessages.getString( PKG, "Delete.Log.UnableToCommitUpdateConnection" )
-          + data.db + "] :" + e.toString() );
+                + data.db + "] :" + e.toString() );
         setErrors( 1 );
       } finally {
         data.db.disconnect();
