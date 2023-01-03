@@ -63,16 +63,15 @@ public interface CachedManagedDataSourceInterface extends DataSource {
   void removeInUseBy( String ownerName );
 
   /**
-   * Receives an object and calculates its hash
-   * @param dataSource
+   * Gets the Datasource hash
    */
-  String getHash( Object dataSource );
+  String getHash();
 
   /**
    * Sets the Datasource hash
-   * @return
+   * @param dataSource
    */
-  void setHash();
+  void setHash( Object dataSource );
 
   /**
    * Try to invalidate the Datasource
