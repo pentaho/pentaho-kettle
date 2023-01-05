@@ -38,7 +38,7 @@
     <ftp4che.version>0.7.1</ftp4che.version>
     <georss-rome.version>0.9.8</georss-rome.version>
     <infobright-core.version>3.4</infobright-core.version>
-    <ini4j.version>0.5.1</ini4j.version>
+    <ini4j.version>0.5.4</ini4j.version>
     <!-- https://jira.pentaho.com/browse/PDI-44134 update janino to latest -->
     <janino.version>3.0.8</janino.version>
     <javadbf.version>20081125</javadbf.version>
