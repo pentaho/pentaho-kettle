@@ -149,6 +149,7 @@ public class AvroInputMetaTest {
   @Test( expected = KettleStepException.class )
   public void testGetFields_unknownPluginForFieldType() throws KettleStepException {
     AvroInputField fld = mock( AvroInputField.class );
+    when( fld.getPentahoType() ).thenReturn( Integer.MIN_VALUE ); // invalid type
 
     meta.setInputFields( Arrays.asList( fld ) );
     meta.getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
