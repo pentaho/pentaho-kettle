@@ -49,8 +49,8 @@
       </excludes>
       <includes>
         <include>org.apache.avro:avro</include>
-        <include>org.codehaus.jackson:jackson-mapper-asl</include>
-        <include>org.codehaus.jackson:jackson-core-asl</include>
+        <include>com.fasterxml.jackson.core:jackson-databind</include>
+        <include>com.fasterxml.jackson.core:jackson-core</include>
       </includes>
     </dependencySet>
   </dependencySets>
