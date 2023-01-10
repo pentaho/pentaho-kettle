@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.delete;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -70,32 +71,28 @@ public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
   public void setUpLoadSave() throws Exception {
     PluginRegistry.init( false );
     List<String> attributes =
-        Arrays.asList( "schemaName", "tableName", "commitSize", "databaseMeta", "keyStream", "keyLookup", "keyCondition", "keyStream2" );
+            Arrays.asList( "schemaName", "tableName", "commitSize", "databaseMeta", "keyFields" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+            new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "keyStream", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "keyLookup", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "keyCondition", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "keyStream2", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
-
+    attrValidatorMap.put ("keyFields", new ArrayLoadSaveValidator<DeleteMeta.KeyFields>( new DeleteFieldLoadSaveValidator(), 5));
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+            new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+                    getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
   public void modify( StepMetaInterface someMeta ) {
     if ( someMeta instanceof DeleteMeta ) {
-      ( (DeleteMeta) someMeta ).allocate( 5 );
+      ( (DeleteMeta) someMeta ).allocate( 1 );
     }
   }
 
@@ -181,13 +178,40 @@ public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
 
     deleteMeta.readRep( rep, metaStore, idStep, databases );
 
-    assertEquals( 1, ( (String[]) getInternalState( deleteMeta, "keyStream" ) ).length );
-    assertEquals( keyNameValue, ( (String[]) getInternalState( deleteMeta, "keyStream" ) )[0] );
-    assertEquals( 1, ( (String[]) getInternalState( deleteMeta, "keyLookup" ) ).length );
-    assertEquals( keyFieldValue, ( (String[]) getInternalState( deleteMeta, "keyLookup" ) )[0] );
-    assertEquals( 1, ( (String[]) getInternalState( deleteMeta, "keyCondition" ) ).length );
-    assertEquals( keyConditionValue, ( (String[]) getInternalState( deleteMeta, "keyCondition" ) )[0] );
-    assertEquals( 1, ( (String[]) getInternalState( deleteMeta, "keyStream2" ) ).length );
-    assertEquals( keyName2Value, ( (String[]) getInternalState( deleteMeta, "keyStream2" ) )[0] );
+    assertEquals( 1, ( (DeleteMeta.KeyFields[])
+            getInternalState( deleteMeta, "keyFields" ) ).length );
+    assertEquals( keyNameValue, ( (DeleteMeta.KeyFields[])
+            getInternalState( deleteMeta, "keyFields" ) )[0].getKeyStream() );
+    assertEquals( keyFieldValue, ( (DeleteMeta.KeyFields[])
+            getInternalState( deleteMeta, "keyFields" ) )[0].getKeyLookup() );
+    assertEquals( keyConditionValue, ( (DeleteMeta.KeyFields[])
+            getInternalState( deleteMeta, "keyFields" ) )[0].getKeyCondition() );
+    assertEquals( keyName2Value, ( (DeleteMeta.KeyFields[])
+            getInternalState( deleteMeta, "keyFields" ) )[0].getKeyStream2() );
+  }
+
+  public class DeleteFieldLoadSaveValidator implements FieldLoadSaveValidator<DeleteMeta.KeyFields>{
+
+    @Override public DeleteMeta.KeyFields getTestObject() {
+      DeleteMeta.KeyFields rtn = new DeleteMeta.KeyFields();
+      rtn.setKeyStream( UUID.randomUUID().toString() );
+      rtn.setKeyStream2( UUID.randomUUID().toString() );
+      rtn.setKeyCondition( UUID.randomUUID().toString() );
+      rtn.setKeyLookup( UUID.randomUUID().toString() );
+      return rtn;
+    }
+
+    @Override public boolean validateTestObject( DeleteMeta.KeyFields testObject, Object actual ) {
+      if( !( actual instanceof DeleteMeta.KeyFields)) {
+        return false;
+      }
+      DeleteMeta.KeyFields another = (DeleteMeta.KeyFields) actual;
+      return new EqualsBuilder()
+              .append( testObject.getKeyCondition(), another.getKeyCondition() )
+              .append( testObject.getKeyLookup(), another.getKeyLookup() )
+              .append( testObject.getKeyStream(), another.getKeyStream() )
+              .append( testObject.getKeyStream2(), another.getKeyStream2() )
+              .isEquals();
+    }
   }
 }
