@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -98,7 +100,8 @@ public class InsertUpdateMetaTest {
 
     mockHelper =
       new StepMockHelper<>( "insertUpdate", InsertUpdateMeta.class, InsertUpdateData.class );
-    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
+    Mockito.when(
+        mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
     Mockito.when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new InsertUpdateMeta() );
   }
@@ -123,8 +126,20 @@ public class InsertUpdateMetaTest {
   @Test
   public void testProvidesModeler() throws Exception {
     InsertUpdateMeta insertUpdateMeta = new InsertUpdateMeta();
-    insertUpdateMeta.setUpdateLookup( new String[] {"f1", "f2", "f3"} );
-    insertUpdateMeta.setUpdateStream( new String[] {"s4", "s5", "s6"} );
+    InsertUpdateMeta.UpdateField[] updateFields = new InsertUpdateMeta.UpdateField[ 3 ];
+    updateFields[ 0 ] = new InsertUpdateMeta.UpdateField();
+    updateFields[ 1 ] = new InsertUpdateMeta.UpdateField();
+    updateFields[ 2 ] = new InsertUpdateMeta.UpdateField();
+
+    updateFields[ 0 ].setUpdateLookup( "f1" );
+    updateFields[ 1 ].setUpdateLookup( "f2" );
+    updateFields[ 2 ].setUpdateLookup( "f3" );
+
+    updateFields[ 0 ].setUpdateStream( "s4" );
+    updateFields[ 1 ].setUpdateStream( "s5" );
+    updateFields[ 2 ].setUpdateStream( "s6" );
+
+    insertUpdateMeta.setUpdateFields( updateFields );
 
     InsertUpdateData tableOutputData = new InsertUpdateData();
     tableOutputData.insertRowMeta = Mockito.mock( RowMeta.class );
@@ -152,8 +167,8 @@ public class InsertUpdateMetaTest {
   @Before
   public void setUpLoadSave() throws Exception {
     List<String> attributes =
-        Arrays.asList( "schemaName", "tableName", "databaseMeta", "keyStream", "keyLookup", "keyCondition",
-            "keyStream2", "updateLookup", "updateStream", "update", "commitSize", "updateBypassed" );
+      Arrays.asList( "schemaName", "tableName", "databaseMeta", "keyFields", "updateFields", "commitSize",
+        "updateBypassed" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
@@ -189,23 +204,23 @@ public class InsertUpdateMetaTest {
       }
     };
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "keyStream", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "keyLookup", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "keyCondition", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "keyStream2", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "updateLookup", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "updateStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyFields",
+      new ArrayLoadSaveValidator<InsertUpdateMeta.KeyField>( new InsertFieldLoadSaveValidator(), 4 ) );
+    attrValidatorMap.put( "updateFields",
+      new ArrayLoadSaveValidator<InsertUpdateMeta.UpdateField>( new UpdateFieldLoadSaveValidator(), 3 ) );
     attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
     attrValidatorMap.put( "update", new ArrayLoadSaveValidator<Boolean>( new BooleanLoadSaveValidator(), 5 ) );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
-    typeValidatorMap.put( boolean[].class.getCanonicalName(), new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 3 ) );
+    typeValidatorMap.put( boolean[].class.getCanonicalName(),
+      new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 3 ) );
 
-    loadSaveTester = new LoadSaveTester( InsertUpdateMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+    loadSaveTester = new LoadSaveTester( InsertUpdateMeta.class, attributes, getterMap, setterMap, attrValidatorMap,
+      typeValidatorMap );
   }
 
   @Test
@@ -215,7 +230,8 @@ public class InsertUpdateMetaTest {
 
   @Test
   public void testErrorProcessRow() throws KettleException {
-    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
+    Mockito.when(
+        mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
       .thenReturn(
         mockHelper.logChannelInterface );
     Mockito.when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new InsertUpdateMeta() );
@@ -230,7 +246,8 @@ public class InsertUpdateMetaTest {
     mockHelper.processRowsStepDataInterface.keynrs = new int[] {};
     mockHelper.processRowsStepDataInterface.db = Mockito.mock( Database.class );
     mockHelper.processRowsStepDataInterface.valuenrs = new int[] {};
-    Mockito.doThrow( new KettleStepException( "Test exception" ) ).when( insertUpdateStep ).putRow( Mockito.any(), Mockito.any() );
+    Mockito.doThrow( new KettleStepException( "Test exception" ) ).when( insertUpdateStep )
+      .putRow( Mockito.any(), Mockito.any() );
 
     boolean result =
       insertUpdateStep.processRow( mockHelper.processRowsStepMetaInterface, mockHelper.processRowsStepDataInterface );
@@ -245,12 +262,14 @@ public class InsertUpdateMetaTest {
     insertUpdateStep.setInputRowMeta( Mockito.mock( RowMetaInterface.class ) );
     insertUpdateStep = Mockito.spy( insertUpdateStep );
 
+    InsertUpdateMeta.KeyField[] keyFields = new InsertUpdateMeta.KeyField[ 1 ];
+    keyFields[ 0 ] = new InsertUpdateMeta.KeyField();
     InsertUpdateMeta insertUpdateMeta = new InsertUpdateMeta();
-    insertUpdateMeta.setKeyStream( new String[] { "test_field" } );
-    insertUpdateMeta.setKeyCondition( new String[] { "test_condition" } );
-    insertUpdateMeta.setKeyStream2( new String[] {} );
-    insertUpdateMeta.setUpdateLookup( new String[] {} );
-    insertUpdateMeta.setKeyLookup( new String[] {} );
+    keyFields[ 0 ].setKeyStream( "test_field" );
+    keyFields[ 0 ].setKeyCondition( "test_condition" );
+    keyFields[ 0 ].setKeyStream2( "" );
+    keyFields[ 0 ].setKeyLookup( "" );
+    insertUpdateMeta.setKeyFields( keyFields );
     insertUpdateMeta.setUpdateBypassed( true );
     insertUpdateMeta.setDatabaseMeta( Mockito.mock( DatabaseMeta.class ) );
     Database database = Mockito.mock( Database.class );
@@ -265,6 +284,60 @@ public class InsertUpdateMetaTest {
     //run without a exception
     insertUpdateStep.processRow( insertUpdateMeta, mockHelper.processRowsStepDataInterface );
 
-    Assert.assertEquals( insertUpdateMeta.getKeyStream().length, insertUpdateMeta.getKeyStream2().length );
+    /**
+     * Original test for PDI-16349 solution tested the length of the String[] from keyStream and keyStream2.
+     * Since we converted these properties to an array of KeyField objects, the equivalent test would be to check the
+     * value of keyStream2 is not null.
+     */
+    Assert.assertNotNull( insertUpdateMeta.getKeyFields()[ 0 ].getKeyStream() );
+    Assert.assertNotNull( insertUpdateMeta.getKeyFields()[ 0 ].getKeyStream2() );
+  }
+
+  public class InsertFieldLoadSaveValidator implements FieldLoadSaveValidator<InsertUpdateMeta.KeyField> {
+
+    @Override public InsertUpdateMeta.KeyField getTestObject() {
+      InsertUpdateMeta.KeyField rtn = new InsertUpdateMeta.KeyField();
+      rtn.setKeyStream( UUID.randomUUID().toString() );
+      rtn.setKeyStream2( UUID.randomUUID().toString() );
+      rtn.setKeyCondition( UUID.randomUUID().toString() );
+      rtn.setKeyLookup( UUID.randomUUID().toString() );
+      return rtn;
+    }
+
+    @Override public boolean validateTestObject( InsertUpdateMeta.KeyField testObject, Object actual ) {
+      if ( !( actual instanceof InsertUpdateMeta.KeyField ) ) {
+        return false;
+      }
+      InsertUpdateMeta.KeyField another = (InsertUpdateMeta.KeyField) actual;
+      return new EqualsBuilder()
+        .append( testObject.getKeyCondition(), another.getKeyCondition() )
+        .append( testObject.getKeyLookup(), another.getKeyLookup() )
+        .append( testObject.getKeyStream(), another.getKeyStream() )
+        .append( testObject.getKeyStream2(), another.getKeyStream2() )
+        .isEquals();
+    }
+  }
+
+  public class UpdateFieldLoadSaveValidator implements FieldLoadSaveValidator<InsertUpdateMeta.UpdateField> {
+
+    @Override public InsertUpdateMeta.UpdateField getTestObject() {
+      InsertUpdateMeta.UpdateField rtn = new InsertUpdateMeta.UpdateField();
+      rtn.setUpdate( true );
+      rtn.setUpdateLookup( UUID.randomUUID().toString() );
+      rtn.setUpdateStream( UUID.randomUUID().toString() );
+      return rtn;
+    }
+
+    @Override public boolean validateTestObject( InsertUpdateMeta.UpdateField testObject, Object actual ) {
+      if ( !( actual instanceof InsertUpdateMeta.UpdateField ) ) {
+        return false;
+      }
+      InsertUpdateMeta.UpdateField another = (InsertUpdateMeta.UpdateField) actual;
+      return new EqualsBuilder()
+        .append( testObject.getUpdate(), another.getUpdate() )
+        .append( testObject.getUpdateLookup(), another.getUpdateLookup() )
+        .append( testObject.getUpdateStream(), another.getUpdateStream() )
+        .isEquals();
+    }
   }
 }

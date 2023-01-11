@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,6 @@
 
 package org.pentaho.di.trans.steps.insertupdate;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +33,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for PDI-3499
@@ -86,7 +86,11 @@ public class PDI3499Test {
     inputRowMeta.addValueMeta( valueMeta );
 
     InsertUpdateMeta stepMeta = smh.processRowsStepMetaInterface;
-    doReturn( new Boolean[] { true } ).when( stepMeta ).getUpdate();
+    InsertUpdateMeta.UpdateField updateField = new InsertUpdateMeta.UpdateField();
+    updateField.setUpdate( true );
+    InsertUpdateMeta.UpdateField[] updateFields = new InsertUpdateMeta.UpdateField[1];
+    updateFields[0] = updateField;
+    doReturn(  updateFields  ).when( stepMeta ).getUpdateFields();
 
     InsertUpdateData stepData = smh.processRowsStepDataInterface;
     stepData.lookupParameterRowMeta = inputRowMeta;
