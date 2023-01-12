@@ -71,7 +71,7 @@ public interface CachedManagedDataSourceInterface extends DataSource {
    * Sets the Datasource hash
    * @param dataSource
    */
-  void setHash( Object dataSource );
+  void setHash( String dataSource );
 
   /**
    * Try to invalidate the Datasource
