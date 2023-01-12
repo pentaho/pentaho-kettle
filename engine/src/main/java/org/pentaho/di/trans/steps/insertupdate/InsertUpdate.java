@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.BaseDatabaseStep;
 
 /**
  * Performs a lookup in a database table. If the key doesn't exist it inserts values into the table, otherwise it
