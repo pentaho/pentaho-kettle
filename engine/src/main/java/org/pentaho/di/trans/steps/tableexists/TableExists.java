@@ -145,7 +145,4 @@ public class TableExists extends BaseDatabaseStep implements StepInterface {
     return PKG;
   }
 
-  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    super.dispose( smi, sdi );
-  }
 }

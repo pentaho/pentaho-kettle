@@ -377,7 +377,6 @@ public class LucidDBStreamingLoader extends BaseDatabaseStep implements StepInte
         data.db.setAutoCommit( true );
         return true;
       } catch ( KettleDatabaseException e ) {
-        e.printStackTrace();
         logError( e.getMessage() );
       }
     }

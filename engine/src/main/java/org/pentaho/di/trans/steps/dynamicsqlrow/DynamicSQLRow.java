@@ -22,18 +22,18 @@
 
 package org.pentaho.di.trans.steps.dynamicsqlrow;
 
-import java.sql.ResultSet;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
+
+import java.sql.ResultSet;
 
 /**
  * Run dynamic SQL. SQL is defined in a field.
@@ -301,9 +301,5 @@ public class DynamicSQLRow extends BaseDatabaseStep implements StepInterface {
   @Override
   protected Class<?> getPKG() {
     return PKG;
-  }
-
-  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    super.dispose( smi, sdi );
   }
 }

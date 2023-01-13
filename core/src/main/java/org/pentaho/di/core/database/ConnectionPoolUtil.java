@@ -103,6 +103,9 @@ public class ConnectionPoolUtil {
     return dataSources.remove( name );
   }
 
+  /**
+   * @deprecated (Please use {@getDataSource(LogChannelInterface, DatabaseMeta, String) getDataSource} on init the step and then just get the connection when needed)
+   */
   @Deprecated
   public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId )
     throws Exception {
