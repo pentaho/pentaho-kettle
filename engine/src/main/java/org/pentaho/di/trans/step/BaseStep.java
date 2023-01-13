@@ -4053,6 +4053,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     return false;
   }
 
+  @Override
+  public boolean beforeStartProcessing( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    return true;
+  }
+
   /*
    * (non-Javadoc)
    *

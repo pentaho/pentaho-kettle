@@ -188,7 +188,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 
     // Connection line
     wConnection = addConnectionLine( shell, wStepname, middle, margin );
-    if ( input.getDatabase() == null && transMeta.nrDatabases() == 1 ) {
+    if ( input.getDatabaseMeta() == null && transMeta.nrDatabases() == 1 ) {
       wConnection.select( 0 );
     }
     wConnection.addModifyListener( lsMod );
@@ -666,8 +666,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
       logDebug( toString(), BaseMessages.getString( PKG, "GetTableNamesDialog.Log.GettingKeyInfo" ) );
     }
 
-    if ( input.getDatabase() != null ) {
-      wConnection.setText( input.getDatabase().getName() );
+    if ( input.getDatabaseMeta() != null ) {
+      wConnection.setText( input.getDatabaseMeta().getName() );
     } else if ( transMeta.nrDatabases() == 1 ) {
       wConnection.setText( transMeta.getDatabase( 0 ).getName() );
     }
@@ -737,7 +737,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     }
     stepname = wStepname.getText(); // return value
     getInfo( input );
-    if ( input.getDatabase() == null ) {
+    if ( input.getDatabaseMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "GetTableNamesDialog.InvalidConnection.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "GetTableNamesDialog.InvalidConnection.DialogTitle" ) );
@@ -748,7 +748,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void getInfo( GetTableNamesMeta info ) {
-    info.setDatabase( transMeta.findDatabase( wConnection.getText() ) );
+    info.setDatabaseMeta( transMeta.findDatabase( wConnection.getText() ) );
     info.setSchemaName( wschemaname.getText() );
     info.setTablenameFieldName( wTablenameField.getText() );
     info.setSQLCreationFieldName( wSQLCreationField.getText() );
@@ -785,7 +785,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     GetTableNamesMeta oneMeta = new GetTableNamesMeta();
 
     getInfo( oneMeta );
-    if ( oneMeta.getDatabase() == null ) {
+    if ( oneMeta.getDatabaseMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "GetTableNamesDialog.InvalidConnection.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "GetTableNamesDialog.InvalidConnection.DialogTitle" ) );

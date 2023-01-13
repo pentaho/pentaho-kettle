@@ -46,11 +46,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -67,7 +63,7 @@ import org.w3c.dom.Node;
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
   suggestion = "LucidDBStreamingLoaderMeta.SuggestedStep" )
 
-public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMetaInterface {
+public class LucidDBStreamingLoaderMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = LucidDBStreamingLoaderMeta.class; // for i18n
 
   public static String TARGET_TABLE_ALIAS = "TGT";
