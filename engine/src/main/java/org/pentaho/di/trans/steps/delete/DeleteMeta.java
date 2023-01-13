@@ -624,18 +624,18 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static class KeyFields implements Cloneable {
     /** field in table */
-    @Injection( name = "TABLE_NAME_FIELD", group = "FIELDS" )
+    @Injection( name = "TABLE_NAME_FIELD", group = "FIELDS", required = true )
     private String keyLookup;
 
     /** Comparator: =, <>, BETWEEN, ... */
-    @Injection( name = "COMPARATOR", group = "FIELDS" )
+    @Injection( name = "COMPARATOR", group = "FIELDS", required = true )
     private String keyCondition;
 
-    @Injection( name = "STREAM_FIELDNAME_1", group = "FIELDS" )
+    @Injection( name = "STREAM_FIELDNAME_1", group = "FIELDS", required = false )
     private String keyStream;
 
     /** Extra field for between... */
-    @Injection( name = "STREAM_FIELDNAME_2", group = "FIELDS" )
+    @Injection( name = "STREAM_FIELDNAME_2", group = "FIELDS", required = false )
     private String keyStream2;
 
     public String getKeyStream() {
@@ -681,6 +681,48 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
       return result;
     }
 
+    @Override
+    public boolean equals( Object obj ) {
+      if ( this == obj ) {
+        return true;
+      }
+      if ( obj == null ) {
+        return false;
+      }
+      if ( getClass() != obj.getClass() ) {
+        return false;
+      }
+      KeyFields other = (KeyFields) obj;
+      if ( keyStream == null ) {
+        if ( other.keyStream != null ) {
+          return false;
+        }
+      } else if ( !keyStream.equals( other.keyStream ) ) {
+        return false;
+      }
+      if ( keyLookup == null ) {
+        if ( other.keyLookup != null ) {
+          return false;
+        }
+      } else if ( !keyLookup.equals( other.keyLookup ) ) {
+        return false;
+      }
+      if ( keyCondition == null ) {
+        if ( other.keyCondition != null ) {
+          return false;
+        }
+      } else if ( !keyCondition.equals( other.keyCondition ) ) {
+        return false;
+      }
+      if ( keyStream2 == null ) {
+        if ( other.keyStream2 != null ) {
+          return false;
+        }
+      } else if ( !keyStream2.equals( other.keyStream2 ) ) {
+        return false;
+      }
+      return true;
+    }
     @Override
     public Object clone() {
       try {

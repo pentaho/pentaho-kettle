@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,4 +45,7 @@ public @interface Injection {
 
   /** Convert empty values or not. By default, empty value doesn't change target value. */
   boolean convertEmpty() default false;
+
+  /** Property for Required Fields **/
+  boolean required() default false;
 }

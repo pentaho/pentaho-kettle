@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.insertupdate;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -883,19 +882,19 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface,
     /**
      * Field value to update after lookup
      */
-    @Injection( name = "UPDATE_LOOKUP", group = "UPDATES" )
+    @Injection( name = "UPDATE_LOOKUP", group = "UPDATES", required = true )
     private String updateLookup;
 
     /**
      * Stream name to update value with
      */
-    @Injection( name = "UPDATE_STREAM", group = "UPDATES" )
+    @Injection( name = "UPDATE_STREAM", group = "UPDATES", required = true )
     private String updateStream;
 
     /**
      * boolean indicating if field needs to be updated
      */
-    @Injection( name = "UPDATE_FLAG", group = "UPDATES" )
+    @Injection( name = "UPDATE_FLAG", group = "UPDATES", required = true )
     private Boolean update;
 
     /**
@@ -999,25 +998,25 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface,
     /**
      * which field in input stream to compare with?
      */
-    @Injection( name = "KEY_STREAM", group = "KEYS" )
+    @Injection( name = "KEY_STREAM", group = "KEYS", required = false )
     private String keyStream;
 
     /**
      * field in table
      */
-    @Injection( name = "KEY_LOOKUP", group = "KEYS" )
+    @Injection( name = "KEY_LOOKUP", group = "KEYS", required = true )
     private String keyLookup;
 
     /**
      * Comparator: =, <>, BETWEEN, ...
      */
-    @Injection( name = "KEY_CONDITION", group = "KEYS" )
+    @Injection( name = "KEY_CONDITION", group = "KEYS", required = true )
     private String keyCondition;
 
     /**
      * Extra field for between...
      */
-    @Injection( name = "KEY_STREAM2", group = "KEYS" )
+    @Injection( name = "KEY_STREAM2", group = "KEYS", required = false )
     private String keyStream2;
 
     public KeyField() {
