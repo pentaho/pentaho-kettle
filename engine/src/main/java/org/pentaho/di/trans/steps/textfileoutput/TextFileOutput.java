@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -630,16 +630,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
       if ( str != null && str.length > 0 ) {
         List<Integer> enclosures = null;
-        boolean writeEnclosures = false;
-
-        if ( v.isString() ) {
-          if ( meta.isEnclosureForced() && !meta.isPadded() ) {
-            writeEnclosures = true;
-          } else if ( !meta.isEnclosureFixDisabled()
-              && containsSeparatorOrEnclosure( str, data.binarySeparator, data.binaryEnclosure ) ) {
-            writeEnclosures = true;
-          }
-        }
+        boolean writeEnclosures = isWriteEnclosureForWriteField( str );
 
         if ( writeEnclosures ) {
           data.writer.write( data.binaryEnclosure );
@@ -729,10 +720,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             data.writer.write( data.binarySeparator );
           }
 
-          boolean writeEnclosure =
-              ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-                  || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
-                      data.binarySeparator, data.binaryEnclosure ) ) );
+          boolean writeEnclosure = isWriteEnclosureForFieldName( v, fieldName );
 
           if ( writeEnclosure ) {
             data.writer.write( data.binaryEnclosure );
@@ -755,10 +743,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           }
           ValueMetaInterface v = r.getValueMeta( i );
 
-          boolean writeEnclosure =
-              ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-                  || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
-                      data.binarySeparator, data.binaryEnclosure ) ) );
+          boolean writeEnclosure = isWriteEnclosureForValueMetaInterface( v );
 
           if ( writeEnclosure ) {
             data.writer.write( data.binaryEnclosure );
@@ -1032,6 +1017,45 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
       }
     }
+  }
+
+  /**
+   * @return writeEnclosure based on fieldName and ValueMetaInterface value
+   */
+  boolean isWriteEnclosureForFieldName( ValueMetaInterface v, String fieldName ) {
+    return ( isWriteEnclosed( v ) )
+            || isEnclosureFixDisabledAndContainsSeparatorOrEnclosure( fieldName.getBytes() );
+  }
+
+  /**
+   * @return writeEnclosure based on ValueMetaInterface values
+   */
+  boolean isWriteEnclosureForValueMetaInterface( ValueMetaInterface v ) {
+    return ( isWriteEnclosed( v ) )
+            || isEnclosureFixDisabledAndContainsSeparatorOrEnclosure( v.getName().getBytes() );
+  }
+
+  /**
+   * @return writeEnclosure based on valueData
+   */
+  boolean isWriteEnclosureForWriteField( byte[] str ) {
+    return ( meta.isEnclosureForced() && !meta.isPadded() )
+            || isEnclosureFixDisabledAndContainsSeparatorOrEnclosure( str );
+  }
+
+  /**
+   * @return writeEnclosure based on TextFileOutputMeta, TextFileOutputData and ValueMetaInterface values
+   */
+  boolean isWriteEnclosed( ValueMetaInterface v ) {
+    return meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString();
+  }
+
+  /**
+   * @return writeEnclosure based on TextFileOutputMeta and ValueMetaInterface values
+   */
+  boolean isEnclosureFixDisabledAndContainsSeparatorOrEnclosure( byte[] source ) {
+    return ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( source,
+            data.binarySeparator, data.binaryEnclosure ) );
   }
 
   protected FileObject getFileObject( String vfsFilename ) throws KettleFileException {
