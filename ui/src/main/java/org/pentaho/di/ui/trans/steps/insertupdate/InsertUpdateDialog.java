@@ -311,7 +311,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
       new ColumnInfo(
         BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.Comparator" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "= ~NULL", "<>", "<", "<=",
-        ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );
+          ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );
     ciKey[ 2 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.StreamField1" ),
