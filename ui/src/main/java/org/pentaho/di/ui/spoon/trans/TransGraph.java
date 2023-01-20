@@ -5091,7 +5091,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     try {
       return new Trans( transMeta, spoon.rep, transMeta.getName(),
         transMeta.getRepositoryDirectory().getPath(),
-        transMeta.getFilename() );
+        transMeta.getFilename(), transMeta);
     } catch ( KettleException e ) {
       throw new RuntimeException( e );
     }
