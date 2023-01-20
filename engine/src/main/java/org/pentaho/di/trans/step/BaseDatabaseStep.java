@@ -170,6 +170,6 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
   }
 
   public String getStepExecutionId() {
-    return getTrans().getContainerObjectId() + "-" + getObjectId().getId();
+    return getTrans().getContainerObjectId() + "-" + getObjectName();
   }
 }

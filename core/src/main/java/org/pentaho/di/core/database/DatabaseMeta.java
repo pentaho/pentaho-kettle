@@ -926,11 +926,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     databaseInterface.setIndexTablespace( index_tablespace );
   }
 
-  boolean isNeedUpdate() {
+  public boolean isNeedUpdate() {
     return needUpdate;
   }
 
-  void setNeedUpdate( boolean needUpdate ) {
+  public void setNeedUpdate( boolean needUpdate ) {
     this.needUpdate = needUpdate;
   }
 
