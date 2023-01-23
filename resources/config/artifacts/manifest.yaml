@@ -110,6 +110,7 @@ ce:
 # Testable items, but not customer hand-off items
 not-for-release:
     - pdi-ee-client-${platform.version}-osgi.zip
+    - pdi-ee-client-docker-${platform.version}.zip
     - pme-ee-${platform.version}-osgi.zip
     - prd-ee-${platform.version}-osgi.zip
     - pdi-ce-${platform.version}-osgi.zip
