@@ -70,13 +70,13 @@ public class InsertUpdateMeta extends BaseDatabaseStepMeta implements StepMetaIn
   /**
    * what's the lookup schema?
    */
-  @Injection( name = "SCHEMA_NAME" )
+  @Injection( name = "SCHEMA_NAME", required = true )
   private String schemaName;
 
   /**
    * what's the lookup table?
    */
-  @Injection( name = "TABLE_NAME" )
+  @Injection( name = "TABLE_NAME", required = true )
   private String tableName;
 
   /**
@@ -102,7 +102,7 @@ public class InsertUpdateMeta extends BaseDatabaseStepMeta implements StepMetaIn
   @Injection( name = "DO_NOT" )
   private boolean updateBypassed;
 
-  @Injection( name = "CONNECTIONNAME" )
+  @Injection( name = "CONNECTIONNAME", required = true )
   public void setConnection( String connectionName ) {
     databaseMeta = DatabaseMeta.findDatabase( databases, connectionName );
   }
