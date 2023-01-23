@@ -84,15 +84,15 @@ public class DeleteMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
   private DatabaseMeta databaseMeta;
 
   /** The target schema name */
-  @Injection( name = "TARGET_SCHEMA" )
+  @Injection( name = "TARGET_SCHEMA", required = true )
   private String schemaName;
 
   /** The lookup table name */
-  @Injection( name = "TARGET_TABLE" )
+  @Injection( name = "TARGET_TABLE", required = true )
   private String tableName;
 
   /** database connection */
-  @Injection( name = "CONNECTIONNAME" )
+  @Injection( name = "CONNECTIONNAME", required = true )
   public void metaSetConnection( String connectionName ) throws KettleException {
     setConnection( connectionName );
   }
