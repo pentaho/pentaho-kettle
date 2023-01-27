@@ -751,6 +751,11 @@ public class Const {
   public static final String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
 
   /**
+   * System wide flag to allow the Filter step to treat nulls as not being 0 for CUST-270
+   */
+  public static final String KETTLE_FILTER_TREAT_NULLS_AS_NOT_ZERO = "KETTLE_FILTER_TREAT_NULLS_AS_NOT_ZERO";
+
+  /**
    * This flag will prevent Kettle from converting {@code null} strings to empty strings in {@link org.pentaho.di.core.row.value.ValueMetaBase}
    * The default value is {@code false}.
    */
