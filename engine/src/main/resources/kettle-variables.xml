@@ -621,4 +621,10 @@
     <default-value>N</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>This environment variable is used to allow the Filter step to treat nulls as not being 0</description>
+    <variable>KETTLE_FILTER_TREAT_NULLS_AS_NOT_ZERO</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
 </kettle-variables>
