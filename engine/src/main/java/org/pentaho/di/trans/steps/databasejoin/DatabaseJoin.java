@@ -213,19 +213,17 @@ public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
 
-    dbLock.lock();
-
     final DatabaseJoinMeta meta = (DatabaseJoinMeta) smi;
     final DatabaseJoinData data = (DatabaseJoinData) sdi;
+    dbLock.lock();
 
-    if ( super.init( smi, sdi ) ) {
+    boolean initialized = super.init( smi, sdi );
+    if ( initialized ) {
       data.db.setQueryLimit( meta.getRowLimit() );
-
-      return true;
     }
     dbLock.unlock();
 
-    return false;
+    return initialized;
   }
 
   private void prepareSQL( DatabaseJoinMeta meta, DatabaseJoinData data ) throws KettleDatabaseException {

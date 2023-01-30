@@ -502,16 +502,17 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   private DataSource getPoolingDataSource( String partitionId, DataSourceProviderInterface dsp ) throws Exception {
-    if ( databaseMeta.isNeedUpdate() ) {
-      dsp.invalidateNamedDataSource( ConnectionPoolUtil.getDataSourceName( databaseMeta, partitionId ), DatasourceType.POOLED );
-      databaseMeta.setNeedUpdate( false );
-    }
+
     try {
       return dsp.getPooledDataSourceFromMeta( databaseMeta, DatasourceType.POOLED );
     } catch ( UnsupportedOperationException e ) {
       // UnsupportedOperationException is happen at DatabaseUtil doesn't support pooled DS, use legacy routine
       // NullPointerException is happen when we will try to run the transformation on the remote server but
       // server does not have such databases, so will using legacy routine as well
+      if ( databaseMeta.isNeedUpdate() && !ConnectionPoolUtil.hasOldConfig( databaseMeta, partitionId ) ) {
+        dsp.invalidateNamedDataSource( ConnectionPoolUtil.getDataSourceName( databaseMeta, partitionId ), DatasourceType.POOLED );
+        databaseMeta.setNeedUpdate( false );
+      }
       return ConnectionPoolUtil.getDataSource( log, databaseMeta, partitionId );
     }
   }
