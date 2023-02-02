@@ -988,10 +988,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         TreeItem treeItem = new TreeItem( rootGroup ? stepItem : groupItem, SWT.NONE );
         treeItem.setText( property.getName() );
         treeItem.setText( 1, property.getDescription() );
-        if ( stepInjectionInfo.getProperties().get( property.getName() ).isRequire() ) {
-          treeItem.setText( 2, Const.NVL(
-            String.valueOf( stepInjectionInfo.getProperties().get( property.getName() ).isRequire() ), "" ) );
-        }
+        treeItem.setText( 2, stepInjectionInfo.getProperties().get( property.getName() ).isRequire() ? "Y" : "" );
         TargetStepAttribute target = new TargetStepAttribute( stepMeta.getName(), property.getName(), !rootGroup );
         treeItemTargetMap.put( treeItem, target );
 
