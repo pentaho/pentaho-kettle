@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2002 - 2023 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -24,6 +24,13 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +40,7 @@ import org.pentaho.di.core.annotations.CarteServlet;
 import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.Job;
 
 @CarteServlet( id = "StopCarteServlet", name = "StopCarteServlet" )
 public class StopCarteServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -43,7 +51,7 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
   public static final String CONTEXT_PATH = "/kettle/stopCarte";
   public static final String REQUEST_ACCEPTED = "request_accepted";
   private final DelayedExecutor delayedExecutor;
-
+  private static boolean acceptJobs = true;
   public StopCarteServlet() {
     this( new DelayedExecutor() );
   }
@@ -54,7 +62,13 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
 
   @Override
   public String getService() {
-    return CONTEXT_PATH + " (" + toString() + ")";
+    return CONTEXT_PATH + " (" + this + ")";
+  }
+  public static void setAcceptJobs( boolean acceptJobs ) {
+    StopCarteServlet.acceptJobs = acceptJobs;
+  }
+  public static boolean isAcceptJobs() {
+    return acceptJobs;
   }
 
   @Override
@@ -68,22 +82,24 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
     }
 
     response.setStatus( HttpServletResponse.SC_OK );
+    String shutdownType = request.getParameter( "shutdowntype" );
+    if ( shutdownType == null ) {
+      shutdownType = "Graceful";
+    }
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
 
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-    } else {
-      response.setContentType( "text/html" );
-    }
 
     PrintStream out = new PrintStream( response.getOutputStream() );
     final Carte carte = CarteSingleton.getCarte();
+    Set<String> activeSet = new HashSet<>();
     if ( useXML ) {
+      response.setContentType( "text/xml" );
+      response.setCharacterEncoding( Const.XML_ENCODING );
       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
       out.print( XMLHandler.addTagValue( REQUEST_ACCEPTED, carte != null ) );
       out.flush();
     } else {
+      response.setContentType( "text/html" );
       out.println( "<HTML>" );
       out.println(
           "<HEAD><TITLE>" + BaseMessages.getString( PKG, "StopCarteServlet.shutdownRequest" ) + "</TITLE></HEAD>" );
@@ -101,13 +117,20 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
       out.flush();
     }
     if ( carte != null ) {
-      delayedExecutor.execute( new Runnable() {
-        @Override
-        public void run() {
-          carte.getWebServer().stopServer();
-          exitJVM( 0 );
-        }
-      }, 1000 );
+      switch ( shutdownType ) {
+        case "Forceful":
+          shutdown( " Proceeding to Forceful Shutdown ", carte );
+          break;
+        case "Graceful":
+          gracefulShutdown( activeSet, carte );
+          break;
+        default:
+          logMinimal( "Specify Shutdown Type" );
+          break;
+      }
+      out.printf( "<a href=\"%s\" target=\"_blank\">Cancel</a><br>%n",
+              convertContextPath( CancelGracefulShutdownServlet.CONTEXT_PATH ) );
+      out.println( "<br>" );
     }
   }
 
@@ -123,22 +146,75 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
 
   public static class DelayedExecutor {
     public void execute( final Runnable runnable, final long delay ) {
-      ExecutorUtil.getExecutor().execute( new Runnable() {
-        @Override
-        public void run() {
-          try {
-            Thread.sleep( delay );
-          } catch ( InterruptedException e ) {
-            // Ignore
-          }
-          runnable.run();
+      ExecutorUtil.getExecutor().execute( () -> {
+        try {
+          Thread.sleep( delay );
+        } catch ( InterruptedException e ) {
+          // Ignore
         }
+        runnable.run();
       } );
     }
   }
 
+  private void shutdown( String logMessage, Carte carte ) {
+    delayedExecutor.execute( () -> {
+      carte.getWebServer().stopServer();
+      logMinimal( logMessage );
+      exitJVM( 0 );
+    }, 10 );
+  }
+
+  private void gracefulShutdown( Set<String> dummySet, Carte carte ) {
+    setAcceptJobs( false );
+    logMinimal( "acceptJobs" + isAcceptJobs() );
+    getSystemLogs();
+    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    executor.scheduleWithFixedDelay( () -> {
+      for ( CarteObjectEntry value : getJobMap().getJobObjects() ) {
+        String jobID = value.getId();
+        Job job = jobMap.findJob( jobID );
+        if ( job.isActive() ) {
+          dummySet.add( jobID );
+        }
+      }
+      if ( dummySet.isEmpty() ) {
+        getSystemLogs();
+        shutdown( " Proceeding to Graceful Shutdown ", carte );
+      }
+      for ( Iterator<String> iterator = dummySet.iterator(); iterator.hasNext();) {
+        String id =  iterator.next();
+        Job job = jobMap.findJob( id );
+        if ( job.isActive() ) {
+          log.logMinimal( "JOB ID : " + id + " running / isActive (from thread) , so wait" );
+        } else if ( job.isFinished() ) {
+          log.logMinimal( "JOB ID : " + id + " removed " );
+          iterator.remove();
+        }
+      } }, 500, 100, TimeUnit.MILLISECONDS );
+  }
   private static final void exitJVM( int status ) {
     System.exit( status );
+  }
+  private String bytesToMb( long bytes ) {
+    if ( bytes < 1024 ) {
+      return bytes + " B";
+    }
+    int z = ( 63 - Long.numberOfLeadingZeros( bytes ) ) / 10;
+    return String.format( "%.1f %sB", (double) bytes / ( 1L << ( z * 10 ) ), " KMGTPE".charAt( z ) );
+  }
+  private void getSystemLogs() {
+    int numThreads = ManagementFactory.getThreadMXBean().getThreadCount();
+    int numProcessors = Runtime.getRuntime().availableProcessors();
+    String freeMemoryMb = bytesToMb( Runtime.getRuntime().freeMemory() );
+    String maxMemoryMb = bytesToMb( Runtime.getRuntime().maxMemory() );
+    String totalMemoryMb = bytesToMb( Runtime.getRuntime().totalMemory() );
+
+    logMinimal( String.format( " num_threads %s", numThreads ) );
+    logMinimal( String.format( " num_processors %s", numProcessors ) );
+    logMinimal( String.format( " free_memory_mb %s", freeMemoryMb ) );
+    logMinimal( String.format( " max_memory_mb %s", maxMemoryMb ) );
+    logMinimal( String.format( " total_memory_mb %s", totalMemoryMb ) );
   }
 }
 

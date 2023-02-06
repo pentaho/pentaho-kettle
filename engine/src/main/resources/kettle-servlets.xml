@@ -50,6 +50,8 @@
   <servlet id="registerSlave"> <description>Register a slave server</description> <classname>org.pentaho.di.www.RegisterSlaveServlet</classname> </servlet>
   <servlet id="getSlaves"> <description>List all registered slave servers</description> <classname>org.pentaho.di.www.GetSlavesServlet</classname> </servlet>
   <servlet id="stopCarte"> <description>Stop Carte Server</description> <classname>org.pentaho.di.www.StopCarteServlet</classname> </servlet>
+  <servlet id="stopCarteGracefulServlet"> <description>Stop Carte Server via Graceful Shutdown</description> <classname>org.pentaho.di.www.StopCarteGracefulServlet</classname> </servlet>
+  <servlet id="CancelGracefulShutdownServlet"> <description> To cancel Shutdown carte request (Graceful) </description> <classname>org.pentaho.di.www.CancelGracefulShutdownServlet</classname> </servlet>
   <servlet id="properties"> <description>Get properties from kettle.properties</description> <classname>org.pentaho.di.www.GetPropertiesServlet</classname> </servlet>
 
   <!-- Easier remote execution ... -->

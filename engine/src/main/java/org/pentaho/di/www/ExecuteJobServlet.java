@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -185,6 +185,15 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
       return;
     }
 
+    PrintWriter out = response.getWriter();
+    if(!StopCarteServlet.isAcceptJobs()){
+      logMinimal("No jobs can be processed because of graceful shutdown");
+      WebResult webResult = new WebResult( WebResult.STRING_OK, "No jobs can be processed because of graceful shutdown" );
+      out.println( webResult.getXML() );
+      out.flush();
+    }
+    else {
+
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "ExecuteJobServlet.Log.ExecuteJobRequested" ) );
     }
@@ -199,7 +208,6 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     String jobOption = request.getParameter( "job" );
     String levelOption = request.getParameter( "level" );
 
-    PrintWriter out = response.getWriter();
 
     Repository repository;
     try {
@@ -327,7 +335,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
 
     // Everything went well till the end.
     response.setStatus( HttpServletResponse.SC_OK );
-  }
+  }}
 
   private JobMeta loadJob( Repository repository, String job ) throws KettleException {
 
