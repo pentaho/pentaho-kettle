@@ -350,7 +350,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         if ( isJettyMode() ) {
           out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );
         } else {
-          out.print( StatusServletUtils.getPentahoStyles( root ) );
+          out.print( StatusServletUtils.getPentahoStyles( request.getSession().getServletContext(),  root ) );
         }
         out.println( "</HEAD>" );
         out.println( "<BODY style=\"overflow: auto;\">" );
