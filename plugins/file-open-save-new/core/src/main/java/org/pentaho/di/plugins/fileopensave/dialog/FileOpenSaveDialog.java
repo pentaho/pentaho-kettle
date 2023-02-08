@@ -102,6 +102,7 @@ import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
+import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryTree;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
@@ -1220,7 +1221,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         flatBtnBack.setEnabled( currentHistoryIndex != 0 );
       }
 
-      if ( selectedNode instanceof RecentTree && ( (RecentTree) selectedNode ).getChildren().isEmpty() ) {
+      if ( selectedNode instanceof RepositoryTree && ( (RepositoryTree) selectedNode ).getChildren().isEmpty() ||
+        selectedNode instanceof RecentTree && ( (RecentTree) selectedNode ).getChildren().isEmpty() ) {
 
         if ( noRecentFilesLabel == null ) {
           noRecentFilesLabel = new Label( recentComposite, SWT.CENTER );
