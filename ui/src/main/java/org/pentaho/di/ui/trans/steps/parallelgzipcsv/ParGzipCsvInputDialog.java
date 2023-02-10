@@ -93,6 +93,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
+import org.pentaho.di.ui.util.DialogHelper;
 
 public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -587,9 +588,9 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 
     if ( wbbFilename != null ) {
       // Listen to the browse button next to the file name
-      wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-        new SelectionAdapterOptions( SelectionOperation.FILE, new FilterType[] { FilterType.GZ, FilterType.ALL },
-          FilterType.GZ, new ProviderFilterType[] { ProviderFilterType.LOCAL } ) ) );
+      wbbFilename.addSelectionListener( DialogHelper.constructSelectionAdapterFileDialogTextVarForUserFile( log
+        , wFilename, transMeta, SelectionOperation.FILE, new FilterType[] { FilterType.GZ
+          , FilterType.ALL }, FilterType.GZ ) );
     }
 
     // Detect X or ALT-F4 or something that kills this window...
