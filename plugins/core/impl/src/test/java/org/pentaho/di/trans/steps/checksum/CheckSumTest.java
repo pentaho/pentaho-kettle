@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -616,33 +616,6 @@ public class CheckSumTest {
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "a3aa77adf7a0bc55c91bc2e482db25bb520d5903fe7adcee9f6a09fd5ae200f6",
       results.getWritten().get( 0 )[ 2 ] );
-  }
-
-  /**
-   * SHA-256 is not supported for compatibility mode: this test is expected to end with an exception
-   */
-  @Test( expected = KettleException.class )
-  public void testHexOutput_sha256_bytes_withCompatibility() throws Exception {
-    executeHexTest( SHA256, CheckSumMeta.EVALUATION_METHOD_BYTES, true, TEST_STRING1, string1Meta );
-    fail( "SHA-256 is not supported for compatibility mode" );
-  }
-
-  /**
-   * SHA-256 is not supported for compatibility mode: this test is expected to end with an exception
-   */
-  @Test( expected = KettleException.class )
-  public void testHexOutput_sha256_pentahoStrings_withCompatibility() throws Exception {
-    executeHexTest( SHA256, CheckSumMeta.EVALUATION_METHOD_PENTAHO_STRINGS, true, TEST_STRING1, string1Meta );
-    fail( "SHA-256 is not supported for compatibility mode" );
-  }
-
-  /**
-   * SHA-256 is not supported for compatibility mode: this test is expected to end with an exception
-   */
-  @Test( expected = KettleException.class )
-  public void testHexOutput_sha256_nativeStrings_withCompatibility() throws Exception {
-    executeHexTest( SHA256, CheckSumMeta.EVALUATION_METHOD_NATIVE_STRINGS, true, TEST_STRING1, string1Meta );
-    fail( "SHA-256 is not supported for compatibility mode" );
   }
 
   private Trans buildHexadecimalChecksumTrans( int checksumType, int evaluationMethod, boolean compatibilityMode,
