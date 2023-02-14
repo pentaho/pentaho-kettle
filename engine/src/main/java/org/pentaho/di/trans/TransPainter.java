@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -165,6 +165,10 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
   }
 
   private void drawTrans( Point thumb ) {
+    if ( !Const.isRunningOnWebspoonMode() && !shadow && gridSize > 1 ) {
+      drawGrid();
+    }
+
     if ( hori != null && vert != null ) {
       hori.setThumb( thumb.x );
       vert.setThumb( thumb.y );
