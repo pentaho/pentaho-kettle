@@ -394,7 +394,13 @@ public class CheckSum extends BaseStep implements StepInterface {
     }
 
     private byte[] getBytesFromNonBinary( Object[] row ) throws KettleException {
-      return vmi.getNativeDataType( row[ fieldIndex ] ).toString().getBytes();
+      byte[] ret = null;
+
+      if ( null != row[ fieldIndex ] ) {
+        ret = vmi.getNativeDataType( row[ fieldIndex ] ).toString().getBytes();
+      }
+
+      return ret;
     }
   }
 }
