@@ -36,7 +36,6 @@
     <jsendnsca.version>2.0.1</jsendnsca.version>
     <feed4j.version>1.0</feed4j.version>
     <ftp4che.version>0.7.1</ftp4che.version>
-    <georss-rome.version>0.9.8</georss-rome.version>
     <infobright-core.version>3.4</infobright-core.version>
     <!-- https://jira.pentaho.com/browse/PDI-44134 update janino to latest -->
     <janino.version>3.0.8</janino.version>
@@ -56,7 +55,6 @@
     <commons-math3.version>3.6.1</commons-math3.version>
     <xmlbeans.version>3.1.0</xmlbeans.version>
     <curvesapi.version>1.06</curvesapi.version>
-    <rome.version>1.0</rome.version>
     <SassyReader.version>0.5</SassyReader.version>
     <saxon.version>9.1.0.8</saxon.version>
     <saxon-dom.version>9.1.0.8</saxon-dom.version>
@@ -243,9 +241,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>georss-rome</groupId>
-      <artifactId>georss-rome</artifactId>
-      <version>${georss-rome.version}</version>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome-modules</artifactId>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -494,9 +491,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>rome</groupId>
+      <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
-      <version>${rome.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

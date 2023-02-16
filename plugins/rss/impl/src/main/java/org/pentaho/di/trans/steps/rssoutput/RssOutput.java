@@ -27,6 +27,7 @@ import java.io.FileWriter;
 import java.io.Writer;
 import java.util.Date;
 
+
 import org.apache.commons.vfs2.FileObject;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -47,18 +48,18 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import com.sun.syndication.feed.module.georss.GeoRSSModule;
-import com.sun.syndication.feed.module.georss.SimpleModuleImpl;
-import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
-import com.sun.syndication.feed.module.georss.geometries.Position;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.feed.synd.SyndImage;
-import com.sun.syndication.feed.synd.SyndImageImpl;
-import com.sun.syndication.io.SyndFeedOutput;
+import com.rometools.modules.georss.GeoRSSModule;
+import com.rometools.modules.georss.SimpleModuleImpl;
+import com.rometools.modules.georss.W3CGeoModuleImpl;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndContentImpl;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.feed.synd.SyndImage;
+import com.rometools.rome.feed.synd.SyndImageImpl;
+import com.rometools.rome.io.SyndFeedOutput;
+import com.rometools.modules.georss.geometries.Position;
 
 /**
  * Output rows to RSS feed and create a file.
