@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -117,6 +118,10 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
   }
 
   private void drawJobElements() {
+    if ( !Const.isRunningOnWebspoonMode() && !shadow && gridSize > 1 ) {
+      drawGrid();
+    }
+
     try {
       ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobPainterStart.id, this );
     } catch ( KettleException e ) {
