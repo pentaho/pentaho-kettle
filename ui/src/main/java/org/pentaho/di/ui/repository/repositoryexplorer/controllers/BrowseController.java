@@ -115,7 +115,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private Shell shell;
 
-  private static final int DIALOG_WIDTH = 357, DIALOG_HEIGHT = 165, DIALOG_COLOR = SWT.COLOR_WHITE;
+  private static final int DIALOG_WIDTH = 365, DIALOG_HEIGHT = 195, DIALOG_COLOR = SWT.COLOR_WHITE;
 
   protected static final String HOME_PATH = "/home", PUBLIC_PATH = "/public";
 
