@@ -1,5 +1,15 @@
 <component>
+
   <fileSets>
+    <!-- the staging dir -->
+    <fileSet>
+      <directory>${assembly.dir}/libswt/win64_java8</directory>
+      <outputDirectory>./libswt/win64_java8</outputDirectory>
+      <includes>
+        <include>swt.jar</include>
+      </includes>
+      <fileMode>0600</fileMode>
+    </fileSet>
     <!-- the staging dir -->
     <fileSet>
       <directory>${assembly.dir}</directory>
@@ -53,6 +63,15 @@
         <include>org.eclipse.platform:*.macosx.x86_64</include>
       </includes>
       <outputDirectory>libswt/osx64</outputDirectory>
+      <outputFileNameMapping>swt.jar</outputFileNameMapping>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.eclipse.platform:*.macosx.aarch64</include>
+      </includes>
+      <outputDirectory>libswt/osx64_aarch</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>

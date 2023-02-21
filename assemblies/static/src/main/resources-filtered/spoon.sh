@@ -124,6 +124,16 @@ case `uname -s` in
                             fi
 			;;
 
+    arm64)
+  		if $($_PENTAHO_JAVA -version 2>&1 | grep "version \"1\.8\..*" > /dev/null )
+                            then
+  		  echo "I'm sorry, this Mac platform [$ARCH] is not supported in Java 8"
+			  exit
+			                      else
+        LIBPATH=$CURRENTDIR/../libswt/osx64_aarch/
+                            fi
+  			;;
+
 		i[3-6]86)
 			LIBPATH=$CURRENTDIR/../libswt/osx/
 			;;

@@ -22,7 +22,7 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
-setlocal 
+setlocal
 
 cd /D %~dp0
 
@@ -80,7 +80,6 @@ FOR /F %%a IN ('java -version 2^>^&1^|%windir%\system32\find /C "version ""1.8."
 GOTO CHECK32VS64BITJAVA
 :CHECK32VS64BITJAVA
 
-
 IF %IS64BITJAVA% == 1 GOTO :USE64
 
 :USE32
@@ -93,6 +92,28 @@ GOTO :CONTINUE
 REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
+REM ===========================================
+REM Check if running Windows 11
+REM ===========================================
+
+REM Check if the major version of Windows is 10.0 (Windows 10 or Windows 11). If it is save the build number
+for /f "tokens=4-7 delims=[.] " %%i in ('ver') do @(if %%i=="10.0" (set WINDOWS_BUILD_VERSION= ) else (set WINDOWS_BUILD_VERSION=%%k))
+
+REM Convert WINDOWS_BUILD_VERSION to a number
+set /A WINDOWS_BUILD_NUMBER=%WINDOWS_BUILD_VERSION%
+
+set ISWINDOWS11ANDJAVA8=""
+REM First build number of Windows 11 is 20000, if the number is less than that it's not Windows 11
+if %WINDOWS_BUILD_NUMBER% LSS 20000 GOTO :ISNOTWINDOWS11ANDJAVA8
+if %ISJAVA8% NEQ 1 GOTO :ISNOTWINDOWS11ANDJAVA8
+SET ISWINDOWS11ANDJAVA8=true
+
+:ISNOTWINDOWS11ANDJAVA8
+if %ISJAVA8% NEQ 1 GOTO :SETJAVASWT
+set LIBSPATH=libswt\win64_java8
+set SWTJAR=..\libswt\win64_java8
+GOTO :CONTINUE
+:SETJAVASWT
 set LIBSPATH=libswt\win64
 set SWTJAR=..\libswt\win64
 :CONTINUE
@@ -139,7 +160,14 @@ set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Djava.library.path=%LIBSPATH%;%HADOOP_
 REM ***************
 REM ** Run...    **
 REM ***************
-
+REM If %STARTTITLE% is set, start Spoon even if it is Java 8 on Windows 11
+if NOT "%STARTTITLE%"=="" GOTO :NORMALSTART
+REM IF %ISWINDOWS11ANDJAVA8% is not set, start normally
+if %ISWINDOWS11ANDJAVA8%=="" GOTO :NORMALSTART
+echo ERROR: Spoon's User Interface requires Java 11 to function on Windows 11
+pause
+GOTO :EOF
+:NORMALSTART
 if %STARTTITLE%!==! SET STARTTITLE="Spoon"
 REM Eventually call java instead of javaw and do not run in a separate window
 if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%
@@ -148,3 +176,4 @@ if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%
 %SPOON_START_OPTION% "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
 @echo off
 if "%SPOON_PAUSE%"=="1" pause
+:EOF
