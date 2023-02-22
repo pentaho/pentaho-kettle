@@ -57,6 +57,15 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.eclipse.platform:*.macosx.aarch64</include>
+      </includes>
+      <outputDirectory>libswt/osx64_aarch</outputDirectory>
+      <outputFileNameMapping>swt.jar</outputFileNameMapping>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
     <!-- licenses -->
     <dependencySet>
       <includes>
