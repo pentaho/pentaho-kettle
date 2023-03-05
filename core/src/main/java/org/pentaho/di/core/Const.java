@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1380,6 +1380,12 @@ public class Const {
    * <p>This environment variable is used by streaming consumer steps to limit the total of concurrent batches across transformations.</p>
    */
   public static final String SHARED_STREAMING_BATCH_POOL_SIZE = "SHARED_STREAMING_BATCH_POOL_SIZE";
+
+  /**
+   * <p>This environment variable is used by the Kinesis consumer to control the number of records retrieved
+   * by the PollingConfig, if used.  Ignored with Enhanced Fan Out./p>
+   */
+  public static final String KINESIS_POLLING_CONFIG_MAX_RECORDS = "KINESIS_POLLING_CONFIG_MAX_RECORDS";
 
   /**
    * <p>This environment variable is used to specify a location used to deploy a shim driver into PDI.</p>
