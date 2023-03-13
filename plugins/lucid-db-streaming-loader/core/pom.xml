@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>lucid-db-streaming-loader-plugin-core</artifactId>
-  <version>9.3.0.2-617</version>
+  <version>9.3.0.2-CUST-273</version>
   <packaging>jar</packaging>
 
   <name>PDI Lucid DB Streaming Loader Plugin Core</name>
@@ -24,14 +24,17 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
+      <version>9.3.0.2-CUST-273</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
+      <version>9.3.0.2-CUST-273</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
+      <version>9.3.0.2-CUST-273</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.swt</groupId>
