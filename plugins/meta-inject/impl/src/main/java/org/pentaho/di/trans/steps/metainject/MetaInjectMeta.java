@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,9 +70,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-@Step( id = "MetaInject",
+@Step(
+    id = "MetaInject",
+    i18nPackageName = "org.pentaho.di.trans.steps.metainject",
     image = "org/pentaho/di/trans/steps/metainject/img/GenericTransform.svg",
     name = "i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MetaInject",
+    description = "i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MetaInject",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow",
     documentationUrl = "Products/ETL_metadata_injection" )
 @InjectionSupported( localizationPrefix = "MetaInject.Injection.", groups = { "SOURCE_OUTPUT_FIELDS",
