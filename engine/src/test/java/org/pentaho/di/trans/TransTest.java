@@ -236,7 +236,7 @@ public class TransTest {
     when( meta.listVariables() ).thenReturn( new String[] {} );
     when( meta.listParameters() ).thenReturn( new String[] { testParam } );
     when( meta.getParameterValue( testParam ) ).thenReturn( testParamValue );
-    FileObject ktr = KettleVFS.createTempFile( "parameters", ".ktr", "ram://" );
+    FileObject ktr = KettleVFS.createTempFile( "parameters", ".ktr", KettleVFS.TEMP_DIR );
     try ( OutputStream outputStream = ktr.getContent().getOutputStream( true ) ) {
       InputStream inputStream = new ByteArrayInputStream( "<transformation></transformation>".getBytes() );
       IOUtils.copy( inputStream, outputStream );
