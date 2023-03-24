@@ -302,45 +302,51 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     try {
       fileFolder = KettleVFS.getFileObject( path, this );
 
-      if ( fileFolder.exists() && new TextFileSelector( fileFolder.toString(), wildcard, parentJob ).hasAccess( fileFolder ) ) {
+      if ( fileFolder.exists() ) {
+        if ( new TextFileSelector( fileFolder.toString(), wildcard, parentJob ).hasAccess( fileFolder ) ) {
+          if ( fileFolder.getType() == FileType.FOLDER ) {
 
-        if ( fileFolder.getType() == FileType.FOLDER ) {
+            if ( log.isDetailed() ) {
+              logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFolder", path ) );
+            }
 
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFolder", path ) );
-          }
+            int totalDeleted = fileFolder.delete( new TextFileSelector( fileFolder.toString(), wildcard, parentJob ) );
 
-          int totalDeleted = fileFolder.delete( new TextFileSelector( fileFolder.toString(), wildcard, parentJob ) );
-
-          if ( log.isDetailed() ) {
-            logDetailed(
-              BaseMessages.getString( PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf( totalDeleted ) ) );
-          }
-          isDeleted = true;
-        } else {
-
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFile", path ) );
-          }
-          isDeleted = fileFolder.delete();
-          if ( !isDeleted ) {
-            logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", path ) );
+            if ( log.isDetailed() ) {
+              logDetailed(
+                      BaseMessages.getString( PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf( totalDeleted ) ) );
+            }
+            isDeleted = true;
           } else {
-            if ( log.isBasic() ) {
-              logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileDeleted", path ) );
+
+            if ( log.isDetailed() ) {
+              logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFile", path ) );
+            }
+            isDeleted = fileFolder.delete();
+            if ( !isDeleted ) {
+              logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", path ) );
+            } else {
+              if ( log.isBasic() ) {
+                logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileDeleted", path ) );
+              }
             }
           }
+        } else {
+          if (log.isBasic()) {
+            logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFiles.FileAccessDenied", path));
+          }
+          isDeleted = false;
         }
       } else {
         // File already deleted, no reason to try to delete it
         if ( log.isBasic() ) {
           logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", path ) );
         }
-        isDeleted = new TextFileSelector( fileFolder.toString(), wildcard, parentJob ).hasAccess( fileFolder );
+        isDeleted = true;
       }
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", path, e
-        .getMessage() ), e );
+              .getMessage() ), e );
     } finally {
       if ( fileFolder != null ) {
         try {
