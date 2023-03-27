@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,10 @@ import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -212,7 +214,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         .valueOf( ( resultRows != null ? resultRows.size() : 0 ) ) ) );
     }
 
-    //Set Embedded NamedCluster MetaStore Provider Key so that it can be passed to VFS
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
     if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
       parentJobMeta.getNamedClusterEmbedManager()
         .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
@@ -299,11 +301,11 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   boolean processFile( String path, String wildcard, Job parentJob ) {
     boolean isDeleted = false;
     FileObject fileFolder = null;
+
     try {
       fileFolder = KettleVFS.getFileObject( path, this );
 
-      if ( fileFolder.exists() && new TextFileSelector( fileFolder.toString(), wildcard, parentJob ).hasAccess( fileFolder ) ) {
-
+      if ( fileFolder.exists() ) {
         if ( fileFolder.getType() == FileType.FOLDER ) {
 
           if ( log.isDetailed() ) {
@@ -336,7 +338,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         if ( log.isBasic() ) {
           logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", path ) );
         }
-        isDeleted = new TextFileSelector( fileFolder.toString(), wildcard, parentJob ).hasAccess( fileFolder );
+        isDeleted = true;
       }
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", path, e
