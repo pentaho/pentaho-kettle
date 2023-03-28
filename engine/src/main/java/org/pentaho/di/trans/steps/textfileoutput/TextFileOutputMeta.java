@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -234,7 +234,7 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   private String fileNameField;
 
   /** Calculated value ... */
-  @Injection( name = "NEW_LINE" )
+  @Injection( name = "NEW_LINE", converter = NewLineCharacterConverter.class )
   private String newline;
 
   /** Flag: add the filenames to result filenames */
