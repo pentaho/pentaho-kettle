@@ -478,7 +478,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         targetPath = targetPath.substring( 7 );
       }
       java.io.File filePath = new java.io.File( targetPath );
-      if ( filePath.isFile() ) {
+      if ( !filePath.exists() ) {
+        return;
+      } else if ( filePath.isFile() ) {
         targetPath = filePath.getParent();
       }
     }
