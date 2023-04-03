@@ -61,12 +61,12 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <version>${project.version}</version>
+            <version>9.1.0.7-CUST-274</version>
         </dependency>
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <version>${project.version}</version>
+            <version>9.1.0.7-CUST-274</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
