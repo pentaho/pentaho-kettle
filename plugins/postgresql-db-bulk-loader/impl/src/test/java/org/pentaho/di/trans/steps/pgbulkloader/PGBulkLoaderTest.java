@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,20 +20,6 @@
  *
  ******************************************************************************/
 package org.pentaho.di.trans.steps.pgbulkloader;
-
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
@@ -58,10 +44,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BOOLEAN;
 
 public class PGBulkLoaderTest {
@@ -207,6 +203,37 @@ public class PGBulkLoaderTest {
     assertEquals( "false", "0" + Const.CR, out.toString() );
   }
 
+  /**
+   * Regression test for PDI-18989
+   */
+  @Test
+  public void emptyInput() throws Exception {
+    final PGBulkLoaderMeta meta = initMeta( "field" );
+    final PGBulkLoaderData data = initData();
+    final PGBulkLoader loader = spy( this.pgBulkLoader );
+    doReturn( null ).when( loader ).getRow();
+
+    loader.init( meta, data );
+    assertFalse( "Step finished", loader.processRow( meta, data ) );
+    loader.dispose( meta, data );
+  }
+
+  /**
+   * Step does not have defined any output fields -> initialize of copy command failed.
+   */
+  @Test
+  public void do_copyFailed() throws Exception {
+    final PGBulkLoaderMeta meta = initMeta();
+    final PGBulkLoaderData data = initData();
+    final PGBulkLoader loader = spy( this.pgBulkLoader );
+    doReturn( new Object[] { "test data" } ).when( loader ).getRow();
+
+    loader.init( meta, data );
+    assertFalse( "Process row failed", loader.processRow( meta, data ) );
+    assertEquals( "Step has error", 1, loader.getErrors() );
+    loader.dispose( meta, data );
+  }
+
   private ByteArrayOutputStream initPGCopyOutputStream() throws IOException, NoSuchFieldException, IllegalAccessException {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final PGCopyOutputStream pgCopy = mock( PGCopyOutputStream.class );
@@ -226,10 +253,10 @@ public class PGBulkLoaderTest {
     return rowMeta;
   }
 
-  private PGBulkLoaderMeta initMeta( String valueName ) throws KettleXMLException {
+  private PGBulkLoaderMeta initMeta( String... valueNames ) throws KettleXMLException {
     final PGBulkLoaderMeta meta = getPgBulkLoaderMock( null );
-    when( meta.getFieldStream() ).thenReturn( new String[] {valueName} );
-    when( meta.getDateMask() ).thenReturn( new String[] {""} );
+    when( meta.getFieldStream() ).thenReturn( valueNames );
+    when( meta.getDateMask() ).thenReturn( new String[] { "" } );
     return meta;
   }
 
