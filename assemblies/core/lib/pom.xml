@@ -8,6 +8,7 @@
     <packaging>pom</packaging>
 
     <name>PDI Core Client Libraries</name>
+    <version>9.1.0.7-CUST-274</version>
 
     <parent>
         <groupId>org.pentaho.di</groupId>
@@ -16,11 +17,11 @@
     </parent>
 
     <properties>
-        <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
+        <pdi-engine-spark.version>9.1.0.7-567</pdi-engine-spark.version>
         <rxjava.version>2.2.3</rxjava.version>
 
         <pentaho-json.version>9.1.0.7-567</pentaho-json.version>
-        <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
+        <pdi-spark-driver.version>9.1.0.7-567</pdi-spark-driver.version>
         <pdi-osgi-bridge.version>9.1.0.7-567</pdi-osgi-bridge.version>
         <commons-database.version>9.1.0.7-567</commons-database.version>
         <pentaho-registry.version>9.1.0.7-567</pentaho-registry.version>
@@ -77,7 +78,7 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-dbdialog</artifactId>
-            <version>${project.version}</version>
+            <version>9.1.0.7-567</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.swt</groupId>
@@ -88,7 +89,7 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-ui-swt</artifactId>
-            <version>${project.version}</version>
+            <version>9.1.0.7-567</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.swt</groupId>
