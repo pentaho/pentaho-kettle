@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -493,7 +493,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     data = (PGBulkLoaderData) sdi;
 
     try {
-      pgCopyOut.close();
+      if ( pgCopyOut != null ) {
+        pgCopyOut.close();
+      }
     } catch (  IOException e ) {
       logError( "Error while closing the Postgres Output Stream", e.getMessage() );
     }
