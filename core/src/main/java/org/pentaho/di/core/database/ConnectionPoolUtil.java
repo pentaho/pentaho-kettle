@@ -35,7 +35,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import javax.sql.DataSource;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -66,6 +68,7 @@ public class ConnectionPoolUtil {
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
 
   private static ConcurrentMap<String, BasicDataSource> dataSources = new ConcurrentHashMap<String, BasicDataSource>();
+  private static Map<String, Properties> dataSourcesAttributesMap = new HashMap<>();
 
   // PDI-12947
   private static final ReentrantLock lock = new ReentrantLock();
@@ -77,20 +80,17 @@ public class ConnectionPoolUtil {
     throws KettleDatabaseException {
     try {
       String name = getDataSourceName( dbMeta, partitionId );
-      return dataSources.containsKey( name );
+      return dataSources.containsKey( name ) && hasOldConfig( dbMeta, partitionId );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG,
           "Database.UnableToCheckIfConnectionPoolExists.Exception" ), e );
     }
   }
 
-  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId )
-    throws Exception {
-    return getConnection( log, dbMeta, partitionId, dbMeta.getInitialPoolSize(), dbMeta.getMaximumPoolSize() );
-  }
+  public static DataSource getDataSource( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId ) throws KettleDatabaseException {
+    int initialSize = dbMeta.getInitialPoolSize();
+    int maximumSize = dbMeta.getMaximumPoolSize();
 
-  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId,
-      int initialSize, int maximumSize ) throws Exception {
     lock.lock();
     try {
       if ( !isDataSourceRegistered( dbMeta, partitionId ) ) {
@@ -99,7 +99,21 @@ public class ConnectionPoolUtil {
     } finally {
       lock.unlock();
     }
-    BasicDataSource ds = dataSources.get( getDataSourceName( dbMeta, partitionId ) );
+    return dataSources.get( getDataSourceName( dbMeta, partitionId ) );
+  }
+
+  public static DataSource removeDataSource( String name ) {
+    return dataSources.remove( name );
+  }
+
+  /**
+   * @deprecated (Please use {@getDataSource(LogChannelInterface, DatabaseMeta, String) getDataSource} on init the step and then just get the connection when needed)
+   */
+  @Deprecated
+  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId )
+    throws Exception {
+
+    DataSource ds = getDataSource( log, dbMeta, partitionId );
     return ds.getConnection();
   }
 
@@ -113,10 +127,8 @@ public class ConnectionPoolUtil {
     String database = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getDatabaseName(), "" ) );
     String hostname = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getHostname(), "" ) );
     String port = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getDatabasePortNumberString(), "" ) );
-    String initialPoolSize = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getInitialPoolSizeString(), "" ) );
-    String maximumPoolSize = dbMeta.environmentSubstitute( Const.NVL( dbMeta.getMaximumPoolSizeString(), "" ) );
 
-    return name + username + password + preferredSchema + database + hostname + port + initialPoolSize + maximumPoolSize + Const.NVL( partitionId, "" );
+    return name + username + password + preferredSchema + database + hostname + port + Const.NVL( partitionId, "" );
   }
 
   /**
@@ -153,6 +165,7 @@ public class ConnectionPoolUtil {
       ds.setDriverClassLoader( databaseMeta.getDatabaseInterface().getClass().getClassLoader() );
     }
     ds.setDriverClassName( clazz );
+    dataSourcesAttributesMap.put( getDataSourceName( databaseMeta, partitionId ), databaseMeta.getAttributes() );
   }
 
   private static void setCredentials( BasicDataSource ds, DatabaseMeta databaseMeta, String partitionId )
@@ -323,6 +336,10 @@ public class ConnectionPoolUtil {
     return dbMeta.getName() + Const.NVL( dbMeta.getDatabaseName(), "" )
         + Const.NVL( dbMeta.getHostname(),  ""  ) + Const.NVL( dbMeta.getDatabasePortNumberString(),  ""  )
         + Const.NVL( partitionId, "" );
+  }
+
+  public static boolean hasOldConfig( DatabaseMeta dbMeta, String partitionId ) {
+    return dbMeta.getAttributes().equals( dataSourcesAttributesMap.get( getDataSourceName( dbMeta, partitionId ) ) );
   }
 
 }

@@ -5,7 +5,7 @@
 
   <artifactId>pdi-pur-plugin-core</artifactId>
   <packaging>jar</packaging>
-  <version>9.3.0.2-617</version>
+  <version>9.3.0.2-CUST-273</version>
 
   <name>PDI PUR Plugin Core</name>
 
@@ -49,19 +49,19 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pdi.version}</version>
+      <version>9.3.0.2-CUST-273</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pdi.version}</version>
+      <version>9.3.0.2-CUST-273</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${pdi.version}</version>
+      <version>9.3.0.2-CUST-273</version>
       <scope>provided</scope>
     </dependency>
 
@@ -90,7 +90,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${platform.version}</version>
+      <version>9.3.0.2-CUST-273</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -258,14 +258,14 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pdi.version}</version>
+      <version>9.3.0.2-CUST-273</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pdi.version}</version>
+      <version>9.3.0.2-CUST-273</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -348,7 +348,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${platform.version}</version>
+      <version>9.3.0.2-CUST-273</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>

@@ -61,6 +61,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.ConnectionPoolUtil;
 import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
@@ -700,6 +701,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return transMeta.getName();
   }
 
+
   /**
    * Instantiates a new transformation using any of the provided parameters including the variable bindings, a
    * repository, a name, a repository directory name, and a filename. This is a multi-purpose method that supports
@@ -714,7 +716,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException if any error occurs during loading, parsing, or creation of the transformation
    */
   public <Parent extends VariableSpace & NamedParams> Trans( Parent parent, Repository rep, String name, String dirname,
-                                                             String filename ) throws KettleException {
+                                                                String filename ) throws KettleException {
+    this( parent, rep, name, dirname, filename, null);
+  }
+
+  public <Parent extends VariableSpace & NamedParams> Trans( Parent parent, Repository rep, String name, String dirname,
+                                                             String filename, TransMeta parentTransMeta ) throws KettleException {
     this();
     try {
       if ( rep != null ) {
@@ -726,7 +733,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             dirname ) );
         }
       } else {
-        transMeta = new TransMeta( filename, false );
+        transMeta = parentTransMeta != null ? parentTransMeta : new TransMeta( filename, false );
       }
 
       this.log = new LogChannel( LogChannel.GENERAL_SUBJECT, false, false );

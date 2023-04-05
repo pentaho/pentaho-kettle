@@ -11,6 +11,7 @@
 
   <artifactId>pdi-core-plugins-impl</artifactId>
   <name>PDI Core Plugins Impl</name>
+  <version>9.3.0.2-CUST-273</version>
 
   <properties>
     <mockito-core.version>1.10.19</mockito-core.version>

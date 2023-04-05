@@ -613,13 +613,17 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   @Override
   public Object clone() {
+    return deepClone( false );
+  }
+
+  public Object deepClone( boolean cloneUpdateFlag ) {
     DatabaseMeta databaseMeta = new DatabaseMeta();
-    databaseMeta.replaceMeta( this );
+    databaseMeta.replaceMeta( this, cloneUpdateFlag );
     databaseMeta.setObjectId( null );
     return databaseMeta;
   }
 
-  public void replaceMeta( DatabaseMeta databaseMeta ) {
+  public void replaceMeta( DatabaseMeta databaseMeta, boolean cloneUpdateFlag ) {
     this.setValues(
       databaseMeta.getName(), databaseMeta.getPluginId(), databaseMeta.getAccessTypeDesc(), databaseMeta
         .getHostname(), databaseMeta.getDatabaseName(), databaseMeta.getDatabasePortNumberString(),
@@ -631,7 +635,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     this.databaseInterface = (DatabaseInterface) databaseMeta.databaseInterface.clone();
 
     this.setObjectId( databaseMeta.getObjectId() );
-    this.setChanged();
+    setChanged( true );
+    if ( cloneUpdateFlag ) {
+      setNeedUpdate( databaseMeta.isNeedUpdate() );
+    }
+  }
+
+  public void replaceMeta( DatabaseMeta databaseMeta ) {
+    replaceMeta( databaseMeta, false );
   }
 
   public void setValues( String name, String type, String access, String host, String db, String port,
@@ -915,11 +926,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     databaseInterface.setIndexTablespace( index_tablespace );
   }
 
-  boolean isNeedUpdate() {
+  public boolean isNeedUpdate() {
     return needUpdate;
   }
 
-  void setNeedUpdate( boolean needUpdate ) {
+  public void setNeedUpdate( boolean needUpdate ) {
     this.needUpdate = needUpdate;
   }
 

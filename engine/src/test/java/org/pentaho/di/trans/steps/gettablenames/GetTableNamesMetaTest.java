@@ -43,7 +43,7 @@ public class GetTableNamesMetaTest {
 
   @Test
   public void testLoadSave() throws KettleException {
-    List<String> attributes = Arrays.asList( "Database", "SchemaName", "TablenameFieldName", "ObjectTypeFieldName",
+    List<String> attributes = Arrays.asList( "DatabaseMeta", "SchemaName", "TablenameFieldName", "ObjectTypeFieldName",
       "SystemObjectFieldName", "SQLCreationFieldName", "includeCatalog", "includeSchema", "includeTable",
       "includeView", "includeProcedure", "includeSynonym", "AddSchemaInOut", "DynamicSchema", "SchemaFieldName" );
 

@@ -11,12 +11,13 @@
 
   <artifactId>pdi-core-plugins-ui</artifactId>
   <name>PDI Core Plugins UI</name>
+  <version>9.3.0.2-CUST-273</version>
 
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-core-plugins-impl</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.2-CUST-273</version>
     </dependency>
 
     <dependency>
