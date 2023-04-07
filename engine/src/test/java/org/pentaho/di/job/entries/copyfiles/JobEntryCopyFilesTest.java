@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -147,6 +147,41 @@ public class JobEntryCopyFilesTest {
       null );
     assertTrue( loadedentry.destination_filefolder[0].equals( destPath[0] ) );
     assertTrue( loadedentry.source_filefolder[0].equals( srcPath[0] ) );
+    verify( mockNamedClusterEmbedManager, times( 2 ) ).registerUrl( anyString() );
+  }
+
+  @Test
+  public void saveLoadWithPassword() throws Exception {
+    String[] srcPath = new String[] { "EMPTY_SOURCE_URL-0-hdfs://user321:321fake@foo.bar.com:8020/user/user321" };
+    String[] destPath = new String[] { "EMPTY_DEST_URL-0-hdfs://user123:fake123@foo.bar.com:8020/user/user123" };
+
+    String srcPathScrubbedEncoded = "EMPTY_SOURCE_URL-0-hdfs://user321:&lt;password&gt;@foo.bar.com:8020/user/user321";
+    String destPathScrubbedEncoded = "EMPTY_DEST_URL-0-hdfs://user123:&lt;password&gt;@foo.bar.com:8020/user/user123";
+
+    String srcPathScrubbed = "EMPTY_SOURCE_URL-0-hdfs://user321:<password>@foo.bar.com:8020/user/user321";
+    String destPathScrubbed = "EMPTY_DEST_URL-0-hdfs://user123:<password>@foo.bar.com:8020/user/user123";
+
+    entry.source_filefolder = srcPath;
+    entry.destination_filefolder = destPath;
+    entry.wildcard = new String[] { EMPTY };
+
+    String xml = "<entry>" + entry.getXML() + "</entry>";
+    assertTrue( xml.contains( srcPathScrubbedEncoded ) );
+    assertTrue( xml.contains( destPathScrubbedEncoded ) );
+    JobEntryCopyFiles loadedentry = new JobEntryCopyFiles();
+    InputStream is = new ByteArrayInputStream( xml.getBytes() );
+    loadedentry.loadXML( XMLHandler.getSubNode(
+        XMLHandler.loadXMLFile( is,
+          null,
+          false,
+          false ),
+        "entry" ),
+      new ArrayList<DatabaseMeta>(),
+      null,
+      null,
+      null );
+    assertTrue( loadedentry.destination_filefolder[0].equals( destPathScrubbed ) );
+    assertTrue( loadedentry.source_filefolder[0].equals( srcPathScrubbed ) );
     verify( mockNamedClusterEmbedManager, times( 2 ) ).registerUrl( anyString() );
   }
 }

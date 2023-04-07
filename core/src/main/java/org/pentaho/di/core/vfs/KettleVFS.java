@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -231,7 +231,7 @@ public class KettleVFS {
    * getFriendlyURI(FileObject) or getFriendlyURI(String) are the public
    * methods.
    */
-  private static String cleanseFilename( String vfsFilename ) {
+  public static String cleanseFilename( String vfsFilename ) {
     return vfsFilename.replaceAll( ":[^:@/]+@", ":<password>@" );
   }
 
