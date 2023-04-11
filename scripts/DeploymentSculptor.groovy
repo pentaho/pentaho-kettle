@@ -4,7 +4,7 @@
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.DumperOptions
 
-@Grab('pentaho-build:file-gatherer:1.2')
+@Grab('pentaho-build:file-gatherer:1.3.0')
 import com.pentaho.build.utilities.FileGatherer
 
 import groovy.util.CliBuilder
