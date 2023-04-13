@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.util.Utf8;
 import org.codehaus.jackson.node.NullNode;
+import org.codehaus.jackson.node.TextNode;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 
@@ -119,6 +120,8 @@ public class AvroToPdiConverter {
         case STRING:
           if ( avroData instanceof GenericData.EnumSymbol ) {
             pentahoData = ( (GenericData.EnumSymbol) avroData ).toString();
+          } else if ( avroData instanceof TextNode ) {
+            pentahoData = convertToPentahoType( pentahoType, ( (TextNode) avroData ).asText(), avroInputField );
           } else {
             pentahoData = convertToPentahoType( pentahoType, (String) avroData, avroInputField );
           }
