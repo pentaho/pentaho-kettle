@@ -72,6 +72,10 @@ public class MetastoreLocatorImpl implements MetastoreLocator, MetastoreLocatorO
   public IMetaStore getMetastore( String providerKey ) {
     IMetaStore metaStore = getExplicitMetastore( MetastoreLocator.REPOSITORY_PROVIDER_KEY );
     if ( metaStore == null ) {
+      //Look for VFS metastore.
+      metaStore = getExplicitMetastore( MetastoreLocator.VFS_PROVIDER_KEY );
+    }
+    if ( metaStore == null ) {
       metaStore = getExplicitMetastore( MetastoreLocator.LOCAL_PROVIDER_KEY );
     }
     if ( metaStore == null && providerKey != null ) {

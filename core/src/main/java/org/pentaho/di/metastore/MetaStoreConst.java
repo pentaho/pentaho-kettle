@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,5 +87,12 @@ public class MetaStoreConst {
       metaStore.setName( Const.PENTAHO_METASTORE_NAME );
     }
     return metaStore;
+  }
+
+  public static IMetaStore openBootstrappingMetastore() throws MetaStoreException {
+    // Borrow local metastore for now....
+    // We should be thinking about how to get/open the VfsMetastore here, maybe?!
+    // Look for metastore-config here, then return XmlBootstrappingMetastore?
+    return openLocalPentahoMetaStore();
   }
 }
