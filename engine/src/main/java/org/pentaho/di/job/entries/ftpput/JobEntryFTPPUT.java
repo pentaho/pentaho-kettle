@@ -730,7 +730,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
       FTPClient.clearSOCKS();
     }
-
+    setLoggingObjectInUse( false );
     return result;
   }
 

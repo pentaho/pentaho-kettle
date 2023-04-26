@@ -1259,6 +1259,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       result.setResult( false );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

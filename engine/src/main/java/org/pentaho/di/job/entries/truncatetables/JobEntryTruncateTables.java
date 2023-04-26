@@ -320,6 +320,9 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
     result.setNrErrors( nrErrors );
     result.setNrLinesDeleted( nrSuccess );
     result.setResult( nrErrors == 0 );
+
+    setLoggingObjectInUse( false );
+
     return result;
   }
 
