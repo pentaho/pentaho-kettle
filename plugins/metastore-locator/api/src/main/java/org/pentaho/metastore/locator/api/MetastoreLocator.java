@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2022 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2023 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.pentaho.metastore.api.IMetaStore;
 public interface MetastoreLocator {
   String LOCAL_PROVIDER_KEY = "LocalMetastoreProvider";
   String REPOSITORY_PROVIDER_KEY = "RepositoryMetastoreProvider";
+  String VFS_PROVIDER_KEY = "VfsMetastoreProvider";
 
   /**
    * Attempts to pick the best the MetaStore based on environment; either
@@ -42,14 +43,14 @@ public interface MetastoreLocator {
 
   /**
    * Registers a metastore provider that returns the received metastore with the current thread. {@link #getMetastore()}
-   * will used this metastore iff the repository and local metastore provider cannot be found.
+   * will use this metastore if the repository and local metastore provider cannot be found.
    * @param metastore
    * @return
    */
   String setEmbeddedMetastore( IMetaStore metastore );
 
   /**
-   * Dispose a metastore provider assciated with the providerKey
+   * Dispose a metastore provider associated with the providerKey
    * @param providerKey The key to the metastore provider.
    */
   void disposeMetastoreProvider( String providerKey );
