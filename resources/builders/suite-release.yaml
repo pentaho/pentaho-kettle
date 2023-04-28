@@ -23,24 +23,24 @@ buildProperties:
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
-  RELEASE_VERSION                : 9.5.0.0
+  RELEASE_VERSION                : 9.5.0.1
   DEPLOYMENT_FOLDER              : 9.5.0.0
   RELEASE_MODE                   : true
-  DEFAULT_BRANCH                 : 9.5.0.0
-  SUITE_BUILD_RESOURCES_BRANCH   : 9.5.0.0
-  SERVICEPACK_BRANCH             : 9.5.0.0
+  DEFAULT_BRANCH                 : 9.5
+  SUITE_BUILD_RESOURCES_BRANCH   : 9.5.0.1
+  SERVICEPACK_BRANCH             : 9.5
   JENKINS_FOLDER_NAME            : '9.5'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/open-jdk/11
-    scmBranch   : 9.5.0.0
+    scmBranch   : 9.5
 
   # We need to override this until this pipeline is the nightly
   BUILD_HOSTING_ROOT: /build2/artifacts/hosted
 
   # Tagging
   RUN_STAGE_TAG: true
-  TAG_NAME: ${RELEASE_VERSION}-${RELEASE_BUILD_NUMBER}
+  TAG_NAME: ${RELEASE_VERSION}-RC
 
   # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
   # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
@@ -57,10 +57,10 @@ buildProperties:
   BUILD_SLACK_CHANNEL : 'buildteam-alerts'
   SLACK_INTEGRATION   : true
   SLACK_CHANNEL:
-    BUILD_FAILURE     : 'qat-builds,buildteam-alerts'
+    BUILD_FAILURE     : 'tatooine,buildteam-alerts'
     BUILD_ABORTED     : 'buildteam-alerts'
-    BUILD_UNSTABLE    : 'qat-builds,buildteam-alerts'
-    BUILD_SUCCESS     : 'qat-builds,buildteam-alerts'
+    BUILD_UNSTABLE    : 'tatooine,buildteam-alerts'
+    BUILD_SUCCESS     : 'tatooine,buildteam-alerts'
 
   # SP specific parameters
   PREVIOUS_RELEASE_VERSION       : ''
