@@ -1,10 +1,10 @@
 // This is the master top-level pipeline that triggers both the build pipeline and the downstream triggered jobs
 
-String jobParentFolder = params.JENKINS_FOLDER_NAME ?: "9.4"
+String jobParentFolder = params.JENKINS_FOLDER_NAME ?: "9.6"
 
-String releaseVersion = params.RELEASE_VERSION ?: "9.4.0.0"
-String suiteBuildResourcesBranch = params.SUITE_BUILD_RESOURCES_BRANCH ?: "9.4.0.0"
-String suiteReleaseVersion = params.SUITE_RELEASE_VERSION ?: "9.4-QAT"
+String releaseVersion = params.RELEASE_VERSION ?: "9.6.0.0"
+String suiteBuildResourcesBranch = params.SUITE_BUILD_RESOURCES_BRANCH ?: "9.6.0.0"
+String suiteReleaseVersion = params.SUITE_RELEASE_VERSION ?: "9.6-QAT"
 String buildHostingRoot = params.BUILD_HOSTING_ROOT ?: "/build2/artifacts/hosted"
 String previousUpgradeReleaseVersion = params.PREVIOUS_UPGRADE_RELEASE_VERSION ?: "8.1.0.6-682"
 String versionMergerVersion = params.VERSION_MERGER_VERSION ?: "1.0.8"
