@@ -157,13 +157,13 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
     setConnection( connectionName );
   }
 
-  @Injection( name = "DATABASE_FIELD_NAME", group = "DATABASE_FIELDS" )
+  @Injection( name = "DATABASE_FIELDNAME", group = "DATABASE_FIELDS" )
   private String[] fieldDatabase;
 
   /**
    * Fields in the table to insert
    */
-  @Injection( name = "DATABASE_STREAM_NAME", group = "DATABASE_FIELDS" )
+  @Injection( name = "DATABASE_STREAMNAME", group = "DATABASE_FIELDS" )
   private String[] fieldStream;
 
 
