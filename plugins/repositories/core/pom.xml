@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>repositories-plugin-core</artifactId>
-  <version>9.6.0.0-SNAPSHOT-15</version>
+  <version>9.6.0.0-SNAPSHOT-16</version>
 
   <name>PDI Repositories Plugin Core</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>repositories</artifactId>
-    <version>9.6.0.0-SNAPSHOT-15</version>
+    <version>9.6.0.0-SNAPSHOT-16</version>
   </parent>
 
   <properties>

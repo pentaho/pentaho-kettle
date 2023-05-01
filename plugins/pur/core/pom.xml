@@ -5,14 +5,14 @@
 
   <artifactId>pdi-pur-plugin-core</artifactId>
   <packaging>jar</packaging>
-  <version>9.6.0.0-SNAPSHOT-15</version>
+  <version>9.6.0.0-SNAPSHOT-16</version>
 
   <name>PDI PUR Plugin Core</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur</artifactId>
-    <version>9.6.0.0-SNAPSHOT-15</version>
+    <version>9.6.0.0-SNAPSHOT-16</version>
   </parent>
 
   <properties>

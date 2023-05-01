@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.pentaho.di.plugins</groupId>
         <artifactId>pdi-plugins</artifactId>
-        <version>9.6.0.0-SNAPSHOT-15</version>
+        <version>9.6.0.0-SNAPSHOT-16</version>
     </parent>
 
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>terafast-bulk-loader</artifactId>
-    <version>9.6.0.0-SNAPSHOT-15</version>
+    <version>9.6.0.0-SNAPSHOT-16</version>
     <packaging>pom</packaging>
 
     <name>PDI TeraData FastLoad Bulk Loader Plugin</name>

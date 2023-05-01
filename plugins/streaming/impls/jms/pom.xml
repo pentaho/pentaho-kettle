@@ -23,14 +23,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pentaho-streaming-jms-plugin</artifactId>
-  <version>9.6.0.0-SNAPSHOT-15</version>
+  <version>9.6.0.0-SNAPSHOT-16</version>
   <packaging>bundle</packaging>
 
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-streaming-impls</artifactId>
-    <version>9.6.0.0-SNAPSHOT-15</version>
+    <version>9.6.0.0-SNAPSHOT-16</version>
   </parent>
 
 
