@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,11 @@
 
 package org.pentaho.di.connections.vfs;
 
+import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionProvider;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
 
 import java.util.List;
@@ -36,4 +39,18 @@ public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends C
   List<VFSRoot> getLocations( T vfsConnectionDetails );
   String getProtocol( T vfsConnectionDetails );
   String sanitizeName( String string );
+
+  /**
+   * If the provided ConnectionDetails are the correct type, return a FileObject for the provided path. This method and
+   * the returning FileObject must not depend on a ConnectionManager or MetaStore.
+   *
+   * @param connectionDetails for the connection
+   * @param path path relative to the connection
+   *
+   * @return FileSystem or null if the provided connection details are not the matching type
+   */
+  default FileObject getDirectFile(ConnectionDetails connectionDetails, String path) throws KettleFileException {
+    return null;
+  }
+
 }
