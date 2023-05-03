@@ -22,7 +22,6 @@
     <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
 
     <!-- Third-party dependencies -->
-    <batik.version>1.9.1</batik.version>
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
