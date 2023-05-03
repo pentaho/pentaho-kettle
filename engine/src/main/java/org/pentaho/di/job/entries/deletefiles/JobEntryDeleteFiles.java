@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,10 +31,8 @@ import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -214,7 +212,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         .valueOf( ( resultRows != null ? resultRows.size() : 0 ) ) ) );
     }
 
-    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    //Set Embedded NamedCluster MetaStore Provider Key so that it can be passed to VFS
     if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
       parentJobMeta.getNamedClusterEmbedManager()
         .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
@@ -301,53 +299,59 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   boolean processFile( String path, String wildcard, Job parentJob ) {
     boolean isDeleted = false;
     FileObject fileFolder = null;
-
     try {
-      fileFolder = KettleVFS.getFileObject( path, this );
+      fileFolder = KettleVFS.getFileObject(path, this);
 
-      if ( fileFolder.exists() ) {
-        if ( fileFolder.getType() == FileType.FOLDER ) {
+      if (fileFolder.exists()) {
+        if (new TextFileSelector(fileFolder.toString(), wildcard, parentJob).hasAccess(fileFolder)) {
+          if (fileFolder.getType() == FileType.FOLDER) {
 
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFolder", path ) );
-          }
+            if (log.isDetailed()) {
+              logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFiles.ProcessingFolder", path));
+            }
 
-          int totalDeleted = fileFolder.delete( new TextFileSelector( fileFolder.toString(), wildcard, parentJob ) );
+            int totalDeleted = fileFolder.delete(new TextFileSelector(fileFolder.toString(), wildcard, parentJob));
 
-          if ( log.isDetailed() ) {
-            logDetailed(
-              BaseMessages.getString( PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf( totalDeleted ) ) );
-          }
-          isDeleted = true;
-        } else {
-
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFile", path ) );
-          }
-          isDeleted = fileFolder.delete();
-          if ( !isDeleted ) {
-            logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", path ) );
+            if (log.isDetailed()) {
+              logDetailed(
+                      BaseMessages.getString(PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf(totalDeleted)));
+            }
+            isDeleted = true;
           } else {
-            if ( log.isBasic() ) {
-              logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileDeleted", path ) );
+
+            if (log.isDetailed()) {
+              logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFiles.ProcessingFile", path));
+            }
+            isDeleted = fileFolder.delete();
+            if (!isDeleted) {
+              logError(BaseMessages.getString(PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", path));
+            } else {
+              if (log.isBasic()) {
+                logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFiles.FileDeleted", path));
+              }
             }
           }
+        } else {
+          if (log.isBasic()) {
+            logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFiles.FileAccessDenied", path));
+          }
+          isDeleted = false;
         }
       } else {
         // File already deleted, no reason to try to delete it
-        if ( log.isBasic() ) {
-          logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", path ) );
+        if (log.isBasic()) {
+          logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", path));
         }
         isDeleted = true;
       }
-    } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", path, e
-        .getMessage() ), e );
+    } catch (Exception e) {
+      logError(BaseMessages.getString(PKG, "JobEntryDeleteFiles.CouldNotProcess", path, e
+              .getMessage()), e);
     } finally {
-      if ( fileFolder != null ) {
+      if (fileFolder != null) {
         try {
           fileFolder.close();
-        } catch ( IOException ex ) {
+        } catch (IOException ex) {
           // Ignore
         }
       }
