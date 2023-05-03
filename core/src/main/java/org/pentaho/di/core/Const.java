@@ -1628,6 +1628,13 @@ public class Const {
   public static final String KETTLE_USE_META_FILE_CACHE_DEFAULT = "N";
 
   /**
+   * Value used to replace nulls in Python Executor Step Input Lines. Empty will mean no replacement will be done
+   */
+  public static final String KETTLE_PYTHON_STEP_REPLACE_NULLS = "KETTLE_PYTHON_STEP_REPLACE_NULLS";
+
+
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *
