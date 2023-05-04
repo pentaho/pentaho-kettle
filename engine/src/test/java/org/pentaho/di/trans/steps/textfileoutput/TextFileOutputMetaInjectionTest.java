@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -244,5 +244,20 @@ public class TextFileOutputMetaInjectionTest extends BaseMetadataInjectionTest<T
     injector.setProperty( meta, "OUTPUT_TRIM", setValue( mftt, "right" ), "f" );
     assertEquals( 2, meta.getOutputFields()[0].getTrimType() );
     skipPropertyTest( "OUTPUT_TRIM" );
+
+    injector.setProperty( meta, "NEW_LINE", setValue( mftt, "\\r" ), "f" );
+    assertEquals( "\r", meta.getNewline() );
+    injector.setProperty( meta, "NEW_LINE", setValue( mftt, "\\r\\n" ), "f" );
+    assertEquals( "\r\n", meta.getNewline() );
+    injector.setProperty( meta, "NEW_LINE", setValue( mftt, "\\n" ), "f" );
+    assertEquals( "\n", meta.getNewline() );
+    injector.setProperty( meta, "NEW_LINE", setValue( mftt, "" ), "f" );
+    assertEquals( "", meta.getNewline() );
+    injector.setProperty( meta, "NEW_LINE", setValue( mftt, "foo\\rbar" ), "f" );
+    assertEquals( "foo\rbar", meta.getNewline() );
+    injector.setProperty( meta, "NEW_LINE", setValue( mftt, "foo\\r\\nbar" ), "f" );
+    assertEquals( "foo\r\nbar", meta.getNewline() );
+    injector.setProperty( meta, "NEW_LINE", setValue( mftt, "foo\\nbar" ), "f" );
+    assertEquals( "foo\nbar", meta.getNewline() );
   }
 }
