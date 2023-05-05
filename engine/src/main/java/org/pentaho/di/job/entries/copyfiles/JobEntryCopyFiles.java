@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -232,13 +232,14 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
   protected void saveSource( StringBuilder retval, String source ) {
     String namedCluster = configurationMappings.get( source );
-    retval.append( "          " ).append( XMLHandler.addTagValue( SOURCE_FILE_FOLDER, source ) );
+
+    retval.append( "          " ).append( XMLHandler.addTagValue( SOURCE_FILE_FOLDER, KettleVFS.cleanseFilename( source ) ) );
     retval.append( "          " ).append( XMLHandler.addTagValue( SOURCE_CONFIGURATION_NAME, namedCluster ) );
   }
 
   protected void saveDestination( StringBuilder retval, String destination ) {
     String namedCluster = configurationMappings.get( destination );
-    retval.append( "          " ).append( XMLHandler.addTagValue( DESTINATION_FILE_FOLDER, destination ) );
+    retval.append( "          " ).append( XMLHandler.addTagValue( DESTINATION_FILE_FOLDER, KettleVFS.cleanseFilename( destination ) ) );
     retval.append( "          " ).append( XMLHandler.addTagValue( DESTINATION_CONFIGURATION_NAME, namedCluster ) );
   }
 
