@@ -927,6 +927,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       }
     }
 
+    setLoggingObjectInUse( false );
     // End
     return result;
   }

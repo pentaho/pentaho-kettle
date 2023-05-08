@@ -171,6 +171,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
       result.setLogText( validator.getErrorMessage() );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

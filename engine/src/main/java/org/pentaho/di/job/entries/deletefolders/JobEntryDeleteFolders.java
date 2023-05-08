@@ -283,6 +283,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
       result.setResult( true );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

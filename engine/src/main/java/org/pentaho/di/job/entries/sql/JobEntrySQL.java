@@ -273,6 +273,8 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
     }
 
     result.setResult( result.getNrErrors() == 0 );
+
+    setLoggingObjectInUse( false );
     return result;
   }
 
