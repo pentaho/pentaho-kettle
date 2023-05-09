@@ -24,6 +24,7 @@ package org.pentaho.di.core.util;
 
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
@@ -54,7 +55,16 @@ public class ConnectionUtil {
           metaStore = meta.getRepository().getMetaStore();
         }
       } else {
-        metaStore = MetaStoreConst.openLocalPentahoMetaStore();
+        MetastoreLocatorOsgi ml = meta.getMetastoreLocatorOsgi();
+        if ( ml != null ) {
+          IMetaStore vfsms = ml.getMetastore();
+          if ( vfsms != null ) {
+            metaStore = vfsms;
+          }
+        }
+        if ( metaStore == null ) {
+          metaStore = MetaStoreConst.openLocalPentahoMetaStore();
+        }
       }
     } catch ( MetaStoreException ignored ) {
       // Allow connectedMetaStore to be null
