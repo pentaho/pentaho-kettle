@@ -206,6 +206,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
       logError( "No filename is defined." );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

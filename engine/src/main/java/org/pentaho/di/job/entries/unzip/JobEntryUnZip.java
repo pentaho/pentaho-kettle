@@ -502,6 +502,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     }
     displayResults();
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

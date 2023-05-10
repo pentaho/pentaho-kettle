@@ -222,6 +222,7 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
       result.setResult( false );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

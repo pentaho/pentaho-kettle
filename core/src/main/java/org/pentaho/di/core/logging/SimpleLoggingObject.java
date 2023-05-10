@@ -33,6 +33,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   private String objectName;
   private LoggingObjectType objectType;
   private LoggingObjectInterface parent;
+  private boolean loggingObjectInUse;
   private LogLevel logLevel = DefaultLogLevel.getLogLevel();
   private String containerObjectId;
   private String logChannelId;
@@ -53,8 +54,8 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
       this.logLevel = parent.getLogLevel();
       this.containerObjectId = parent.getContainerObjectId();
     }
+    setLoggingObjectInUse( false );
   }
-
   /**
    * @return the name
    */
@@ -93,6 +94,15 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   @Override
   public LoggingObjectInterface getParent() {
     return parent;
+  }
+
+  @Override
+  public boolean isLoggingObjectInUse() {
+    return loggingObjectInUse;
+  }
+
+  public void setLoggingObjectInUse( boolean inUse ) {
+    loggingObjectInUse = inUse;
   }
 
   /**
