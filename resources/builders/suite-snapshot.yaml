@@ -496,7 +496,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
        testable        :  false
        archivable      :  true
-       testable        :  false
 
      - jobID           :  pdi-pur-plugin-ee
        scmUrl          :  https://github.com/pentaho/pdi-ee-plugin.git

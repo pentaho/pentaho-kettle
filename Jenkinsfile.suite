@@ -4,6 +4,7 @@ library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSIO
 String buildJobName =  'suite-release'
 Map suiteParameters
 def commonJenkinsFile
+def defaultBranch
 
 node('non-master') {
 
@@ -18,6 +19,7 @@ node('non-master') {
 
         commonJenkinsFile.config()
         suiteParameters = commonJenkinsFile.getJobParameters(buildJobName)
+        defaultBranch = suiteParameters['DEFAULT_BRANCH']
       }
 
       if (!params.NOOP) {
@@ -25,103 +27,64 @@ node('non-master') {
           job.trigger(buildJobName, suiteParameters)
         }
 
-        stage("Trigger Pentaho Container Images") {
-          script {
-            // Any error that might come up from this block, should not compromise the execution of the subsequent stages.
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              withCredentials([string(credentialsId: 'thanos-gh-token', variable: 'GHA_TOKEN')]) {
-                def script2Run = """curl -L \
-                    -X POST \
-                    -H 'Accept: application/vnd.github+json' \
-                    -H 'Authorization: Bearer ${GHA_TOKEN}'\
-                    -H 'X-GitHub-Api-Version: 2022-11-28' \
-                    https://api.github.com/repos/pentaho/pentaho-container-images-ee/actions/workflows/build-all-products.yaml/dispatches \
-                    -d '{"ref":"master","inputs":{"qat_triggered":"true","pentaho_release_version":"${suiteParameters.RELEASE_VERSION}","pentaho_build_number":"${suiteParameters.RELEASE_BUILD_NUMBER}"}}'
-                """
-                def response = sh(script: script2Run, returnStdout: true).trim()
-                echo response
+        stage('Deployment') {
+          stage('Wait for Container Image Completion') {
+            script {
+              // Any error that might come up from this block, should not compromise the execution of the subsequent stages.
+              catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                withCredentials([string(credentialsId: 'thanos-gh-token', variable: 'GITHUB_TOKEN')]) {
+                  def script2Run = """#!/bin/bash
+                    TODAY=\$(date +%Y-%m-%d)
+                    ACTOR="${env.BUILD_GITHUB_USERNAME}"
+                    DEFAULT_BRANCH="${defaultBranch}"
+                    EVENT="workflow_dispatch"
+                    QUERY="actor=\${ACTOR}&created=\${TODAY}&event=\${EVENT}&branch=\${DEFAULT_BRANCH}&per_page=50"
+                    STATUS=""
+                    echo "QUERY=\${QUERY}"
+                    while [ "\${STATUS}" != "completed" ]; do
+                      SORTED_RESP_JSON=\$(curl -L -s \
+                        -H "Accept: application/vnd.github+json" \
+                        -H "Authorization: Bearer ${GITHUB_TOKEN}"\
+                        -H "X-GitHub-Api-Version: 2022-11-28" \
+                        https://api.github.com/repos/smaring/pentaho-container-images-ee/actions/runs?\${QUERY} \
+                        | jq -s -c 'sort_by(.workflow_runs[].id) | .[]')
+                      STATUS=\$( echo "\${SORTED_RESP_JSON}" | jq -r '.workflow_runs[0] | .status')
+                      CONCLUSION=\$( echo "\${SORTED_RESP_JSON}" | jq -r '.workflow_runs[0] | .conclusion')
+                      RUN_NUMBER=\$( echo "\${SORTED_RESP_JSON}" | jq -r '.workflow_runs[0] | .run_number')
+                      ID=\$( echo "\${SORTED_RESP_JSON}" | jq -r '.workflow_runs[0] | .id')
+                      echo -e "Run #\${RUN_NUMBER} with id \${ID}, has status of '\${STATUS}'. Its conclusion is/was '\${CONCLUSION}'"
+                      # if status is already 'completed', let's not wait for the sleep
+                      if [ "\${STATUS}" == "completed" ]; then
+                        break
+                      fi
+                      # check again in 5 mins
+                      sleep 300
+                    done
+                  """
+                  def response = sh(script: script2Run, returnStdout: true).trim()
+                  echo response
+                }
               }
             }
           }
-        }
-        stage('Deployment') {
-          parallel(
-            'deployment-sculptor': {
-              job.trigger('deployment-sculptor', suiteParameters)
-            },
-            'deploy-build-info': {
-              job.trigger('deploy-build-info', suiteParameters)
-            }
-          )
-        }
-
-        stage('Validations / Triggers') {
-          parallel(
-            'github-commits': {
-              job.trigger('engops/github-commits', suiteParameters, false)
-            },
-            'remote-ip-job-trigger': {
-              job.trigger('engops/remote-ip-job-trigger', suiteParameters, false)
-            },
-            'regression-smoketest-job-trigger': {
-              job.trigger('engops/regression-smoketest-job-trigger', suiteParameters, false)
-            },
-            'remote-qa-automation-trigger': {
-              job.trigger('engops/remote-qa-automation-trigger', suiteParameters, false)
-            },
-            'snapshot-checker': {
-              job.trigger('snapshot-checker', suiteParameters, false)
-            },
-            'obfuscation-verifier': {
-              job.trigger('obfuscation-verifier', suiteParameters, false)
-            }
-          )
-        }
-
-        if (params.BUILD_SERVICEPACK) {
-          stage('Service Pack') {
-            stage('Aggregation Designer') {
-              job.trigger('service-pack-installers-aggregation-designer', suiteParameters)
-            }
-            stage('Pentaho Server') {
-              job.trigger('service-pack-installers-pentaho-server', suiteParameters)
-            }
-            stage('DI Client') {
-              job.trigger('service-pack-installers-di-client', suiteParameters)
-            }
-            stage('Metadata Editor') {
-              job.trigger('service-pack-installers-metadata-editor', suiteParameters)
-            }
-            stage('Report Designer') {
-              job.trigger('service-pack-installers-report-designer', suiteParameters)
-            }
-            stage('Schema Workbench') {
-              job.trigger('service-pack-installers-schema-workbench', suiteParameters)
-            }
-            stage('Platform Installer Bundler') {
-              job.trigger('service-pack-platform-installer-bundler', suiteParameters)
-            }
-
-            stage('Deployment (SP)') {
-              job.trigger('deployment-sculptor-sp', suiteParameters)
-            }
+          stage('Gather Container Images') {
+            job.trigger('gather-container-images', suiteParameters)
+          }
+          stage('Construct Hosted') {
+            parallel(
+              'deployment-sculptor': {
+                job.trigger('deployment-sculptor', suiteParameters)
+              },
+              'deploy-build-info': {
+                job.trigger('deploy-build-info', suiteParameters)
+              }
+            )
           }
         }
-        
-        if (params.BUILD_UPGRADE_PATH && !params.NOOP) {
-          stage('Upgrade Path') {
-            job.trigger('upgrade-path-pentaho-server', suiteParameters)
-          }
 
-          stage('Deployment (UP)') {
-            job.trigger('deployment-sculptor-sp', suiteParameters)
-          }
-        }
       }
     }
     
-    commonJenkinsFile.notifyBuildResult(currentBuild.result)
   }
 }
-
 

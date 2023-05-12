@@ -123,3 +123,40 @@ not-for-release:
     - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
+    - pdi-carte-ee-aws-${platform.version}.tar.gz
+    - instructions-pdi-carte-ee-aws-${platform.version}.zip
+    - pdi-carte-ee-bigdata-aws-${platform.version}.tar.gz
+    - instructions-pdi-carte-ee-bigdata-aws-${platform.version}.zip
+    - pdi-cli-ee-aws-${platform.version}.tar.gz
+    - instructions-pdi-cli-ee-aws-${platform.version}.zip
+    - pdi-cli-ee-bigdata-aws-${platform.version}.tar.gz
+    - instructions-pdi-cli-ee-bigdata-aws-${platform.version}.zip
+    - pdi-server-ee-aws-${platform.version}.tar.gz
+    - instructions-pdi-server-ee-aws-${platform.version}.zip
+    - pdi-server-ee-bigdata-aws-${platform.version}.tar.gz
+    - instructions-pdi-server-ee-bigdata-aws-${platform.version}.zip
+    - pdi-carte-ee-azure-${platform.version}.tar.gz
+    - instructions-pdi-carte-ee-azure-${platform.version}.zip
+    - pdi-carte-ee-bigdata-azure-${platform.version}.tar.gz
+    - instructions-pdi-carte-ee-bigdata-azure-${platform.version}.zip
+    - pdi-cli-ee-azure-${platform.version}.tar.gz
+    - instructions-pdi-cli-ee-azure-${platform.version}.zip
+    - pdi-cli-ee-bigdata-azure-${platform.version}.tar.gz
+    - instructions-pdi-cli-ee-bigdata-azure-${platform.version}.zip
+    - pdi-server-ee-azure-${platform.version}.tar.gz
+    - instructions-pdi-server-ee-azure-${platform.version}.zip
+    - pdi-server-ee-bigdata-azure-${platform.version}.tar.gz
+    - instructions-pdi-server-ee-bigdata-azure-${platform.version}.zip
+    - pdi-carte-ee-gcp-${platform.version}.tar.gz
+    - instructions-pdi-carte-ee-gcp-${platform.version}.zip
+    - pdi-carte-ee-bigdata-gcp-${platform.version}.tar.gz
+    - instructions-pdi-carte-ee-bigdata-gcp-${platform.version}.zip
+    - pdi-cli-ee-gcp-${platform.version}.tar.gz
+    - instructions-pdi-cli-ee-gcp-${platform.version}.zip
+    - pdi-cli-ee-bigdata-gcp-${platform.version}.tar.gz
+    - instructions-pdi-cli-ee-bigdata-gcp-${platform.version}.zip
+    - pdi-server-ee-gcp-${platform.version}.tar.gz
+    - instructions-pdi-server-ee-gcp-${platform.version}.zip
+    - pdi-server-ee-bigdata-gcp-${platform.version}.tar.gz
+    - instructions-pdi-server-ee-bigdata-gcp-${platform.version}.zip
+    
