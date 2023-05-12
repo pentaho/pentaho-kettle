@@ -783,15 +783,7 @@ jobGroups:
        versionProperty :  pentaho-metadata.version
 
   4700:
-     - jobID           :  installers
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
-       archivable      :  true
-       testable        :  false
-       parallelize     :  true
-       versionProperty :  pentaho.version
-
-     - jobID           :  container-images-ee-pipeline
+     - jobID           :  trigger-container-images-ee-pipeline
        scmUrl          :  https://github.com/pentaho/pentaho-container-images-ee.git
        buildFramework  :  DSL_SCRIPT
        script          :  |
@@ -824,6 +816,15 @@ jobGroups:
                             }
                           }
        testable        :  false
+
+  4800:
+     - jobID           :  installers
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
+       archivable      :  true
+       testable        :  false
+       parallelize     :  true
+       versionProperty :  pentaho.version
 
 #  4800:
 #     - jobID           :  generate-upgrade-csvs-from-8.3
