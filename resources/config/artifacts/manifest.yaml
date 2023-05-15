@@ -133,8 +133,8 @@ not-for-release:
     - instructions-pdi-cli-ee-bigdata-aws-${platform.version}.zip
     - pdi-server-ee-aws-${platform.version}.tar.gz
     - instructions-pdi-server-ee-aws-${platform.version}.zip
-    - pdi-server-ee-bigdata-aws-${platform.version}.tar.gz
-    - instructions-pdi-server-ee-bigdata-aws-${platform.version}.zip
+    - platform-server-ee-aws-${platform.version}.tar.gz
+    - instructions-platform-server-ee-aws-${platform.version}.zip
     - pdi-carte-ee-azure-${platform.version}.tar.gz
     - instructions-pdi-carte-ee-azure-${platform.version}.zip
     - pdi-carte-ee-bigdata-azure-${platform.version}.tar.gz
@@ -145,8 +145,8 @@ not-for-release:
     - instructions-pdi-cli-ee-bigdata-azure-${platform.version}.zip
     - pdi-server-ee-azure-${platform.version}.tar.gz
     - instructions-pdi-server-ee-azure-${platform.version}.zip
-    - pdi-server-ee-bigdata-azure-${platform.version}.tar.gz
-    - instructions-pdi-server-ee-bigdata-azure-${platform.version}.zip
+    - platform-server-ee-azure-${platform.version}.tar.gz
+    - instructions-platform-server-ee-azure-${platform.version}.zip
     - pdi-carte-ee-gcp-${platform.version}.tar.gz
     - instructions-pdi-carte-ee-gcp-${platform.version}.zip
     - pdi-carte-ee-bigdata-gcp-${platform.version}.tar.gz
@@ -157,5 +157,5 @@ not-for-release:
     - instructions-pdi-cli-ee-bigdata-gcp-${platform.version}.zip
     - pdi-server-ee-gcp-${platform.version}.tar.gz
     - instructions-pdi-server-ee-gcp-${platform.version}.zip
-    - pdi-server-ee-bigdata-gcp-${platform.version}.tar.gz
-    - instructions-pdi-server-ee-bigdata-gcp-${platform.version}.zip
+    - platform-server-ee-gcp-${platform.version}.tar.gz
+    - instructions-platform-server-ee-gcp-${platform.version}.zip
