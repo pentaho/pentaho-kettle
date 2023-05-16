@@ -82,9 +82,72 @@ node('non-master') {
           }
         }
 
+        stage('Validations / Triggers') {
+          parallel(
+            'github-commits': {
+              job.trigger('engops/github-commits', suiteParameters, false)
+            },
+            'remote-ip-job-trigger': {
+              job.trigger('engops/remote-ip-job-trigger', suiteParameters, false)
+            },
+            'regression-smoketest-job-trigger': {
+              job.trigger('engops/regression-smoketest-job-trigger', suiteParameters, false)
+            },
+            'remote-qa-automation-trigger': {
+              job.trigger('engops/remote-qa-automation-trigger', suiteParameters, false)
+            },
+            'snapshot-checker': {
+              job.trigger('snapshot-checker', suiteParameters, false)
+            },
+            'obfuscation-verifier': {
+              job.trigger('obfuscation-verifier', suiteParameters, false)
+            }
+          )
+        }
+
+        if (params.BUILD_SERVICEPACK) {
+          stage('Service Pack') {
+            stage('Aggregation Designer') {
+              job.trigger('service-pack-installers-aggregation-designer', suiteParameters)
+            }
+            stage('Pentaho Server') {
+              job.trigger('service-pack-installers-pentaho-server', suiteParameters)
+            }
+            stage('DI Client') {
+              job.trigger('service-pack-installers-di-client', suiteParameters)
+            }
+            stage('Metadata Editor') {
+              job.trigger('service-pack-installers-metadata-editor', suiteParameters)
+            }
+            stage('Report Designer') {
+              job.trigger('service-pack-installers-report-designer', suiteParameters)
+            }
+            stage('Schema Workbench') {
+              job.trigger('service-pack-installers-schema-workbench', suiteParameters)
+            }
+            stage('Platform Installer Bundler') {
+              job.trigger('service-pack-platform-installer-bundler', suiteParameters)
+            }
+
+            stage('Deployment (SP)') {
+              job.trigger('deployment-sculptor-sp', suiteParameters)
+            }
+          }
+        }
+
+        if (params.BUILD_UPGRADE_PATH && !params.NOOP) {
+          stage('Upgrade Path') {
+            job.trigger('upgrade-path-pentaho-server', suiteParameters)
+          }
+
+          stage('Deployment (UP)') {
+            job.trigger('deployment-sculptor-sp', suiteParameters)
+          }
+        }
       }
     }
-    
+
+    commonJenkinsFile.notifyBuildResult(currentBuild.result)
   }
 }
 
