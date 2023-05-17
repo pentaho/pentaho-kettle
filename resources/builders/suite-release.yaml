@@ -787,8 +787,8 @@ jobGroups:
        # for branching and tagging purposes only
        scmUrl          :  https://github.com/pentaho/pentaho-container-images-ee.git
        directives      :
-                 build :  -version
-                 test  :  -version
+                 build :  clean -version
+                 test  :  clean -version
        testable        :  false
 
      - jobID           :  trigger-container-images-ee-pipeline
