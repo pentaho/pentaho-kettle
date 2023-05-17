@@ -1013,14 +1013,16 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
       setDBName( XMLHandler.getTagValue( con, "database" ) );
 
+      setDefaultAttributes();
+
       // The DB port is read here too for backward compatibility! getName()
       //
-      setDBPort( XMLHandler.getTagValue( con, "port" ) );
-      setUsername( XMLHandler.getTagValue( con, "username" ) );
-      setPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( con, "password" ) ) );
-      setServername( XMLHandler.getTagValue( con, "servername" ) );
-      setDataTablespace( XMLHandler.getTagValue( con, "data_tablespace" ) );
-      setIndexTablespace( XMLHandler.getTagValue( con, "index_tablespace" ) );
+      setDBPort( Const.NVL( XMLHandler.getTagValue( con, "port" ), "" ) );
+      setUsername( Const.NVL( XMLHandler.getTagValue( con, "username" ), "" ) );
+      setPassword( Const.NVL( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( con, "password" ) ), "" ) );
+      setServername( Const.NVL( XMLHandler.getTagValue( con, "servername" ), "" ) );
+      setDataTablespace( Const.NVL( XMLHandler.getTagValue( con, "data_tablespace" ), "" ) );
+      setIndexTablespace( Const.NVL( XMLHandler.getTagValue( con, "index_tablespace" ), "" ) );
 
       setReadOnly( Boolean.valueOf( XMLHandler.getTagValue( con, "read_only" ) ) );
 
@@ -1032,7 +1034,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
           String code = XMLHandler.getTagValue( attrnode, "code" );
           String attribute = XMLHandler.getTagValue( attrnode, "attribute" );
           if ( code != null && attribute != null ) {
-            databaseInterface.addAttribute( code, attribute );
+            databaseInterface.addAttribute( code, Const.NVL( attribute, "" ) );
           }
           getDatabasePortNumberString();
         }
@@ -1040,6 +1042,17 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load database connection info from XML node", e );
     }
+  }
+
+  /**
+   * Set default values for attributes to keep consistency with metas created using the DatabaseDelegate
+   *
+   * @see org.pentaho.di.repository.pur.DatabaseDelegate#dataNodeToElement(DataNode,RepositoryElementInterface)
+   */
+
+  private void setDefaultAttributes() {
+    setConnectSQL( "" );
+    setUsingDoubleDecimalAsSchemaTableSeparator( false );
   }
 
   @Override
