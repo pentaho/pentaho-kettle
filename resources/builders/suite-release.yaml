@@ -783,14 +783,6 @@ jobGroups:
        versionProperty :  pentaho-metadata.version
 
   4700:
-     - jobID           :  pentaho-container-images-ee
-       # for branching and tagging purposes only
-       scmUrl          :  https://github.com/pentaho/pentaho-container-images-ee.git
-       directives      :
-                 build :  clean -version
-                 test  :  clean -version
-       testable        :  false
-
      - jobID           :  trigger-container-images-ee-pipeline
        scmUrl          :  https://github.com/pentaho/pentaho-container-images-ee.git
        buildFramework  :  DSL_SCRIPT
@@ -841,5 +833,12 @@ jobGroups:
        root            :  installer-tool
        versionProperty :  pentaho.version
 
-
+  5000:
+     - jobID           :  jenkins-pipelines
+       # for branching and tagging with version-merger application purposes only
+       scmUrl          :  https://github.com/pentaho/jenkins-pipelines.git
+       directives      :
+                 build :  clean -version
+                 test  :  clean -version
+       testable        :  false
 
