@@ -32,6 +32,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
@@ -49,8 +50,8 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.metastore.api.IMetaStore;
 
 public abstract class AbstractBaseCommandExecutor {
 
@@ -60,20 +61,13 @@ public abstract class AbstractBaseCommandExecutor {
 
   private LogChannelInterface log;
   private Class<?> pkgClazz;
-  DelegatingMetaStore metaStore;
+  private Supplier<IMetaStore> metaStoreSupplier = MetaStoreConst.getDefaultMetastoreSupplier();
 
   private Result result = new Result();
 
   protected Result exitWithStatus( final int exitStatus ) {
     getResult().setExitStatus( exitStatus );
     return getResult();
-  }
-
-  public DelegatingMetaStore createDefaultMetastore() throws MetaStoreException {
-    DelegatingMetaStore metaStore = new DelegatingMetaStore();
-    metaStore.addMetaStore( MetaStoreConst.openLocalPentahoMetaStore() );
-    metaStore.setActiveMetaStoreName( metaStore.getName() );
-    return metaStore;
   }
 
   protected void logDebug( final String messageKey ) {
@@ -302,12 +296,16 @@ public abstract class AbstractBaseCommandExecutor {
     this.pkgClazz = pkgClazz;
   }
 
-  public DelegatingMetaStore getMetaStore() {
-    return metaStore;
+  public synchronized IMetaStore getMetaStore() {
+    return metaStoreSupplier.get();
   }
 
-  public void setMetaStore( DelegatingMetaStore metaStore ) {
-    this.metaStore = metaStore;
+  public synchronized Supplier<IMetaStore> getMetaStoreSupplier() {
+    return metaStoreSupplier;
+  }
+
+  public synchronized void setMetaStoreSupplier( Supplier<IMetaStore> metaStoreSupplier ) {
+    this.metaStoreSupplier = metaStoreSupplier;
   }
 
   public SimpleDateFormat getDateFormat() {

@@ -91,9 +91,6 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
     try {
 
-      if ( getMetaStore() == null ) {
-        setMetaStore( createDefaultMetastore() );
-      }
       ConnectionManager.getInstance().setMetastoreSupplier( () -> getMetaStore() );
 
       // Read kettle job specified on command-line?
@@ -301,11 +298,6 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
     if ( directory == null ) {
       return null; // not much we can do here
-    }
-
-    // Add the IMetaStore of the repository to our delegation
-    if ( repository.getMetaStore() != null && getMetaStore() != null ) {
-      getMetaStore().addMetaStore( repository.getMetaStore() );
     }
 
     // Load a job

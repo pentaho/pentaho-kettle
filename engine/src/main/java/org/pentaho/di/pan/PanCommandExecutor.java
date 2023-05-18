@@ -93,10 +93,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
     try {
 
-      if ( getMetaStore() == null ) {
-        setMetaStore( createDefaultMetastore() );
-      }
-
       ConnectionManager.getInstance().setMetastoreSupplier( () -> getMetaStore() );
       logDebug( "Pan.Log.StartingToLookOptions" );
 
@@ -331,11 +327,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
     if ( directory == null ) {
       return null; // not much we can do here
-    }
-
-    // Add the IMetaStore of the repository to our delegation
-    if ( repository.getMetaStore() != null && getMetaStore() != null ) {
-      getMetaStore().addMetaStore( repository.getMetaStore() );
     }
 
     logDebug( "Pan.Log.LoadTransInfo" );

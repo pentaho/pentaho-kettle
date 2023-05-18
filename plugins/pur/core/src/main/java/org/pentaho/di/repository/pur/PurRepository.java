@@ -46,7 +46,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.Import;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.AbstractRepository;
 import org.pentaho.di.repository.IRepositoryExporter;
@@ -380,16 +379,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override public void disconnect() {
     connected = false;
     metaStore = null;
-    IMetaStore activeMetaStore = null;
-    try {
-      activeMetaStore = MetaStoreConst.openLocalPentahoMetaStore();
-    } catch ( MetaStoreException e ) {
-      activeMetaStore = null;
-    }
-    if ( activeMetaStore != null ) {
-      final IMetaStore connectedMetaStore = activeMetaStore;
-      connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
-    }
 
     purRepositoryConnector.disconnect();
   }

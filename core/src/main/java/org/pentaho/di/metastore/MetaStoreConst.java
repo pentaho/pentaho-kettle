@@ -23,11 +23,17 @@
 package org.pentaho.di.metastore;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.function.Supplier;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.pentaho.metastore.stores.xml.XmlUtil;
 
@@ -52,6 +58,27 @@ public class MetaStoreConst {
   public static final String DB_ATTR_JDBC_URL = "jdbc_url";
 
   public static final String DB_ATTR_ID_ATTRIBUTES = "attributes";
+
+  private static final Supplier<IMetaStore> metaStoreSupplier = new Supplier<IMetaStore>() {
+    private volatile MetastoreLocator metastoreLocator;
+
+    public IMetaStore get() {
+      if ( metastoreLocator == null ) {
+        synchronized ( this ) {
+          try {
+            if ( metastoreLocator == null ) {
+              Collection<MetastoreLocator> metastoreLocators =
+                  PluginServiceLoader.loadServices( MetastoreLocator.class );
+              metastoreLocator = metastoreLocators.stream().findFirst().orElse( null );
+            }
+          } catch ( KettlePluginException e ) {
+            LogChannel.GENERAL.logError( "Error getting metastore locator", e );
+          }
+        }
+      }
+      return metastoreLocator == null ? null : metastoreLocator.getMetastore();
+    }
+  };
 
   public static final String getDefaultPentahoMetaStoreLocation() {
     return System.getProperty( "user.home" ) + File.separator + ".pentaho";
@@ -87,5 +114,9 @@ public class MetaStoreConst {
       metaStore.setName( Const.PENTAHO_METASTORE_NAME );
     }
     return metaStore;
+  }
+
+  public static Supplier<IMetaStore> getDefaultMetastoreSupplier() {
+    return metaStoreSupplier;
   }
 }

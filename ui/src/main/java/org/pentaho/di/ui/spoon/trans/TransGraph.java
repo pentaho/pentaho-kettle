@@ -4520,7 +4520,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       } else {
         StepMetaInterface meta = stepMeta.getStepMetaInterface();
         if ( !Utils.isEmpty( meta.getReferencedObjectDescriptions() ) ) {
-          referencedMeta = meta.loadReferencedObject( index, spoon.rep, spoon.metaStore, transMeta );
+          referencedMeta = meta.loadReferencedObject( index, spoon.rep, spoon.getMetaStore(), transMeta );
         }
       }
       if ( referencedMeta == null ) {

@@ -2521,7 +2521,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   protected void loadReferencedObject( JobEntryCopy jobEntryCopy, int index ) {
     try {
       Object referencedMeta =
-        jobEntryCopy.getEntry().loadReferencedObject( index, spoon.rep, spoon.metaStore, jobMeta );
+          jobEntryCopy.getEntry().loadReferencedObject( index, spoon.rep, spoon.getMetaStore(), jobMeta );
       if ( referencedMeta == null ) {
         // Compatible re-try for older plugins.
         referencedMeta =
@@ -2712,7 +2712,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           // Open the file or create a new one!
           //
           if ( KettleVFS.fileExists( exactFilename ) ) {
-            launchJobMeta = new JobMeta( jobMeta, exactFilename, spoon.rep, spoon.metaStore, null );
+            launchJobMeta = new JobMeta( jobMeta, exactFilename, spoon.rep, spoon.getMetaStore(), null );
           } else {
             launchJobMeta = new JobMeta();
           }
