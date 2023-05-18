@@ -32,6 +32,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -502,7 +503,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
   }
 
   @Test
-  public void testGetJobPathWithoutExtension() {
+  public void testGetJobPathWithoutExtension() throws KettlePluginException {
     PurRepository pur = new PurRepository();
     RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     doReturn( mock( ObjectId.class ) ).when( rdi ).getObjectId();
@@ -512,7 +513,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
   }
 
   @Test
-  public void testGetJobPathWithExtension() {
+  public void testGetJobPathWithExtension() throws KettlePluginException {
     PurRepository pur = new PurRepository();
     RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     doReturn( mock( ObjectId.class ) ).when( rdi ).getObjectId();
@@ -522,7 +523,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
   }
 
   @Test
-  public void testGetTransPathWithoutExtension() {
+  public void testGetTransPathWithoutExtension() throws KettlePluginException {
     PurRepository pur = new PurRepository();
     RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     doReturn( mock( ObjectId.class ) ).when( rdi ).getObjectId();
@@ -532,7 +533,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
   }
 
   @Test
-  public void testGetTransPathWithExtension() {
+  public void testGetTransPathWithExtension() throws KettlePluginException {
     PurRepository pur = new PurRepository();
     RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     doReturn( mock( ObjectId.class ) ).when( rdi ).getObjectId();
@@ -618,7 +619,7 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
 
   @Test
   @SuppressWarnings( {"squid:S1075", "squid:S3655"} )
-  public void testGetURI() throws URISyntaxException {
+  public void testGetURI() throws URISyntaxException, KettlePluginException {
     PurRepository purRepo = new PurRepository();
     PurRepositoryMeta repoMeta = new PurRepositoryMeta();
     repoMeta.setRepositoryLocation( new PurRepositoryLocation( "http://localhost:8080/pentaho" ) );

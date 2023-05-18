@@ -20,6 +20,7 @@ package org.pentaho.di.repository.pur;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider;
@@ -32,7 +33,7 @@ public class AbsSecurityProviderTest {
   private AbsSecurityProvider provider;
 
   @Before
-  public void setUp() {
+  public void setUp() throws KettlePluginException {
     provider = new AbsSecurityProvider( new PurRepository(), new PurRepositoryMeta(), new UserInfo(),
       mock( ServiceManager.class ) );
     provider = spy( provider );
