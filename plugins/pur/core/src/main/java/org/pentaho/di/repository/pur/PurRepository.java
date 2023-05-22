@@ -150,6 +150,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   // Kettle property that when set to false disabled the lazy repository access
   public static final String LAZY_REPOSITORY = "KETTLE_LAZY_REPOSITORY";
+  public static final String VFS_METASTORE_PROVIDER = "VfsMetastoreProvider";
 
   private static Class<?> PKG = PurRepository.class;
 
@@ -298,7 +299,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       purRepositoryServiceRegistry.registerService( ILockService.class, new UnifiedRepositoryLockService( pur ) );
       purRepositoryServiceRegistry
         .registerService( IAclService.class, new UnifiedRepositoryConnectionAclService( pur ) );
-      metaStore = metastoreLocator.getExplicitMetastore( "VfsMetastoreProvider" );
+      metaStore = metastoreLocator.getExplicitMetastore( VFS_METASTORE_PROVIDER );
       if ( metaStore == null ) {
         metaStore = new PurRepositoryMetaStore( this );
       }
@@ -353,7 +354,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         if ( log.isDetailed() ) {
           log.logDetailed( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
         }
-        metaStore = metastoreLocator.getExplicitMetastore( "VfsMetastoreProvider" );
+        metaStore = metastoreLocator.getExplicitMetastore( VFS_METASTORE_PROVIDER );
         if ( metaStore == null ) {
           metaStore = new PurRepositoryMetaStore( this );
         }
