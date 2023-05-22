@@ -73,7 +73,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 @PluginDialog( id = "AvroOutput", image = "AO.svg", pluginType = PluginDialog.PluginType.STEP,
-        documentationUrl = "Products/Avro_Input" )
+        documentationUrl = "Products/Avro_Output" )
 public class AvroOutputDialog extends BaseAvroStepDialog implements StepDialogInterface {
 
   private static final Class<?> PKG = AvroOutputMeta.class;
