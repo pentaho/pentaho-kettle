@@ -627,4 +627,11 @@
     <default-value>N</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>Set this variable to have the Python Executor step consider null/empty lines. Consider the following behaviour: Leaving it empty, will have the step ignore null lines. Setting it will have the step replace these lines with the vallue added. (ex. NaN)
+    </description>
+    <variable>KETTLE_PYTHON_STEP_REPLACE_NULLS</variable>
+    <default-value></default-value>
+  </kettle-variable>
+
 </kettle-variables>
