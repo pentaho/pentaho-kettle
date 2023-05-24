@@ -342,11 +342,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           log.logDetailed( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
         }
         metaStore = new PurRepositoryMetaStore( this );
-        IMetaStore activeMetaStore = metaStore;
-        if ( activeMetaStore != null ) {
-          final IMetaStore connectedMetaStore = activeMetaStore;
-          connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
-        }
 
         // Create the default Pentaho namespace if it does not exist
         try {

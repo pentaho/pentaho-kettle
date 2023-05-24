@@ -41,6 +41,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -90,8 +91,11 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     Repository repository = null;
 
     try {
+      if ( getMetaStore() == null ) {
+        setMetaStore( MetaStoreConst.getDefaultMetastore() );
+      }
 
-      ConnectionManager.getInstance().setMetastoreSupplier( () -> getMetaStore() );
+      ConnectionManager.getInstance().setMetastoreSupplier( MetaStoreConst.getDefaultMetastoreSupplier() );
 
       // Read kettle job specified on command-line?
       if ( !Utils.isEmpty( params.getRepoName() ) || !Utils.isEmpty( params.getLocalFile() ) ) {

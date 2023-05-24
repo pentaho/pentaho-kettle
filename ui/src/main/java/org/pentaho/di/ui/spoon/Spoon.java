@@ -8921,6 +8921,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void setRepository( Repository rep ) {
     this.rep = rep;
     this.repositoryName = rep != null ? rep.getName() : null;
+      if ( rep != null ) {
+        this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+      }
 
     // Registering the UI Support classes
     UISupportRegistery.getInstance().registerUISupport(

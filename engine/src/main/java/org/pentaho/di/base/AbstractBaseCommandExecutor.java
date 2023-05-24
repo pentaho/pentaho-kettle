@@ -32,7 +32,6 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
@@ -61,7 +60,7 @@ public abstract class AbstractBaseCommandExecutor {
 
   private LogChannelInterface log;
   private Class<?> pkgClazz;
-  private Supplier<IMetaStore> metaStoreSupplier = MetaStoreConst.getDefaultMetastoreSupplier();
+  IMetaStore metaStore = MetaStoreConst.getDefaultMetastore();
 
   private Result result = new Result();
 
@@ -296,16 +295,12 @@ public abstract class AbstractBaseCommandExecutor {
     this.pkgClazz = pkgClazz;
   }
 
-  public synchronized IMetaStore getMetaStore() {
-    return metaStoreSupplier.get();
+  public IMetaStore getMetaStore() {
+    return metaStore;
   }
 
-  public synchronized Supplier<IMetaStore> getMetaStoreSupplier() {
-    return metaStoreSupplier;
-  }
-
-  public synchronized void setMetaStoreSupplier( Supplier<IMetaStore> metaStoreSupplier ) {
-    this.metaStoreSupplier = metaStoreSupplier;
+  public void setMetaStore( IMetaStore metaStore ) {
+    this.metaStore = metaStore;
   }
 
   public SimpleDateFormat getDateFormat() {

@@ -59,16 +59,16 @@ public class MetaStoreConst {
 
   public static final String DB_ATTR_ID_ATTRIBUTES = "attributes";
 
-  private static final Supplier<IMetaStore> metaStoreSupplier = new Supplier<IMetaStore>() {
+  private static final Supplier<MetastoreLocator> metastoreLocatorSupplier = new Supplier<MetastoreLocator> () {
     private volatile MetastoreLocator metastoreLocator;
 
-    public IMetaStore get() {
+    public MetastoreLocator get() {
       if ( metastoreLocator == null ) {
         synchronized ( this ) {
           try {
             if ( metastoreLocator == null ) {
               Collection<MetastoreLocator> metastoreLocators =
-                  PluginServiceLoader.loadServices( MetastoreLocator.class );
+                PluginServiceLoader.loadServices( MetastoreLocator.class );
               metastoreLocator = metastoreLocators.stream().findFirst().orElse( null );
             }
           } catch ( KettlePluginException e ) {
@@ -76,7 +76,24 @@ public class MetaStoreConst {
           }
         }
       }
-      return metastoreLocator == null ? null : metastoreLocator.getMetastore();
+      return metastoreLocator;
+    }
+  };
+
+  private static final Supplier<IMetaStore> metaStoreSupplier = new Supplier<IMetaStore> () {
+    private volatile IMetaStore metaStore;
+    public IMetaStore get() {
+      if ( metaStore == null ) {
+        synchronized( this ) {
+          if ( metaStore == null ) {
+            MetastoreLocator locator = metastoreLocatorSupplier.get();
+            if ( locator != null ) {
+              metaStore = new SuppliedMetaStore( () -> locator.getMetastore() );
+            }
+          }
+        }
+      }
+      return metaStore;
     }
   };
 
@@ -119,4 +136,9 @@ public class MetaStoreConst {
   public static Supplier<IMetaStore> getDefaultMetastoreSupplier() {
     return metaStoreSupplier;
   }
+
+  public static IMetaStore getDefaultMetastore() {
+    return metaStoreSupplier.get();
+  }
 }
+

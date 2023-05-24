@@ -112,6 +112,8 @@ public class SlaveServerConfig {
       if ( metastore != null ) {
         return metastore;
       }
+      LogChannel.GENERAL.logError( "Unable to open local Pentaho meta store from [" + MetaStoreConst.getDefaultPentahoMetaStoreLocation() + "]");
+
       MemoryMetaStore memoryStore = new MemoryMetaStore();
       memoryStore.setName( "Memory metastore" );
       return memoryStore;

@@ -54,6 +54,7 @@ import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.w3c.dom.Document;
 
 import java.io.File;
@@ -93,7 +94,10 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
     try {
 
-      ConnectionManager.getInstance().setMetastoreSupplier( () -> getMetaStore() );
+      if ( getMetaStore() == null ) {
+        setMetaStore( MetaStoreConst.getDefaultMetastore() );
+      }
+      ConnectionManager.getInstance().setMetastoreSupplier( MetaStoreConst.getDefaultMetastoreSupplier() );
       logDebug( "Pan.Log.StartingToLookOptions" );
 
       // Read kettle transformation specified
