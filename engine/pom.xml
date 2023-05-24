@@ -252,6 +252,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome-utils</artifactId>
+      <version>${rome.version}</version>
+    </dependency>
+    <dependency>
       <groupId>infobright</groupId>
       <artifactId>infobright-core</artifactId>
       <version>${infobright-core.version}</version>
