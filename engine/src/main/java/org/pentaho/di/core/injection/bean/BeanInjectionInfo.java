@@ -91,6 +91,10 @@ public class BeanInjectionInfo {
     }
   }
 
+  public Class<?> getBeanInjectionClass() {
+    return clazz;
+  }
+
   public String getLocalizationPrefix() {
     return clazzAnnotation.localizationPrefix();
   }

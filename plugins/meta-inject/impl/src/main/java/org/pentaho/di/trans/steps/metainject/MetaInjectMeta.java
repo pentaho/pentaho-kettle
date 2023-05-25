@@ -276,7 +276,6 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
         targetSourceMapping.put( target, source );
       }
 
-      MetaInjectMigration.migrate( targetSourceMapping );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
@@ -323,7 +322,6 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
         targetSourceMapping.put( target, source );
       }
 
-      MetaInjectMigration.migrate( targetSourceMapping );
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
