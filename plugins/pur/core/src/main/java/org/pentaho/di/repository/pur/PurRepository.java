@@ -391,15 +391,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override public void disconnect() {
     connected = false;
-    metaStore = null;
-    try {
-      metaStore = MetaStoreConst.openLocalPentahoMetaStore();
-    } catch ( MetaStoreException e ) {
+    if ( metaStore instanceof PurRepositoryMetaStore ) {
       metaStore = null;
-    }
-    if ( metaStore != null ) {
-      final IMetaStore connectedMetaStore = metaStore;
-      connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
+      try {
+        metaStore = MetaStoreConst.openLocalPentahoMetaStore();
+      } catch ( MetaStoreException e ) {
+        metaStore = null;
+      }
+      if ( metaStore != null ) {
+        final IMetaStore connectedMetaStore = metaStore;
+        connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
+      }
     }
 
     purRepositoryConnector.disconnect();
