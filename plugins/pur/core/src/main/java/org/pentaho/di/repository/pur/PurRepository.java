@@ -36,11 +36,14 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.Import;
@@ -113,6 +116,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
@@ -146,6 +150,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   // Kettle property that when set to false disabled the lazy repository access
   public static final String LAZY_REPOSITORY = "KETTLE_LAZY_REPOSITORY";
+  public static final String VFS_METASTORE_PROVIDER = "VfsMetastoreProvider";
 
   private static Class<?> PKG = PurRepository.class;
 
@@ -221,7 +226,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private String connectMessage = null;
 
-  protected PurRepositoryMetaStore metaStore;
+  protected IMetaStore metaStore;
 
   private ConnectionManager connectionManager = ConnectionManager.getInstance();
 
@@ -237,12 +242,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   private static final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
   private static final ReadWriteLock sharedObjectsLock = new ReentrantReadWriteLock();
 
+  private final MetastoreLocatorOsgi metastoreLocator;
+
 
   // ~ Constructors ====================================================================================================
 
-  public PurRepository() {
+  public PurRepository() throws KettlePluginException {
     super();
     initSharedObjectAssemblerMap();
+    Collection<MetastoreLocatorOsgi> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocatorOsgi.class );
+    metastoreLocator = metastoreLocators.stream().findFirst().get();
   }
 
   // ~ Methods =========================================================================================================
@@ -290,7 +299,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       purRepositoryServiceRegistry.registerService( ILockService.class, new UnifiedRepositoryLockService( pur ) );
       purRepositoryServiceRegistry
         .registerService( IAclService.class, new UnifiedRepositoryConnectionAclService( pur ) );
-      metaStore = new PurRepositoryMetaStore( this );
+      metaStore = metastoreLocator.getExplicitMetastore( VFS_METASTORE_PROVIDER );
+      if ( metaStore == null ) {
+        metaStore = new PurRepositoryMetaStore( this );
+      }
       try {
         metaStore.createNamespace( PentahoDefaults.NAMESPACE );
       } catch ( MetaStoreException e ) {
@@ -342,12 +354,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         if ( log.isDetailed() ) {
           log.logDetailed( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
         }
-        metaStore = new PurRepositoryMetaStore( this );
-        IMetaStore activeMetaStore = metaStore;
-        if ( activeMetaStore != null ) {
-          final IMetaStore connectedMetaStore = activeMetaStore;
-          connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
+        metaStore = metastoreLocator.getExplicitMetastore( VFS_METASTORE_PROVIDER );
+        if ( metaStore == null ) {
+          metaStore = new PurRepositoryMetaStore( this );
         }
+        final IMetaStore connectedMetaStore = metaStore;
+        connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
 
         // Create the default Pentaho namespace if it does not exist
         try {
@@ -379,16 +391,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override public void disconnect() {
     connected = false;
-    metaStore = null;
-    IMetaStore activeMetaStore = null;
-    try {
-      activeMetaStore = MetaStoreConst.openLocalPentahoMetaStore();
-    } catch ( MetaStoreException e ) {
-      activeMetaStore = null;
-    }
-    if ( activeMetaStore != null ) {
-      final IMetaStore connectedMetaStore = activeMetaStore;
-      connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
+    if ( metaStore instanceof PurRepositoryMetaStore ) {
+      metaStore = null;
+      try {
+        metaStore = MetaStoreConst.openLocalPentahoMetaStore();
+      } catch ( MetaStoreException e ) {
+        metaStore = null;
+      }
+      if ( metaStore != null ) {
+        final IMetaStore connectedMetaStore = metaStore;
+        connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
+      }
     }
 
     purRepositoryConnector.disconnect();
