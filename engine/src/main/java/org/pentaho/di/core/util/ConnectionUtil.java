@@ -26,9 +26,6 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
 import org.pentaho.di.metastore.MetaStoreConst;
-import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
 /**
  * Utility for managing embedded named connections
@@ -45,35 +42,7 @@ public class ConnectionUtil {
    */
   public static void init( AbstractMeta meta ) {
     ConnectionManager connectionManager = ConnectionManager.getInstance();
-
-    IMetaStore metaStore = null;
-    try {
-      if ( meta.getRepository() != null ) {
-        if ( meta.getMetaStore() instanceof DelegatingMetaStore ) {
-          metaStore = ( (DelegatingMetaStore) meta.getMetaStore() ).getActiveMetaStore();
-        } else {
-          metaStore = meta.getRepository().getMetaStore();
-        }
-      } else {
-        MetastoreLocatorOsgi ml = meta.getMetastoreLocatorOsgi();
-        if ( ml != null ) {
-          IMetaStore vfsms = ml.getMetastore();
-          if ( vfsms != null ) {
-            metaStore = vfsms;
-          }
-        }
-        if ( metaStore == null ) {
-          metaStore = MetaStoreConst.openLocalPentahoMetaStore();
-        }
-      }
-    } catch ( MetaStoreException ignored ) {
-      // Allow connectedMetaStore to be null
-    }
-
-    if ( metaStore != null ) {
-      final IMetaStore connectedMetaStore = metaStore;
-      connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
-    }
+    connectionManager.setMetastoreSupplier( MetaStoreConst.getDefaultMetastoreSupplier() );
   }
 
 }

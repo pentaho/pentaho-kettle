@@ -22,9 +22,13 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
+import org.pentaho.di.trans.steps.tableoutput.TableOutputData;
+import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This class converts old mapping info into new one.
@@ -36,25 +40,23 @@ public class MetaInjectMigration {
   /* migration mapping of keys.
      key is the old version of the mapping
      value is the new version of the mapping */
-  private static Map<String, String> migrationMappings = new HashMap<>();
+  private static Map<String, String> migrationMappingsTableOutputMeta = new HashMap<>();
+  private static Map<Class<?>, Map<String, String> > migrationMappings = new HashMap<>();
+
   static {
-    migrationMappings.put( "SCHENAMENAMEFIELD", "SCHEMANAMEFIELD" );
-    migrationMappings.put( "DATABASE_FIELD_NAME", "DATABASE_FIELDNAME" );
-    migrationMappings.put( "STREAM_FIELDNAME", "DATABASE_STREAMNAME" );
+    migrationMappingsTableOutputMeta.put( "SCHENAMENAMEFIELD", "SCHEMANAMEFIELD" );
+    migrationMappingsTableOutputMeta.put( "DATABASE_FIELDNAME", "DATABASE_FIELD_NAME" );
+    migrationMappingsTableOutputMeta.put( "STREAM_FIELDNAME", "DATABASE_STREAM_NAME" );
+
+    migrationMappings.put( TableOutputMeta.class, migrationMappingsTableOutputMeta );
   }
 
   /**
    * Migrate mapping from previous versions.
    */
-  public static void migrate( Map<TargetStepAttribute, SourceStepField> targetSourceMapping ) {
-    for ( TargetStepAttribute oldTarget : new ArrayList<>( targetSourceMapping.keySet() ) ) {
-      for ( Map.Entry<String, String> mapping : migrationMappings.entrySet() ) {
-        if ( mapping.getKey().equals( oldTarget.getAttributeKey() ) ) {
-          SourceStepField so = targetSourceMapping.remove( oldTarget );
-          TargetStepAttribute newTarget = new TargetStepAttribute( oldTarget.getStepname(), mapping.getValue(), oldTarget.isDetail() );
-          targetSourceMapping.put( newTarget, so );
-        }
-      }
-    }
+  public static String migrate( Class<?> clazz, String attributeKey) {
+    return Optional.ofNullable( migrationMappings.get( clazz ) )
+      .map( mappings -> mappings.getOrDefault( attributeKey, attributeKey ) )
+      .orElse( attributeKey );
   }
 }

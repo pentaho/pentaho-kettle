@@ -1384,11 +1384,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   @Deprecated
   public JobMeta getJobMeta( Repository rep, VariableSpace space ) throws KettleException {
     parentJobMeta.getMetaFileCache( ); //Get the cache from the parent or create it
-    if ( rep != null ) {
-      return getJobMeta( rep, rep.getMetaStore(), space );
-    } else {
       return getJobMeta( rep, getMetaStore(), space );
-    }
   }
 
   protected JobMeta getJobMetaFromRepository( Repository rep, CurrentDirectoryResolver r, String transPath, VariableSpace tmpSpace ) throws KettleException {
