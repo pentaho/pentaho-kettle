@@ -28,6 +28,7 @@ import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionProvider;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.util.List;
 
@@ -50,7 +51,8 @@ public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends C
    * @return FileSystem or null if the provided connection details are not the matching type
    */
   default FileObject getDirectFile(ConnectionDetails connectionDetails, String path) throws KettleFileException {
-    return null;
+    String pvfsUrl = "pvfs://" + connectionDetails.getName() + ( path.startsWith( "/" ) ? "" : "/" ) + path;
+    return KettleVFS.getFileObject( pvfsUrl );
   }
 
 }
