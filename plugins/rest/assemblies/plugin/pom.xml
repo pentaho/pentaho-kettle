@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <artifactId>rest-assemblies</artifactId>
+    <version>9.6.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>kettle-rest-plugin</artifactId>
+  <version>9.6.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>PDI Rest Plugin Distribution</name>
+
+  <properties>
+    <project.revision>9.6.0.0-SNAPSHOT</project.revision>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>rest-core</artifactId>
+      <version>${project.revision}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>
