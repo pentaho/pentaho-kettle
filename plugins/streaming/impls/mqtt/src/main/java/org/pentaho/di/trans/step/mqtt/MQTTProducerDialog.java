@@ -70,7 +70,8 @@ import static org.pentaho.di.ui.core.WidgetUtils.createFieldDropDown;
 import static org.pentaho.di.ui.core.WidgetUtils.formDataBelow;
 
 @SuppressWarnings ( "unused" )
-@PluginDialog ( id = "MQTTProducer", image = "MQTTProducer.svg", pluginType = PluginDialog.PluginType.STEP )
+@PluginDialog ( id = "MQTTProducer", image = "MQTTProducer.svg", pluginType = PluginDialog.PluginType.STEP,
+  documentationUrl = "Products/MQTT_Producer" )
 public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInterface {
   private static final int SHELL_MIN_WIDTH = 527;
   private static final int SHELL_MIN_HEIGHT = 650;
