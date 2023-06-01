@@ -615,7 +615,21 @@ public class SlaveServerConfig {
   }
 
   public IMetaStore getMetaStore() {
-    return metaStoreSupplier.get();
+    return metaStoreSupplier == null ? null : metaStoreSupplier.get();
+  }
+
+  public Supplier<IMetaStore> getMetastoreSupplier() {
+    return metaStoreSupplier;
+  }
+
+  /**
+   * Should generally be used only for tests.
+   *
+   *
+   * @param metastoreSupplier
+   */
+  public void setMetastoreSupplier( Supplier<IMetaStore> metastoreSupplier ) {
+    this.metaStoreSupplier = metastoreSupplier;
   }
 
   public String getPasswordFile() {
