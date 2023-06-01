@@ -40,9 +40,9 @@ public class MetaInjectMigrationTest {
     String[] oldMappingNames = { "SCHENAMENAMEFIELD", "DATABASE_FIELDNAME", "STREAM_FIELDNAME", "DATE_RANGE_START_FIELD" };
     //The expected new mappings. Since the migration process removes and adds again the new  mapping, the one that does
     // not need change will become the first one.
-    String[] newMappingNames = { "DATABASE_FIELDNAME", "DATE_RANGE_START_FIELD", "SCHEMANAMEFIELD", "DATABASE_STREAMNAME" };
+    String[] newMappingNames = { "DATE_RANGE_START_FIELD", "SCHEMANAMEFIELD", "DATABASE_FIELD_NAME", "DATABASE_STREAM_NAME" };
     //Expected Step Names. After the migration the Step names should not change.
-    String[] expectedStepName = { "step2","step4", "step1", "step3" };
+    String[] expectedStepName = { "step4", "step1", "step2", "step3" };
 
     //Initiate target mapping with the old mapping names
     int idStep = 1;
