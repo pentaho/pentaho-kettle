@@ -39,8 +39,8 @@ public class MetaInjectMigration {
   private static Map<String, String> migrationMappings = new HashMap<>();
   static {
     migrationMappings.put( "SCHENAMENAMEFIELD", "SCHEMANAMEFIELD" );
-    migrationMappings.put( "DATABASE_FIELD_NAME", "DATABASE_FIELDNAME" );
-    migrationMappings.put( "STREAM_FIELDNAME", "DATABASE_STREAMNAME" );
+    migrationMappings.put( "DATABASE_FIELDNAME", "DATABASE_FIELD_NAME" );
+    migrationMappings.put( "STREAM_FIELDNAME", "DATABASE_STREAM_NAME" );
   }
 
   /**
