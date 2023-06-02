@@ -472,7 +472,7 @@ public abstract class AvroInputMetaBase extends BaseStepMeta implements StepMeta
     setFormat( SourceFormat.AVRO_USE_SCHEMA.ordinal() );
   }
 
-  @Injection( name = "STREAM_FIELDNAME"  )
+  @Injection( name = "DATABASE_STREAM_NAME"  )
   @Deprecated
   public void setDataFieldName( String fieldName ) {
     setDataLocation( fieldName, LocationDescriptor.FIELD_NAME );
