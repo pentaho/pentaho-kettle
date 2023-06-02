@@ -45,6 +45,18 @@ public class SuppliedMetaStore implements IMetaStore {
     this.metaStoreSupplier = metaStoreSupplier;
   }
 
+  /**
+   * Returns the current metastore as supplied by the Supplier.
+   *
+   * The object returned by this method should not be held on to permanently.
+   *
+   *
+   * @return IMetaStore The current metastore.
+   */
+  public IMetaStore getCurrentMetaStore() {
+    return metaStoreSupplier.get();
+  }
+
   @Override
   public List<String> getNamespaces() throws MetaStoreException {
     return metaStoreSupplier.get().getNamespaces();

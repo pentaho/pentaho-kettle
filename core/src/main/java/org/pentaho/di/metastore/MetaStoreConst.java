@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.metastore.api.IMetaStore;
@@ -36,6 +35,8 @@ import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.pentaho.metastore.stores.xml.XmlUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MetaStoreConst {
 
@@ -59,6 +60,8 @@ public class MetaStoreConst {
 
   public static final String DB_ATTR_ID_ATTRIBUTES = "attributes";
 
+  private static final Logger logger = LoggerFactory.getLogger( MetaStoreConst.class );
+
   private static final Supplier<MetastoreLocator> metastoreLocatorSupplier = new Supplier<MetastoreLocator> () {
     private volatile MetastoreLocator metastoreLocator;
 
@@ -72,7 +75,7 @@ public class MetaStoreConst {
               metastoreLocator = metastoreLocators.stream().findFirst().orElse( null );
             }
           } catch ( KettlePluginException e ) {
-            LogChannel.GENERAL.logError( "Error getting metastore locator", e );
+            logger.error( "Error getting metastore locator", e );
           }
         }
       }
