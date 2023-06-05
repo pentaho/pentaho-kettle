@@ -1004,6 +1004,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       } catch ( KettleDatabaseException kde ) {
         throw new KettleXMLException( "Unable to create new database interface", kde );
       }
+      
+      setDefaultAttributesValues();
 
       setName( XMLHandler.getTagValue( con, "name" ) );
       setDisplayName( getName() );
@@ -1040,6 +1042,22 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load database connection info from XML node", e );
     }
+  }
+
+  /**
+   * Initialize every attribute
+   */
+  private void setDefaultAttributesValues() {
+    setConnectSQL( "" );
+    setInitialPoolSizeString( "" );
+    setMaximumPoolSizeString( "" );
+    setUsingConnectionPool( false );
+    setForcingIdentifiersToLowerCase( false );
+    setForcingIdentifiersToUpperCase( false );
+    setQuoteAllFields( false );
+    setUsingDoubleDecimalAsSchemaTableSeparator( false );
+    setSupportsBooleanDataType( false );
+    setSupportsTimestampDataType( false );
   }
 
   @Override
