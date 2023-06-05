@@ -51,11 +51,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -71,7 +67,7 @@ import java.util.List;
  * @since 2-jun-2003
  */
 @InjectionSupported( localizationPrefix = "TableOutputMeta.Injection.", groups = { "DATABASE_FIELDS" } )
-public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, ProvidesModelerMeta {
+public class TableOutputMeta extends BaseDatabaseStepMeta implements StepMetaInterface, ProvidesModelerMeta {
   private static Class<?> PKG = TableOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DatabaseMeta databaseMeta;

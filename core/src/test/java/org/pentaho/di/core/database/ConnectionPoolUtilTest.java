@@ -102,7 +102,9 @@ public class ConnectionPoolUtilTest implements Driver {
   public void testGetConnection() throws Exception {
     when( dbMeta.getName() ).thenReturn( "CP1" );
     when( dbMeta.getPassword() ).thenReturn( PASSWORD );
-    Connection conn = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "", 1, 2 );
+    when( dbMeta.getInitialPoolSize() ).thenReturn( 1 );
+    when( dbMeta.getMaximumPoolSize() ).thenReturn( 2 );
+    Connection conn = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "" );
     assertTrue( conn != null );
   }
 
@@ -110,7 +112,9 @@ public class ConnectionPoolUtilTest implements Driver {
   public void testGetConnectionEncrypted() throws Exception {
     when( dbMeta.getName() ).thenReturn( "CP2" );
     when( dbMeta.getPassword() ).thenReturn( ENCR_PASSWORD );
-    Connection conn = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "", 1, 2 );
+    when( dbMeta.getInitialPoolSize() ).thenReturn( 1 );
+    when( dbMeta.getMaximumPoolSize() ).thenReturn( 2 );
+    Connection conn = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "" );
     assertTrue( conn != null );
   }
 
@@ -161,8 +165,6 @@ public class ConnectionPoolUtilTest implements Driver {
     String dbMetaDatabase = UUID.randomUUID().toString();
     String dbMetaHostname = UUID.randomUUID().toString();
     String dbMetaPort = UUID.randomUUID().toString();
-    String dbMetaInitialPoolSize = UUID.randomUUID().toString();
-    String dbMetaMaximumPoolSize = UUID.randomUUID().toString();
     String partitionId = UUID.randomUUID().toString();
 
     when( dbMetaMock.getName() ).thenReturn( dbMetaName );
@@ -172,8 +174,6 @@ public class ConnectionPoolUtilTest implements Driver {
     when( dbMetaMock.getDatabaseName() ).thenReturn( dbMetaDatabase );
     when( dbMetaMock.getHostname() ).thenReturn( dbMetaHostname );
     when( dbMetaMock.getDatabasePortNumberString() ).thenReturn( dbMetaPort );
-    when( dbMetaMock.getInitialPoolSizeString() ).thenReturn( dbMetaInitialPoolSize );
-    when( dbMetaMock.getMaximumPoolSizeString() ).thenReturn( dbMetaMaximumPoolSize );
 
     when( dbMetaMock.environmentSubstitute( eq( dbMetaName ) ) ).thenReturn( dbMetaName );
     when( dbMetaMock.environmentSubstitute( eq( dbMetaUsername ) ) ).thenReturn( dbMetaUsername );
@@ -182,11 +182,9 @@ public class ConnectionPoolUtilTest implements Driver {
     when( dbMetaMock.environmentSubstitute( eq( dbMetaDatabase ) ) ).thenReturn( dbMetaDatabase );
     when( dbMetaMock.environmentSubstitute( eq( dbMetaHostname ) ) ).thenReturn( dbMetaHostname );
     when( dbMetaMock.environmentSubstitute( eq( dbMetaPort ) ) ).thenReturn( dbMetaPort );
-    when( dbMetaMock.environmentSubstitute( eq( dbMetaInitialPoolSize ) ) ).thenReturn( dbMetaInitialPoolSize );
-    when( dbMetaMock.environmentSubstitute( eq( dbMetaMaximumPoolSize ) ) ).thenReturn( dbMetaMaximumPoolSize );
 
     String dataSourceNameExpected = dbMetaName + dbMetaUsername + dbMetaPassword + dbMetaSchema + dbMetaDatabase +
-      dbMetaHostname + dbMetaPort + dbMetaInitialPoolSize + dbMetaMaximumPoolSize + partitionId;
+      dbMetaHostname + dbMetaPort + partitionId;
     String dataSourceName = connectionPoolUtil.getDataSourceName( dbMetaMock, partitionId );
 
     assertEquals( dataSourceNameExpected, dataSourceName );

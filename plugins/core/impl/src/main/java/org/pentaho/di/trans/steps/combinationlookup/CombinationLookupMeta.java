@@ -56,11 +56,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -74,7 +70,7 @@ import org.w3c.dom.Node;
   categoryDescription = "BaseStep.Category.DataWarehouse", description = "BaseStep.TypeTooltipDesc.CombinationUpdate",
   i18nPackageName = "org.pentaho.di.trans.step" )
 @InjectionSupported( localizationPrefix = "CombinationLookup.Injection." )
-public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInterface,
+public class CombinationLookupMeta extends BaseDatabaseStepMeta implements StepMetaInterface,
   ProvidesModelerMeta {
   private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!
 

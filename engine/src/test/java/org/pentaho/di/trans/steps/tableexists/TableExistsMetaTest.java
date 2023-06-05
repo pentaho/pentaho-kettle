@@ -43,7 +43,7 @@ public class TableExistsMetaTest {
 
   @Test
   public void testLoadSave() throws KettleException {
-    List<String> attributes = Arrays.asList( "Database", "DynamicTablenameField", "ResultFieldName",
+    List<String> attributes = Arrays.asList( "DatabaseMeta", "DynamicTablenameField", "ResultFieldName",
       "Schemaname" );
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( TableExistsMeta.class, attributes );

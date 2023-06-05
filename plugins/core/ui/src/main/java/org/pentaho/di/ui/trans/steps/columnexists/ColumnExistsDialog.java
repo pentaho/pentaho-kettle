@@ -152,7 +152,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 
     // Connection line
     wConnection = addConnectionLine( shell, wStepname, middle, margin );
-    if ( input.getDatabase() == null && transMeta.nrDatabases() == 1 ) {
+    if ( input.getDatabaseMeta() == null && transMeta.nrDatabases() == 1 ) {
       wConnection.select( 0 );
     }
     wConnection.addModifyListener( lsMod );
@@ -400,8 +400,8 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
       logDebug( BaseMessages.getString( PKG, "ColumnExistsDialog.Log.GettingKeyInfo" ) );
     }
 
-    if ( input.getDatabase() != null ) {
-      wConnection.setText( input.getDatabase().getName() );
+    if ( input.getDatabaseMeta() != null ) {
+      wConnection.setText( input.getDatabaseMeta().getName() );
     } else if ( transMeta.nrDatabases() == 1 ) {
       wConnection.setText( transMeta.getDatabase( 0 ).getName() );
     }
@@ -437,7 +437,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
       return;
     }
 
-    input.setDatabase( transMeta.findDatabase( wConnection.getText() ) );
+    input.setDatabaseMeta( transMeta.findDatabase( wConnection.getText() ) );
     input.setSchemaname( wSchemaname.getText() );
     input.setTablename( wTablenameText.getText() );
     input.setTablenameInField( wTablenameInField.getSelection() );
@@ -447,7 +447,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 
     stepname = wStepname.getText(); // return value
 
-    if ( input.getDatabase() == null ) {
+    if ( input.getDatabaseMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "ColumnExistsDialog.InvalidConnection.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "ColumnExistsDialog.InvalidConnection.DialogTitle" ) );

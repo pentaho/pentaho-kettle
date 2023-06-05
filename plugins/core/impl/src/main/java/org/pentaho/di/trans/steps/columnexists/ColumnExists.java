@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.columnexists;
 
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -30,11 +29,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 
 /**
  * Check if a column exists in table on a specified connection *
@@ -44,7 +39,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  *
  */
 
-public class ColumnExists extends BaseStep implements StepInterface {
+public class ColumnExists extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ColumnExistsMeta meta;
@@ -187,38 +182,19 @@ public class ColumnExists extends BaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "ColumnExists.Error.ResultFieldMissing" ) );
         return false;
       }
-      data.db = new Database( this, meta.getDatabase() );
-      data.db.shareVariablesWith( this );
-      try {
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "ColumnExists.Log.ConnectedToDB" ) );
-        }
-
-        return true;
-      } catch ( KettleException e ) {
-        logError( BaseMessages.getString( PKG, "ColumnExists.Log.DBException" ) + e.getMessage() );
-        if ( data.db != null ) {
-          data.db.disconnect();
-        }
-      }
+      return true;
     }
     return false;
+  }
+
+  @Override
+  protected Class<?> getPKG() {
+    return PKG;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ColumnExistsMeta) smi;
     data = (ColumnExistsData) sdi;
-    if ( data.db != null ) {
-      data.db.disconnect();
-    }
     super.dispose( smi, sdi );
   }
 }

@@ -22,22 +22,19 @@
 
 package org.pentaho.di.trans.steps.dynamicsqlrow;
 
-import java.util.ArrayList;
-
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
+import org.pentaho.di.trans.step.BaseDatabaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+
+import java.util.ArrayList;
 
 /**
  * @author Matt
  * @since 24-jan-2005
  */
-public class DynamicSQLRowData extends BaseStepData implements StepDataInterface {
+public class DynamicSQLRowData extends BaseDatabaseStepData implements StepDataInterface {
   RowMetaInterface outputRowMeta;
   RowMetaInterface lookupRowMeta;
-
-  public Database db;
 
   public Object[] notfound; // Values in case nothing is found...
 
