@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.salesforceinput;
 
-import com.sun.syndication.io.impl.Base64;
+import com.rometools.rome.io.impl.Base64;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
