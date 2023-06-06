@@ -90,13 +90,13 @@ public class DimensionLookupMetaInjectionTest extends BaseMetadataInjectionTest<
         return meta.getDateTo();
       }
     } );
-    check( "STREAM_FIELDNAME", new StringGetter() {
+    check( "DATABASE_STREAM_NAME", new StringGetter() {
       @Override
       public String get() {
         return meta.getFieldStream()[0];
       }
     } );
-    check( "DATABASE_FIELDNAME", new StringGetter() {
+    check( "DATABASE_FIELD_NAME", new StringGetter() {
       @Override
       public String get() {
         return meta.getFieldLookup()[0];
