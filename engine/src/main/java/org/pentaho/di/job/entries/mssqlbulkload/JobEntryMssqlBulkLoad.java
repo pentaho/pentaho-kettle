@@ -624,6 +624,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
       result.setNrErrors( 1 );
       logError( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Nofilename.Label" ) );
     }
+    setLoggingObjectInUse( false );
     return result;
   }
 

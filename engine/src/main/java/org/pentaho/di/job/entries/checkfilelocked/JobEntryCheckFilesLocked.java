@@ -237,6 +237,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
       logError( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.ErrorRunningJobEntry", e ) );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

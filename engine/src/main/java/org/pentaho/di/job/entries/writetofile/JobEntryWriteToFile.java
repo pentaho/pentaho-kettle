@@ -242,6 +242,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
       logError( BaseMessages.getString( PKG, "JobWriteToFile.Error.MissinfgFile" ) );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 
