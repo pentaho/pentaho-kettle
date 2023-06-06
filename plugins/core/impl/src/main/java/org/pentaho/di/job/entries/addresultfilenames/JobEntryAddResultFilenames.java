@@ -266,6 +266,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
       result.setNrErrors( nrErrFiles );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

@@ -279,6 +279,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
       }
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 
