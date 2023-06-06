@@ -180,12 +180,12 @@ upload_file () {
   FILE_NAME=${FILE_PATH_ARRAY[-1]}
 
     echo "uploading $FILE_PATH ..."
-    COMMAND="curl -i -X POST \"https://upload.box.com/api/2.0/files/content\" \
+    COMMAND="curl -s --retry 3 -X POST \"https://upload.box.com/api/2.0/files/content\" \
                   -H \"Authorization: Bearer $ACCESS_TOKEN\" \
                   -H \"Content-Type: multipart/form-data\" \
                   -F attributes='{\"name\":\"$FILE_NAME\", \"parent\":{\"id\":\"$PARENT_ID\"}}' \
-                  -F file=@$FILE_PATH \
-                  | jq '.'"
+                  -F file=@$FILE_PATH "
+
     if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
       echo "${COMMAND}"
     fi
@@ -193,6 +193,13 @@ upload_file () {
     if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
       echo "${RESPONSE}"
     fi
+
+    new_file_id=$(echo "$RESPONSE" | jq -r '.entries[0] | .id' || echo "error" )
+    # If we haven't received the file's id back, it will probably mean that it was not created... so we retry
+    if [ "$new_file_id" == "" ] && [ "$RESPONSE" != "" ]; then
+      upload_file "$PARENT_ID" "$FILE_PATH" || echo "Couldn't recreate $FILE_PATH. See log."
+    fi
+
   echo "file upload complete"
 }
 
