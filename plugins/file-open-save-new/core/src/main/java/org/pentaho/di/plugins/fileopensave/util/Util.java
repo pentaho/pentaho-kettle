@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,27 @@ public class Util {
   }
 
   public static String getName( String path ) {
-    return path.substring( path.lastIndexOf( "/" ) + 1, path.lastIndexOf( "." ) );
+    //Strips off extension if present
+    int slashpos = path.lastIndexOf( "/" );
+    int dotpos = path.lastIndexOf( "." );
+    if ( slashpos < dotpos ) {
+      return path.substring( slashpos + 1, dotpos );
+    } else {
+      return path.substring( slashpos + 1 );
+    }
   }
 
+  public static String getFolder( String path ) {
+    if ( path.endsWith( ":\\\\" ) || path.endsWith( "://" ) ) {
+      return null; //no parent of root
+    }
+    if ( path.lastIndexOf( "/" ) == -1 ) {
+      if ( path.lastIndexOf( "\\" ) == -1 ) {
+        return null; //No parent if no slashes
+      } else {
+        return path.substring( 0, path.lastIndexOf( "\\" ) );
+      }
+    }
+    return path.substring( 0, path.lastIndexOf( "/" ) );
+  }
 }

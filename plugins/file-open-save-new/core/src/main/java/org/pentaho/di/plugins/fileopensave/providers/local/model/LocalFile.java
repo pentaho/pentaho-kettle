@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.plugins.fileopensave.providers.local.model;
 
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
 
@@ -94,5 +95,9 @@ public class LocalFile extends BaseEntity implements File {
     LocalFile compare = (LocalFile) obj;
     // This comparison depends on `getProvider()` to always return a hardcoded value
     return compare.getProvider().equals( getProvider() ) && Objects.equals( getPath(), compare.getPath() );
+  }
+
+  public EntityType getEntityType(){
+    return EntityType.LOCAL_FILE;
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.plugins.fileopensave.api.providers;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.ui.core.FileDialogOperation;
 
@@ -61,6 +62,16 @@ public interface FileProvider<T extends File> {
     return getTree();
   }
 
+  /**
+   * Works kind of like a resolve.  It will return a mewly created file object if the file received exists physically,
+   * or null if the file specified does not exist.
+   *
+   * @param file
+   * @param filters
+   * @param space
+   * @return
+   * @throws FileException
+   */
   List<T> getFiles( T file, String filters, VariableSpace space ) throws FileException;
 
   List<T> searchFiles( T file, String filters, String searchString, VariableSpace space ) throws FileException;
@@ -79,15 +90,16 @@ public interface FileProvider<T extends File> {
 
   boolean isSame( File file1, File file2 );
 
-  T rename( T file, String newPath, boolean overwrite, VariableSpace space ) throws FileException;
+  T rename( T file, String newPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
 
-  T copy( T file, String toPath, boolean overwrite, VariableSpace space ) throws FileException;
+  T copy( T file, String toPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
 
-  T move( T file, String toPath, boolean overwrite, VariableSpace space ) throws FileException;
+  T move( T file, String toPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
 
   InputStream readFile( T file, VariableSpace space ) throws FileException;
 
-  T writeFile( InputStream inputStream, T destDir, String path, boolean overwrite, VariableSpace space ) throws FileException;
+  T writeFile( InputStream inputStream, T destDir, String path, OverwriteStatus overwriteStatus, VariableSpace space )
+    throws FileException, KettleFileException;
 
   T getParent( T file );
 
@@ -96,7 +108,12 @@ public interface FileProvider<T extends File> {
   void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation );
 
 
-  default T createDirectory( String parentPath, T file, String newDirectoryName ) throws FileException, KettleFileException {
+  default T createDirectory( String parentPath, T file, String newDirectoryName )
+    throws FileException, KettleFileException {
+    throw new UnsupportedOperationException();
+  }
+
+  default File getFile( String path, boolean isDirectory ) {
     throw new UnsupportedOperationException();
   }
 }

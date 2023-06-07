@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,9 +24,10 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
+import org.pentaho.di.plugins.fileopensave.util.Util;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,9 +81,24 @@ public class VFSDirectory extends VFSFile implements Directory {
     this.canAddChildren = canAddChildren;
   }
 
+  /**
+   * Create a VFSDirectory.  Note that this creates an VFSDirectory object, it does not physically create the
+   * directory.
+   * @param parent The path to the parent folder
+   * @param fileObject A VFSFileObject for the actual folder being created
+   * @param connection The VFS connection associated with the directory
+   * @param domain The domain associated with the directory
+   * @return VFSDirectory
+   */
   public static VFSDirectory create( String parent, FileObject fileObject, String connection, String domain ) {
     VFSDirectory vfsDirectory = new VFSDirectory();
-    vfsDirectory.setName( fileObject.getName().getBaseName() );
+    if ( fileObject.getName().toString().endsWith("/") ) {
+      // Adls2 has a bug that delivers directories with an ending slash.  Others do not
+      String adjustedName = fileObject.getName().toString();
+      vfsDirectory.setName( Util.getName( adjustedName.substring( 0, adjustedName.length() - 1 ) ) ); //remove the trailing slash
+    } else {
+      vfsDirectory.setName( fileObject.getName().getBaseName() );
+    }
     vfsDirectory.setPath( fileObject.getName().getURI() );
     vfsDirectory.setParent( parent );
     if ( connection != null ) {
@@ -95,7 +111,7 @@ public class VFSDirectory extends VFSFile implements Directory {
     vfsDirectory.setCanAddChildren( true );
     try {
       vfsDirectory.setDate( new Date( fileObject.getContent().getLastModifiedTime() ) );
-    } catch ( FileSystemException e ) {
+    } catch ( Exception e ) {
       vfsDirectory.setDate( new Date() );
     }
     return vfsDirectory;
@@ -121,5 +137,10 @@ public class VFSDirectory extends VFSFile implements Directory {
     return compare.getProvider().equals( getProvider() )
       && StringUtils.equals( compare.getConnection(), getConnection() )
       && StringUtils.equals( compare.getPath(), getPath() );
+  }
+
+  @Override
+  public EntityType getEntityType(){
+    return EntityType.VFS_DIRECTORY;
   }
 }

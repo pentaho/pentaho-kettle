@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.repository.model;
 
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
@@ -49,7 +50,7 @@ public class RepositoryDirectory extends RepositoryFile implements Directory {
     RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
     repositoryDirectory.setParent( parentPath );
     repositoryDirectory.setName( repositoryDirectoryInterface.getName() );
-    repositoryDirectory.setPath( repositoryDirectoryInterface.getPath() );
+    repositoryDirectory.setPath( parentPath == null ? repositoryDirectoryInterface.getPath() : parentPath + "/" + repositoryDirectoryInterface.getName() );
     repositoryDirectory.setObjectId( repositoryDirectoryInterface.getObjectId().getId() );
     repositoryDirectory.setHidden( !repositoryDirectoryInterface.isVisible() );
     repositoryDirectory.setRoot( RepositoryFileProvider.NAME );
@@ -77,11 +78,39 @@ public class RepositoryDirectory extends RepositoryFile implements Directory {
     return repositoryDirectory;
   }
 
+  /**
+   * Used to create a new RepositoryDirectory object from exisiting parent without actually creating the directory
+   * @param parentPath
+   * @param name
+   * @param path
+   * @param id
+   * @param isVisible
+   * @return
+   */
+  public static RepositoryDirectory build( String parentPath, String name, String id, boolean isVisible ) {
+    RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
+    repositoryDirectory.setParent( parentPath );
+    repositoryDirectory.setName( name );
+    repositoryDirectory.setPath( parentPath + "/" + name );
+    repositoryDirectory.setObjectId( id );
+    repositoryDirectory.setHidden( isVisible );
+    repositoryDirectory.setRoot( RepositoryFileProvider.NAME );
+    repositoryDirectory.setCanAddChildren( true );
+    repositoryDirectory.setCanEdit( true );
+
+    return repositoryDirectory;
+  }
+
   @Override public boolean isCanAddChildren() {
     return canAddChildren;
   }
 
   public void setCanAddChildren( boolean canAddChildren ) {
     this.canAddChildren = canAddChildren;
+  }
+
+  @Override
+  public EntityType getEntityType(){
+    return EntityType.REPOSITORY_DIRECTORY;
   }
 }

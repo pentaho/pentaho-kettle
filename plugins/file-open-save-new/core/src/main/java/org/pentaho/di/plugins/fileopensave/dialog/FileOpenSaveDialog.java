@@ -47,6 +47,9 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -89,6 +92,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.api.providers.Entity;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
@@ -99,6 +103,9 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
+import org.pentaho.di.plugins.fileopensave.dragdrop.ElementDragListener;
+import org.pentaho.di.plugins.fileopensave.dragdrop.ElementTransfer;
+import org.pentaho.di.plugins.fileopensave.dragdrop.ElementTreeDropAdapter;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
@@ -1109,7 +1116,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     return file;
   }
 
-  private void refreshDisplay( SelectionEvent selectionEvent ) {
+  public void refreshDisplay( SelectionEvent selectionEvent ) {
     StructuredSelection fileTableViewerSelection = (StructuredSelection) ( fileTableViewer.getSelection() );
     TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
     FileProvider fileProvider = null;
@@ -1190,8 +1197,15 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     PropsUI.getInstance().setLook( sashForm );
     sashForm.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
 
-    treeViewer = new TreeViewer( sashForm, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION );
+    treeViewer = new TreeViewer( sashForm, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI );
     PropsUI.getInstance().setLook( treeViewer.getTree() );
+    // Add drag/drop support
+    Transfer[] dropTransfers = new Transfer[] { ElementTransfer.getInstance(), FileTransfer.getInstance() };
+    Transfer[] dragTransfers = new Transfer[] { ElementTransfer.getInstance() };
+    int ops = DND.DROP_COPY | DND.DROP_MOVE;
+
+    treeViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( treeViewer, this, log ) );
+    treeViewer.addDropSupport( ops, dropTransfers, new ElementTreeDropAdapter( treeViewer, log ) );
 
     stackLayout = new StackLayout();
     recentComposite = new Composite( sashForm, SWT.BORDER );
@@ -1202,7 +1216,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     treeViewer.setContentProvider( new FileTreeContentProvider( FILE_CONTROLLER, this ) );
 
-    // Load the various file types on the left
+    // Load the various tree types on the left
     treeViewer.setInput( FILE_CONTROLLER.load( providerFilter ).toArray() );
 
     treeViewer.addPostSelectionChangedListener( e -> {
@@ -1214,6 +1228,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         treeViewer.refresh( selectedNode, true );
         treeViewer.setExpandedState( selectedNode, true );
       }
+
       // Update the path that is selected
       selectPath( selectedNode );
       // Clears the selection from fileTableViewer
@@ -1229,7 +1244,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( noRecentFilesLabel == null ) {
           noRecentFilesLabel = new Label( recentComposite, SWT.CENTER );
           PropsUI.getInstance().setLook( noRecentFilesLabel );
-          noRecentFilesLabel.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.middle.no-recents.message" ));
+          noRecentFilesLabel.setText(
+            BaseMessages.getString( PKG, "file-open-save-plugin.app.middle.no-recents.message" ) );
         }
         stackLayout.topControl = noRecentFilesLabel;
         stackLayout.topControl.getParent().layout();
@@ -1260,6 +1276,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } );
 
     fileTableViewer = new TableViewer( recentComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION );
+
+    // Add drag/drop support
+    fileTableViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( fileTableViewer, this, log ) );
+
     PropsUI.getInstance().setLook( fileTableViewer.getTable() );
     fileTableViewer.getTable().setHeaderVisible( true );
     Menu fileTableMenu = new Menu( fileTableViewer.getTable() );
@@ -1575,15 +1595,17 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           if ( !isApplyToAll ) {
             createPasteWarningDialog( file.getName() );
           }
-          switch ( pasteAction ) {
+          switch( pasteAction ) {
             case PASTE_ACTION_REPLACE:
-              copyFile( file, destFolder, newFilePath, true );
+              copyFile( file, destFolder, newFilePath,
+                new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.OVERWRITE ) );
               break;
             case PASTE_ACTION_KEEP_BOTH:
               if ( StringUtils.isNotEmpty( newFilePath ) ) {
                 result = FILE_CONTROLLER.getNewName( destFolder, newFilePath );
                 if ( result.getStatus() == Result.Status.SUCCESS ) {
-                  FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(), false );
+                  FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(),
+                    new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.RENAME ) );
                 }
               }
               break;
@@ -1598,7 +1620,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         }
 
       } else {
-        result = copyFile( file, destFolder, newFilePath, false );
+        result = copyFile( file, destFolder, newFilePath,
+          new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.CANCEL ) );
       }
 
       if ( isCutActionSelected && deleteCutFileFlag ) {
@@ -1625,9 +1648,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     return null;
   }
 
-  private Result copyFile( File file, File destFolder, String path, boolean overwrite ) {
+  private Result copyFile( File file, File destFolder, String path, OverwriteStatus overwriteStatus ) {
     if ( StringUtils.isNotEmpty( path ) ) {
-      return FILE_CONTROLLER.copyFile( file, destFolder, path, overwrite );
+      return FILE_CONTROLLER.copyFile( file, destFolder, path, overwriteStatus );
     }
     return null;
   }
@@ -1639,7 +1662,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       String filename = file.getName();
       String fileExtention =
         filename.lastIndexOf( "." ) != -1 ? filename.substring( filename.lastIndexOf( "." ), filename.length() ) : null;
-      FILE_CONTROLLER.rename( file, file.getParent() + java.io.File.separator + renameValue, true );
+      FILE_CONTROLLER.rename( file, file.getParent() + java.io.File.separator + renameValue,
+        new OverwriteStatus( null, OverwriteStatus.OverwriteMode.OVERWRITE ) );
     }
   }
 

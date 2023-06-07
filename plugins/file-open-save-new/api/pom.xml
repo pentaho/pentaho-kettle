@@ -15,10 +15,19 @@
 
   <name>PDI File Open and Save New Plugin API</name>
 
+  <properties>
+    <mockito.version>3.12.4</mockito.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>

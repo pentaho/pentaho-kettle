@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,4 +23,20 @@
 package org.pentaho.di.plugins.fileopensave.api.providers.exception;
 
 public class InvalidFileTypeException extends FileException {
+  public InvalidFileTypeException() {
+    super();
+  }
+
+  public InvalidFileTypeException( Throwable cause ) {
+    super( cause );
+  }
+
+  public InvalidFileTypeException( String message ) {
+    super( message );
+  }
+
+  public InvalidFileTypeException( String message, Throwable cause ) {
+    super( message, cause );
+  }
+
 }

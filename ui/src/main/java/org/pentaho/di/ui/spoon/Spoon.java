@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -4650,7 +4650,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void openFileNew() throws Exception {
-    openFileNew( evaluateFileBrowserProviderFilter(), FilterType.KETTLE_FILES.toString(), false
+    openFileNew( evaluateFileBrowserProviderFilter(), FilterType.KETTLE_FILES.toString()  + "," + FilterType.ALL.toString(), false
 		, FileDialogOperation.OPEN );
   }
 
@@ -4682,7 +4682,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     try {
       fileDialogOperation.setFilter( fileFilterType );
-      fileDialogOperation.setDefaultFilter( FilterType.KETTLE_FILES.toString() );
+      fileDialogOperation.setDefaultFilter( FilterType.KETTLE_FILES.toString()  + "," + FilterType.ALL.toString() );
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
               fileDialogOperation );
       String path = fileDialogOperation.getPath();

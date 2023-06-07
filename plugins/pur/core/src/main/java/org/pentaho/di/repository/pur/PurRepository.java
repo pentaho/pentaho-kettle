@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2010-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2010-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3441,7 +3441,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.BeforeSaveToRepository.id, element );
 
-    final boolean isUpdate = ( element.getObjectId() != null );
+    final boolean isUpdate = ( element.getObjectId() != null && element.getObjectId().getId() != null  );
     RepositoryFile file = null;
     if ( isUpdate ) {
 
