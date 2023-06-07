@@ -70,10 +70,11 @@ public class MetastoreLocatorImpl implements MetastoreLocator, MetastoreLocatorO
 
   @Override
   public IMetaStore getMetastore( String providerKey ) {
-    IMetaStore metaStore = getExplicitMetastore( MetastoreLocator.REPOSITORY_PROVIDER_KEY );
+    //Look for VFS metastore.
+    IMetaStore metaStore = getExplicitMetastore( MetastoreLocator.VFS_PROVIDER_KEY );
+    System.err.println( "This is running the current code totally dude" );
     if ( metaStore == null ) {
-      //Look for VFS metastore.
-      metaStore = getExplicitMetastore( MetastoreLocator.VFS_PROVIDER_KEY );
+      metaStore = getExplicitMetastore( MetastoreLocator.REPOSITORY_PROVIDER_KEY );
     }
     if ( metaStore == null ) {
       metaStore = getExplicitMetastore( MetastoreLocator.LOCAL_PROVIDER_KEY );
