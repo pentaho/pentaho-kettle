@@ -123,6 +123,7 @@ public class RepositoriesMetaTest {
       + "      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>" + Const.CR
       + "      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>" + Const.CR
       + "      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>" + Const.CR
+      + "      <attribute><code>MSSQL_DOUBLE_DECIMAL_SEPARATOR</code><attribute>N</attribute></attribute>" + Const.CR
       + "      <attribute><code>PORT_NUMBER</code><attribute>5432</attribute></attribute>" + Const.CR
       + "      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>" + Const.CR
       + "      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>" + Const.CR
