@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.providers.local.model;
 
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
 
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class LocalDirectory extends LocalFile implements Directory {
 
   public static LocalDirectory create( String parent, Path path ) {
     LocalDirectory localDirectory = new LocalDirectory();
-    localDirectory.setName( path.getFileName().toString() );
+    localDirectory.setName( path.getFileName() == null ? null : path.getFileName().toString() );
     localDirectory.setPath( path.toString() );
     localDirectory.setParent( parent );
     try {
@@ -89,5 +90,10 @@ public class LocalDirectory extends LocalFile implements Directory {
     localDirectory.setCanEdit( true );
     localDirectory.setHasChildren( true );
     return localDirectory;
+  }
+
+  @Override
+  public EntityType getEntityType(){
+    return EntityType.LOCAL_DIRECTORY;
   }
 }

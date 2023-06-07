@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
 
@@ -113,7 +114,7 @@ public class VFSFile extends BaseEntity implements File {
       if ( fileObject != null && fileObject.getContent() != null ) {
         vfsFile.setDate( new Date( fileObject.getContent().getLastModifiedTime() ) );
       }
-    } catch ( FileSystemException ignored ) {
+    } catch ( Exception ignored ) {
       vfsFile.setDate( new Date() );
     }
     return vfsFile;
@@ -148,5 +149,9 @@ public class VFSFile extends BaseEntity implements File {
     return compare.getProvider().equals( getProvider() )
       && StringUtils.equals( compare.getConnection(), getConnection() )
       && StringUtils.equals( compare.getPath(), getPath() );
+  }
+
+  public EntityType getEntityType(){
+    return EntityType.VFS_FILE;
   }
 }

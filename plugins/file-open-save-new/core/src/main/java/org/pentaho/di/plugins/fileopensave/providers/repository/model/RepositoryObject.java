@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.providers.repository.model;
 
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
 
@@ -90,5 +91,9 @@ public abstract class RepositoryObject extends BaseEntity implements File {
 
   public void setHidden( boolean hidden ) {
     this.hidden = hidden;
+  }
+
+  public EntityType getEntityType(){
+    return EntityType.REPOSITORY_OBJECT;
   }
 }

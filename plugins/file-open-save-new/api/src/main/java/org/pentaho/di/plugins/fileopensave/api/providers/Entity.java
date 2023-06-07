@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,4 +36,5 @@ public interface Entity {
   Date getDate();
   boolean isCanEdit();
   boolean isCanDelete();
+  EntityType getEntityType();
 }

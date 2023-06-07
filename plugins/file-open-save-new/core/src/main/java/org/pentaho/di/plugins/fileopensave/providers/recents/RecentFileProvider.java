@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.plugins.fileopensave.providers.recents;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
@@ -125,15 +126,15 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     return false;
   }
 
-  @Override public RecentFile rename( RecentFile file, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
+  @Override public RecentFile rename( RecentFile file, String newPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile copy( RecentFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
+  @Override public RecentFile copy( RecentFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile move( RecentFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
+  @Override public RecentFile move( RecentFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
     return null;
   }
 
@@ -141,7 +142,8 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     return null;
   }
 
-  @Override public RecentFile writeFile( InputStream inputStream, RecentFile destDir, String path, boolean overwrite, VariableSpace space )
+  @Override public RecentFile writeFile( InputStream inputStream, RecentFile destDir, String path,
+                                         OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
     return null;
   }

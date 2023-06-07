@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,6 +66,10 @@ public class Utils {
   }
 
   public static String getExtension( String path ) {
+    int dotPos = path.lastIndexOf( "." );
+    if ( dotPos == -1 || dotPos < path.lastIndexOf( "/" ) ) {
+      return "";
+    }
     return path.substring( path.lastIndexOf( "." ) + 1, path.length() );
   }
 

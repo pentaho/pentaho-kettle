@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,12 +23,15 @@
 package org.pentaho.di.plugins.fileopensave.providers.local;
 
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileTypeException;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalTree;
@@ -44,6 +47,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.FileVisitResult;
@@ -51,7 +55,10 @@ import java.nio.file.FileVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -269,7 +276,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       Path newPath = Files.createDirectories( Paths.get( folder.getPath() ) );
       LocalDirectory localDirectory = new LocalDirectory();
       localDirectory.setName( newPath.getFileName().toString() );
-      localDirectory.setPath( newPath.getFileName().toString() );
+      localDirectory.setPath( newPath.toString() );
 
       localDirectory.setDate( new Date( Files.getLastModifiedTime( newPath ).toMillis() ) );
       localDirectory.setRoot( NAME );
@@ -285,39 +292,42 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   /**
    * @param file
    * @param newPath
-   * @param overwrite
+   * @param overwriteStatus
    * @return
    * @throws FileException
    */
   @Override
-  public LocalFile rename( LocalFile file, String newPath, boolean overwrite, VariableSpace space )
+  public LocalFile rename( LocalFile file, String newPath, OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
-    return doMove( file.getPath(), newPath, overwrite, space );
+    return doMove( file.getPath(), newPath, overwriteStatus, space );
   }
 
   /**
    * @param file
    * @param toPath
-   * @param overwrite
+   * @param overwriteStatus
    * @return
    * @throws FileException
    */
   @Override
-  public LocalFile move( LocalFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
-    return doMove( file.getPath(), toPath, overwrite, space );
+  public LocalFile move( LocalFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
+    return doMove( file.getPath(), toPath, overwriteStatus, space );
   }
 
   /**
    * @param path
    * @param newPath
-   * @param overwrite
+   * @param overwriteStatus
    * @return
    * @throws FileException
    */
-  private LocalFile doMove( String path, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
+  @SuppressWarnings( "squid:S01172" )
+  private LocalFile doMove( String path, String newPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
     try {
       Path movePath;
-      if ( overwrite ) {
+      //Should not be opening the dialog here
+      overwriteStatus.promptOverwriteIfNecessary( "Any duplicate files/folders encountered", "Files/Folders" );
+      if ( overwriteStatus.isOverwrite() ) {
         movePath = Files.move( Paths.get( path ), Paths.get( newPath ), StandardCopyOption.REPLACE_EXISTING );
       } else {
         movePath = Files.move( Paths.get( path ), Paths.get( newPath ) );
@@ -335,28 +345,24 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   /**
    * @param file
    * @param toPath
-   * @param overwrite
+   * @param overwriteStatus
    * @param space
    * @return
    * @throws FileException
    */
   @Override
-  public LocalFile copy( LocalFile file, String toPath, boolean overwrite, VariableSpace space ) throws FileException {
+  public LocalFile copy( LocalFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space )
+    throws FileException {
     try {
       Path newPath = Paths.get( toPath );
       if ( file instanceof Directory ) {
-        Files.walk( Paths.get( file.getPath() ) )
-          .forEach( source -> {
-            Path destination = Paths.get( toPath, source.toString()
-              .substring( file.getPath().length() ) );
-            try {
-              Files.copy( source, destination );
-            } catch ( IOException e ) {
-              e.printStackTrace();
-            }
-          } );
+        Files.walkFileTree( Paths.get( file.getPath() ), new LocalFileVisitor( file, toPath, overwriteStatus ) );
       } else {
-        newPath = Files.copy( Paths.get( file.getPath() ), Paths.get( toPath ), StandardCopyOption.REPLACE_EXISTING );
+        newPath = singleFileCopy( Paths.get( file.getPath() ), Paths.get( toPath ), overwriteStatus );
+        if ( newPath == null ) {
+          // If here it is likely the user hit cancel or skip
+          return null;
+        }
         return LocalFile.create( newPath.getParent().toString(), newPath );
       }
       if ( newPath.toFile().isDirectory() ) {
@@ -364,6 +370,26 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       } else {
         return LocalFile.create( newPath.getParent().toString(), newPath );
       }
+    } catch ( IOException e ) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  private Path singleFileCopy( Path source, Path destination, OverwriteStatus overwriteStatus ) {
+    try {
+      StandardCopyOption sco = null;
+      overwriteStatus.promptOverwriteIfNecessary( destination.toFile().exists(), destination.toString(), "file" );
+      if ( overwriteStatus.isOverwrite() ) {
+        sco = StandardCopyOption.REPLACE_EXISTING;
+      } else if ( overwriteStatus.isCancel() || overwriteStatus.isSkip() ) {
+        return null;
+      } else if ( overwriteStatus.isRename() ) {
+        LocalFile parentDir =
+          LocalFile.create( destination.getParent().getParent().toString(), destination.getParent() );
+        destination = Paths.get( getNewName( parentDir, destination.toString(), new Variables() ) );
+      }
+      return sco == null ? Files.copy( source, destination ) : Files.copy( source, destination, sco );
     } catch ( IOException e ) {
       return null;
     }
@@ -396,13 +422,13 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @param inputStream
    * @param destDir
    * @param path
-   * @param overwrite
+   * @param overwriteStatus
    * @param space
    * @return
    * @throws FileAlreadyExistsException
    */
   @Override
-  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, boolean overwrite,
+  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, OverwriteStatus overwriteStatus,
                               VariableSpace space )
     throws FileException {
     try {
@@ -464,20 +490,97 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     //Any local caches that this provider might use should be cleared here.
   }
 
+  //Should do nothing if the directory already exists, or create any directories that do not exist
   @Override public LocalFile createDirectory( String parentPath, LocalFile file, String newFolderName )
     throws FileException {
-    LocalFile newLocalFile;
+    LocalDirectory newLocalDirectory;
     if ( file instanceof Directory ) {
-      newLocalFile = LocalFile.create( parentPath,
-        Paths.get( file.getPath() + FileSystems.getDefault().getSeparator() + newFolderName ) );
+        newLocalDirectory = LocalDirectory.create( parentPath,
+          Paths.get( file.getPath() + FileSystems.getDefault().getSeparator() + newFolderName ) );
     } else {
-      newLocalFile = LocalFile.create( parentPath,
-        Paths.get( file.getParent() + FileSystems.getDefault().getSeparator() + newFolderName ) );
+      throw new InvalidFileTypeException( "Illegal attempt to create directory under a file" );
     }
-    return this.add( newLocalFile, null );
+    try {
+      return this.add( newLocalDirectory, null );
+    } catch ( FileExistsException e ) {
+      //The file already exists.  Suppress the error
+    }
+    return newLocalDirectory;
   }
 
   @Override public LocalFile getFile( LocalFile file, VariableSpace space ) {
+     Paths.get( file.getPath() );
     return null;
   }
+
+  public class LocalFileVisitor extends SimpleFileVisitor<Path> {
+    private final OverwriteStatus overwriteStatus;
+    private Map<Path, Path> folderTransversedMap = new HashMap<>();
+
+    public LocalFileVisitor ( LocalFile originalSourceFile, String toPath, OverwriteStatus overwriteStatus ) {
+      super();
+      this.overwriteStatus = overwriteStatus;
+      folderTransversedMap.put( Paths.get( originalSourceFile.getPath() ), Paths.get( toPath ) ); //seed the map
+    }
+
+    @Override
+    public FileVisitResult preVisitDirectory( Path source, BasicFileAttributes attrs ) throws IOException {
+      Objects.requireNonNull( source );
+      Objects.requireNonNull( attrs );
+      Path destination = convertSourceToDestination( source );
+      overwriteStatus.setCurrentFileInProgressDialog( source.toString() );
+      //Even if we do not have a duplicate we have to make this call to reset the mode, if not apply to all
+      overwriteStatus.promptOverwriteIfNecessary( destination.toFile().exists(), destination.toString(), "folder" );
+      if ( overwriteStatus.isCancel() ) {
+        return FileVisitResult.TERMINATE;
+      }
+      if ( overwriteStatus.isSkip() ) {
+        return FileVisitResult.SKIP_SUBTREE;
+      }
+      if ( overwriteStatus.isRename() ) {
+        LocalFile parentDir = LocalFile.create( destination.getParent().toString(), destination );
+        Path newDestination = Paths.get( getNewName( parentDir, destination.toString(), new Variables() ) );
+        newDestination.toFile().mkdirs();
+        folderTransversedMap.put( source, newDestination ); //We changed the destination folder, update the map
+        return FileVisitResult.CONTINUE;
+      }
+      destination.toFile().mkdirs();
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFile( Path source, BasicFileAttributes attrs )
+      throws IOException {
+      Objects.requireNonNull( source );
+      Objects.requireNonNull( attrs );
+      overwriteStatus.setCurrentFileInProgressDialog( source.toString() );
+
+      Path nPath = singleFileCopy( source, convertSourceToDestination( source ), overwriteStatus );
+      if ( nPath == null ) {
+        if ( overwriteStatus.isCancel() ) {
+          return FileVisitResult.TERMINATE;
+        }
+        if ( overwriteStatus.isSkip() ) {
+          return FileVisitResult.CONTINUE;
+        }
+
+      }
+
+      return FileVisitResult.CONTINUE;
+    }
+
+    private Path convertSourceToDestination( Path source ) {
+      Path destinationPath = null;
+      if ( source.toFile().isDirectory() ) {
+        destinationPath = folderTransversedMap.computeIfAbsent( source,
+          k -> Paths.get( folderTransversedMap.get( k.getParent() ).toString(), k.getFileName().toString() ) );
+      } else {
+        // If here it is a file and its parent dir is already processed
+        destinationPath = Paths.get( folderTransversedMap.get( Paths.get( source.getParent().toString() ) ).toString(),
+          source.getFileName().toString() );
+      }
+      return destinationPath;
+    }
+  }
+
 }

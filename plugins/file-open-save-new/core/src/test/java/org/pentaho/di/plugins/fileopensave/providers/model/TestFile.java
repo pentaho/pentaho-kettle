@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.providers.model;
 
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.TestFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
@@ -78,5 +79,9 @@ public class TestFile extends BaseEntity implements File {
     TestFile compare = (TestFile) obj;
     return compare.getProvider().equals( getProvider() )
       && ( ( compare.getPath() == null && getPath() == null ) || compare.getPath().equals( getPath() ) );
+  }
+
+  public EntityType getEntityType(){
+    return EntityType.TEST_FILE;
   }
 }

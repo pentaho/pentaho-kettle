@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,5 +41,9 @@ public interface Tree<T extends Entity> extends Providerable {
   }
   default boolean isCanDelete() {
     return false;
+  }
+
+  default EntityType getEntityType(){
+    return EntityType.TREE;
   }
 }
