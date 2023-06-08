@@ -160,11 +160,11 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
   private String dateTo;
 
   /** Fields containing the values in the input stream to update the dimension with */
-  @Injection( name = "STREAM_FIELDNAME", group = "FIELDS" )
+  @Injection( name = "DATABASE_STREAM_NAME", group = "FIELDS" )
   private String[] fieldStream;
 
   /** Fields in the dimension to update or retrieve */
-  @Injection( name = "DATABASE_FIELDNAME", group = "FIELDS" )
+  @Injection( name = "DATABASE_FIELD_NAME", group = "FIELDS" )
   private String[] fieldLookup;
 
   /** The type of update to perform on the fields: insert, update, punch-through */

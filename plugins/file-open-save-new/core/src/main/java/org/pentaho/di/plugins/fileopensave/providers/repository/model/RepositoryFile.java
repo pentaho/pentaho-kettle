@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.plugins.fileopensave.providers.repository.model;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.providers.recents.RecentFileProvider;
@@ -150,4 +151,10 @@ public class RepositoryFile extends RepositoryObject implements File {
   public boolean passesTypeFilter( String filter ) {
     return Utils.matches( getName() + ( TRANSFORMATION.equalsIgnoreCase( getType() ) ? KTR : KJB ), filter );
   }
+
+  @Override
+  public EntityType getEntityType(){
+    return EntityType.REPOSITORY_FILE;
+  }
+
 }

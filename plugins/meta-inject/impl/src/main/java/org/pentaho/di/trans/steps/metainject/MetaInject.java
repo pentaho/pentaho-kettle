@@ -767,7 +767,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     for ( TargetStepAttribute key : targetMap.keySet() ) {
       if ( !unavailableTargetSteps.contains( key ) ) {
         BeanInjectionInfo info = beanInfos.get( key.getStepname().toUpperCase() );
-        if ( info != null && !info.getProperties().containsKey( MetaInjectMigration.migrate(info.getBeanInjectionClass(), key.getAttributeKey() ) ) ) {
+        if ( info != null && !info.getProperties().containsKey( key.getAttributeKey() ) ) {
           missingKeys.add( key );
         }
       }

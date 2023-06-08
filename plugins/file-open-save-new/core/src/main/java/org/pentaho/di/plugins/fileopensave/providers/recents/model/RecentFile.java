@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.plugins.fileopensave.providers.recents.model;
 
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.recents.RecentFileProvider;
 
@@ -68,5 +69,9 @@ public class RecentFile extends BaseEntity implements File {
 
   public void setUsername( String username ) {
     this.username = username;
+  }
+
+  public EntityType getEntityType(){
+    return EntityType.RECENT_FILE;
   }
 }

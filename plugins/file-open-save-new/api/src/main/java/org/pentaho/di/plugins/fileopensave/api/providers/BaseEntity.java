@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -109,5 +109,9 @@ public class BaseEntity implements Entity, Providerable {
 
   public void setCanDelete( boolean canDelete ) {
     this.canDelete = canDelete;
+  }
+
+  public EntityType getEntityType(){
+    return EntityType.UNKNOWN;
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.plugins.fileopensave.providers;
 
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
@@ -116,7 +117,7 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return file1.getProvider().equals( file2.getProvider() );
   }
 
-  @Override public TestFile rename( TestFile file, String newPath, boolean overwrite, VariableSpace space ) throws FileException {
+  @Override public TestFile rename( TestFile file, String newPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
     TestFile findFile = findFile( file );
     if ( findFile != null ) {
       findFile.setPath( newPath );
@@ -126,7 +127,7 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return findFile;
   }
 
-  @Override public TestFile copy( TestFile file, String toPath, boolean overwrite, VariableSpace space )
+  @Override public TestFile copy( TestFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
     TestFile findFile = findFile( file );
     if ( findFile != null ) {
@@ -144,9 +145,9 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return null;
   }
 
-  @Override public TestFile move( TestFile file, String toPath, boolean overwrite, VariableSpace space )
+  @Override public TestFile move( TestFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
-    TestFile newFile = copy( file, toPath, overwrite, space );
+    TestFile newFile = copy( file, toPath, overwriteStatus, space );
     if ( newFile != null ) {
       doDelete( newFile );
     }
@@ -157,7 +158,8 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return null;
   }
 
-  @Override public TestFile writeFile( InputStream inputStream, TestFile destDir, String path, boolean overwrite, VariableSpace space )
+  @Override public TestFile writeFile( InputStream inputStream, TestFile destDir, String path,
+                                       OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
     return null;
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,8 +52,8 @@ public class FileCache {
   }
 
   public boolean addFile( File parent, File file ) {
-    if ( fileCache.containsKey( parent ) ) {
-      fileCache.get( parent ).add( file );
+    if ( fileCache.containsKey( parent ) && !fileCache.containsKey( file ) ) {
+        fileCache.get( parent ).add( file );
     }
     return false;
   }

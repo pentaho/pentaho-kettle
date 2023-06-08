@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.plugins.fileopensave.controllers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
@@ -98,7 +99,8 @@ public class FileControllerTest {
     testFile.setParent( "/directory1" );
     testFile.setName( "file1" );
     testFile.setPath( "/directory1/file1" );
-    TestFile newFile = (TestFile) fileController.rename( testFile, "/directory1/file1new", true ).getData();
+    TestFile newFile = (TestFile) fileController.rename( testFile, "/directory1/file1new",
+      new OverwriteStatus( null, OverwriteStatus.OverwriteMode.OVERWRITE ) ).getData();
     Assert.assertEquals( "file1new", newFile.getName() );
     Assert.assertEquals( "/directory1/file1new", newFile.getPath() );
 
@@ -124,8 +126,8 @@ public class FileControllerTest {
     testFile.setParent( "/directory1" );
     testFile.setName( "file1" );
     testFile.setPath( "/directory1/file1" );
-    TestFile newFile =
-      (TestFile) fileController.copyFile( testFile, testDirectory4, "/directory4/file1", true ).getData();
+    TestFile newFile = (TestFile) fileController.copyFile( testFile, testDirectory4, "/directory4/file1",
+      new OverwriteStatus( null, OverwriteStatus.OverwriteMode.OVERWRITE ) ).getData();
     Assert.assertEquals( "file1", newFile.getName() );
     Assert.assertEquals( "/directory4/file1", newFile.getPath() );
 
@@ -151,8 +153,8 @@ public class FileControllerTest {
     testFile.setParent( "/directory1" );
     testFile.setName( "file1" );
     testFile.setPath( "/directory1/file1" );
-    TestFile newFile =
-      (TestFile) fileController.moveFile( testFile, testDirectory4, "/directory4/file1", true ).getData();
+    TestFile newFile = (TestFile) fileController.moveFile( testFile, testDirectory4, "/directory4/file1",
+        new OverwriteStatus( null, OverwriteStatus.OverwriteMode.OVERWRITE ) ).getData();
     Assert.assertEquals( "file1", newFile.getName() );
     Assert.assertEquals( "/directory4/file1", newFile.getPath() );
 

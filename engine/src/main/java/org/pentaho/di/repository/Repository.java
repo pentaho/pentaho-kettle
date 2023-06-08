@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -447,7 +447,7 @@ public interface Repository {
    * @param parentDirectory
    *          the parent directory
    * @param directoryPath
-   *          The path to the new Repository Directory, to be created.
+   *          The partial path to the new Repository Directory, to be created.
    * @return The created sub-directory
    * @throws KettleException
    *           In case something goes wrong

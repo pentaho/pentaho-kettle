@@ -63,7 +63,7 @@ public class AvroInputMetaInjectionTest extends BaseMetadataInjectionTest<AvroIn
     check( "SCHEMA_LOCATION", () -> meta.getSchemaLocation() );
     checkStoredOrdinal( "SCHEMA_LOCATION_TYPE", () -> meta.getSchemaLocationType(),
       AvroInputMetaBase.LocationDescriptor.class );
-    check( "STREAM_FIELDNAME", () -> meta.getDataLocation() );
+    check( "DATABASE_STREAM_NAME", () -> meta.getDataLocation() );
 
     check( "FIELD_NULL_STRING", () -> meta.getInputFields()[ 0 ].getNullString() );
     check( "FIELD_PATH", () -> meta.getInputFields()[ 0 ].getAvroFieldName() );

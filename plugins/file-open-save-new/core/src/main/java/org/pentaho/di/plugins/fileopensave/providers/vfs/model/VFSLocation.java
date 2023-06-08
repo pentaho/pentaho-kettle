@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,14 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
+import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
+
 /**
  * Created by bmorrise on 2/14/19.
  */
 public class VFSLocation extends VFSDirectory {
+  private boolean usesBuckets = false;
+
   @Override public boolean isCanEdit() {
     return false;
   }
@@ -35,4 +39,16 @@ public class VFSLocation extends VFSDirectory {
     return false;
   }
 
+  @Override
+  public EntityType getEntityType(){
+    return EntityType.VFS_LOCATION;
+  }
+
+  public boolean hasBuckets() {
+    return usesBuckets;
+  }
+
+  public void setHasBuckets( boolean hasBuckets ) {
+    this.usesBuckets = hasBuckets;
+  }
 }
