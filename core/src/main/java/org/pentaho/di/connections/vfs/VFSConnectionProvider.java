@@ -50,9 +50,9 @@ public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends C
    *
    * @return FileSystem or null if the provided connection details are not the matching type
    */
-  default FileObject getDirectFile(ConnectionDetails connectionDetails, String path) throws KettleFileException {
-    String pvfsUrl = "pvfs://" + connectionDetails.getName() + ( path.startsWith( "/" ) ? "" : "/" ) + path;
-    return KettleVFS.getFileObject( pvfsUrl );
+  default FileObject getDirectFile( T connectionDetails, String path ) throws KettleFileException {
+    String pvfsUrl = connectionDetails.getType() + "://" + path;
+    return KettleVFS.getFileObject( pvfsUrl, getOpts( connectionDetails ) );
   }
 
 }
