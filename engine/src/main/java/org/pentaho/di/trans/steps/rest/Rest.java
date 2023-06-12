@@ -559,7 +559,8 @@ public class Rest extends BaseStep implements StepInterface {
       }
 
       data.trustStoreFile = environmentSubstitute( meta.getTrustStoreFile() );
-      data.trustStorePassword = environmentSubstitute( meta.getTrustStorePassword() );
+      data.trustStorePassword =
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getTrustStorePassword() ) );
 
       String applicationType = Const.NVL( meta.getApplicationType(), "" );
       if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XML ) ) {
