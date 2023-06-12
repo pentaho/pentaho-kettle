@@ -62,6 +62,10 @@ public class MetaStoreConst {
 
   private static final Logger logger = LoggerFactory.getLogger( MetaStoreConst.class );
 
+  // whether to default to the local metastore. This is not wanted most of the time because it second-guesses the
+  // logic in MetastoreLocator. Should only be enabled in tests that don't load plugins.
+  private static volatile boolean defaultToLocalXml = false;
+
   private static final Supplier<MetastoreLocator> metastoreLocatorSupplier = new Supplier<MetastoreLocator> () {
     private volatile MetastoreLocator metastoreLocator;
 
@@ -92,6 +96,12 @@ public class MetaStoreConst {
             MetastoreLocator locator = metastoreLocatorSupplier.get();
             if ( locator != null ) {
               metaStore = new SuppliedMetaStore( () -> locator.getMetastore() );
+            } else if ( defaultToLocalXml ) {
+              try {
+                return openLocalPentahoMetaStore();
+              } catch ( MetaStoreException e ) {
+                logger.error( "Error opening local XML metastore", e );
+              }
             }
           }
         }
@@ -143,5 +153,18 @@ public class MetaStoreConst {
   public static IMetaStore getDefaultMetastore() {
     return metaStoreSupplier.get();
   }
+
+
+  /**
+   * When this is enabled, if the MetastoreLocator returns null, a local xml metastore will be returned. This should
+   * only happen when plugins are not loaded, which should only apply in some unit tests. Runtime code should all
+   * load the metastore on demand, ideally using the metastoreSupplier above, and should not initialize a metastore at
+   * construction time.
+   *
+   */
+  public static void enableDefaultToLocalXml() {
+    defaultToLocalXml = true;
+  }
+
 }
 
