@@ -717,8 +717,8 @@ public class PurRepositoryProxy implements Repository {
   }
 
   @Override
-  public IMetaStore getMetaStore() {
-    return getDelegate().getMetaStore();
+  public IMetaStore getRepositoryMetaStore() {
+    return getDelegate().getRepositoryMetaStore();
   }
 
   @Override

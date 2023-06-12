@@ -2069,7 +2069,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     return new RepositoryImporter( this );
   }
 
-  public KettleDatabaseRepositoryMetaStore getMetaStore() {
+  public KettleDatabaseRepositoryMetaStore getRepositoryMetaStore() {
     return metaStore;
   }
 }

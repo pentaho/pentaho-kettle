@@ -643,7 +643,7 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public IMetaStore getMetaStore() {
+  public IMetaStore getRepositoryMetaStore() {
     return null;
   }
 

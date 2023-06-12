@@ -53,7 +53,7 @@ public class RepositoryMetastoreProviderTest {
   public void testGetMetastoreSuccess() {
     Repository repository = mock( Repository.class );
     IMetaStore metaStore = mock( IMetaStore.class );
-    when( repository.getMetaStore() ).thenReturn( metaStore );
+    when( repository.getRepositoryMetaStore() ).thenReturn( metaStore );
     when( kettleRepositoryLocator.getRepository() ).thenReturn( repository );
     assertEquals( metaStore, repositoryMetastoreProvider.getMetastore() );
   }

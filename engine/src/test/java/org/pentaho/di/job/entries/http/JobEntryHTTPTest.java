@@ -114,7 +114,7 @@ public class JobEntryHTTPTest {
   public void testDateTimeAddedFieldIsSetInTrue_WhenRepoReturnsTrue() throws KettleException {
     when( ktlDbRepMock.getJobEntryAttributeBoolean( objIdMock, "date_time_added" ) ).thenReturn( true );
 
-    jobEntryHttp.loadRep( ktlDbRepMock, ktlDbRepMock.getMetaStore(), objIdMock, null, null );
+    jobEntryHttp.loadRep( ktlDbRepMock, ktlDbRepMock.getRepositoryMetaStore(), objIdMock, null, null );
     verify( ktlDbRepMock, never() ).getJobEntryAttributeString( objIdMock, "date_time_added" );
     verify( ktlDbRepMock ).getJobEntryAttributeBoolean( objIdMock, "date_time_added" );
     assertTrue( "DateTimeAdded field should be TRUE.", jobEntryHttp.isDateTimeAdded() );

@@ -55,7 +55,7 @@ public class RepositoryMetastoreProvider implements MetastoreProvider, ServicePr
     if ( kettleRepositoryLocator != null ) {
       Repository repository = kettleRepositoryLocator.getRepository();
       if ( repository != null ) {
-        return repository.getMetaStore();
+        return repository.getRepositoryMetaStore();
       }
     }
     return null;
