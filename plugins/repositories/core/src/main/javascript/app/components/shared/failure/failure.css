@@ -1,6 +1,69 @@
 .fail {
   background-image: url("../../../img/fail.png");
-  width: 67px;
-  height: 58px;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 65px;
+  height: 60px;
   margin: auto;
+  padding: 50px;
+}
+
+#repository-manager-failure-header {
+  font-family: OpenSansLight;
+  margin: 20px;
+}
+
+#repository-manager-failure-row-message{
+  margin: 20px;
+}
+.text-color-primary {
+  color: #005eaa;
+}
+
+.btn-color-primary {
+  color: white;
+  background-color: #005eaa;
+  border-color: #005eaa;
+}
+
+.btn-color-primary:hover {
+  color: white;
+  background-color: #0f2b5b;
+  border-color: #0f2b5b;
+}
+
+.btn-outline-color-secondary {
+  color: #005DA6;
+  background-color: #FFFFFF;
+  border: 1px solid #005DA6;
+}
+
+.btn-outline-color-secondary:hover {
+  color: #0F2B5B;
+  background-color: #FFFFFF;
+  border: 1px solid #0F2B5B;
+}
+
+#repository-manager-failure-container {
+  position: absolute;
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+}
+
+#repository-manager-failure-row-action-buttons {
+  padding: 45px;
+  min-height: 210px;
+}
+
+#repository-manager-failure-row-action-buttons > div {
+  padding: 5px 10px;
+}
+
+#repository-manager-failure-row-footer {
+  margin: 20px;
+}
+
+#repository-manager-failure-footer-separator {
+  margin: 10px 0px 10px 0px;
 }

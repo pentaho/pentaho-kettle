@@ -1,0 +1,80 @@
+#repository-manager-database-select-header {
+    font-family: OpenSansLight;
+    margin: 20px;
+}
+
+.text-color-primary {
+    color: #005eaa;
+}
+
+.btn-color-primary {
+    color: white;
+    background-color: #005eaa;
+    border-color: #005eaa;
+}
+
+.btn-color-primary:hover {
+    color: white;
+    background-color: #0f2b5b;
+    border-color: #0f2b5b;
+}
+
+.btn-outline-color-secondary {
+    color: #005DA6;
+    background-color: #FFFFFF;
+    border: 1px solid #005DA6;
+}
+
+.btn-outline-color-secondary:hover {
+    color: #0F2B5B;
+    background-color: #FFFFFF;
+    border: 1px solid #0F2B5B;
+}
+
+#repository-manager-database-select-row-list-empty-info {
+    padding-top: 120px;
+    min-height: 370px;
+}
+
+#repository-manager-database-select-table-wrapper {
+    border: 1px solid #CCCCCC;
+    border-collapse: collapse;
+    border-radius: 4px;
+    margin: 10px;
+    overflow: auto;
+}
+
+#repository-manager-database-select-table {
+    height: 340px;
+}
+
+.repository-manager-database-select-table-items {
+    font-size: 14px;
+    color: #666666;
+    padding: 12px 12px 12px 32px;
+    cursor: pointer;
+    background-image: url('../../../img/database.svg');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+
+.repository-manager-database-select-table-items.active {
+    color: #FFFFFF;
+    background-color: #005EAA;
+}
+
+
+#repository-manager-database-select-container {
+    position: absolute;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+}
+
+#repository-manager-database-select-row-footer {
+    margin: 20px;
+}
+
+#repository-manager-database-select-footer-separator {
+    margin: 10px 0px 10px 0px;
+}

@@ -1,3 +1,72 @@
+#repository-manager-header {
+  font-family: OpenSansLight;
+  margin: 20px;
+}
+
+.text-color-primary {
+  color: #005eaa;
+}
+
+.btn-color-primary {
+  color: white;
+  background-color: #005eaa;
+  border-color: #005eaa;
+}
+
+.btn-color-primary:hover {
+  color: white;
+  background-color: #0f2b5b;
+  border-color: #0f2b5b;
+}
+
+.btn-outline-color-secondary {
+  color: #005DA6;
+  background-color: #FFFFFF;
+  border: 1px solid #005DA6;
+}
+
+.btn-outline-color-secondary:hover {
+  color: #0F2B5B;
+  background-color: #FFFFFF;
+  border: 1px solid #0F2B5B;
+}
+
+#repository-manager-table-wrapper {
+  border: 1px solid #CCCCCC;
+  margin: 10px;
+  height: 300px;
+  overflow: auto;
+}
+
+#repository-manager-container {
+  position: absolute;
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+}
+
+#repository-manager-row-footer {
+  margin: 20px;
+}
+
+#repository-manager-footer-separator {
+  margin: 10px 0px 10px 0px;
+}
+
+#repository-manager-row-action-buttons {
+  margin: 10px;
+  min-height: 90px;
+}
+
+.repository-manager-button-hidden {
+  display: none;
+}
+
+#repository-manager-row-action-buttons > div {
+  padding: 4px;
+}
+
+/* The following css need to be validate which CSS can be remove or not and which css should be migrated into global.css */
 @CHARSET "ISO-8859-1";
 /*
 * BODY and MAIN DIVS
@@ -38,8 +107,8 @@ body {
 
 .connection_name_label {
   font-family: OpenSansLight;
-  font-size: 24px;
-  white-space: nowrap;
+  font-size: 20px;
+  /*white-space: nowrap;*/
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -165,10 +234,6 @@ button:not(.defaultBtn):not(.detailsBtn) {
 
 button.same_width {
   width: 200px;
-}
-
-button#connect {
-  width: 278px;
 }
 
 /* default */
@@ -521,15 +586,6 @@ hr {
   background-color: white;
 }
 
-.loading-main {
-  position: relative;
-  width: 400px;
-  margin-top: 208px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}
-
 .busy {
   background-repeat: no-repeat;
   height: 66px;
@@ -543,7 +599,6 @@ hr {
 }
 
 .transition {
-  position: absolute;
   left: 0;
   top: 0;
   width: 100%;
