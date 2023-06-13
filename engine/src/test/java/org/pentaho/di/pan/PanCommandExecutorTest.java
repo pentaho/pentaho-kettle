@@ -107,7 +107,7 @@ public class PanCommandExecutorTest {
     metastore.addMetaStore( fsMetaStore );
 
     // mock actions from Repository
-    when( repository.getMetaStore() ).thenReturn( repoMetaStore );
+    when( repository.getRepositoryMetaStore() ).thenReturn( repoMetaStore );
 
     // mock actions from PanCommandExecutor
     when( mockedPanCommandExecutor.getMetaStore() ).thenReturn( metastore );

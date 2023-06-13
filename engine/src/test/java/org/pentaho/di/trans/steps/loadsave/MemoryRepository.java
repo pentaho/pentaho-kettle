@@ -797,7 +797,7 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public IMetaStore getMetaStore() {
+  public IMetaStore getRepositoryMetaStore() {
     // TODO Auto-generated method stub
     return null;
   }

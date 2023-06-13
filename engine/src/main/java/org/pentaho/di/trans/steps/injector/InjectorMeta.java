@@ -38,6 +38,7 @@ import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -259,8 +260,8 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
   @Deprecated
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info ) {
-    check( remarks, transMeta, stepMeta, prev, input, output, info, transMeta, repository, repository != null
-      ? repository.getMetaStore() : null );
+    check( remarks, transMeta, stepMeta, prev, input, output, info, transMeta, repository,
+      MetaStoreConst.getDefaultMetastore() );
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
