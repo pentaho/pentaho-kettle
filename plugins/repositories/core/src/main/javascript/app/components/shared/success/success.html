@@ -1,40 +1,62 @@
-<div class="main_div" style="padding-top:40px;">
-  <div style="margin-bottom: 22px;">
+<div id="repository-manager-success-container" class="container">
+
+  <h1 id="repository-manager-success-header" class="text-center text-color-primary">
+    {{::vm.congratulationsLabel}}
+  </h1>
+
+  <div id="repository-manager-success-row-icon" class="row text-center">
     <div class="success"></div>
   </div>
-  <div class="title_text margin_bottom_30">
-    {{::vm.congratulationsLabel}}
+
+  <div id="repository-manager-success-row-message" class="row text-center">
+    <p ng-if="vm.connection.edit">{{::vm.readyEdit}}</p>
+    <p ng-if="!vm.connection.edit">{{::vm.readyCreate}}</p>
   </div>
-  <div class="primary_text">
-    <div class="margin_bottom_80" ng-if="vm.connection.edit">{{::vm.readyEdit}}</div>
-    <div class="margin_bottom_80" ng-if="!vm.connection.edit">{{::vm.readyCreate}}</div>
-    <div class="margin_bottom_30">{{::vm.question}}</div>
-    <div class="margin_bottom_30" ng-if="!vm.connection.connected">
-      <button class="same_width primary" type="button" ng-click="vm.onConnect()">
-        <span>
-          {{::vm.connectNow}}
-        </span>
+
+  <div id="repository-manager-success-row-action-buttons" class="row text-center">
+
+    <div class="col-xs-12 col-sm-12 col-md-12" >
+      <div id="repository-manager-success-row-action-buttons-question">{{::vm.question}}</div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12" ng-if="!vm.connection.connected" >
+      <button
+              id="repository-manager-success-row-action-buttons-connectBtn"
+              class="btn btn-color-primary btn-block"
+              type="button"
+              ng-click="vm.onConnect()"
+      >
+        <span> {{::vm.connectNow}} </span>
       </button>
     </div>
-    <div>
-      <button class="same_width primary" type="button" ng-click="vm.onManage()">
-        <span>
-          {{::vm.manageConnections}}
-        </span>
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <button
+              id="repository-manager-success-row-action-buttons-manageBtn"
+              class="btn btn-color-primary btn-block"
+              type="button"
+              ng-click="vm.onManage()"
+      >
+        <span> {{::vm.manageConnections}} </span>
       </button>
     </div>
   </div>
-  <div class="bottom">
-    <div class="margin_bottom_20">
-      <hr />
+
+  <!-- Repository manager success Footer -->
+  <div id="repository-manager-success-row-footer" class="row justify-content-center align-items-center">
+    <div class="col-sm-12">
+      <hr id="repository-manager-database-details-footer-separator"/>
     </div>
-    <div>
+    <div class="col-xs-6 col-sm-6 col-md-6">
       <help></help>
-      <button class="right secondary" type="button" ng-click="vm.onClose()">
-        <span>
-          {{::vm.finishLabel}}
-        </span>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+      <button
+              id="repository-manager-database-details-row-action-buttons-btnFinish"
+              class="btn btn-outline-color-secondary"
+              ng-click="vm.onClose()">
+        <span> {{::vm.finishLabel}} </span>
       </button>
     </div>
   </div>
+
 </div>

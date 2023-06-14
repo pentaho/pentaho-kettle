@@ -1,0 +1,54 @@
+#repository-manager-other-header {
+    font-family: OpenSansLight;
+    margin: 20px;
+}
+
+.text-color-primary {
+    color: #005eaa;
+}
+
+.btn-color-primary {
+    color: white;
+    background-color: #005eaa;
+    border-color: #005eaa;
+}
+
+.btn-color-primary:hover {
+    color: white;
+    background-color: #0f2b5b;
+    border-color: #0f2b5b;
+}
+
+.btn-outline-color-secondary {
+    color: #005DA6;
+    background-color: #FFFFFF;
+    border: 1px solid #005DA6;
+}
+
+.btn-outline-color-secondary:hover {
+    color: #0F2B5B;
+    background-color: #FFFFFF;
+    border: 1px solid #0F2B5B;
+}
+
+#repository-manager-other-table-wrapper {
+    border: 0px solid #CCCCCC;
+    margin: 10px;
+    margin-bottom: 240px;
+    overflow: auto;
+}
+
+#repository-manager-other-container {
+    position: absolute;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+}
+
+#repository-manager-other-row-footer {
+    margin: 20px;
+}
+
+#repository-manager-other-footer-separator {
+    margin: 10px 0px 10px 0px;
+}

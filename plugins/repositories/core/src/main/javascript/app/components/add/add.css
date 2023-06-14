@@ -1,9 +1,64 @@
-.add_container {
-  height: 440px;
-  overflow: hidden;
+.repository-manager-add-header {
+  font-family: OpenSansLight;
+  margin: 20px;
 }
 
-.pentaho_repo {
+.text-color-primary {
+  color: #005eaa;
+}
+
+.btn-color-primary {
+  color: white;
+  background-color: #005eaa;
+  border-color: #005eaa;
+}
+
+.btn-color-primary:hover {
+  color: white;
+  background-color: #0f2b5b;
+  border-color: #0f2b5b;
+}
+
+.btn-outline-color-secondary {
+  color: #005DA6;
+  background-color: #FFFFFF;
+  border: 1px solid #005DA6;
+}
+
+.btn-outline-color-secondary:hover {
+  color: #0F2B5B;
+  background-color: #FFFFFF;
+  border: 1px solid #0F2B5B;
+}
+
+#repository-manager-add-container {
+  position: absolute;
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+}
+
+#repository-manager-add-row-subtitle {
+  margin: 40px 0 30px 0;
+}
+
+#repository-manager-add-other-repositories {
+  margin: 30px 0 30px 0;
+}
+
+#repository-manager-add-row-footer {
+  margin: 20px;
+}
+
+#repository-manager-add-footer-separator {
+  margin: 10px 0px 10px 0px;
+}
+
+#repository-manager-add-pentaho-image {
+  margin: 30px;
+}
+
+.pentaho_repository_logo {
   background-image: url("../../img/pentaho_repo.svg");
   background-position: center center;
   width: 380px;

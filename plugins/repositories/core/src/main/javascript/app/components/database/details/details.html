@@ -1,40 +1,60 @@
-<div class="main_div">
-  <div class="title_text margin_bottom_30">{{::vm.connectionDetails}}</div>
-  <div class="middle_div">
-    <div class="margin_bottom_15">
-      <label for="displayName" class="margin_bottom_5 block text_left">{{::vm.displayNameLabel}}</label>
-      <input focus="300" id="displayName" class="block" type="text" size="50" ng-model="vm.connection.displayName" ng-keyup="vm.resetErrorMsg()"/>
-    </div>
-    <div class="margin_bottom_15">
-      <label for="connectionDD" class="margin_bottom_5 block text_left">{{::vm.databaseConnection}}</label>
-      <div ng-click="vm.selectDatabase()" id="connectionDD" style="cursor:pointer" ng-class="{italic : vm.connection.databaseConnection == 'None'}">{{vm.connection.databaseConnection}}</div>
-    </div>
-    <div class="margin_bottom_20">
-      <label for="description" class="margin_bottom_5 block text_left">{{::vm.descriptionLabel}}</label>
-      <textarea id="description" class="block" rows="4" cols="50" ng-model="vm.connection.description"></textarea>
-    </div>
-    <div class="text_left">
-      <button id="isDefault" class="detailsBtn inline" ng-class="{activate : vm.connection.isDefault}" ng-click="vm.setDefaultConn(!vm.connection.isDefault)">
-        <div class="detailsBtnCheckmark" ng-show="vm.connection.isDefault"></div>
-      </button>
-      <label for="isDefault" class="inline margin_left_3">{{::vm.launchLabel}}</label>
+
+<div id="repository-manager-database-details-container" class="container">
+
+  <h1 id="repository-manager-database-details-header" class="text-center text-color-primary">
+    {{::vm.connectionDetails}}
+  </h1>
+
+  <!-- Repository manager details database -->
+  <div id="repository-manager-database-details-form" class="row justify-content-center align-items-center">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <div class="form-group">
+        <label for="repository-manager-database-details-form-displayName" class="text_left" >{{::vm.displayNameLabel}}</label><br>
+        <input focus="300" type="text" size="50" name="username" id="repository-manager-database-details-form-displayName" class="form-control" ng-model="vm.connection.displayName" ng-keyup="vm.resetErrorMsg()">
+      </div>
+
+      <div class="form-group">
+        <label for="repository-manager-database-details-form-connectionDD" class="text_left">{{::vm.databaseConnection}}</label>
+        <div id="repository-manager-database-details-form-connectionDD" style="cursor:pointer"
+             ng-click="vm.selectDatabase()" ng-class="{italic : vm.connection.databaseConnection == 'None'}">{{vm.connection.databaseConnection}}</div>
+      </div>
+
+      <div class="form-group">
+        <label for="repository-manager-database-details-form-description" class="text_left">{{::vm.descriptionLabel}}</label>
+        <textarea id="repository-manager-database-details-form-description" class="block" rows="4" cols="50" ng-model="vm.connection.description"></textarea>
+      </div>
+
+      <div class="form-group text_left">
+        <button id="repository-manager-database-details-form-button-isDefault" class="detailsBtn inline" ng-class="{activate : vm.connection.isDefault}" ng-click="vm.setDefaultConn(!vm.connection.isDefault)">
+          <div class="detailsBtnCheckmark" ng-show="vm.connection.isDefault"></div>
+        </button>
+        <label for="repository-manager-database-details-form-button-isDefault" class="inline margin_left_3">{{::vm.launchLabel}}</label>
+      </div>
+
     </div>
   </div>
-  <div class="bottom">
-    <div class="margin_bottom_20">
-      <hr />
+
+  <!-- Repository manager database details Footer -->
+  <div id="repository-manager-database-details-row-footer" class="row justify-content-center align-items-center">
+    <div class="col-sm-12">
+      <hr id="repository-manager-database-details-footer-separator"/>
     </div>
-    <div>
+    <div class="col-xs-6 col-sm-6 col-md-6">
       <help></help>
-      <button id="finish" class="right margin_left_10 primary" type="button" disabled="disabled" ng-disabled="!vm.canFinish()" ng-click="vm.finish()">
-        <span>
-          {{::vm.finishLabel}}
-        </span>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+      <button
+              id="repository-manager-database-details-row-action-buttons-btnFinish"
+              class="btn btn-color-primary"
+              ng-disabled="!vm.canFinish()"
+              ng-click="vm.finish()">
+        <span> {{::vm.finishLabel}} </span>
       </button>
-      <button class="right secondary" type="button" ng-click="vm.back()">
-        <span>
-          {{::vm.backLabel}}
-        </span>
+      <button
+              id="repository-manager-database-details-row-action-buttons-btnBack"
+              class="btn btn-outline-color-secondary"
+              ng-click="vm.back()">
+        <span> {{::vm.backLabel}} </span>
       </button>
     </div>
   </div>

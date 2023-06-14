@@ -1,10 +1,14 @@
-<div class="main_div">
-  <div class="add_container">
-    <div class="title_text margin_bottom_5">{{::vm.otherLabel}}</div>
-    <div class="margin_bottom_30 primary_text">{{::vm.newDescriptionLabel}}</div>
-    <div id="table-wrapper" class="primary_text" style="margin-bottom:55px;">
-      <div id="table-scroll">
-        <table id="reposTable" class="text_left">
+<div id="repository-manager-other-container" class="container">
+
+  <h1 id="repository-manager-other-header" class="text-center text-color-primary">
+    {{::vm.otherLabel}}
+  </h1>
+
+  <!-- Repository manager list repositories -->
+  <div id="repository-manager-other-row-list-repositories" class="row justify-content-center align-items-center">
+    <div class="col-md-12">
+      <div id="repository-manager-other-table-wrapper">
+        <table id="repository-manager-other-table">
           <tr ng-repeat="repositoryType in vm.repositoryTypes" ng-class="{active : repositoryType == vm.selectedRepositoryType}">
             <td class="bullet" />
             <td class="repo_type" ng-click="vm.selectRepositoryType(repositoryType)">
@@ -16,24 +20,35 @@
       </div>
     </div>
   </div>
-  <div class="margin_bottom_30">
-    <a style="cursor:pointer" ui-sref="add">{{::vm.newPentahoRepositoryLabel}}</a>
-  </div>
-  <div class="bottom">
-    <div class="margin_bottom_20">
-      <hr />
+
+
+  <!-- Repository manager other repositories link -->
+  <div id="repository-manager-other-row-action-buttons" class="row justify-content-center align-items-center">
+    <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+      <a class="link-primary" style="cursor:pointer" ui-sref="add">{{::vm.newPentahoRepositoryLabel}}</a>
     </div>
-    <div>
+  </div>
+
+  <!-- Repository manager other repositories Footer -->
+  <div id="repository-manager-other-row-footer" class="row justify-content-center align-items-center">
+    <div class="col-xs-12">
+      <hr id="repository-manager-other-footer-separator"/>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6">
       <help></help>
-      <button id="btnClose" class="right margin_left_10 secondary" type="button" ng-click="vm.close()">
-        <span>
-          {{::vm.closeLabel}}
-        </span>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+      <button
+              id="repository-manager-other-buttons-btnGetStarted"
+              class="btn btn-color-primary"
+              ng-disabled="!vm.selectedRepositoryType" ng-click="vm.getStarted(vm.selectedRepositoryType)">
+        <span> {{::vm.getStartedLabel}} </span>
       </button>
-      <button id="btnGetStarted" class="right primary" type="button" ng-disabled="!vm.selectedRepositoryType" ng-click="vm.getStarted(vm.selectedRepositoryType)">
-        <span>
-          {{::vm.getStartedLabel}}
-        </span>
+      <button
+              id="repository-manager-other-buttons-btnClose"
+              class="btn btn-outline-color-secondary"
+              ng-click="vm.close()">
+        <span> {{::vm.closeLabel}} </span>
       </button>
     </div>
   </div>

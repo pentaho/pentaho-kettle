@@ -1,32 +1,50 @@
-<div class="main_div">
-  <div class="add_container">
-    <div class="header margin_bottom_30">{{::vm.pentahoRepositoryLabel}}</div>
-    <div class="primary_text">
-      <div class="margin_bottom_10">{{::vm.pentahoDescriptionLabel}}</div>
-      <div class="margin_bottom_30">{{::vm.pentahoClickStartedLabel}}</div>
-    </div>
-    <div class="margin_bottom_30">
-      <div class="pentaho_repo"></div>
+<div id="repository-manager-add-container" class="container">
+
+  <h1 class="text-center repository-manager-add-header text-color-primary">
+    {{::vm.pentahoRepositoryLabel}}
+  </h1>
+
+  <!-- Repository manager list repositories -->
+  <div id="repository-manager-add-row-subtitle" class="row justify-content-center align-items-center">
+    <div class="col-md-12 text-center">
+      <p>{{::vm.pentahoDescriptionLabel}}</p>
+      <p>{{::vm.pentahoClickStartedLabel}}</p>
     </div>
   </div>
-  <div class="margin_bottom_30">
-    <a href="" ng-click="vm.other()">{{::vm.othersLabel}}</a>
-  </div>
-  <div class="bottom">
-    <div class="margin_bottom_20">
-      <hr />
+
+
+  <!-- Repository manager Action Buttons -->
+  <div id="repository-manager-add-pentaho-image" class="row justify-content-center align-items-center">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <div class="pentaho_repository_logo"></div>
     </div>
-    <div>
+  </div>
+  <div id="repository-manager-add-other-repositories" class="row justify-content-center align-items-center">
+    <div class="col-xs-6 col-sm-6 col-md-6 text-center col-xs-offset-3 col-xs-offset-3 col-sm-offset-3 col-md-offset-3">
+      <a href="" ng-click="vm.other()">{{::vm.othersLabel}}</a>
+    </div>
+  </div>
+
+  <!-- Repository manager add Footer -->
+  <div id="repository-manager-add-row-footer" class="row justify-content-center align-items-center">
+    <div class="col-sm-12">
+      <hr id="repository-manager-add-footer-separator"/>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6">
       <help></help>
-      <button id="btnClose" class="right margin_left_10 secondary" ng-click="vm.close()">
-        <span>
-          {{::vm.closeLabel}}
-        </span>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+      <button
+              id="repository-manager-add-row-action-buttons-btnGetStarted"
+              class="btn btn-color-primary"
+              ng-click="vm.getStarted()">
+        <span> {{::vm.getStartedLabel}} </span>
       </button>
-      <button id="btnGetStarted" class="right primary" ng-click="vm.getStarted()">
-        <span>
-          {{::vm.getStartedLabel}}
-        </span>
+      <button
+              id="repository-manager-add-row-action-buttons-btnClose"
+              class="btn btn-outline-color-secondary"
+              ng-click="vm.close()">
+        <span> {{::vm.closeLabel}} </span>
       </button>
     </div>
   </div>

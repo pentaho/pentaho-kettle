@@ -1,0 +1,37 @@
+#login-repository-header {
+    font-family: OpenSansLight;
+    margin: 20px;
+}
+
+.text-color-primary {
+    color: #005EAA;
+}
+
+.btn-color-primary {
+    color: white;
+    background-color: #005EAA;
+    border-color: #005EAA;
+}
+
+.btn-color-primary:hover {
+    color: white;
+    background-color: #0F2B5B;
+    border-color: #0F2B5B;
+}
+
+.form-control:focus {
+    border-color: #005EAA;
+    box-shadow: 0 0 0 0.2rem rgba(0,94,170,.25);
+}
+
+#login-repository-container {
+    position: absolute;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+}
+
+#login-repository-form-username,
+#login-repository-form-password {
+    width: 100%;
+}

@@ -1,58 +1,91 @@
-<div class="main_div">
-  <div class="title_text margin_bottom_30">
-    {{::vm.managerTitle}}
-  </div>
-  <div id="table-wrapper" class="margin_bottom_20 table_border">
-    <div class="table-scroll-mng">
-      <table id="repoMngTable">
-        <tr ng-repeat="repository in vm.repositories" ng-class="{active : repository === vm.selectedRepository}"  ng-click="vm.selectRepository(repository)" ng-init="$last && addToolTips()">
-          <td class="bullet" />
-          <td class="repo_type text_left">
-            <div class="repoType mightOverflow headerText">
-              {{repository.displayName}}
+<div id="repository-manager-container" class="container">
+
+    <h1 id="repository-manager-header" class="text-center text-color-primary">
+        {{::vm.managerTitle}}
+    </h1>
+
+    <!-- Repository manager list repositories -->
+    <div id="repository-manager-row-list-repositories" class="row justify-content-center align-items-center">
+        <div class="col-md-12">
+            <div id="repository-manager-table-wrapper">
+                <table id="repoMngTable">
+                    <tr ng-repeat="repository in vm.repositories"
+                        ng-class="{active : repository === vm.selectedRepository}"
+                        ng-click="vm.selectRepository(repository)" ng-init="$last && addToolTips()">
+                        <td class="bullet"/>
+                        <td class="repo_type text_left">
+                            <div class="repoType mightOverflow headerText">
+                                {{repository.displayName}}
+                            </div>
+                            <div id="repoDesc">{{repository.description}}</div>
+                        </td>
+                        <td class="default">
+                            <button class="defaultBtn" ng-click="vm.setDefault(repository); $event.stopPropagation();"
+                                    ng-if="!repository.isDefault" title="{{::vm.launchLabel}}"></button>
+                            <button class="defaultBtn activate"
+                                    ng-click="vm.clearDefault(repository); $event.stopPropagation();"
+                                    ng-if="repository.isDefault" title="{{::vm.launchLabel}}">
+                                <div id="defaultBtnCheckmark"></div>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
             </div>
-            <div id="repoDesc">{{repository.description}}</div>
-          </td>
-          <td class="default">
-            <button class="defaultBtn" ng-click="vm.setDefault(repository); $event.stopPropagation();"
-                ng-if="!repository.isDefault" title="{{::vm.launchLabel}}"></button>
-            <button class="defaultBtn activate" ng-click="vm.clearDefault(repository); $event.stopPropagation();"
-                ng-if="repository.isDefault" title="{{::vm.launchLabel}}">
-              <div id="defaultBtnCheckmark"></div>
+        </div>
+    </div>
+
+
+    <!-- Repository manager Action Buttons -->
+    <div id="repository-manager-row-action-buttons" class="row justify-content-center align-items-center">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <button
+                    id="repository-manager-row-action-buttons-addBtn"
+                    class="btn btn-color-primary btn-block"
+                    type="button"
+                    ng-click="vm.add()"
+            >
+                <span> {{::vm.addLabel}} </span>
             </button>
-          </td>
-        </tr>
-      </table>
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6">
+            <button
+                    id="repository-manager-row-action-buttons-editBtn"
+                    class="btn btn-outline-color-secondary btn-block"
+                    type="button"
+                    ng-class="{'repository-manager-button-hidden' : !vm.selectedRepository || vm.repositories.length == 0}"
+                    ng-click="vm.edit(vm.selectedRepository)"
+            >
+                <span> {{::vm.editLabel}} </span>
+            </button>
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6">
+            <button
+                    id="repository-manager-row-action-buttons-delete"
+                    class="btn btn-outline-color-secondary btn-block"
+                    type="button"
+                    ng-class="{'repository-manager-button-hidden' : !vm.selectedRepository || vm.repositories.length == 0}"
+                    ng-click="vm.remove(vm.selectedRepository)"
+            >
+                <span> {{::vm.deleteLabel}} </span>
+            </button>
+        </div>
     </div>
-  </div>
-  <div>
-    <button id="deleteBtn" class="right margin_left_10 secondary" type="button" ng-class="{invisible : !vm.selectedRepository || vm.repositories.length == 0}" ng-click="vm.remove(vm.selectedRepository)">
-      <span>
-        {{::vm.deleteLabel}}
-      </span>
-    </button>
-    <button id="editBtn" class="right secondary" type="button" style="margin-left: 85px;" ng-class="{invisible : !vm.selectedRepository || vm.repositories.length == 0}" ng-click="vm.edit(vm.selectedRepository)">
-      <span>
-        {{::vm.editLabel}}
-      </span>
-    </button>
-    <button id="addBtn" class="right primary" type="button" ng-click="vm.add()">
-      <span>
-        {{::vm.addLabel}}
-      </span>
-    </button>
-  </div>
-  <div class="bottom">
-    <div class="margin_bottom_20">
-      <hr />
+
+    <!-- Repository manager Footer -->
+    <div id="repository-manager-row-footer" class="row justify-content-center align-items-center">
+        <div class="col-sm-12">
+            <hr id="repository-manager-footer-separator"/>
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6">
+            <help></help>
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+            <button
+                    id="repository-manager-row-action-buttons-btnClose"
+                    class="btn btn-outline-color-secondary"
+                    ng-click="vm.close()">
+                <span> {{::vm.closeLabel}} </span>
+            </button>
+        </div>
     </div>
-    <div>
-      <help></help>
-      <button id="btnClose" class="right secondary" type="button" ng-click="vm.close()">
-        <span>
-          {{::vm.closeLabel}}
-        </span>
-      </button>
-    </div>
-  </div>
 </div>

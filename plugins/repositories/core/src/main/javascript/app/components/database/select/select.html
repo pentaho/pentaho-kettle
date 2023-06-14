@@ -1,55 +1,83 @@
-<div class="main_div" ng-if="vm.databases.length>0">
-  <div class="title_text margin_bottom_30">{{::vm.selectLabel}}</div>
-  <div class="middle_div">
-    <div id="dbDiv" class="margin_bottom_20 text_left">
-      <div ng-repeat="database in vm.databases" class="db_list_items" ng-class="{active : database.name == vm.connection.databaseConnection}" ng-click="vm.selectDatabase(database)">{{database.name}}</div>
+<div id="repository-manager-database-select-container" class="container">
+
+  <h1 id="repository-manager-database-select-header" class="text-center text-color-primary">
+    {{::vm.databaseSelectLabel}}
+  </h1>
+
+  <!-- Repository manager database select empty -->
+  <div id="repository-manager-database-select-row-list-empty"
+       class="row justify-content-center align-items-center"
+       ng-if="vm.databases.length==0">
+    <div class="col-md-12">
+      <p id="repository-manager-database-select-row-list-empty-info" class="text_center" readonly="readonly">
+        {{::vm.databaseNoneLabel}}
+      </p>
     </div>
-    <div>
-      <button id="delete" class="right margin_left_10 secondary" ng-class="{visible : vm.connection.databaseConnection}"
-          type="button" ng-click="vm.deleteConnection()">
-        <span>
-          {{::vm.deleteLabel}}
-        </span>
+  </div>
+
+  <!-- Repository manager database select list connections -->
+  <div id="repository-manager-database-select-row-list-repositories"
+       class="row justify-content-center align-items-center"
+       ng-if="vm.databases.length>0">
+    <div class="col-md-12">
+      <div id="repository-manager-database-select-table-wrapper">
+        <div id="repository-manager-database-select-table" class="margin_bottom_20 text_left">
+          <div ng-repeat="database in vm.databases" class="repository-manager-database-select-table-items" ng-class="{active : database.name == vm.connection.databaseConnection}" ng-click="vm.selectDatabase(database)">{{database.name}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repository manager database select actions buttons -->
+  <div id="repository-manager-database-select-row-action-buttons" class="row justify-content-center align-items-center">
+    <div
+            class="text-center"
+            ng-class="{'col-xs-6 col-sm-6 col-md-6 col-xs-offset-3 col-sm-offset-3 col-md-offset-3' : vm.databases.length === 0, 'col-xs-4 col-sm-4 col-md-4' : vm.databases.length > 0 }">
+      <button
+              id="repository-manager-database-select-row-action-buttons-newBtn"
+              class="btn btn-color-primary btn-block"
+              ng-click="vm.createNewConnection()"
+      >
+        <span ng-if="vm.databases.length>0"> {{::vm.newLabel}} </span>
+        <span ng-if="vm.databases.length==0"> {{::vm.createLabel}} </span>
       </button>
-      <button id="edit" class="right margin_left_10 secondary" ng-class="{visible : vm.connection.databaseConnection}"
-          type="button" ng-click="vm.editConnection()">
-        <span>
-          {{::vm.editLabel}}
-        </span>
+    </div>
+    <div class="col-xs-4 col-sm-4 col-md-4 text-center" ng-if="vm.databases.length>0">
+      <button
+              id="repository-manager-database-select-row-action-buttons-editBtn"
+              class="btn btn-outline-color-secondary btn-block"
+              ng-class="{visible : vm.connection.databaseConnection}"
+              ng-click="vm.editConnection()"
+      >
+        <span> {{::vm.editLabel}} </span>
       </button>
-      <button id="new" class="right secondary" type="button" ng-click="vm.createNewConnection()">
-        <span>
-          {{::vm.newLabel}}
-        </span>
+    </div>
+    <div class="col-xs-4 col-sm-4 col-md-4 text-center" ng-if="vm.databases.length>0">
+      <button
+              id="repository-manager-database-select-row-action-buttons-deleteBtn"
+              class="btn btn-outline-color-secondary btn-block"
+              ng-class="{visible : vm.connection.databaseConnection}"
+              ng-click="vm.deleteConnection()">
+        <span> {{ ::vm.deleteLabel }} </span>
       </button>
     </div>
   </div>
-</div>
-<div class="main_div" ng-if="vm.databases.length==0">
-  <div class="title_text margin_bottom_30">{{::vm.databaseSelectLabel}}</div>
-  <div class="middle_div">
-    <div class="margin_bottom_20">
-      <textarea id="no_conn" class="text_center" readonly="readonly">{{::vm.databaseNoneLabel}}</textarea>
+
+  <!-- Repository manager database select Footer -->
+  <div id="repository-manager-database-select-row-footer" class="row justify-content-center align-items-center">
+    <div class="col-xs-12">
+      <hr id="repository-manager-database-select-footer-separator"/>
     </div>
-    <div>
-      <button class="same_width primary" type="button" ng-click="vm.createNewConnection()">
-        <span>
-          {{::vm.createLabel}}
-        </span>
+    <div class="col-xs-6 col-sm-6 col-md-6">
+      <help></help>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+      <button
+              id="repository-manager-database-select-buttons-btnBack"
+              class="btn btn-color-primary"
+              ng-click="vm.back()">
+        <span> {{::vm.backLabel}} </span>
       </button>
     </div>
-  </div>
-</div>
-<div class="bottom">
-  <div class="margin_bottom_20">
-    <hr />
-  </div>
-  <div>
-    <help></help>
-    <button class="right primary" type="button" ng-click="vm.back()">
-      <span>
-        {{::vm.backLabel}}
-      </span>
-    </button>
   </div>
 </div>

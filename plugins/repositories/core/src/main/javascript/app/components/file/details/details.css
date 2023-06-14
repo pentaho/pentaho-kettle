@@ -1,6 +1,59 @@
-#pentaho_details {
+/*#pentaho_details {
   width: 100%;
   position: absolute;
   top: 0;
   left: 0;
+}*/
+input:disabled {
+  background-color: #f2f2f2;
+  border-color: #e6e6e6;
+  color: #999999;
+}
+
+.text-color-primary {
+  color: #005EAA;
+}
+
+.btn-color-primary {
+  color: white;
+  background-color: #005EAA;
+  border-color: #005EAA;
+}
+
+.btn-color-primary:hover {
+  color: white;
+  background-color: #0F2B5B;
+  border-color: #0F2B5B;
+}
+
+.form-control:focus {
+  border-color: #005EAA;
+  box-shadow: 0 0 0 0.2rem rgba(0,94,170,.25);
+}
+
+#repository-manager-file-details-header {
+  font-family: OpenSansLight;
+  margin: 20px;
+}
+
+#repository-manager-file-details-form-displayName,
+#repository-manager-file-details-form-connectionDD,
+#repository-manager-file-details-form-description{
+  width: 100%;
+}
+
+
+#repository-manager-file-details-form-description {
+  resize: none;
+}
+
+#repository-manager-file-details-container {
+  position: absolute;
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+}
+
+#repository-manager-file-details-row-footer {
+  padding-top: 90px;
 }
