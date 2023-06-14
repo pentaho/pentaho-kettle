@@ -271,7 +271,6 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
         SourceStepField source = new SourceStepField( sourceStepname, sourceField );
         targetSourceMapping.put( target, source );
       }
-
       MetaInjectMigration.migrate( targetSourceMapping );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
