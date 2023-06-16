@@ -77,6 +77,10 @@ define(
         };
 
         function enter(element, done) {
+          if( _isDisabledTransitions() ) {
+            done();
+            return;
+          }
           switch (transition) {
             case "slideLeft":
               _slideLeftEnter(element, done);
@@ -91,6 +95,10 @@ define(
         }
 
         function leave(element, done) {
+          if( _isDisabledTransitions() ) {
+            done();
+            return;
+          }
           switch (transition) {
             case "slideLeft":
               _slideLeftLeave(element, done);
@@ -105,7 +113,7 @@ define(
         }
 
         function _slideLeftEnter(element, done) {
-          jQuery(element).css('left', '100%');
+          jQuery(element).css('left', '600px');
           jQuery(element).animate({
             left: 0
           }, function () {
@@ -114,7 +122,7 @@ define(
         }
 
         function _slideRightEnter(element, done) {
-          jQuery(element).css('left', '-100%');
+          jQuery(element).css('left', '-600px');
           jQuery(element).animate({
             left: 0
           }, function () {
@@ -156,6 +164,11 @@ define(
           }, function() {
             done();
           });
+        }
+
+        /* This is a workaround to disable animations due to cause a glitch with the new implementation (PDI-19626) */
+        function _isDisabledTransitions() {
+          return true;
         }
       }
     });

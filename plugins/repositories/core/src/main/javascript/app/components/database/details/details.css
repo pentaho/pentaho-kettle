@@ -56,6 +56,7 @@ input:disabled {
 
 #repository-manager-database-details-row-footer {
   padding-top: 160px;
+  padding-bottom: 15px;
 }
 
 #repository-manager-database-details-form-connectionDD {

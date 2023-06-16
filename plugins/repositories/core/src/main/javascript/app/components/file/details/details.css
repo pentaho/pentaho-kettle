@@ -55,5 +55,6 @@ input:disabled {
 }
 
 #repository-manager-file-details-row-footer {
-  padding-top: 90px;
+  padding-top: 85px;
+  padding-bottom: 15px;
 }
