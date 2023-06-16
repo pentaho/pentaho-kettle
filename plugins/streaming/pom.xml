@@ -17,7 +17,6 @@
 
   <properties>
     <pdi.version>9.6.0.0-SNAPSHOT</pdi.version>
-    <guava.version>19.0</guava.version>
     <pentaho-metaverse.version>9.6.0.0-SNAPSHOT</pentaho-metaverse.version>
   </properties>
 

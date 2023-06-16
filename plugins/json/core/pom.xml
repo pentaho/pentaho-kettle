@@ -20,7 +20,6 @@
     <platform.version>9.6.0.0-SNAPSHOT</platform.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
-    <guava.version>17.0</guava.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <mockito-all.version>1.9.5</mockito-all.version>
     <build.revision>${project.version}</build.revision>
