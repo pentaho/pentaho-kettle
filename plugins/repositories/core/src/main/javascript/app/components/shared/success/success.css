@@ -61,7 +61,8 @@
 }
 
 #repository-manager-success-row-footer {
-  margin: 20px;
+  margin: 20px 0px 0px 0px;
+  padding-bottom: 15px;
 }
 
 #repository-manager-success-footer-separator {
