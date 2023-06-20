@@ -44,7 +44,6 @@
         <module>rss</module>
         <module>mondrianinput</module>
         <module>avro-format</module>
-        <module>rest</module>
       </modules>
     </profile>
 
