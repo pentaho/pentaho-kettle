@@ -22,12 +22,9 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -37,6 +34,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -51,14 +49,19 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.di.core.annotations.Step;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * @author Samatar
  * @since 16-jan-2011
  *
  */
-
+@Step( id = "Rest", image = "REST.svg", i18nPackageName = "org.pentaho.di.trans.step.Rest",
+  documentationUrl = "Products/REST_Client", name = "Rest.name",
+  description = "Rest.description", categoryDescription = "Rest.category" )
 public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
