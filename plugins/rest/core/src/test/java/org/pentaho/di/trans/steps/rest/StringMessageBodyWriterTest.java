@@ -1,7 +1,6 @@
 package org.pentaho.di.trans.steps.rest;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
 

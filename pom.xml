@@ -60,7 +60,7 @@
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <js.version>1.7R3</js.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
-    <guava.version>17.0</guava.version>
+    <guava.version>32.0.1-jre</guava.version>
     <encoder.version>1.2</encoder.version>
     <wstx-asl.version>3.2.4</wstx-asl.version>
 
@@ -160,12 +160,6 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.owasp.encoder</groupId>

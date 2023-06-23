@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>pentaho-streaming</artifactId>
-  <version>9.6.0.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
@@ -13,15 +9,15 @@
     <version>9.6.0.0-SNAPSHOT</version>
   </parent>
 
-  <name>Pentaho Streaming Plugins</name>
+  <artifactId>rest</artifactId>
+  <version>9.6.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-  <properties>
-    <pdi.version>9.6.0.0-SNAPSHOT</pdi.version>
-    <pentaho-metaverse.version>9.6.0.0-SNAPSHOT</pentaho-metaverse.version>
-  </properties>
+  <name>PDI Rest Plugin</name>
+  <description>This plugin is for Pentaho Data Integration (ETL) a.k.a Kettle</description>
 
   <modules>
-    <module>impls</module>
+    <module>core</module>
     <module>assemblies</module>
   </modules>
 </project>

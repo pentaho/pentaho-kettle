@@ -9,7 +9,6 @@
   <packaging>pom</packaging>
 
   <name>PDI Plugins</name>
-
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
@@ -91,6 +90,7 @@
         <module>ldap</module>
         <module>excel</module>
         <module>pentaho-reporting</module>
+        <module>rest</module>
       </modules>
     </profile>
 

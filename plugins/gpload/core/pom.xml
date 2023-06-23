@@ -16,6 +16,10 @@
 
   <name>PDI GPLoad Plugin Core</name>
 
+  <properties>
+    <commons-lang3.version>3.12.0</commons-lang3.version>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -41,6 +45,18 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
