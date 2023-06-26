@@ -68,6 +68,7 @@
     <pentaho-metaverse.version>9.6.0.0-SNAPSHOT</pentaho-metaverse.version>
     <pdi-xml-plugin.version>9.6.0.0-SNAPSHOT</pdi-xml-plugin.version>
     <pdi-json-plugin.version>9.6.0.0-SNAPSHOT</pdi-json-plugin.version>
+    <pdi-rest-plugin.version>9.6.0.0-SNAPSHOT</pdi-rest-plugin.version>
   </properties>
 
   <dependencies>
@@ -699,6 +700,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>kettle-json-plugin</artifactId>
       <version>${pdi-json-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>kettle-rest-plugin</artifactId>
+      <version>${pdi-rest-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
