@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,7 +58,11 @@ public class OtherConnectionDetailsProvider extends BaseVFSConnectionProvider<Ot
         getVar( otherConnectionDetails.getUsername(), space ),
         getVar( otherConnectionDetails.getPassword(), space ) );
     FileSystemOptions opts = new FileSystemOptions();
-    DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, auth );
+    try {
+      DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, auth );
+    } catch ( FileSystemException fse ) {
+      // Ignore and return default options
+    }
     return opts;
   }
 
