@@ -44,6 +44,7 @@ pdi-osgi-bridge.version=9.6.0.0-BUILDTAG
 pdi-platform-utils-plugin.version=9.6.0.0-BUILDTAG
 pdi-plugins-ee.version=9.6.0.0-BUILDTAG
 pdi-pur-plugin.version=9.6.0.0-BUILDTAG
+pdi-rest-plugin.version=9.6.0.0-BUILDTAG
 pdi-salesforce-plugin.version=9.6.0.0-BUILDTAG
 pdi-sap-hana-bulk-loader-plugin.version=9.6.0.0-BUILDTAG
 pdi-scheduler-plugin.version=9.6.0.0-BUILDTAG
