@@ -22,6 +22,7 @@
 
 package org.pentaho.di.plugins.fileopensave.controllers;
 
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.Utils;
 
@@ -274,7 +275,9 @@ public class FileController {
     try {
       FileProvider<File> fromFileProvider = providerService.get( file.getProvider() );
       FileProvider<File> toFileProvider = providerService.get( destDir.getProvider() );
-      path = toFileProvider.sanitizeName( destDir, path );
+      if ( !path.startsWith( ConnectionFileProvider.SCHEME + "://") ) {
+        path = toFileProvider.sanitizeName( destDir, path );
+      }
 
       return writeFile( fromFileProvider, toFileProvider, file, destDir, path, overwriteStatus );
     } catch ( InvalidFileProviderException | FileException | KettleFileException ignored ) {
