@@ -432,7 +432,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
                               VariableSpace space )
     throws FileException {
     try {
-      Files.copy( inputStream, Paths.get( path ) );
+      Files.copy( inputStream, Paths.get( path ), StandardCopyOption.REPLACE_EXISTING );
       return LocalFile.create( destDir.getPath(), Paths.get( path ) );
     } catch ( FileAlreadyExistsException e ) {
       throw new FileExistsException();

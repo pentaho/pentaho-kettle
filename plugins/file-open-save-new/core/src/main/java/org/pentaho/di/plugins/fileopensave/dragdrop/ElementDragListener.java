@@ -31,6 +31,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.dialog.FileOpenSaveDialog;
 import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
+import org.pentaho.di.plugins.fileopensave.util.Util;
 
 /**
  * Supports dragging elements from a structured viewer.
@@ -83,6 +84,7 @@ public class ElementDragListener extends DragSourceAdapter {
           }
         }
       }
+      Util.rawElementMassage( rawElements[ i ] );
     }
     if ( ElementTransfer.getInstance().isSupportedType( event.dataType ) ) {
       event.data = rawElements;
