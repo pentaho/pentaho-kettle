@@ -70,7 +70,7 @@ public class Util {
     //Performs conversion of raw elements from drag and drop to something the system understands
     if ( rawElement instanceof VFSFile ) {
       VFSFile vfsFile = (VFSFile) rawElement;
-      if ( !vfsFile.getPath().startsWith( "hcp" ) ) {
+      if ( vfsFile.getPath().startsWith( "hcp://" ) ) {
         //HCP Files come back like this "hcp://hcp.hitachi.com:443/path1/filename" and for some reason this does not
         // work with HCP.  We work around this by converting the URL to pvfs like this
         // ( ie: pvfs://myconnectionName/path1/filename ).  The displayed name is what we want.
