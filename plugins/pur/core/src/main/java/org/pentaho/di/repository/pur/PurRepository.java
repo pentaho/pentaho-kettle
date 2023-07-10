@@ -1493,12 +1493,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     readWriteLock.readLock().lock();
     try {
       List<RepositoryFile> children = getAllFilesOfType( null, RepositoryObjectType.DATABASE, false );
-      List<DatabaseMeta> dbMetas = new ArrayList<DatabaseMeta>();
+      List<DatabaseMeta> dbMetas = new ArrayList<>();
+
+      //[PDI-18487] - Amount of POST calls from PDI client connected to Repository
+      //Grab data from all objects at once to lower calls to server
+      List<NodeRepositoryFileData> data = pur.getDataForReadInBatch( children, NodeRepositoryFileData.class );
+      Iterator<NodeRepositoryFileData> dataIter = data.iterator();
 
       for ( RepositoryFile file : children ) {
-        DataNode node;
-        node = pur.getDataForRead( file.getId(), NodeRepositoryFileData.class ).getNode();
-
+        //Both list should be ordered, so the items match
+        DataNode node = dataIter.next().getNode();
         DatabaseMeta databaseMeta = (DatabaseMeta) databaseMetaTransformer.dataNodeToElement( node );
         databaseMeta.setName( file.getTitle() );
         dbMetas.add( databaseMeta );
