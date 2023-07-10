@@ -35,6 +35,7 @@ import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSRoot;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -555,7 +556,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   }
 
   @Override public String sanitizeName( VFSFile destDir, String newPath ) {
-    return getConnectionProvider( newPath ).sanitizeName( newPath );
+    if ( newPath.startsWith( ConnectionFileProvider.SCHEME + "://" ) ) {
+      return newPath;
+    }
+      return getConnectionProvider( newPath ).sanitizeName( newPath );
   }
 
   private VFSConnectionProvider<VFSConnectionDetails> getConnectionProvider( String key ) {

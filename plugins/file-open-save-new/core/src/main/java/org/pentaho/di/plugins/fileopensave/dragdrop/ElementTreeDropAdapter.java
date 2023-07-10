@@ -40,6 +40,7 @@ import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
 import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
+import org.pentaho.di.plugins.fileopensave.util.Util;
 
 import java.util.Arrays;
 
@@ -70,6 +71,7 @@ public class ElementTreeDropAdapter extends ViewerDropAdapter {
       errorBox.open();
       return false;
     }
+    Util.rawElementMassage( genericTarget );
     Element target = new Element( genericTarget );
 
     log.logDebug( "TreeDrop: last target element was \"" + target.getPath() + "\" location was " + location );
