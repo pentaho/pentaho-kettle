@@ -26,6 +26,12 @@
             <artifactId>pentaho-googledrive-vfs-core</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.http-client</groupId>
+                    <artifactId>google-http-client</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

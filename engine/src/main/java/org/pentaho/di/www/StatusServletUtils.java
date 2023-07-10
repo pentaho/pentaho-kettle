@@ -108,7 +108,8 @@ class StatusServletUtils {
         }
       }
     } catch ( ParserConfigurationException | IOException | SAXException e ) {
-      LogChannel.GENERAL.logError( e.getMessage(), e );
+      //BISERVER-14930 As requested, the error was hidden from the logs
+      //LogChannel.GENERAL.logError( e.getMessage(), e );
     }
 
     return buildCssPath( root, themeName, themeCss, mantleThemeCss );
@@ -209,17 +210,21 @@ class StatusServletUtils {
       }
     }
     //if we can't find the configured value, we get the value from runtime system relative path
-    File file = new File( "temp.xml" );
+    File file = new File( "" );
     file.deleteOnExit();
     int ps;
     String solutionPath = "";
 
     try {
       ps = file.getCanonicalPath().lastIndexOf( "pentaho-server" );
-      solutionPath =
-        file.getCanonicalPath().substring( 0, ps ) + "pentaho-server" + File.separator + PENTAHO_SOLUTIONS_PATH_COMPONENT;
+      if ( ps != -1 ) {
+        solutionPath =
+                file.getCanonicalPath().substring(0, ps) + "pentaho-server" + File.separator + PENTAHO_SOLUTIONS_PATH_COMPONENT;
+      } else {
+        LogChannel.GENERAL.logBasic( "solution path was not found in: " + file.getAbsolutePath()  + ". Please configure the property \"solution-path\" in your instalation's WEB-INF folder.");
+      }
     } catch ( IOException e ) {
-      e.printStackTrace();
+      LogChannel.GENERAL.logError( e.getMessage(), e );
     }
 
     return solutionPath;

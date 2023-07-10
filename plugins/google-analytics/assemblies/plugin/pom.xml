@@ -46,21 +46,27 @@
     </dependency>
     <dependency>
       <groupId>com.google.http-client</groupId>
-      <artifactId>google-http-client</artifactId>
-      <version>1.20.0</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.http-client</groupId>
       <artifactId>google-http-client-jackson2</artifactId>
       <version>1.20.0</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.oauth-client</groupId>
       <artifactId>google-oauth-client</artifactId>
       <version>1.20.0</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -70,12 +76,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <version>1.3.9</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

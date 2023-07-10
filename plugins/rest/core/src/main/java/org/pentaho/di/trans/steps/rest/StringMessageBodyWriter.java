@@ -24,14 +24,14 @@ package org.pentaho.di.trans.steps.rest;
 
 import com.sun.jersey.core.impl.provider.entity.StringProvider;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * This class is a custom provider to replace the default com.sun.jersey.core.impl.provider.entity.StringProvider
