@@ -27,6 +27,7 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionProvider;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -52,7 +53,8 @@ public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends C
    */
   default FileObject getDirectFile( T connectionDetails, String path ) throws KettleFileException {
     String pvfsUrl = connectionDetails.getType() + "://" + path;
-    return KettleVFS.getFileObject( pvfsUrl, getOpts( connectionDetails ) );
+    // use an empty Variables to prevent other "connection" values from causing StackOverflowErrors
+    return KettleVFS.getFileObject( pvfsUrl, new Variables(), getOpts( connectionDetails ) );
   }
 
 }
