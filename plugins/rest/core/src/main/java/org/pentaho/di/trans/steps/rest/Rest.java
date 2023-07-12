@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -318,7 +318,7 @@ public class Rest extends BaseStep implements StepInterface {
       // SSL TRUST STORE CONFIGURATION
       if ( !Utils.isEmpty( data.trustStoreFile ) ) {
         try {
-          SSLContext ctx = getSslContextWithTrustStoreFile( data.trustStoreFile, data.trustStorePassword );
+          SSLContext ctx = getSslContext( data.trustStoreFile, data.trustStorePassword );
           HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify( String hostname, SSLSession session ) {
               if ( isDebug() ) {
@@ -346,7 +346,7 @@ public class Rest extends BaseStep implements StepInterface {
 
   }
 
-  public static SSLContext getSslContextWithTrustStoreFile( String trustFile, String trustStorePassword )
+  protected SSLContext getSslContext( String trustFile, String trustStorePassword )
     throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException,
     UnrecoverableKeyException {
 
