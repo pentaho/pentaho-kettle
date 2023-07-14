@@ -28,8 +28,6 @@
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-pool.version>1.5.7</commons-pool.version>
     <jug-lgpl.version>2.0.0</jug-lgpl.version>
-    <jsch.version>0.1.54</jsch.version>
-    <jzlib.version>1.0.7</jzlib.version>
     <ognl.version>2.6.9</ognl.version>
     <scannotation.version>1.0.2</scannotation.version>
     <com.wcohen.secondstring.version>0.1</com.wcohen.secondstring.version>
@@ -363,27 +361,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.jcraft</groupId>
+      <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>${jsch.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.jcraft</groupId>
-      <artifactId>jzlib</artifactId>
-      <version>${jzlib.version}</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>ognl</groupId>

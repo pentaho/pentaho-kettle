@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,10 +26,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.util.List;
+import java.util.Vector;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
-import org.apache.commons.vfs2.FileUtil;
+import org.apache.commons.vfs2.util.FileObjectUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -39,7 +43,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import com.google.common.annotations.VisibleForTesting;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Proxy;
@@ -76,8 +79,8 @@ public class SFTPClient {
   private String passphrase = null; // Empty passphrase for now
   private String compression = null;
 
-  private Session s;
-  private ChannelSftp c;
+  private Session session;
+  private ChannelSftp channel;
 
   /**
    * Init Helper Class with connection settings
@@ -129,7 +132,7 @@ public class SFTPClient {
   public SFTPClient( InetAddress serverIP, int serverPort, String userName, String privateKeyFilename,
     String passPhrase ) throws KettleJobException {
 
-    if ( serverIP == null || serverPort < 0 || userName == null || userName.equals( "" ) ) {
+    if ( serverIP == null || serverPort <= 0 || userName == null || userName.equals( "" ) ) {
       throw new KettleJobException(
         "For a SFTP connection server name and username must be set and server port must be greater than zero." );
     }
@@ -143,18 +146,19 @@ public class SFTPClient {
       if ( !Utils.isEmpty( privateKeyFilename ) ) {
         // We need to use private key authentication
         this.prvkey = privateKeyFilename;
-        byte[] passphrasebytes = new byte[0];
+
+        byte[] passPhraseBytes;
         if ( !Utils.isEmpty( passPhrase ) ) {
           // Set passphrase
           this.passphrase = passPhrase;
-          passphrasebytes = GetPrivateKeyPassPhrase().getBytes();
+          passPhraseBytes = getPrivateKeyPassPhrase().getBytes();
+        } else {
+          passPhraseBytes = new byte[0];
         }
-        jsch.addIdentity( getUserName(), FileUtil.getContent( KettleVFS.getFileObject( prvkey ) ), // byte[] privateKey
-          null, // byte[] publicKey
-          passphrasebytes ); // byte[] passPhrase
+        jsch.addIdentity( getUserName(), getFileContent( prvkey ), null, passPhraseBytes );
       }
-      s = jsch.getSession( userName, serverIP.getHostAddress(), serverPort );
-      s.setConfig( PREFERRED_AUTH_CONFIG_NAME, getPreferredAuthentications() );
+      session = jsch.getSession( userName, serverIP.getHostAddress(), serverPort );
+      session.setConfig( PREFERRED_AUTH_CONFIG_NAME, getPreferredAuthentications() );
     } catch ( IOException e ) {
       throw new KettleJobException( e );
     } catch ( KettleFileException e ) {
@@ -164,10 +168,14 @@ public class SFTPClient {
     }
   }
 
+  private static byte[] getFileContent( String vfsFileName ) throws KettleFileException, IOException {
+    return FileObjectUtils.getContentAsByteArray( KettleVFS.getFileObject( vfsFileName ) );
+  }
+
   public void login( String password ) throws KettleJobException {
     this.password = password;
 
-    s.setPassword( this.getPassword() );
+    session.setPassword( this.getPassword() );
     try {
       java.util.Properties config = new java.util.Properties();
       config.put( "StrictHostKeyChecking", "no" );
@@ -178,11 +186,11 @@ public class SFTPClient {
         config.put( COMPRESSION_S2C, compress );
         config.put( COMPRESSION_C2S, compress );
       }
-      s.setConfig( config );
-      s.connect();
-      Channel channel = s.openChannel( "sftp" );
-      channel.connect();
-      c = (ChannelSftp) channel;
+      session.setConfig( config );
+      session.connect();
+      Channel sftpChannel = session.openChannel( "sftp" );
+      sftpChannel.connect();
+      this.channel = (ChannelSftp) sftpChannel;
     } catch ( JSchException e ) {
       throw new KettleJobException( e );
     }
@@ -190,58 +198,49 @@ public class SFTPClient {
 
   public void chdir( String dirToChangeTo ) throws KettleJobException {
     try {
-      c.cd( dirToChangeTo.replace( "\\\\", "/" ).
+      channel.cd( dirToChangeTo.replace( "\\\\", "/" ).
         replace( "\\", "/" ) );
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
     }
   }
 
+  /**
+   *
+   * @return Files in current directory
+   * @throws KettleJobException
+   */
   public String[] dir() throws KettleJobException {
-    String[] fileList = null;
-
     try {
-      java.util.Vector<?> v = c.ls( "." );
-      java.util.Vector<String> o = new java.util.Vector<String>();
-      if ( v != null ) {
-        for ( int i = 0; i < v.size(); i++ ) {
-          Object obj = v.elementAt( i );
-          if ( obj != null && obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry ) {
-            LsEntry lse = (com.jcraft.jsch.ChannelSftp.LsEntry) obj;
-            if ( !lse.getAttrs().isDir() ) {
-              o.add( lse.getFilename() );
-            }
-          }
-        }
+      Vector<ChannelSftp.LsEntry> entries = channel.ls( "." );
+      if (entries == null) {
+        return null;
       }
-      if ( o.size() > 0 ) {
-        fileList = new String[o.size()];
-        o.copyInto( fileList );
-      }
+
+      List<String> files = entries.stream()
+          .filter( lse -> lse != null && !lse.getAttrs().isDir() )
+          .map( ChannelSftp.LsEntry::getFilename )
+          .collect( Collectors.toList() );
+
+      // uses depend on being null when empty
+      return files.isEmpty() ? null : files.toArray( new String[files.size()] );
+
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
     }
-
-    return fileList;
   }
 
   public void get( FileObject localFile, String remoteFile ) throws KettleJobException {
     OutputStream localStream = null;
     try {
       localStream = KettleVFS.getOutputStream( localFile, false );
-      c.get( remoteFile, localStream );
+      channel.get( remoteFile, localStream );
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
     } catch ( IOException e ) {
       throw new KettleJobException( e );
     } finally {
-      if ( localStream != null ) {
-        try {
-          localStream.close();
-        } catch ( IOException ignore ) {
-          // Ignore any IOException, as we're trying to close the stream anyways
-        }
-      }
+      IOUtils.closeQuietly( localStream );
     }
   }
 
@@ -255,7 +254,7 @@ public class SFTPClient {
   public void get( String localFilePath, String remoteFile ) throws KettleJobException {
     int mode = ChannelSftp.OVERWRITE;
     try {
-      c.get( remoteFile, localFilePath, null, mode );
+      channel.get( remoteFile, localFilePath, null, mode );
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
     }
@@ -263,7 +262,7 @@ public class SFTPClient {
 
   public String pwd() throws KettleJobException {
     try {
-      return c.pwd();
+      return channel.pwd();
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
     }
@@ -274,7 +273,7 @@ public class SFTPClient {
     InputStream inputStream = null;
     try {
       inputStream = KettleVFS.getInputStream( fileObject );
-      c.put( inputStream, remoteFile, null, mode );
+      channel.put( inputStream, remoteFile, null, mode );
     } catch ( Exception e ) {
       throw new KettleJobException( e );
     } finally {
@@ -292,7 +291,7 @@ public class SFTPClient {
     int mode = ChannelSftp.OVERWRITE;
 
     try {
-      c.put( inputStream, remoteFile, null, mode );
+      channel.put( inputStream, remoteFile, null, mode );
     } catch ( Exception e ) {
       throw new KettleJobException( e );
     } finally {
@@ -308,7 +307,7 @@ public class SFTPClient {
 
   public void delete( String file ) throws KettleJobException {
     try {
-      c.rm( file );
+      channel.rm( file );
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
     }
@@ -329,7 +328,7 @@ public class SFTPClient {
 
       for ( String f : folders ) {
         if ( f.length() != 0 && !folderExists( f ) ) {
-          c.mkdir( f );
+          channel.mkdir( f );
         }
       }
     } catch ( ArrayIndexOutOfBoundsException e ) {
@@ -344,7 +343,7 @@ public class SFTPClient {
    */
   public void renameFile( String sourcefilename, String destinationfilename ) throws KettleJobException {
     try {
-      c.rename( sourcefilename, destinationfilename );
+      channel.rename( sourcefilename, destinationfilename );
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
     }
@@ -352,7 +351,7 @@ public class SFTPClient {
 
   public FileType getFileType( String filename ) throws KettleJobException {
     try {
-      SftpATTRS attrs = c.stat( filename );
+      SftpATTRS attrs = channel.stat( filename );
       if ( attrs == null ) {
         return FileType.IMAGINARY;
       }
@@ -374,7 +373,7 @@ public class SFTPClient {
   public boolean folderExists( String foldername ) {
     boolean retval = false;
     try {
-      SftpATTRS attrs = c.stat( foldername );
+      SftpATTRS attrs = channel.stat( foldername );
       if ( attrs == null ) {
         return false;
       }
@@ -409,23 +408,23 @@ public class SFTPClient {
         ( (ProxySOCKS5) proxy ).setUserPasswd( user, pass );
       }
     }
-    s.setProxy( proxy );
+    session.setProxy( proxy );
   }
 
   public void disconnect() {
-    if ( c != null ) {
-      c.disconnect();
+    if ( channel != null ) {
+      channel.disconnect();
     }
-    if ( s != null ) {
-      s.disconnect();
+    if ( session != null ) {
+      session.disconnect();
     }
   }
 
-  public String GetPrivateKeyFileName() {
+  public String getPrivateKeyFileName() {
     return this.prvkey;
   }
 
-  public String GetPrivateKeyPassPhrase() {
+  public String getPrivateKeyPassPhrase() {
     return this.passphrase;
   }
 
