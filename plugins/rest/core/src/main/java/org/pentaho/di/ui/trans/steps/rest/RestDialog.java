@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -149,9 +149,10 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private Label wlProxyPort;
   private TextVar wProxyPort;
 
-  private CTabFolder wTabFolder;
+  protected CTabFolder wTabFolder;
 
-  private CTabItem wGeneralTab, wAdditionalTab, wParametersTab, wMatrixParametersTab, wAuthTab, wSSLTab;
+  private CTabItem wGeneralTab, wAdditionalTab, wParametersTab, wMatrixParametersTab, wAuthTab;
+  protected CTabItem wSSLTab;
   private FormData fdTabFolder;
 
   private Composite wGeneralComp, wAdditionalComp;
@@ -163,7 +164,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private Composite wAuthComp;
   private FormData fdAuthComp;
 
-  private Composite wSSLComp;
+  protected Composite wSSLComp;
   private FormData fdSSLComp;
 
   private Label wlParameters, wlMatrixParameters;
@@ -191,6 +192,9 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
   private Button wMatrixGet;
   private Listener lsMatrixGet;
+
+  protected Group gSSLTrustStore;
+
 
   public RestDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -558,7 +562,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdResponseTime.top = new FormAttachment( wResultCode, margin );
     fdResponseTime.right = new FormAttachment( 100, 0 );
     wResponseTime.setLayoutData( fdResponseTime );
- // Response header line...
+    // Response header line...
     wlResponseHeader = new Label( gOutputFields, SWT.RIGHT );
     wlResponseHeader.setText( BaseMessages.getString( PKG, "RestDialog.ResponseHeader.Label" ) );
     props.setLook( wlResponseHeader );
@@ -777,7 +781,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     // ////////////////////////
     // START SSLTrustStore GROUP
 
-    Group gSSLTrustStore = new Group( wSSLComp, SWT.SHADOW_ETCHED_IN );
+    gSSLTrustStore = new Group( wSSLComp, SWT.SHADOW_ETCHED_IN );
     gSSLTrustStore.setText( BaseMessages.getString( PKG, "RestDialog.SSLTrustStoreGroup.Label" ) );
     FormLayout SSLTrustStoreLayout = new FormLayout();
     SSLTrustStoreLayout.marginWidth = 3;
@@ -815,7 +819,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     wbTrustStoreFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wTrustStoreFile, transMeta,
       new SelectionAdapterOptions( SelectionOperation.FILE,
-        new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
+        new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     // TrustStorePassword line
     wlTrustStorePassword = new Label( gSSLTrustStore, SWT.RIGHT );
@@ -844,6 +848,9 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     // END HTTP AUTH GROUP
     // ////////////////////////
+
+    // TODO
+    additionalSSLUiChanges();
 
     fdSSLComp = new FormData();
     fdSSLComp.left = new FormAttachment( 0, 0 );
@@ -894,7 +901,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         new ColumnInfo(
           BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ) };
 
-    colinf[1].setUsingVariables( true );
+    colinf[ 1 ].setUsingVariables( true );
     wFields =
       new TableView(
         transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
@@ -1143,6 +1150,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     };
     shell.addListener( SWT.Resize, lsResize );
 
+
     // Set the shell size, based upon previous time...
     setSize();
     wTabFolder.setSelection( 0 );
@@ -1188,11 +1196,11 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     Set<String> keySet = fields.keySet();
     List<String> entries = new ArrayList<String>( keySet );
 
-    fieldNames = entries.toArray( new String[entries.size()] );
+    fieldNames = entries.toArray( new String[ entries.size() ] );
 
     Const.sortStrings( fieldNames );
-    colinfoparams[0].setComboValues( fieldNames );
-    colinf[0].setComboValues( fieldNames );
+    colinfoparams[ 0 ].setComboValues( fieldNames );
+    colinf[ 0 ].setComboValues( fieldNames );
   }
 
   private void setStreamFields() {
@@ -1244,11 +1252,11 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     if ( input.getHeaderName() != null ) {
       for ( int i = 0; i < input.getHeaderName().length; i++ ) {
         TableItem item = wFields.table.getItem( i );
-        if ( input.getHeaderField()[i] != null ) {
-          item.setText( 1, input.getHeaderField()[i] );
+        if ( input.getHeaderField()[ i ] != null ) {
+          item.setText( 1, input.getHeaderField()[ i ] );
         }
-        if ( input.getHeaderName()[i] != null ) {
-          item.setText( 2, input.getHeaderName()[i] );
+        if ( input.getHeaderName()[ i ] != null ) {
+          item.setText( 2, input.getHeaderName()[ i ] );
         }
       }
     }
@@ -1256,11 +1264,11 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     if ( input.getParameterField() != null ) {
       for ( int i = 0; i < input.getParameterField().length; i++ ) {
         TableItem item = wParameters.table.getItem( i );
-        if ( input.getParameterField()[i] != null ) {
-          item.setText( 1, input.getParameterField()[i] );
+        if ( input.getParameterField()[ i ] != null ) {
+          item.setText( 1, input.getParameterField()[ i ] );
         }
-        if ( input.getParameterName()[i] != null ) {
-          item.setText( 2, input.getParameterName()[i] );
+        if ( input.getParameterName()[ i ] != null ) {
+          item.setText( 2, input.getParameterName()[ i ] );
         }
       }
     }
@@ -1268,11 +1276,11 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     if ( input.getMatrixParameterField() != null ) {
       for ( int i = 0; i < input.getMatrixParameterField().length; i++ ) {
         TableItem item = wMatrixParameters.table.getItem( i );
-        if ( input.getMatrixParameterField()[i] != null ) {
-          item.setText( 1, input.getMatrixParameterField()[i] );
+        if ( input.getMatrixParameterField()[ i ] != null ) {
+          item.setText( 1, input.getMatrixParameterField()[ i ] );
         }
-        if ( input.getMatrixParameterField()[i] != null ) {
-          item.setText( 2, input.getMatrixParameterField()[i] );
+        if ( input.getMatrixParameterField()[ i ] != null ) {
+          item.setText( 2, input.getMatrixParameterField()[ i ] );
         }
       }
     }
@@ -1356,19 +1364,19 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     }
     for ( int i = 0; i < nrheaders; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
-      input.getHeaderField()[i] = item.getText( 1 );
-      input.getHeaderName()[i] = item.getText( 2 );
+      input.getHeaderField()[ i ] = item.getText( 1 );
+      input.getHeaderName()[ i ] = item.getText( 2 );
     }
     for ( int i = 0; i < nrparams; i++ ) {
       TableItem item = wParameters.getNonEmpty( i );
-      input.getParameterField()[i] = item.getText( 1 );
-      input.getParameterName()[i] = item.getText( 2 );
+      input.getParameterField()[ i ] = item.getText( 1 );
+      input.getParameterName()[ i ] = item.getText( 2 );
     }
 
     for ( int i = 0; i < nrmatrixparams; i++ ) {
       TableItem item = wMatrixParameters.getNonEmpty( i );
-      input.getMatrixParameterField()[i] = item.getText( 1 );
-      input.getMatrixParameterName()[i] = item.getText( 2 );
+      input.getMatrixParameterField()[ i ] = item.getText( 1 );
+      input.getMatrixParameterName()[ i ] = item.getText( 2 );
     }
 
     input.setDynamicMethod( wMethodInField.getSelection() );
@@ -1394,6 +1402,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     input.setApplicationType( wApplicationType.getText() );
     stepname = wStepname.getText(); // return value
 
+    setAdditionalFieldsInMeta();
     dispose();
   }
 
@@ -1407,7 +1416,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     } catch ( KettleException ke ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "RestDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-          .getString( PKG, "RestDialog.FailedToGetFields.DialogMessage" ), ke );
+        .getString( PKG, "RestDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -1421,7 +1430,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     } catch ( KettleException ke ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "RestDialog.FailedToGetHeaders.DialogTitle" ), BaseMessages
-          .getString( PKG, "RestDialog.FailedToGetHeaders.DialogMessage" ), ke );
+        .getString( PKG, "RestDialog.FailedToGetHeaders.DialogMessage" ), ke );
     }
 
   }
@@ -1431,5 +1440,13 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wMethod.setEnabled( !wMethodInField.getSelection() );
     wlMethodField.setEnabled( wMethodInField.getSelection() );
     wMethodField.setEnabled( wMethodInField.getSelection() );
+  }
+
+  protected void additionalSSLUiChanges() {
+    // None
+  }
+
+  protected void setAdditionalFieldsInMeta() {
+    //Noop. The class extending this class can set additional fields
   }
 }

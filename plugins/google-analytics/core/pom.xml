@@ -169,9 +169,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jcraft</groupId>
+      <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.1.54</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

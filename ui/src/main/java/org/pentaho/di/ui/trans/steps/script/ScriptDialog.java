@@ -2041,17 +2041,14 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
   // This could be useful for further improvements
   public static ScriptNode parseVariables( Context cx, Scriptable scope, String source, String sourceName,
     int lineno, Object securityDomain ) {
-    // Interpreter compiler = new Interpreter();
-    CompilerEnvirons evn = new CompilerEnvirons();
-    // evn.setLanguageVersion(Context.VERSION_1_5);
-    evn.setOptimizationLevel( -1 );
-    evn.setGeneratingSource( true );
-    evn.setGenerateDebugInfo( true );
+    CompilerEnvirons env = new CompilerEnvirons();
+    env.setOptimizationLevel( -1 );
+    env.setGeneratingSource( true );
+    env.setGenerateDebugInfo( true );
     ErrorReporter errorReporter = new ToolErrorReporter( false );
-    Parser p = new Parser( evn, errorReporter );
+    Parser p = new Parser( env, errorReporter );
     ScriptNode tree = p.parse( source, "", 0 ); // IOException
-    new NodeTransformer().transform( tree );
-    // Script result = (Script)compiler.compile(scope, evn, tree, p.getEncodedSource(),false, null);
+    new NodeTransformer().transform( tree, env );
     return tree;
   }
 }
