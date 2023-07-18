@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -3950,7 +3951,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         }
       }
     }
-    return res.toArray( new String[ res.size() ] );
+    List<String> sortedRes = res.stream().sorted().collect(Collectors.toList());
+    return sortedRes.toArray( new String[ sortedRes.size() ] );
   }
 
   public Map<String, Collection<String>> getTableMap() throws KettleDatabaseException {
