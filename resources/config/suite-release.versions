@@ -129,6 +129,7 @@ platform.version=9.6.0.0-BUILDTAG
 schemaworkbench-plugins.version=9.6.0.0-BUILDTAG
 snowflake-plugin.version=1.3.0-BUILDTAG
 vertica-bulkloader-plugin.version=9.6.0.0-BUILDTAG
+vfs-metastore-plugin.version=9.6.0.0-BUILDTAG
 worker-nodes.version=9.6.0.0-BUILDTAG
 worker-nodes-custom-resources.version=9.6.0.0
 
