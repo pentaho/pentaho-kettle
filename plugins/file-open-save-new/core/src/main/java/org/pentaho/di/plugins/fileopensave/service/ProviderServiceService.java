@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,29 +55,6 @@ public class ProviderServiceService implements ProviderServiceInterface, Service
     RepositoryFileProvider repoProvider = new RepositoryFileProvider();
     RecentFileProvider recentProvider = new RecentFileProvider();
     VFSFileProvider vfsProvider = new VFSFileProvider();
-    // TODO. Commented out as part of BACKLOG-37379: Need to check if ConnectionManager needs the metastoreSupplier here.
-    // the MetastoreSupplier to use the metastoreLocator.
-    //ConnectionManager.getInstance().setMetastoreSupplier( () -> {
-    //
-    //  try {
-    //    return MetaStoreConst.openLocalPentahoMetaStore();
-    //  } catch ( Exception e ) {
-    //    // Error getting metastore
-    //    throw new RuntimeException( e );
-    //  }
-    //} );
-
-    // TODO. Commented out as part of BACKLOG-37379: Need to check if ConnectionManager needs the metastoreSupplier here.
-    // the MetastoreSupplier to use the metastoreLocator.
-    //ConnectionManager.getInstance().setMetastoreSupplier( () -> {
-    //
-    //  try {
-    //    return MetaStoreConst.openLocalPentahoMetaStore();
-    //  } catch ( Exception e ) {
-    //    // Error getting metastore
-    //    throw new RuntimeException( e );
-    //  }
-    //} );
 
     List<FileProvider> fileProviders = new ArrayList<>();
     fileProviders.addAll( Arrays.asList( recentProvider, localProvider, repoProvider, vfsProvider ) );

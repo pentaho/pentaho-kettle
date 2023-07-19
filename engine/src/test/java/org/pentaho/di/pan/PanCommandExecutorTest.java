@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -146,16 +146,6 @@ public class PanCommandExecutorTest {
     assertTrue( trans.getMetaStore() instanceof DelegatingMetaStore );
     assertNotNull( ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList() );
 
-    // TODO BACKLOG-37682: revisit.
-    // assertEquals( 2, ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList().size() );
-    // assertTrue( ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList().stream()
-    // .anyMatch( m -> {
-    // try {
-    // return REPO_METASTORE_NAME.equals( m.getName() );
-    // } catch ( Exception e ) {
-    // return false;
-    // }
-    // } ) );
   }
 
   @Test
@@ -167,20 +157,6 @@ public class PanCommandExecutorTest {
     assertNotNull( trans );
     assertNotNull( trans.getMetaStore() );
 
-    // TODO BACKLOG-37682: revisit.
-    // assertTrue( trans.getMetaStore() instanceof DelegatingMetaStore );
-    // assertNotNull( ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList() );
-    //
-    // assertEquals( 1, ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList().size() );
-    //
-    // assertTrue( ( (DelegatingMetaStore) trans.getMetaStore() ).getMetaStoreList().stream()
-    //   .anyMatch( m -> {
-    //     try {
-    //       return FS_METASTORE_NAME.equals( m.getName() );
-    //     } catch ( Exception e ) {
-    //       return false;
-    //     }
-    //   } ) );
   }
 
   @Test
