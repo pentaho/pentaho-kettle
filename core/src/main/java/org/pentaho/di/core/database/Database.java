@@ -58,7 +58,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.util.Utils;
@@ -3951,8 +3950,15 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         }
       }
     }
-    List<String> sortedRes = res.stream().sorted().collect(Collectors.toList());
-    return sortedRes.toArray( new String[ sortedRes.size() ] );
+    return createSortedArray( res );
+  }
+
+  private static String[] createSortedArray( List<String> l ) {
+    if ( l == null ) {
+      return null;
+    }
+    List<String> sortedList = l.stream().sorted().collect( Collectors.toList() );
+    return sortedList.toArray( new String[sortedList.size()] );
   }
 
   public Map<String, Collection<String>> getTableMap() throws KettleDatabaseException {

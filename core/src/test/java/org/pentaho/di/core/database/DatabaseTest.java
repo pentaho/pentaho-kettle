@@ -56,6 +56,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -840,6 +841,26 @@ public class DatabaseTest {
 
     String[] tableNames = db.getTablenames();
     assertEquals( tableNames.length, 1 );
+  }
+
+  @Test
+  public void testGetTablenamesMultipleTables() throws SQLException, KettleDatabaseException {
+    when(rs.next()).thenReturn(true, true, true, false);
+    when(rs.getString("TABLE_NAME")).thenReturn("K_TABLE","A_TABLE", "Z_TABLE");
+    when(dbMetaMock.getTables(
+            same(dbMetaDataMock), or(anyString(), eq(null)), or(anyString(), eq(null)), any()
+    )).thenReturn(rs);
+    when(dbMetaMock.getQuotedSchemaTableCombination(eq(null), anyString())).thenReturn(
+            "K_TABLE", "A_TABLE", "Z_TABLE"
+    );
+    Database db = new Database(log, dbMetaMock);
+    db.setConnection(mockConnection(dbMetaDataMock));
+
+    String[] tableNames = db.getTablenames();
+    assertEquals(3, tableNames.length);
+    assertEquals("A_TABLE", tableNames[0]);
+    assertEquals("K_TABLE", tableNames[1]);
+    assertEquals("Z_TABLE", tableNames[2]);
   }
 
   @Test
