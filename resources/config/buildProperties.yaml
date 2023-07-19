@@ -44,7 +44,7 @@ BUILD_ORDER_REPORT: false
 # SCM
 SCM_CREDENTIALS_ID: github-buildguy
 SCM_API_TOKEN_CREDENTIALS_ID: github-api-token-buildguy
-DEFAULT_BRANCH: master
+DEFAULT_BRANCH: 9.5
 
 # Version control properties
 RELEASE_BUILD_NUMBER: ${BUILD_NUMBER}
