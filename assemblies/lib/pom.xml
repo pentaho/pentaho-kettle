@@ -641,6 +641,18 @@
       <artifactId>google-http-client</artifactId>
       <version>${google-http-client.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!-- pentaho-big-data-legacy-core is required in both artifacts because of the dependency in kafka streaming plugin -->
     <!-- otherwise this is only needed by the big data plugin -->
     <dependency>
