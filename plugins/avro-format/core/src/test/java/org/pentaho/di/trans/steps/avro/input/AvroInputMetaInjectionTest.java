@@ -67,6 +67,7 @@ public class AvroInputMetaInjectionTest extends BaseMetadataInjectionTest<AvroIn
 
     check( "FIELD_NULL_STRING", () -> meta.getInputFields()[ 0 ].getNullString() );
     check( "FIELD_PATH", () -> meta.getInputFields()[ 0 ].getAvroFieldName() );
+    check( "AVRO_FORMAT_TYPE", () -> meta.getInputFields()[ 0 ].getFormatType() );
 
     check( "LOOKUP_DEFAULT_VALUE", () -> meta.getLookupFields().get( 0 ).defaultValue );
     check( "LOOKUP_FIELD_NAME", () -> meta.getLookupFields().get( 0 ).getFieldName() );

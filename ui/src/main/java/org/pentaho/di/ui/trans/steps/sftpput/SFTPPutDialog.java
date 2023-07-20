@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,11 +85,6 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
   private static Class<?> PKG = org.pentaho.di.trans.steps.sftpput.SFTPPutMeta.class;
 
   private boolean gotPreviousFields = false;
-
-  private static final String[] FILETYPES =
-    new String[] {
-      BaseMessages.getString( PKG, "SFTPPUT.Filetype.Pem" ),
-      BaseMessages.getString( PKG, "SFTPPUT.Filetype.All" ) };
 
   private SFTPPutMeta input;
 
@@ -542,6 +537,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     wCompression.add( "none" );
     wCompression.add( "zlib" );
     wCompression.select( 0 ); // +1: starts at -1
+    wCompression.addModifyListener( lsMod );
 
     props.setLook( wCompression );
     fdCompression = new FormData();

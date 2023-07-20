@@ -33,7 +33,7 @@ import org.pentaho.di.trans.steps.file.BaseFileField;
 public class BaseFormatInputField extends BaseFileField implements IFormatInputField {
   @Injection( name = "FIELD_PATH", group = "FIELDS" )
   protected String formatFieldName = null;
-
+  @Injection( name = "AVRO_FORMAT_TYPE", group = "FIELDS" )
   private int formatType;
   private int precision = 0;
   private int scale = 0;
