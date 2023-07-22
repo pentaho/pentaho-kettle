@@ -26,7 +26,7 @@ buildProperties:
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
   RELEASE_VERSION                : 9.5.0.1
-  DEPLOYMENT_FOLDER              : 9.5.0.0
+  DEPLOYMENT_FOLDER              : 9.5-QAT
   RELEASE_MODE                   : true
   DEFAULT_BRANCH                 : 9.5
   SUITE_BUILD_RESOURCES_BRANCH   : 9.5.0.1
