@@ -24,7 +24,6 @@ package org.pentaho.di.core.util;
 
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
 import org.pentaho.di.metastore.MetaStoreConst;
 
 /**
