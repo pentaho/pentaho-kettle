@@ -1,0 +1,90 @@
+################################################################################
+# NOTE temporary file, only used for partial builds for the feature branch     #
+# This file's groupIds and jobIds will match suite-snapshot.yaml               #
+# THIS FILE SHOULD NOT GET MERGED INTO main branches: 'master', '9.6.0.0', ... #
+################################################################################
+
+buildProperties:
+  BUILD_PLAN_ID: Suite Snapshot Build
+
+  USE_MINION_JOBS: true
+  IGNORE_PIPELINE_FAILURE: true
+  RELEASE_BUILD_NUMBER: latest
+
+  ARCHIVING_CONFIG: ${BUILD_CONFIG_ROOT_PATH}/artifacts/snapshot-manifest.yaml
+  ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
+
+  MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
+  # we are running in containers, let the maven process have most of the memory available
+  MAVEN_OPTS: -Xmx4g -XX:MaxRAMPercentage=90.0
+
+  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-scheduler-snapshot-orl/
+  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-scheduler-snapshot-orl/
+  MAVEN_RESOLVE_REPO_URL         : https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-scheduler/
+
+  DOCKER_PUBLIC_PUSH_REPO        : pntpub-docker-scheduler-dev-orl.repo.orl.eng.hitachivantara.com/
+  DOCKER_PRIVATE_PUSH_REPO       : pntprv-docker-scheduler-dev-orl.repo.orl.eng.hitachivantara.com/
+
+  HELM_REPOSITORY_URL            : https://repo.orl.eng.hitachivantara.com/artifactory/lumadadataintegration-helm-dev-orl
+
+  # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
+  # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
+  # parallel tasks like checkout, test, tagging, and archiving, reduce
+  # to a reasonable size to reduce the risk of timeout failures.
+  PARALLEL_SIZE_CHECKOUT: 15
+  PARALLEL_SIZE_TEST    : 20
+  PARALLEL_SIZE_TAG     : 20
+  PARALLEL_SIZE_ARCHIVE : 10
+
+  MAVEN_DEFAULT_DIRECTIVES:
+    build: clean deploy -DskipTests
+    test: test
+
+  JOB_ITEM_DEFAULTS :
+    dockerImage     : jenkins-build/maven/open-jdk/11
+    scmBranch       : master
+
+jobGroups:
+################################################################################
+# NOTE placed jobId 'pentaho-scheduler-plugin-ee' to be in built at the time   #
+#  as similiar jonbs in suite-snapshot.yaml:                                   #
+#   -  'platform-chart-plugin-ee'                                              #
+#   -  'analysis-plugin-ee'                                                    #
+# It's possible to move this jobId to an earlier jobGroup, this is a           #
+# cautionary placement.                                                        #
+################################################################################
+  3500:
+     - jobID           :  pentaho-scheduler-plugin-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin-ee.git
+       scmBranch       :  scheduler-plugin
+       versionProperty :  pentaho-scheduler-plugin-ee.version
+################################################################################
+# NOTE groupId:jobId 4500:'platform-server-assembly-ee' already existed        #
+# branch has new code that packages artifacts                                  #
+# from jobId 'pentaho-scheduler-plugin-ee'                                     #
+################################################################################
+  4500:
+     - jobID           :  platform-server-assembly-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
+       scmBranch       :  scheduler-plugin
+       directives      :  += -DskipDefault -P platform-ee-assemble
+       testable        :  false
+       archivable      :  true
+       versionProperty :  pentaho-scheduler-plugin-ee.version
+
+################################################################################
+# NOTE adding jobids 'installers', 'installer-tool' to generate files such as: #
+#  pentaho-business-analytics-9.6.0.0-SNAPSHOT...                              #
+################################################################################
+  4700:
+     - jobID           :  installers
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/bitrock-installbuilder-8
+       archivable      :  true
+       testable        :  false
+       parallelize     :  true
+
+     - jobID           :  installer-tool
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/installanywhere-installbuilder
+       root            :  installer-tool
