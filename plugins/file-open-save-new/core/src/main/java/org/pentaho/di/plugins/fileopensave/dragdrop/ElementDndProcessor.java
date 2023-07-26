@@ -117,7 +117,10 @@ public class ElementDndProcessor {
       processErrorMessage( "Destination \"" + destinationFolder.getPath() + "\" must be a folder." );
     }
     for ( File source : sourceObjects ) {
-      if ( destinationFolder.getPath().indexOf( source.getPath() ) == 0 ) {
+      int sourcePathLength = source.getPath().length();
+      if ( destinationFolder.getPath().indexOf( source.getPath() ) == 0 && ( destinationFolder.getPath().length() ==
+        sourcePathLength
+        || "/\\".indexOf( destinationFolder.getPath().substring( sourcePathLength, sourcePathLength + 1 ) ) != -1 ) ) {
         processErrorMessage(
           "Destination folder \"" + destinationFolder.getPath() + "\" cannot be a sub-folder of source \""
             + source.getPath() + "\".  This can cause infinite looping." );
