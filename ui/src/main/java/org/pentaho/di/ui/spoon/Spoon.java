@@ -95,6 +95,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
@@ -8925,6 +8926,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
       }
 
+    ConnectionManager.getInstance().reset();
     // Registering the UI Support classes
     UISupportRegistery.getInstance().registerUISupport(
       RepositorySecurityProvider.class, BaseRepositoryExplorerUISupport.class );
