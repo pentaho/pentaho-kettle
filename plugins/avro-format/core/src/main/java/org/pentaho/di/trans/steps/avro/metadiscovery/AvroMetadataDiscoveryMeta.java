@@ -82,6 +82,8 @@ public class AvroMetadataDiscoveryMeta extends BaseStepMeta implements StepMetaI
 
   private static final String AVRO_KETTLE_TYPE_NAME = "kettleTypeFieldName";
 
+  private static final String IS_CACHE_SCHEMAS = "isCacheSchemas";
+
   @Injection( name = "AVRO_PATH_FIELD_NAME" )
   private String avroPathFieldName;
 
@@ -346,8 +348,8 @@ public class AvroMetadataDiscoveryMeta extends BaseStepMeta implements StepMetaI
         XMLHandler.getTagValue( stepnode, SCHEMA_LOCATION_TYPE ) == null ? LocationDescriptor.FILE_NAME.ordinal()
           : Integer.parseInt( XMLHandler.getTagValue( stepnode, SCHEMA_LOCATION_TYPE ) );
       isCacheSchemas = Boolean.TRUE.equals( ValueMetaBase.convertStringToBoolean(
-        XMLHandler.getTagValue( stepnode, "isCacheSchemas" ) == null ? "false"
-          : XMLHandler.getTagValue( stepnode, "isCacheSchemas" ) ) );
+        XMLHandler.getTagValue( stepnode, IS_CACHE_SCHEMAS ) == null ? "false"
+          : XMLHandler.getTagValue( stepnode, IS_CACHE_SCHEMAS ) ) );
       avroPathFieldName = XMLHandler.getTagValue( stepnode, AVRO_PATH_FIELD_NAME );
       avroTypeFieldName = XMLHandler.getTagValue( stepnode, AVRO_TYPE_FIELD_NAME );
       nullableFieldName = XMLHandler.getTagValue( stepnode, AVRO_NULLABLE_FIELD_NAME );
@@ -369,7 +371,7 @@ public class AvroMetadataDiscoveryMeta extends BaseStepMeta implements StepMetaI
     retval.append( INDENT ).append( XMLHandler.addTagValue( DATA_LOCATION_TYPE, dataLocationType ) );
     retval.append( INDENT ).append( XMLHandler.addTagValue( SCHEMA_LOCATION, getSchemaLocation() ) );
     retval.append( INDENT ).append( XMLHandler.addTagValue( SCHEMA_LOCATION_TYPE, schemaLocationType ) );
-    retval.append( INDENT ).append( XMLHandler.addTagValue( "isCacheSchemas", isCacheSchemas() ) );
+    retval.append( INDENT ).append( XMLHandler.addTagValue( IS_CACHE_SCHEMAS, isCacheSchemas() ) );
     retval.append( INDENT ).append( XMLHandler.addTagValue( AVRO_PATH_FIELD_NAME, getAvroPathFieldName() ) );
     retval.append( INDENT ).append( XMLHandler.addTagValue( AVRO_TYPE_FIELD_NAME, getAvroTypeFieldName() ) );
     retval.append( INDENT ).append( XMLHandler.addTagValue( AVRO_NULLABLE_FIELD_NAME, getNullableFieldName() ) );
@@ -387,7 +389,7 @@ public class AvroMetadataDiscoveryMeta extends BaseStepMeta implements StepMetaI
       rep.saveStepAttribute( transformationId, stepId, DATA_LOCATION_TYPE, dataLocationType );
       rep.saveStepAttribute( transformationId, stepId, SCHEMA_LOCATION, getSchemaLocation() );
       rep.saveStepAttribute( transformationId, stepId, SCHEMA_LOCATION_TYPE, schemaLocationType );
-      rep.saveStepAttribute( transformationId, stepId, "isCacheSchemas", isCacheSchemas() );
+      rep.saveStepAttribute( transformationId, stepId, IS_CACHE_SCHEMAS, isCacheSchemas() );
       rep.saveStepAttribute( transformationId, stepId, AVRO_PATH_FIELD_NAME, getAvroPathFieldName() );
       rep.saveStepAttribute( transformationId, stepId, AVRO_TYPE_FIELD_NAME, getAvroTypeFieldName() );
       rep.saveStepAttribute( transformationId, stepId, AVRO_NULLABLE_FIELD_NAME, getNullableFieldName() );
@@ -407,6 +409,7 @@ public class AvroMetadataDiscoveryMeta extends BaseStepMeta implements StepMetaI
       dataLocationType = (int) rep.getStepAttributeInteger( stepId, DATA_LOCATION_TYPE );
       schemaLocation = rep.getStepAttributeString( stepId, SCHEMA_LOCATION );
       schemaLocationType = (int) rep.getStepAttributeInteger( stepId, SCHEMA_LOCATION_TYPE );
+      isCacheSchemas = rep.getStepAttributeBoolean( stepId, IS_CACHE_SCHEMAS );
       avroPathFieldName = rep.getStepAttributeString( stepId, AVRO_PATH_FIELD_NAME );
       avroTypeFieldName = rep.getStepAttributeString( stepId, AVRO_TYPE_FIELD_NAME );
       nullableFieldName = rep.getStepAttributeString( stepId, AVRO_NULLABLE_FIELD_NAME );

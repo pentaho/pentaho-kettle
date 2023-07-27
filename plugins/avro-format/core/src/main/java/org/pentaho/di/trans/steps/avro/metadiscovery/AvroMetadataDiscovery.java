@@ -45,8 +45,6 @@ import java.util.List;
 
 public class AvroMetadataDiscovery extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = AvroMetadataDiscovery.class;
-
   private AvroMetadataDiscoveryMeta meta;
   private AvroMetadataDiscoveryData data;
 
@@ -135,7 +133,7 @@ public class AvroMetadataDiscovery extends BaseStep implements StepInterface {
             avroInputField.getAvroType().getLogicalType() );
         }
         if ( data.avroNullableIndex > -1 ) {
-          outputRow[ data.avroNullableIndex ] = false;
+          outputRow[ data.avroNullableIndex ] = true;
         }
         if ( data.avroKettleTypeIndex > -1 ) {
           outputRow[ data.avroKettleTypeIndex ] = ValueMetaFactory.getValueMetaName( avroInputField.getPentahoType() );
