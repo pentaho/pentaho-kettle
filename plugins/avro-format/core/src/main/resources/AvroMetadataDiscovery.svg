@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="_-----_Artwork"
+   data-name="----- Artwork"
+   viewBox="0 0 42 42"
+   version="1.1"
+   sodipodi:docname="AnonosBigPrivacyProducer.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <metadata
+     id="metadata5938">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>MQTT-Producer</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="640"
+     inkscape:window-height="480"
+     id="namedview5936"
+     showgrid="false"
+     inkscape:zoom="5.6190476"
+     inkscape:cx="21"
+     inkscape:cy="21"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="_-----_Artwork" />
+  <defs
+     id="defs5923">
+    <style
+       id="style5921">.cls-1{fill:#eff9fe;}.cls-2{fill:#3d6480;}</style>
+  </defs>
+  <title
+     id="title5925">MQTT-Producer</title>
+  <polygon
+     class="cls-1"
+     points="32 32 32 10 17.46 10 10 17.57 10 32 32 32"
+     id="polygon5927" />
+  <polygon
+     class="cls-2"
+     points="32 10 32 32 10 32 10 17.57 8 19.46 8 34 34 34 34 8 19.46 8 17.46 10 32 10"
+     id="polygon5929" />
+  <polygon
+     class="cls-2"
+     points="9.3 8.2 4.07 2.98 2.73 4.32 7.96 9.54 4.81 9.54 4.81 11.45 11.2 11.44 11.2 5.12 9.3 5.12 9.3 8.2"
+     id="polygon5931" />
+  <ellipse
+     style="fill:#008000"
+     id="path5044"
+     ry="4.2711864"
+     rx="3.1144068"
+     cy="20.822035"
+     cx="16.105932" />
+  <rect
+     style="fill:#008000"
+     id="rect5046"
+     width="10.144068"
+     height="2.1355932"
+     x="18.864407"
+     y="19.932203" />
+  <rect
+     style="fill:#008000"
+     id="rect5048"
+     width="1.4237288"
+     height="1.7796611"
+     x="25.449152"
+     y="21.711864" />
+  <rect
+     style="fill:#008000"
+     id="rect5048-9"
+     width="1.4237288"
+     height="1.7796611"
+     x="27.355932"
+     y="21.711864" />
+  <ellipse
+     style="fill:#eff9fe;fill-opacity:1;stroke-width:0.48181206"
+     id="path5044-4"
+     ry="2.3135593"
+     rx="1.3347458"
+     cy="21"
+     cx="16.116678" />
+</svg>
