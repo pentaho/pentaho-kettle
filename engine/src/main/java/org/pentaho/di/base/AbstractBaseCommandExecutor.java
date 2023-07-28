@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,8 +49,8 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.di.version.BuildVersion;
-import org.pentaho.metastore.api.IMetaStore;
 
 public abstract class AbstractBaseCommandExecutor {
 
@@ -60,13 +60,20 @@ public abstract class AbstractBaseCommandExecutor {
 
   private LogChannelInterface log;
   private Class<?> pkgClazz;
-  IMetaStore metaStore = MetaStoreConst.getDefaultMetastore();
+  DelegatingMetaStore metaStore;
 
   private Result result = new Result();
 
   protected Result exitWithStatus( final int exitStatus ) {
     getResult().setExitStatus( exitStatus );
     return getResult();
+  }
+
+  public DelegatingMetaStore createDefaultMetastore() throws MetaStoreException {
+    DelegatingMetaStore metaStore = new DelegatingMetaStore();
+    metaStore.addMetaStore( MetaStoreConst.openLocalPentahoMetaStore() );
+    metaStore.setActiveMetaStoreName( metaStore.getName() );
+    return metaStore;
   }
 
   protected void logDebug( final String messageKey ) {
@@ -295,11 +302,11 @@ public abstract class AbstractBaseCommandExecutor {
     this.pkgClazz = pkgClazz;
   }
 
-  public IMetaStore getMetaStore() {
+  public DelegatingMetaStore getMetaStore() {
     return metaStore;
   }
 
-  public void setMetaStore( IMetaStore metaStore ) {
+  public void setMetaStore( DelegatingMetaStore metaStore ) {
     this.metaStore = metaStore;
   }
 

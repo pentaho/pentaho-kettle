@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,6 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,8 +46,6 @@ import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 public class ConnectionManager {
 
   private static final ConnectionManager instance = new ConnectionManager();
-
-  private static final Logger logger = LoggerFactory.getLogger( ConnectionManager.class );
 
   private List<LookupFilter> lookupFilters = new ArrayList<>();
   private Supplier<IMetaStore> metaStoreSupplier;
@@ -169,7 +165,6 @@ public class ConnectionManager {
         connectionProvider.prepare( connectionDetails );
       }
     } catch ( KettleException e ) {
-      logger.error( "Error saving connection {}", connectionDetails.getName(), e );
       // Ignore the exception and save anyway.
     }
 
@@ -271,7 +266,6 @@ public class ConnectionManager {
     try {
       return getMetaStoreFactory( metaStore, provider.getClassType() ).getElementNames();
     } catch ( MetaStoreException mse ) {
-      logger.error( "Error calling metastore getElementNames()", mse );
       return Collections.emptyList();
     }
   }
@@ -464,8 +458,7 @@ public class ConnectionManager {
       EncryptUtils.encryptFields( connectionDetails );
       metaStoreFactory.saveElement( connectionDetails );
       return true;
-    } catch ( MetaStoreException e ) {
-      logger.error( "Error in saveElement {}", connectionDetails.getName(), e );
+    } catch ( MetaStoreException ignored ) {
       return false;
     }
   }
@@ -485,7 +478,6 @@ public class ConnectionManager {
       }
       return connectionDetails;
     } catch ( MetaStoreException e ) {
-      logger.error( "Error in loadElement {}", name, e );
       return null;
     }
   }
@@ -501,7 +493,6 @@ public class ConnectionManager {
       ConnectionProvider<? extends ConnectionDetails> provider = connectionProviders.get( scheme );
       return provider.getClassType().newInstance();
     } catch ( Exception e ) {
-      logger.error( "Error in createConnectionDetails {}", scheme, e );
       return null;
     }
   }
@@ -518,7 +509,6 @@ public class ConnectionManager {
     try {
       return getMetaStoreFactory( provider.getClassType() ).getElements();
     } catch ( Exception e ) {
-      logger.error( "Error in getConnectionDetailsBySheme {}", scheme, e );
       return Collections.emptyList();
     }
   }
