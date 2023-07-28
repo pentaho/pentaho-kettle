@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.apache.commons.lang.ClassUtils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.ReconnectableRepository;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
@@ -71,7 +72,7 @@ public class RepositorySessionTimeoutHandler implements InvocationHandler {
       }
       Object result = method.invoke( repository, args );
       if ( CONNECT_METHOD_NAME.equals( methodName ) ) {
-        IMetaStore metaStore = repository.getMetaStore();
+        IMetaStore metaStore = MetaStoreConst.getDefaultMetastore();
         metaStoreInstance = wrapMetastoreWithTimeoutHandler( metaStore, sessionTimeoutHandler );
       }
       return result;

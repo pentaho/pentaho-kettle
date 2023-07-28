@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -797,7 +797,7 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public IMetaStore getMetaStore() {
+  public IMetaStore getRepositoryMetaStore() {
     // TODO Auto-generated method stub
     return null;
   }

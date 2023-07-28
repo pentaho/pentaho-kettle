@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2023 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryAttributeInterface;
@@ -537,7 +538,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       copyNode.setProperty( PROP_JOBENTRY_TYPE, entry.getPluginId() );
       DataNode customNode = new DataNode( NODE_CUSTOM );
       RepositoryProxy proxy = new RepositoryProxy( customNode );
-      entry.saveRep( proxy, proxy.getMetaStore(), null );
+      entry.saveRep( proxy, MetaStoreConst.getDefaultMetastore(), null );
       compatibleEntrySaveRep( entry, proxy, null );
 
       copyNode.addNode( customNode );

@@ -45,6 +45,11 @@
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-metastore-locator-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Third-party dependencies -->
     <dependency>

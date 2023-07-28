@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,9 +25,6 @@ package org.pentaho.di.core.util;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.metastore.MetaStoreConst;
-import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
 /**
  * Utility for managing embedded named connections
@@ -44,26 +41,7 @@ public class ConnectionUtil {
    */
   public static void init( AbstractMeta meta ) {
     ConnectionManager connectionManager = ConnectionManager.getInstance();
-
-    IMetaStore metaStore = null;
-    try {
-      if ( meta.getRepository() != null ) {
-        if ( meta.getMetaStore() instanceof DelegatingMetaStore ) {
-          metaStore = ( (DelegatingMetaStore) meta.getMetaStore() ).getActiveMetaStore();
-        } else {
-          metaStore = meta.getRepository().getMetaStore();
-        }
-      } else {
-        metaStore = MetaStoreConst.openLocalPentahoMetaStore();
-      }
-    } catch ( MetaStoreException ignored ) {
-      // Allow connectedMetaStore to be null
-    }
-
-    if ( metaStore != null ) {
-      final IMetaStore connectedMetaStore = metaStore;
-      connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
-    }
+    connectionManager.setMetastoreSupplier( MetaStoreConst.getDefaultMetastoreSupplier() );
   }
 
 }

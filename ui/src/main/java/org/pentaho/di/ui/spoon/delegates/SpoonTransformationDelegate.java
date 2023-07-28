@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -764,7 +764,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
     // Set repository and safe mode information in both the exec config and the metadata
     transMeta.setRepository( spoon.rep );
-    transMeta.setMetaStore( spoon.metaStore );
+    transMeta.setMetaStore( spoon.getMetaStore() );
 
     executionConfiguration.setRepository( spoon.rep );
 
@@ -934,7 +934,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
           showSaveTransformationBeforeRunningDialog( spoon.getShell() );
         } else if ( executionConfiguration.getRemoteServer() != null ) {
           String carteObjectId =
-              Trans.sendToSlaveServer( transMeta, executionConfiguration, spoon.rep, spoon.metaStore );
+              Trans.sendToSlaveServer( transMeta, executionConfiguration, spoon.rep, spoon.getMetaStore() );
           monitorRemoteTrans( transMeta, carteObjectId, executionConfiguration.getRemoteServer() );
           spoon.delegates.slaves.addSpoonSlave( executionConfiguration.getRemoteServer() );
 

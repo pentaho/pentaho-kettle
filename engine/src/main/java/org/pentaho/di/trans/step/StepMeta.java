@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -974,7 +975,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException {
-    return exportResources( space, definitions, resourceNamingInterface, repository, repository.getMetaStore() );
+    return exportResources( space, definitions, resourceNamingInterface, repository,
+      MetaStoreConst.getDefaultMetastore() );
   }
 
   @Override

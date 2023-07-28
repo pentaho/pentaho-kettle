@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2069,7 +2069,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     return new RepositoryImporter( this );
   }
 
-  public KettleDatabaseRepositoryMetaStore getMetaStore() {
+  public KettleDatabaseRepositoryMetaStore getRepositoryMetaStore() {
     return metaStore;
   }
 }

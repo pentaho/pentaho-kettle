@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,7 @@ import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -327,7 +328,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
           JobEntryTrans trans = (JobEntryTrans) entry;
           if ( trans.getSpecificationMethod() == ObjectLocationSpecificationMethod.FILENAME ) {
             try {
-              TransMeta meta = trans.getTransMeta( repository, repository.getMetaStore(), jobMeta );
+              TransMeta meta = trans.getTransMeta( repository, MetaStoreConst.getDefaultMetastore(), jobMeta );
               FileObject fileObject = KettleVFS.getFileObject( meta.getFilename() );
               trans.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
               trans.setFileName( null );
@@ -346,7 +347,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
           JobEntryJob jobEntryJob = (JobEntryJob) entry;
           if ( jobEntryJob.getSpecificationMethod() == ObjectLocationSpecificationMethod.FILENAME ) {
             try {
-              JobMeta meta = jobEntryJob.getJobMeta( repository, repository.getMetaStore(), jobMeta );
+              JobMeta meta = jobEntryJob.getJobMeta( repository, MetaStoreConst.getDefaultMetastore(), jobMeta );
               FileObject fileObject = KettleVFS.getFileObject( meta.getFilename() );
               jobEntryJob.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
               jobEntryJob.setFileName( null );

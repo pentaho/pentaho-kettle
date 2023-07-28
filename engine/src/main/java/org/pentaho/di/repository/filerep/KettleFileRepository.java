@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.AbstractRepository;
 import org.pentaho.di.repository.IRepositoryExporter;
@@ -952,7 +953,7 @@ public class KettleFileRepository extends AbstractRepository {
     jobMeta.setObjectId( new StringObjectId( calcObjectId( repdir, jobname, EXT_JOB ) ) );
 
     jobMeta.setRepository( this );
-    jobMeta.setMetaStore( getMetaStore() );
+    jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
 
     readDatabases( jobMeta, true );
     jobMeta.clearChanged();
@@ -1109,7 +1110,7 @@ public class KettleFileRepository extends AbstractRepository {
     String filename = calcDirectoryName( repdir ) + transname + ".ktr";
     TransMeta transMeta = new TransMeta( filename, this, setInternalVariables );
     transMeta.setRepository( this );
-    transMeta.setMetaStore( getMetaStore() );
+    transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
     transMeta.setFilename( null );
     transMeta.setName( transname );
     transMeta.setObjectId( new StringObjectId( calcObjectId( repdir, transname, EXT_TRANSFORMATION ) ) );
@@ -1561,7 +1562,7 @@ public class KettleFileRepository extends AbstractRepository {
   }
 
   @Override
-  public XmlMetaStore getMetaStore() {
+  public XmlMetaStore getRepositoryMetaStore() {
     return metaStore;
   }
 

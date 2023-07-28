@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,8 +56,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
-
 
 public class Kitchen {
   private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!!
@@ -109,10 +107,6 @@ public class Kitchen {
         args.add( a[i] );
       }
     }
-
-    DelegatingMetaStore metaStore = new DelegatingMetaStore();
-    metaStore.addMetaStore( MetaStoreConst.openLocalPentahoMetaStore() );
-    metaStore.setActiveMetaStoreName( metaStore.getName() );
 
     StringBuilder optionRepname, optionUsername, optionTrustUser, optionPassword, optionJobname, optionDirname, initialDir;
     StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
