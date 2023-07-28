@@ -249,6 +249,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
       result.setResult( true );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

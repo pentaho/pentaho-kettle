@@ -962,6 +962,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       myFileList = null;
     } // end finally
 
+    setLoggingObjectInUse( false );
     return result;
   } // JKU: end function execute()
 

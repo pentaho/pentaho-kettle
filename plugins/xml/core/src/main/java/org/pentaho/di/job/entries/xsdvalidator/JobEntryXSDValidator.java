@@ -256,6 +256,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
       }
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

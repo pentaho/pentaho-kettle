@@ -486,6 +486,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
       result.setResult( true );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

@@ -1161,6 +1161,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       result.setResult( false );
     }
     displayResults();
+    setLoggingObjectInUse( false );
     return result;
   }
 

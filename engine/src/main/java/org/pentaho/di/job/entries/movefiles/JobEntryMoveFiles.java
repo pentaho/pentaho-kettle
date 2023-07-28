@@ -526,6 +526,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
     displayResults();
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

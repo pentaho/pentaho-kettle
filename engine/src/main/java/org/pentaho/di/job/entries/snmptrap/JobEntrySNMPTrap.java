@@ -514,6 +514,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
       }
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

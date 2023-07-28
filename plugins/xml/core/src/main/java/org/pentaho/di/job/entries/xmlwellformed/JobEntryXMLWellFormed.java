@@ -320,6 +320,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 
     displayResults();
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

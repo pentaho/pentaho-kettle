@@ -330,6 +330,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     } else {
       logError( BaseMessages.getString( PKG, "JobPing.NOK.Label", hostname ) );
     }
+    setLoggingObjectInUse( false );
     return result;
   }
 

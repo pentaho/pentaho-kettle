@@ -905,6 +905,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     result.setNrFilesRetrieved( NrfilesDeleted );
     result.setNrErrors( NrErrors );
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

@@ -542,6 +542,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
       if ( destination_filefolder != null ) {
         destination_filefolder = null;
       }
+      setLoggingObjectInUse( false );
     }
   }
 
