@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -95,7 +95,6 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -697,7 +696,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       JobEntryInterface cloneJei = (JobEntryInterface) jobEntryInterface.clone();
       ( (VariableSpace) cloneJei ).copyVariablesFrom( this );
       cloneJei.setRepository( rep );
-      cloneJei.setMetaStore( MetaStoreConst.getDefaultMetastore() );
+      if ( rep != null ) {
+        cloneJei.setMetaStore( rep.getMetaStore() );
+      }
       cloneJei.setParentJob( this );
       cloneJei.setParentJobMeta( this.getJobMeta() );
       final long start = System.currentTimeMillis();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,7 +54,6 @@ import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.w3c.dom.Document;
 
 import java.io.File;
@@ -95,9 +94,10 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     try {
 
       if ( getMetaStore() == null ) {
-        setMetaStore( MetaStoreConst.getDefaultMetastore() );
+        setMetaStore( createDefaultMetastore() );
       }
-      ConnectionManager.getInstance().setMetastoreSupplier( MetaStoreConst.getDefaultMetastoreSupplier() );
+
+      ConnectionManager.getInstance().setMetastoreSupplier( () -> getMetaStore() );
       logDebug( "Pan.Log.StartingToLookOptions" );
 
       // Read kettle transformation specified
@@ -331,6 +331,11 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
     if ( directory == null ) {
       return null; // not much we can do here
+    }
+
+    // Add the IMetaStore of the repository to our delegation
+    if ( repository.getMetaStore() != null && getMetaStore() != null ) {
+      getMetaStore().addMetaStore( repository.getMetaStore() );
     }
 
     logDebug( "Pan.Log.LoadTransInfo" );
