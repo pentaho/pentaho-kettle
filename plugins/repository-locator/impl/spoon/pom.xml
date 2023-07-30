@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-kettle-repository-locator-core</artifactId>
-    <version>9.6.0.0-SNAPSHOT</version>
+    <version>9.6.0.0-108</version>
   </parent>
   <artifactId>pentaho-kettle-repository-locator-impl-spoon</artifactId>
-  <version>9.6.0.0-SNAPSHOT</version>
+  <version>9.6.0.0-108</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
