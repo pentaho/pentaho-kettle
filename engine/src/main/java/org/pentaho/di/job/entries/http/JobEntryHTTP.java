@@ -574,6 +574,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

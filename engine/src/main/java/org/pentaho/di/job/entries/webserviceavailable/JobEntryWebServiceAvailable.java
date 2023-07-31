@@ -185,6 +185,7 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
       result.setLogText( message );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

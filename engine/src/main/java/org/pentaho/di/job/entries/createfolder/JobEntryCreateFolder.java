@@ -202,6 +202,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
       logError( "No Foldername is defined." );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

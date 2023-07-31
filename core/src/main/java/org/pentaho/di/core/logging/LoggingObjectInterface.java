@@ -143,4 +143,7 @@ public interface LoggingObjectInterface extends LoggingObjectLifecycleInterface 
    * @return True if the logging is forcibly separated out from even identical objects.
    */
   public boolean isForcingSeparateLogging();
+
+  boolean isLoggingObjectInUse();
+
 }

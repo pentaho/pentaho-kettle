@@ -203,6 +203,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
       logError( BaseMessages.getString( PKG, "JobEntryDeleteFile.ERROR_0007_No_Filename_Is_Defined" ) );
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

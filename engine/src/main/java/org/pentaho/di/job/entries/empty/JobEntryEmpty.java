@@ -40,6 +40,7 @@ import org.w3c.dom.Node;
 
 public class JobEntryEmpty extends JobEntryBase implements JobEntryInterface {
   public Result execute( Result prev_result, int nr ) throws KettleException {
+    setLoggingObjectInUse( false );
     return null;
   }
 

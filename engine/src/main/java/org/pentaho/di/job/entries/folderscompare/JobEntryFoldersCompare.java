@@ -512,6 +512,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
       }
     }
 
+    setLoggingObjectInUse( false );
     return result;
   }
 

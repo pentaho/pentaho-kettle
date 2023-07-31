@@ -153,6 +153,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
    */
   public Result execute( Result prev_result, int nr ) {
     prev_result.setResult( evaluate( prev_result ) );
+    setLoggingObjectInUse( false );
     return prev_result;
   }
 

@@ -169,7 +169,7 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
     } finally {
       database.disconnect();
     }
-
+    setLoggingObjectInUse( false );
     return result;
   }
 
