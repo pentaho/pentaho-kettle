@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -831,7 +831,12 @@ public class PluginRegistry {
       if ( plugin.isNativePlugin() ) {
         return (T) Class.forName( className );
       } else if ( plugin instanceof ClassLoadingPluginInterface ) {
-        return (T) ( (ClassLoadingPluginInterface) plugin ).getClassLoader().loadClass( className );
+        ClassLoadingPluginInterface cpi = (ClassLoadingPluginInterface) plugin;
+        ClassLoader cl = cpi.getClassLoader();
+        if ( cl == null ) {
+          throw new KettlePluginException( "Unable to find class loader for plugin: " + plugin );
+        }
+        return (T) cl.loadClass( className );
       } else {
         URLClassLoader ucl;
         lock.writeLock().lock();

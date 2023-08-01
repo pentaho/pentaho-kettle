@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1419,7 +1419,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
         jobMeta.activateParameters();
 
         if ( executionConfiguration.getRemoteServer() != null ) {
-          Job.sendToSlaveServer( jobMeta, executionConfiguration, spoon.rep, spoon.metaStore );
+          Job.sendToSlaveServer( jobMeta, executionConfiguration, spoon.rep, spoon.getMetaStore() );
           spoon.delegates.slaves.addSpoonSlave( executionConfiguration.getRemoteServer() );
         } else {
           MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.ICON_ERROR );
