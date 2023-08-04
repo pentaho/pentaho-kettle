@@ -281,10 +281,11 @@ public class RepositoryManagerDialog extends Dialog {
             case "PentahoEnterpriseRepository":
               return Stream.of(
                 new RepositoryInfo( pi, new PentahoEnterpriseRepoFormComposite( stackComposite, SWT.NONE ) ) );
-
-            case "KettleFileRepository":
-              return Stream.of(
-                new RepositoryInfo( pi, new KettleFileRepoFormComposite( stackComposite, SWT.NONE ) ) );
+            // Commented out per Jira Case BACKLOG-36707. If the File Repository option is needed again, just uncomment
+            // the next 3 lines.
+            // case "KettleFileRepository":
+            // return Stream.of(
+            // new RepositoryInfo( pi, new KettleFileRepoFormComposite( stackComposite, SWT.NONE ) ) );
             case "KettleDatabaseRepository":
               return Stream.of(
                 new RepositoryInfo( pi, new KettleDatabaseRepoFormComposite( stackComposite, SWT.NONE ) {
