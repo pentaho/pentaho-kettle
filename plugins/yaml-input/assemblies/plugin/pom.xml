@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>yaml-input-assemblies</artifactId>
-    <version>9.6.0.0-SNAPSHOT</version>
+    <version>9.6.0.0-119</version>
   </parent>
 
   <artifactId>yaml-input-plugins</artifactId>
-  <version>9.6.0.0-SNAPSHOT</version>
+  <version>9.6.0.0-119</version>
   <packaging>pom</packaging>
 
   <name>PDI Yaml Input Plugins Distribution</name>
