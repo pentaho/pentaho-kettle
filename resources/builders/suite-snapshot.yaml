@@ -314,6 +314,8 @@ jobGroups:
   2600:
      - jobID           :  common-ui
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-common-ui.git
+       scmBranch       :  scheduler-plugin
+       versionProperty :  pentaho-scheduler-plugin-ee.version
 
   2700:
      - jobID           :  data-access-plugin
