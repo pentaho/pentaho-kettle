@@ -147,6 +147,7 @@ public class JobEntryHTTPTest {
     assertEquals( 0L, result.getNrErrors() );
     assertEquals( HttpStatus.SC_OK, basicHttpJobEntry.getResponseStatusCode() );
     assertTrue( FileUtils.sizeOf( tempTargetFile ) > 0 );
+    tempTargetFile.delete();
 
     // Test invalid URL
     result = new Result();
@@ -155,6 +156,7 @@ public class JobEntryHTTPTest {
     assertEquals( 1L, result.getNrErrors() );
     assertEquals( 0, basicHttpJobEntry.getResponseStatusCode() );
     assertTrue( FileUtils.sizeOf( tempTargetFile ) == 0 );
+    tempTargetFile.delete();
   }
 
   @Test
