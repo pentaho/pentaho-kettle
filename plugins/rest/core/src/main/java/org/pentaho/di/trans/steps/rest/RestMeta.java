@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -131,6 +131,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   private String trustStoreFile;
   private String trustStorePassword;
 
+  private boolean ignoreSsl;
   public RestMeta() {
     super(); // allocate BaseStepMeta
   }
@@ -357,6 +358,14 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setFieldName( String resultName ) {
     this.fieldName = resultName;
+  }
+
+  public boolean isIgnoreSsl() {
+    return ignoreSsl;
+  }
+
+  public void setIgnoreSsl(boolean ignoreSsl) {
+    this.ignoreSsl = ignoreSsl;
   }
 
   @Override

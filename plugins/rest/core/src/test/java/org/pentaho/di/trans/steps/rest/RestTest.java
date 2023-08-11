@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,10 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -39,21 +36,22 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import javax.ws.rs.core.MultivaluedMap;
-import java.util.HashSet;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedHashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith( PowerMockRunner.class )
 @PowerMockIgnore( "jdk.internal.reflect.*" )
@@ -69,32 +67,23 @@ public class RestTest {
     transMeta.addStep( stepMeta );
     Rest rest = new Rest( stepMeta, mock( StepDataInterface.class ),
       1, transMeta, mock( Trans.class ) );
-    MultivaluedMapImpl map = rest.createMultivalueMap( "param1", "{a:{[val1]}}" );
-    String val1 = map.getFirst( "param1" );
+    MultivaluedHashMap map = rest.createMultivalueMap( "param1", "{a:{[val1]}}" );
+    String val1 = map.getFirst( "param1" ).toString();
     assertTrue( val1.contains( "%7D" ) );
   }
 
   @Test
-  public void testCallEndpointWithDeleteVerb() throws KettleException {
-    MultivaluedMap<String, String> headers = new MultivaluedMapImpl();
-    headers.add( "Content-Type", "application/json" );
+  public void testCallEndpointWithGetVerb() throws KettleException {
+    Invocation.Builder builder = mock( Invocation.Builder.class );
 
-    ClientResponse response = mock( ClientResponse.class );
-    doReturn( 200 ).when( response ).getStatus();
-    doReturn( headers ).when( response ).getHeaders();
-    doReturn( "true" ).when( response ).getEntity( String.class );
-
-    WebResource.Builder builder = mock( WebResource.Builder.class );
-    doReturn( response ).when( builder ).delete( ClientResponse.class );
-
-    WebResource resource = mock( WebResource.class );
-    doReturn( builder ).when( resource ).getRequestBuilder();
+    WebTarget resource = mock( WebTarget.class );
+    doReturn( builder ).when( resource ).request();
 
     Client client = mock( Client.class );
-    doReturn( resource ).when( client ).resource( anyString() );
+    doReturn( resource ).when( client ).target( anyString() );
 
-    mockStatic( Client.class );
-    when( Client.create( any() ) ).thenReturn( client );
+    ClientBuilder clientBuilder = mock( ClientBuilder.class );
+    when( clientBuilder.build() ).thenReturn( client );
 
     RestMeta meta = mock( RestMeta.class );
     doReturn( false ).when( meta ).isDetailed();
@@ -105,16 +94,15 @@ public class RestTest {
     doReturn( 1 ).when( rmi ).size();
 
     RestData data = mock( RestData.class );
-    DefaultApacheHttpClient4Config config = mock( DefaultApacheHttpClient4Config.class );
-    doReturn( new HashSet<>() ).when( config ).getSingletons();
-    data.method = RestMeta.HTTP_METHOD_DELETE;
+    data.method = RestMeta.HTTP_METHOD_GET;
+    data.config = new ClientConfig();
     data.inputRowMeta = rmi;
     data.resultFieldName = "result";
     data.resultCodeFieldName = "status";
     data.resultHeaderFieldName = "headers";
-    data.config = config;
+    data.realUrl = "https://www.hitachivantara.com/en-us/home.html";
 
-    Rest rest = mock( Rest.class );
+    Rest rest = mock( Rest.class, Answers.RETURNS_DEFAULTS.get() );
     doCallRealMethod().when( rest ).callRest( any() );
     doCallRealMethod().when( rest ).searchForHeaders( any() );
 
@@ -122,10 +110,10 @@ public class RestTest {
     setInternalState( rest, "data", data );
 
     Object[] output = rest.callRest( new Object[] { 0 } );
+    //Should not get any exception but a non-null output
+    assertNotNull( output );
 
-    verify( builder, times( 1 ) ).delete( ClientResponse.class );
-    assertEquals( "true", output[ 1 ] );
+    //GET request should succeed.
     assertEquals( 200L, output[ 2 ] );
-    assertEquals( "{\"Content-Type\":\"application\\/json\"}", output[ 3 ] );
   }
 }

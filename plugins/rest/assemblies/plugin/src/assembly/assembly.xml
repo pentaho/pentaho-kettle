@@ -24,7 +24,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>/lib</outputDirectory>
       <scope>runtime</scope>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
     </dependencySet>
   </dependencySets>
 </assembly>
