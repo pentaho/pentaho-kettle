@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>monet-db-bulk-loader</artifactId>
-    <version>9.6.0.0-SNAPSHOT</version>
+    <version>9.6.0.0-122</version>
   </parent>
 
   <artifactId>monet-db-bulk-loader-assemblies</artifactId>
-  <version>9.6.0.0-SNAPSHOT</version>
+  <version>9.6.0.0-122</version>
   <packaging>pom</packaging>
 
   <name>PDI Monet DB Bulk Loader Plugins Assemblies</name>
