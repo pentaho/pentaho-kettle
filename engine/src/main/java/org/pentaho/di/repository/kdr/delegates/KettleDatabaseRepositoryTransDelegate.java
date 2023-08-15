@@ -393,10 +393,6 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       if ( monitor != null ) {
         monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.UnlockingRepository" ) );
       }
-      repository.unlockRepository();
-
-      // Perform a commit!
-      repository.commit();
 
       transMeta.clearChanged();
       if ( monitor != null ) {
