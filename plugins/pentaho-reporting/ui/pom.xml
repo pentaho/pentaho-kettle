@@ -7,13 +7,13 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-reporting</artifactId>
-    <version>9.6.0.0-SNAPSHOT</version>
+    <version>9.6.0.0-129</version>
   </parent>
 
   <artifactId>pentaho-reporting-plugins-ui</artifactId>
   <name>PDI Pentaho Reporting Plugins UI</name>
   <properties>
-    <pentaho-reporting.version>9.6.0.0-SNAPSHOT</pentaho-reporting.version>
+    <pentaho-reporting.version>9.6.0.0-129</pentaho-reporting.version>
   </properties>
 
   <dependencies>
