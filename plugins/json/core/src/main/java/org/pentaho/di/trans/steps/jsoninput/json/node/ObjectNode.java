@@ -63,62 +63,64 @@ public class ObjectNode extends Node {
     ValueNode<Object> currentValueNode = (ValueNode) currentNode;
     ValueNode<Object> storedValueNode = (ValueNode) storedNode;
 
-    Object value = currentValueNode.getValue();
+    Object currentValue = currentValueNode.getValue();
+    Object storedValue = storedValueNode.getValue();
+    Object value = currentValue;
 
     // If anyone is string everyone need to be a string
-    if ( currentValueNode.getValue() instanceof String || storedValueNode.getValue() instanceof String ) {
-      value = longestString( (String) currentValueNode.getValue(), (String) storedValueNode.getValue() );
-    } else if ( currentValueNode.getValue().getClass().equals( Object.class ) || storedValueNode.getValue().getClass().equals( Object.class ) ) {
+    if ( currentValue instanceof String || storedValue instanceof String ) {
+      value = longestString( currentValue.toString(), storedValue.toString() );
+    } else if ( currentValue.getClass().equals( Object.class ) || storedValue.getClass().equals( Object.class ) ) {
       // If anyone is object type, we need to convert all into String and store the big one
-      value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
-    } else if ( currentValueNode.getValue() instanceof BigDecimal || storedValueNode.getValue() instanceof BigDecimal ) {
+      value = longestString( currentValue.toString(), storedValue.toString() );
+    } else if ( currentValue instanceof BigDecimal || storedValue instanceof BigDecimal ) {
       // If anyone is BigDecimal, we need to convert into BigDecimal, except if we are dealing with objets that are not Number
-      if ( !( currentValueNode.getValue() instanceof Number ) || !( storedValueNode.getValue() instanceof Number ) ) {
+      if ( !( currentValue instanceof Number ) || !( storedValue instanceof Number ) ) {
         // Convert it into a generic string
-        value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
+        value = longestString( currentValue.toString(), storedValue.toString() );
       } else {
         //We are dealing with Numbers, so we can convert it into BigDecimal
-        value = biggestNumber( new BigDecimal( currentValueNode.getValue().toString() ), new BigDecimal( storedValueNode.getValue().toString() ) );
+        value = biggestNumber( new BigDecimal( currentValue.toString() ), new BigDecimal( storedValue.toString() ) );
       }
-    } else if ( currentValueNode.getValue() instanceof Double || storedValueNode.getValue() instanceof Double ) {
+    } else if ( currentValue instanceof Double || storedValue instanceof Double ) {
       // If anyone is Double, we need to convert into Double
-      if ( !( currentValueNode.getValue() instanceof Number ) || !( storedValueNode.getValue() instanceof Number ) ) {
+      if ( !( currentValue instanceof Number ) || !( storedValue instanceof Number ) ) {
         // Convert it into a generic string
-        value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
+        value = longestString( currentValue.toString(), storedValue.toString() );
       } else {
         //We are dealing with Numbers, so we can convert it into Double, because we already know it is not a DigDecimal
-        value = biggestNumber( Double.valueOf( currentValueNode.getValue().toString() ), Double.valueOf( storedValueNode.getValue().toString() ) );
+        value = biggestNumber( Double.valueOf( currentValue.toString() ), Double.valueOf( storedValue.toString() ) );
       }
-    } else if ( currentValueNode.getValue() instanceof BigInteger || storedValueNode.getValue() instanceof BigInteger ) {
+    } else if ( currentValue instanceof BigInteger || storedValue instanceof BigInteger ) {
       // If anyone is BigInteger, we need to convert into BigInteger
-      if ( !( currentValueNode.getValue() instanceof Number ) || !( storedValueNode.getValue() instanceof Number ) ) {
+      if ( !( currentValue instanceof Number ) || !( storedValue instanceof Number ) ) {
         // Convert it into a generic string
-        value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
+        value = longestString( currentValue.toString(), storedValue.toString() );
       } else {
         //We are dealing with Numbers, so we can convert it into BigInteger, because we already know it is not a Double
-        value = biggestNumber( new BigInteger( currentValueNode.getValue().toString() ), new BigInteger( storedValueNode.getValue().toString() ) );
+        value = biggestNumber( new BigInteger( currentValue.toString() ), new BigInteger( storedValue.toString() ) );
       }
-    } else if ( currentValueNode.getValue() instanceof Number || storedValueNode.getValue() instanceof Number ) {
+    } else if ( currentValue instanceof Number || storedValue instanceof Number ) {
       // If anyone is a generic Number, we need to convert into Integer
-      if ( !( currentValueNode.getValue() instanceof Number ) || !( storedValueNode.getValue() instanceof Number ) ) {
+      if ( !( currentValue instanceof Number ) || !( storedValue instanceof Number ) ) {
         // Convert it into a generic string
-        value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
+        value = longestString( currentValue.toString(), storedValue.toString() );
       } else {
         //We are dealing with Numbers, so we can convert it into Long, because we already know it is not a BigInteger
-        value = biggestNumber( Long.valueOf( currentValueNode.getValue().toString() ), Long.valueOf( storedValueNode.getValue().toString() ) );
+        value = biggestNumber( Long.valueOf( currentValue.toString() ), Long.valueOf( storedValue.toString() ) );
       }
-    } else if ( currentValueNode.getValue() instanceof Boolean && !( storedValueNode.getValue() instanceof Boolean ) ) {
+    } else if ( currentValue instanceof Boolean && !( storedValue instanceof Boolean ) ) {
       // Convert it into a generic string if the stored value is not a Boolean
-      value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
-    } else if ( currentValueNode.getValue() instanceof Date && !( storedValueNode.getValue() instanceof Date ) ) {
+      value = longestString( currentValue.toString(), storedValue.toString() );
+    } else if ( currentValue instanceof Date && !( storedValue instanceof Date ) ) {
       // Convert it into a generic string if the stored value is not a Date
-      value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
-    } else if ( currentValueNode.getValue() instanceof Timestamp && !( storedValueNode.getValue() instanceof Timestamp ) ) {
+      value = longestString( currentValue.toString(), storedValue.toString() );
+    } else if ( currentValue instanceof Timestamp && !( storedValue instanceof Timestamp ) ) {
       // Convert it into a generic string if the stored value is not a Timestamp
-      value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
-    } else if ( currentValueNode.getValue() instanceof InetAddress && !( storedValueNode.getValue() instanceof InetAddress ) ) {
+      value = longestString( currentValue.toString(), storedValue.toString() );
+    } else if ( currentValue instanceof InetAddress && !( storedValue instanceof InetAddress ) ) {
       // Convert it into a generic string if the stored value is not a InetAddress
-      value = longestString( currentValueNode.getValue().toString(), storedValueNode.getValue().toString() );
+      value = longestString( currentValue.toString(), storedValue.toString() );
     }
     // Update value on stored node
     updateStoredNode( storedValueNode, value );
