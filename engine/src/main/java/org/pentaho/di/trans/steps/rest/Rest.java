@@ -28,6 +28,7 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.uri.UriComponent;
+import com.sun.jersey.client.apache4.ApacheHttpClient4;
 import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
 import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
@@ -52,7 +53,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
@@ -67,13 +67,13 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
 /**
  * @author Samatar
  * @since 16-jan-2011
+ *
  */
 
 public class Rest extends BaseStep implements StepInterface {
@@ -119,7 +119,7 @@ public class Rest extends BaseStep implements StepInterface {
       MessageBodyWriter<String> stringMessageBodyWriter = new StringMessageBodyWriter();
       data.config.getSingletons().add( stringMessageBodyWriter );
       // create an instance of the com.sun.jersey.api.client.Client class
-      client = Client.create( data.config );
+      client = ApacheHttpClient4.create( data.config );
       if ( data.basicAuthentication != null ) {
         client.addFilter( data.basicAuthentication );
       }
@@ -133,13 +133,11 @@ public class Rest extends BaseStep implements StepInterface {
         // Add matrix parameters
         UriBuilder builder = webResource.getUriBuilder();
         for ( int i = 0; i < data.nrMatrixParams; i++ ) {
-          String value = data.inputRowMeta.getString( rowData, data.indexOfMatrixParamFields[ i ] );
+          String value = data.inputRowMeta.getString( rowData, data.indexOfMatrixParamFields[i] );
           if ( isDebug() ) {
-            logDebug(
-              BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[ i ], value ) );
+            logDebug( BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[i], value ) );
           }
-          builder = builder.matrixParam( data.matrixParamNames[ i ],
-            UriComponent.encode( value, UriComponent.Type.QUERY_PARAM ) );
+          builder = builder.matrixParam( data.matrixParamNames[i], UriComponent.encode( value, UriComponent.Type.QUERY_PARAM ) );
         }
         webResource = client.resource( builder.build() );
       }
@@ -147,11 +145,11 @@ public class Rest extends BaseStep implements StepInterface {
       if ( data.useParams ) {
         // Add query parameters
         for ( int i = 0; i < data.nrParams; i++ ) {
-          String value = data.inputRowMeta.getString( rowData, data.indexOfParamFields[ i ] );
+          String value = data.inputRowMeta.getString( rowData, data.indexOfParamFields[i] );
           if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[ i ], value ) );
+            logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[i], value ) );
           }
-          webResource = webResource.queryParams( createMultivalueMap( data.paramNames[ i ], value ) );
+          webResource = webResource.queryParams( createMultivalueMap( data.paramNames[i], value ) );
         }
       }
       if ( isDebug() ) {
@@ -162,15 +160,15 @@ public class Rest extends BaseStep implements StepInterface {
       if ( data.useHeaders ) {
         // Add headers
         for ( int i = 0; i < data.nrheader; i++ ) {
-          String value = data.inputRowMeta.getString( rowData, data.indexOfHeaderFields[ i ] );
+          String value = data.inputRowMeta.getString( rowData, data.indexOfHeaderFields[i] );
 
           // unsure if an already set header will be returned to builder
-          builder = builder.header( data.headerNames[ i ], value );
-          if ( "Content-Type".equals( data.headerNames[ i ] ) ) {
+          builder = builder.header( data.headerNames[i], value );
+          if ( "Content-Type".equals( data.headerNames[i] ) ) {
             contentType = value;
           }
           if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "Rest.Log.HeaderValue", data.headerNames[ i ], value ) );
+            logDebug( BaseMessages.getString( PKG, "Rest.Log.HeaderValue", data.headerNames[i], value ) );
           }
         }
       }
@@ -207,11 +205,10 @@ public class Rest extends BaseStep implements StepInterface {
           response = builder.options( ClientResponse.class );
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_PATCH ) ) {
           if ( null != contentType ) {
-            response =
-              builder.type( contentType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString );
+            response = builder.type( contentType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString );
           } else {
             response = builder.type( data.mediaType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class,
-              entityString );
+                entityString );
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
@@ -222,8 +219,7 @@ public class Rest extends BaseStep implements StepInterface {
       // Get response time
       long responseTime = System.currentTimeMillis() - startTime;
       if ( isDetailed() ) {
-        logDetailed(
-          BaseMessages.getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
+        logDetailed( BaseMessages.getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
       }
 
       // Get status
@@ -296,12 +292,10 @@ public class Rest extends BaseStep implements StepInterface {
       data.config = new DefaultApacheHttpClient4Config();
       if ( !Utils.isEmpty( data.realProxyHost ) ) {
         // PROXY CONFIGURATION
-        data.config.getProperties()
-          .put( ApacheHttpClient4Config.PROPERTY_PROXY_URI, "http://" + data.realProxyHost + ":" + data.realProxyPort );
+        data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_PROXY_URI, "http://" + data.realProxyHost + ":" + data.realProxyPort );
         if ( !Utils.isEmpty( data.realHttpLogin ) && !Utils.isEmpty( data.realHttpPassword ) ) {
           AuthScope authScope = new AuthScope( data.realProxyHost, data.realProxyPort );
-          UsernamePasswordCredentials credentials =
-            new UsernamePasswordCredentials( data.realHttpLogin, data.realHttpPassword );
+          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( data.realHttpLogin, data.realHttpPassword );
           CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
           credentialsProvider.setCredentials( authScope, credentials );
           data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_CREDENTIALS_PROVIDER, credentialsProvider );
@@ -317,8 +311,15 @@ public class Rest extends BaseStep implements StepInterface {
       }
       // SSL TRUST STORE CONFIGURATION
       if ( !Utils.isEmpty( data.trustStoreFile ) ) {
-        try {
-          SSLContext ctx = getSslContextWithTrustStoreFile( data.trustStoreFile, data.trustStorePassword );
+        try ( FileInputStream trustFileStream = new FileInputStream( data.trustStoreFile ) ) {
+          KeyStore trustStore = KeyStore.getInstance( "JKS" );
+          trustStore.load( trustFileStream, data.trustStorePassword.toCharArray() );
+          TrustManagerFactory tmf = TrustManagerFactory.getInstance( "SunX509" );
+          tmf.init( trustStore );
+
+          SSLContext ctx = SSLContext.getInstance( "SSL" );
+          ctx.init( null, tmf.getTrustManagers(), null );
+
           HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify( String hostname, SSLSession session ) {
               if ( isDebug() ) {
@@ -330,7 +331,7 @@ public class Rest extends BaseStep implements StepInterface {
           data.config.getProperties().put( HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties( hv, ctx ) );
         } catch ( NoSuchAlgorithmException e ) {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
-        } catch ( KeyStoreException | UnrecoverableKeyException e ) {
+        } catch ( KeyStoreException e ) {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyStoreException" ), e );
         } catch ( CertificateException e ) {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CertificateException" ), e );
@@ -342,39 +343,6 @@ public class Rest extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
         }
       }
-    }
-
-  }
-
-  public static SSLContext getSslContextWithTrustStoreFile( String trustFile, String trustStorePassword )
-    throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException,
-    UnrecoverableKeyException {
-
-    try ( FileInputStream trustFileStream = new FileInputStream( trustFile );
-          FileInputStream keyStoreFileStream = new FileInputStream( trustFile ) ) {
-
-
-      TrustManagerFactory tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
-      // Using null here initialises the TMF with the default trust store.
-      tmf.init( (KeyStore) null );
-
-      // Load the trustStore which needs to be imported
-      KeyStore trustStore = KeyStore.getInstance( KeyStore.getDefaultType() );
-      trustStore.load( trustFileStream, trustStorePassword.toCharArray() );
-
-      tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
-      tmf.init( trustStore );
-
-      KeyStore identityKeyStore = KeyStore.getInstance( KeyStore.getDefaultType() );
-      identityKeyStore.load( keyStoreFileStream, trustStorePassword.toCharArray() );
-      KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
-      kmf.init( identityKeyStore, trustStorePassword.toCharArray() );
-
-
-      SSLContext sslContext = SSLContext.getInstance( "TLSv1.2" );
-      sslContext.init( kmf.getKeyManagers(), tmf.getTrustManagers(), null );
-
-      return sslContext;
     }
   }
 
@@ -411,8 +379,7 @@ public class Rest extends BaseStep implements StepInterface {
           data.indexOfUrlField = data.inputRowMeta.indexOfValue( realUrlfieldName );
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
-            throw new KettleException(
-              BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", realUrlfieldName ) );
+            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", realUrlfieldName ) );
           }
         }
       } else {
@@ -435,17 +402,17 @@ public class Rest extends BaseStep implements StepInterface {
       int nrargs = meta.getHeaderName() == null ? 0 : meta.getHeaderName().length;
       if ( nrargs > 0 ) {
         data.nrheader = nrargs;
-        data.indexOfHeaderFields = new int[ nrargs ];
-        data.headerNames = new String[ nrargs ];
+        data.indexOfHeaderFields = new int[nrargs];
+        data.headerNames = new String[nrargs];
         for ( int i = 0; i < nrargs; i++ ) {
           // split into body / header
-          data.headerNames[ i ] = environmentSubstitute( meta.getHeaderName()[ i ] );
-          String field = environmentSubstitute( meta.getHeaderField()[ i ] );
+          data.headerNames[i] = environmentSubstitute( meta.getHeaderName()[i] );
+          String field = environmentSubstitute( meta.getHeaderField()[i] );
           if ( Utils.isEmpty( field ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.HeaderFieldEmpty" ) );
           }
-          data.indexOfHeaderFields[ i ] = data.inputRowMeta.indexOfValue( field );
-          if ( data.indexOfHeaderFields[ i ] < 0 ) {
+          data.indexOfHeaderFields[i] = data.inputRowMeta.indexOfValue( field );
+          if ( data.indexOfHeaderFields[i] < 0 ) {
             throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
           }
         }
@@ -456,16 +423,16 @@ public class Rest extends BaseStep implements StepInterface {
         int nrparams = meta.getParameterField() == null ? 0 : meta.getParameterField().length;
         if ( nrparams > 0 ) {
           data.nrParams = nrparams;
-          data.paramNames = new String[ nrparams ];
-          data.indexOfParamFields = new int[ nrparams ];
+          data.paramNames = new String[nrparams];
+          data.indexOfParamFields = new int[nrparams];
           for ( int i = 0; i < nrparams; i++ ) {
-            data.paramNames[ i ] = environmentSubstitute( meta.getParameterName()[ i ] );
-            String field = environmentSubstitute( meta.getParameterField()[ i ] );
+            data.paramNames[i] = environmentSubstitute( meta.getParameterName()[i] );
+            String field = environmentSubstitute( meta.getParameterField()[i] );
             if ( Utils.isEmpty( field ) ) {
               throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ParamFieldEmpty" ) );
             }
-            data.indexOfParamFields[ i ] = data.inputRowMeta.indexOfValue( field );
-            if ( data.indexOfParamFields[ i ] < 0 ) {
+            data.indexOfParamFields[i] = data.inputRowMeta.indexOfValue( field );
+            if ( data.indexOfParamFields[i] < 0 ) {
               throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
             }
           }
@@ -474,16 +441,16 @@ public class Rest extends BaseStep implements StepInterface {
         int nrmatrixparams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
         if ( nrmatrixparams > 0 ) {
           data.nrMatrixParams = nrmatrixparams;
-          data.matrixParamNames = new String[ nrmatrixparams ];
-          data.indexOfMatrixParamFields = new int[ nrmatrixparams ];
+          data.matrixParamNames = new String[nrmatrixparams];
+          data.indexOfMatrixParamFields = new int[nrmatrixparams];
           for ( int i = 0; i < nrmatrixparams; i++ ) {
-            data.matrixParamNames[ i ] = environmentSubstitute( meta.getMatrixParameterName()[ i ] );
-            String field = environmentSubstitute( meta.getMatrixParameterField()[ i ] );
+            data.matrixParamNames[i] = environmentSubstitute( meta.getMatrixParameterName()[i] );
+            String field = environmentSubstitute( meta.getMatrixParameterField()[i] );
             if ( Utils.isEmpty( field ) ) {
               throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MatrixParamFieldEmpty" ) );
             }
-            data.indexOfMatrixParamFields[ i ] = data.inputRowMeta.indexOfValue( field );
-            if ( data.indexOfMatrixParamFields[ i ] < 0 ) {
+            data.indexOfMatrixParamFields[i] = data.inputRowMeta.indexOfValue( field );
+            if ( data.indexOfMatrixParamFields[i] < 0 ) {
               throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
             }
           }
@@ -547,8 +514,7 @@ public class Rest extends BaseStep implements StepInterface {
       data.realProxyHost = environmentSubstitute( meta.getProxyHost() );
       data.realProxyPort = Const.toInt( environmentSubstitute( meta.getProxyPort() ), 8080 );
       data.realHttpLogin = environmentSubstitute( meta.getHttpLogin() );
-      data.realHttpPassword =
-        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
+      data.realHttpPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
 
       if ( !meta.isDynamicMethod() ) {
         data.method = environmentSubstitute( meta.getMethod() );
@@ -559,8 +525,7 @@ public class Rest extends BaseStep implements StepInterface {
       }
 
       data.trustStoreFile = environmentSubstitute( meta.getTrustStoreFile() );
-      data.trustStorePassword =
-        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getTrustStorePassword() ) );
+      data.trustStorePassword = environmentSubstitute( meta.getTrustStorePassword() );
 
       String applicationType = Const.NVL( meta.getApplicationType(), "" );
       if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XML ) ) {
