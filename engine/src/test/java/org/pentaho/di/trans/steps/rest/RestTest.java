@@ -22,15 +22,17 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.apache4.ApacheHttpClient4;
+import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
 import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -40,6 +42,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
@@ -57,7 +60,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith( PowerMockRunner.class )
 @PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( Client.class )
+@PrepareForTest( ApacheHttpClient4.class )
 public class RestTest {
 
   @Test
@@ -90,11 +93,11 @@ public class RestTest {
     WebResource resource = mock( WebResource.class );
     doReturn( builder ).when( resource ).getRequestBuilder();
 
-    Client client = mock( Client.class );
+    ApacheHttpClient4 client = mock( ApacheHttpClient4.class );
     doReturn( resource ).when( client ).resource( anyString() );
 
-    mockStatic( Client.class );
-    when( Client.create( any() ) ).thenReturn( client );
+    mockStatic( ApacheHttpClient4.class );
+    when( ApacheHttpClient4.create( any() ) ).thenReturn( client );
 
     RestMeta meta = mock( RestMeta.class );
     doReturn( false ).when( meta ).isDetailed();
@@ -124,8 +127,8 @@ public class RestTest {
     Object[] output = rest.callRest( new Object[] { 0 } );
 
     verify( builder, times( 1 ) ).delete( ClientResponse.class );
-    assertEquals( "true", output[ 1 ] );
-    assertEquals( 200L, output[ 2 ] );
-    assertEquals( "{\"Content-Type\":\"application\\/json\"}", output[ 3 ] );
+    assertEquals( "true", output[1] );
+    assertEquals( 200L, output[2] );
+    assertEquals( "{\"Content-Type\":\"application\\/json\"}", output[3] );
   }
 }
