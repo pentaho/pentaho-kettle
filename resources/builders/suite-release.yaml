@@ -13,6 +13,9 @@ buildProperties:
   MAVEN_PUBLIC_RELEASE_REPO_URL  : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-dev-orl/
   MAVEN_PRIVATE_RELEASE_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-dev-orl/
 
+  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-snapshot-orl/
+  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-snapshot-orl/
+
   DOCKER_PUBLIC_PUSH_REPO        : pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com
   DOCKER_PRIVATE_PUSH_REPO       : pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com
 
