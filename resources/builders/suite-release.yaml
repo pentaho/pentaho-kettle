@@ -72,20 +72,6 @@ buildProperties:
   SP_RELEASE_VERSION             : '202006'
   DO_AUTO_PATCH                  : false
 
-  # The generate-upgrade-csvs Maven profile in the installer-tool kicks off a process that collects the commits and filenames
-  # of every file maintenance branch's latest SP that are different from the pipeline project branch.  These are committed in
-  # git and pushed back to Github prior to the installer running the regular process to compute the upgrade paths.  The
-  # UPGRADE_FROM_##_VERSION below defines the branch source for analysis to establish the upgrade path.  The UPGRADE_FROM_##_TAG
-  # just helps define the name of the file that the upgrade installer expects to find.
-  UPGRADE_FROM_83_VERSION  : 8.3.0.27
-  UPGRADE_FROM_83_TAG      : 8.3.0.27-R
-  UPGRADE_FROM_92_VERSION  : 9.2.0.4
-  UPGRADE_FROM_92_TAG      : 9.2.0.4-R
-  UPGRADE_FROM_93_VERSION  : 9.3.0.0
-  UPGRADE_FROM_93_TAG      : 9.3.0.0-R
-  UPGRADE_FROM_94_VERSION  : master
-  UPGRADE_FROM_94_TAG      : 9.5.0.0-R
-
 
 jobGroups:
   200:
