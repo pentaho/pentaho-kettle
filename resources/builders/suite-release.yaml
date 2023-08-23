@@ -25,11 +25,11 @@ buildProperties:
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
-  RELEASE_VERSION                : 9.5.0.1
-  DEPLOYMENT_FOLDER              : 9.5-QAT
+  RELEASE_VERSION                : 9.5
+  DEPLOYMENT_FOLDER              : 9.5-MI
   RELEASE_MODE                   : true
   DEFAULT_BRANCH                 : 9.5
-  SUITE_BUILD_RESOURCES_BRANCH   : 9.5.0.1
+  SUITE_BUILD_RESOURCES_BRANCH   : 9.5
   SERVICEPACK_BRANCH             : 9.5
   JENKINS_FOLDER_NAME            : '9.5'
 
@@ -227,6 +227,7 @@ jobGroups:
 
      - jobID           :  license-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
+       scmBranch       :  master
        directives      :  += -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-ee-dsc.version
 
