@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,7 @@ import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
+import org.pentaho.di.trans.steps.utils.CommonExcelUtils;
 
 /**
  * This class reads data from one or more Microsoft Excel files.
@@ -76,7 +77,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
   public ExcelInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
-    setZipBombConfiguration();
+    CommonExcelUtils.setZipBombConfiguration();
   }
 
   /**
@@ -728,48 +729,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
     }
   }
 
-  /**
-   * This method is responsible for setting the configuration values that control how the ZipSecureFile class behaves
-   * when trying to detect zipbombs (check PDI-17586 for more details).
-   */
-  protected void setZipBombConfiguration() {
 
-    // The minimum allowed ratio between de- and inflated bytes to detect a zipbomb.
-    String minInflateRatioVariable =
-      EnvUtil
-        .getSystemProperty( Const.KETTLE_ZIP_MIN_INFLATE_RATIO, Const.KETTLE_ZIP_MIN_INFLATE_RATIO_DEFAULT_STRING );
-    double minInflateRatio;
-    try {
-      minInflateRatio = Const.checkXlsxZipBomb() ? Double.parseDouble( minInflateRatioVariable )
-              : Const.KETTLE_ZIP_NEGATIVE_MIN_INFLATE;
-    } catch ( NullPointerException | NumberFormatException e ) {
-      minInflateRatio = Const.KETTLE_ZIP_MIN_INFLATE_RATIO_DEFAULT;
-    }
-    ZipSecureFile.setMinInflateRatio( minInflateRatio );
-
-    // The maximum file size of a single zip entry.
-    String maxEntrySizeVariable =
-      EnvUtil.getSystemProperty( Const.KETTLE_ZIP_MAX_ENTRY_SIZE, Const.KETTLE_ZIP_MAX_ENTRY_SIZE_DEFAULT_STRING );
-    long maxEntrySize;
-    try {
-      maxEntrySize = Long.parseLong( maxEntrySizeVariable );
-    } catch ( NullPointerException | NumberFormatException e ) {
-      maxEntrySize = Const.KETTLE_ZIP_MAX_ENTRY_SIZE_DEFAULT;
-    }
-    ZipSecureFile.setMaxEntrySize( maxEntrySize );
-
-    // The maximum number of characters of text that are extracted before an exception is thrown during extracting
-    // text from documents.
-    String maxTextSizeVariable =
-      EnvUtil.getSystemProperty( Const.KETTLE_ZIP_MAX_TEXT_SIZE, Const.KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT_STRING );
-    long maxTextSize;
-    try {
-      maxTextSize = Long.parseLong( maxTextSizeVariable );
-    } catch ( NullPointerException | NumberFormatException e ) {
-      maxTextSize = Const.KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT;
-    }
-    ZipSecureFile.setMaxTextSize( maxTextSize );
-  }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelInputMeta) smi;
