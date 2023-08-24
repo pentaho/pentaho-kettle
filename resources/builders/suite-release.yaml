@@ -25,11 +25,11 @@ buildProperties:
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
-  RELEASE_VERSION                : 9.5
-  DEPLOYMENT_FOLDER              : 9.5-MI
+  RELEASE_VERSION                : 9.5.2.0
+  DEPLOYMENT_FOLDER              : 9.5.2.0
   RELEASE_MODE                   : true
   DEFAULT_BRANCH                 : 9.5
-  SUITE_BUILD_RESOURCES_BRANCH   : 9.5
+  SUITE_BUILD_RESOURCES_BRANCH   : 9.5.2.0
   SERVICEPACK_BRANCH             : 9.5
   JENKINS_FOLDER_NAME            : '9.5'
 
