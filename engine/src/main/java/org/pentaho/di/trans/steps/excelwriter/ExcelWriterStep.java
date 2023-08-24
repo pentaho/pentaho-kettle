@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,6 +68,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.utils.CommonExcelUtils;
 import org.pentaho.di.workarounds.BufferedOutputStreamWithCloseDetection;
 
 @SuppressWarnings( "deprecation" )
@@ -84,6 +85,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   public ExcelWriterStep( StepMeta s, StepDataInterface stepDataInterface, int c, TransMeta t, Trans dis ) {
     super( s, stepDataInterface, c, t, dis );
+    CommonExcelUtils.setZipBombConfiguration();
   }
 
   @Override

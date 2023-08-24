@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,6 +65,7 @@ import jxl.format.CellFormat;
 import jxl.format.Colour;
 import jxl.format.UnderlineStyle;
 import jxl.write.WritableFont.FontName;
+import org.pentaho.di.trans.steps.utils.CommonExcelUtils;
 
 /**
  * Converts input rows to excel cells and then writes this information to one or more files.
@@ -81,6 +82,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
   public ExcelOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+    CommonExcelUtils.setZipBombConfiguration();
   }
 
   @Override
