@@ -60,6 +60,17 @@
             </Policies>
             <DefaultRolloverStrategy/>
         </RollingFile>
+        <RollingFile name="license-execution-appender" fileName="logs/license.log" filePattern="logs/license-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <!-- Rollover daily -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- Rollover when size exceeds 500KB -->
+                <SizeBasedTriggeringPolicy size="500KB"/>
+            </Policies>
+        </RollingFile>
     </Appenders>
 
     <!-- ================ -->
@@ -92,6 +103,10 @@
         </Logger>
 
         <Logger name="org.pentaho.hadoop.shim.DriverManager" level="INFO"/>
+
+        <Logger name="com.pentaho.dsc.revenera" level="INFO">
+            <appender-ref ref="license-execution-appender"/>
+        </Logger>
 
       <!-- ======================= -->
       <!-- Setup the Root category -->
