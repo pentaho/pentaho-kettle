@@ -91,6 +91,7 @@
         <module>excel</module>
         <module>pentaho-reporting</module>
         <module>rest</module>
+        <module>db</module>
       </modules>
     </profile>
 
