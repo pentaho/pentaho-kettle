@@ -35,7 +35,7 @@ buildProperties:
 
   JOB_ITEM_DEFAULTS :
     dockerImage     : jenkins-build/maven/open-jdk/11
-    scmBranch       : 10.0
+    scmBranch       : master
 
 jobGroups:
   200:

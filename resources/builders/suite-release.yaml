@@ -28,17 +28,17 @@ buildProperties:
   # Version based control properties
   RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL       : WARN
-  RELEASE_VERSION                : 10.0.0.0
-  DEPLOYMENT_FOLDER              : 10.0-QAT
+  RELEASE_VERSION                : 10.1.0.0
+  DEPLOYMENT_FOLDER              : 10.1-QAT
   RELEASE_MODE                   : true
-  DEFAULT_BRANCH                 : 10.0
-  SUITE_BUILD_RESOURCES_BRANCH   : 10.0.0.0
-  SERVICEPACK_BRANCH             : 10.0
-  JENKINS_FOLDER_NAME            : '10.0'
+  DEFAULT_BRANCH                 : master
+  SUITE_BUILD_RESOURCES_BRANCH   : 10.1.0.0
+  SERVICEPACK_BRANCH             : 10.1
+  JENKINS_FOLDER_NAME            : '10.1'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/open-jdk/11
-    scmBranch   : 10.0
+    scmBranch   : master
 
   # We need to override this until this pipeline is the nightly
   BUILD_HOSTING_ROOT: /build2/artifacts/hosted
