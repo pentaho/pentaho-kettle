@@ -1,0 +1,19 @@
+<message message="vm.errorMessage"></message>
+<div class="main_div">
+  <div class="title_text margin_bottom_30 text_center">{{vm.title}}</div>
+  <div class="middle_div margin_bottom_10">
+    <div class="margin_bottom_15">
+      <label for="connectionName" class="margin_bottom_5 text_left">{{::vm.connectionName}}</label>
+      <input focus="300" id="connectionName" type="text" ng-keyup="vm.checkConnectionName()" ng-model="vm.name"/>
+    </div>
+    <div class="margin_bottom_15">
+      <label for="connectionType" class="margin_bottom_5 text_left">{{::vm.connectionType}}</label>
+      <selectbox id="connectionType" type="vm.type" options="vm.connectionTypes" on-select="vm.onSelect(value)"></selectbox>
+    </div>
+    <div class="margin_bottom_15">
+      <label for="connectionDescription" class="margin_bottom_5 text_left">{{::vm.connectionDescription}}</label>
+      <textarea id="connectionDescription" ng-model="vm.data.model.description"></textarea>
+    </div>
+  </div>
+  <controls buttons="vm.buttons" data="vm.data"></controls>
+</div>

@@ -1,0 +1,30 @@
+<div class="main_div" style="padding-top:40px;">
+  <div style="margin-bottom: 22px;">
+    <div class="success"></div>
+  </div>
+  <div class="title_text margin_bottom_30 text_center">
+    {{::vm.couldNotConnect}}
+  </div>
+  <div class="primary_text text_center">
+    <div class="margin_bottom_80">
+      {{::vm.messageOne}}<br />
+      {{::vm.messageTwo}}
+    </div>
+    <div class="margin_bottom_30">{{::vm.question}}</div>
+    <div class="margin_bottom_30">
+      <button class="same_width secondary" type="button" ng-click="vm.onEditConnection()">
+        <span>
+          {{::vm.editConnection}}
+        </span>
+      </button>
+    </div>
+    <div>
+      <button class="same_width secondary" type="button" ng-click="vm.onCreateNew()">
+        <span>
+          {{::vm.createNewConnection}}
+        </span>
+      </button>
+    </div>
+  </div>
+  <controls buttons="vm.buttons"></controls>
+</div>

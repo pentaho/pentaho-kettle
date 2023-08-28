@@ -1,0 +1,64 @@
+message .message-icon {
+  width: 32px;
+  height: 28px;
+  float: left;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+message .message.error {
+  border: 1px solid #f3E085;
+  background-color: #fcf8e3;
+}
+
+message .message.success {
+  border: 1px solid #A4A4A1;
+  background-color: #FBF8E2;
+}
+
+message .message {
+  width: calc(100% - 46px);
+  height: 63px;
+  border-radius: 5px;
+  position: absolute;
+  top: -63px;
+  left: 23px;
+  opacity: 0;
+  z-index: 1000;
+}
+
+message .message-text {
+  width: calc(100% - 100px);
+  float: left;
+  margin-top: 13px;
+  margin-left: 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+message .message-close {
+  width: 12px;
+  height: 12px;
+  float: right;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+message .message.success .message-icon > div {
+  background-image: url("../../img/success.png");
+  background-size: 34px 31px;
+  width: 34px;
+  height: 31px;
+}
+
+message .message.error .message-icon > div {
+  background-image: url("../../img/caution.svg");
+  width: 32px;
+  height: 28px;
+}
+
+message .close {
+  background-image: url("../../img/close_notif.svg");
+  width: 12px;
+  height: 12px;
+}

@@ -1,0 +1,26 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30 text_center">{{::vm.connectionDetails}}</div>
+  <div class="middle_div margin_bottom_10">
+    <div class="margin_bottom_15">
+      <label for="host" class="margin_bottom_5 block text_left">{{::vm.protocol}}</label>
+      <input focus="300" id="protocol" class="block" type="text" size="50" ng-model="vm.data.model.protocol"/>
+    </div>
+    <div class="margin_bottom_15">
+      <label for="host" class="margin_bottom_5 block text_left">{{::vm.host}}</label>
+      <input focus="300" id="host" class="block" type="text" size="50" ng-model="vm.data.model.host"/>
+    </div>
+    <div class="margin_bottom_15">
+      <label for="port" class="margin_bottom_5 block text_left">{{::vm.port}}</label>
+      <input id="port" class="block" type="text" size="50" ng-model="vm.data.model.port"/>
+    </div>
+    <div class="margin_bottom_15">
+      <label for="username" class="margin_bottom_5 block text_left">{{::vm.username}}</label>
+      <input id="username" class="block" type="text" size="50" ng-model="vm.data.model.username"/>
+    </div>
+    <div class="margin_bottom_15">
+      <label for="password" class="margin_bottom_5 block text_left">{{::vm.password}}</label>
+      <input id="password" class="block" type="text" size="50" ng-model="vm.data.model.password"/>
+    </div>
+  </div>
+  <controls back="'intro'" next="'summary'" data="vm.data" can-next="vm.canNext()" apply="vm.data.state=='modify'"></controls>
+</div>

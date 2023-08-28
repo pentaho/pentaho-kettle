@@ -1,0 +1,8 @@
+failure .success {
+  background-image: url("./img/fail.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 70px;
+  height: 59px;
+  margin: auto;
+}

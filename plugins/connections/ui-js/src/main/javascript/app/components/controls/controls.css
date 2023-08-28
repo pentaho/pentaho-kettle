@@ -1,0 +1,34 @@
+controls .bottom {
+  min-width: 545px;
+  padding: 20px 30px 30px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+controls .bottom .leftPane {
+  float: left;
+  width: 33%;
+}
+
+controls .bottom .middlePane {
+  text-align: center;
+  float: left;
+  width: 33%;
+}
+
+controls .bottom .rightPane {
+  float: right;
+  width: 33%;
+}
+
+controls .bottom .rightPane>button {
+  margin-left: 10px;
+}
+
+controls .waiting .loading-icon {
+  height: 34px;
+  width: 34px;
+  background-size: 34px 34px;
+}

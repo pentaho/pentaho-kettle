@@ -1,0 +1,25 @@
+<div class="bottom">
+  <div class="margin_bottom_20">
+    <hr/>
+  </div>
+  <div>
+    <div class="leftPane">
+      <help></help>
+    </div>
+    <div class="middlePane">
+      <div ng-repeat="button in vm.getMiddleButtons()">
+        <button ng-if="!button.isWaiting" ng-class="button.class" type="button" ng-click="button.onClick()" ng-disabled="button.isDisabled()">
+          <span>{{::button.label}}</span>
+        </button>
+        <div class="waiting">
+          <div ng-if="button.isWaiting" class="busy loading-icon"></div>
+        </div>
+      </div>
+    </div>
+    <div class="rightPane">
+      <button ng-repeat="button in vm.getRightButtons()" class="right" ng-class="button.class" type="button" ng-click="button.onClick()" ng-disabled="button.isDisabled()">
+        <span>{{::button.label}}</span>
+      </button>
+    </div>
+  </div>
+</div>

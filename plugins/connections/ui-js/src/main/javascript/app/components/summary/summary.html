@@ -1,0 +1,47 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30 text_center">{{::vm.connectionSummary}}</div>
+  <div class="middle_div overflow-container">
+    <div class="margin_bottom_15">
+      <div class="section_header">
+        <label class="margin_bottom_5 block text_left">{{::vm.generalSettings}}</label>
+        <div class="edit" ng-click="vm.onEditClick('intro')"></div>
+      </div>
+      <div class="group_holder">
+        <div class="group">
+          <div class="label">{{::vm.connectionName}}</div>
+          <div class="value">{{vm.data.model.name}}</div>
+        </div>
+        <div class="group">
+          <div class="label">{{::vm.connectionType}}</div>
+          <div class="value">{{vm.getLabel(vm.data.model.type)}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="margin_bottom_15" ng-repeat="section in vm.summary">
+      <div class="section_header">
+        <label class="margin_bottom_5 block text_left">{{section.title}}</label>
+        <div class="edit" ng-click="vm.onEditClick(section.editLink)"></div>
+      </div>
+      <div class="group_holder">
+        <div class="group" ng-repeat="(key, value) in section.mapping">
+          <div class="label">{{section.mapping[key]}}</div>
+          <div class="value" title="{{vm.data.model[key]}}">
+            {{section.filters[key]?section.filters[key](vm.data.model[key]):vm.data.model[key]}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="margin_bottom_15" ng-if="vm.data.model.description">
+      <div class="section_header">
+        <label class="margin_bottom_5 block text_left">{{::vm.description}}</label>
+        <div class="edit" ng-click="vm.onEditClick('intro')"></div>
+      </div>
+      <div class="group_holder">
+        <div class="group">
+          <div class="label full">{{vm.data.model.description}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <controls data="vm.data" buttons="vm.buttons"></controls>
+</div>
