@@ -67,8 +67,12 @@ public class ObjectNode extends Node {
     Object storedValue = storedValueNode.getValue();
     Object value = currentValue;
 
-    // If anyone is string everyone need to be a string
+    if ( value == null ) {
+      return;
+    }
+
     if ( currentValue instanceof String || storedValue instanceof String ) {
+      // If anyone is string everyone need to be a string
       value = longestString( currentValue.toString(), storedValue.toString() );
     } else if ( currentValue.getClass().equals( Object.class ) || storedValue.getClass().equals( Object.class ) ) {
       // If anyone is object type, we need to convert all into String and store the big one

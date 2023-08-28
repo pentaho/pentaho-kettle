@@ -121,6 +121,9 @@ public class JsonSampler {
    * @return
    */
   private String convertJsonTypeToPentahoTypes( String type ) {
+    if ( type == null ) {
+      return null;
+    }
     switch ( type ) {
       case "BigDecimal":
         return "BigNumber";
