@@ -5,7 +5,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-dbdialog</artifactId>
-  <version>10.0.0.0-SNAPSHOT</version>
+  <version>10.0.0.0-149</version>
   <packaging>jar</packaging>
 
   <name>PDI DB Dialog</name>
@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>10.0.0.0-SNAPSHOT</version>
+    <version>10.0.0.0-149</version>
   </parent>
 
   <properties>
