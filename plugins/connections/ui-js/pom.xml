@@ -6,14 +6,14 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>connections</artifactId>
-    <version>9.4.0.0-SNAPSHOT</version>
+    <version>9.6.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>connections-ui</artifactId>
-  <version>9.4.0.0-SNAPSHOT</version>
+  <artifactId>connections-ui-js</artifactId>
+  <version>9.6.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Connections Plugin UI</name>
+  <name>Connections Plugin UI JS</name>
 
   <properties>
     <maven-replacer-plugin.version>1.5.2</maven-replacer-plugin.version>
@@ -26,21 +26,13 @@
       <artifactId>kettle-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-ui-swt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-engine</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>core-ui</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
+      <groupId>org.pentaho.di.plugins</groupId> <!-- TODO remvoe comment, update to groupId naming, change version to match convention -->
       <artifactId>pentaho-metastore-locator-api</artifactId>
-      <version>${pdi.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -54,10 +46,6 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-i18n-webservice-bundle</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.swt</groupId>
-      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
     </dependency>
     <dependency>
       <!-- this is required by OSGi bean declared in src/main/resources-filtered/OSGI-INF/blueprint/blueprint.xml -->

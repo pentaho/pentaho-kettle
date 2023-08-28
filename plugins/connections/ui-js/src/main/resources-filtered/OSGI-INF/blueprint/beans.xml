@@ -30,39 +30,15 @@
            xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
            default-timeout="20000" default-activation="eager">
 
-  <reference id="metastoreLocator"
-             interface="org.pentaho.osgi.metastore.locator.api.MetastoreLocator"
-             availability="optional"/>
-
-  <bean id="ConnectionDelegate" scope="singleton" class="org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate" />
-
-  <bean id="VFSConnectionTreeDelegateExtension" scope="singleton"
-        class="org.pentaho.di.connections.ui.tree.ConnectionTreeDelegateExtension">
-    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType" />
-  </bean>
-
-  <bean id="ConnectionPopupMenuExtension" scope="singleton"
-        class="org.pentaho.di.connections.ui.tree.ConnectionPopupMenuExtension">
-    <argument ref="ConnectionDelegate" />
-    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType" />
-  </bean>
-
-  <bean id="ConnectionViewTreeExtension" scope="singleton"
-        class="org.pentaho.di.connections.ui.tree.ConnectionViewTreeExtension">
-    <argument ref="ConnectionDelegate" />
-    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType" />
-  </bean>
-
-  <bean id="ConnectionLifecycleListener"
-        class="org.pentaho.di.connections.ui.lifecycle.ConnectionLifecycleListener">
-    <argument ref="metastoreLocator"/>
-    <pen:di-plugin type="org.pentaho.di.core.plugins.LifecyclePluginType" />
-  </bean>
-
   <jaxrs:server address="/connection" id="browser-endpoint">
     <jaxrs:serviceBeans>
       <bean class="org.pentaho.di.connections.ui.endpoints.ConnectionEndpoints">
-        <argument ref="metastoreLocator"/>
+      <!-- TODO add spring injection for ConnectionManager.java to replace code for ConnectionEndpoints() and use ConnectionEndpoints(connectionManager)
+        public ConnectionEndpoints() {
+          this( ConnectionManager.getInstance() );
+          this.connectionManager.setMetastoreSupplier( MetaStoreConst.getDefaultMetastoreSupplier() );
+         }
+      -->
       </bean>
     </jaxrs:serviceBeans>
 

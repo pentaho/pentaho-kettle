@@ -15,7 +15,7 @@
       "use strict";
 
       // overrides just for this app
-      if ( IS_RUNNING_ON_WEBSPOON_MODE ) {
+      if ( /*IS_RUNNING_ON_WEBSPOON_MODE*/ true ) { //FIXME need path offset for pentaho server base url [BACKLOG-37873], setting IS_RUNNING_ON_WEBSPOON_MODE=true causes errors with i18n
         document.getElementById('style.css').href = "../../@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css";
         document.getElementById('global.css').href = "../../@pentaho/di-core-ui@${project.version}/css/global.css";
         require.config({
@@ -23,7 +23,8 @@
             "pentaho": "../../@pentaho/di-core-ui@${project.version}/pentaho",
             "css": "../../require-css@${require-css.version}/css",
             "text": "../../requirejs-text@${requirejs-text.version}/text",
-            "dojo": "../../dojo@${dojo.version}"
+            "dojo": "../../dojo@${dojo.version}",
+            "pentaho/i18n-osgi": "../.." + "/@pentaho/i18n-osgi@${project.version}/js/i18n" // FIXME use require.config.baseUrl  [BACKLOG-37873] + hard coded to 9.6 that is destination dev pentaho server
           }
         });
       } else {

@@ -47,6 +47,12 @@ define([
       vm.closeLabel = i18n.get('connections.final.closeLabel');
       vm.data.isSaved = true;
       vm.buttons = getButtons();
+
+      /**
+       * FIXME removing dependency on Spoon.java/SWT - SCENARIO NEWCONNECTION
+       * TODO create a function newConnection(),
+       * takes the place of logic in ConnectionEndpoints#createConnection
+       */
     }
 
     function onCreateNew() {

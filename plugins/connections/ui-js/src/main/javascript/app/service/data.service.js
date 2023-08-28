@@ -44,8 +44,10 @@ define(
      */
     function factory(helperService) {
       var baseUrl = "";
-      if ( IS_RUNNING_ON_WEBSPOON_MODE ) {
-        baseUrl = "/spoon/osgi/cxf/connection";
+      if ( /* IS_RUNNING_ON_WEBSPOON_MODE*/ true ) { //commenting out don't need variable
+        //baseUrl = "/spoon/osgi/cxf/connection"; // old webspoon
+        // TODO look into configuration of or use 'pentaho/environment' -> https://github.com/pentaho/pentaho-kettle/blob/master/plugins/core-ui/src/main/resources/app/pentaho/environment/main.js#L38:w
+        baseUrl = "/pentaho/osgi/cxf/connection";
       } else {
         baseUrl = "/cxf/connection";
       }

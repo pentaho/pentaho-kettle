@@ -18,5 +18,6 @@
 
   <modules>
     <module>plugin</module>
+    <module>feature</module>
   </modules>
 </project>

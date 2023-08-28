@@ -26,78 +26,43 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ui.endpoints.ConnectionEndpoints;
-import org.pentaho.di.core.KettleClientEnvironment;
-import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.stores.memory.MemoryMetaStore;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.Response;
 
 public class ConnectionEndpointsTest {
 
-  private ConnectionManager connectionManager = ConnectionManager.getInstance();
-  private MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-  private static String DESCRIPTION = "Connection Description";
+  private ConnectionManager mockConnectionManager;
   private static String CONNECTION_NAME = "Connection Name";
-  private static String PASSWORD = "testpassword";
-  private static String PASSWORD2 = "testpassword2";
 
   @Before
   public void setup() throws Exception {
-    KettleClientEnvironment.init();
-    connectionManager.setMetastoreSupplier( () -> memoryMetaStore );
+    //KettleClientEnvironment.init(); // NOTE: with proper class structure, only need generic mocking library
   }
 
   @Test
   public void createConnection() {
-    addProvider();
-    ConnectionEndpoints connectionEndpoints = new ConnectionEndpoints( getMetaStoreLocator() );
-    try {
-      connectionEndpoints.createConnection( getConnectionDetails(), CONNECTION_NAME );
-    } catch ( Exception e ) {
-      // Bypass exceptions thrown by lack of getSpoon().getShell().getDisplay() since we are not running the UI
-    }
 
-    Response response = connectionEndpoints.getConnectionExists( CONNECTION_NAME );
-    assertEquals( "true", response.getEntity() );
+    // SETUP
+    mockConnectionManager = mock( ConnectionManager.class );
+    ConnectionEndpoints connectionEndpoints = new ConnectionEndpoints( mockConnectionManager );
+    when( mockConnectionManager.exists( eq( CONNECTION_NAME ) ) ).thenReturn( true );
+
+    // EXECUTE 1: name match
+    Response response1 = connectionEndpoints.getConnectionExists( CONNECTION_NAME );
+
+    // VERIFY 1
+    assertEquals( "true", response1.getEntity() );
+
+    // EXECUTE 2: name does not exists
+    Response response2 = connectionEndpoints.getConnectionExists( CONNECTION_NAME + "_XYZ"  );
+
+    // VERIFY 2
+    assertEquals( "false", response2.getEntity() );
   }
 
-  private void addProvider() {
-    TestConnectionProvider testConnectionProvider = new TestConnectionProvider( connectionManager );
-    connectionManager.addConnectionProvider( TestConnectionProvider.SCHEME, testConnectionProvider );
-  }
-
-  private TestConnectionDetails getConnectionDetails() {
-    TestConnectionDetails testConnectionDetails = new TestConnectionDetails();
-    testConnectionDetails.setDescription( DESCRIPTION );
-    testConnectionDetails.setName( CONNECTION_NAME );
-    testConnectionDetails.setPassword( PASSWORD );
-    testConnectionDetails.setPassword1( PASSWORD2 );
-    return testConnectionDetails;
-  }
-
-  private MetastoreLocator getMetaStoreLocator() {
-    return new MetastoreLocator() {
-      @Override public IMetaStore getMetastore() {
-        return memoryMetaStore;
-      }
-
-      @Override public IMetaStore getMetastore( String s ) {
-        return null;
-      }
-
-      @Override public String setEmbeddedMetastore( IMetaStore iMetaStore ) {
-        return null;
-      }
-
-      @Override public void disposeMetastoreProvider( String s ) {
-      }
-
-      @Override public IMetaStore getExplicitMetastore( String s ) {
-        return null;
-      }
-    };
-  }
 }

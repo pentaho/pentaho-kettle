@@ -44,6 +44,17 @@ define([
       vm.helpLabel = i18n.get('connections.help.helpLabel');
     }
 
+    /**
+     * FIXME removing dependency on Spoon.java/SWT - SCENARIO HELP
+     * dataService.help() is bringing up SWT UI
+     * TODO properly implement a javascript callback similar to:
+     *    https://github.com/pentaho/pentaho-kettle/blob/9.3.0.4/plugins/connections/ui/src/main/javascript/app/components/intro/intro.component.js#L176
+     * and then in the Client whether Spoon or PUC provide the js function such as:
+     *    https://github.com/pentaho/pentaho-kettle/blob/9.3.0.4/plugins/connections/ui/src/main/java/org/pentaho/di/connections/ui/dialog/ConnectionDialog.java#L84-L89
+     * and return just HELP_URL or value of "ConnectionDialog.help.dialog.Help"
+     * and have client implement how to handle it, i.e. ConnectionDialog.java for Spoon scenario
+     */
+
     function click() {
       dataService.help();
     }

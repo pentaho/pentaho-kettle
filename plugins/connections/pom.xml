@@ -17,6 +17,7 @@
 
   <modules>
     <module>ui</module>
+    <module>ui-js</module>
     <module>assemblies</module>
   </modules>
 
@@ -90,6 +91,54 @@
         <artifactId>core-ui</artifactId>
         <version>${pdi.version}</version>
       </dependency>
+
+<!-- TODO remove comment, javacript related dependencies for ui-js -->
+      <dependency>
+        <groupId>pentaho</groupId>
+        <artifactId>pentaho-i18n-webservice-bundle</artifactId>
+        <version>${project.version}</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>${dependency.javax.ws.rs-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${dependency.javax.servlet-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+     <dependency>
+        <groupId>org.webjars.npm</groupId>
+        <artifactId>uirouter__core</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars.npm</groupId>
+        <artifactId>uirouter__angularjs</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars.bower</groupId>
+        <artifactId>requirejs-text</artifactId>
+        <version>${requirejs-text.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars.bower</groupId>
+        <artifactId>require-css</artifactId>
+        <version>${require-css.version}</version>
+        <scope>provided</scope>
+      </dependency>
+<!-- TODO remove comment, javacript related dependencies for ui-js -->
+
     </dependencies>
   </dependencyManagement>
 </project>

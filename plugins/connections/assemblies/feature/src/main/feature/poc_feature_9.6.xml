@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="connections-plugin-repo">
+  <feature name="connections-plugin" description="Connections Plugin Distribution" version="9.3.0.4-727" install="auto">
+    <details>Container pom for Pentaho Data Integration modules</details>
+    <feature>cxf-jaxrs</feature>
+    <feature>pentaho-requirejs-osgi-manager</feature>
+    <feature>pentaho-deployers</feature>
+    <feature>pentaho-i18n</feature>
+    <feature prerequisite="true" dependency="false">wrap</feature>
+    <!-- FIXME don't reload existing service for 'pentaho-i18n-webservice-bundle' if started -->
+    <!--<bundle>mvn:pentaho/pentaho-i18n-webservice-bundle/9.6.0.0-SNAPSHOT</bundle>-->
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular/1.8.0</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/angular-i18n/1.8.0</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/uirouter__core/5.0.23</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.npm/uirouter__angularjs/1.0.22</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-animate/1.8.0</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/require-css/0.1.8</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/requirejs-text/2.0.10</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/dojo/1.9.2</bundle>
+    <bundle>mvn:org.pentaho.di.plugins/connections-ui-js/9.6.0.0-SNAPSHOT</bundle>
+    <bundle dependency="true">wrap:mvn:org.webjars.bower/angular/1.8.0</bundle>
+    <bundle dependency="true">wrap:mvn:org.webjars.npm/angular-i18n/1.8.0</bundle>
+    <bundle>mvn:org.pentaho.di.plugins/core-ui/9.6.0.0-SNAPSHOT</bundle>
+  </feature>
+</features>
