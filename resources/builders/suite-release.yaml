@@ -31,14 +31,14 @@ buildProperties:
   RELEASE_VERSION                : 10.0.0.0
   DEPLOYMENT_FOLDER              : 10.0-QAT
   RELEASE_MODE                   : true
-  DEFAULT_BRANCH                 : master
+  DEFAULT_BRANCH                 : 10.0
   SUITE_BUILD_RESOURCES_BRANCH   : 10.0.0.0
   SERVICEPACK_BRANCH             : 10.0
   JENKINS_FOLDER_NAME            : '10.0'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/open-jdk/11
-    scmBranch   : master
+    scmBranch   : 10.0
 
   # We need to override this until this pipeline is the nightly
   BUILD_HOSTING_ROOT: /build2/artifacts/hosted
