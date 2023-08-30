@@ -37,6 +37,7 @@
         <module>infobright-bulk-loader</module>
         <module>ivw-bulk-loader</module>
         <module>edi2xml</module>
+        <module>credit-card-validator</module>
         <module>mysql-bulk-loader</module>
         <module>yaml-input</module>
         <module>metastore-locator</module>
