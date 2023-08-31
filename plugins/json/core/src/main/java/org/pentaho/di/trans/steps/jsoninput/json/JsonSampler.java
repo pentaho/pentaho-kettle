@@ -103,7 +103,7 @@ public class JsonSampler {
     TreeItem item = Objects.isNull( treeItem ) ? new TreeItem( tree, 0 ) : new TreeItem( treeItem, 0 );
     if ( Objects.nonNull( node ) ) {
       item.setData( "Key", node.getKey() );
-      item.setData( "Type", node.getType() );
+      item.setData( "Type", convertJsonTypeToPentahoTypes( node.getType() ) );
       if ( "Object".equals( node.getType() ) ) {
         processObject( node, tree, item );
       } else if ( "Array".equals( node.getType() ) ) {
@@ -111,6 +111,31 @@ public class JsonSampler {
       } else {
         processValues( node, item );
       }
+    }
+  }
+
+  /**
+   * This method converts DataTypes returned from json sampler into compatible Pentaho DataType
+   *
+   * @param type
+   * @return
+   */
+  private String convertJsonTypeToPentahoTypes( String type ) {
+    if ( type == null ) {
+      return null;
+    }
+    switch ( type ) {
+      case "BigDecimal":
+        return "BigNumber";
+      case "BigInteger":
+        return "Integer";
+      case "Double":
+        return "Number";
+      case "Object":
+      case "Array":
+        return "String";
+      default:
+        return type;
     }
   }
 
