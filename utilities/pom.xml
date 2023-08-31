@@ -6,7 +6,7 @@
 
   <groupId>org.pentaho.di</groupId>
   <artifactId>pentaho-kettle-utilities</artifactId>
-  <version>10.0.0.0-SNAPSHOT</version>
+  <version>10.0.0.0-152</version>
   <packaging>pom</packaging>
 
   <name>Pentaho Kettle Utilities</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>10.0.0.0-SNAPSHOT</version>
+    <version>10.0.0.0-152</version>
   </parent>
 
   <modules>
