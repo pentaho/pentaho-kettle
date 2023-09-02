@@ -9,6 +9,7 @@ __List of the current core plugins:__
 * google-analytics
 * gp-bulk-loader
 * drools
+* mail-job
 * dummy
 * gpload
 * sftpput
