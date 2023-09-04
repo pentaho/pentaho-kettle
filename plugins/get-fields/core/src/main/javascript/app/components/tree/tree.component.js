@@ -110,10 +110,29 @@ define([
               key = "root";
             }
           }
-          paths.push(key + ":" + data + ":" + node.type);
+          paths.push(key + ":" + data + ":" + _convertJsonTypeToPentahoTypes(node.type));
         }
       }
       return paths;
+    }
+
+    function _convertJsonTypeToPentahoTypes(jsonType) {
+      if (jsonType === null) {
+        return null;
+      }
+      switch ( jsonType ) {
+        case "BigDecimal":
+          return "BigNumber";
+        case "BigInteger":
+          return "Integer";
+        case "Double":
+          return "Number";
+        case "Object":
+        case "Array":
+          return "String";
+        default:
+          return jsonType;
+      }
     }
 
     function _generatePath(node) {
