@@ -58,7 +58,11 @@ public class OtherConnectionDetailsProvider extends BaseVFSConnectionProvider<Ot
         getVar( otherConnectionDetails.getUsername(), space ),
         getVar( otherConnectionDetails.getPassword(), space ) );
     FileSystemOptions opts = new FileSystemOptions();
-    DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, auth );
+    try {
+      DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, auth );
+    } catch ( FileSystemException fse ) {
+      // Ignore and return default options
+    }
     return opts;
   }
 
