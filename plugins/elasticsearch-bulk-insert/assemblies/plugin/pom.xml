@@ -6,18 +6,18 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>elasticsearch-bulk-insert-assemblies</artifactId>
-    <version>9.5.0.0-SNAPSHOT</version>
+    <version>9.5.0.1-271</version>
   </parent>
 
   <artifactId>elasticsearch-bulk-insert-plugin</artifactId>
-  <version>9.5.0.0-SNAPSHOT</version>
+  <version>9.5.0.1-271</version>
   <packaging>pom</packaging>
 
   <name>PDI Elasticsearch Bulk Insert Plugin Distribution</name>
   <description>Elasticsearch Bulk Insert</description>
 
   <properties>
-    <project.revision>9.5.0.0-SNAPSHOT</project.revision>
+    <project.revision>9.5.0.1-271</project.revision>
   </properties>
 
   <dependencies>
