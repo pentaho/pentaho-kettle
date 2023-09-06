@@ -70,18 +70,18 @@ public class JsonSamplerTest {
             "{\n" +
             "itemarr: [\n" +
             "{\n" +
-            "item1: value1\n" +
+            "item1: value14000\n" +
             "item3: value3\n" +
             "item2: value2\n" +
             "},\n" +
             "],\n" +
-            "item1: value1\n" +
+            "item1: value11300\n" +
             "item3: {\n" +
             "item4: true\n" +
-            "item5: 1.0\n" +
+            "item5: value520\n" +
             "item6: value6\n" +
             "},\n" +
-            "item2: value2\n" +
+            "item2: value2400\n" +
             "},\n" +
             "],\n" +
             "},\n", node.toString() );
@@ -99,21 +99,48 @@ public class JsonSamplerTest {
             "{\n" +
             "itemarr: [\n" +
             "{\n" +
-            "item1: value1\n" +
+            "item1: value_120\n" +
             "item3: value3\n" +
             "},\n" +
             "],\n" +
-            "item1: value1\n" +
+            "item1: value1120\n" +
             "item3: {\n" +
             "item4: true\n" +
-            "item5: 1.0\n" +
+            "item5: 5.0\n" +
             "},\n" +
-            "item2: value2\n" +
+            "item2: value22\n" +
             "},\n" +
             "],\n" +
             "},\n", node.toString() );
   }
 
+
+  @Test
+  public void testDedupeLines2() throws Exception {
+    Configuration configuration = new Configuration();
+    configuration.setLines( 14 );
+    JsonSampler jsonSampler = new JsonSampler( configuration );
+    InputStream inputStream = this.getClass().getResourceAsStream( "/org/pentaho/getfields/types/json/dedupe-test2.json" );
+    Node node = jsonSampler.sample( inputStream );
+    Assert.assertEquals( "{\n" +
+      "data: [\n" +
+      "{\n" +
+      "itemarr: [\n" +
+      "{\n" +
+      "item1: value_120\n" +
+      "item3: value3\n" +
+      "},\n" +
+      "],\n" +
+      "item1: value11300\n" +
+      "item3: {\n" +
+      "item4: true\n" +
+      "item5: value51\n" +
+      "},\n" +
+      "item2: value230\n" +
+      "},\n" +
+      "],\n" +
+      "},\n", node.toString() );
+  }
 
   @Test
   public void testDedupeNestedArrays() throws Exception {
@@ -126,14 +153,14 @@ public class JsonSamplerTest {
             "item: [\n" +
             "{\n" +
             "five: five\n" +
-            "one: two\n" +
+            "one: this_is_longer\n" +
             "seven: example\n" +
             "nine: [\n" +
             "[\n" +
             "{\n" +
-            "test: airplane\n" +
+            "test: everything\n" +
             "example: {\n" +
-            "why: none\n" +
+            "why: do not know\n" +
             "},\n" +
             "},\n" +
             "],\n" +
