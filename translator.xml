@@ -13,7 +13,6 @@
     <root>plugins/star-modeler/src</root>
     <root>plugins/market/src</root>
     <root>plugins/kettle-palo-plugin/src</root>
-    <root>plugins/kettle-openerp-plugin/src</root>
     <root>plugins/kettle-hl7-plugin/src</root>
 
   </source-directories>

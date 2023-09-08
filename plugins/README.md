@@ -15,7 +15,6 @@ __List of the current core plugins:__
 * sftpput
 * hl7
 * json
-* openerp
 * mail
 * mail-validator-job
 * palo
@@ -49,7 +48,6 @@ __List of the current core plugins:__
 * connected-to-repository
 * export-repository
 * ftp-delete
-
 __Deprecated plugins:__
 
 * xml-input-stream
