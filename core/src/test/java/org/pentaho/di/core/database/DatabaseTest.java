@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,11 +31,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.AdditionalMatchers.aryEq;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -51,13 +52,16 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.DriverPropertyInfo;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -633,7 +637,9 @@ public class DatabaseTest {
 
   private Connection mockConnection( DatabaseMetaData dbMetaData ) throws SQLException {
     Connection conn = mock( Connection.class );
+    MockDriver.conn = conn;
     when( conn.getMetaData() ).thenReturn( dbMetaData );
+    when( conn.isValid( anyInt() ) ).thenReturn( true );
     return conn;
   }
 
@@ -689,9 +695,7 @@ public class DatabaseTest {
 
   @Test
   public void testNormalConnect_WhenTheProviderDoesNotReturnDataSourceWithPool() throws Exception {
-    Driver driver = mock( Driver.class );
-    when( driver.acceptsURL( or( anyString(), eq( null ) ) ) ).thenReturn( true );
-    when( driver.connect( or( anyString(), eq( null ) ), any( Properties.class ) ) ).thenReturn( conn );
+    Driver driver = new MockDriver();
     DriverManager.registerDriver( driver );
 
     when( meta.isUsingConnectionPool() ).thenReturn( true );
@@ -718,9 +722,7 @@ public class DatabaseTest {
 
   @Test
   public void testNormalConnectWhenDatasourceNeedsUpdate() throws Exception {
-    Driver driver = mock( Driver.class );
-    when( driver.acceptsURL( or( anyString(), eq( null ) ) ) ).thenReturn( true );
-    when( driver.connect( or( anyString(), eq( null ) ), any( Properties.class ) ) ).thenReturn( conn );
+    Driver driver = new MockDriver();
     DriverManager.registerDriver( driver );
 
     Properties prop = mock( Properties.class );
@@ -754,9 +756,7 @@ public class DatabaseTest {
 
   @Test
   public void testNormalConnectWhenDatasourceDontNeedsUpdate() throws Exception {
-    Driver driver = mock( Driver.class );
-    when( driver.acceptsURL( or( anyString(), eq( null ) ) ) ).thenReturn( true );
-    when( driver.connect( or( anyString(), eq( null ) ), any( Properties.class ) ) ).thenReturn( conn );
+    Driver driver = new MockDriver();
     DriverManager.registerDriver( driver );
 
     when( meta.isUsingConnectionPool() ).thenReturn( true );
@@ -963,5 +963,40 @@ public class DatabaseTest {
     verify( db, times( 1 ) ).getTableFieldsMetaByDbMeta( any(), any() );
   }
 
+  public static class MockDriver implements Driver {
+    public static Connection conn;
+
+    public MockDriver() {
+
+    }
+
+    @Override public Connection connect( String url, Properties info ) throws SQLException {
+      return conn;
+    }
+
+    @Override public boolean acceptsURL( String url ) throws SQLException {
+      return true;
+    }
+
+    @Override public DriverPropertyInfo[] getPropertyInfo( String url, Properties info ) throws SQLException {
+      return new DriverPropertyInfo[ 0 ];
+    }
+
+    @Override public int getMajorVersion() {
+      return 0;
+    }
+
+    @Override public int getMinorVersion() {
+      return 0;
+    }
+
+    @Override public boolean jdbcCompliant() {
+      return true;
+    }
+
+    @Override public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+      return null;
+    }
+  }
 
 }
