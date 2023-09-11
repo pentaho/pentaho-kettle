@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,6 +60,10 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.core.annotations.PluginDialog;
+
+@PluginDialog( id = "RandomCCNumberGenerator", image = "CCG.svg", pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Generate+random+credit+card+numbers" )
 
 public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!

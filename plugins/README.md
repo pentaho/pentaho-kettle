@@ -30,6 +30,7 @@ __List of the current core plugins:__
 * excel
 * ivw-bulk-loader
 * edi2xml
+* random-cc-number-generator
 * engine-configuration
 * pur
 * repositories
