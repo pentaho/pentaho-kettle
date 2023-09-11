@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -51,6 +52,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@Step( id = "GetRepositoryNames", name = "BaseStep.TypeLongDesc.GetRepositoryNames",
+        description = "BaseStep.TypeTooltipDesc.GetRepositoryNames",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
+        image = "GRN.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+repository+names",
+        i18nPackageName = "org.pentaho.di.trans.steps.getrepositorynames" )
 public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GetRepositoryNamesMeta.class; // i18n!
 

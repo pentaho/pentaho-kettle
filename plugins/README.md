@@ -39,6 +39,7 @@ __List of the current core plugins:__
 * yaml-input
 * pentaho-reporting
 * mondrianinput
+* get-repository-names
 
 __Deprecated plugins:__
 

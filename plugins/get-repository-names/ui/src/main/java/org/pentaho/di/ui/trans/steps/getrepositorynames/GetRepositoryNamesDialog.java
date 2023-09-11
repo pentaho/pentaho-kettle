@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -73,6 +74,8 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 
+@PluginDialog(id = "GetRepositoryNames",image = "GRN.svg", pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+repository+names")
 public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = GetRepositoryNamesMeta.class; // i18n
 
