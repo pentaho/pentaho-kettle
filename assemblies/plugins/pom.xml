@@ -41,6 +41,7 @@
     <ldap-plugin.version>${project.version}</ldap-plugin.version>
     <ivw-bulk-loader-plugin.version>${project.version}</ivw-bulk-loader-plugin.version>
     <edi2xml-plugin.version>${project.version}</edi2xml-plugin.version>
+    <random-cc-number-generator-plugin.version>${project.version}</random-cc-number-generator-plugin.version>
     <mondrianinput-plugin.version>${project.version}</mondrianinput-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
@@ -304,6 +305,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>edi2xml-plugins</artifactId>
       <version>${edi2xml-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>random-cc-number-generator-plugins</artifactId>
+      <version>${random-cc-number-generator-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

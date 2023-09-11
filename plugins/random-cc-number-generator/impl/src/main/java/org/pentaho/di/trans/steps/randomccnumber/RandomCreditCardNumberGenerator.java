@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  * This file is dual-licensed under the Apache Software License V2 and is
  * also available under the terms of the GNU Lesser GPL version 2.1 as provided

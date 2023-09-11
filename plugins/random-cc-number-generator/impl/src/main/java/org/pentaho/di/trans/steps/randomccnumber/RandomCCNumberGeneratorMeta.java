@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -59,6 +60,14 @@ import org.w3c.dom.Node;
  * @author Samatar
  * @since 01-4-2010
  */
+
+@Step( id = "RandomCCNumberGenerator", name = "BaseStep.TypeLongDesc.RandomCCNumberGenerator",
+        description = "BaseStep.TypeTooltipDesc.RandomCCNumberGenerator",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
+        image = "CCG.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Generate+random+credit+card+numbers",
+        i18nPackageName = "org.pentaho.di.trans.steps.randomccnumber" )
+
 public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
 
