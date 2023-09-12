@@ -447,6 +447,8 @@ jobGroups:
   2800:
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+       directives      :  += -Deula-wrap
+       archivable      :  true
        versionProperty :  pdi-plugins-ee.version
 
      - jobID           :  snowflake-plugin

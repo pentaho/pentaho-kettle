@@ -68,6 +68,8 @@ ee:
         - pdi-ee-plugin-${platform.version}.zip
         - pentaho-monitoring-plugin-mib-assembly-${platform.version}-dist.zip
         - pir-plugin-ee-${platform.version}-dist.zip
+        - hierarchical-datatype-plugin-${platform.version}-dist.zip
+        - pentaho-streaming-kafka-plugin-zip-${platform.version}-dist.zip
     server:
         - pentaho-server-ee-${platform.version}-dist.zip
         - pentaho-server-manual-ee-${platform.version}-dist.zip
