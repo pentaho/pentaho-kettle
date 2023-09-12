@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,11 +49,19 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+import org.pentaho.di.core.annotations.Step;
 
 /*
  * Created on 03-Juin-2008
  *
  */
+
+@Step( id = "CreditCardValidator", name = "BaseStep.TypeLongDesc.CreditCardValidator",
+        description = "BaseStep.TypeTooltipDesc.CreditCardValidator",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation",
+        image = "CCV.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Credit+card+validator",
+        i18nPackageName = "org.pentaho.di.trans.steps.creditcardvalidator" )
 
 public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!!

@@ -38,6 +38,7 @@
         <module>ivw-bulk-loader</module>
         <module>edi2xml</module>
         <module>random-cc-number-generator</module>
+        <module>credit-card-validator</module>
         <module>mysql-bulk-loader</module>
         <module>yaml-input</module>
         <module>metastore-locator</module>
