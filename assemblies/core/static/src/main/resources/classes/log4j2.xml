@@ -104,7 +104,7 @@
 
         <Logger name="org.pentaho.hadoop.shim.DriverManager" level="INFO"/>
 
-        <Logger name="com.pentaho.dsc.revenera" level="INFO">
+        <Logger name="com.pentaho.dsc.elm" level="INFO">
             <appender-ref ref="license-execution-appender"/>
         </Logger>
 
