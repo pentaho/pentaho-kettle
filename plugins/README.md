@@ -9,6 +9,8 @@ __List of the current core plugins:__
 * google-analytics
 * gp-bulk-loader
 * drools
+* email-messages-input
+* get-mails
 * dummy
 * gpload
 * hl7

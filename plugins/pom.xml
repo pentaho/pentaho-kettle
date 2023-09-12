@@ -31,6 +31,8 @@
       </activation>
       <modules>
         <module>monet-db-bulk-loader</module>
+        <module>email-messages-input</module>
+        <module>get-mails</module>
         <module>postgresql-db-bulk-loader</module>
         <module>oracle-bulk-loader</module>
         <module>terafast-bulk-loader</module>

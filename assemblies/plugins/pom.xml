@@ -17,6 +17,8 @@
   <properties>
     <!-- plugins -->
     <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
+    <get-mails-plugin.version>${project.version}</get-mails-plugin.version>
+    <email-messages-input-plugin.version>${project.version}</email-messages-input-plugin.version>
     <big-data-plugin.version>10.1.0.0-SNAPSHOT</big-data-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-dummy-plugin.version>${project.version}</kettle-dummy-plugin.version>
@@ -114,6 +116,30 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>kettle-s3csvinput-plugin</artifactId>
       <version>${kettle-s3csvinput-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>get-mails-plugins</artifactId>
+      <version>${get-mails-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>email-messages-input-plugins</artifactId>
+      <version>${email-messages-input-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
