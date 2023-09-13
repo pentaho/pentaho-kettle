@@ -50,12 +50,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-@Step( id = "PaloDimInput", image = "ui/images/deprecated.svg",
-    i18nPackageName = "org.pentaho.di.trans.steps.palo.diminput",
-    name = "PaloDimInput.TransName", description = "PaloDimInput.TransDescription",
-    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Dimension+Input",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@Step( id = "PaloDimInput", image = "ui/images/deprecated.svg",
+//    i18nPackageName = "org.pentaho.di.trans.steps.palo.diminput",
+//    name = "PaloDimInput.TransName", description = "PaloDimInput.TransDescription",
+//    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Dimension+Input",
+//    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
 public class PaloDimInputMeta extends BaseStepMeta implements StepMetaInterface {
   private DatabaseMeta databaseMeta;
   private String dimension = "";

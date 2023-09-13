@@ -43,11 +43,11 @@ import java.util.List;
  * @author Matt
  * @since 05-11-2003
  */
-
-@org.pentaho.di.core.annotations.JobEntry( id = "DummyJob", suggestion = "DummyPlugin.Job.SuggestedEntry",
-      i18nPackageName = "pdi.jobentry.dummy", image = "ui/images/deprecated.svg",
-      name = "DummyPlugin.Job.Name", description = "DummyPlugin.Job.Description",
-      categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@org.pentaho.di.core.annotations.JobEntry( id = "DummyJob", suggestion = "DummyPlugin.Job.SuggestedEntry",
+//      i18nPackageName = "pdi.jobentry.dummy", image = "ui/images/deprecated.svg",
+//      name = "DummyPlugin.Job.Name", description = "DummyPlugin.Job.Description",
+//      categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
 public class JobEntryDummy extends JobEntryBase implements Cloneable, JobEntryInterface {
 
   private static final String WILDCARD = "wildcard";

@@ -54,11 +54,12 @@ import org.w3c.dom.Node;
 /**
  *
  */
-@Step( id = "PaloDimOutput", image = "ui/images/deprecated.svg",
-    i18nPackageName = "org.pentaho.di.trans.steps.palo.dimoutput", name = "PaloDimOutput.TransName",
-    description = "PaloDimOutput.TransDescription",
-    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Dimension+Output",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@Step( id = "PaloDimOutput", image = "ui/images/deprecated.svg",
+//    i18nPackageName = "org.pentaho.di.trans.steps.palo.dimoutput", name = "PaloDimOutput.TransName",
+//    description = "PaloDimOutput.TransDescription",
+//    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Dimension+Output",
+//    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
 public class PaloDimOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private DatabaseMeta databaseMeta;

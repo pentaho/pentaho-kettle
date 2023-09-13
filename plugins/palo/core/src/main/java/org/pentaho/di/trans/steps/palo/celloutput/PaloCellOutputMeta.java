@@ -50,12 +50,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-@Step( id = "PaloCellOutput", image = "ui/images/deprecated.svg",
-  i18nPackageName = "org.pentaho.di.trans.steps.palo.celloutput", name = "PaloCellOutput.TransName",
-    description = "PaloCellOutput.TransDescription",
-    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cell+Output",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@Step( id = "PaloCellOutput", image = "ui/images/deprecated.svg",
+//  i18nPackageName = "org.pentaho.di.trans.steps.palo.celloutput", name = "PaloCellOutput.TransName",
+//    description = "PaloCellOutput.TransDescription",
+//    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cell+Output",
+//    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
 public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private DatabaseMeta databaseMeta;

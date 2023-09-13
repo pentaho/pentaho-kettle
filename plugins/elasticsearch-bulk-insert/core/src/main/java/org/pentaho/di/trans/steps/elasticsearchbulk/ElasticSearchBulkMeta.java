@@ -58,12 +58,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-
-@Step( id = "ElasticSearchBulk", i18nPackageName = "org.pentaho.di.trans.steps.elasticsearch",
-        name = "ElasticSearchBulk.TypeLongDesc.ElasticSearchBulk",
-        description = "ElasticSearchBulk.TypeTooltipDesc.ElasticSearchBulk",
-        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated", image = "ui/images/deprecated.svg",
-        documentationUrl = "Products/ElasticSearch_Bulk_Insert_(deprecated)" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@Step( id = "ElasticSearchBulk", i18nPackageName = "org.pentaho.di.trans.steps.elasticsearch",
+//        name = "ElasticSearchBulk.TypeLongDesc.ElasticSearchBulk",
+//        description = "ElasticSearchBulk.TypeTooltipDesc.ElasticSearchBulk",
+//        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated", image = "ui/images/deprecated.svg",
+//        documentationUrl = "Products/ElasticSearch_Bulk_Insert_(deprecated)" )
 @InjectionSupported( localizationPrefix = "ElasticSearchBulk.Injection." )
 public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInterface {
 

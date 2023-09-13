@@ -43,14 +43,14 @@ import java.util.*;
  * Created on 02-jun-2003
  *
  */
-
-@Step( id = "DummyStep",
-      image = "ui/images/deprecated.svg",
-      i18nPackageName = "be.ibridge.kettle.dummy",
-      name = "DummyPlugin.Step.Name",
-      description = "DummyPlugin.Step.Description",
-      categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
-      suggestion = "DummyPlugin.Step.SuggestedStep" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@Step( id = "DummyStep",
+//      image = "ui/images/deprecated.svg",
+//      i18nPackageName = "be.ibridge.kettle.dummy",
+//      name = "DummyPlugin.Step.Name",
+//      description = "DummyPlugin.Step.Description",
+//      categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
+//      suggestion = "DummyPlugin.Step.SuggestedStep" )
 public class DummyPluginMeta extends BaseStepMeta implements StepMetaInterface {
   private ValueMetaAndData value;
 
