@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,21 +22,30 @@
 
 package org.pentaho.di.trans.steps.creditcardvalidator;
 
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.step.BaseStepData;
+import org.pentaho.di.trans.step.StepDataInterface;
+
 /**
  * @author Samatar
  * @since 03-Juin-2008
  *
  */
-public class ReturnIndicator {
-  public String CardType;
-  public boolean CardValid;
-  public String UnValidMsg;
+public class CreditCardValidatorData extends BaseStepData implements StepDataInterface {
+  public int indexOfField;
+  public String realResultFieldname;
+  public String realCardTypeFieldname;
+  public String realNotValidMsgFieldname;
+  public RowMetaInterface outputRowMeta;
+  public int NrPrevFields;
+  public RowMetaInterface previousRowMeta;
 
-  public ReturnIndicator() {
+  public CreditCardValidatorData() {
     super();
-    CardValid = false;
-    CardType = null;
-    UnValidMsg = null;
+    indexOfField = -1;
+    realResultFieldname = null;
+    realCardTypeFieldname = null;
+    realNotValidMsgFieldname = null;
   }
 
 }

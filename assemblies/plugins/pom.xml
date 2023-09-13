@@ -42,6 +42,7 @@
     <ivw-bulk-loader-plugin.version>${project.version}</ivw-bulk-loader-plugin.version>
     <edi2xml-plugin.version>${project.version}</edi2xml-plugin.version>
     <random-cc-number-generator-plugin.version>${project.version}</random-cc-number-generator-plugin.version>
+    <credit-card-validator-plugin.version>${project.version}</credit-card-validator-plugin.version>
     <mondrianinput-plugin.version>${project.version}</mondrianinput-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
@@ -318,6 +319,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>random-cc-number-generator-plugins</artifactId>
       <version>${random-cc-number-generator-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>credit-card-validator-plugins</artifactId>
+      <version>${credit-card-validator-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

@@ -31,6 +31,7 @@ __List of the current core plugins:__
 * ivw-bulk-loader
 * edi2xml
 * random-cc-number-generator
+* credit-card-validator
 * engine-configuration
 * pur
 * repositories
