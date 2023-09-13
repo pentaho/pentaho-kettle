@@ -214,7 +214,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
     String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
-    int startLineNr = Const.toInt( request.getParameter( "from" ), 9999999 );
+    int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
@@ -507,11 +507,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
   private String getLogText( Job job, int startLineNr, int lastLineNr ) throws KettleException {
     try {
-      int totalLogLinesForJob = KettleLogStore.getLogBufferFromTo( job.getLogChannelId(), false, 0, lastLineNr ).size();
-      int startLineForJob = lastLineNr - totalLogLinesForJob;
-      int start = ( startLineForJob + startLineNr - 1 ) > lastLineNr ? 0 : startLineForJob + startLineNr - 1;
       return KettleLogStore.getAppender().getBuffer(
-        job.getLogChannel().getLogChannelId(), false, start, lastLineNr ).toString();
+        job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
     } catch ( OutOfMemoryError error ) {
       throw new KettleException( BaseMessages.getString( PKG, "GetJobStatusServlet.Error.LogStringIsTooLong" ) );
     }
