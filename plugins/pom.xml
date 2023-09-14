@@ -47,6 +47,7 @@
         <module>mondrianinput</module>
         <module>avro-format</module>
         <module>get-repository-names</module>
+        <module>connected-to-repository</module>
       </modules>
     </profile>
 

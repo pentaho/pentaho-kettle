@@ -42,6 +42,7 @@ __List of the current core plugins:__
 * pentaho-reporting
 * mondrianinput
 * get-repository-names
+* connected-to-repository
 
 __Deprecated plugins:__
 

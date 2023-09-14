@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -63,6 +64,9 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Samatar
  * @since 23-06-2008
  */
+
+@PluginDialog( id = "CONNECTED_TO_REPOSITORY", image = "CREP.svg", pluginType = PluginDialog.PluginType.JOBENTRY,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Check+if+connected+to+Repository" )
 public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryConnectedToRepository.class; // for i18n purposes, needed by Translator2!!
 
