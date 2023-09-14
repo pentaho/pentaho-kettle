@@ -162,8 +162,8 @@ public class GetJobStatusServletTest {
     getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
     verify( cacheMock, times( 2 ) ).get( logId, 0 );
-    verify( cacheMock, times( 2 ) ).put( eq( logId ), anyString(), eq( 0 ) );
-    verify( mockJob, times( 2 ) ).getLogChannel();
+    verify( cacheMock, times( 1 ) ).put( eq( logId ), anyString(), eq( 0 ) );
+    verify( mockJob, times( 1 ) ).getLogChannel();
 
   }
 
