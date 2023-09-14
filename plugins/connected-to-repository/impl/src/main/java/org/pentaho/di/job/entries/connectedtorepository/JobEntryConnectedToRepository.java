@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.job.entries.connectedtorepository;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -46,6 +47,10 @@ import org.w3c.dom.Node;
  * @author Samatar
  * @since 23-06-2008
  */
+
+@JobEntry(id = "CONNECTED_TO_REPOSITORY",name = "JobEntry.ConnectedToRepository.TypeDesc",image = "CREP.svg",
+description = "JobEntry.ConnectedToRepository.Tooltip",categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Repository",
+i18nPackageName = "i18n:org.pentaho.di.job.entry:JobEntry.ConnectedToRepository",documentationUrl = "http://wiki.pentaho.com/display/EAI/Check+if+connected+to+Repository")
 public class JobEntryConnectedToRepository extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryConnectedToRepository.class; // for i18n purposes, needed by Translator2!!
 
