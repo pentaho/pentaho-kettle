@@ -124,6 +124,7 @@ public class KettleVFS {
   public static FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions ) throws KettleFileException {
     return getFileObject( vfsFilename, defaultVariableSpace, fsOptions );
   }
+
   // IMPORTANT:
   // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
   // In that case, VFS doesn't parse the file correctly.
@@ -155,7 +156,7 @@ public class KettleVFS {
       //If it does, then give it some time and tries to load. It stops when timeout is up or a scheme is found.
       int timeOut = TIMEOUT_LIMIT;
       if ( hasSchemePattern( vfsFilename, PROVIDER_PATTERN_SCHEME ) ) {
-        while ( scheme == null && timeOut > 0 ) {
+        while (scheme == null && timeOut > 0) {
           // ask again to refresh schemes list
           schemes = fsManager.getSchemes();
           try {
@@ -208,7 +209,7 @@ public class KettleVFS {
   }
 
   static String getScheme( String[] schemes, String fileName ) {
-    for ( String scheme : schemes ) {
+    for (String scheme : schemes) {
       if ( fileName.startsWith( scheme + ":" ) ) {
         return scheme;
       }
@@ -249,7 +250,7 @@ public class KettleVFS {
 
     String[] varList = varSpace.listVariables();
 
-    for ( String var : varList ) {
+    for (String var : varList) {
       if ( var.equalsIgnoreCase( CONNECTION ) && varSpace.getVariable( var ) != null ) {
         FileSystemOptions fileSystemOptions = VFSHelper.getOpts( vfsFilename, varSpace.getVariable( var ) );
         if ( fileSystemOptions != null ) {
@@ -296,7 +297,7 @@ public class KettleVFS {
       InputStreamReader reader = new InputStreamReader( inputStream, charSetName );
       int c;
       StringBuilder aBuffer = new StringBuilder();
-      while ( ( c = reader.read() ) != -1 ) {
+      while (( c = reader.read() ) != -1) {
         aBuffer.append( (char) c );
       }
       reader.close();
@@ -407,8 +408,10 @@ public class KettleVFS {
     if ( !root.startsWith( "file:" ) ) {
       return fileName.getURI(); // nothing we can do about non-normal files.
     }
+    // PDI-19865 - we'll see 4 forward slashes for a windows/smb network share,
+    // so we need want to keep only the relevant part of the URI
     if ( root.startsWith( "file:////" ) ) {
-      return fileName.getURI(); // we'll see 4 forward slashes for a windows/smb network share
+      return fileName.getURI().substring( 7 );
     }
     if ( root.endsWith( ":/" ) ) { // Windows
       root = root.substring( 8, 10 );
@@ -508,7 +511,7 @@ public class KettleVFS {
           new StringBuilder( 50 ).append( directory ).append( '/' ).append( prefix ).append( '_' ).append(
             UUIDUtil.getUUIDAsString() ).append( suffix ).toString();
         fileObject = getFileObject( filename, space );
-      } while ( fileObject.exists() );
+      } while (fileObject.exists());
       return fileObject;
     } catch ( IOException e ) {
       throw new KettleFileException( e );
@@ -559,8 +562,8 @@ public class KettleVFS {
 
     boolean found = false;
     String[] schemes = fsManager.getSchemes();
-    for ( int i = 0; i < schemes.length; i++ ) {
-      if ( vfsFileName.startsWith( schemes[ i ] + ":" ) ) {
+    for (int i = 0; i < schemes.length; i++) {
+      if ( vfsFileName.startsWith( schemes[i] + ":" ) ) {
         found = true;
         break;
       }
