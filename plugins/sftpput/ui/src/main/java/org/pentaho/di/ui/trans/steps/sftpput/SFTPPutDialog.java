@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.sftpput;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -52,11 +49,12 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT;
@@ -74,12 +72,18 @@ import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * Send file to SFTP host.
  *
  * @author Samatar Hassan
  * @since 30-April-2012
  */
+
+@PluginDialog( id = "SFTPPut", image = "SFP.svg", pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/SFTP+Put" )
 public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface {
   //for i18n purposes, needed by Translator2!!
   private static Class<?> PKG = org.pentaho.di.trans.steps.sftpput.SFTPPutMeta.class;
