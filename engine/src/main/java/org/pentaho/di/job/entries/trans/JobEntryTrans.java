@@ -1694,4 +1694,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     this.suppressResultData = suppressResultData;
   }
 
+  @Override public void callBeforeLog() {
+    if ( parentJob != null ) {
+      parentJob.callBeforeLog();
+    }
+  }
+
+  @Override
+  public void callAfterLog() {
+    if ( parentJob != null ) {
+      parentJob.callAfterLog();
+    }
+  }
 }
