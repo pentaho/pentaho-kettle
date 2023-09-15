@@ -511,7 +511,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         }
 
         SlaveServerJobStatus ts =
-          slaveServer.getJobStatus( jobStatus.getJobName(), jobStatus.getId(), 9999999 );
+          slaveServer.getJobStatus( jobStatus.getJobName(), jobStatus.getId(), 0 );
 
         if ( log.isDetailed() ) {
           log.logDetailed(
