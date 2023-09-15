@@ -1414,6 +1414,10 @@ public class Const {
   public static final String KETTLE_USE_AWS_DEFAULT_CREDENTIALS = "KETTLE_USE_AWS_DEFAULT_CREDENTIALS";
 
   /**
+   * This environment variable allows to enable s3 legacy URI. Please check: PDI-19732.
+   */
+  public static final String KETTLE_COMPATIBILITY_ALLOW_S3_LEGACY_URI = "KETTLE_COMPATIBILITY_ALLOW_S3_LEGACY_URI";
+  /**
    * <p>This environment variable is used by streaming consumer steps to limit the total of concurrent batches across transformations.</p>
    */
   public static final String SHARED_STREAMING_BATCH_POOL_SIZE = "SHARED_STREAMING_BATCH_POOL_SIZE";
