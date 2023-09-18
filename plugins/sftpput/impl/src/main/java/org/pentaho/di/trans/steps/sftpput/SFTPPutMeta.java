@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,10 @@
 
 package org.pentaho.di.trans.steps.sftpput;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -49,13 +48,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.List;
+
 /**
  * Send file to SFTP host.
  *
  * @author Samatar Hassan
  * @since 30-April-2012
  */
-
+@Step( id = "SFTPPut", name = "BaseStep.TypeLongDesc.SFTPPut",
+        description = "BaseStep.TypeTooltipDesc.SFTPPut",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental",
+        image = "SFP.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/SFTP+Put",
+        i18nPackageName = "org.pentaho.di.trans.steps.sftpput" )
 public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SFTPPutMeta.class; // for i18n purposes, needed by Translator2!!
 

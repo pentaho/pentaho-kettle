@@ -11,6 +11,7 @@ __List of the current core plugins:__
 * drools
 * dummy
 * gpload
+* sftpput
 * hl7
 * json
 * openerp
