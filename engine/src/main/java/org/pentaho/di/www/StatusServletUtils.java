@@ -149,18 +149,20 @@ class StatusServletUtils {
       String themeSettingPath = solutionPath + File.separator + SYSTEM_PATH_COMPONENT + File.separator + PENTAHO_XML_FILENAME;
 
       File f = new File( themeSettingPath );
-
-      themeName = buildThemeName( f );
-
+      if ( f.exists() ) {
+        themeName = buildThemeName( f );
+      }
       // Get theme CSS file
       String themeDirStr = solutionPath + File.separator + SYSTEM_PATH_COMPONENT + File.separator
         + "common-ui" + File.separator + RESOURCES_PATH_COMPONENT + File.separator
         + THEMES_PATH_COMPONENT + File.separator + themeName + File.separator;
       File themeDir = new File( themeDirStr );
-      for ( File fName : Optional.ofNullable( themeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
-        if ( fName.getName().contains( ".css" ) ) {
-          themeCss = fName.getName();
-          break;
+      if ( themeDir.exists() ) {
+        for ( File fName : Optional.ofNullable( themeDir.listFiles() ).orElse( new File[ 0 ] ) ) {
+          if ( fName.getName().contains( ".css" ) ) {
+            themeCss = fName.getName();
+            break;
+          }
         }
       }
 
@@ -177,7 +179,7 @@ class StatusServletUtils {
         }
       }
     } catch ( ParserConfigurationException | IOException | SAXException e ) {
-      LogChannel.GENERAL.logError( e.getMessage(), e );
+      LogChannel.GENERAL.logBasic( e.getMessage(), e );
     }
 
     return buildCssPath( root, themeName, themeCss, mantleThemeCss );
@@ -224,7 +226,7 @@ class StatusServletUtils {
         LogChannel.GENERAL.logBasic( "solution path was not found in: " + file.getAbsolutePath()  + ". Please configure the property \"solution-path\" in your instalation's WEB-INF folder.");
       }
     } catch ( IOException e ) {
-      LogChannel.GENERAL.logError( e.getMessage(), e );
+      LogChannel.GENERAL.logBasic( e.getMessage(), e );
     }
 
     return solutionPath;
