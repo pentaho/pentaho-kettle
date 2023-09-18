@@ -7,7 +7,7 @@
   <parent>
     <artifactId>avro-format</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-25</version>
   </parent>
 
   <artifactId>avro-format-assemblies</artifactId>
