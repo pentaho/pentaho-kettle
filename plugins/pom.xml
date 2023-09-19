@@ -50,6 +50,7 @@
         <module>get-repository-names</module>
         <module>sftpput</module>
         <module>connected-to-repository</module>
+        <module>mail-validator-job</module>
       </modules>
     </profile>
 

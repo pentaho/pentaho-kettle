@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.mailvalidator;
 
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
@@ -55,6 +56,12 @@ import org.w3c.dom.Node;
  * @author Samatar
  * @since 23-06-2008
  */
+@JobEntry( id = "MAIL_VALIDATOR,JobCategory.Category.Mail_VALIDATOR", name = "JobEntry.MailValidator.TypeDesc",
+        i18nPackageName = "org.pentaho.di.job.entries.mailvalidator",
+        description = "JobEntry.MailValidator.Tooltip",
+        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Mail",
+        image = "ui/images/MAV.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Mail+Validator" )
 public class JobEntryMailValidator extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryMailValidator.class; // for i18n purposes, needed by Translator2!!
 

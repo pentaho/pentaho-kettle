@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.core.annotations.PluginDialog;
 
 /**
  * This dialog allows you to edit a JobEntryMailValidator
@@ -62,6 +63,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Samatar
  * @since 23-06-2008
  */
+@PluginDialog( id = "MAIL_VALIDATOR,JobCategory.Category.Mail_VALIDATOR", image = "MAV.svg", pluginType = PluginDialog.PluginType.JOBENTRY,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Mail+Validator" )
 public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryMailValidator.class; // for i18n purposes, needed by Translator2!!
 
