@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.ResultFile;
@@ -79,6 +80,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Matt
  * @since 19-06-2003
  */
+@PluginDialog( id = "MAIL", image = "MAIL.svg", pluginType = PluginDialog.PluginType.JOBENTRY,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Mail" )
 public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!!
 

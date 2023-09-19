@@ -45,6 +45,7 @@
         <module>repository-locator</module>
         <module>rss</module>
         <module>mondrianinput</module>
+        <module>mail-job</module>
         <module>avro-format</module>
         <module>get-repository-names</module>
         <module>sftpput</module>
