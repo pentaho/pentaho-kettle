@@ -543,6 +543,12 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>This environment variable allows to enable s3 legacy URI. Please check: PDI-19732.</description>
+    <variable>KETTLE_COMPATIBILITY_ALLOW_S3_LEGACY_URI</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>This environment variable is used by streaming consumer steps to limit the total of concurrent batches across transformations. Leave 0 for unlimited.</description>
     <variable>SHARED_STREAMING_BATCH_POOL_SIZE</variable>
     <default-value>0</default-value>
