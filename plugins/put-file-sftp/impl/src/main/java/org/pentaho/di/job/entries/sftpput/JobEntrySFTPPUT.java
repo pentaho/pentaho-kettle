@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,30 +22,21 @@
 
 package org.pentaho.di.job.entries.sftpput;
 
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
-
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -54,6 +45,8 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -62,6 +55,13 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * This defines an SFTP put job entry.
  *
@@ -69,6 +69,13 @@ import org.w3c.dom.Node;
  * @since 05-11-2003
  *
  */
+
+@JobEntry( id = "SFTPPUT", name = "JobEntry.SFTPPut.TypeDesc",
+        i18nPackageName = "org.pentaho.di.job.entries.sftpput",
+        description = "JobEntry.SFTPPut.Tooltip",
+        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
+        image = "PSFTP.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Put+a+file+with+SFTP" )
 public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntrySFTPPUT.class; // for i18n purposes, needed by Translator2!!
 
@@ -111,7 +118,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
   private boolean successWhenNoFile;
 
-  public JobEntrySFTPPUT( String n ) {
+  public JobEntrySFTPPUT(String n ) {
     super( n, "" );
     serverName = null;
     serverPort = "22";
