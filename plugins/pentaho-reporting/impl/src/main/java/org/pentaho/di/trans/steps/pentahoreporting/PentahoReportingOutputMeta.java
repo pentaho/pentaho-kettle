@@ -111,7 +111,9 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   public static final String XML_TAG_PARAMETER = "parameter";
 
   public static final String XML_TAG_INPUT_FILE_FIELD = "input_file_field";
+  public static final String XML_TAG_INPUT_FILE_FIELD_LEGACY = "file_input_field";
   public static final String XML_TAG_OUTPUT_FILE_FIELD = "output_file_field";
+  public static final String XML_TAG_OUTPUT_FILE_FIELD_LEGACY = "file_output_field";
   public static final String XML_TAG_INPUT_FILE = "input_file";
   public static final String XML_TAG_OUTPUT_FILE = "output_file";
   public static final String XML_TAG_USE_VALUES_FROM_FIELDS = "use_values_from_fields";
@@ -222,10 +224,18 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases ) throws KettleException {
     try {
       inputFileField = rep.getStepAttributeString( idStep, XML_TAG_INPUT_FILE_FIELD );
+      if ( inputFileField == null ) {
+        //Might have legacy XML tag names
+        inputFileField = rep.getStepAttributeString( idStep, XML_TAG_INPUT_FILE_FIELD_LEGACY );
+      }
       outputFileField = rep.getStepAttributeString( idStep, XML_TAG_OUTPUT_FILE_FIELD );
+      if ( outputFileField == null ) {
+        //Might have legacy XML tag names
+        outputFileField = rep.getStepAttributeString( idStep, XML_TAG_OUTPUT_FILE_FIELD_LEGACY );
+      }
       inputFile = rep.getStepAttributeString( idStep, XML_TAG_INPUT_FILE );
       outputFile = rep.getStepAttributeString( idStep, XML_TAG_OUTPUT_FILE );
-      useValuesFromFields = rep.getStepAttributeBoolean( idStep, XML_TAG_USE_VALUES_FROM_FIELDS );
+      useValuesFromFields = rep.getStepAttributeBoolean( idStep, 0, XML_TAG_USE_VALUES_FROM_FIELDS, true );
       createParentFolder = rep.getStepAttributeBoolean( idStep, XML_TAG_CREATE_PARENT_FOLDER );
       parameterFieldMap = new HashMap<String, String>();
       int nrParameters = rep.countNrStepAttributes( idStep, XML_TAG_PARAMETER + "_" + XML_TAG_NAME );
