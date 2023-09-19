@@ -69,6 +69,7 @@
     <mqtt-streaming-plugin.version>${project.version}</mqtt-streaming-plugin.version>
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
     <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
+    <mail-plugin.version>${project.version}</mail-plugin.version>
     <mail-validator-job-plugin.version>${project.version}</mail-validator-job-plugin.version>
     <pentaho-metaverse.version>10.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <pdi-xml-plugin.version>10.1.0.0-SNAPSHOT</pdi-xml-plugin.version>
@@ -791,6 +792,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>get-repository-names-plugins</artifactId>
       <version>${get-repository-names-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>mail-plugins</artifactId>
+      <version>${mail-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

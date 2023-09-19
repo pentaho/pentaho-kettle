@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -82,6 +83,8 @@ import java.util.Random;
  * @since 28-07-2008
  */
 
+@PluginDialog( id = "Mail", image = "MAIL.svg", pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Mail+%28step%29" )
 public class MailDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!!
 

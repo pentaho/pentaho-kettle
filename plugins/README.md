@@ -16,6 +16,7 @@ __List of the current core plugins:__
 * hl7
 * json
 * openerp
+* mail
 * mail-validator-job
 * palo
 * s3csvinput
