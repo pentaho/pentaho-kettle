@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>mail-validator-job</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-26</version>
   </parent>
 
   <artifactId>mail-validator-job-plugins-impl</artifactId>
