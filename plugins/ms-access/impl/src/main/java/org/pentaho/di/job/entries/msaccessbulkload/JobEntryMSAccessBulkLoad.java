@@ -69,11 +69,12 @@ import com.healthmarketscience.jackcess.Database;
  *
  */
 
-@JobEntry( id = "MS_ACCESS_BULK_LOAD", image = "ui/images/deprecated.svg",
-  suggestion = "JobEntryMSAccessBulkLoad.SuggestedEntry",
-  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated",
-  i18nPackageName = "org.pentaho.di.job.entries.msaccessbulkload",
-  name = "JobEntryMSAccessBulkLoad.Name.Default", description = "JobEntryMSAccessBulkLoad.Tooltip" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@JobEntry( id = "MS_ACCESS_BULK_LOAD", image = "ui/images/deprecated.svg",
+//  suggestion = "JobEntryMSAccessBulkLoad.SuggestedEntry",
+//  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated",
+//  i18nPackageName = "org.pentaho.di.job.entries.msaccessbulkload",
+//  name = "JobEntryMSAccessBulkLoad.Name.Default", description = "JobEntryMSAccessBulkLoad.Tooltip" )
 public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryMSAccessBulkLoad.class; // for i18n purposes, needed by Translator2!!
 

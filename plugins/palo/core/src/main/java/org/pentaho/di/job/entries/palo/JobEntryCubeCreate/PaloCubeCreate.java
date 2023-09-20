@@ -48,11 +48,12 @@ import org.w3c.dom.Node;
  * @since 03-08-2011
  */
 
-@org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_CREATE",
-    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeCreate", image = "ui/images/deprecated.svg",
-    name = "PaloCubeCreate.JobName", description = "PaloCubeCreate.JobDescription",
-    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cube+Create",
-    categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_CREATE",
+//    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeCreate", image = "ui/images/deprecated.svg",
+//    name = "PaloCubeCreate.JobName", description = "PaloCubeCreate.JobDescription",
+//    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cube+Create",
+//    categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
 public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryInterface {
 
   private DatabaseMeta databaseMeta;

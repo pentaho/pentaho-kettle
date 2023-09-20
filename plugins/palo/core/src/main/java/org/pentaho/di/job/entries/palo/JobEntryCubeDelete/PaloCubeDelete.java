@@ -44,12 +44,12 @@ import org.w3c.dom.Node;
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
-
-@org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_DELETE",
-    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeDelete", image = "ui/images/deprecated.svg",
-    name = "PaloCubeDelete.JobName", description = "PaloCubeDelete.JobDescription",
-    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cube+Delete",
-    categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
+// BACKLOG-38582 Remove specific deprecated steps and job entries from PDI, Please uncomment to enable plugin if needed.
+//@org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_DELETE",
+//    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeDelete", image = "ui/images/deprecated.svg",
+//    name = "PaloCubeDelete.JobName", description = "PaloCubeDelete.JobDescription",
+//    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cube+Delete",
+//    categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
 public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryInterface {
 
   private DatabaseMeta databaseMeta;
