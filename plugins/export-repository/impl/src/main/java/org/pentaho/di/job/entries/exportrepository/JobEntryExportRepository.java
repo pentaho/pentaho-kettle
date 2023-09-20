@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.exportrepository;
 
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
@@ -78,6 +79,10 @@ import org.w3c.dom.Node;
  * @since 04-06-2008
  *
  */
+
+@JobEntry(id = "EXPORT_REPOSITORY",name = "JobEntry.ExportRepository.Tooltip",description = "JobEntry.ExportRepository.TypeDesc",
+image = "EREP.svg",categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Repository",documentationUrl = "http://wiki.pentaho.com/display/EAI/Export+repository+to+XML+file",
+i18nPackageName = "i18n:org.pentaho.di.job.entry:JobEntry.ExportRepository")
 public class JobEntryExportRepository extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryExportRepository.class; // for i18n purposes, needed by Translator2!!
 

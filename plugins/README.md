@@ -47,6 +47,7 @@ __List of the current core plugins:__
 * mondrianinput
 * get-repository-names
 * connected-to-repository
+* export-repository
 
 __Deprecated plugins:__
 

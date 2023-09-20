@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -82,6 +83,9 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Samatar
  * @since 04-06-2008
  */
+
+@PluginDialog(id = "EXPORT_REPOSITORY",image = "EREP.svg",pluginType = PluginDialog.PluginType.JOBENTRY,
+documentationUrl = "http://wiki.pentaho.com/display/EAI/Export+repository+to+XML+file")
 public class JobEntryExportRepositoryDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryExportRepository.class; // for i18n purposes, needed by Translator2!!
 
