@@ -76,6 +76,7 @@
     <pdi-rest-plugin.version>9.6.0.0-SNAPSHOT</pdi-rest-plugin.version>
     <get-repository-names-plugin.version>${project.version}</get-repository-names-plugin.version>
     <connected-to-repository-plugin.version>${project.version}</connected-to-repository-plugin.version>
+    <mail-validator-plugin.version>${project.version}</mail-validator-plugin.version>
   </properties>
 
   <dependencies>
@@ -251,6 +252,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>yaml-input-plugins</artifactId>
       <version>${yaml-input-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>mail-validator-plugins</artifactId>
+      <version>${mail-validator-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

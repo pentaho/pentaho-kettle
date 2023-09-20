@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,7 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.mailvalidator;
+import org.pentaho.di.core.annotations.PluginDialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -55,7 +56,8 @@ import org.pentaho.di.trans.steps.mailvalidator.MailValidatorMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
+@PluginDialog( id = "MailValidator", image = "MAV.svg", pluginType = PluginDialog.PluginType.STEP,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Mail+Validator" )
 public class MailValidatorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 

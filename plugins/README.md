@@ -46,6 +46,7 @@ __List of the current core plugins:__
 * mondrianinput
 * get-repository-names
 * connected-to-repository
+* mail-validator
 
 __Deprecated plugins:__
 
