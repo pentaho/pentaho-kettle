@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+import org.pentaho.di.core.annotations.Step;
 
 /**
  * Send mail step. based on Mail job entry
@@ -56,6 +57,12 @@ import org.w3c.dom.Node;
  * @since 28-07-2008
  */
 
+@Step( id = "Mail", name = "BaseStep.TypeLongDesc.Mail",
+        i18nPackageName = "org.pentaho.di.trans.step.mail",
+        description = "BaseStep.TypeTooltipDesc.Mail",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility",
+        image = "ui/images/MAIL.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Mail+%28step%29" )
 public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!!
 
