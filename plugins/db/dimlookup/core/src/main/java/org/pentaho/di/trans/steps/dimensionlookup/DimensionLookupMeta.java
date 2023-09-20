@@ -35,6 +35,7 @@ import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -77,6 +78,13 @@ import org.w3c.dom.Node;
  *
  */
 @InjectionSupported( localizationPrefix = "DimensionLookup.Injection.", groups = { "KEYS", "FIELDS" } )
+@Step(  id = "DimensionLookup", 
+        name = "BaseStep.TypeLongDesc.DimensionUpdate",
+        description = "BaseStep.TypeTooltipDesc.Dimensionupdate",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.DataWarehouse",
+        i18nPackageName = "org.pentaho.di.trans.steps.dimensionlookup",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Dimension+Lookup-Update",
+        image = "DIM.svg" )
 public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMetaInterface, ProvidesModelerMeta {
   private static Class<?> PKG = DimensionLookupMeta.class; // for i18n purposes, needed by Translator2!!
 

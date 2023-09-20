@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <artifactId>pdi-db-plugins</artifactId>
+    <version>9.6.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dimlookup</artifactId>
+  <version>9.6.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>PDI Dimension Lookup Step</name>
+  <description>This plugin is for pentaho Data integration (ETL) a.k.a kettle</description>
+  <url>http://www.pentaho.com/</url>
+
+  <modules>
+    <module>core</module>
+    <module>assemblies</module>
+  </modules>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+
+  <properties>
+    <pdi.version>${project.version}</pdi.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>pentaho-kettle</groupId>
+        <artifactId>kettle-engine</artifactId>
+        <version>${pdi.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>pentaho-kettle</groupId>
+        <artifactId>kettle-core</artifactId>
+        <version>${pdi.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>pentaho-kettle</groupId>
+        <artifactId>kettle-ui-swt</artifactId>
+        <version>${pdi.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      
+      <!--test dependencies-->
+      <dependency>
+       <groupId>pentaho-kettle</groupId>
+       <artifactId>kettle-core</artifactId>
+       <version>${pdi.version}</version>
+       <classifier>tests</classifier>
+       <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>pentaho-kettle</groupId>
+         <artifactId>kettle-engine</artifactId>
+         <version>${pdi.version}</version>
+         <classifier>tests</classifier>
+         <scope>test</scope>
+       </dependency>
+       
+    </dependencies>
+  </dependencyManagement>
+</project>
