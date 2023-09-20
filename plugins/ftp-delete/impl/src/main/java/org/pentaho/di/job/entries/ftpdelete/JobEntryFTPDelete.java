@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.ftpdelete;
 
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
@@ -76,6 +77,12 @@ import com.trilead.ssh2.SFTPv3DirectoryEntry;
  * @since 05-11-2003
  *
  */
+@JobEntry( id = "FTP_DELETE", name = "JobEntry.FTPDELETE.TypeDesc",
+        i18nPackageName = "org.pentaho.di.job.entries.ftpdelete",
+        description = "JobEntry.FTPDELETE.Tooltip",
+        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
+        image = "ui/images/FTPD.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/FTP+Delete" )
 public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryFTPDelete.class; // for i18n purposes, needed by Translator2!!
 

@@ -73,6 +73,7 @@
     <get-repository-names-plugin.version>${project.version}</get-repository-names-plugin.version>
     <connected-to-repository-plugin.version>${project.version}</connected-to-repository-plugin.version>
     <export-repository-plugin.version>${project.version}</export-repository-plugin.version>
+    <ftp-delete-plugin.version>${project.version}</ftp-delete-plugin.version>
   </properties>
 
   <dependencies>
