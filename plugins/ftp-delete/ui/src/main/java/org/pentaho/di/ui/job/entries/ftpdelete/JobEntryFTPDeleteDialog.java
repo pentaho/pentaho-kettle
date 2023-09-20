@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
@@ -82,6 +83,8 @@ import com.trilead.ssh2.SFTPv3FileAttributes;
  * @author Samatar
  * @since 27-04-2008
  */
+@PluginDialog( id = "FTP_DELETE", image = "FTPD.svg", pluginType = PluginDialog.PluginType.JOBENTRY,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/FTP+Delete" )
 public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryFTPDelete.class; // for i18n purposes, needed by Translator2!!
 

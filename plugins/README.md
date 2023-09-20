@@ -48,6 +48,7 @@ __List of the current core plugins:__
 * get-repository-names
 * connected-to-repository
 * export-repository
+* ftp-delete
 
 __Deprecated plugins:__
 
