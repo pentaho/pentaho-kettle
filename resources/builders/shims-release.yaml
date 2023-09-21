@@ -34,7 +34,7 @@ buildProperties:
   DEFAULT_BRANCH                 : [shim-id]-[shim-release-version]
   SUITE_BUILD_RESOURCES_BRANCH   : [shim-id]-[shim-release-version]
   SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
-  JENKINS_FOLDER_NAME            : "9.6"
+  JENKINS_FOLDER_NAME            : "10.1"
 
   # We need to override this until this pipeline is the nightly
   BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
