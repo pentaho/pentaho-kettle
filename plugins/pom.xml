@@ -96,6 +96,7 @@
         <module>excel</module>
         <module>pentaho-reporting</module>
         <module>rest</module>
+        <module>put-a-file-with-ftp</module>
       </modules>
     </profile>
 
