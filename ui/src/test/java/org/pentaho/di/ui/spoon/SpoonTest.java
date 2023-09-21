@@ -22,7 +22,7 @@
 
 package org.pentaho.di.ui.spoon;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static junit.framework.Assert.*;
 
@@ -75,7 +75,6 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.delegates.SpoonTabsDelegate;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
-import org.powermock.api.mockito.PowerMockito;
 
 /**
  * Spoon tests
@@ -98,8 +97,8 @@ public class SpoonTest {
 
   @Before
   public void setUp() throws KettleException {
-    doCallRealMethod().when( spoon ).copySelected( any( TransMeta.class ), anyListOf( StepMeta.class ),
-        anyListOf( NotePadMeta.class ) );
+    doCallRealMethod().when( spoon ).copySelected( any( TransMeta.class ), anyList(),
+      anyList() );
     doCallRealMethod().when( spoon ).pasteXML( any( TransMeta.class ), anyString(), any( Point.class ) );
     doCallRealMethod().when( spoon ).delHop( any( TransMeta.class ), any( TransHopMeta.class ) );
     when( spoon.getLog() ).thenReturn( log );

@@ -42,9 +42,11 @@ import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 public class SpoonExportXmlTest {
   private VariableSpace mockedVariableSpace;

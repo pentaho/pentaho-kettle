@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -83,6 +84,11 @@ public class GetDatabaseInfoProgressDialog {
     listeners.forEach( listener -> listener.databaseInfoProgressFinished( progressMonitor ) );
   }
 
+  @VisibleForTesting
+  protected ProgressMonitorDialog newProgressMonitorDialog() {
+    return new ProgressMonitorDialog( shell );
+  }
+
   public DatabaseMetaInformation open() {
     final DatabaseMetaInformation dmi = new DatabaseMetaInformation( dbInfo );
     IRunnableWithProgress op = new IRunnableWithProgress() {
@@ -97,7 +103,7 @@ public class GetDatabaseInfoProgressDialog {
     };
 
     try {
-      ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
+      ProgressMonitorDialog pmd = newProgressMonitorDialog();
       pmd.run( true, true, op );
       notifyDatabaseProgress( pmd.getProgressMonitor() );
     } catch ( InvocationTargetException e ) {

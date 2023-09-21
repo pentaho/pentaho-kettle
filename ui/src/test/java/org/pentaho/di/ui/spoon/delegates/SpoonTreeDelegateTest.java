@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.junit.After;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -33,32 +35,32 @@ import org.pentaho.di.ui.spoon.TreeSelection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.mockito.Mockito.mockStatic;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { ConstUI.class, PluginRegistry.class } )
 public class SpoonTreeDelegateTest {
 
   private Spoon spoon = mock( Spoon.class );
+  private static MockedStatic<ConstUI> constUI;
+  private static MockedStatic<PluginRegistry> pluginRegistry;
 
   @Before
   public void setup() {
-    mockStatic( ConstUI.class );
-    mockStatic( PluginRegistry.class );
+    constUI = mockStatic( ConstUI.class );
+    pluginRegistry = mockStatic( PluginRegistry.class );
+  }
+
+  @After
+  public void cleanUp() {
+    constUI.close();
+    pluginRegistry.close();
   }
 
   @Test

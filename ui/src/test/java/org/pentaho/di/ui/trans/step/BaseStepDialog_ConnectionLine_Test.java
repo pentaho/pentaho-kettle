@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,8 +40,8 @@ import org.powermock.reflect.Whitebox;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -86,7 +86,7 @@ public class BaseStepDialog_ConnectionLine_Test {
 
   private void invokeAddConnectionListener( TransMeta transMeta, String answeredName ) throws Exception {
     BaseStepDialog dialog = mock( BaseStepDialog.class );
-    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) )
+    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), any() ) )
       .thenAnswer( new PropsSettingAnswer( answeredName, INPUT_HOST ) );
 
     Supplier<Spoon> mockSupplier = mock( Supplier.class );
@@ -218,7 +218,7 @@ public class BaseStepDialog_ConnectionLine_Test {
     dialog.databaseDialog = databaseDialog;
     dialog.transMeta = transMeta;
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) ).thenCallRealMethod();
-    when( dialog.getDatabaseDialog( any( Shell.class ) ) ).thenCallRealMethod();
+    when( dialog.getDatabaseDialog( any() ) ).thenCallRealMethod();
 
     String result = dialog.showDbDialogUnlessCancelledOrValid( (DatabaseMeta) db.clone(), db );
     assertEquals( expectedResult, result );
@@ -257,7 +257,7 @@ public class BaseStepDialog_ConnectionLine_Test {
     dialog.databaseDialog = databaseDialog;
     dialog.transMeta = transMeta;
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) ).thenCallRealMethod();
-    when( dialog.getDatabaseDialog( any( Shell.class ) ) ).thenCallRealMethod();
+    when( dialog.getDatabaseDialog( any() ) ).thenCallRealMethod();
 
     // try to rename db1 ("qwerty")
     String result = dialog.showDbDialogUnlessCancelledOrValid( (DatabaseMeta) db1.clone(), db1 );
