@@ -84,7 +84,6 @@
         <module>sap</module>
         <module>shapefilereader</module>
         <module>gpload</module>
-        <module>openerp</module>
         <module>version-checker</module>
         <module>salesforce</module>
         <module>pur</module>
