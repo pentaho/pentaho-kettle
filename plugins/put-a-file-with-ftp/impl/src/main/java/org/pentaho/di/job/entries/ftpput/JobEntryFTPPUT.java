@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.ftpput;
 
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
@@ -74,6 +75,12 @@ import com.enterprisedt.net.ftp.FTPTransferType;
  * @since 15-09-2007
  */
 
+@JobEntry( id = "FTP_PUT", name = "JobEntry.FTPPUT.TypeDesc",
+        i18nPackageName = "org.pentaho.di.job.entries.ftpput",
+        description = "JobEntry.FTPPUT.Tooltip",
+        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
+        image = "ui/images/PFTP.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Put+a+file+with+FTP" )
 public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryFTPPUT.class; // for i18n purposes, needed by Translator2!!
 
