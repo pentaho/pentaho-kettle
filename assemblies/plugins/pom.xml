@@ -65,7 +65,6 @@
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
     <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
     <mail-plugin.version>${project.version}</mail-plugin.version>
-    <mail-validator-job-plugin.version>${project.version}</mail-validator-job-plugin.version>
     <pentaho-metaverse.version>10.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <pdi-xml-plugin.version>10.1.0.0-SNAPSHOT</pdi-xml-plugin.version>
     <pdi-json-plugin.version>10.1.0.0-SNAPSHOT</pdi-json-plugin.version>
@@ -74,6 +73,7 @@
     <connected-to-repository-plugin.version>${project.version}</connected-to-repository-plugin.version>
     <export-repository-plugin.version>${project.version}</export-repository-plugin.version>
     <ftp-delete-plugin.version>${project.version}</ftp-delete-plugin.version>
+    <mail-validator-plugin.version>${project.version}</mail-validator-plugin.version>
   </properties>
 
   <dependencies>
@@ -211,8 +211,8 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>mail-validator-job-plugins</artifactId>
-      <version>${mail-validator-job-plugin.version}</version>
+      <artifactId>mail-validator-plugins</artifactId>
+      <version>${mail-validator-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

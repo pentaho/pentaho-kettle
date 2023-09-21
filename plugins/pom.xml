@@ -51,9 +51,9 @@
         <module>sftpput</module>
         <module>connected-to-repository</module>
         <module>mail</module>
-        <module>mail-validator-job</module>
         <module>export-repository</module>
         <module>ftp-delete</module>
+        <module>mail-validator</module>
       </modules>
     </profile>
 

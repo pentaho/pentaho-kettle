@@ -17,7 +17,6 @@ __List of the current core plugins:__
 * json
 * openerp
 * mail
-* mail-validator-job
 * palo
 * s3csvinput
 * sap
@@ -49,6 +48,7 @@ __List of the current core plugins:__
 * connected-to-repository
 * export-repository
 * ftp-delete
+* mail-validator
 
 __Deprecated plugins:__
 
