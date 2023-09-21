@@ -49,6 +49,7 @@
         <module>avro-format</module>
         <module>get-repository-names</module>
         <module>sftpput</module>
+        <module>put-file-sftp</module>
         <module>connected-to-repository</module>
         <module>mail</module>
         <module>mail-validator-job</module>
