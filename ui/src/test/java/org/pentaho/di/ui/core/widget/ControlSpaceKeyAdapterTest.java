@@ -22,32 +22,34 @@
 
 package org.pentaho.di.ui.core.widget;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.ui.core.PropsUI;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { PropsUI.class } )
 public class ControlSpaceKeyAdapterTest {
+
+  private static MockedStatic<PropsUI> propsUIMockedStatic;
 
   @Before
   public void before() {
     PropsUI propsUI = mock( PropsUI.class );
-    PowerMockito.mockStatic( PropsUI.class );
+    propsUIMockedStatic = mockStatic( PropsUI.class );
     BDDMockito.given( PropsUI.getInstance() ).willReturn( propsUI );
+  }
+
+  @After
+  public void cleanUp() {
+    propsUIMockedStatic.close();
   }
 
   @Test
