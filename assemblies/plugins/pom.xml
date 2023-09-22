@@ -75,6 +75,7 @@
     <connected-to-repository-plugin.version>${project.version}</connected-to-repository-plugin.version>
     <export-repository-plugin.version>${project.version}</export-repository-plugin.version>
     <ftp-delete-plugin.version>${project.version}</ftp-delete-plugin.version>
+    <email-messages-plugin.version>${project.version}</email-messages-plugin.version>
     <put-a-file-with-ftp-plugin.version>${project.version}</put-a-file-with-ftp-plugin.version>
     <get-file-with-ftp.version>${project.version}</get-file-with-ftp.version>
   </properties>
@@ -780,6 +781,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>export-repository-plugins</artifactId>
       <version>${export-repository-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>email-messages-plugins</artifactId>
+      <version>${email-messages-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
