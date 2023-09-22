@@ -718,7 +718,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   @Test
   public void testMetaStoreBasics() throws MetaStoreException {
-    IMetaStore metaStore = repository.getMetaStore();
+    IMetaStore metaStore = repository.getRepositoryMetaStore();
     assertNotNull( metaStore );
 
     MetaStoreTestBase base = new MetaStoreTestBase();
@@ -727,7 +727,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   @Test
   public void testMetaStoreNamespaces() throws MetaStoreException {
-    IMetaStore metaStore = repository.getMetaStore();
+    IMetaStore metaStore = repository.getRepositoryMetaStore();
     assertNotNull( metaStore );
 
     // We start with a clean slate, only the pentaho namespace
@@ -762,7 +762,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   @Test
   public void testMetaStoreElementTypes() throws MetaStoreException {
-    IMetaStore metaStore = repository.getMetaStore();
+    IMetaStore metaStore = repository.getRepositoryMetaStore();
     assertNotNull( metaStore );
     String ns = PentahoDefaults.NAMESPACE;
 
@@ -816,7 +816,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     // Set up a namespace
     //
     String ns = PentahoDefaults.NAMESPACE;
-    IMetaStore metaStore = repository.getMetaStore();
+    IMetaStore metaStore = repository.getRepositoryMetaStore();
     if ( !metaStore.namespaceExists( ns ) ) {
       metaStore.createNamespace( ns );
     }
