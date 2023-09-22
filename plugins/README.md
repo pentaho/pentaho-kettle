@@ -49,6 +49,7 @@ __List of the current core plugins:__
 * connected-to-repository
 * export-repository
 * ftp-delete
+* email-messages
 * put-a-file-with-ftp
 
 __Deprecated plugins:__

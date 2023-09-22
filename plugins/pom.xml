@@ -55,6 +55,7 @@
         <module>mail-validator-job</module>
         <module>export-repository</module>
         <module>ftp-delete</module>
+        <module>email-messages</module>
       </modules>
     </profile>
 
