@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,8 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.job.entries.sftp;
-
-import java.net.InetAddress;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -48,8 +46,9 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sftp.JobEntrySFTP;
@@ -69,6 +68,8 @@ import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.net.InetAddress;
+
 /**
  * This dialog allows you to edit the SFTP job entry settings.
  *
@@ -76,6 +77,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @since 19-06-2003
  */
 
+@PluginDialog( id = "SFTP", image = "GSFTP.svg", pluginType = PluginDialog.PluginType.JOBENTRY,
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+a+file+with+SFTP" )
 public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntrySFTP.class; // for i18n purposes, needed by Translator2!!
   private static final String[] FILETYPES =
@@ -240,7 +243,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
   private LabelTextVar wProxyPassword;
   private FormData fdProxyPasswd;
 
-  public JobEntrySFTPDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+  public JobEntrySFTPDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntrySFTP) jobEntryInt;
     if ( this.jobEntry.getName() == null ) {

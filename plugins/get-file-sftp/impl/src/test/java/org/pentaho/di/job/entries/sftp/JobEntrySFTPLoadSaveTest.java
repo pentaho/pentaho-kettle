@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,12 @@
 
 package org.pentaho.di.job.entries.sftp;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.ClassRule;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class JobEntrySFTPLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntrySFTP> {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();

@@ -31,6 +31,7 @@
     <yaml-input-plugin.version>${project.version}</yaml-input-plugin.version>
     <pentaho-reporting-plugin.version>10.1.0.0-SNAPSHOT</pentaho-reporting-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
+    <get-file-sftp-plugin.version>${project.version}</get-file-sftp-plugin.version>
     <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
     <terafast-bulk-loader-plugin.version>${project.version}</terafast-bulk-loader-plugin.version>
     <postgresql-db-bulk-loader-plugin.version>${project.version}</postgresql-db-bulk-loader-plugin.version>
@@ -109,6 +110,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>kettle-s3csvinput-plugin</artifactId>
       <version>${kettle-s3csvinput-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>get-file-sftp-plugin</artifactId>
+      <version>${get-file-sftp-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

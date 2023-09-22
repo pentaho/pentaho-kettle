@@ -12,6 +12,7 @@ __List of the current core plugins:__
 * mail-job
 * dummy
 * gpload
+* get-file-sftp
 * sftpput
 * hl7
 * json
