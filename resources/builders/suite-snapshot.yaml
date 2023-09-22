@@ -336,12 +336,8 @@ jobGroups:
   2800:
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       #parallelize     :  true
-
-     - jobID           :  snowflake-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       root            :  snowflake
        archivable      :  true
+       #parallelize     :  true
 
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
