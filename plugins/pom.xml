@@ -51,6 +51,7 @@
         <module>sftpput</module>
         <module>put-file-sftp</module>
         <module>connected-to-repository</module>
+        <module>get-file-sftp</module>
         <module>mail</module>
         <module>mail-validator-job</module>
         <module>export-repository</module>

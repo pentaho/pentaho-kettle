@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,6 @@
 
 package org.pentaho.di.job.entries.sftp;
 
-import org.pentaho.di.job.entry.validator.AbstractFileValidator;
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
-
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -41,6 +30,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -54,6 +44,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -63,6 +56,13 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * This defines a SFTP job entry.
  *
@@ -70,6 +70,12 @@ import org.w3c.dom.Node;
  * @since 05-11-2003
  *
  */
+@JobEntry( id = "SFTP", name = "JobEntry.SFTP.TypeDesc",
+        i18nPackageName = "org.pentaho.di.job.entries.sftp",
+        description = "JobEntry.SFTP.Tooltip",
+        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
+        image = "GSFTP.svg",
+        documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+a+file+with+SFTP" )
 public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntrySFTP.class; // for i18n purposes, needed by Translator2!!
 
@@ -96,7 +102,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
   private String proxyUsername;
   private String proxyPassword;
 
-  public JobEntrySFTP( String n ) {
+  public JobEntrySFTP(String n ) {
     super( n, "" );
     serverName = null;
     serverPort = "22";
