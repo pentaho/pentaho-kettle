@@ -117,7 +117,16 @@ public class LdapProtocol {
   }
 
   protected InitialLdapContext createLdapContext( Hashtable<String, String> env ) throws NamingException {
-    return new InitialLdapContext( env, null );
+    // PDI-19783 : The classes needed to create ldap were loaded inside of plugin classloader, so we need to
+    // override the current thread classloader to be able to create the ldap context.
+    ClassLoader currentThreadClassloader = Thread.currentThread().getContextClassLoader();
+    try {
+      Thread.currentThread().setContextClassLoader( this.getClass().getClassLoader() );
+      InitialLdapContext initialLdapContext = new InitialLdapContext( env, null );
+      return initialLdapContext;
+    } finally {
+      Thread.currentThread().setContextClassLoader( currentThreadClassloader );
+    }
   }
 
   protected void doConnect( String username, String password ) throws KettleException {
