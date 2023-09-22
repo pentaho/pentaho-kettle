@@ -227,6 +227,18 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>ftp-delete-plugins</artifactId>
+      <version>${ftp-delete-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>yaml-input-plugins</artifactId>
       <version>${yaml-input-plugin.version}</version>
       <type>zip</type>
