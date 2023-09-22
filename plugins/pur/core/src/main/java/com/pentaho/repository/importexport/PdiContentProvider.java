@@ -20,6 +20,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
@@ -107,10 +108,10 @@ public class PdiContentProvider implements IPdiContentProvider {
 
           if ( "ktr".equalsIgnoreCase( extension ) ) {
             TransMeta transMeta = new TransMeta( convertTransformation( file.getId() ), repo, true, null, null );
-            userVariables = getTransVars( transMeta );
+            userVariables = getTransVars( transMeta, file );
           } else if ( "kjb".equalsIgnoreCase( extension ) ) {
             JobMeta jobMeta = new JobMeta( convertJob( file.getId() ), repo, null );
-            userVariables = getJobVars( jobMeta );
+            userVariables = getJobVars( jobMeta, file );
           }
         } catch ( KettleException e ) {
           log.error( e );
@@ -120,7 +121,7 @@ public class PdiContentProvider implements IPdiContentProvider {
     return userVariables;
   }
 
-  private Map<String, String> getTransVars( TransMeta transMeta ) {
+  private Map<String, String> getTransVars( TransMeta transMeta, RepositoryFile file ) {
     /*
      * The following code was more or less copy/pasted from SpoonTransformationDelegate and
      * TransExecutionConfigurationDialog
@@ -128,6 +129,7 @@ public class PdiContentProvider implements IPdiContentProvider {
     TransExecutionConfiguration transExeConf = new TransExecutionConfiguration();
     Map<String, String> variableMap = new HashMap<>();
     variableMap.putAll( transExeConf.getVariables() ); // the default
+    variableMap.put( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, file.getName() );
 
     transExeConf.setVariables( variableMap );
     transExeConf.getUsedVariables( transMeta );
@@ -135,7 +137,7 @@ public class PdiContentProvider implements IPdiContentProvider {
     return transExeConf.getVariables();
   }
 
-  private Map<String, String> getJobVars( JobMeta jobMeta ) {
+  private Map<String, String> getJobVars( JobMeta jobMeta, RepositoryFile file ) {
     /*
      * The following code was more or less copy/pasted from SpoonJobDelegate and JobExecutionConfigurationDialog
      */
@@ -145,6 +147,7 @@ public class PdiContentProvider implements IPdiContentProvider {
     jobExeConf.setVariables( variableMap );
     jobExeConf.getUsedVariables( jobMeta );
     Map<String, String> jobVarsMap = jobExeConf.getVariables();
+    jobVarsMap.put( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, file.getName() );
     // jobVarsMap will also contain any parameters for the job, not just the variables
     // this is a quirk that happens elsewhere too, but breaks the PUC params UI, so clean it up here
     for (String paramName : ( (NamedParams) jobMeta ).listParameters() ) {
