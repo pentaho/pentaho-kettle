@@ -50,6 +50,7 @@ __List of the current core plugins:__
 * export-repository
 * ftp-delete
 * put-a-file-with-ftp
+* get-file-with-ftp
 
 __Deprecated plugins:__
 
