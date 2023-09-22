@@ -51,6 +51,7 @@ __List of the current core plugins:__
 * ftp-delete
 * email-messages
 * put-a-file-with-ftp
+* get-file-with-ftp
 
 __Deprecated plugins:__
 

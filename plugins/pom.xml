@@ -56,6 +56,7 @@
         <module>export-repository</module>
         <module>ftp-delete</module>
         <module>email-messages</module>
+        <module>get-file-with-ftp</module>
       </modules>
     </profile>
 
