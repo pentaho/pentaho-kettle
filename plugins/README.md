@@ -15,7 +15,6 @@ __List of the current core plugins:__
 * sftpput
 * hl7
 * json
-* openerp
 * mail
 * palo
 * s3csvinput
@@ -29,6 +28,7 @@ __List of the current core plugins:__
 * monet-db-bulk-loader
 * ms-access-bulk-loader
 * postgresql-db-bulk-loader
+* put-file-sftp
 * infobright-bulk-loader
 * excel
 * ivw-bulk-loader
@@ -49,6 +49,9 @@ __List of the current core plugins:__
 * export-repository
 * ftp-delete
 * mail-validator
+* email-messages
+* put-a-file-with-ftp
+* get-file-with-ftp
 
 __Deprecated plugins:__
 

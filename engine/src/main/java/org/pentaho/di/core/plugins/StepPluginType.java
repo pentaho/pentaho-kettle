@@ -65,7 +65,6 @@ import org.w3c.dom.Node;
     "BaseStep.Category.DataQuality",
     "BaseStep.Category.Cryptography",
     "BaseStep.Category.Palo",
-    "BaseStep.Category.OpenERP",
     "BaseStep.Category.Job",
     "BaseStep.Category.Mapping",
     "BaseStep.Category.Bulk",

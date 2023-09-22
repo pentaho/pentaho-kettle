@@ -54,5 +54,11 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.pentaho.di.plugins</groupId>
+          <artifactId>put-file-sftp-plugins-impl</artifactId>
+          <version>${project.version}</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 </project>

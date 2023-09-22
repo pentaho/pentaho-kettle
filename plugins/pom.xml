@@ -49,11 +49,14 @@
         <module>avro-format</module>
         <module>get-repository-names</module>
         <module>sftpput</module>
+        <module>put-file-sftp</module>
         <module>connected-to-repository</module>
         <module>mail</module>
         <module>export-repository</module>
         <module>ftp-delete</module>
         <module>mail-validator</module>
+        <module>email-messages</module>
+        <module>get-file-with-ftp</module>
       </modules>
     </profile>
 
@@ -84,7 +87,6 @@
         <module>sap</module>
         <module>shapefilereader</module>
         <module>gpload</module>
-        <module>openerp</module>
         <module>version-checker</module>
         <module>salesforce</module>
         <module>pur</module>
@@ -97,6 +99,7 @@
         <module>excel</module>
         <module>pentaho-reporting</module>
         <module>rest</module>
+        <module>put-a-file-with-ftp</module>
       </modules>
     </profile>
 

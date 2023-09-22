@@ -40,6 +40,7 @@
     <ldap-plugin.version>${project.version}</ldap-plugin.version>
     <ivw-bulk-loader-plugin.version>${project.version}</ivw-bulk-loader-plugin.version>
     <sftpput-plugin.version>${project.version}</sftpput-plugin.version>
+    <put-file-sftp-plugin.version>${project.version}</put-file-sftp-plugin.version>
     <edi2xml-plugin.version>${project.version}</edi2xml-plugin.version>
     <random-cc-number-generator-plugin.version>${project.version}</random-cc-number-generator-plugin.version>
     <credit-card-validator-plugin.version>${project.version}</credit-card-validator-plugin.version>
@@ -74,6 +75,9 @@
     <export-repository-plugin.version>${project.version}</export-repository-plugin.version>
     <ftp-delete-plugin.version>${project.version}</ftp-delete-plugin.version>
     <mail-validator-plugin.version>${project.version}</mail-validator-plugin.version>
+    <email-messages-plugin.version>${project.version}</email-messages-plugin.version>
+    <put-a-file-with-ftp-plugin.version>${project.version}</put-a-file-with-ftp-plugin.version>
+    <get-file-with-ftp.version>${project.version}</get-file-with-ftp.version>
   </properties>
 
   <dependencies>
@@ -345,6 +349,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>sftpput-plugin</artifactId>
       <version>${sftpput-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>put-file-sftp-plugins</artifactId>
+      <version>${put-file-sftp-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
@@ -765,6 +781,42 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>export-repository-plugins</artifactId>
       <version>${export-repository-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>email-messages-plugins</artifactId>
+      <version>${email-messages-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>put-a-file-with-ftp-plugins</artifactId>
+      <version>${put-a-file-with-ftp-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>get-file-with-ftp-plugins</artifactId>
+      <version>${get-file-with-ftp.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
