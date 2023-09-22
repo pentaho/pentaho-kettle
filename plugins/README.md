@@ -16,7 +16,6 @@ __List of the current core plugins:__
 * hl7
 * json
 * mail
-* mail-validator-job
 * palo
 * s3csvinput
 * sap
@@ -49,6 +48,7 @@ __List of the current core plugins:__
 * connected-to-repository
 * export-repository
 * ftp-delete
+* mail-validator
 * email-messages
 * put-a-file-with-ftp
 * get-file-with-ftp
