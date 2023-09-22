@@ -87,7 +87,7 @@ IF %IS64BITJAVA% == 1 GOTO :USE64
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
-set LIBSPATH=libswt\win32
+set LIBSPATH=libswt\win32;native_lib\win32;..\native_lib\win32
 GOTO :CONTINUE
 :USE64
 REM ===========================================
@@ -112,11 +112,11 @@ SET ISWINDOWS11ANDJAVA8=true
 
 :ISNOTWINDOWS11ANDJAVA8
 if %ISJAVA8% NEQ 1 GOTO :SETJAVASWT
-set LIBSPATH=libswt\win64_java8
+set LIBSPATH=libswt\win64_java8;native_lib\win64_java8;..\native_lib\win64_java8
 set SWTJAR=..\libswt\win64_java8
 GOTO :CONTINUE
 :SETJAVASWT
-set LIBSPATH=libswt\win64
+set LIBSPATH=libswt\win64;native_lib\win64;..\native_lib\win64
 set SWTJAR=..\libswt\win64
 :CONTINUE
 popd
