@@ -40,6 +40,9 @@ jobGroups:
      - jobID           :  metastore
        scmUrl          :  https://github.com/pentaho/metastore.git
 
+     - jobID           :  reporting
+       scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
+
      - jobID           :  osgi-bundles
        scmUrl          :  https://github.com/pentaho/pentaho-osgi-bundles.git
 
@@ -56,8 +59,8 @@ jobGroups:
      - jobID           :  eula-wrap-config
        scmUrl          :  https://github.com/pentaho/pentaho-eula-wrap-config.git
 
-     - jobID           :  reporting
-       scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
+     - jobID           :  encryption-support
+       scmUrl          :  https://github.com/pentaho/pentaho-encryption-support.git
 
      - jobID           :  gwt-widgets
        scmUrl          :  https://github.com/pentaho/pentaho-commons-gwt-modules.git
@@ -92,11 +95,11 @@ jobGroups:
      - jobID           :  mondrian
        scmUrl          :  https://github.com/pentaho/mondrian.git
 
-     # Disable ITs for platform because it is filling up docker container
-     # by creating a large file in /tmp. See BISERVER-14405
-     #- jobID           :  platform
-     #  scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-     #  directives      :  -= -DrunITs
+#      Disable ITs for platform because it is filling up docker container
+#      by creating a large file in /tmp. See BISERVER-14405
+#     - jobID           :  platform
+#       scmUrl          :  https://github.com/pentaho/pentaho-platform.git
+#       directives      :  -= -DrunITs
 
      - jobID           :  pdi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
@@ -120,18 +123,19 @@ jobGroups:
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-plugin.git
 
-     - jobID           :  archetypes-ee
-       scmUrl          :  https://github.com/pentaho/maven-project-archetypes-ee.git
-
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  https://github.com/pentaho/pentaho-hadoop-shims.git
        directives      :  += -DskipDefault -P shim-api,common,shims,all
 
+     - jobID           :  archetypes-ee
+       scmUrl          :  https://github.com/pentaho/maven-project-archetypes-ee.git
+
+     - jobID           :  big-data-plugin-features
+       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+       directives      :  -= -DrunITs
+
      - jobID           :  big-data-splunk-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
-
-     - jobID           :  big-data-mongodb-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
 
      - jobID           :  big-data-cassandra-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-cassandra-plugin.git
@@ -159,8 +163,8 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-metaverse.git
        directives      :  -= verify += install
 
-     - jobID           :  pdi-monitoring-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
+     - jobID           :  big-data-mongodb-plugin
+       scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
 
      - jobID           :  modeler
        scmUrl          :  https://github.com/pentaho/modeler.git
@@ -174,13 +178,8 @@ jobGroups:
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
 
-     #- jobID           :  pdi-plugins-ee
-     #  scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-     #  directives      :  -= -DrunITs
-
-     - jobID           :  pdi-client-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       directives      :  -= verify += install -Deula-wrap
+     - jobID           :  pdi-monitoring-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
 
      - jobID           :  camel-components
        scmUrl          :  https://github.com/pentaho/pentaho-camel-components.git
@@ -209,15 +208,12 @@ jobGroups:
      - jobID           :  marketplace-plugin
        scmUrl          :  https://github.com/pentaho/marketplace.git
 
-     - jobID           :  big-data-plugin-features
-       scmUrl          :  https://github.com/pentaho/big-data-plugin.git
-       directives      :  -= -DrunITs
-
      - jobID           :  pdi-data-refinery-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-data-refinery.git
 
-     - jobID           :  pdi-daemon
-       scmUrl          :  https://github.com/pentaho/adaptive-execution-layer.git
+#     - jobID           :  pdi-plugins-ee
+#       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+#       directives      :  -= -DrunITs
 
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
@@ -233,9 +229,6 @@ jobGroups:
 
      - jobID           :  platform-reporting-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-reporting.git
-
-     - jobID           :  big-data-hadoop-shims-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
 
      - jobID           :  cda-plugin
        scmUrl          :  https://github.com/webdetails/cda.git
@@ -256,6 +249,9 @@ jobGroups:
      - jobID           :  analyzer-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-analyzer.git
        directives      :  += -Dagilebi
+
+#     - jobID           :  container-utils
+#       scmUrl          :  https://github.com/pentaho/container-utils.git
 
      - jobID           :  platform-chart-plugin-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee-chart-plugin.git
@@ -291,9 +287,6 @@ jobGroups:
      - jobID           :  pdi-scheduler-plugin
        scmUrl          :  https://github.com/pentaho/pdi-scheduler-plugin.git
 
-     - jobID           :  pdi-google-docs-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-google-docs-plugin.git
-
      - jobID           :  pdi-jms-plugin
        scmUrl          :  https://github.com/pentaho/pdi-jms-plugin.git
 
@@ -309,6 +302,9 @@ jobGroups:
      - jobID           :  karaf-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-karaf-ee-assembly.git
 
+     - jobID           :  big-data-hadoop-shims-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
+
      - jobID           :  prd-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
 
@@ -318,11 +314,15 @@ jobGroups:
      - jobID           :  pdi-operations-mart-ee
        scmUrl          :  https://github.com/pentaho/pdi-operations-mart.git
 
+     - jobID           :  pdi-client-assembly-ee
+       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
+       directives      :  -= verify += install -Deula-wrap
+
      - jobID           :  metadata-editor
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
 
-     - jobID           :  pad
-       scmUrl          :  https://github.com/pentaho/pentaho-aggdesigner.git
+#     - jobID           :  pad
+#       scmUrl          :  https://github.com/pentaho/pentaho-aggdesigner.git
 
      - jobID           :  metadata-editor-ee
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
@@ -332,6 +332,3 @@ jobGroups:
 
      - jobID           :  platform-sdk
        scmUrl          :  https://github.com/pentaho/pentaho-sdk.git
-
-     - jobID           :  encryption-support
-       scmUrl          :  https://github.com/pentaho/pentaho-encryption-support.git
