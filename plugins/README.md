@@ -13,6 +13,7 @@ __List of the current core plugins:__
 * dummy
 * gpload
 * get-file-sftp
+* ftps
 * sftpput
 * hl7
 * json
