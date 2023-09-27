@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,8 @@ import org.pentaho.di.core.util.Assert;
 
 import java.util.*;
 
-import com.sun.jersey.api.client.ClientResponse;
+
+import javax.ws.rs.core.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -107,18 +108,18 @@ public class RestIT {
     }
 
     @Override
-    protected MultivaluedMap<String, String> searchForHeaders( ClientResponse response ) {
+    protected MultivaluedMap<String, Object> searchForHeaders( Response response ) {
       if ( override ) {
         String host = "host";
-        List<String> localhost = new ArrayList<String>();
+        List<String> localhost = new ArrayList<>();
         localhost.add( "localhost" );
-        Map.Entry<String, List<String>> entry = Mockito.mock( Map.Entry.class );
+        Map.Entry<String, Object> entry = Mockito.mock( Map.Entry.class );
         when( entry.getKey() ).thenReturn( host );
         when( entry.getValue() ).thenReturn( localhost );
-        Set<Map.Entry<String, List<String>>> set = new HashSet<Map.Entry<String, List<String>>>();
+        Set<Map.Entry<String, Object>> set = new HashSet<>();
         set.add( entry );
-        MultivaluedMap<String, String> test = Mockito.mock( MultivaluedMap.class );
-        when( test.entrySet() ).thenReturn( set );
+        MultivaluedMap<String, Object> test = Mockito.mock( MultivaluedMap.class );
+        when( test.entrySet() ).thenReturn( Collections.emptySet() );
         return test;
       } else {
         return super.searchForHeaders( response );
@@ -152,7 +153,7 @@ public class RestIT {
     //
     // MB - 5/2016
     Assume.assumeTrue( !System.getProperty( "java.version" ).startsWith( "1.8" ) );
-    stepMockHelper = new StepMockHelper<RestMeta, RestData>( "REST CLIENT TEST", RestMeta.class, RestData.class );
+    stepMockHelper = new StepMockHelper<>( "REST CLIENT TEST", RestMeta.class, RestData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
@@ -176,7 +177,7 @@ public class RestIT {
     meta.addValueMeta( new ValueMetaString( "fieldName" ) );
     meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
     Object[] expectedRow = new Object[] { "", 204L };
-    Rest rest =
+    RestHandler rest =
       new RestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     rest.setInputRowMeta( inputRowMeta );
@@ -188,7 +189,7 @@ public class RestIT {
     data.resultFieldName = "ResultFieldName";
     data.resultCodeFieldName = "ResultCodeFieldName";
     Assert.assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
-    Object[] out = ( (RestHandler) rest ).getOutputRow();
+    Object[] out = rest.getOutputRow();
     Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
@@ -204,7 +205,7 @@ public class RestIT {
       meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
       Object[] expectedRow =
         new Object[] { "", 204L, 0L, "{\"host\":\"localhost\"}" };
-      Rest rest =
+      RestHandler rest =
         new RestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, true );
       RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
       rest.setInputRowMeta( inputRowMeta );
@@ -220,7 +221,7 @@ public class RestIT {
       data.resultFieldName = "ResultFieldName";
       data.resultCodeFieldName = "ResultCodeFieldName";
       Assert.assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
-      Object[] out = ( (RestHandler) rest ).getOutputRow();
+      Object[] out = rest.getOutputRow();
       Assert.assertTrue( meta.equals( out, expectedRow, index ) );
     } catch ( ArrayIndexOutOfBoundsException ex ) {
       // This is only here because everything blows up due to the version
