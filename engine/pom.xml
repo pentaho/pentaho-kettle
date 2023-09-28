@@ -38,7 +38,7 @@
     <ftp4che.version>0.7.1</ftp4che.version>
     <infobright-core.version>3.4</infobright-core.version>
     <!-- https://jira.pentaho.com/browse/PDI-44134 update janino to latest -->
-    <janino.version>3.0.8</janino.version>
+    <!--<janino.version>3.0.8</janino.version>-->
     <javadbf.version>20081125</javadbf.version>
     <jcommon.version>1.0.16</jcommon.version>
     <json-simple.version>1.1</json-simple.version>
