@@ -23,6 +23,7 @@
 package org.pentaho.di.job.entries.ftpdelete;
 
 import org.pentaho.di.core.annotations.JobEntry;
+import org.pentaho.di.job.entries.ftpsget.FTPSConnection;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
@@ -50,7 +51,6 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entries.ftpsget.FTPSConnection;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
