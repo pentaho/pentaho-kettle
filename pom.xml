@@ -58,7 +58,6 @@
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
-    <js.version>1.7R3</js.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
     <guava.version>17.0</guava.version>
     <encoder.version>1.2</encoder.version>
@@ -135,9 +134,9 @@
         <version>1.3.0</version>
       </dependency>
       <dependency>
-        <groupId>rhino</groupId>
-        <artifactId>js</artifactId>
-        <version>${js.version}</version>
+        <groupId>org.mozilla</groupId>
+        <artifactId>rhino</artifactId>
+        <version>${rhino.version}</version>
         <exclusions>
           <exclusion>
             <groupId>*</groupId>
