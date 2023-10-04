@@ -13,7 +13,6 @@ __List of the current core plugins:__
 * gpload
 * hl7
 * json
-* openerp
 * palo
 * s3csvinput
 * sap
