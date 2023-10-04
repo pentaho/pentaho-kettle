@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>metastore-locator</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-47</version>
   </parent>
   <artifactId>pentaho-metastore-locator-core</artifactId>
-  <version>10.1.0.0-SNAPSHOT</version>
+  <version>10.1.0.0-47</version>
   <packaging>jar</packaging>
   <developers>
     <developer>
@@ -34,7 +34,7 @@
     </developer>
   </developers>
   <properties>
-    <pdi.version>10.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>10.1.0.0-47</pdi.version>
     <hamcrest.version>1.3</hamcrest.version>
     <mockito.version>4.0.0</mockito.version>
     <junit.version>4.12</junit.version>
