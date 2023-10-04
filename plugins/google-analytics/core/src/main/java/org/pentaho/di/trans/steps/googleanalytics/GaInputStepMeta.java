@@ -62,8 +62,8 @@ import org.w3c.dom.Node;
   i18nPackageName = "org.pentaho.di.trans.steps.googleanalytics",
   name = "GoogleAnalytics.TypeLongDesc.GoogleAnalyticsStep",
   description = "GoogleAnalytics.TypeTooltipDesc.GoogleAnalyticsStep",
-  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
-  image = "GAN.svg",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
+  image = "ui/images/deprecated.svg",
 
   documentationUrl = "http://wiki.pentaho.com/display/EAI/Google+Analytics" )
 @InjectionSupported( localizationPrefix = "GoogleAnalytics.Injection.", groups = { "OUTPUT_FIELDS" } )
