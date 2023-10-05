@@ -40,51 +40,93 @@ buildProperties:
     build: clean deploy -DskipTests
     test: test
 
-  JOB_ITEM_DEFAULTS :
-    dockerImage     : jenkins-build/maven/open-jdk/11
-    scmBranch       : master
+  JOB_ITEM_DEFAULTS:
+    dockerImage       :  jenkins-build/maven/open-jdk/11
+    scmBranch         :  master
 
-jobGroups:
-################################################################################
-# NOTE placed jobId 'pentaho-scheduler-plugin-ee' to be in built at the time   #
-#  as similiar jonbs in suite-snapshot.yaml:                                   #
-#   -  'platform-chart-plugin-ee'                                              #
-#   -  'analysis-plugin-ee'                                                    #
-# It's possible to move this jobId to an earlier jobGroup, this is a           #
-# cautionary placement.                                                        #
-################################################################################
-  3500:
-     - jobID           :  pentaho-scheduler-plugin-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin-ee.git
-       scmBranch       :  scheduler-plugin
-       versionProperty :  pentaho-scheduler-plugin-ee.version
-################################################################################
-# NOTE groupId:jobId 4500:'platform-server-assembly-ee' already existed        #
-# branch has new code that packages artifacts                                  #
-# from jobId 'pentaho-scheduler-plugin-ee'                                     #
-################################################################################
-  4500:
-     - jobID           :  platform-server-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
-       scmBranch       :  scheduler-plugin
-       directives      :  += -DskipDefault -P platform-ee-assemble
-       testable        :  false
-       archivable      :  true
-       versionProperty :  pentaho-scheduler-plugin-ee.version
+  jobGroups:
+    ################################################################################
+    # Build the 'pentaho-commons-gwt-modules first because the platform and the    #
+    # scheduler-plugin depend on gwt changes.                                      #
+    ################################################################################
+    700:
+      - jobID           :  pentaho-commons-gwt-modules
+        scmUrl          :  https://github.com/pentaho/pentaho-commons-gwt-modules.git
+        scmBranch       :  scheduler-plugin
 
-################################################################################
-# NOTE adding jobids 'installers', 'installer-tool' to generate files such as: #
-#  pentaho-business-analytics-9.6.0.0-SNAPSHOT...                              #
-################################################################################
+    ################################################################################
+    # For now build the entire pentaho-platform.  There are changes in extnsions   #
+    # and scheduler modules that will be needed                                    #
+    ################################################################################
+    1000:
+      - jobID           :  pentaho-platform
+        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
+        scmBranch       :  scheduler-plugin
+
+    ################################################################################
+    # Added to resolve pipeline issues with -Drelease and obfusation and lincense  #
+    # issues.  per Steve Maring                                                    #
+    ################################################################################
+    1300:
+      - jobID           :  license-ee
+        scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
+        directives      :  += -Dmaven.test.failure.ignore=true
+
+    3300:
+      - jobID           :  pentaho-scheduler-plugin
+        scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin.git
+        scmBranch       :  scheduler-plugin
+
+    4400:
+      - jobID           :  platform-server-assembly
+        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
+        scmBranch       :  scheduler-plugin
+        directives      :  += -DskipDefault -P platform-assemble
+        testable        :  false
+        archivable      :  true
+
+    ################################################################################
+    # NOTE placed jobId 'pentaho-scheduler-plugin-ee' to be in built at the time   #
+    #  as similiar jonbs in suite-snapshot.yaml:                                   #
+    #   -  'platform-chart-plugin-ee'                                              #
+    #   -  'analysis-plugin-ee'                                                    #
+    # It's possible to move this jobId to an earlier jobGroup, this is a           #
+    # cautionary placement.                                                        #
+    ################################################################################
+    4450:
+      - jobID: pentaho-scheduler-plugin-ee
+        scmUrl: https://github.com/pentaho/pentaho-scheduler-plugin-ee.git
+        scmBranch: scheduler-plugin
+        versionProperty: pentaho-scheduler-plugin-ee.version
+
+    ################################################################################
+    # NOTE groupId:jobId 4500:'platform-server-assembly-ee' already existed        #
+    # branch has new code that packages artifacts                                  #
+    # from jobId 'pentaho-scheduler-plugin-ee'                                     #
+    ################################################################################
+    4500:
+      - jobID           :  platform-server-assembly-ee
+        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
+        scmBranch       :  scheduler-plugin
+        directives      :  += -DskipDefault -P platform-ee-assemble
+        testable        :  false
+        archivable      :  true
+        versionProperty :  pentaho-scheduler-plugin-ee.version
+
+   ################################################################################
+  # NOTE adding jobids 'installers', 'installer-tool' to generate files such as: #
+  #  pentaho-business-analytics-9.6.0.0-SNAPSHOT...                              #
+  ################################################################################
   4700:
-     - jobID           :  installers
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/bitrock-installbuilder-8
-       archivable      :  true
-       testable        :  false
-       parallelize     :  true
+    - jobID           :  installers
+      scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+      dockerImage     :  jenkins-build/bitrock-installbuilder-8
+      archivable      :  true
+      testable        :  false
+      parallelize     :  true
 
-     - jobID           :  installer-tool
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/installanywhere-installbuilder
-       root            :  installer-tool
+    - jobID           :  installer-tool
+      scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+      dockerImage     :  jenkins-build/installanywhere-installbuilder
+      root            :  installer-tool
+
