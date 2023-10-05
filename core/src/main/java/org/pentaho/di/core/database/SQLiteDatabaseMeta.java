@@ -223,7 +223,7 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String[] getUsedLibraries() {
-    return new String[] { "sqlite-jdbc-3.27.2.1.jar" };
+    return new String[] { "sqlite-jdbc-3.41.2.2.jar" };
   }
 
   /**
