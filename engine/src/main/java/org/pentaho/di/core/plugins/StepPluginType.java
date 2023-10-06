@@ -49,6 +49,7 @@ import org.w3c.dom.Node;
     "BaseStep.Category.Output",
     "BaseStep.Category.MetadataDiscovery",
     "BaseStep.Category.Streaming",
+    "BaseStep.Category.Hierarchical",
     "BaseStep.Category.Transform",
     "BaseStep.Category.Utility",
     "BaseStep.Category.Flow",

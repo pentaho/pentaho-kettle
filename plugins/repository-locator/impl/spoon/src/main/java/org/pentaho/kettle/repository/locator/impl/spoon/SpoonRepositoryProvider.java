@@ -20,11 +20,11 @@ import org.pentaho.di.core.service.ServiceProvider;
 import org.pentaho.di.core.service.ServiceProviderInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.kettle.repository.locator.api.KettleRepositoryLocator;
 import org.pentaho.kettle.repository.locator.api.KettleRepositoryProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 /**
  * Created by bryan on 4/15/16.
@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 @ServiceProvider( id = "SpoonRepositoryProviderProvider",
   description = "Get the repository from the provided PentahoSession", provides = KettleRepositoryProvider.class )
 public class SpoonRepositoryProvider implements KettleRepositoryProvider, ServiceProviderInterface<KettleRepositoryProvider> {
-  private static Logger log = Logger.getLogger( SpoonRepositoryProvider.class.getName() );
+  private static Logger log = LoggerFactory.getLogger( SpoonRepositoryProvider.class.getName() );
   private final Supplier<Spoon> spoonSupplier;
 
   public SpoonRepositoryProvider() {
@@ -47,7 +47,7 @@ public class SpoonRepositoryProvider implements KettleRepositoryProvider, Servic
     try {
       return spoonSupplier.get().getRepository();
     } catch ( Exception e ) {
-      log.warning( e.getMessage() );
+      log.warn( e.getMessage() );
       return null;
     }
   }

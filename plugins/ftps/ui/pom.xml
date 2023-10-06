@@ -1,43 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
-    <artifactId>pentaho-kettle-repository-locator-core</artifactId>
+    <artifactId>ftps</artifactId>
     <version>10.1.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>pentaho-kettle-repository-locator-impl-spoon</artifactId>
-  <version>10.1.0.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+
+  <artifactId>ftps-plugin-ui</artifactId>
+  <name>PDI  FTPS Plugins UI</name>
+
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>pentaho-kettle-repository-locator-api</artifactId>
+      <artifactId>ftps-plugin-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <!-- SWT it required to compile any version of any architecture will work -->
+    <dependency>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
+
 </project>

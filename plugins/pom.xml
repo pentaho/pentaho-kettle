@@ -52,6 +52,7 @@
         <module>put-file-sftp</module>
         <module>connected-to-repository</module>
         <module>get-file-sftp</module>
+        <module>ftps</module>
         <module>mail</module>
         <module>export-repository</module>
         <module>ftp-delete</module>

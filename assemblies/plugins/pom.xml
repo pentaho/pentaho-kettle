@@ -32,6 +32,7 @@
     <pentaho-reporting-plugin.version>10.1.0.0-SNAPSHOT</pentaho-reporting-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <get-file-sftp-plugin.version>${project.version}</get-file-sftp-plugin.version>
+    <ftps-plugin.version>${project.version}</ftps-plugin.version>
     <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
     <terafast-bulk-loader-plugin.version>${project.version}</terafast-bulk-loader-plugin.version>
     <postgresql-db-bulk-loader-plugin.version>${project.version}</postgresql-db-bulk-loader-plugin.version>
@@ -70,7 +71,7 @@
     <pentaho-metaverse.version>10.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <pdi-xml-plugin.version>10.1.0.0-SNAPSHOT</pdi-xml-plugin.version>
     <pdi-json-plugin.version>10.1.0.0-SNAPSHOT</pdi-json-plugin.version>
-    <pdi-rest-plugin.version>9.6.0.0-SNAPSHOT</pdi-rest-plugin.version>
+    <pdi-rest-plugin.version>10.1.0.0-SNAPSHOT</pdi-rest-plugin.version>
     <get-repository-names-plugin.version>${project.version}</get-repository-names-plugin.version>
     <connected-to-repository-plugin.version>${project.version}</connected-to-repository-plugin.version>
     <export-repository-plugin.version>${project.version}</export-repository-plugin.version>
@@ -122,6 +123,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>get-file-sftp-plugin</artifactId>
       <version>${get-file-sftp-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>ftps-plugin</artifactId>
+      <version>${ftps-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
