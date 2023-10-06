@@ -49,7 +49,7 @@ buildProperties:
     # Build the 'pentaho-commons-gwt-modules first because the platform and the    #
     # scheduler-plugin depend on gwt changes.                                      #
     ################################################################################
-    700:
+    3100:
       - jobID           :  pentaho-commons-gwt-modules
         scmUrl          :  https://github.com/pentaho/pentaho-commons-gwt-modules.git
         scmBranch       :  scheduler-plugin
@@ -58,7 +58,7 @@ buildProperties:
     # For now build the entire pentaho-platform.  There are changes in extnsions   #
     # and scheduler modules that will be needed                                    #
     ################################################################################
-    1000:
+    3200:
       - jobID           :  pentaho-platform
         scmUrl          :  https://github.com/pentaho/pentaho-platform.git
         scmBranch       :  scheduler-plugin
@@ -67,11 +67,6 @@ buildProperties:
     # Added to resolve pipeline issues with -Drelease and obfusation and lincense  #
     # issues.  per Steve Maring                                                    #
     ################################################################################
-    1300:
-      - jobID           :  license-ee
-        scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
-        directives      :  += -Dmaven.test.failure.ignore=true
-
     3300:
       - jobID           :  pentaho-scheduler-plugin
         scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin.git
@@ -124,9 +119,3 @@ buildProperties:
       archivable      :  true
       testable        :  false
       parallelize     :  true
-
-    - jobID           :  installer-tool
-      scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-      dockerImage     :  jenkins-build/installanywhere-installbuilder
-      root            :  installer-tool
-
