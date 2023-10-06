@@ -386,6 +386,7 @@ jobGroups:
   3400:
      - jobID           :  analyzer-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-analyzer.git
+       dockerImage     :  jenkins-build/headless-chrome
        directives      :  += -Dagilebi
        archivable      :  true
 
