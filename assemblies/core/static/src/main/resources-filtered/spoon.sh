@@ -82,29 +82,29 @@ case `uname -s` in
 		case $ARCH in
 
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/aix/:$CURRENTDIR/../native_lib/aix/:$CURRENTDIR/native_lib/aix/
+				LIBPATH=$CURRENTDIR/../libswt/aix/
 				;;
 
 			ppc64)
-				LIBPATH=$CURRENTDIR/../libswt/aix64/:$CURRENTDIR/../native_lib/aix64/:$CURRENTDIR/native_lib/aix64/
+				LIBPATH=$CURRENTDIR/../libswt/aix64/
 				;;
 
-			*)	
+			*)
 				echo "I'm sorry, this AIX platform [$ARCH] is not yet supported!"
 				exit
 				;;
 		esac
 		;;
-	SunOS) 
+	SunOS)
 	ARCH=`uname -m`
 		case $ARCH in
 
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/solaris-x86/:$CURRENTDIR/../native_lib/solaris-x86/:$CURRENTDIR/native_lib/solaris-x86/
+				LIBPATH=$CURRENTDIR/../libswt/solaris-x86/
 				;;
 
-			*)	
-				LIBPATH=$CURRENTDIR/../libswt/solaris/:$CURRENTDIR/../native_lib/solaris/:$CURRENTDIR/native_lib/solaris/
+			*)
+				LIBPATH=$CURRENTDIR/../libswt/solaris/
 				;;
 		esac
 		;;
@@ -118,9 +118,9 @@ case `uname -s` in
 		x86_64)
 			if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
                             then
-			  LIBPATH=$CURRENTDIR/../libswt/osx64/:$CURRENTDIR/../native_lib/osx64/:$CURRENTDIR/native_lib/osx64/
+			  LIBPATH=$CURRENTDIR/../libswt/osx64/
                             else
-			  LIBPATH=$CURRENTDIR/../libswt/osx/:$CURRENTDIR/../native_lib/osx/:$CURRENTDIR/native_lib/osx/
+			  LIBPATH=$CURRENTDIR/../libswt/osx/
                             fi
 			;;
     arm64)
@@ -129,14 +129,14 @@ case `uname -s` in
           echo "I'm sorry, this Mac platform [$ARCH] is not supported in Java 8"
           exit
                               else
-          LIBPATH=$CURRENTDIR/../libswt/osx64_aarch/:$CURRENTDIR/../native_lib/osx64_aarch/:$CURRENTDIR/native_lib/osx64_aarch/
+          LIBPATH=$CURRENTDIR/../libswt/osx64_aarch/
                               fi
       ;;
 		i[3-6]86)
-			LIBPATH=$CURRENTDIR/../libswt/osx/:$CURRENTDIR/../native_lib/osx/:$CURRENTDIR/native_lib/osx/
+			LIBPATH=$CURRENTDIR/../libswt/osx/
 			;;
 
-		*)	
+		*)
 			echo "I'm sorry, this Mac platform [$ARCH] is not yet supported!"
 			echo "Please try starting using 'Data Integration 32-bit' or"
 			echo "'Data Integration 64-bit' as appropriate."
@@ -169,25 +169,25 @@ case `uname -s` in
 			x86_64)
 				if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
                                 then
-				  LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/:$CURRENTDIR/../native_lib/linux/x86_64/:$CURRENTDIR/native_lib/linux/x86_64/
+				  LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
                                 else
-				  LIBPATH=$CURRENTDIR/../libswt/linux/x86/:$CURRENTDIR/../native_lib/linux/x86/:$CURRENTDIR/native_lib/linux/x86/
+				  LIBPATH=$CURRENTDIR/../libswt/linux/x86/
                                 fi
 				;;
 
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86/:$CURRENTDIR/../native_lib/linux/x86/:$CURRENTDIR/native_lib/linux/x86/
+				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
 				;;
 
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/:$CURRENTDIR/../native_lib/linux/ppc/:$CURRENTDIR/native_lib/linux/ppc/
+				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
 				;;
 
 			ppc64)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc64/:$CURRENTDIR/../native_lib/linux/ppc64/:$CURRENTDIR/native_lib/linux/ppc64/
+				LIBPATH=$CURRENTDIR/../libswt/linux/ppc64/
 				;;
 
-			*)	
+			*)
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
@@ -200,30 +200,30 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/:$CURRENTDIR/../native_lib/linux/x86_64/:$CURRENTDIR/native_lib/linux/x86_64/
+				LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86/:$CURRENTDIR/../native_lib/linux/x86/:$CURRENTDIR/native_lib/linux/x86/
+				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
 				;;
 
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/:$CURRENTDIR/../native_lib/linux/ppc/:$CURRENTDIR/native_lib/linux/ppc/
+				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
-			*)	
+			*)
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 		esac
 		;;
 
-	HP-UX) 
-		LIBPATH=$CURRENTDIR/../libswt/hpux/:$CURRENTDIR/../native_lib/hpux/:$CURRENTDIR/native_lib/hpux/
+	HP-UX)
+		LIBPATH=$CURRENTDIR/../libswt/hpux/
 		;;
 	CYGWIN*)
 		./Spoon.bat
