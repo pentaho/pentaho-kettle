@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -549,6 +549,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     wCompression.add( "none" );
     wCompression.add( "zlib" );
     wCompression.select( 0 ); // +1: starts at -1
+    wCompression.addModifyListener( lsMod );
 
     props.setLook( wCompression );
     fdCompression = new FormData();
