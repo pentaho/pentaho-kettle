@@ -11,24 +11,24 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-52</version>
   </parent>
 
   <properties>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
-    <pentaho-mongodb-plugin.version>10.1.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
-    <big-data-plugin.version>10.1.0.0-SNAPSHOT</big-data-plugin.version>
+    <pentaho-mongodb-plugin.version>10.1.0.0-52</pentaho-mongodb-plugin.version>
+    <big-data-plugin.version>10.1.0.0-52</big-data-plugin.version>
 
-    <pentaho-json.version>10.1.0.0-SNAPSHOT</pentaho-json.version>
+    <pentaho-json.version>10.1.0.0-52</pentaho-json.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
-    <commons-database.version>10.1.0.0-SNAPSHOT</commons-database.version>
-    <pentaho-registry.version>10.1.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-metaverse.version>10.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <platform.version>10.1.0.0-SNAPSHOT</platform.version>
-    <pentaho-reporting.version>10.1.0.0-SNAPSHOT</pentaho-reporting.version>
-    <pdi-osgi-bridge.version>10.1.0.0-SNAPSHOT</pdi-osgi-bridge.version>
-    <pentaho-hadoop-shims.version>10.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
+    <commons-database.version>10.1.0.0-52</commons-database.version>
+    <pentaho-registry.version>10.1.0.0-52</pentaho-registry.version>
+    <pentaho-metaverse.version>10.1.0.0-52</pentaho-metaverse.version>
+    <platform.version>10.1.0.0-52</platform.version>
+    <pentaho-reporting.version>10.1.0.0-52</pentaho-reporting.version>
+    <pdi-osgi-bridge.version>10.1.0.0-52</pdi-osgi-bridge.version>
+    <pentaho-hadoop-shims.version>10.1.2023.04.00-52</pentaho-hadoop-shims.version>
 
     <!-- third party -->
     <derbyclient.version>10.2.1.6</derbyclient.version>
@@ -53,7 +53,7 @@
     <databricks.version>4.0.0</databricks.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <jface.version>3.22.0</jface.version>
-    <pentaho-metadata.version>10.1.0.0-SNAPSHOT</pentaho-metadata.version>
+    <pentaho-metadata.version>10.1.0.0-52</pentaho-metadata.version>
     <xml-graphics-common.version>2.2</xml-graphics-common.version>
     <jdom.version>1.1.3</jdom.version>
     <google-http-client.version>1.42.3</google-http-client.version>
