@@ -83,6 +83,11 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
   private boolean gotPreviousFields = false;
 
+  private static final String[] FILETYPES =
+    new String[] {
+      BaseMessages.getString( PKG, "SFTPPUT.Filetype.Pem" ),
+      BaseMessages.getString( PKG, "SFTPPUT.Filetype.All" ) };
+
   private SFTPPutMeta input;
 
   private CTabFolder wTabFolder;
