@@ -49,7 +49,7 @@ jobGroups:
   # Build the 'pentaho-commons-gwt-modules first because the platform and the    #
   # scheduler-plugin depend on gwt changes.                                      #
   ################################################################################
-  3100:
+  700:
     - jobID           :  pentaho-commons-gwt-modules
       scmUrl          :  https://github.com/pentaho/pentaho-commons-gwt-modules.git
       scmBranch       :  scheduler-plugin
@@ -58,10 +58,26 @@ jobGroups:
   # For now build the entire pentaho-platform.  There are changes in extnsions   #
   # and scheduler modules that will be needed                                    #
   ################################################################################
-  3200:
-    - jobID           :  pentaho-platform
-      scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-      scmBranch       :  scheduler-plugin
+  1000:
+    - jobID           : platform-api
+      scmUrl          : https://github.com/pentaho/pentaho-platform.git
+      scmBranch       : scheduler-plugin
+      directives      : += -DskipDefault -P platform-api
+
+  2100:
+    - jobID           : platform-base
+      scmUrl          : https://github.com/pentaho/pentaho-platform.git
+      scmBranch       : scheduler-plugin
+      directives      : += -DskipDefault -P platform-base
+      parallelize     : true
+      archivable      : true
+
+  2700:
+    - jobID           : platform-user-console
+      scmUrl          : https://github.com/pentaho/pentaho-platform.git
+      scmBranch       : scheduler-plugin
+      directives      : += -DskipDefault -P platform-user-console
+      #parallelize     :  true
 
   ################################################################################
   # Added to resolve pipeline issues with -Drelease and obfusation and lincense  #
