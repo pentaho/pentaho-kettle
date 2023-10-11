@@ -128,8 +128,15 @@ public class LoggingBuffer {
   public StringBuffer getBuffer( String parentLogChannelId, boolean includeGeneral, int startLineNr, int endLineNr ) {
     StringBuilder eventBuffer = new StringBuilder( 10000 );
 
-    List<KettleLoggingEvent> events =
-      getLogBufferFromTo( parentLogChannelId, includeGeneral, startLineNr, endLineNr );
+    List<KettleLoggingEvent> events = getLogBufferFromTo( parentLogChannelId, includeGeneral, 0, endLineNr );
+
+    // PDI-19901:  We need to skip the number records until startLineNr after filter all records by log channel id
+    if ( startLineNr > 0 ) {
+      int totalLoggingEvents = events.size();
+      int start = startLineNr > totalLoggingEvents ? totalLoggingEvents : startLineNr;
+      events = events.subList( start, totalLoggingEvents );
+    }
+
     for ( KettleLoggingEvent event : events ) {
       eventBuffer.append( layout.format( event ) ).append( Const.CR );
     }

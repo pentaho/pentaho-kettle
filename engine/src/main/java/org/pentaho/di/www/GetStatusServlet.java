@@ -756,13 +756,13 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "'"
         + " + '?name=' + encodeURIComponent(document.getElementById( 'j-cellTableFirstCell_' + selectedJobRowIndex )"
         + ".innerText)"
-        + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerHTML + '&from=9999999' );" );
+        + " + '&id=' + document.getElementById( 'j-cellTableCell_' + selectedJobRowIndex ).innerHTML + '&from=0' );" );
       out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
       out.println( "window.location.replace( '"
         + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "'"
         + " + '?name=' + encodeURIComponent(document.getElementById( 'cellTableFirstCell_' + selectedTransRowIndex )"
         + ".innerText)"
-        + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerText );" );
+        + " + '&id=' + document.getElementById( 'cellTableCell_' + selectedTransRowIndex ).innerText + '&from=0' );" );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );
