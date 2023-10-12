@@ -2181,7 +2181,7 @@ public class JobMeta extends AbstractMeta
         // if ( includePasswords )
         // {
         if ( meta.getPassword() != null ) {
-          stringList.add( new StringSearchResult( meta.getPassword(), meta, this,
+          stringList.add( new StringSearchResult( meta.getPassword().replaceAll(".","*"), meta, this,
               BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabasePassword" ) ) );
           // }
         }
