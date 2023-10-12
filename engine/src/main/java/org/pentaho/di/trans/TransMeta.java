@@ -5265,11 +5265,11 @@ public class TransMeta extends AbstractMeta
           stringList.add( new StringSearchResult( meta.getServername(), meta, this,
               BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
         }
-        if ( includePasswords ) {
+        //if ( includePasswords ) {
           if ( meta.getPassword() != null ) {
-            stringList.add( new StringSearchResult( meta.getPassword(), meta, this,
+            stringList.add( new StringSearchResult( meta.getPassword().replaceAll(".","*"), meta, this,
                 BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
-          }
+         // }
         }
       }
     }
