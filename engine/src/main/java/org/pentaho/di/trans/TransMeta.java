@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@
 package org.pentaho.di.trans;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.vfs2.FileName;
@@ -5264,11 +5265,11 @@ public class TransMeta extends AbstractMeta
           stringList.add( new StringSearchResult( meta.getServername(), meta, this,
               BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
         }
-        if ( includePasswords ) {
+
           if ( meta.getPassword() != null ) {
-            stringList.add( new StringSearchResult( meta.getPassword(), meta, this,
+            stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
                 BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
-          }
+
         }
       }
     }
