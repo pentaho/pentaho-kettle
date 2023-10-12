@@ -23,6 +23,7 @@
 
 package org.pentaho.di.job;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -2181,7 +2182,7 @@ public class JobMeta extends AbstractMeta
         // if ( includePasswords )
         // {
         if ( meta.getPassword() != null ) {
-          stringList.add( new StringSearchResult( meta.getPassword().replaceAll(".","*"), meta, this,
+          stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
               BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabasePassword" ) ) );
           // }
         }
