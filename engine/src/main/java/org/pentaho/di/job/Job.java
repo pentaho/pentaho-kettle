@@ -109,6 +109,8 @@ import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
+import java.time.LocalDateTime;
+import org.springframework.util.ObjectUtils;
 
 /**
  * This class executes a job as defined by a JobMeta object.
@@ -479,7 +481,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       KettleEnvironment.setExecutionInformation( this, rep );
 
       log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobStarted" ) );
-
+      log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.StartTime", LocalDateTime.now()) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.RunName", jobMeta.getName()) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.UserContext", System.getProperty("user.name")) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.NoOfSteps", jobMeta.nrJobEntries()) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.NoOfHops", jobMeta.nrJobHops()) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.RunId", this.getLogChannelId()) );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobStart.id, this );
 
       // Start the tracking...
@@ -547,7 +554,23 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       }
       // Save this result...
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerEnd ) );
-      log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
+      if( !ObjectUtils.isEmpty( jerEnd ) && !ObjectUtils.isEmpty( jerEnd.getResult() ) && jerEnd.getResult().getResult() ){
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId() ) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.EndTime",LocalDateTime.now() ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId() ) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.UserContext",System.getProperty("user.name") ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId()) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.SuccessStatus") );
+      } else {
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId() ) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.EndTime",LocalDateTime.now() ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId() ) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.UserContext",System.getProperty("user.name") ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId()) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.SuccessFailure") );
+      }
 
       setActive( false );
       if ( !isStopped() ) {

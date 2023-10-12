@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -150,7 +150,8 @@ import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
-
+import java.time.LocalDateTime;
+import org.springframework.util.ObjectUtils;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.pentaho.di.trans.Trans.BitMaskStatus.FINISHED;
 import static org.pentaho.di.trans.Trans.BitMaskStatus.RUNNING;
@@ -781,6 +782,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     setInitialLogBufferStartLine();
     prepareExecution( arguments );
     startThreads();
+    log.logMinimal( BaseMessages.getString( PKG, "Trans.Comment.RunId",this.getLogChannelId() ) + ","+
+      BaseMessages.getString( PKG, "Trans.Comment.EndTime",LocalDateTime.now() ) );
+    log.logMinimal( BaseMessages.getString( PKG, "Trans.Comment.RunId",this.getLogChannelId() ) + ","+
+      BaseMessages.getString( PKG, "Trans.Comment.UserContext",System.getProperty("user.name") ) );
   }
 
   /**
@@ -797,7 +802,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     log.snap( Metrics.METRIC_TRANSFORMATION_EXECUTION_START );
     log.snap( Metrics.METRIC_TRANSFORMATION_INIT_START );
-
+    log.logBasic( "Transformation started." );
+    if( !ObjectUtils.isEmpty(transMeta)) {
+      log.logBasic( BaseMessages.getString( PKG, "Trans.Comment.StartTime", LocalDateTime.now()) + ","+
+        BaseMessages.getString( PKG, "Trans.Comment.RunName", transMeta.getName()) + ","+
+        BaseMessages.getString( PKG, "Trans.Comment.UserContext", System.getProperty("user.name")) + ","+
+        BaseMessages.getString( PKG, "Trans.Comment.NoOfSteps", transMeta.nrSteps()) + ","+
+        BaseMessages.getString( PKG, "Trans.Comment.NoOfHops", transMeta.nrTransHops()) + ","+
+        BaseMessages.getString( PKG, "Trans.Comment.RunId", this.getLogChannelId()) );
+    }
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationPrepareExecution.id, this );
 
     checkCompatibility();
