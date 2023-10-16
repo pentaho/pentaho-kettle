@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -70,7 +71,7 @@ public class BaseLogTableTest {
     privateLoggingRegistryField.setAccessible( true );
     ReflectionUtils.setField( privateLoggingRegistryField, lb, lr );
 
-    List<BufferLine> bl = new ArrayList<>();
+    ConcurrentSkipListMap<Integer, BufferLine> bl = new ConcurrentSkipListMap<>();
     Field privateLBufferField = LoggingBuffer.class.getDeclaredField( "buffer" );
     privateLBufferField.setAccessible( true );
     ReflectionUtils.setField( privateLBufferField, lb, bl );
@@ -78,24 +79,28 @@ public class BaseLogTableTest {
     KettleLoggingEvent kLE1 = spy( KettleLoggingEvent.class );
     LogMessage lm = new LogMessage( "First Job Execution Logging Event", "1", LogLevel.BASIC );
     kLE1.setMessage( lm );
-    bl.add( new BufferLine( kLE1 ) );
+    addToBuffer( bl, new BufferLine( kLE1 ) );
 
     BaseLogTable baseLogTable = mock( BaseLogTable.class );
     doCallRealMethod().when( baseLogTable ).getLogBuffer( any( VariableSpace.class ), anyString(), any( LogStatus.class ), anyString(), anyInt() );
 
     VariableSpace vs = mock( VariableSpace.class );
 
-    String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 0 );
+    String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 1 );
     assertTrue( s1.contains( "First Job Execution Logging Event" ) );
 
     KettleLoggingEvent kLE2 = spy( KettleLoggingEvent.class );
     LogMessage lm2 = new LogMessage( "Second Job Execution Logging Event", "1", LogLevel.BASIC );
     kLE2.setMessage( lm2 );
-    bl.add( new BufferLine( kLE2 ) );
+    addToBuffer( bl, new BufferLine( kLE2 ) );
 
-    String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 1 );
+    String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 2 );
     assertFalse( s2.contains( "First Job Execution Logging Event" ) );
     assertTrue( s2.contains( "Second Job Execution Logging Event" ) );
+  }
+
+  private void addToBuffer( ConcurrentSkipListMap bl, BufferLine bufferLine ) {
+    bl.put( bufferLine.getNr(), bufferLine );
   }
 
 }
