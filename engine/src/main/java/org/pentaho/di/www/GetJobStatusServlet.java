@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -214,6 +214,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
     String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    int numberOfTailLines = Const.toInt( request.getParameter( "tail" ), 0 );
     int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
 
     response.setStatus( HttpServletResponse.SC_OK );
@@ -287,7 +288,11 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
             out.flush();
           } else {
             int lastLineNr = KettleLogStore.getLastBufferLineNr();
-            String logText = getLogText( job, startLineNr, lastLineNr );
+            String logText = getLogText( job, startLineNr, lastLineNr, numberOfTailLines );
+/*            if ( numberOfTailLines > 0 ) {
+              //Only asking for last numberOfTailLines log lines
+              logText = logText.substring( StringUtils.lastOrdinalIndexOf(  logText, "\n", numberOfTailLines + 1 ) + 1 );
+            }*/
 
             response.setContentType( TEXT_XML );
             response.setCharacterEncoding( Const.XML_ENCODING );
@@ -423,7 +428,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.print( "<div class=\"workspaceHeading\">Job log</div>" );
           out.println( "<textarea id=\"joblog\" cols=\"120\" rows=\"20\" wrap=\"off\" "
               + "name=\"Job log\" readonly=\"readonly\" style=\"height: auto;\">"
-              + Encode.forHtml( getLogText( job, startLineNr, lastLineNr ) ) + "</textarea>" );
+              + Encode.forHtml( getLogText( job, startLineNr, lastLineNr, numberOfTailLines ) ) + "</textarea>" );
           out.print( "</div>" );
 
           out.println( "<script type=\"text/javascript\">" );
@@ -505,10 +510,10 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     return CONTEXT_PATH;
   }
 
-  private String getLogText( Job job, int startLineNr, int lastLineNr ) throws KettleException {
+  private String getLogText( Job job, int startLineNr, int lastLineNr, int numberOfTailLines ) throws KettleException {
     try {
       return KettleLogStore.getAppender().getBuffer(
-        job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
+        job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr, numberOfTailLines ).toString();
     } catch ( OutOfMemoryError error ) {
       throw new KettleException( BaseMessages.getString( PKG, "GetJobStatusServlet.Error.LogStringIsTooLong" ) );
     }
