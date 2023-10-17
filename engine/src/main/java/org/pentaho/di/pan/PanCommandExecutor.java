@@ -239,7 +239,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       int completionTimeSeconds = calculateAndPrintElapsedTime( start, stop, "Pan.Log.StartStop", "Pan.Log.ProcessingEndAfter",
               "Pan.Log.ProcessingEndAfterLong", "Pan.Log.ProcessingEndAfterLonger", "Pan.Log.ProcessingEndAfterLongest" );
       getResult().setElapsedTimeMillis( stop.getTime() - start.getTime() );
-
+      getLog().logBasic( "Transformation stopped." );
+      getLog().logBasic(BaseMessages.getString( getPkgClazz(), "Pan.Comment.UserContext",System.getProperty("user.name")  ) );
       if ( getResult().getNrErrors() == 0 ) {
 
         trans.printStats( completionTimeSeconds );
