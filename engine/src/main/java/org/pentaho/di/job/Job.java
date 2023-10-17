@@ -42,6 +42,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.base.IMetaFileCache;
@@ -145,6 +146,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   private AtomicInteger errors;
 
   private VariableSpace variables = new Variables();
+
+  private MutableInt lastNr = new MutableInt( -1 );
 
   /**
    * The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables,
@@ -744,8 +747,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Also capture the logging text after the execution...
       //
       LoggingBuffer loggingBuffer = KettleLogStore.getAppender();
-      StringBuffer logTextBuffer = loggingBuffer.getBuffer( cloneJei.getLogChannel().getLogChannelId(), false );
-      newResult.setLogText( logTextBuffer.toString() + newResult.getLogText() );
+      StringBuffer logTextBuffer = loggingBuffer.getBuffer( cloneJei.getLogChannel().getLogChannelId(),
+        false, lastNr );
+      newResult.appendLogText( logTextBuffer.toString() );
 
       // Save this result as well...
       //
