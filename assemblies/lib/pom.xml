@@ -37,7 +37,7 @@
     <jt400.version>6.1</jt400.version>
     <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
     <sapdbc.version>7.4.4</sapdbc.version>
-    <sqlite-jdbc.version>3.27.2.1</sqlite-jdbc.version>
+    <!--<sqlite-jdbc.version>3.27.2.1</sqlite-jdbc.version>-->
     <webservices-api.version>2.3.1</webservices-api.version>
     <webservices-rt.version>2.3.1</webservices-rt.version>
     <asm.version>3.2</asm.version>
