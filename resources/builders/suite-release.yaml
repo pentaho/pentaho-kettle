@@ -451,13 +451,6 @@ jobGroups:
        archivable      :  true
        versionProperty :  pdi-plugins-ee.version
 
-     - jobID           :  snowflake-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       directives      :  += -Deula-wrap
-       root            :  snowflake
-       archivable      :  true
-       versionProperty :  snowflake-plugin.version
-
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
        versionProperty :  pentaho-cde-plugin.version
