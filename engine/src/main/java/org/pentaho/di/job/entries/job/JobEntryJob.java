@@ -1733,4 +1733,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
+  @Override public void callBeforeLog() {
+    if ( parentJob != null ) {
+      parentJob.callBeforeLog();
+    }
+  }
+
+  @Override
+  public void callAfterLog() {
+    if ( parentJob != null ) {
+      parentJob.callAfterLog();
+    }
+  }
+
 }
