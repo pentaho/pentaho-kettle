@@ -7,7 +7,7 @@ buildProperties:
   # Maven
   MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
   MAVEN_DEFAULT_DIRECTIVES:
-    build: clean deploy -DskipTests -Drelease
+    build: clean deploy -DskipTests
     test: test
 
   MAVEN_PUBLIC_RELEASE_REPO_URL  : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-dev-orl/
