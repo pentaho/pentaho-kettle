@@ -49,7 +49,7 @@ jobGroups:
   # Build the 'pentaho-commons-gwt-modules first because the platform and the    #
   # scheduler-plugin depend on gwt changes.                                      #
   ################################################################################
-  3100:
+  700:
     - jobID           :  pentaho-commons-gwt-modules
       scmUrl          :  https://github.com/pentaho/pentaho-commons-gwt-modules.git
       scmBranch       :  scheduler-plugin
@@ -58,27 +58,89 @@ jobGroups:
   # For now build the entire pentaho-platform.  There are changes in extnsions   #
   # and scheduler modules that will be needed                                    #
   ################################################################################
+  1000:
+    - jobID           : platform-api
+      scmUrl          : https://github.com/pentaho/pentaho-platform.git
+      scmBranch       : scheduler-plugin
+      directives      : += -DskipDefault -P platform-api
+
+  2100:
+    - jobID           : platform-base
+      scmUrl          : https://github.com/pentaho/pentaho-platform.git
+      scmBranch       : scheduler-plugin
+      directives      : += -DskipDefault -P platform-base
+      parallelize     : true
+      archivable      : true
+
+  2600:
+    - jobID           : common-ui
+      scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-common-ui.git
+      scmBranch       : scheduler-plugin
+      versionProperty : pentaho-scheduler-plugin-ee.version
+
+  2700:
+    - jobID           : platform-user-console
+      scmUrl          : https://github.com/pentaho/pentaho-platform.git
+      scmBranch       : scheduler-plugin
+      directives      : += -DskipDefault -P platform-user-console
+      #parallelize     :  true
+
+  2900:
+    - jobID           : platform-reporting-plugin
+      scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-reporting.git
+      #parallelize     :  true
+
   3200:
-    - jobID           :  pentaho-platform
-      scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-      scmBranch       :  scheduler-plugin
+    - jobID           : platform-ee
+      scmUrl          : https://github.com/pentaho/pentaho-platform-ee.git
+      directives      : += -DskipDefault -P platform-ee
 
   ################################################################################
   # Added to resolve pipeline issues with -Drelease and obfusation and lincense  #
   # issues.  per Steve Maring                                                    #
   ################################################################################
   3300:
-    - jobID           :  pentaho-scheduler-plugin
-      scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin.git
-      scmBranch       :  scheduler-plugin
+    - jobID           : pentaho-scheduler-plugin
+      scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
+      scmBranch       : scheduler-plugin
+
+    - jobID           : geo-plugin
+      scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-geo.git
+      archivable      : true
+
+  3400:
+    - jobID           : analyzer-plugin
+      scmUrl          : https://github.com/pentaho/pentaho-analyzer.git
+      directives      : += -Dagilebi
+      archivable      : true
+
+  3600:
+    - jobID           : karaf-assembly
+      scmUrl          : https://github.com/pentaho/pentaho-karaf-assembly.git
+      testable        : false
+
+    - jobID           : dashboards-plugin
+      scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-dashboards.git
+      archivable      : true
+
+  3700:
+    - jobID           : pir-plugin
+      scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-interactive-reporting.git
+      archivable      : true
+      parallelize     : true
+
+  3800:
+    - jobID           : karaf-assembly-ee
+      scmUrl          : https://github.com/pentaho/pentaho-karaf-ee-assembly.git
+      testable        : false
 
   4400:
-    - jobID           :  platform-server-assembly
-      scmUrl          :  https://github.com/pentaho/pentaho-platform.git
-      scmBranch       :  scheduler-plugin
-      directives      :  += -DskipDefault -P platform-assemble
-      testable        :  false
-      archivable      :  true
+    - jobID           : platform-server-assembly
+      scmUrl          : https://github.com/pentaho/pentaho-platform.git
+      scmBranch       : scheduler-plugin
+      directives      : += -DskipDefault -P platform-assemble
+      testable        : false
+      archivable      : true
 
   ################################################################################
   # NOTE placed jobId 'pentaho-scheduler-plugin-ee' to be in built at the time   #
