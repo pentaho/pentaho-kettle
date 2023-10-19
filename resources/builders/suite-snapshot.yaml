@@ -383,6 +383,7 @@ jobGroups:
   3200:
      - jobID           :  platform-ee
        scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
+       scmBranch       :  scheduler-plugin
        directives      :  += -DskipDefault -P platform-ee
 
   3300:
