@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,6 +53,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -189,6 +191,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   private DataSource dataSource;
   private String ownerName;
+
+  private static final Lock lock = new ReentrantLock();
 
   static {
     initValueMetaPluginClasses();
@@ -2789,7 +2793,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     long startTime = System.currentTimeMillis();
 
     try {
-
+      lock.lock();
       int nrcols = rowInfo.size();
       Object[] data = RowDataUtil.allocateRowData( nrcols );
 
@@ -2807,6 +2811,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     } catch ( Exception ex ) {
       throw new KettleDatabaseException( "Couldn't get row from result set", ex );
     } finally {
+      lock.unlock();
       if ( log.isGatheringMetrics() ) {
         long time = System.currentTimeMillis() - startTime;
         log.snap( Metrics.METRIC_DATABASE_GET_ROW_SUM_TIME, databaseMeta.getName(), time );
