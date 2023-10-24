@@ -136,6 +136,7 @@ jobGroups:
 
      - jobID           :  platform-api
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
+       scmBranch       :  scheduler-plugin
        directives      :  += -DskipDefault -P platform-api
 
   1100:
@@ -234,6 +235,7 @@ jobGroups:
      - jobID           :  platform-base
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
        directives      :  += -DskipDefault -P platform-base
+       scmBranch       :  scheduler-plugin
        parallelize     :  true
        archivable      :  true
 
@@ -327,6 +329,7 @@ jobGroups:
      - jobID           :  platform-user-console
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
        directives      :  += -DskipDefault -P platform-user-console
+       scmBranch       :  scheduler-plugin
        #parallelize     :  true
 
      - jobID           :  big-data-plugin-highdeps
@@ -362,6 +365,11 @@ jobGroups:
      - jobID           :  platform-reporting-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-reporting.git
        #parallelize     :  true
+
+  2950:
+    - jobID           : pentaho-scheduler-plugin
+      scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
+      scmBranch       : scheduler-plugin
 
   3000:
      - jobID           :  big-data-hadoop-shims-ee
@@ -563,6 +571,7 @@ jobGroups:
      - jobID           :  platform-server-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-platform.git
        directives      :  += -DskipDefault -P platform-assemble
+       scmBranch       :  scheduler-plugin
        testable        :  false
        archivable      :  true
 
