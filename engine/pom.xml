@@ -73,7 +73,6 @@
     <js.version>1.7R3</js.version>
     <mail.version>1.6.1</mail.version>
     <mstor.version>0.9.13</mstor.version>
-    <snappy-java.version>1.1.0</snappy-java.version>
     <commons-cli.version>1.2</commons-cli.version>
     <log4jdbc.version>1.2</log4jdbc.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
