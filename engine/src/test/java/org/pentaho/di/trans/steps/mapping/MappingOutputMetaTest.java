@@ -21,14 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -41,7 +33,15 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
-public class MappingOutputMetaIT {
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+
+public class MappingOutputMetaTest {
 
   private Repository repository = mock( Repository.class );
   private IMetaStore metaStore = mock( IMetaStore.class );
@@ -58,11 +58,13 @@ public class MappingOutputMetaIT {
     rowMeta.addValueMeta( valueMeta1 );
     rowMeta.addValueMeta( valueMeta2 );
 
-    List<MappingValueRename> outputValueRenames = new ArrayList<MappingValueRename>();
+    List<MappingValueRename> outputValueRenames = new ArrayList<>();
     outputValueRenames.add( new MappingValueRename( "valueMeta2", "valueMeta1" ) );
     MappingOutputMeta meta = new MappingOutputMeta();
     meta.setOutputValueRenames( outputValueRenames );
     meta.getFields( rowMeta, null, info, nextStep, space, repository, metaStore );
+
+    assertNotNull( rowMeta.getValueMetaList() );
 
     //we must not add additional field
     assertEquals( 2, rowMeta.getValueMetaList().size() );
@@ -71,11 +73,10 @@ public class MappingOutputMetaIT {
     assertEquals( valueMeta1, rowMeta.getValueMeta( 0 ) );
 
     //the second value meta must be other than we want to rename since we already have value meta with such name
-    assertFalse( "valueMeta1".equals( rowMeta.getValueMeta( 1 ).getName() ) );
+    assertNotEquals( "valueMeta1", rowMeta.getValueMeta( 1 ).getName() );
 
-   //the second value meta must be other than we want to rename since we already have value meta with such name. 
+    //the second value meta must be other than we want to rename since we already have value meta with such name.
     //It must be renamed according the rules from the #RowMeta
-    assertTrue( "valueMeta1_1".equals( rowMeta.getValueMeta( 1 ).getName() ) );
+    assertEquals( "valueMeta1_1", rowMeta.getValueMeta( 1 ).getName() );
   }
-
 }
