@@ -33,7 +33,6 @@
     <jcifs.version>1.3.3</jcifs.version>
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
     <xmlunit.version>1.5</xmlunit.version>
-    <joda.version>2.10.2</joda.version>
     <encryption-support.version>10.1.0.0-SNAPSHOT</encryption-support.version>
   </properties>
 
