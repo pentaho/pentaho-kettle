@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.pentahoreporting;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,9 +31,10 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 
 import java.io.File;
-import java.util.Arrays;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -52,30 +52,6 @@ public class PentahoReportingOutputIT {
   @Before
   public void prepareCommon() throws Exception {
     transMeta = new TransMeta( "src/it/resources/org/pentaho/di/trans/steps/pentahoreporting/pdi-13434.ktr" );
-  }
-
-  private void runTransformation(PentahoReportingOutputMeta.ProcessorType processorType) throws Exception {
-    File tmp = File.createTempFile( "PentahoReportingOutputTest", "PentahoReportingOutputTest" );
-    tmp.deleteOnExit();
-
-    StepMeta outputStep = transMeta.findStep( "Data Grid" );
-    DataGridMeta metaGrid = (DataGridMeta) outputStep.getStepMetaInterface();
-    metaGrid.getDataLines().clear();
-    metaGrid.getDataLines()
-      .add( asList( "src/it/resources/org/pentaho/di/trans/steps/pentahoreporting/pdi-13434.prpt", tmp.getAbsolutePath() ) );
-
-    StepMeta reportingStep = transMeta.findStep( "Pentaho Reporting Output" );
-    PentahoReportingOutputMeta reportingMeta = (PentahoReportingOutputMeta) reportingStep.getStepMetaInterface();
-    reportingMeta.setOutputProcessorType( processorType );
-
-    Trans trans = new Trans( transMeta );
-    trans.prepareExecution( null );
-    trans.startThreads();
-    trans.waitUntilFinished();
-
-    Assert.assertEquals( 0, trans.getErrors() );
-    Assert.assertTrue( tmp.length() > 0 );
-    tmp.delete();
   }
 
   @Test
@@ -101,5 +77,30 @@ public class PentahoReportingOutputIT {
   @Test
   public void createReport_Rtf() throws Exception {
     runTransformation( PentahoReportingOutputMeta.ProcessorType.RTF );
+  }
+
+  private void runTransformation( PentahoReportingOutputMeta.ProcessorType processorType ) throws Exception {
+    File tmp = File.createTempFile( "PentahoReportingOutputTest", "PentahoReportingOutputTest" );
+    tmp.deleteOnExit();
+
+    StepMeta outputStep = transMeta.findStep( "Data Grid" );
+    DataGridMeta metaGrid = (DataGridMeta) outputStep.getStepMetaInterface();
+    metaGrid.getDataLines().clear();
+    metaGrid.getDataLines()
+      .add( asList( "src/it/resources/org/pentaho/di/trans/steps/pentahoreporting/pdi-13434.prpt",
+        tmp.getAbsolutePath() ) );
+
+    StepMeta reportingStep = transMeta.findStep( "Pentaho Reporting Output" );
+    PentahoReportingOutputMeta reportingMeta = (PentahoReportingOutputMeta) reportingStep.getStepMetaInterface();
+    reportingMeta.setOutputProcessorType( processorType );
+
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( null );
+    trans.startThreads();
+    trans.waitUntilFinished();
+
+    assertEquals( 0, trans.getErrors() );
+    assertTrue( tmp.length() > 0 );
+    tmp.delete();
   }
 }

@@ -48,9 +48,9 @@ import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 public class PDI7502IT {
 
   private static File reportFile;
-  private static String INPUT_FIELD_NAME = "PRPT_Report_File";
-  private static String OUTPUT_FIELD_NAME = "Generated Report File";
-  private static String REPORTING_STEP_NAME = "PRPT Output Step";
+  private static final String INPUT_FIELD_NAME = "PRPT_Report_File";
+  private static final String OUTPUT_FIELD_NAME = "Generated Report File";
+  private static final String REPORTING_STEP_NAME = "PRPT Output Step";
 
   private File outputFile;
   private List<RowMetaAndData> inputRows;
