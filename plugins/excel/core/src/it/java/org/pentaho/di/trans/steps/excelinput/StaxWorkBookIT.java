@@ -21,15 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.excelinput;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.util.Date;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,15 +30,26 @@ import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 public class StaxWorkBookIT {
 
-  private String sample = "src/it/resources/sample-file.xlsx";
-  private String sampleProtected = "src/it/resources/sample-file-protected.xlsx";
-  private String password = "password";
+  private static final String SAMPLE_FILE = "src/it/resources/sample-file.xlsx";
+  private static final String SAMPLE_FILE_PROTECTED = "src/it/resources/sample-file-protected.xlsx";
+  private static final String SAMPLE_FILE_PROTECTED_PASSWORD = "password";
 
   @Test
   public void testReadData() throws KettleException {
-    readData( sample, null );
+    readData( SAMPLE_FILE, null );
   }
 
   // TODO Get a legit test file
@@ -56,15 +58,15 @@ public class StaxWorkBookIT {
   @Ignore
   @Test
   public void testReadDataProtected() throws KettleException {
-    readData( sampleProtected, password );
+    readData( SAMPLE_FILE_PROTECTED, SAMPLE_FILE_PROTECTED_PASSWORD );
   }
 
 
   @Test
   public void testFileDoesNotChange() throws KettleException, IOException {
-    File fileBeforeRead = new File( sample );
-    readData( sample );
-    File fileAfterRead = new File( sample );
+    File fileBeforeRead = new File( SAMPLE_FILE );
+    readData( SAMPLE_FILE );
+    File fileAfterRead = new File( SAMPLE_FILE );
     assertTrue( FileUtils.contentEquals(fileBeforeRead, fileAfterRead ) );
   }
 
@@ -73,8 +75,8 @@ public class StaxWorkBookIT {
     FileLock lock = null;
     RandomAccessFile randomAccessFile = null;
     try {
-      readData( sample );
-      File fileAfterRead = new File( sample );
+      readData( SAMPLE_FILE );
+      File fileAfterRead = new File( SAMPLE_FILE );
       randomAccessFile = new RandomAccessFile( fileAfterRead, "rw" );
       FileChannel fileChannel = randomAccessFile.getChannel();
       lock = fileChannel.tryLock();
@@ -92,7 +94,7 @@ public class StaxWorkBookIT {
 
   @Test
   public void testEmptySheet() throws Exception {
-    KWorkbook workbook = getWorkbook( sample, null );
+    KWorkbook workbook = getWorkbook( SAMPLE_FILE, null );
     int numberOfSheets = workbook.getNumberOfSheets();
     assertEquals( 3, numberOfSheets );
     // last two sheets are empty, check if no exception opening
@@ -106,7 +108,7 @@ public class StaxWorkBookIT {
 
   @Test
   public void testReadSameRow() throws Exception {
-    KWorkbook workbook = getWorkbook( sample, null );
+    KWorkbook workbook = getWorkbook( SAMPLE_FILE, null );
     KSheet sheet1 = workbook.getSheet( 0 );
     KCell[] row = sheet1.getRow( 3 );
     assertEquals( "Two", row[1].getValue() );
@@ -116,7 +118,7 @@ public class StaxWorkBookIT {
 
   @Test
   public void testReadRowRA() throws Exception {
-    KWorkbook workbook = getWorkbook( sample, null );
+    KWorkbook workbook = getWorkbook( SAMPLE_FILE, null );
     KSheet sheet1 = workbook.getSheet( 0 );
     KCell[] row = sheet1.getRow( 4 );
     assertEquals( "Three", row[1].getValue() );
@@ -127,7 +129,7 @@ public class StaxWorkBookIT {
 
   @Test
   public void testReadEmptyRow() throws Exception {
-    KWorkbook workbook = getWorkbook( sample, null );
+    KWorkbook workbook = getWorkbook( SAMPLE_FILE, null );
     KSheet sheet1 = workbook.getSheet( 0 );
     KCell[] row = sheet1.getRow( 0 );
     assertEquals( 0, row.length );
@@ -135,7 +137,7 @@ public class StaxWorkBookIT {
 
   @Test
   public void testReadCells() throws Exception {
-    KWorkbook workbook = getWorkbook( sample, null );
+    KWorkbook workbook = getWorkbook( SAMPLE_FILE, null );
     KSheet sheet = workbook.getSheet( 0 );
 
     KCell cell = sheet.getCell( 1, 2 );
@@ -152,7 +154,7 @@ public class StaxWorkBookIT {
   }
 
   protected KWorkbook getWorkbook( String file, String encoding ) throws KettleException {
-    return WorkbookFactory.getWorkbook( SpreadSheetType.SAX_POI, file, encoding, null );
+    return getWorkbook( file, encoding, null );
   }
 
   protected KWorkbook getWorkbook( String file, String encoding, String password ) throws KettleException {
@@ -217,5 +219,4 @@ public class StaxWorkBookIT {
       // OK!
     }
   }
-
 }

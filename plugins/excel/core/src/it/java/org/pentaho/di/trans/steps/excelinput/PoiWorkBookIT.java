@@ -22,7 +22,15 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
-import static org.junit.Assert.*;
+import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.spreadsheet.KCell;
+import org.pentaho.di.core.spreadsheet.KCellType;
+import org.pentaho.di.core.spreadsheet.KSheet;
+import org.pentaho.di.core.spreadsheet.KWorkbook;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,18 +39,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.spreadsheet.KCell;
-import org.pentaho.di.core.spreadsheet.KCellType;
-import org.pentaho.di.core.spreadsheet.KSheet;
-import org.pentaho.di.core.spreadsheet.KWorkbook;
-import org.apache.commons.io.FileUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PoiWorkBookIT {
 
@@ -79,7 +79,8 @@ public class PoiWorkBookIT {
       actualException = e;
     }
     assertNotNull( actualException );
-    assertEquals( "\nPassword incorrect\n", actualException.getMessage() );
+    assertNotNull( actualException.getMessage() );
+    assertEquals( "Password incorrect", actualException.getMessage().trim() );
   }
 
   @Test
