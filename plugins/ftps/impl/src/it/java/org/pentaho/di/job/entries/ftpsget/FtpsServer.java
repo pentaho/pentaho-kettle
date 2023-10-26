@@ -22,9 +22,9 @@
 
 package org.pentaho.di.job.entries.ftpsget;
 
+import com.google.common.io.Files;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
-import org.apache.ftpserver.ftplet.Authority;
 import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.ssl.SslConfigurationFactory;
@@ -42,40 +42,52 @@ public class FtpsServer {
 
   public static final String SERVER_BASE_DIR = "src/it/resources/org/pentaho/di/job/entries/ftpsget";
   public static final String SERVER_KEYSTORE = SERVER_BASE_DIR + "/ftpserver.jks";
-  public static final String SERVER_USERS = SERVER_BASE_DIR + "/users.properties";
+  public static final String SERVER_KEYSTORE_PASSWORD = "password";
   public static final String USER_HOME_DIR = SERVER_BASE_DIR + "/dir";
   public static final String SAMPLE_FILE = "file.txt";
 
-  public static final String ADMIN = "admin";
-  public static final String PASSWORD = "password";
   public static final int DEFAULT_PORT = 8009;
 
 
-  public static FtpsServer createDefaultServer() throws Exception {
-    return new FtpsServer( DEFAULT_PORT, ADMIN, PASSWORD, true );
-  }
+  /**
+   * Creates an FTP server on the given port with a user with the given name, password and home directory.
+   *
+   * @param username    the user's name
+   * @param password    the password for the user
+   * @param userHomeDir the user home directory
+   * @param implicitSsl if it's to use SSL
+   * @return an FTP server with the given configuration
+   * @throws Exception
+   */
+  public static FtpsServer createFTPServer( int port, String username, String password, File userHomeDir,
+                                            boolean implicitSsl ) throws Exception {
+    if ( userHomeDir.exists() && userHomeDir.isDirectory() ) {
+      Files.copy( new File( USER_HOME_DIR + "/" + SAMPLE_FILE ),
+        new File( userHomeDir.getAbsolutePath() + "/" + SAMPLE_FILE ) );
+    }
 
-  public static FtpsServer createFtpServer() throws Exception {
-    return new FtpsServer( DEFAULT_PORT, ADMIN, PASSWORD, false );
+    return new FtpsServer( port, username, password, userHomeDir.getAbsolutePath(), implicitSsl );
   }
 
   private final FtpServer server;
 
-  public FtpsServer( int port, String username, String password, boolean implicitSsl ) throws Exception {
-    this.server = createServer( port, username, password, implicitSsl );
+  public FtpsServer( int port, String username, String password, String userHomeDir, boolean implicitSsl )
+    throws Exception {
+    this.server = createServer( port, username, password, userHomeDir, implicitSsl );
   }
 
   /*
    * Adopted from https://mina.apache.org/ftpserver-project/embedding_ftpserver.html
    */
-  private FtpServer createServer( int port, String username, String password, boolean implicitSsl ) throws Exception {
+  private FtpServer createServer( int port, String username, String password, String userHomeDir, boolean implicitSsl )
+    throws Exception {
     ListenerFactory factory = new ListenerFactory();
     factory.setPort( port );
 
     if ( implicitSsl ) {
       SslConfigurationFactory ssl = new SslConfigurationFactory();
       ssl.setKeystoreFile( new File( SERVER_KEYSTORE ) );
-      ssl.setKeystorePassword( PASSWORD );
+      ssl.setKeystorePassword( SERVER_KEYSTORE_PASSWORD );
       // set the SSL configuration for the listener
       factory.setSslConfiguration( ssl.createSslConfiguration() );
       factory.setImplicitSsl( true );
@@ -87,15 +99,21 @@ public class FtpsServer {
 
     PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
 
-    userManagerFactory.setFile( new File( SERVER_USERS ) );
+    // As this is to be used in testing and the user file is generated/updated... there's no need to reuse it.
+    // Let's use a temp file
+    File usersFile = File.createTempFile( getClass().getName() + "Users", ".properties" );
+    // And set it to be deleted on exit...
+    usersFile.deleteOnExit();
+
+    userManagerFactory.setFile( usersFile );
     UserManager userManager = userManagerFactory.createUserManager();
     if ( !userManager.doesExist( username ) ) {
       BaseUser user = new BaseUser();
       user.setName( username );
       user.setPassword( password );
       user.setEnabled( true );
-      user.setHomeDirectory( USER_HOME_DIR );
-      user.setAuthorities( Collections.<Authority>singletonList( new WritePermission() ) );
+      user.setHomeDirectory( userHomeDir );
+      user.setAuthorities( Collections.singletonList( new WritePermission() ) );
       userManager.save( user );
     }
 
@@ -107,7 +125,7 @@ public class FtpsServer {
     server.start();
   }
 
-  public void stop() throws Exception {
+  public void stop() {
     if ( server != null ) {
       server.stop();
     }

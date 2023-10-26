@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>ftps-plugin-ui</artifactId>
-  <name>PDI  FTPS Plugins UI</name>
+  <name>PDI FTPS Plugins UI</name>
 
   <dependencies>
     <dependency>

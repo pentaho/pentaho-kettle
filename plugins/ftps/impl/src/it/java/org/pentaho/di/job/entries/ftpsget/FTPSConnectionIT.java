@@ -27,8 +27,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.variables.Variables;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -36,7 +39,6 @@ import java.io.PrintWriter;
 import static org.apache.commons.io.FileUtils.contentEquals;
 import static org.junit.Assert.assertTrue;
 import static org.pentaho.di.job.entries.ftpsget.FTPSConnection.CONNECTION_TYPE_FTP_IMPLICIT_SSL;
-import static org.pentaho.di.job.entries.ftpsget.FtpsServer.*;
 
 /**
  * @author Andrey Khayrutdinov
@@ -45,11 +47,19 @@ public class FTPSConnectionIT {
 
   private static FtpsServer server;
 
+  private static final String FTP_USER = "FTP_USER";
+  private static final String FTP_USER_PASSWORD = "FTP_USER_PASSWORD";
+
+  @ClassRule
+  public static TemporaryFolder ftpFolder = new TemporaryFolder();
+
+  private FTPSConnection connection;
+
   @BeforeClass
   public static void createServer() throws Exception {
     KettleEnvironment.init();
-
-    server = FtpsServer.createDefaultServer();
+    server =
+      FtpsServer.createFTPServer( FtpsServer.DEFAULT_PORT, FTP_USER, FTP_USER_PASSWORD, ftpFolder.getRoot(), true );
     server.start();
   }
 
@@ -61,17 +71,15 @@ public class FTPSConnectionIT {
     }
   }
 
-
-  private FTPSConnection connection;
-
   @Before
   public void createConnection() throws Exception {
-    connection = new FTPSConnection( CONNECTION_TYPE_FTP_IMPLICIT_SSL, "localhost", DEFAULT_PORT, ADMIN, PASSWORD );
+    connection = new FTPSConnection( CONNECTION_TYPE_FTP_IMPLICIT_SSL, "localhost", FtpsServer.DEFAULT_PORT, FTP_USER,
+      FTP_USER_PASSWORD, new Variables() );
     connection.connect();
   }
 
   @After
-  public void closeConnection() throws Exception {
+  public void closeConnection() {
     if ( connection != null ) {
       connection.disconnect();
       connection = null;
@@ -82,11 +90,11 @@ public class FTPSConnectionIT {
   @Test
   public void download() throws Exception {
     File tmp = File.createTempFile( "FTPSConnectionTest", "download" );
-
     tmp.deleteOnExit();
+
     try {
-      connection.downloadFile( new FTPFile( "/", SAMPLE_FILE, false ), tmp.getAbsolutePath() );
-      assertTrue( contentEquals( new File( FtpsServer.USER_HOME_DIR + "/" + SAMPLE_FILE ), tmp ) );
+      connection.downloadFile( new FTPFile( "/", FtpsServer.SAMPLE_FILE, false ), tmp.getAbsolutePath() );
+      assertTrue( contentEquals( new File( FtpsServer.USER_HOME_DIR + "/" + FtpsServer.SAMPLE_FILE ), tmp ) );
     } finally {
       tmp.delete();
     }
@@ -95,19 +103,17 @@ public class FTPSConnectionIT {
   @Test
   public void upload() throws Exception {
     File tmp = File.createTempFile( "FTPSConnectionTest", "download" );
-    PrintWriter pw = new PrintWriter( tmp );
-    try {
+    tmp.deleteOnExit();
+
+    try ( PrintWriter pw = new PrintWriter( tmp ) ) {
       pw.print( "test" );
       pw.flush();
-    } finally {
-      pw.close();
     }
 
-    tmp.deleteOnExit();
     try {
       connection.uploadFile( tmp.getAbsolutePath(), "uploaded.txt" );
 
-      File uploaded = new File( FtpsServer.USER_HOME_DIR + "/uploaded.txt" );
+      File uploaded = new File( ftpFolder.getRoot().getAbsolutePath() + "/uploaded.txt" );
       assertTrue( uploaded.exists() );
       assertTrue( contentEquals( uploaded, tmp ) );
 

@@ -25,13 +25,19 @@ package org.pentaho.di.job.entries.ftpsget;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
+
+import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -44,17 +50,22 @@ import static org.mockito.Mockito.when;
 public class JobEntryFTPSGetIT {
 
   private static FtpsServer server;
-  private static String ramDir;
+
+  private static final String FTP_USER = "FTP_USER";
+  private static final String FTP_USER_PASSWORD = "FTP_USER_PASSWORD";
+
+  @ClassRule
+  public static TemporaryFolder ftpFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder outputFolder = new TemporaryFolder();
 
   @BeforeClass
   public static void createServer() throws Exception {
     KettleEnvironment.init();
 
-    server = FtpsServer.createDefaultServer();
+    server =
+      FtpsServer.createFTPServer( FtpsServer.DEFAULT_PORT, FTP_USER, FTP_USER_PASSWORD, ftpFolder.getRoot(), true );
     server.start();
-
-    ramDir = "ram://" + JobEntryFTPSGetIT.class.getSimpleName();
-    KettleVFS.getFileObject( ramDir ).createFolder();
   }
 
   @AfterClass
@@ -63,18 +74,15 @@ public class JobEntryFTPSGetIT {
       server.stop();
       server = null;
     }
-
-    KettleVFS.getFileObject( ramDir ).delete();
   }
-
 
   @Test
   public void downloadFile_WhenDestinationIsSetViaVariable() throws Exception {
     final String myVar = "my-var";
-    final String expectedDownloadedFilePath = ramDir + "/" + FtpsServer.SAMPLE_FILE;
+    final String expectedDownloadedFilePath = outputFolder.getRoot().getAbsolutePath() + "/" + FtpsServer.SAMPLE_FILE;
 
     JobEntryFTPSGet job = createCommonJob();
-    job.setVariable( myVar, ramDir );
+    job.setVariable( myVar, outputFolder.getRoot().getAbsolutePath() );
     job.setTargetDirectory( String.format( "${%s}", myVar ) );
 
     FileObject downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
@@ -90,20 +98,21 @@ public class JobEntryFTPSGetIT {
 
   @Test
   public void downloadFile_WhenDestinationIsSetDirectly() throws Exception {
-    JobEntryFTPSGet job = createCommonJob();
-    job.setTargetDirectory( ramDir );
+    final String expectedDownloadedFilePath = outputFolder.getRoot().getAbsolutePath() + "/" + FtpsServer.SAMPLE_FILE;
 
-    FileObject downloaded = KettleVFS.getFileObject( ramDir + "/" + FtpsServer.SAMPLE_FILE );
+    JobEntryFTPSGet job = createCommonJob();
+    job.setTargetDirectory( outputFolder.getRoot().getAbsolutePath() );
+
+    FileObject downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
     assertFalse( downloaded.exists() );
-    try{
+    try {
       job.execute( new Result(), 1 );
-      downloaded = KettleVFS.getFileObject( ramDir + "/" + FtpsServer.SAMPLE_FILE );
+      downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
       assertTrue( downloaded.exists() );
     } finally {
       downloaded.delete();
     }
   }
-
 
   private static JobEntryFTPSGet createCommonJob() {
     JobEntryFTPSGet job = new JobEntryFTPSGet();
@@ -113,16 +122,21 @@ public class JobEntryFTPSGetIT {
   }
 
   private static void setMockParent( JobEntryBase job ) {
-    Job parent = mock( Job.class );
-    when( parent.isStopped() ).thenReturn( false );
-    job.setParentJob( parent );
+    Job parentJob = mock( Job.class );
+    when( parentJob.isStopped() ).thenReturn( false );
+    when( parentJob.getLogLevel() ).thenReturn( LogLevel.BASIC );
+    when( parentJob.getContainerObjectId() ).thenReturn( UUID.randomUUID().toString() );
+    job.setParentJob( parentJob );
+    JobMeta parentJobMeta = mock( JobMeta.class );
+    when( parentJobMeta.getNamedClusterEmbedManager() ).thenReturn( null );
+    job.setParentJobMeta( parentJobMeta );
     job.setLogLevel( LogLevel.NOTHING );
   }
 
   private static void setCommonServerProperties( JobEntryFTPSGet job ) {
     job.setConnectionType( FTPSConnection.CONNECTION_TYPE_FTP_IMPLICIT_SSL );
-    job.setUserName( FtpsServer.ADMIN );
-    job.setPassword( FtpsServer.PASSWORD );
+    job.setUserName( FTP_USER );
+    job.setPassword( FTP_USER_PASSWORD );
     job.setServerName( "localhost" );
     job.setPort( Integer.toString( FtpsServer.DEFAULT_PORT ) );
     job.setFTPSDirectory( "/" );
