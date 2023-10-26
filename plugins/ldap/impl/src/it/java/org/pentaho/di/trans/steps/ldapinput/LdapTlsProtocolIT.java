@@ -22,29 +22,28 @@
 
 package org.pentaho.di.trans.steps.ldapinput;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Hashtable;
-
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.StartTlsRequest;
-import javax.naming.ldap.StartTlsResponse;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.steps.ldapinput.store.CustomSocketFactory;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.StartTlsRequest;
+import javax.naming.ldap.StartTlsResponse;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Hashtable;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class LdapTlsProtocolIT {
   private LogChannelInterface mockLogChannelInterface;
@@ -98,8 +97,8 @@ public class LdapTlsProtocolIT {
     when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
     when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
-    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( hostConcrete ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( portConcrete ) ).thenReturn( portConcrete );
 
     TestableLdapTlsProtocol testableLdapProtocol =
       new TestableLdapTlsProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
@@ -120,8 +119,8 @@ public class LdapTlsProtocolIT {
     when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
     when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
-    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( hostConcrete ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( portConcrete ) ).thenReturn( portConcrete );
 
     TestableLdapTlsProtocol testableLdapProtocol =
       new TestableLdapTlsProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
@@ -141,14 +140,14 @@ public class LdapTlsProtocolIT {
     when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
     when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
-    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( hostConcrete ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( portConcrete ) ).thenReturn( portConcrete );
 
     TestableLdapTlsProtocol testableLdapProtocol =
       new TestableLdapTlsProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
-    assertEquals( null, testableLdapProtocol.contextEnv.get( Context.SECURITY_PROTOCOL ) );
+    assertNull( testableLdapProtocol.contextEnv.get( Context.SECURITY_PROTOCOL ) );
   }
 
   @Test
@@ -160,8 +159,8 @@ public class LdapTlsProtocolIT {
     when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
     when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
-    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( hostConcrete ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( portConcrete ) ).thenReturn( portConcrete );
 
     TestableLdapTlsProtocol testableLdapProtocol =
       new TestableLdapTlsProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
@@ -179,8 +178,8 @@ public class LdapTlsProtocolIT {
     when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
     when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
-    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( hostConcrete ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( portConcrete ) ).thenReturn( portConcrete );
 
     TestableLdapTlsProtocol testableLdapProtocol =
       new TestableLdapTlsProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
