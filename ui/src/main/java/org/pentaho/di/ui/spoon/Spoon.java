@@ -4764,7 +4764,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     fileDialogOperation.setFilename( meta.getName() );
     fileDialogOperation.setProviderFilter( providerFilter );
     if ( !export && rep != null && meta.getRepositoryDirectory() != null ) {
-      fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
+      setFileOperatioPathForRepositoryFile( fileDialogOperation, meta );
     } else {
       setFileOperatioPathForNonRepositoryFile(fileDialogOperation, meta, export );
     }
@@ -4799,6 +4799,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     return saved;
+  }
+
+  private void setFileOperatioPathForRepositoryFile( FileDialogOperation fileDialogOperation, EngineMetaInterface meta ) {
+
+    List<LastUsedFile> lastUsedFileList = getLastUsedRepoFiles();
+
+    if ( !Utils.isEmpty( lastUsedFileList ) ) {
+      fileDialogOperation.setPath( lastUsedFileList.get( 0 ).getDirectory() );
+    } else {
+      fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
+    }
+  }
+
+  private List<LastUsedFile> getLastUsedRepoFiles() {
+    String repoAndUser = getRepoAndUser();
+    return props.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
+  }
+
+  private String getRepoAndUser() {
+    String username = getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
+    return getRepository().getName() + ":" + username;
   }
 
   private boolean performRepoSave( EngineMetaInterface meta, String fileType, FileDialogOperation fileDialogOperation ) throws KettleException {
@@ -5484,7 +5505,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setFileType( fileType );
           fileDialogOperation.setFilter( deriveFileFilterFromFileType( fileType ) );
-          fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
+          setFileOperatioPathForRepositoryFile( fileDialogOperation, meta );
           //Set the filename so it can be used as the default filename in the save dialog
           String fileName = ( meta.getFilename() == null || meta.getFilename().length() == 0 )
                   ? meta.getName() : meta.getFilename();
@@ -8927,7 +8948,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     this.rep = rep;
     if ( rep != null ) {
       this.repositoryName = rep.getName();
-      lastFileOpened = null;
+      List<LastUsedFile> lastUsedFiles = getLastUsedRepoFiles();
+      if ( !Utils.isEmpty( lastUsedFiles ) ) {
+        String path = lastUsedFiles.get( 0 ).getDirectory() + "/" + lastUsedFiles.get( 0 ).getFilename();
+        lastFileOpened = path;
+        lastFileOpenedProvider = ProviderFilterType.REPOSITORY.toString();
+      }
     } else {
       this.repositoryName = null;
       lastFileOpened = props.getLastUsedLocalFile();
