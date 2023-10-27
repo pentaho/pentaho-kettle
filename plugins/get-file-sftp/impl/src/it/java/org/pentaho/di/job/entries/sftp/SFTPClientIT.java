@@ -22,43 +22,40 @@
 
 package org.pentaho.di.job.entries.sftp;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.InetAddress;
-
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.Session;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.vfs.KettleVFS;
 
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.Session;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.InetAddress;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class SFTPClientIT {
 
-  // @ClassRule
-  public static TemporaryFolder folder;
+  @ClassRule
+  public static TemporaryFolder folder = new TemporaryFolder();
 
   private static SftpServer server;
 
   @BeforeClass
   public static void startServer() throws Exception {
     KettleEnvironment.init();
-
-    folder = new TemporaryFolder();
-    folder.create();
 
     server = SftpServer.createDefaultServer( folder );
     server.start();
@@ -68,9 +65,6 @@ public class SFTPClientIT {
   public static void stopServer() throws Exception {
     server.stop();
     server = null;
-
-    folder.delete();
-    folder = null;
   }
 
 
@@ -102,7 +96,6 @@ public class SFTPClientIT {
     session = null;
   }
 
-
   @Test
   public void putFile() throws Exception {
     final byte[] data = "putFile()".getBytes();
@@ -111,11 +104,8 @@ public class SFTPClientIT {
 
     ByteArrayOutputStream uploaded = new ByteArrayOutputStream();
     channel.connect();
-    InputStream inputStream = channel.get( "uploaded.txt" );
-    try {
+    try ( InputStream inputStream = channel.get( "uploaded.txt" ) ) {
       IOUtils.copy( inputStream, uploaded );
-    } finally {
-      inputStream.close();
     }
 
     assertTrue(
@@ -135,5 +125,4 @@ public class SFTPClientIT {
     assertTrue( downloaded.exists() );
     assertTrue( IOUtils.contentEquals( downloaded.getContent().getInputStream(), new ByteArrayInputStream( data ) ) );
   }
-
 }

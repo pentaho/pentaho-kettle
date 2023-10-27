@@ -13,6 +13,10 @@
   <artifactId>put-a-file-with-ftp-plugins-impl</artifactId>
   <name>PDI Put a File With FTP Plugins Impl</name>
 
+  <properties>
+    <ftpserver-core.version>1.0.6</ftpserver-core.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -37,12 +41,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>1.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
       <classifier>tests</classifier>
@@ -52,6 +50,24 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ftpserver</groupId>
+      <artifactId>ftpserver-core</artifactId>
+      <version>${ftpserver-core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>ftps-plugin-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

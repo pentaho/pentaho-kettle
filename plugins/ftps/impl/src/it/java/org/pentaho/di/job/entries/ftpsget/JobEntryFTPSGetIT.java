@@ -23,7 +23,9 @@
 package org.pentaho.di.job.entries.ftpsget;
 
 import org.apache.commons.vfs2.FileObject;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -59,6 +61,8 @@ public class JobEntryFTPSGetIT {
   @Rule
   public TemporaryFolder outputFolder = new TemporaryFolder();
 
+  private JobEntryFTPSGet jobEntry;
+
   @BeforeClass
   public static void createServer() throws Exception {
     KettleEnvironment.init();
@@ -76,19 +80,25 @@ public class JobEntryFTPSGetIT {
     }
   }
 
+  @Before
+  public void createJobEntry() {
+    jobEntry = new JobEntryFTPSGet();
+    setMockParent( jobEntry );
+    setServerProperties( jobEntry );
+  }
+
   @Test
   public void downloadFile_WhenDestinationIsSetViaVariable() throws Exception {
     final String myVar = "my-var";
     final String expectedDownloadedFilePath = outputFolder.getRoot().getAbsolutePath() + "/" + FtpsServer.SAMPLE_FILE;
 
-    JobEntryFTPSGet job = createCommonJob();
-    job.setVariable( myVar, outputFolder.getRoot().getAbsolutePath() );
-    job.setTargetDirectory( String.format( "${%s}", myVar ) );
+    jobEntry.setVariable( myVar, outputFolder.getRoot().getAbsolutePath() );
+    jobEntry.setTargetDirectory( String.format( "${%s}", myVar ) );
 
     FileObject downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
     assertFalse( downloaded.exists() );
     try {
-      job.execute( new Result(), 1 );
+      jobEntry.execute( new Result(), 1 );
       downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
       assertTrue( downloaded.exists() );
     } finally {
@@ -100,25 +110,17 @@ public class JobEntryFTPSGetIT {
   public void downloadFile_WhenDestinationIsSetDirectly() throws Exception {
     final String expectedDownloadedFilePath = outputFolder.getRoot().getAbsolutePath() + "/" + FtpsServer.SAMPLE_FILE;
 
-    JobEntryFTPSGet job = createCommonJob();
-    job.setTargetDirectory( outputFolder.getRoot().getAbsolutePath() );
+    jobEntry.setTargetDirectory( outputFolder.getRoot().getAbsolutePath() );
 
     FileObject downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
     assertFalse( downloaded.exists() );
     try {
-      job.execute( new Result(), 1 );
+      jobEntry.execute( new Result(), 1 );
       downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
       assertTrue( downloaded.exists() );
     } finally {
       downloaded.delete();
     }
-  }
-
-  private static JobEntryFTPSGet createCommonJob() {
-    JobEntryFTPSGet job = new JobEntryFTPSGet();
-    setMockParent( job );
-    setCommonServerProperties( job );
-    return job;
   }
 
   private static void setMockParent( JobEntryBase job ) {
@@ -133,7 +135,7 @@ public class JobEntryFTPSGetIT {
     job.setLogLevel( LogLevel.NOTHING );
   }
 
-  private static void setCommonServerProperties( JobEntryFTPSGet job ) {
+  private static void setServerProperties( JobEntryFTPSGet job ) {
     job.setConnectionType( FTPSConnection.CONNECTION_TYPE_FTP_IMPLICIT_SSL );
     job.setUserName( FTP_USER );
     job.setPassword( FTP_USER_PASSWORD );

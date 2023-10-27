@@ -22,15 +22,12 @@
 
 package org.pentaho.di.job.entries.sftp;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.Session;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.core.KettleEnvironment;
@@ -40,24 +37,25 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.utils.TestUtils;
 
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.Session;
+import java.io.ByteArrayInputStream;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class JobEntrySFTPIT {
 
-  private static TemporaryFolder folder;
+  @ClassRule
+  public static TemporaryFolder folder = new TemporaryFolder();
 
   private static SftpServer server;
 
   @BeforeClass
   public static void prepareEnv() throws Exception {
     KettleEnvironment.init();
-
-    folder = new TemporaryFolder();
-    folder.create();
 
     server = SftpServer.createDefaultServer( folder );
     server.start();
@@ -67,9 +65,6 @@ public class JobEntrySFTPIT {
   public static void stopServer() throws Exception {
     server.stop();
     server = null;
-
-    folder.delete();
-    folder = null;
   }
 
   @Test

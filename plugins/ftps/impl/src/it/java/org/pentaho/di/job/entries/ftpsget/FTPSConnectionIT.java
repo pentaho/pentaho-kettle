@@ -45,13 +45,13 @@ import static org.pentaho.di.job.entries.ftpsget.FTPSConnection.CONNECTION_TYPE_
  */
 public class FTPSConnectionIT {
 
-  private static FtpsServer server;
 
   private static final String FTP_USER = "FTP_USER";
   private static final String FTP_USER_PASSWORD = "FTP_USER_PASSWORD";
 
   @ClassRule
   public static TemporaryFolder ftpFolder = new TemporaryFolder();
+  private static FtpsServer server;
 
   private FTPSConnection connection;
 
@@ -85,7 +85,6 @@ public class FTPSConnectionIT {
       connection = null;
     }
   }
-
 
   @Test
   public void download() throws Exception {
