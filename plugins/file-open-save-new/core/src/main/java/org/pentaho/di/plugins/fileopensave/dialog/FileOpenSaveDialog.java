@@ -93,6 +93,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus.OverwriteMode;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.api.providers.Entity;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
@@ -1598,14 +1599,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           switch( pasteAction ) {
             case PASTE_ACTION_REPLACE:
               copyFile( file, destFolder, newFilePath,
-                new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.OVERWRITE ) );
+                new OverwriteStatus( getShell(), OverwriteMode.OVERWRITE ) );
               break;
             case PASTE_ACTION_KEEP_BOTH:
               if ( StringUtils.isNotEmpty( newFilePath ) ) {
                 result = FILE_CONTROLLER.getNewName( destFolder, newFilePath );
                 if ( result.getStatus() == Result.Status.SUCCESS ) {
                   FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(),
-                    new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.RENAME ) );
+                    new OverwriteStatus( getShell(), OverwriteMode.RENAME ) );
                 }
               }
               break;
@@ -1621,7 +1622,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
       } else {
         result = copyFile( file, destFolder, newFilePath,
-          new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.CANCEL ) );
+          new OverwriteStatus( getShell(), OverwriteMode.CANCEL ) );
       }
 
       if ( isCutActionSelected && deleteCutFileFlag ) {
@@ -1659,11 +1660,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     RenameDialog renameDialog = new RenameDialog( getShell() );
     String renameValue = renameDialog.open( file.getName() );
     if ( renameValue != null ) {
-      String filename = file.getName();
-      String fileExtention =
-        filename.lastIndexOf( "." ) != -1 ? filename.substring( filename.lastIndexOf( "." ), filename.length() ) : null;
-      FILE_CONTROLLER.rename( file, file.getParent() + java.io.File.separator + renameValue,
-        new OverwriteStatus( null, OverwriteStatus.OverwriteMode.OVERWRITE ) );
+      String newPath = file.getParent() + java.io.File.separator + renameValue;
+      // Prevent rename folder to the same name
+      if ( !file.getPath().equals( newPath ) ) {
+        FILE_CONTROLLER.rename( file, newPath, new OverwriteStatus( null, OverwriteMode.OVERWRITE ) );
+      }
     }
   }
 
