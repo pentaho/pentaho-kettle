@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
@@ -63,7 +64,8 @@ public class MissingPluginTransIT {
       trans.prepareExecution( null );
       fail();
     } catch ( KettleException e ) {
-      verify( log, times( 1 ) ).logError( "Step [JSON Input.0] failed to initialize!" );
+      verify( log, times( 1 ) ).logError(
+        BaseMessages.getString( Trans.class, "Trans.Log.StepFailedToInit", "JSON Input.0" ) );
     }
   }
 }

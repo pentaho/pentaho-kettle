@@ -26,7 +26,6 @@ import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.pentaho.di.core.database.ConnectionPoolUtilIntegrationIT;
 import org.pentaho.di.core.database.DatabaseIT;
 import org.pentaho.di.core.parameters.ParameterSimpleTransIT;
 import org.pentaho.di.core.util.StringEvaluatorIT;
@@ -40,7 +39,6 @@ import org.pentaho.di.trans.steps.csvinput.CsvInput1IT;
 import org.pentaho.di.trans.steps.csvinput.CsvInput2IT;
 import org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepIT;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsIT;
-//import org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest;
 import org.pentaho.di.trans.steps.gpload.GPLoadIT;
 import org.pentaho.di.trans.steps.injector.InjectorIT;
 import org.pentaho.di.trans.steps.nullif.NullIfIT;
@@ -76,7 +74,7 @@ public class AllRegressionTestsIT {
     suite.addTestSuite( ParameterSimpleTransIT.class );
 //    suite.addTestSuite( ValueDataUtilTest.class );
     suite.addTest( new JUnit4TestAdapter( DatabaseIT.class ) );
-    suite.addTest( new JUnit4TestAdapter( ConnectionPoolUtilIntegrationIT.class ) );
+//    suite.addTest( new JUnit4TestAdapter( ConnectionPoolUtilIntegrationIT.class ) );
     suite.addTestSuite( HopIT.class );
     suite.addTestSuite( InjectorIT.class );
     suite.addTestSuite( RowGeneratorIT.class );

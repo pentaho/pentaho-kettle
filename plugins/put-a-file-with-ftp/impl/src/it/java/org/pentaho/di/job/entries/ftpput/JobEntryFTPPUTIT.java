@@ -26,26 +26,30 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.ftpsget.FTPSConnection;
-import org.pentaho.di.job.entries.ftpsget.FtpsServer;
+import org.pentaho.di.job.entry.JobEntryBase;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.pentaho.di.job.entries.ftpsget.FTPSConnection.CONNECTION_TYPE_FTP;
-import static org.pentaho.di.job.entries.ftpsget.FtpsServer.ADMIN;
-import static org.pentaho.di.job.entries.ftpsget.FtpsServer.DEFAULT_PORT;
-import static org.pentaho.di.job.entries.ftpsget.FtpsServer.PASSWORD;
 
 /**
  * @author Andrey Khayrutdinov
@@ -53,16 +57,24 @@ import static org.pentaho.di.job.entries.ftpsget.FtpsServer.PASSWORD;
 public class JobEntryFTPPUTIT {
 
   private static FtpsServer server;
-  private static TemporaryFolder folder;
+  @ClassRule
+  public static TemporaryFolder ftpFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder localFolder = new TemporaryFolder();
+
+  private FTPSConnection connection;
+  private File tempFile;
+  private JobEntryFTPPUT jobEntry;
+
+  private static final int FTP_PORT = 8123;
+  private static final String FTP_USER = "FTP_USER";
+  private static final String FTP_USER_PASSWORD = "FTP_USER_PASSWORD";
 
   @BeforeClass
   public static void prepareEnv() throws Exception {
     KettleEnvironment.init();
-
-    folder = new TemporaryFolder();
-    folder.create();
-
-    server = FtpsServer.createFtpServer();
+    server =
+      FtpsServer.createFTPServer( FTP_PORT, FTP_USER, FTP_USER_PASSWORD, ftpFolder.getRoot(), false );
     server.start();
   }
 
@@ -72,90 +84,86 @@ public class JobEntryFTPPUTIT {
       server.stop();
       server = null;
     }
-
-    folder.delete();
-    folder = null;
   }
-
-
-  private FTPSConnection connection;
-  private File tempFile;
-  private JobEntryFTPPUT entry;
 
   @Before
   public void prepareResources() throws Exception {
-    connection = new FTPSConnection( CONNECTION_TYPE_FTP, "localhost", DEFAULT_PORT, ADMIN, PASSWORD );
-    connection.connect();
-
-    tempFile = new File( folder.getRoot(), UUID.randomUUID().toString() );
+    tempFile = new File( localFolder.getRoot(), UUID.randomUUID().toString() );
     tempFile.createNewFile();
 
-    entry = new JobEntryFTPPUT();
-    entry.setUserName( ADMIN );
-    entry.setPassword( PASSWORD );
-    entry.setServerName( "localhost" );
-    entry.setServerPort( Integer.toString( DEFAULT_PORT ) );
-    entry.setActiveConnection( true );
-    entry.setControlEncoding( "UTF-8" );
-    entry.setBinaryMode( true );
+    jobEntry = new JobEntryFTPPUT();
+    jobEntry.setUserName( FTP_USER );
+    jobEntry.setPassword( FTP_USER_PASSWORD );
+    jobEntry.setServerName( "localhost" );
+    jobEntry.setServerPort( Integer.toString( FTP_PORT ) );
+    jobEntry.setActiveConnection( true );
+    jobEntry.setControlEncoding( StandardCharsets.UTF_8.name() );
+    jobEntry.setBinaryMode( true );
     // tempFile is a UUID ==> it is a valid wildcard to itself (no need to escape)
-    entry.setWildcard( tempFile.getName() );
+    jobEntry.setWildcard( tempFile.getName() );
+    setMockParent( jobEntry );
+
+    connection =
+      new FTPSConnection( CONNECTION_TYPE_FTP, "localhost", FTP_PORT, FTP_USER, FTP_USER_PASSWORD, new Variables() );
+    connection.connect();
   }
 
   @After
   public void releaseResources() throws Exception {
-    entry = null;
+    jobEntry = null;
 
     if ( connection != null ) {
       connection.disconnect();
       connection = null;
     }
-    // no need to delete tempFile - it will be removed by the folder rule
   }
-
 
   @Test
   public void reportsError_WhenLocalDirectoryIsNotSet() throws Exception {
-    entry.setLocalDirectory( null );
-    Result result = executeStep( entry );
+    jobEntry.setLocalDirectory( null );
+
+    Result result = jobEntry.execute( new Result(), 0 );
     assertEquals( 1, result.getNrErrors() );
   }
 
   @Test
   public void uploadsFile_WhenSourceFolderIsSet_WithOutProtocolPrefix() throws Exception {
-    entry.setLocalDirectory( folder.getRoot().getAbsolutePath() );
+    jobEntry.setLocalDirectory( localFolder.getRoot().getAbsolutePath() );
 
-    doTestUploadsFile( entry, tempFile.getName() );
+    doTestUploadsFile( jobEntry, tempFile.getName() );
   }
 
   @Test
   public void uploadsFile_WhenSourceFolderIsSet_WithProtocolPrefix() throws Exception {
-    entry.setLocalDirectory( folder.getRoot().toURI().toString() );
+    jobEntry.setLocalDirectory( localFolder.getRoot().toURI().toString() );
 
-    doTestUploadsFile( entry, tempFile.getName() );
+    doTestUploadsFile( jobEntry, tempFile.getName() );
   }
 
   @Test
   public void uploadsFile_WhenSourceFolderIsSet_ViaVariable() throws Exception {
-    String absolutePath = folder.getRoot().getAbsolutePath();
-    entry.setLocalDirectory( "${" + INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}" );
-    entry.setVariable( INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, absolutePath );
+    String absolutePath = localFolder.getRoot().getAbsolutePath();
+    jobEntry.setLocalDirectory( "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}" );
+    jobEntry.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, absolutePath );
 
-    doTestUploadsFile( entry, tempFile.getName() );
+    doTestUploadsFile( jobEntry, tempFile.getName() );
   }
 
   private void doTestUploadsFile( JobEntryFTPPUT entry, String fileName ) throws Exception {
     assertFalse( connection.isFileExists( fileName ) );
-    executeStep( entry );
+    entry.execute( new Result(), 0 );
     assertTrue( connection.isFileExists( fileName ) );
   }
 
-  private Result executeStep( JobEntryFTPPUT entry ) throws Exception {
-    Job job = new Job( null, new JobMeta() );
-    job.setStopped( false );
-
-    entry.setParentJob( job );
-    return entry.execute( new Result(), 0 );
+  private static void setMockParent( JobEntryBase job ) {
+    Job parentJob = mock( Job.class );
+    when( parentJob.isStopped() ).thenReturn( false );
+    when( parentJob.getLogLevel() ).thenReturn( LogLevel.BASIC );
+    when( parentJob.getContainerObjectId() ).thenReturn( UUID.randomUUID().toString() );
+    job.setParentJob( parentJob );
+    JobMeta parentJobMeta = mock( JobMeta.class );
+    when( parentJobMeta.getNamedClusterEmbedManager() ).thenReturn( null );
+    job.setParentJobMeta( parentJobMeta );
+    job.setLogLevel( LogLevel.ROWLEVEL );
   }
-
 }
