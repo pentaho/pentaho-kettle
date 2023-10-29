@@ -28,7 +28,6 @@
     <jersey2-apache-connector.version>2.30</jersey2-apache-connector.version>
     <jersey2.version>2.38</jersey2.version>
     <jaxrs.version>2.1.6</jaxrs.version>
-    <jetty.version>9.4.51.v20230217</jetty.version>
   </properties>
 
   <dependencies>

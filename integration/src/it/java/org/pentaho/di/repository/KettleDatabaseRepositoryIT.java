@@ -109,7 +109,7 @@ public class KettleDatabaseRepositoryIT extends TestCase {
 
       // Verify metastore functionality
       //
-      IMetaStore metaStore = repository.getMetaStore();
+      IMetaStore metaStore = repository.getRepositoryMetaStore();
       KettleMetaStoreTestBase testBase = new KettleMetaStoreTestBase();
       testBase.testFunctionality( metaStore );
 
