@@ -304,6 +304,7 @@ jobGroups:
 
      - jobID           :  big-data-hadoop-shims-ee
        scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
+       directives      : += -DskipDefault -P base,all -Deula-wrap
 
      - jobID           :  prd-assembly-ee
        scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
