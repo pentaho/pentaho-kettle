@@ -302,6 +302,7 @@ jobGroups:
 
      - jobID           :  pdi-platform-plugin
        scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
+       scmBranch       :  scheduler-plugin
        testable        :  false
 
      - jobID           :  pdi-platform-utils-plugin
@@ -380,6 +381,7 @@ jobGroups:
 
      - jobID           :  cda-plugin
        scmUrl          :  https://github.com/webdetails/cda.git
+       scmBranch       :  scheduler-plugin
 
   3100:
      - jobID           :  jdbc-distribution-utility
