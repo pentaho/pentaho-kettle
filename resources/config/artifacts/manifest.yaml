@@ -31,7 +31,7 @@ ee:
     other:
         - pentaho-operations-mart-${platform.version}-dist.zip
         - pentaho-sdk-${platform.version}-dist.zip
-        - dock-maker-${platform.version}-dist.zip
+        - dock-maker-${platform.version}-public-dist.zip
     patches:
             windows:
                 - AggregationDesigner-SP-${platform.version}.exe
