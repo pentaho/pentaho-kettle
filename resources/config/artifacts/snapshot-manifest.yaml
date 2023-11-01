@@ -55,7 +55,6 @@ ee:
         - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}-dist.zip
     upgrade:
@@ -95,6 +94,5 @@ not-for-release:
     - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar

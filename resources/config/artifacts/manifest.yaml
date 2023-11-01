@@ -80,7 +80,6 @@ ee:
         - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}-dist.zip
     container-images:
@@ -133,7 +132,6 @@ ce:
 # Testable items, but not customer hand-off items
 not-for-release:
     - pdi-ee-client-${platform.version}-osgi.zip
-    - pdi-ee-client-docker-${platform.version}.zip
     - pme-ee-${platform.version}-osgi.zip
     - prd-ee-${platform.version}-osgi.zip
     - pdi-ce-${platform.version}-osgi.zip
@@ -143,7 +141,6 @@ not-for-release:
     - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-mapr61-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
     - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
     
