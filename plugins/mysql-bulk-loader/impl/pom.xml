@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>mysql-bulk-loader</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-81</version>
   </parent>
 
   <artifactId>mysql-bulk-loader-impl</artifactId>
