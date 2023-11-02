@@ -30,6 +30,8 @@ node('non-master') {
         stage('Deployment') {
           stage('Wait for Container Image Completion') {
             script {
+              maxAttempts = suiteParameters['BUILD_RETRIES']
+
               // Any error that might come up from this block, should not compromise the execution of the subsequent stages.
               catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                 withCredentials([string(credentialsId: 'thanos-gh-token', variable: 'GITHUB_TOKEN')]) {
@@ -41,6 +43,9 @@ node('non-master') {
                     QUERY="actor=\${ACTOR}&created=\${TODAY}&event=\${EVENT}&branch=\${DEFAULT_BRANCH}&per_page=50"
                     STATUS=""
                     echo "QUERY=\${QUERY}"
+
+                    ATTEMPTS=0
+
                     while [ "\${STATUS}" != "completed" ]; do
                       SORTED_RESP_JSON=\$(curl -L -s \
                         -H "Accept: application/vnd.github+json" \
@@ -53,8 +58,15 @@ node('non-master') {
                       RUN_NUMBER=\$( echo "\${SORTED_RESP_JSON}" | jq -r '.workflow_runs[0] | .run_number')
                       ID=\$( echo "\${SORTED_RESP_JSON}" | jq -r '.workflow_runs[0] | .id')
                       echo -e "Run #\${RUN_NUMBER} with id \${ID}, has status of '\${STATUS}'. Its conclusion is/was '\${CONCLUSION}'"
+
+                      if [[ "\${STATUS}" == "" || "\${STATUS}" == "null" ]]; then
+                        ((ATTEMPTS++))
+                        if (( \${ATTEMPTS} >= ${maxAttempts} )); then
+                          echo "Max attempts without a reasonable response has been reached. Stopped waiting..."
+                          break
+                        fi
                       # if status is already 'completed', let's not wait for the sleep
-                      if [ "\${STATUS}" == "completed" ]; then
+                      elif [ "\${STATUS}" == "completed" ]; then
                         break
                       fi
                       # check again in 5 mins
