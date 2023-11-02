@@ -72,6 +72,11 @@ jobGroups:
       parallelize     : true
       archivable      : true
 
+  2500:
+     - jobID           :  pdi-platform-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
+       scmBranch       :  scheduler-plugin
+       testable        :  false
   2600:
     - jobID           : common-ui
       scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-common-ui.git
@@ -90,6 +95,10 @@ jobGroups:
       scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-reporting.git
       #parallelize     :  true
 
+  3000:
+     - jobID           :  cda-plugin
+       scmUrl          :  https://github.com/webdetails/cda.git
+       scmBranch       :  scheduler-plugin
   3200:
     - jobID           : platform-ee
       scmUrl          : https://github.com/pentaho/pentaho-platform-ee.git
