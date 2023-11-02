@@ -32,6 +32,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
@@ -330,11 +331,13 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
           out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
             PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ) ) );
         }
+        out.print(new ObjectMapper().writeValueAsString(carteObjectId));
         out.flush();
       } catch ( Exception executionException ) {
         String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
         throw new KettleException( BaseMessages.getString( PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ), executionException );
       }
+
     } catch ( Exception ex ) {
       // When we get to this point KettleAuthenticationException has already been wrapped in an Execution Exception
       // and that in a KettleException
