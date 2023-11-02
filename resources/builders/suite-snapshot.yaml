@@ -343,6 +343,7 @@ jobGroups:
   2800:
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+       scmBranch       :  scheduler-plugin
        #parallelize     :  true
 
      - jobID           :  snowflake-plugin

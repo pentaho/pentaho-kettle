@@ -89,7 +89,13 @@ jobGroups:
       scmBranch       : scheduler-plugin
       directives      : += -DskipDefault -P platform-user-console
       #parallelize     :  true
-
+      
+  2800:
+    - jobID           :  pdi-plugins-ee
+      scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
+      scmBranch       :  scheduler-plugin
+      #parallelize     :  true
+      
   2900:
     - jobID           : platform-reporting-plugin
       scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-reporting.git
