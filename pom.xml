@@ -59,7 +59,6 @@
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
-    <guava.version>32.0.1-jre</guava.version>
     <encoder.version>1.2</encoder.version>
     <wstx-asl.version>3.2.4</wstx-asl.version>
     <jsch.version>0.2.9</jsch.version>
