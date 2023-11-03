@@ -2786,7 +2786,7 @@ public class TransMeta extends AbstractMeta
     Document doc = null;
     try {
       if (parentVariableSpace == null ) {
-        parentVariableSpace = new Variables();
+        parentVariableSpace = Variables.getADefaultVariableSpace();
       }
 
       final FileObject transFile = KettleVFS.getFileObject( fname, parentVariableSpace );

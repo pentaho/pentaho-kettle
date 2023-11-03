@@ -867,4 +867,13 @@ public class TransMetaTest {
 
     assertEquals( "Original value defined at run execution", transMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
+  
+  @Test
+  public void testTransMetaUsingDefaultVariableSpaceWithSystemProperties() {
+    System.setProperty( "TransMetaTest.A_TEST_PROPERTY", "1000" );
+    TransMeta transMeta = new TransMeta();
+    assertEquals( "1000", transMeta.getVariable( "TransMetaTest.A_TEST_PROPERTY" ) );
+    System.clearProperty( "TransMetaTest.A_TEST_PROPERTY" );
+  }
+  
 }
