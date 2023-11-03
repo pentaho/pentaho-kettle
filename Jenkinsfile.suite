@@ -30,7 +30,7 @@ node('non-master') {
         stage('Deployment') {
           stage('Wait for Container Image Completion') {
             script {
-              maxAttempts = suiteParameters['BUILD_RETRIES']
+              maxAttempts = 12
 
               // Any error that might come up from this block, should not compromise the execution of the subsequent stages.
               catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
