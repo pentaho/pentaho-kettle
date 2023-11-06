@@ -150,11 +150,25 @@ jobGroups:
       scmUrl          : https://github.com/pentaho/pentaho-karaf-ee-assembly.git
       testable        : false
 
+  4300:
+    - jobID           :  pdi-client-assembly-ee
+      scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
+      scmBranch       :  scheduler-plugin
+      testable        :  false
+      archivable      :  true
+
   4400:
     - jobID           : platform-server-assembly
       scmUrl          : https://github.com/pentaho/pentaho-platform.git
       scmBranch       : scheduler-plugin
       directives      : += -DskipDefault -P platform-assemble
+      testable        : false
+      archivable      : true
+
+    - jobID           : pdi-client-assembly-ee-osgi
+      scmUrl          : https://github.com/pentaho/pdi-assemblies-ee.git
+      directives      : += -Dosgi
+      scmBranch       : scheduler-plugin
       testable        : false
       archivable      : true
 

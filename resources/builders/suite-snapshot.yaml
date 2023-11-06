@@ -549,6 +549,7 @@ jobGroups:
   4300:
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
+       scmBranch       :  scheduler-plugin
        testable        :  false
        archivable      :  true
 
@@ -587,6 +588,7 @@ jobGroups:
      - jobID           :  pdi-client-assembly-ee-osgi
        scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
        directives      :  += -Dosgi
+       scmBranch       :  scheduler-plugin
        testable        :  false
        archivable      :  true
 
