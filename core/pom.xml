@@ -83,7 +83,7 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-bridge</artifactId>
-      <version>${batik-bridge.version}</version>
+      <version>${batik.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-css</artifactId>
-      <version>${batik-css.version}</version>
+      <version>${batik.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
