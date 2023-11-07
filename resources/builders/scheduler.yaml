@@ -99,12 +99,19 @@ jobGroups:
   2900:
     - jobID           : platform-reporting-plugin
       scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-reporting.git
+      scmBranch       : scheduler-plugin
       #parallelize     :  true
 
   3000:
      - jobID           :  cda-plugin
        scmUrl          :  https://github.com/webdetails/cda.git
        scmBranch       :  scheduler-plugin
+
+  3100:
+    - jobID           :  cdf-plugin
+      scmUrl          :  https://github.com/webdetails/cdf.git
+      scmBranch       :  scheduler-plugin
+
   3200:
     - jobID           : platform-ee
       scmUrl          : https://github.com/pentaho/pentaho-platform-ee.git
@@ -127,6 +134,7 @@ jobGroups:
   3400:
     - jobID           : analyzer-plugin
       scmUrl          : https://github.com/pentaho/pentaho-analyzer.git
+      scmBranch       : scheduler-plugin
       directives      : += -Dagilebi
       archivable      : true
 
@@ -142,6 +150,7 @@ jobGroups:
   3700:
     - jobID           : pir-plugin
       scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-interactive-reporting.git
+      scmBranch       : scheduler-plugin
       archivable      : true
       parallelize     : true
 
