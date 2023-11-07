@@ -690,11 +690,19 @@ public class Mail extends BaseStep implements StepInterface {
     if ( !meta.isOnlySendComment() && ( !Utils.isEmpty( contactPerson ) || !Utils.isEmpty( contactPhone ) ) ) {
       messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.ContactInfo" ) + " :" ).append( Const.CR );
       messageText.append( "---------------------" ).append( Const.CR );
-      messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.PersonToContact" ) + " : " ).append(
-        contactPerson ).append( Const.CR );
-      messageText
-        .append( BaseMessages.getString( PKG, "Mail.Log.Comment.Tel" ) + "  : " ).append( contactPhone ).append(
-          Const.CR );
+
+      if ( !Utils.isEmpty( contactPerson ) ) {
+        messageText
+          .append( BaseMessages.getString( PKG, "Mail.Log.Comment.PersonToContact" ) + " : " ).append( contactPerson )
+          .append( Const.CR );
+      }
+
+      if ( !Utils.isEmpty( contactPhone ) ) {
+        messageText
+          .append( BaseMessages.getString( PKG, "Mail.Log.Comment.Tel" ) + "  : " ).append( contactPhone )
+          .append( Const.CR );
+      }
+
       messageText.append( Const.CR );
     }
     data.parts = new MimeMultipart();
