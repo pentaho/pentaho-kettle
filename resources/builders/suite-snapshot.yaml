@@ -471,6 +471,7 @@ jobGroups:
 
      - jobID           :  pdi-scheduler-plugin
        scmUrl          :  https://github.com/pentaho/pdi-scheduler-plugin.git
+       scmBranch       :  scheduler-plugin
 
      - jobID           :  pdi-jms-plugin
        scmUrl          :  https://github.com/pentaho/pdi-jms-plugin.git
