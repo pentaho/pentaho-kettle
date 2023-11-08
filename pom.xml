@@ -62,6 +62,7 @@
     <encoder.version>1.2</encoder.version>
     <wstx-asl.version>3.2.4</wstx-asl.version>
     <jsch.version>0.2.9</jsch.version>
+    <jface.version>3.3.0-I20070606-0010</jface.version>
 
     <!-- Test dependencies -->
     <mockito-all.version>1.10.19</mockito-all.version>

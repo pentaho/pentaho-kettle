@@ -80,6 +80,7 @@
     <email-messages-plugin.version>${project.version}</email-messages-plugin.version>
     <put-a-file-with-ftp-plugin.version>${project.version}</put-a-file-with-ftp-plugin.version>
     <get-file-with-ftp.version>${project.version}</get-file-with-ftp.version>
+    <msg-box-info.version>${project.version}</msg-box-info.version>
   </properties>
 
   <dependencies>
@@ -855,6 +856,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>get-file-with-ftp-plugins</artifactId>
       <version>${get-file-with-ftp.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>msg-box-info-plugins</artifactId>
+      <version>${msg-box-info.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

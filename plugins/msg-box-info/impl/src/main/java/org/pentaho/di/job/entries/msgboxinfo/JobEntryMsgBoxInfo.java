@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.msgboxinfo;
 
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
@@ -53,6 +54,10 @@ import org.w3c.dom.Node;
  * @since 12-02-2007
  */
 
+
+@JobEntry(id = "MSGBOX_INFO",name = "JobEntry.MsgBoxInfo.TypeDesc",
+        description = "JobEntry.MsgBoxInfo.Tooltip",categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Utility",
+        i18nPackageName = "i18n:org.pentaho.di.job.entry:JobEntry.MsgBoxInfo",documentationUrl = "http://wiki.pentaho.com/display/EAI/Display+Msgbox+info")
 public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEntryInterface {
   private String bodymessage;
   private String titremessage;
