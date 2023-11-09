@@ -335,7 +335,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
       if ( isURL ) {
         // Retry to show the welcome page in an external browser.
         //
-        Status status = Launch.openURL( urlString );
+        Status status = (new Launch()).openURL( urlString );
         ok = status.equals( Status.Success );
       }
       if ( !ok ) {

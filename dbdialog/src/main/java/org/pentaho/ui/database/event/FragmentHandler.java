@@ -24,6 +24,9 @@ package org.pentaho.ui.database.event;
 
 import java.io.InputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -45,6 +48,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
  * @created Mar 19, 2008
  */
 public class FragmentHandler extends AbstractXulEventHandler {
+  private static final Logger log = LoggerFactory.getLogger( FragmentHandler.class );
 
   private XulListbox connectionBox;
   private XulListbox accessBox;
@@ -61,19 +65,12 @@ public class FragmentHandler extends AbstractXulEventHandler {
 
     XulDomContainer fragmentContainer;
 
-    try {
+    // Get new group box fragment ...
+    // This will effectively set up the SWT parent child relationship...
 
-      // Get new group box fragment ...
-      // This will effectively set up the SWT parent child relationship...
-
-      fragmentContainer = this.xulDomContainer.loadFragment( fragmentUri, Messages.getBundle() );
-      XulComponent newGroup = fragmentContainer.getDocumentRoot().getFirstChild();
-      parentElement.replaceChild( groupElement, newGroup );
-
-    } catch ( XulException e ) {
-      e.printStackTrace();
-      throw e;
-    }
+    fragmentContainer = this.xulDomContainer.loadFragment( fragmentUri, Messages.getBundle() );
+    XulComponent newGroup = fragmentContainer.getDocumentRoot().getFirstChild();
+    parentElement.replaceChild( groupElement, newGroup );
   }
 
   /**
@@ -90,10 +87,9 @@ public class FragmentHandler extends AbstractXulEventHandler {
     Object connectionKey = DataHandler.connectionNametoID.get( connectionBox.getSelectedItem() );
     String databaseName = null;
     try {
-      databaseName =
-        PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "" + connectionKey ).getIds()[0];
+      databaseName = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "" + connectionKey ).getIds()[0];
     } catch ( Exception e ) {
-      e.printStackTrace();
+      log.error( e.getLocalizedMessage() );
     }
 
     DatabaseInterface database = DataHandler.connectionMap.get( connectionBox.getSelectedItem() );
@@ -182,7 +178,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
       box.setMessage( message );
       box.open();
     } catch ( XulException e ) {
-      System.out.println( "Error creating messagebox " + e.getMessage() );
+      log.error( "Error creating messagebox " + e.getMessage() );
     }
   }
 

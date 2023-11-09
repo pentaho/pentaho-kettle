@@ -149,6 +149,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
   protected DatabaseMeta cache = new DatabaseMeta();
 
+  protected Launch launch = new Launch();
+
   private XulDeck dialogDeck;
 
   private XulListbox deckOptionsBox;
@@ -471,7 +473,7 @@ public class DataHandler extends AbstractXulEventHandler {
       return;
     }
 
-    Status status = Launch.openURL( url );
+    Status status = launch.openURL( url );
 
     if ( status.equals( Status.Failed ) ) {
       message = Messages.getString( "DataHandler.USER_UNABLE_TO_LAUNCH_BROWSER", url );
