@@ -202,6 +202,10 @@ public class XMLOutput extends BaseStep implements StepInterface {
             ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta( data.fieldnrs[i] );
             Object valueData = r[data.fieldnrs[i]];
 
+            if ( valueMeta.isNull(  valueData ) && !Utils.isEmpty( outputField.getNullString() ) ) {
+              valueData = outputField.getNullString();
+            }
+
             String elementName = outputField.getElementName();
             if ( Utils.isEmpty( elementName ) ) {
               elementName = outputField.getFieldName();
