@@ -30,6 +30,7 @@ import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.UserStore;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -217,6 +218,7 @@ public class WebServer {
     constraintMapping.setPathSpec( "/*" );
 
     securityHandler.setConstraintMappings( new ConstraintMapping[] { constraintMapping } );
+    securityHandler.setAuthenticator( new BasicAuthenticator() );
 
     
     // Add all the servlets defined in kettle-servlets.xml ...
