@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>put-file-sftp</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-93</version>
   </parent>
 
   <artifactId>put-file-sftp-plugins-ui</artifactId>
