@@ -30,7 +30,9 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.trans.TransMeta.TransformationType;
+import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 public class SingleThreadedTransExecutor {
@@ -399,6 +401,28 @@ public class SingleThreadedTransExecutor {
 
   public boolean isStopped() {
     return trans.isStopped();
+  }
+
+  public boolean beforeStartProcessing( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    log.logBasic( "Single Threaded Executor Before Trans Start Processing: [" + trans.getName( ) + "]" );
+    // Call beforeStartProcessing
+    boolean result = false;
+    for ( StepMetaDataCombi combi : trans.getSteps() ) {
+      result = combi.step.beforeStartProcessing( combi.meta, combi.data ) || result;
+    }
+
+    return result;
+  }
+
+  public boolean afterFinishProcessing( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    log.logBasic( "Single Threaded Executor After Trans Finish Processing: [" + trans.getName( ) + "]" );
+    // Call afterFinishProcessing
+    boolean result = false;
+    for ( StepMetaDataCombi combi : trans.getSteps() ) {
+      result = combi.step.afterFinishProcessing( combi.meta, combi.data ) || result;
+    }
+
+    return result;
   }
 
   public void dispose() throws KettleException {
