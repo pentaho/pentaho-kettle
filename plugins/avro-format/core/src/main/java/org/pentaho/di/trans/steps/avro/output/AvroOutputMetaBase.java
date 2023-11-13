@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.avro.output;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.trans.steps.avro.AvroTypeConverter;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
@@ -436,6 +437,9 @@ public abstract class AvroOutputMetaBase extends BaseStepMeta implements StepMet
   }
 
   public String constructOutputFilename( String file ) {
+    if ( StringUtils.isEmpty( file ) )
+        return file;
+
     return ( file.endsWith( ".avro" ) )
         ? constructSingleOutputFilename( file )
         : constructDirectoryOutputFilename( file );
