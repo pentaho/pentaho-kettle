@@ -1660,7 +1660,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     RenameDialog renameDialog = new RenameDialog( getShell() );
     String renameValue = renameDialog.open( file.getName() );
     if ( renameValue != null ) {
-      String newPath = file.getParent() + java.io.File.separator + renameValue;
+      String newPath = file.getParent() + "/" + renameValue;
       // Prevent rename folder to the same name
       if ( !file.getPath().equals( newPath ) ) {
         FILE_CONTROLLER.rename( file, newPath, new OverwriteStatus( null, OverwriteMode.OVERWRITE ) );
