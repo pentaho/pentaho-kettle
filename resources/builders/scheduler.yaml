@@ -159,6 +159,12 @@ jobGroups:
       scmUrl          : https://github.com/pentaho/pentaho-karaf-ee-assembly.git
       testable        : false
 
+  4000:
+    - jobID           :  prd-assembly-ee
+      scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
+      testable        :  false
+      archivable      :  true
+
   4300:
     - jobID           :  pdi-client-assembly-ee
       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
