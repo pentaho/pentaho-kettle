@@ -216,12 +216,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
       return true;
     } else {
-      // after the last row, the (last) file is closed
-      if ( data.wb != null ) {
-        closeOutputFile();
-      }
       setOutputDone();
-      clearWorkbookMem();
       return false;
     }
   }
@@ -233,6 +228,21 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     data.wb = null;
     data.clearStyleCache( 0 );
 
+  }
+
+  @Override
+  public boolean afterFinishProcessing( StepMetaInterface smi, StepDataInterface sdi ) {
+    if ( data.wb != null ) {
+      try {
+        closeOutputFile();
+      } catch ( KettleException e ) {
+        logDetailed( e.getMessage() );
+        return false;
+      }
+    }
+    setOutputDone();
+    clearWorkbookMem();
+    return true;
   }
 
   private void closeOutputFile() throws KettleException {
@@ -265,6 +275,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
 
       data.wb.write( out );
+      data.wb = null;
     } catch ( IOException e ) {
       throw new KettleException( e );
     }
