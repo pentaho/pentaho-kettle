@@ -722,7 +722,7 @@
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
-      <artifactId>pentaho-streaming-kafka-plugin-zip</artifactId>
+      <artifactId>pentaho-streaming-kafka-plugin</artifactId>
       <version>${big-data-plugin.version}</version>
       <type>zip</type>
       <exclusions>
