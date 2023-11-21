@@ -126,6 +126,7 @@ pentaho-vfs-browser.version=10.1.0.0-BUILDTAG
 pentaho.version=10.1.0.0-BUILDTAG
 pir-plugin.version=10.1.0.0-BUILDTAG
 platform.version=10.1.0.0-BUILDTAG
+revenera-lic-validator.version=10.1.0.0-BUILDTAG
 schemaworkbench-plugins.version=10.1.0.0-BUILDTAG
 snowflake-plugin.version=10.1.0.0-BUILDTAG
 vertica-bulkloader-plugin.version=10.1.0.0-BUILDTAG

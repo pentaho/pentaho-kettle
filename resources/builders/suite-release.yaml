@@ -210,7 +210,37 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-metadata.git
        versionProperty :  pentaho-metadata.version
 
+     - jobID           :  license-ee-api
+       scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
+       directives      :  += -Dmaven.test.failure.ignore=true -pl .,pentaho-license-validator-api,pentaho-license-validator
+       versionProperty :  pentaho-ee-dsc.version
+
+  1250:
+     - jobID           :  revenera-validator
+       scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git
+       versionProperty :  revenera-lic-validator.version
+
   1300:
+     - jobID           :  revenera-validator-linux-eula-wrap
+       scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git
+       root            :  enterprise-local-license-server
+       directives      :
+                 build :  deploy -DskipTests -Deula-wrap -Dlinux-eula-wrap
+                 test  :  test
+       archivable      :  true
+       testable        :  false
+       versionProperty :  revenera-lic-validator.version
+
+     - jobID           :  revenera-validator-windows-eula-wrap
+       scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git
+       root            :  enterprise-local-license-server
+       directives      :
+                 build :  deploy -DskipTests -Deula-wrap -Dwindows-eula-wrap
+                 test  :  test
+       archivable      :  true
+       testable        :  false
+       versionProperty :  revenera-lic-validator.version
+
      - jobID           :  database-gwt
        scmUrl          :  https://github.com/pentaho/pentaho-commons-database.git
        directives      :  += -pl gwt
@@ -230,7 +260,7 @@ jobGroups:
 
      - jobID           :  license-ee
        scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
-       directives      :  += -Dmaven.test.failure.ignore=true
+       directives      :  += -Dmaven.test.failure.ignore=true -pl core,ftp-installer,mock,assemblies,metadata-client-tool -amd
        versionProperty :  pentaho-ee-dsc.version
 
      - jobID           :  pdi-dataservice-plugin
