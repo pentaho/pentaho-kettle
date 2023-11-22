@@ -1218,6 +1218,9 @@ public class Const {
   // See PDI-19138 for details
   public static final String KETTLE_JSON_INPUT_INCLUDE_NULLS = "KETTLE_JSON_INPUT_INCLUDE_NULLS";
 
+  // See PDI-17309 for details
+  public static final String KETTLE_COMPATIBILITY_CONCAT_FIELDS_SPLIT_ROWS_HEADER_OFFSET = "KETTLE_COMPATIBILITY_CONCAT_FIELDS_SPLIT_ROWS_HEADER_OFFSET";
+
   /**
    * This property when set to Y force the same output file even when splits is required.
    * See PDI-19064 for details
