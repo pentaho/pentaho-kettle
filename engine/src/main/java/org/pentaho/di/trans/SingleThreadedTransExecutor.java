@@ -408,7 +408,7 @@ public class SingleThreadedTransExecutor {
     // Call beforeStartProcessing
     boolean result = false;
     for ( StepMetaDataCombi combi : trans.getSteps() ) {
-      result = combi.step.beforeStartProcessing( smi, sdi ) || result;
+      result = combi.step.beforeStartProcessing( combi.meta, combi.data ) || result;
     }
 
     return result;
@@ -419,7 +419,7 @@ public class SingleThreadedTransExecutor {
     // Call afterFinishProcessing
     boolean result = false;
     for ( StepMetaDataCombi combi : trans.getSteps() ) {
-      result = combi.step.afterFinishProcessing( smi, sdi ) || result;
+      result = combi.step.afterFinishProcessing( combi.meta, combi.data ) || result;
     }
 
     return result;
