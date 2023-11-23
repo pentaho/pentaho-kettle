@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>metastore-locator</artifactId>
-    <version>10.0.0.0-SNAPSHOT</version>
+    <version>10.0.0.1-264</version>
   </parent>
   <artifactId>pentaho-metastore-locator-api</artifactId>
-  <version>10.0.0.0-SNAPSHOT</version>
+  <version>10.0.0.1-264</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
