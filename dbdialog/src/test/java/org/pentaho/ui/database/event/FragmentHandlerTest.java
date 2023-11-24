@@ -120,7 +120,7 @@ public class FragmentHandlerTest {
     when( mockDoc.getFirstChild() ).thenReturn( firstChild );
     when( fragmentContainer.getDocumentRoot() ).thenReturn( mockDoc );
     when( xulDomContainer.loadFragment( anyString(), any( Object.class ) ) ).thenReturn( fragmentContainer );
-    fragmentHandler.loadDatabaseOptionsFragment( null );
+    fragmentHandler.loadDatabaseOptionsFragment( null, null );
   }
 
   @Test( expected = XulException.class )
@@ -130,7 +130,7 @@ public class FragmentHandlerTest {
     when( component.getParent() ).thenReturn( parent );
     when( document.getElementById( "database-options-box" ) ).thenReturn( component );
     when( xulDomContainer.loadFragment( anyString(), any( Object.class ) ) ).thenThrow( new XulException() );
-    fragmentHandler.loadDatabaseOptionsFragment( null );
+    fragmentHandler.loadDatabaseOptionsFragment( null, null );
   }
 
   @Test
