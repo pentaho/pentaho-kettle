@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -979,6 +979,14 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     String xml =
       execService( GetJobStatusServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&id="
         + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr, true );
+    return SlaveServerJobStatus.fromXML( xml );
+  }
+
+  public SlaveServerJobStatus getJobStatusTail( String jobName, String carteObjectId, int maxNumberOfLines )
+    throws Exception {
+    String xml =
+      execService( GetJobStatusServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&id="
+        + Const.NVL( carteObjectId, "" ) + "&xml=Y&tail=" + maxNumberOfLines, true );
     return SlaveServerJobStatus.fromXML( xml );
   }
 

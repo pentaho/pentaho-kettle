@@ -42,6 +42,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.CLabel;
@@ -82,6 +83,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
@@ -93,6 +95,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus.OverwriteMode;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.api.providers.Entity;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
@@ -136,6 +139,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -195,6 +199,21 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   // The left-hand tree viewer
   protected TreeViewer treeViewer;
   protected TableViewer fileTableViewer;
+
+  protected Comparator<Object> fileTableViewerComparator;
+
+  protected final Comparator<Object> DEFAULT_FOLDER_VS_FILE_COMPARATOR =
+      Comparator.comparing( f -> f instanceof Directory, Boolean::compare );
+
+  protected final Comparator<Object> DEFAULT_FILE_TABLE_VIEWER_COMPARATOR =
+      DEFAULT_FOLDER_VS_FILE_COMPARATOR.reversed()
+          .thenComparing( Comparator.comparing( f -> ( (File) f ).getName(),
+            String.CASE_INSENSITIVE_ORDER ) );
+
+  protected TableColumn fTableNameColumn;
+  protected TableColumn fTableTypeColumn;
+  protected TableColumn fTableModifiedColumn;
+
 
   protected Text txtSearch;
   protected Set<File> selectedItems = new HashSet<>();
@@ -377,6 +396,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     btnCancel.setLayoutData( new FormDataBuilder().top( select, 20 ).right( 100, -30 ).result() );
     btnCancel.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.cancel.button" ) );
 
+    getShell().setDefaultButton( btnOpen );
+    
   }
 
   @Override protected Control createContents( Composite parent ) {
@@ -715,6 +736,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     btnCancel.setLayoutData( new FormDataBuilder().top( select, 20 ).right( 100, -30 ).result() );
     btnCancel.setText( BaseMessages.getString( PKG, "file-open-save-plugin.app.cancel.button" ) );
 
+    getShell().setDefaultButton( btnSave );
+    
   }
 
   private void processOnSavePressed( File file ) {
@@ -1376,6 +1399,19 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
     } );
 
+    //Setup the JFace view sorter (in case the user wants to sort the columns)
+    fileTableViewer.setSorter( new ViewerSorter() {
+      @Override
+      public int compare( Viewer viewer, Object e1, Object e2 ) {
+        
+        if( fileTableViewerComparator != null ) {
+          return fileTableViewerComparator.compare( e1, e2 );
+        }
+        return DEFAULT_FILE_TABLE_VIEWER_COMPARATOR.compare( e1, e2 );
+        
+      }
+    });
+    
     // Mouse Listner added to capture an event when the user click on empty space on Dialogue which deselects the
     // file/folder
     fileTableViewer.getTable().addMouseListener( new MouseListener() {
@@ -1397,9 +1433,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } );
 
     TableViewerColumn tvcName = new TableViewerColumn( fileTableViewer, SWT.NONE );
-    tvcName.getColumn().setText( BaseMessages.getString( PKG, "file-open-save-plugin.files.name.header" ) );
-    tvcName.getColumn().setWidth( 250 );
-
+    fTableNameColumn = tvcName.getColumn();
+    fTableNameColumn.setText( BaseMessages.getString( PKG, "file-open-save-plugin.files.name.header" ) );
+    fTableNameColumn.setWidth( 250 );
+    fTableNameColumn.addListener( SWT.Selection, e -> { sortColumnSelection( fTableNameColumn ); } );
     ColumnLabelProvider clpName = new ColumnLabelProvider() {
 
       @Override public String getText( Object element ) {
@@ -1430,9 +1467,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     tvcName.setLabelProvider( clpName );
 
     TableViewerColumn tvcType = new TableViewerColumn( fileTableViewer, SWT.NONE );
-    tvcType.getColumn().setText( BaseMessages.getString( PKG, "file-open-save-plugin.files.type.header" ) );
-    tvcType.getColumn().setWidth( 100 );
-    tvcType.getColumn().setResizable( false );
+    fTableTypeColumn = tvcType.getColumn();
+    fTableTypeColumn.setText( BaseMessages.getString( PKG, "file-open-save-plugin.files.type.header" ) );
+    fTableTypeColumn.setWidth( 100 );
+    fTableTypeColumn.setResizable( false );
+    fTableTypeColumn.addListener( SWT.Selection, e -> { sortColumnSelection( fTableTypeColumn ); } );
+    
     tvcType.setLabelProvider( new ColumnLabelProvider() {
       @Override public Color getForeground( Object element ) {
         return clrGray;
@@ -1444,10 +1484,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } );
 
     TableViewerColumn tvcModified = new TableViewerColumn( fileTableViewer, SWT.NONE );
-    tvcModified.getColumn().setText( BaseMessages.getString( PKG, "file-open-save-plugin.files.modified.header" ) );
-    tvcModified.getColumn().setWidth( 140 );
-    tvcModified.getColumn().setResizable( false );
-
+    fTableModifiedColumn = tvcModified.getColumn();
+    fTableModifiedColumn.setText( BaseMessages.getString( PKG, "file-open-save-plugin.files.modified.header" ) );
+    fTableModifiedColumn.setWidth( 140 );
+    fTableModifiedColumn.setResizable( false );
+    fTableModifiedColumn.addListener( SWT.Selection, e -> { sortColumnSelection( fTableModifiedColumn ); } );
+    
     tvcModified.setLabelProvider( new ColumnLabelProvider() {
       SimpleDateFormat sdf = new SimpleDateFormat( "MM/dd/yy hh:mm aa" );
 
@@ -1542,6 +1584,65 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     return browser;
   }
+  
+  private void sortColumnSelection( TableColumn selColumn ) {
+    
+    TableColumn sortColumn = fileTableViewer.getTable().getSortColumn();
+    
+    int direction = fileTableViewer.getTable().getSortDirection();
+    
+    if( selColumn.equals( sortColumn ) ) {
+      switch( direction ) {
+        case SWT.UP:
+          direction = SWT.DOWN;
+          break;
+        case SWT.DOWN:
+          direction = SWT.NONE;
+          sortColumn = null;
+          break;
+      }
+    } else {
+      sortColumn = selColumn;
+      direction = SWT.UP;
+    }
+    fileTableViewer.getTable().setSortColumn( sortColumn );
+    fileTableViewer.getTable().setSortDirection( direction );
+    
+    //Get it again now that we've set it
+    sortColumn = fileTableViewer.getTable().getSortColumn();
+    
+    if( sortColumn != null ) {
+    
+      Comparator<Object> baseComparator = DEFAULT_FOLDER_VS_FILE_COMPARATOR;
+      if( direction == SWT.UP ) {
+        baseComparator = baseComparator.reversed();
+      }
+      
+      Comparator<Object> colComparator = null;
+      
+      if( sortColumn == fTableNameColumn ) {
+        colComparator = Comparator.comparing( o -> ((Entity) o).getName(), String.CASE_INSENSITIVE_ORDER );
+      } else if( sortColumn == fTableTypeColumn ) {
+        colComparator = Comparator.comparing( o -> ((Entity) o).getType() );
+      } else if( sortColumn == fTableModifiedColumn ) {
+        colComparator = Comparator.comparingLong( o -> { 
+          Date d = ((Entity) o).getDate();
+          return d == null ? 0 : d.getTime();
+        });
+      } 
+      if( direction == SWT.DOWN ) {
+        colComparator = colComparator.reversed();
+      }
+      fileTableViewerComparator = baseComparator.thenComparing( colComparator );
+      
+    } else {
+      //no comparator, use default
+      fileTableViewerComparator = null;
+    }
+    
+    fileTableViewer.refresh( true ); 
+  }
+  
 
   private void performRename( SelectionEvent e ) {
     selectedItems.clear();
@@ -1598,14 +1699,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           switch( pasteAction ) {
             case PASTE_ACTION_REPLACE:
               copyFile( file, destFolder, newFilePath,
-                new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.OVERWRITE ) );
+                new OverwriteStatus( getShell(), OverwriteMode.OVERWRITE ) );
               break;
             case PASTE_ACTION_KEEP_BOTH:
               if ( StringUtils.isNotEmpty( newFilePath ) ) {
                 result = FILE_CONTROLLER.getNewName( destFolder, newFilePath );
                 if ( result.getStatus() == Result.Status.SUCCESS ) {
                   FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(),
-                    new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.RENAME ) );
+                    new OverwriteStatus( getShell(), OverwriteMode.RENAME ) );
                 }
               }
               break;
@@ -1621,7 +1722,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
       } else {
         result = copyFile( file, destFolder, newFilePath,
-          new OverwriteStatus( getShell(), OverwriteStatus.OverwriteMode.CANCEL ) );
+          new OverwriteStatus( getShell(), OverwriteMode.CANCEL ) );
       }
 
       if ( isCutActionSelected && deleteCutFileFlag ) {
@@ -1659,11 +1760,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     RenameDialog renameDialog = new RenameDialog( getShell() );
     String renameValue = renameDialog.open( file.getName() );
     if ( renameValue != null ) {
-      String filename = file.getName();
-      String fileExtention =
-        filename.lastIndexOf( "." ) != -1 ? filename.substring( filename.lastIndexOf( "." ), filename.length() ) : null;
-      FILE_CONTROLLER.rename( file, file.getParent() + java.io.File.separator + renameValue,
-        new OverwriteStatus( null, OverwriteStatus.OverwriteMode.OVERWRITE ) );
+      String newPath = file.getParent() + "/" + renameValue;
+      // Prevent rename folder to the same name
+      if ( !file.getPath().equals( newPath ) ) {
+        FILE_CONTROLLER.rename( file, newPath, new OverwriteStatus( null, OverwriteMode.OVERWRITE ) );
+      }
     }
   }
 
@@ -2123,9 +2224,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
             FILE_CONTROLLER.searchFiles( (File) selectedElement, currentFilters, searchString ) :
             FILE_CONTROLLER.getFiles( (File) selectedElement, currentFilters, useCache );
           fileTableViewer.setInput( files.stream()
-            .sorted( Comparator.comparing( f -> f instanceof Directory, Boolean::compare ).reversed()
-              .thenComparing( Comparator.comparing( f -> ( (File) f ).getName(),
-                String.CASE_INSENSITIVE_ORDER ) ) )
+            .sorted( DEFAULT_FILE_TABLE_VIEWER_COMPARATOR )
             .toArray() );
         } catch ( FileException e ) {
           new ErrorDialog( getShell(), "Error",

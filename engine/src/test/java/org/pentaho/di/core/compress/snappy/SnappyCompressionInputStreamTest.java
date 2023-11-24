@@ -41,6 +41,7 @@ import org.pentaho.di.core.compress.CompressionProvider;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.xerial.snappy.Snappy;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
 
@@ -107,7 +108,7 @@ public class SnappyCompressionInputStreamTest {
     SnappyOutputStream sos = new SnappyOutputStream( baos );
     byte[] testBytes = "Test".getBytes();
     sos.write( testBytes );
-    ByteArrayInputStream in = new ByteArrayInputStream( baos.toByteArray() );
+    ByteArrayInputStream in = new ByteArrayInputStream( Snappy.compress( testBytes ) );
     sos.close();
 
     return new SnappyInputStream( in );

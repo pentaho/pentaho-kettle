@@ -13,6 +13,10 @@
   <artifactId>get-file-sftp-plugin-impl</artifactId>
   <name>PDI Get File SFTP Impl</name>
 
+  <properties>
+   <sshd-sftp.version>0.11.0</sshd-sftp.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -46,6 +50,12 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sshd</groupId>
+      <artifactId>sshd-sftp</artifactId>
+      <version>${sshd-sftp.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

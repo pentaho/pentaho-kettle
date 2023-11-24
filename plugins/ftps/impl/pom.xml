@@ -13,6 +13,10 @@
   <artifactId>ftps-plugin-impl</artifactId>
   <name>PDI FTPS Impl</name>
 
+  <properties>
+    <ftpserver-core.version>1.0.6</ftpserver-core.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -52,6 +56,12 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ftpserver</groupId>
+      <artifactId>ftpserver-core</artifactId>
+      <version>${ftpserver-core.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

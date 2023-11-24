@@ -55,7 +55,7 @@ public class XulDatabaseExplorerControllerIT {
     Assert.assertEquals( "By default action status is none", UiPostActionStatus.NONE, actual );
 
     try {
-      dialog.createDatabaseNodes();
+      dialog.createDatabaseNodes( shell );
     } catch ( Exception e ) {
       // do nothing as it usually used for ui functionality     
     }

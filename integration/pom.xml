@@ -17,8 +17,6 @@
   </parent>
 
   <properties>
-    <sshd-sftp.version>0.11.0</sshd-sftp.version>
-    <ftpserver-core.version>1.0.6</ftpserver-core.version>
     <pdi.version>10.1.0.0-SNAPSHOT</pdi.version>
   </properties>
 
@@ -71,19 +69,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>kettle-gpload-plugin-core</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.sshd</groupId>
-      <artifactId>sshd-sftp</artifactId>
-      <version>${sshd-sftp.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ftpserver</groupId>
-      <artifactId>ftpserver-core</artifactId>
-      <version>${ftpserver-core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

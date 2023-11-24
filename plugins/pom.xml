@@ -59,6 +59,7 @@
         <module>mail-validator</module>
         <module>email-messages</module>
         <module>get-file-with-ftp</module>
+        <module>msg-box-info</module>
       </modules>
     </profile>
 

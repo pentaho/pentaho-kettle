@@ -42,6 +42,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.base.IMetaFileCache;
@@ -109,6 +110,8 @@ import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
+import java.time.LocalDateTime;
+import org.springframework.util.ObjectUtils;
 
 /**
  * This class executes a job as defined by a JobMeta object.
@@ -145,6 +148,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   private AtomicInteger errors;
 
   private VariableSpace variables = new Variables();
+
+  private MutableInt lastNr = new MutableInt( -1 );
 
   /**
    * The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables,
@@ -479,7 +484,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       KettleEnvironment.setExecutionInformation( this, rep );
 
       log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobStarted" ) );
-
+      log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.StartTime", LocalDateTime.now()) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.RunName", jobMeta.getName()) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.UserContext", System.getProperty("user.name")) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.NoOfSteps", jobMeta.nrJobEntries()) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.NoOfHops", jobMeta.nrJobHops()) + ","+
+        BaseMessages.getString( PKG, "Job.Comment.RunId", this.getLogChannelId()) );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobStart.id, this );
 
       // Start the tracking...
@@ -547,7 +557,23 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       }
       // Save this result...
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerEnd ) );
-      log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
+      if( !ObjectUtils.isEmpty( jerEnd ) && !ObjectUtils.isEmpty( jerEnd.getResult() ) && jerEnd.getResult().getResult() ){
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId() ) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.EndTime",LocalDateTime.now() ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId() ) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.UserContext",System.getProperty("user.name") ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId()) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.SuccessStatus") );
+      } else {
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId() ) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.EndTime",LocalDateTime.now() ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId() ) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.UserContext",System.getProperty("user.name") ) );
+        log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.RunId",this.getLogChannelId()) + ","+
+          BaseMessages.getString( PKG, "Job.Comment.SuccessFailure") );
+      }
 
       setActive( false );
       if ( !isStopped() ) {
@@ -744,8 +770,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Also capture the logging text after the execution...
       //
       LoggingBuffer loggingBuffer = KettleLogStore.getAppender();
-      StringBuffer logTextBuffer = loggingBuffer.getBuffer( cloneJei.getLogChannel().getLogChannelId(), false );
-      newResult.setLogText( logTextBuffer.toString() + newResult.getLogText() );
+      StringBuffer logTextBuffer = loggingBuffer.getBuffer( cloneJei.getLogChannel().getLogChannelId(),
+        false, lastNr );
+      newResult.appendLogText( logTextBuffer.toString() );
 
       // Save this result as well...
       //

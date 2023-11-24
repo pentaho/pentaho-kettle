@@ -89,13 +89,13 @@ case `uname -s` in
 				LIBPATH=$CURRENTDIR/../libswt/aix64/
 				;;
 
-			*)	
+			*)
 				echo "I'm sorry, this AIX platform [$ARCH] is not yet supported!"
 				exit
 				;;
 		esac
 		;;
-	SunOS) 
+	SunOS)
 	ARCH=`uname -m`
 		case $ARCH in
 
@@ -103,7 +103,7 @@ case `uname -s` in
 				LIBPATH=$CURRENTDIR/../libswt/solaris-x86/
 				;;
 
-			*)	
+			*)
 				LIBPATH=$CURRENTDIR/../libswt/solaris/
 				;;
 		esac
@@ -136,7 +136,7 @@ case `uname -s` in
 			LIBPATH=$CURRENTDIR/../libswt/osx/
 			;;
 
-		*)	
+		*)
 			echo "I'm sorry, this Mac platform [$ARCH] is not yet supported!"
 			echo "Please try starting using 'Data Integration 32-bit' or"
 			echo "'Data Integration 64-bit' as appropriate."
@@ -187,7 +187,7 @@ case `uname -s` in
 				LIBPATH=$CURRENTDIR/../libswt/linux/ppc64/
 				;;
 
-			*)	
+			*)
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
@@ -215,14 +215,14 @@ case `uname -s` in
 				exit
 				;;
 
-			*)	
+			*)
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 		esac
 		;;
 
-	HP-UX) 
+	HP-UX)
 		LIBPATH=$CURRENTDIR/../libswt/hpux/
 		;;
 	CYGWIN*)

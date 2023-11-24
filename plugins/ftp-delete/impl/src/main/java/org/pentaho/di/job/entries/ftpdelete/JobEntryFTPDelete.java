@@ -718,6 +718,10 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           }
         }
 
+        if ( copyprevious ) {
+          realFtpDirectory = "";
+        }
+
         // establish the connection
         FTPConnect(
           realservername, realUsername, realPassword, realserverport, realFtpDirectory, realproxyhost,

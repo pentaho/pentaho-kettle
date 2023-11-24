@@ -307,6 +307,32 @@ public class SingleThreader extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override public boolean beforeStartProcessing( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    // beforeStartProcessing of the single threading execution engine
+    try {
+      if ( getData().executor != null ) {
+        return getData().executor.beforeStartProcessing( smi, sdi );
+      }
+    } catch ( KettleException e ) {
+      log.logError( "Error disposing of sub-transformation: ", e );
+    }
+
+    return super.beforeStartProcessing( smi, sdi );
+  }
+
+  @Override public boolean afterFinishProcessing( StepMetaInterface smi, StepDataInterface sdi ) {
+    // afterFinishProcessing of the single threading execution engine
+    try {
+      if ( getData().executor != null ) {
+        return getData().executor.afterFinishProcessing( smi, sdi );
+      }
+    } catch ( KettleException e ) {
+      log.logError( "Error disposing of sub-transformation: ", e );
+    }
+
+    return super.afterFinishProcessing( smi, sdi );
+  }
+
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     // dispose of the single threading execution engine
     //

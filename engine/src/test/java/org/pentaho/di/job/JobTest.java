@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job;
 
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -274,6 +275,7 @@ public class JobTest {
     setInternalState( mockedJob, "jobEntryListeners", new ArrayList<>(  ) );
     setInternalState( mockedJob, "jobEntryResults", new LinkedList<>(  ) );
     setInternalState( mockedJob, "status", new AtomicInteger( 0 ) );
+    setInternalState( mockedJob, "lastNr", new MutableInt( -1 ) );
     when( mockedJobMeta.findJobEntry( JobMeta.STRING_SPECIAL_START, 0, false ) ).thenReturn( mockedJobEntryCopy );
     when( mockedJobEntryCopy.getEntry() ).thenReturn( mockedJobEntrySpecial );
     when( mockedJobEntrySpecial.getLogChannel() ).thenReturn( mockedLogChannel );
@@ -310,6 +312,7 @@ public class JobTest {
       when( startJobEntryResult.clone() ).thenReturn( startJobEntryResult );
       setInternalState( mockedJob, "startJobEntryCopy", startJobEntryCopy );
       setInternalState( mockedJob, "startJobEntryResult", startJobEntryResult );
+      setInternalState( mockedJob, "lastNr", new MutableInt( -1 ) );
       when( mockJobEntryInterface.execute( startJobEntryResult, 0 ) ).thenReturn( new Result() );
 
       mockedJob.execute( 0, new Result() );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -130,6 +130,9 @@ public class SpoonSlave extends Composite implements TabItemInterface {
   private TreeItem jobParentItem;
 
   private LogChannelInterface log;
+
+  private String lastLoggedId;
+  private boolean lastLoggedIsFinishedOrStopped;
 
   private class TreeEntry {
     String itemType; // Transformation or Job
@@ -505,50 +508,55 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       }
     } else if ( item.getData( "jobStatus" ) != null ) {
       SlaveServerJobStatus jobStatus = (SlaveServerJobStatus) item.getData( "jobStatus" );
-      try {
-        if ( log.isDetailed() ) {
-          log.logDetailed( "Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer );
-        }
-
-        SlaveServerJobStatus ts =
-          slaveServer.getJobStatus( jobStatus.getJobName(), jobStatus.getId(), 0 );
-
-        if ( log.isDetailed() ) {
-          log.logDetailed(
-            "Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer );
-        }
-
-        String logging = ts.getLoggingString();
-
-        String[] lines = logging.split( "\r\n|\r|\n" );
-        if ( lines.length > PropsUI.getInstance().getMaxNrLinesInLog() ) {
-          // Trim to view the last x lines
-          int offset = lines.length - PropsUI.getInstance().getMaxNrLinesInLog();
-          StringBuilder trimmedLog = new StringBuilder();
-          // Keep only the text from offset to the end of the log
-          while ( offset != lines.length ) {
-            trimmedLog.append( lines[offset++] ).append( '\n' );
+      if ( !jobStatus.isFinished() || !jobStatus.getId().equals( lastLoggedId ) || !lastLoggedIsFinishedOrStopped ) {
+        try {
+          if ( log.isDetailed() ) {
+            log.logDetailed( "Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer );
           }
-          logging = trimmedLog.toString();
-        }
 
-        currentLogText = logging;
+          SlaveServerJobStatus ts =
+            slaveServer.getJobStatusTail( jobStatus.getJobName(), jobStatus.getId(),
+              PropsUI.getInstance().getMaxNrLinesInLog() );
 
-        Result result = ts.getResult();
-        if ( result != null ) {
-          item.setText( 2, "" + result.getNrLinesRead() );
-          item.setText( 3, "" + result.getNrLinesWritten() );
-          item.setText( 4, "" + result.getNrLinesInput() );
-          item.setText( 5, "" + result.getNrLinesOutput() );
-          item.setText( 6, "" + result.getNrLinesUpdated() );
-          item.setText( 7, "" + result.getNrLinesRejected() );
-          item.setText( 8, "" + result.getNrErrors() );
+          if ( log.isDetailed() ) {
+            log.logDetailed(
+              "Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer );
+          }
+
+          String logging = ts.getLoggingString();
+
+          String[] lines = logging.split( "\r\n|\r|\n" );
+          if ( lines.length > PropsUI.getInstance().getMaxNrLinesInLog() ) {
+            // Trim to view the last x lines
+            int offset = lines.length - PropsUI.getInstance().getMaxNrLinesInLog();
+            StringBuilder trimmedLog = new StringBuilder();
+            // Keep only the text from offset to the end of the log
+            while ( offset != lines.length ) {
+              trimmedLog.append( lines[ offset++ ] ).append( '\n' );
+            }
+            logging = trimmedLog.toString();
+          }
+
+          currentLogText = logging;
+          lastLoggedId = jobStatus.getId();
+          lastLoggedIsFinishedOrStopped = jobStatus.isFinished() || jobStatus.isStopped();
+
+          Result result = ts.getResult();
+          if ( result != null ) {
+            item.setText( 2, "" + result.getNrLinesRead() );
+            item.setText( 3, "" + result.getNrLinesWritten() );
+            item.setText( 4, "" + result.getNrLinesInput() );
+            item.setText( 5, "" + result.getNrLinesOutput() );
+            item.setText( 6, "" + result.getNrLinesUpdated() );
+            item.setText( 7, "" + result.getNrLinesRejected() );
+            item.setText( 8, "" + result.getNrErrors() );
+          }
+        } catch ( Exception e ) {
+          jobStatus.setErrorDescription( "Unable to access transformation details : "
+            + Const.CR + Const.getStackTracker( e ) );
         }
-      } catch ( Exception e ) {
-        jobStatus.setErrorDescription( "Unable to access transformation details : "
-          + Const.CR + Const.getStackTracker( e ) );
       }
-    }
+      }
   }
 
   protected void enableButtons() {
