@@ -11,13 +11,13 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>10.0.0.0-SNAPSHOT</version>
+    <version>10.0.0.1-267</version>
   </parent>
 
   <properties>
     <!-- plugins -->
     <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
-    <big-data-plugin.version>10.0.0.0-SNAPSHOT</big-data-plugin.version>
+    <big-data-plugin.version>10.0.0.1-267</big-data-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-dummy-plugin.version>${project.version}</kettle-dummy-plugin.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
@@ -26,11 +26,11 @@
     <kettle-gpload-plugin.version>${project.version}</kettle-gpload-plugin.version>
     <kettle-hl7-plugin.version>${project.version}</kettle-hl7-plugin.version>
     <kettle-palo-plugin.version>${project.version}</kettle-palo-plugin.version>
-    <pdi-google-analytics-plugin.version>10.0.0.0-SNAPSHOT</pdi-google-analytics-plugin.version>
-    <pdi-salesforce-plugin.version>10.0.0.0-SNAPSHOT</pdi-salesforce-plugin.version>
+    <pdi-google-analytics-plugin.version>10.0.0.1-267</pdi-google-analytics-plugin.version>
+    <pdi-salesforce-plugin.version>10.0.0.1-267</pdi-salesforce-plugin.version>
     <monet-db-bulk-loader-plugin.version>${project.version}</monet-db-bulk-loader-plugin.version>
     <yaml-input-plugin.version>${project.version}</yaml-input-plugin.version>
-    <pentaho-reporting-plugin.version>10.0.0.0-SNAPSHOT</pentaho-reporting-plugin.version>
+    <pentaho-reporting-plugin.version>10.0.0.1-267</pentaho-reporting-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
     <terafast-bulk-loader-plugin.version>${project.version}</terafast-bulk-loader-plugin.version>
@@ -46,13 +46,13 @@
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
-    <pdi-sap-plugin.version>10.0.0.0-SNAPSHOT</pdi-sap-plugin.version>
-    <pentaho-cassandra-plugin.version>10.0.0.0-SNAPSHOT</pentaho-cassandra-plugin.version>
+    <pdi-sap-plugin.version>10.0.0.1-267</pdi-sap-plugin.version>
+    <pentaho-cassandra-plugin.version>10.0.0.1-267</pentaho-cassandra-plugin.version>
     <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
-    <pdi-platform-utils-plugin.version>10.0.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
-    <vertica-bulkloader-plugin.version>10.0.0.0-SNAPSHOT</vertica-bulkloader-plugin.version>
-    <pdi-pur-plugin.version>10.0.0.0-SNAPSHOT</pdi-pur-plugin.version>
-    <pentaho-mongodb-plugin.version>10.0.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
+    <pdi-platform-utils-plugin.version>10.0.0.1-267</pdi-platform-utils-plugin.version>
+    <vertica-bulkloader-plugin.version>10.0.0.1-267</vertica-bulkloader-plugin.version>
+    <pdi-pur-plugin.version>10.0.0.1-267</pdi-pur-plugin.version>
+    <pentaho-mongodb-plugin.version>10.0.0.1-267</pentaho-mongodb-plugin.version>
     <engine-configuration-plugin.version>${project.version}</engine-configuration-plugin.version>
     <metastore-locator-plugin.version>${project.version}</metastore-locator-plugin.version>
     <repository-locator-plugin.version>${project.version}</repository-locator-plugin.version>
@@ -65,9 +65,9 @@
     <mqtt-streaming-plugin.version>${project.version}</mqtt-streaming-plugin.version>
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
     <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
-    <pentaho-metaverse.version>10.0.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <pdi-xml-plugin.version>10.0.0.0-SNAPSHOT</pdi-xml-plugin.version>
-    <pdi-json-plugin.version>10.0.0.0-SNAPSHOT</pdi-json-plugin.version>
+    <pentaho-metaverse.version>10.0.0.1-267</pentaho-metaverse.version>
+    <pdi-xml-plugin.version>10.0.0.1-267</pdi-xml-plugin.version>
+    <pdi-json-plugin.version>10.0.0.1-267</pdi-json-plugin.version>
   </properties>
 
   <dependencies>
