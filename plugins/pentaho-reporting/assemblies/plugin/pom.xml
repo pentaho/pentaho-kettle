@@ -7,18 +7,18 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-reporting-assemblies</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-110</version>
   </parent>
 
   <artifactId>pentaho-reporting-plugins</artifactId>
-  <version>10.1.0.0-SNAPSHOT</version>
+  <version>10.1.0.0-110</version>
   <packaging>pom</packaging>
 
   <name>PDI Pentaho Reporting Plugins Distribution</name>
   <description></description>
 
   <properties>
-    <pentaho-reporting.version>10.1.0.0-SNAPSHOT</pentaho-reporting.version>
+    <pentaho-reporting.version>10.1.0.0-110</pentaho-reporting.version>
   </properties>
 
   <dependencies>
