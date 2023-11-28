@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ public class ConcatFieldsData extends TextFileOutputData implements StepDataInte
   public String stringEnclosure;
   public String[] stringNullValue;
   public int targetFieldLengthFastDataDump; // for fast data dump (StringBuilder size)
+  public int headerOffsetForSplitRows;
 
   public ConcatFieldsData() {
     super(); // allocate TextFileOutputData

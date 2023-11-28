@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,9 +24,11 @@ package org.pentaho.di.trans.steps.concatfields;
 
 import java.io.UnsupportedEncodingException;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -111,10 +113,13 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
     if ( ( r == null && data.outputRowMeta != null && meta.isFooterEnabled() )
       || ( r != null && getLinesWritten() > 0 && meta.getSplitEvery() > 0
-      && ( ( getLinesWritten() + 1 ) % meta.getSplitEvery() ) == 0 ) ) {
+      && ( ( getLinesWritten() + 1 - data.headerOffsetForSplitRows ) % meta.getSplitEvery() ) == 0 ) ) {
       if ( data.outputRowMeta != null ) {
         if ( meta.isFooterEnabled() ) {
           writeHeader();
+          if ( isHeaderOffsetForSplitRowsAllowed() ) {
+            data.headerOffsetForSplitRows++;
+          }
           // add an empty line for the header
           Object[] row = new Object[ data.outputRowMeta.size() ];
           putRowFromStream( row );
@@ -305,6 +310,10 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
     initStringDataFields();
 
+    if ( isHeaderOffsetForSplitRowsAllowed() ) {
+      data.headerOffsetForSplitRows = 1;
+    }
+
     boolean rv = super.init( smi, sdi ); // calls also initBinaryDataFields();
     data.binaryNewline = new byte[] {}; // tweak the CR/LF handling
     return rv;
@@ -355,6 +364,16 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     }
 
     return retval;
+  }
+
+  private boolean isHeaderOffsetForSplitRowsAllowed() {
+    //Check if retro compatibility is set or not, to guaranty compatibility with older versions
+    //If this variable is not set, then data.headerOffsetForSplitRows will always be 0
+    //If this variable is set to Y, then data.headerOffsetForSplitRows will increment on every Split Rows, and
+    //this value is used to correct the offset in populating the header data at right position
+    String val = getVariable( Const.KETTLE_COMPATIBILITY_CONCAT_FIELDS_SPLIT_ROWS_HEADER_OFFSET, "N" );
+
+    return Boolean.TRUE.equals( ValueMetaBase.convertStringToBoolean( Const.NVL( val, "N" ) ) );
   }
 
   @Override
