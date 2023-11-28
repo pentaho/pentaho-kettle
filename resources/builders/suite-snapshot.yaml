@@ -148,6 +148,14 @@ jobGroups:
      - jobID           :  metadata
        scmUrl          :  https://github.com/pentaho/pentaho-metadata.git
 
+     - jobID           :  license-ee-api
+       scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
+       directives      :  += -Dmaven.test.failure.ignore=true -pl .,pentaho-license-validator-api,pentaho-license-validator
+  
+  1250:
+     - jobID           :  revenera-validator
+       scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git       
+
   1300:
      - jobID           :  database-gwt
        scmUrl          :  https://github.com/pentaho/pentaho-commons-database.git
@@ -162,9 +170,9 @@ jobGroups:
      - jobID           :  chartbeans
        scmUrl          :  https://github.com/pentaho/pentaho-chartbeans.git
 
-     - jobID           :  license-ee
+     - jobID           :  license-ee-core
        scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
-       directives      :  += -Dmaven.test.failure.ignore=true
+       directives      :  += -Dmaven.test.failure.ignore=true -pl core,ftp-installer,mock,assemblies,metadata-client-tool -amd
 
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-plugin.git
