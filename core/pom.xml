@@ -431,6 +431,17 @@
       <artifactId>simple-jndi</artifactId>
       <version>${simple-jndi.version}</version>
     </dependency>
+    <dependency> <!-- included only to provide FTP file providers; not used by code -->
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>${commons-net.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <!-- Endorsed Standards Excluded from Java 11+ -->
     <dependency>
