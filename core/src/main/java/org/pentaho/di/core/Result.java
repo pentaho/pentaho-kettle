@@ -675,8 +675,10 @@ public class Result implements Cloneable {
     stopped = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "is_stopped" ) );
 
     logChannelId = XMLHandler.getTagValue( node, "log_channel_id" );
-    logText = new StringBuilder( XMLHandler.getTagValue( node, "log_text" ) );
-
+    String tagText = XMLHandler.getTagValue( node, "log_text" );
+    if ( tagText != null ) {
+      logText = new StringBuilder( tagText );
+    }
     elapsedTimeMillis = Const.toLong( XMLHandler.getTagValue( node, "elapsedTimeMillis" ), 0L );
     executionId = XMLHandler.getTagValue( node, "executionId" );
 
