@@ -111,11 +111,16 @@ get_access_token () {
       -d \"box_subject_type=enterprise\"  \
       -d \"box_subject_id=80272\" \
       | jq '.'"
-  if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
+  RESPONSE=$(eval "${COMMAND} 2>&1")
+  RET=$?
+  TOKEN_FAILURE=false
+  if [ $RET -ne 0 ]; then
+    TOKEN_FAILURE=true
+  fi
+  if [ "$TOKEN_FAILURE" == "true" ] || [ "${IS_DEBUG_ENABLED}" == "true" ]; then
     echo "${COMMAND}"
   fi
-  RESPONSE=$(eval "${COMMAND} 2>&1")
-  if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
+  if [ "$TOKEN_FAILURE" == "true" ] || [ "${IS_DEBUG_ENABLED}" == "true" ]; then
     echo "${RESPONSE}"
   fi
   ACCESS_TOKEN=$(echo "${RESPONSE}" | jq '.access_token')
@@ -153,11 +158,17 @@ get_folder_id () {
                     }
                   }' \
                   | jq '.'"
-    if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
+    
+    RESPONSE=$(eval "${COMMAND} 2>&1")
+    RET=$?
+    FOLDER_FAILURE=false
+    if [ $RET -ne 0 ]; then
+      FOLDER_FAILURE=true
+    fi
+    if [ "$FOLDER_FAILURE" == "true" ] || [ "${IS_DEBUG_ENABLED}" == "true" ]; then
       echo "${COMMAND}"
     fi
-    RESPONSE=$(eval "${COMMAND} 2>&1")
-    if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
+    if [ "$FOLDER_FAILURE" == "true" ] || [ "${IS_DEBUG_ENABLED}" == "true" ]; then
       echo "${RESPONSE}"
     fi
     if [ "$(echo ${RESPONSE} | jq -r '.code')" == "item_name_in_use" ]; then
@@ -179,28 +190,41 @@ upload_file () {
   FILE_PATH_ARRAY=($(echo $FILE_PATH | sed "s/\// /g"))
   FILE_NAME=${FILE_PATH_ARRAY[-1]}
 
-    echo "uploading $FILE_PATH ..."
-    COMMAND="curl -s --retry 3 -X POST \"https://upload.box.com/api/2.0/files/content\" \
-                  -H \"Authorization: Bearer $ACCESS_TOKEN\" \
-                  -H \"Content-Type: multipart/form-data\" \
-                  -F attributes='{\"name\":\"$FILE_NAME\", \"parent\":{\"id\":\"$PARENT_ID\"}}' \
-                  -F file=@$FILE_PATH "
+  echo "uploading $FILE_PATH ..."
+  COMMAND="curl -s --retry 3 -X POST \"https://upload.box.com/api/2.0/files/content\" \
+                -H \"Authorization: Bearer $ACCESS_TOKEN\" \
+                -H \"Content-Type: multipart/form-data\" \
+                -F attributes='{\"name\":\"$FILE_NAME\", \"parent\":{\"id\":\"$PARENT_ID\"}}' \
+                -F file=@$FILE_PATH "
+    
+  RESPONSE=$(eval "${COMMAND} 2>&1")
+  RET=$?
+  UPLOAD_FAILURE=false
+  if [ $RET -ne 0 ]; then
+    UPLOAD_FAILURE=true
+  fi
+  if [ "$UPLOAD_FAILURE" == "true" ] || [ "${IS_DEBUG_ENABLED}" == "true" ]; then
+    echo "${COMMAND}"
+  fi
+    
+  if [ "$UPLOAD_FAILURE" == "true" ] || [ "${IS_DEBUG_ENABLED}" == "true" ]; then
+    echo "${RESPONSE}"
+  fi
 
-    if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
-      echo "${COMMAND}"
-    fi
-    RESPONSE=$(eval "${COMMAND} 2>&1")
-    if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
-      echo "${RESPONSE}"
-    fi
+  new_file_id=$(echo "$RESPONSE" | jq -r '.entries[0] | .id' || echo "error" )
+  # If we haven't received the file's id back, it will probably mean that it was not created... so we retry
+  if [ "$new_file_id" == "" ] && [ "$RESPONSE" != "" ]; then
+    UPLOAD_FAILURE=$(upload_file "$PARENT_ID" "$FILE_PATH")
+  fi
 
-    new_file_id=$(echo "$RESPONSE" | jq -r '.entries[0] | .id' || echo "error" )
-    # If we haven't received the file's id back, it will probably mean that it was not created... so we retry
-    if [ "$new_file_id" == "" ] && [ "$RESPONSE" != "" ]; then
-      upload_file "$PARENT_ID" "$FILE_PATH" || echo "Couldn't recreate $FILE_PATH. See log."
-    fi
-
-  echo "file upload complete"
+  if [ "$UPLOAD_FAILURE" = true ]; then
+    echo "################################################"
+    echo "############   UPLOAD FAILED   #################"
+    echo "################################################"
+    echo "FAILURE"
+  else
+    echo "SUCCESS"
+  fi
 }
 
 
@@ -215,7 +239,7 @@ get_access_token
 
 # get $VERSION dir under parent
 TARGET_FOLDER_PATH=$PARENT_FOLDER_NAME/$VERSION
-get_folder_id $FOLDER_ID $TARGET_FOLDER_PATH
+get_folder_id "$FOLDER_ID" "$TARGET_FOLDER_PATH"
 
 if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
   echo "FOLDER_ID: $FOLDER_ID"
@@ -224,7 +248,7 @@ fi
 if [[ "$BUILD_NUM" != "RELEASE" ]]; then
   # create/check $BUILD_NUM dir under $VERSION dir
   TARGET_FOLDER_PATH=$PARENT_FOLDER_NAME/$VERSION/$BUILD_NUM
-  get_folder_id $FOLDER_ID $TARGET_FOLDER_PATH
+  get_folder_id "$FOLDER_ID" "$TARGET_FOLDER_PATH"
   if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
     echo "FOLDER_ID: $FOLDER_ID"
   fi
@@ -240,6 +264,8 @@ ESCAPED_SRC_PATH=$(echo "$SRC_PATH" | sed "s/\//\\\\\//g")
 if [ "${IS_DEBUG_ENABLED}" == "true" ]; then
   find $SRC_PATH -type d
 fi
+
+SCRIPT_STATUS="SUCCESS"
 
 while IFS= read -r SRC_DIR; do
 
@@ -291,7 +317,7 @@ while IFS= read -r SRC_DIR; do
             fi
           done
           echo "creating folder ${FOLDER_PATH_SEGMENT} ..."
-          get_folder_id $FOLDER_ID $FOLDER_PATH_SEGMENT
+          get_folder_id "$FOLDER_ID" "$FOLDER_PATH_SEGMENT"
         done
         break
       else
@@ -315,17 +341,28 @@ while IFS= read -r SRC_DIR; do
 
   echo "uploading files from $SRC_DIR to $TARGET_FOLDER_PATH ..."
 
-  # get a new access token as they are only good found ~70 mins and these file uploads can take a while
+  # get a new access token as they are only good for ~70 mins and these file uploads can take a while
   get_access_token
 
   find $SRC_DIR -maxdepth 1 -type f | while read real_file; do
     echo "uploading $real_file to $TARGET_FOLDER_PATH ... "
-    upload_file $FOLDER_ID $real_file
+    RESULT=$(upload_file "$FOLDER_ID" "$real_file")
+    if [ "$RESULT" == "FAILURE" ]; then
+      SCRIPT_STATUS="FAILURE"
+    fi
   done
 
   find $SRC_DIR -maxdepth 1 -type l | while read sym_file; do
     echo "uploading $sym_file to $TARGET_FOLDER_PATH ... "
-    upload_file $FOLDER_ID $sym_file
+    RESULT=$(upload_file "$FOLDER_ID" "$sym_file")
+    if [ "$RESULT" == "FAILURE" ]; then
+      SCRIPT_STATUS="FAILURE"
+    fi
   done
 
 done <<< "$(find $SRC_PATH -type d)"
+
+if [ "$SCRIPT_STATUS" == "FAILURE" ]; then
+  echo "FAILURES encountered during upload"
+  exit 1
+fi
