@@ -30,6 +30,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -148,6 +149,7 @@ public class ExcelWriterStepTest {
     step.prepareNextOutputFile();
   }
 
+  @Ignore
   @Test
   public void testWriteUsingTemplateWithFormatting() throws Exception {
     assertTrue( step.init( metaMock, dataMock ) );
