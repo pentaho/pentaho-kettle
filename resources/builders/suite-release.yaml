@@ -220,7 +220,7 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git
        versionProperty :  revenera-lic-validator.version
 
-  1300:
+  1260:
      - jobID           :  revenera-validator-linux-eula-wrap
        scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git
        root            :  enterprise-local-license-server
@@ -231,6 +231,7 @@ jobGroups:
        testable        :  false
        versionProperty :  revenera-lic-validator.version
 
+  1300:
      - jobID           :  revenera-validator-windows-eula-wrap
        scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git
        root            :  enterprise-local-license-server
