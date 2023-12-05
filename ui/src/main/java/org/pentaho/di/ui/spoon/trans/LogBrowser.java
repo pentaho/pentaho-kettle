@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -91,7 +91,7 @@ public class LogBrowser {
     final Color colorRed = GUIResource.getInstance().getColorRed();
 
     final int LOG_LINE_ESTIMATED_SIZE = 150;
-    final int MAX_NR_LOG_LINES_CHUNK = 150;
+    final int MAX_NR_LOG_LINES_CHUNK = 500;
 
     // Refresh the log every second or so
     //

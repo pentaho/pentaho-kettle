@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -126,7 +126,7 @@ public class Result implements Cloneable {
   private String logChannelId;
 
   /** The log text. */
-  private String logText;
+  private StringBuilder logText = new StringBuilder( 10000 );
 
   /**
    * safe stop.
@@ -543,7 +543,7 @@ public class Result implements Cloneable {
     nrLinesDeleted = 0;
     nrErrors = 0;
     nrFilesRetrieved = 0;
-    logText = null;
+    logText = new StringBuilder( 10000 );
   }
 
   /**
@@ -564,7 +564,7 @@ public class Result implements Cloneable {
     nrFilesRetrieved += res.getNrFilesRetrieved();
     resultFiles.putAll( res.getResultFiles() );
     logChannelId = res.getLogChannelId();
-    logText = res.getLogText();
+    logText.append( res.getLogText() );
     rows.addAll( res.getRows() );
   }
 
@@ -629,7 +629,7 @@ public class Result implements Cloneable {
     xml.append( XMLHandler.addTagValue( "exit_status", exitStatus ) );
     xml.append( XMLHandler.addTagValue( "is_stopped", stopped ) );
     xml.append( XMLHandler.addTagValue( "log_channel_id", logChannelId ) );
-    xml.append( XMLHandler.addTagValue( "log_text", logText ) );
+    xml.append( XMLHandler.addTagValue( "log_text", logText.toString() ) );
     xml.append( XMLHandler.addTagValue( "elapsedTimeMillis", elapsedTimeMillis ) );
     xml.append( XMLHandler.addTagValue( "executionId", executionId ) );
 
@@ -675,8 +675,10 @@ public class Result implements Cloneable {
     stopped = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "is_stopped" ) );
 
     logChannelId = XMLHandler.getTagValue( node, "log_channel_id" );
-    logText = XMLHandler.getTagValue( node, "log_text" );
-
+    String tagText = XMLHandler.getTagValue( node, "log_text" );
+    if ( tagText != null ) {
+      logText = new StringBuilder( tagText );
+    }
     elapsedTimeMillis = Const.toLong( XMLHandler.getTagValue( node, "elapsedTimeMillis" ), 0L );
     executionId = XMLHandler.getTagValue( node, "executionId" );
 
@@ -866,7 +868,7 @@ public class Result implements Cloneable {
    * @return the logging text as a string
    */
   public String getLogText() {
-    return logText;
+    return logText.toString();
   }
 
   /**
@@ -876,7 +878,15 @@ public class Result implements Cloneable {
    *          the logText to set
    */
   public void setLogText( String logText ) {
-    this.logText = logText;
+    if ( logText == null ) {
+      this.logText = new StringBuilder( 10000 );
+    } else {
+      this.logText = new StringBuilder( logText );
+    }
+  }
+
+  public void appendLogText( String logTextStr ) {
+    logText.append( logTextStr );
   }
 
   /**
