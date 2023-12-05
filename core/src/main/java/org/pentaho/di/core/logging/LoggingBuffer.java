@@ -205,7 +205,8 @@ public class LoggingBuffer {
    * @return
    */
   public StringBuffer getBuffer( String parentLogChannelId, boolean includeGeneral, MutableInt newLastNr ) {
-    int startLine = newLastNr.addAndGet( 1 );
+    newLastNr.add( 1 );
+    int startLine = newLastNr.toInteger();
     newLastNr.setValue( getLastBufferLineNr() );
     return getBuffer( parentLogChannelId, includeGeneral, startLine, newLastNr.getValue() );
   }
