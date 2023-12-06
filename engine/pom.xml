@@ -65,10 +65,13 @@
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <wsdl4j-qname.version>1.6.1</wsdl4j-qname.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
-    <hibernate-core.version>3.6.9.Final</hibernate-core.version>
-    <hibernate-c3p0.version>3.6.9.Final</hibernate-c3p0.version>
+    <hibernate-core.version>5.4.24.Final</hibernate-core.version>
+    <hibernate-c3p0.version>5.4.24.Final</hibernate-c3p0.version>
     <hibernate-commons-annotations.version>3.2.0.Final</hibernate-commons-annotations.version>
-    <hibernate-ehcache.version>3.6.9.Final</hibernate-ehcache.version>
+    <hibernate-ehcache.version>5.4.24.Final</hibernate-ehcache.version>
+    <jboss-logging.version>3.5.3.Final</jboss-logging.version>
+    <javax.persistence-api.version>2.2</javax.persistence-api.version>
+    <byte-buddy.version>1.12.16</byte-buddy.version>
     <cglib-nodep.version>2.2</cglib-nodep.version>
     <js.version>1.7R3</js.version>
     <mail.version>1.6.1</mail.version>
@@ -624,6 +627,17 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
+      <version>1.0.2.Final</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
       <version>${ehcache-core.version}</version>
@@ -669,16 +683,10 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <version>${hibernate-commons-annotations.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <groupId>org.hibernate.javax.persistence</groupId>
+    <artifactId>hibernate-jpa-2.1-api</artifactId>
+    <version>1.0.0.Final</version>
+  </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-ehcache</artifactId>
@@ -687,6 +695,30 @@
         <exclusion>
           <groupId>*</groupId>
           <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <version>${jboss-logging.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>${byte-buddy.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
         </exclusion>
       </exclusions>
     </dependency>
