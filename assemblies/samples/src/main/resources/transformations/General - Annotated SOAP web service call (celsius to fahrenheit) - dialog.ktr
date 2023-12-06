@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>Annotated SOAP Web Service call - dialog</name>
+    <name>General - Annotated SOAP web service call celsius to fahrenheit - dialog</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -20,12 +20,12 @@
         <timeout_days/>
         <field>
           <id>ID_BATCH</id>
-          <enabled>N</enabled>
+          <enabled>Y</enabled>
           <name>ID_BATCH</name>
         </field>
         <field>
           <id>CHANNEL_ID</id>
-          <enabled>N</enabled>
+          <enabled>Y</enabled>
           <name>CHANNEL_ID</name>
         </field>
         <field>
@@ -70,7 +70,7 @@
         </field>
         <field>
           <id>LINES_REJECTED</id>
-          <enabled>N</enabled>
+          <enabled>Y</enabled>
           <name>LINES_REJECTED</name>
           <subject/>
         </field>
@@ -106,7 +106,7 @@
         </field>
         <field>
           <id>LOG_FIELD</id>
-          <enabled>N</enabled>
+          <enabled>Y</enabled>
           <name>LOG_FIELD</name>
         </field>
         <field>
@@ -428,16 +428,16 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014/02/26 14:58:08.974</created_date>
-    <modified_user>-</modified_user>
-    <modified_date>2010/03/15 17:15:43.639</modified_date>
+    <created_date>2023/12/04 11:03:35.946</created_date>
+    <modified_user/>
+    <modified_date>2023/12/04 11:03:35.946</modified_date>
     <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
     <notepad>
       <note>This is an annotated SOAP Web Service call.
-It validates a credit card number using a public (free) web service.
+It converts temperature from celsius to fahrenheit using a public (free) web service.
 
 This sample explains how you can customize an XML template to generate a SOAP request.
 This method can also be used to customize other XML snippets.
@@ -446,14 +446,13 @@ It also shows you how you can parse SOAP responses by
 explaining how you can work with namespaces in XML 
 documents in E4X (ECMA/Script for XML).
 
-See also: https://developer.mozilla.org/En/E4X
-</note>
-      <xloc>74</xloc>
-      <yloc>132</yloc>
-      <width>676</width>
-      <heigth>250</heigth>
-      <fontname/>
-      <fontsize>-1</fontsize>
+See also: https://developer.mozilla.org/En/E4X</note>
+      <xloc>64</xloc>
+      <yloc>224</yloc>
+      <width>730</width>
+      <heigth>277</heigth>
+      <fontname>Segoe UI</fontname>
+      <fontsize>9</fontsize>
       <fontbold>N</fontbold>
       <fontitalic>N</fontitalic>
       <fontcolorred>0</fontcolorred>
@@ -465,18 +464,18 @@ See also: https://developer.mozilla.org/En/E4X
       <bordercolorred>100</bordercolorred>
       <bordercolorgreen>100</bordercolorgreen>
       <bordercolorblue>100</bordercolorblue>
-      <drawshadow>N</drawshadow>
+      <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
   <order>
     <hop>
-      <from>credit card number</from>
-      <to>Generate SOAP request</to>
+      <from>Generate SOAP request</from>
+      <to>HTTP Post</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Generate SOAP request</from>
-      <to>HTTP Post</to>
+      <from>Temperature in Celsius</from>
+      <to>Generate SOAP request</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -497,7 +496,7 @@ See also: https://developer.mozilla.org/En/E4X
       <schema_name/>
     </partitioning>
     <compatible>N</compatible>
-    <optimizationLevel/>
+    <optimizationLevel>9</optimizationLevel>
     <jsScripts>
       <jsScript>
         <jsScript_type>0</jsScript_type>
@@ -509,23 +508,22 @@ See also: https://developer.mozilla.org/En/E4X
 // Change the request to match your needs.
 // Inject arguments in the place of the question marks like this:
 // 
-// var cardNumber = "123412341243124";
+// var temperature = 100;
 // request=...
-//     &lt;ws:CardNumber>{cardNumber}&lt;/ws:CardNumber> ...;
+//     &lt;Celsius>{temperature}&lt;/Celsius> ...;
 // 
-// where cardNumber is the name of a scoped JS variable.  That includes input fields.
+// where temperature is the name of a scoped JS variable.  That includes input fields.
 //
 // See also: https://developer.mozilla.org/En/E4X
 // 
 //
-request = &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ws="http://ws.cdyne.com/">
-   &lt;soap:Header/>
-   &lt;soap:Body>
-      &lt;ws:CheckCC>
-         &lt;ws:CardNumber>{cardNumber}&lt;/ws:CardNumber>
-      &lt;/ws:CheckCC>
-   &lt;/soap:Body>
-&lt;/soap:Envelope>;
+request = &lt;soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+  &lt;soap12:Body>
+    &lt;CelsiusToFahrenheit xmlns="https://www.w3schools.com/xml/">
+      &lt;Celsius>{temperature}&lt;/Celsius>
+    &lt;/CelsiusToFahrenheit>
+  &lt;/soap12:Body>
+&lt;/soap12:Envelope>;
 
 var requestXml=request.toXMLString();
 </jsScript_script>
@@ -541,6 +539,7 @@ var requestXml=request.toXMLString();
         <replace>N</replace>
       </field>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -549,8 +548,8 @@ var requestXml=request.toXMLString();
       </output>
     </remotesteps>
     <GUI>
-      <xloc>297</xloc>
-      <yloc>57</yloc>
+      <xloc>336</xloc>
+      <yloc>144</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -567,7 +566,7 @@ var requestXml=request.toXMLString();
     </partitioning>
     <postafile>N</postafile>
     <encoding>UTF-8</encoding>
-    <url>https://ws.cdyne.com/creditcardverify/luhnchecker.asmx?wsdl</url>
+    <url>https://www.w3schools.com/xml/tempconvert.asmx</url>
     <urlInField>N</urlInField>
     <urlField/>
     <requestEntity>requestXml</requestEntity>
@@ -586,6 +585,7 @@ var requestXml=request.toXMLString();
       <response_time/>
       <response_header/>
     </result>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -594,8 +594,8 @@ var requestXml=request.toXMLString();
       </output>
     </remotesteps>
     <GUI>
-      <xloc>490</xloc>
-      <yloc>57</yloc>
+      <xloc>544</xloc>
+      <yloc>144</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -611,69 +611,51 @@ var requestXml=request.toXMLString();
       <schema_name/>
     </partitioning>
     <compatible>N</compatible>
-    <optimizationLevel/>
+    <optimizationLevel>9</optimizationLevel>
     <jsScripts>
       <jsScript>
         <jsScript_type>0</jsScript_type>
-        <jsScript_name>VerifyEmail</jsScript_name>
+        <jsScript_name>Script 1</jsScript_name>
         <jsScript_script>/*
   This is the response that is received:
   ---------------------------------------
 
-&lt;?xml version="1.0" encoding="utf-8"?>
-&lt;soap:Envelope 
-  xmlns:soap="http://www.w3.org/2003/05/soap-envelope" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  &lt;soap:Body>
-    &lt;CheckCCResponse 
-      xmlns="http://ws.cdyne.com/">
-      &lt;CheckCCResult>
-        &lt;CardType>NONE&lt;/CardType>
-        &lt;CardValid>false&lt;/CardValid>
-      &lt;/CheckCCResult>
-    &lt;/CheckCCResponse&gt;
-  &lt;/soap:Body>
+&lt;&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    &lt;soap:Body>
+        &lt;CelsiusToFahrenheitResponse
+            xmlns="https://www.w3schools.com/xml/">
+            &lt;CelsiusToFahrenheitResult>68&lt;/CelsiusToFahrenheitResult>
+        &lt;/CelsiusToFahrenheitResponse>
+    &lt;/soap:Body>
 &lt;/soap:Envelope>
 */
 
-// E4X needs to get rid of the &lt;xml> header for security reasons...
-// See also: bug 336551, https://bugzilla.mozilla.org/show_bug.cgi?id=336551
-// 
 responseXml = responseXml.replace(/^&lt;\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, "");
 var response = new XML(responseXml);
 
 // Determine the namespace of the SOAP Envelope:
-//
+
 var soap = response.namespace();
 
-// Specify the namespace of the verify email response:
-//
-var ws = response.*.*.namespace(); // OR: new Namespace("http://ws.cdyne.com/");
+// Specify the namespace:
+
+var ws = response.*.*.namespace();
 
 // Set this namespace as a default to make parsing the response easier:
-//
+
 default xml namespace = ws
 
 // Grab the body inside the SOAP response:
-//
-var responseBody = response.soap::Body.CheckCCResponse;
 
-// Use the following format to parse the response body, the payload of the SOAP response:
-// 
-// var memberElement = responseBody.someElement;
-// var memberAttribute = responseBody.@someAttribute;
-// 
-var cardType = responseBody.CheckCCResult.CardType;
-var cardValid = responseBody.CheckCCResult.CardValid;
+var responseBody = response.soap::Body.CelsiusToFahrenheitResponse;
 
-responseBody.removeNamespace(ws);
-responseBody.removeNamespace(soap);
+var temp = responseBody.CelsiusToFahrenheitResult;
 
-var xmlns = new Namespace("http://ws.cdyne.com/");
-responseBody.removeNamespace(xmlns);
-
-Alert(responseBody.toXMLString());
+Alert("Conversion successful, "+temperature + " C temperature in Fahrenheit - "+temp+" F");
 
 
 </jsScript_script>
@@ -681,22 +663,15 @@ Alert(responseBody.toXMLString());
     </jsScripts>
     <fields>
       <field>
-        <name>cardType</name>
-        <rename>cardType</rename>
-        <type>String</type>
-        <length>-1</length>
-        <precision>-1</precision>
-        <replace>N</replace>
-      </field>
-      <field>
-        <name>cardValid</name>
-        <rename>cardValid</rename>
+        <name>temp</name>
+        <rename>temp</rename>
         <type>String</type>
         <length>-1</length>
         <precision>-1</precision>
         <replace>N</replace>
       </field>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -705,13 +680,13 @@ Alert(responseBody.toXMLString());
       </output>
     </remotesteps>
     <GUI>
-      <xloc>683</xloc>
-      <yloc>57</yloc>
+      <xloc>720</xloc>
+      <yloc>144</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>credit card number</name>
+    <name>Temperature in Celsius</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -723,13 +698,13 @@ Alert(responseBody.toXMLString());
     </partitioning>
     <fields>
       <field>
-        <name>cardNumber</name>
-        <type>String</type>
+        <name>temperature</name>
+        <type>Number</type>
         <format/>
         <currency/>
         <decimal/>
         <group/>
-        <nullif>4012888888881881</nullif>
+        <nullif>20</nullif>
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
@@ -740,6 +715,7 @@ Alert(responseBody.toXMLString());
     <interval_in_ms/>
     <row_time_field/>
     <last_time_field/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -748,8 +724,8 @@ Alert(responseBody.toXMLString());
       </output>
     </remotesteps>
     <GUI>
-      <xloc>104</xloc>
-      <yloc>57</yloc>
+      <xloc>128</xloc>
+      <yloc>144</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -758,4 +734,37 @@ Alert(responseBody.toXMLString());
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
+</transformation>
+>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>128</xloc>
+      <yloc>144</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step_error_handling>
+  </step_error_handling>
+  <slave-step-copy-partition-distribution>
+  </slave-step-copy-partition-distribution>
+  <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>
