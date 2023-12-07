@@ -23,6 +23,10 @@
 package org.pentaho.ui.database.event;
 
 import java.io.InputStream;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -45,6 +49,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
  * @created Mar 19, 2008
  */
 public class FragmentHandler extends AbstractXulEventHandler {
+  private static final Logger log = LoggerFactory.getLogger( FragmentHandler.class );
 
   private XulListbox connectionBox;
   private XulListbox accessBox;
@@ -54,25 +59,36 @@ public class FragmentHandler extends AbstractXulEventHandler {
   public FragmentHandler() {
   }
 
-  protected void loadDatabaseOptionsFragment( String fragmentUri ) throws XulException {
+  protected void loadDatabaseOptionsFragment( String fragmentUri, DataHandler dataHandler ) throws XulException {
 
     XulComponent groupElement = document.getElementById( "database-options-box" );
     XulComponent parentElement = groupElement.getParent();
 
     XulDomContainer fragmentContainer;
 
-    try {
+    // Get new group box fragment ...
+    // This will effectively set up the SWT parent child relationship...
 
-      // Get new group box fragment ...
-      // This will effectively set up the SWT parent child relationship...
+    fragmentContainer = this.xulDomContainer.loadFragment( fragmentUri, Messages.getBundle() );
+    XulComponent newGroup = fragmentContainer.getDocumentRoot().getFirstChild();
 
-      fragmentContainer = this.xulDomContainer.loadFragment( fragmentUri, Messages.getBundle() );
-      XulComponent newGroup = fragmentContainer.getDocumentRoot().getFirstChild();
-      parentElement.replaceChild( groupElement, newGroup );
+    parentElement.replaceChild( groupElement, newGroup );
 
-    } catch ( XulException e ) {
-      e.printStackTrace();
-      throw e;
+    // merge event handlers so scripts defined in a fragment can be used
+    this.xulDomContainer.mergeContainer( fragmentContainer );
+
+    if ( dataHandler != null ) {
+      dataHandler.clearExtraHandler();
+      // a fragment handler will complement DataHandler with fragment-specific data handler
+      Optional.ofNullable( newGroup.getAttributeValue( "handler" ) ).ifPresent( handlerCall -> {
+        try {
+          DbInfoHandler handler = (DbInfoHandler) this.xulDomContainer.invoke( handlerCall, new Object[0] );
+          log.debug( "Using fragment handler {}", handler.getClass() );
+          dataHandler.setExtraHandler( handler );
+        } catch ( Exception e ) {
+          log.error( "Unable to call `handler` attribute", e );
+        }
+      } );
     }
   }
 
@@ -90,10 +106,9 @@ public class FragmentHandler extends AbstractXulEventHandler {
     Object connectionKey = DataHandler.connectionNametoID.get( connectionBox.getSelectedItem() );
     String databaseName = null;
     try {
-      databaseName =
-        PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "" + connectionKey ).getIds()[0];
+      databaseName = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "" + connectionKey ).getIds()[0];
     } catch ( Exception e ) {
-      e.printStackTrace();
+      log.error( e.getLocalizedMessage(), e );
     }
 
     DatabaseInterface database = DataHandler.connectionMap.get( connectionBox.getSelectedItem() );
@@ -131,11 +146,13 @@ public class FragmentHandler extends AbstractXulEventHandler {
         break;
     }
 
-    try {
-      loadDatabaseOptionsFragment( fragment.toLowerCase() );
-    } catch ( XulException e ) {
-      // TODO should be reporting as an error dialog; need error dialog in XUL framework
-      showMessage( Messages.getString( "FragmentHandler.USER.CANT_LOAD_OPTIONS", databaseName ) );
+    if ( fragment != null ) {
+      try {
+        loadDatabaseOptionsFragment( fragment.toLowerCase(), dataHandler );
+      } catch ( XulException e ) {
+        // TODO should be reporting as an error dialog; need error dialog in XUL framework
+        showMessage( Messages.getString( "FragmentHandler.USER.CANT_LOAD_OPTIONS", databaseName ) );
+      }
     }
 
     XulTextbox portBox = (XulTextbox) document.getElementById( "port-number-text" );
@@ -182,7 +199,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
       box.setMessage( message );
       box.open();
     } catch ( XulException e ) {
-      System.out.println( "Error creating messagebox " + e.getMessage() );
+      log.error( "Error creating messagebox " + e.getMessage() );
     }
   }
 

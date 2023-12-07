@@ -1,0 +1,38 @@
+<vbox id="database-options-box" orient="vertical" flex="1"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:pen="http://www.pentaho.org/2008/xul"
+  handler="databricksHandler.getInfoHandler()"
+  >
+  <script id="databricksHandler" src="org.pentaho.ui.database.event.databricks.DatabricksHandler" />
+  <groupbox>
+    <caption label="${DatabaseDialog.USER_SETTINGS}" />
+    <label id="server-host-name-label" value="${DatabaseDialog.label.ServerHostname}" />
+    <textbox pen:customclass="variabletextbox" id="server-host-name-text" />
+    <label id="http-path-label" value="${DatabaseDialog.label.HttpPath}" />
+    <textbox pen:customclass="variabletextbox" id="http-path-text" />
+    <label id="database-name-label" value="${DatabaseDialog.label.DatabaseName}" />
+    <textbox pen:customclass="variabletextbox" id="database-name-text" />
+    <label id="port-number-label" value="${DatabaseDialog.label.PortNumber}" />
+    <textbox pen:customclass="variabletextbox" id="port-number-text" />
+  </groupbox>
+  <groupbox id="database-authentication" orient="vertical" flex="1">
+    <caption label="${DatabaseDialog.label.AuthenticationMethod}" />
+    <radiogroup id="auth-radio" orient="horizontal">
+      <radio id="auth-radio-creds" label="Credentials" command="databricksHandler.selectAuth()"/>
+      <radio id="auth-radio-token" label="Token"/>
+    </radiogroup>
+    <deck id="auth-deck" visible="true">
+      <vbox id="authentication-user-pass">
+        <label id="username-label" value="${DatabaseDialog.label.Username}" />
+        <textbox pen:customclass="variabletextbox" id="username-text"
+          pen:binding="kaput" />
+        <label id="password-label" value="${DatabaseDialog.label.Password}" />
+        <textbox pen:customclass="variabletextbox" id="password-text" type="password" />
+      </vbox>
+      <vbox id="authentication-token">
+        <label id="token-label" value="${DatabaseDialog.label.Token}" />
+        <textbox pen:customclass="variabletextbox" id="token-text" type="password" />
+      </vbox>
+    </deck>
+  </groupbox>
+</vbox>

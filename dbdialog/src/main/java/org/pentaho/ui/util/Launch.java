@@ -32,7 +32,7 @@ public class Launch {
     Success, Failed
   }
 
-  public static Status openURL( String url ) {
+  public Status openURL( String url ) {
 
     Status r = Status.Success;
     String osName = System.getProperty( "os.name" );

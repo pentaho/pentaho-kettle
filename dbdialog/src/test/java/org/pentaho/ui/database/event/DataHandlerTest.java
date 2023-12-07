@@ -25,6 +25,7 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -32,6 +33,8 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.ui.util.Launch;
+import org.pentaho.ui.util.Launch.Status;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -49,6 +52,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -91,6 +95,10 @@ public class DataHandlerTest {
   @Before
   public void setUp() throws Exception {
     dataHandler = new DataHandler();
+    // avoid actually opening browser windows during test
+    Launch noLaunch = mock( Launch.class );
+    when( noLaunch.openURL( anyString() ) ).thenReturn( Status.Success );
+    dataHandler.launch = noLaunch;
     xulDomContainer = mock( XulDomContainer.class );
 
     document = mock( Document.class );
@@ -139,7 +147,6 @@ public class DataHandlerTest {
 
   @Test
   public void testLoadConnectionData() throws Exception {
-
 
     DatabaseInterface dbInterface = mock( DatabaseInterface.class );
     when( dbInterface.getDefaultDatabasePort() ).thenReturn( 5309 );

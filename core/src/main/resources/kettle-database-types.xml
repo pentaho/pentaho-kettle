@@ -230,4 +230,8 @@
     <classname>org.pentaho.di.core.database.AzureSqlDataBaseMeta</classname>
   </database-type>
 
+  <database-type id="DATABRICKS">
+    <description>Databricks</description>
+    <classname>org.pentaho.di.core.database.DatabricksDatabaseMeta</classname>
+  </database-type>
 </database-types>
