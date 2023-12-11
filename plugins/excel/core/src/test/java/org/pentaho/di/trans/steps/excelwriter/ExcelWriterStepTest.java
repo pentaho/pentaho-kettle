@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,14 @@
 
 package org.pentaho.di.trans.steps.excelwriter;
 
-import com.google.common.io.Files;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -51,6 +50,8 @@ import org.pentaho.di.utils.TestUtils;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.Date;
 
 import static org.junit.Assert.assertNotNull;
@@ -70,22 +71,26 @@ import static org.mockito.Mockito.when;
 
 public class ExcelWriterStepTest {
 
+  public static URL getTemplateTestXlsx() {
+    return ExcelWriterStepTest.class.getResource( "template_test.xlsx" );
+  }
+
+  public static URL getTemplateWithFormattingXlsx() {
+    return ExcelWriterStepTest.class.getResource( "template_with_formatting.xlsx" );
+  }
+
   private static final String SHEET_NAME = "Sheet1";
   private static final String XLS = "xls";
   private static final String DOT_XLS = '.' + XLS;
   private static final String XLSX = "xlsx";
   private static final String DOT_XLSX = '.' + XLSX;
-  private static final String EMPTY_STRING = "";
 
   private Workbook wb;
   private StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData> mockHelper;
   private ExcelWriterStep step;
 
-  private ExcelWriterStepMeta stepMeta;
   private ExcelWriterStepMeta metaMock;
   private ExcelWriterStepData dataMock;
-
-  private File templateFile;
 
   @Before
   public void setUp() throws Exception {
@@ -98,7 +103,6 @@ public class ExcelWriterStepTest {
     step = spy( new ExcelWriterStep(
       mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans ) );
 
-    stepMeta = new ExcelWriterStepMeta();
     metaMock = mock( ExcelWriterStepMeta.class );
     dataMock = mock( ExcelWriterStepData.class );
   }
@@ -136,7 +140,7 @@ public class ExcelWriterStepTest {
   @Test
   public void testPrepareNextOutputFile() throws Exception {
     assertTrue( step.init( metaMock, dataMock ) );
-    File outDir = Files.createTempDir();
+    File outDir = Files.createTempDirectory( "" ).toFile();
     String testFileOut = outDir.getAbsolutePath() + File.separator + "test.xlsx";
     when( step.buildFilename( 0 ) ).thenReturn( testFileOut );
     when( metaMock.isTemplateEnabled() ).thenReturn( true );
@@ -144,22 +148,21 @@ public class ExcelWriterStepTest {
     when( metaMock.isHeaderEnabled() ).thenReturn( true );
     when( metaMock.getExtension() ).thenReturn( XLSX );
     dataMock.createNewFile = true;
-    dataMock.realTemplateFileName = getClass().getResource( "template_test.xlsx" ).getFile();
+    dataMock.realTemplateFileName = getTemplateTestXlsx().getFile();
     dataMock.realSheetname = SHEET_NAME;
     step.prepareNextOutputFile();
   }
 
-  @Ignore
   @Test
   public void testWriteUsingTemplateWithFormatting() throws Exception {
     assertTrue( step.init( metaMock, dataMock ) );
-    String path = Files.createTempDir().getAbsolutePath() + File.separator + "formatted.xlsx";
+    String path = Files.createTempDirectory( "" ).toFile().getAbsolutePath() + File.separator + "formatted.xlsx";
 
     dataMock.fieldnrs = new int[] { 0 };
     dataMock.linkfieldnrs = new int[] { -1 };
     dataMock.commentfieldnrs = new int[] { -1 };
     dataMock.createNewFile = true;
-    dataMock.realTemplateFileName = getClass().getResource( "template_with_formatting.xlsx" ).getFile();
+    dataMock.realTemplateFileName = getTemplateWithFormattingXlsx().getFile();
     dataMock.realSheetname = "TicketData";
     dataMock.inputRowMeta = mock( RowMetaInterface.class );
 
@@ -181,6 +184,7 @@ public class ExcelWriterStepTest {
 
     step.prepareNextOutputFile();
 
+    assertTrue( "must use streaming", dataMock.sheet instanceof SXSSFSheet );
     dataMock.posY = 1;
     dataMock.sheet = spy( dataMock.sheet );
     step.writeNextLine( new Object[] { 12 } );

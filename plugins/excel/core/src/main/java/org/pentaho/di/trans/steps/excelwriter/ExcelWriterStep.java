@@ -26,9 +26,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -57,7 +58,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -220,6 +220,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   private void clearWorkbookMem() {
     data.file = null;
     data.sheet = null;
+    data.innerSheet = Optional.empty();
+    IOUtils.closeQuietly( data.wb );
     data.wb = null;
     data.clearStyleCache( 0 );
   }
@@ -268,11 +270,12 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( meta.isForceFormulaRecalculation() ) {
         recalculateAllWorkbookFormulas();
       }
-
       data.wb.write( out );
-      data.wb = null;
     } catch ( IOException e ) {
       throw new KettleException( e );
+    } finally {
+      IOUtils.closeQuietly( data.wb );
+      data.wb = null;
     }
   }
 
@@ -674,6 +677,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         data.wb.setSelectedTab( existingActiveSheetIndex );
         appendingToSheet = false;
       }
+      data.innerSheet = Optional.empty();
 
       // if use chose to make the current sheet active, do so
       if ( meta.isMakeSheetActive() ) {
@@ -704,7 +708,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
 
       // If it's to use streaming, initialize it now as we already made all necessary initial calculations.
-      if ( data.wb instanceof XSSFWorkbook && meta.isStreamingData() && !meta.isTemplateEnabled() ) {
+      if ( data.wb instanceof XSSFWorkbook && meta.isStreamingData() ) {
+        data.innerSheet = Optional.of( data.sheet );
         data.wb = new SXSSFWorkbook( (XSSFWorkbook) data.wb, STREAMING_WINDOW_SIZE );
         data.sheet = data.wb.getSheet( data.realSheetname );
       }
@@ -786,7 +791,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   /**
    * Creates a new Excel file
    */
-  private void createFile() throws FileSystemException, KettleFileException, KettleException, IOException {
+  private void createFile() throws KettleException, IOException {
     // if template file is enabled
     if ( meta.isTemplateEnabled() ) {
       // handle template case (must have same format)
@@ -811,13 +816,12 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
     } else {
       // handle fresh file case, just create a fresh workbook
-      Workbook wb = XLSX.equalsIgnoreCase( meta.getExtension() ) ? new XSSFWorkbook() : new HSSFWorkbook();
-      BufferedOutputStreamWithCloseDetection out =
-          new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) );
-      wb.createSheet( data.realSheetname );
-      wb.write( out );
-      out.close();
-      wb.close();
+      try ( Workbook wb = XLSX.equalsIgnoreCase( meta.getExtension() ) ? new XSSFWorkbook() : new HSSFWorkbook();
+          BufferedOutputStreamWithCloseDetection out =
+              new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) ) ) {
+        wb.createSheet( data.realSheetname );
+        wb.write( out );
+      }
     }
   }
 
@@ -859,7 +863,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   private Row getOrCreateRow( int rowIdx ) {
     Row xlsRow = data.sheet.getRow( rowIdx );
     if ( xlsRow == null ) {
-      xlsRow = data.sheet.createRow( rowIdx );
+      xlsRow = data.innerSheet.map( s -> s.getRow( rowIdx ) ).orElseGet( () -> data.sheet.createRow( rowIdx ) );
     }
     return xlsRow;
   }
