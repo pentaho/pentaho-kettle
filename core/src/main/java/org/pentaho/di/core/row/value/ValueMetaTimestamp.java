@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 public class ValueMetaTimestamp extends ValueMetaDate {
@@ -84,13 +85,18 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     if ( timestamp == null ) {
       return null;
     }
+    TimeZone defaultTimeZone = TimeZone.getDefault();
+    TimeZone currentZone = getDateFormatTimeZone();
 
     long milliseconds = timestamp.getTime();
+    int timezoneDifference = currentZone.getOffset(milliseconds) - defaultTimeZone.getOffset(milliseconds);
     if ( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS.equalsIgnoreCase( conversionMode ) ) {
       long seconds = TimeUnit.SECONDS.convert( milliseconds, TimeUnit.MILLISECONDS );
-      return seconds * 1000000000L + timestamp.getNanos();
+      long nanos = timestamp.getNanos();
+      nanos += TimeUnit.NANOSECONDS.convert( timezoneDifference, TimeUnit.MILLISECONDS );
+      return seconds * 1000000000L + nanos;
     } else {
-      return milliseconds;
+      return milliseconds + timezoneDifference;
     }
   }
 

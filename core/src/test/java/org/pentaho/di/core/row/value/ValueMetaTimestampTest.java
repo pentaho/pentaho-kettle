@@ -215,6 +215,21 @@ public class ValueMetaTimestampTest {
   }
 
   @Test
+  public void testConvertTimestampToInteger_DifferentTimeZone() throws KettleValueException {
+    System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE,
+            Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE_NANOSECONDS );
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    TimeZone.setDefault(TimeZone.getTimeZone("Etc/UTC"));
+    long result = valueMetaTimestamp.getInteger( TIMESTAMP_WITH_NANOSECONDS );
+    assertEquals( 1567312496123456789L, result );
+    System.setProperty( Const.KETTLE_TIMESTAMP_NUMBER_CONVERSION_MODE, "Something invalid!" );
+    valueMetaTimestamp = new ValueMetaTimestamp();
+    TimeZone.setDefault(TimeZone.getTimeZone("Etc/UTC"));
+    result = valueMetaTimestamp.getInteger( TIMESTAMP_WITH_NANOSECONDS );
+    assertEquals( 1567308896123L, result );
+  }
+
+  @Test
   public void testConvertTimestampToInteger_Null() throws KettleValueException {
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
     assertNull( valueMetaTimestamp.getInteger( null ) );
