@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -422,6 +422,9 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     // Ensure the path is uniform for windows. Path's using the internal variable need to use forward slash
     if ( Const.isWindows() ) {
       path = path.replace( '\\', '/' );
+      if ( parentPath != null ) {
+        parentPath = parentPath.replace( '\\', '/' );
+      } 
     }
 
     return path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
