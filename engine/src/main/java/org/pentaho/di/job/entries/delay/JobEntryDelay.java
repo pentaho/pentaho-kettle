@@ -24,6 +24,7 @@ package org.pentaho.di.job.entries.delay;
 
 import java.util.List;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -135,36 +136,44 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
-    int Multiple;
-    String Waitscale;
+    int multiple;
+    String waitScale;
+
+    // Validate if Real Maximum Timeout is only digits.
+    if ( !NumberUtils.isDigits( getRealMaximumTimeout() ) ) {
+      result.setResult( false );
+      result.setNrErrors( 1 );
+      logError( "Invalid value for Maximum Timeout." );
+      return result;
+    }
 
     // Scale time
     switch ( scaleTime ) {
       case 0:
         // Second
-        Multiple = 1000;
-        Waitscale = BaseMessages.getString( PKG, "JobEntryDelay.SScaleTime.Label" );
+        multiple = 1000;
+        waitScale = BaseMessages.getString( PKG, "JobEntryDelay.SScaleTime.Label" );
         break;
       case 1:
         // Minute
-        Multiple = 60000;
-        Waitscale = BaseMessages.getString( PKG, "JobEntryDelay.MnScaleTime.Label" );
+        multiple = 60000;
+        waitScale = BaseMessages.getString( PKG, "JobEntryDelay.MnScaleTime.Label" );
         break;
       default:
         // Hour
-        Multiple = 3600000;
-        Waitscale = BaseMessages.getString( PKG, "JobEntryDelay.HrScaleTime.Label" );
+        multiple = 3600000;
+        waitScale = BaseMessages.getString( PKG, "JobEntryDelay.HrScaleTime.Label" );
         break;
     }
 
     try {
-      // starttime (in seconds ,Minutes or Hours)
-      double timeStart = (double) System.currentTimeMillis() / (double) Multiple;
+      // start time (in seconds, Minutes or Hours)
+      double timeStart = (double) System.currentTimeMillis() / (double) multiple;
 
       double iMaximumTimeout = Const.toInt( getRealMaximumTimeout(), Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 ) );
 
       if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobEntryDelay.LetsWaitFor.Label", iMaximumTimeout, Waitscale ) );
+        logDetailed( BaseMessages.getString( PKG, "JobEntryDelay.LetsWaitFor.Label", iMaximumTimeout, waitScale ) );
       }
 
       boolean continueLoop = true;
@@ -174,14 +183,14 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       if ( iMaximumTimeout < 0 ) {
         iMaximumTimeout = Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 );
         logBasic( BaseMessages.getString( PKG, "JobEntryDelay.MaximumTimeReset.Label", String
-          .valueOf( iMaximumTimeout ), String.valueOf( Waitscale ) ) );
+          .valueOf( iMaximumTimeout ), String.valueOf( waitScale ) ) );
       }
 
       // Loop until the delay time has expired.
       //
       while ( continueLoop && !parentJob.isStopped() ) {
         // Update Time value
-        double now = (double) System.currentTimeMillis() / (double) Multiple;
+        double now = (double) System.currentTimeMillis() / (double) multiple;
 
         // Let's check the limit time
         if ( ( iMaximumTimeout >= 0 ) && ( now >= ( timeStart + iMaximumTimeout ) ) ) {
