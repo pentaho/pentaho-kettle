@@ -47,15 +47,24 @@ public class ElementTransferTest {
   private VariableSpace space = new Variables();
 
   ElementTransfer elementTransfer;
+  private static boolean skipTests = false;
 
   @Before
   public void setUp() throws Exception {
-    elementTransfer = ElementTransfer.getInstance();
+    org.junit.Assume.assumeFalse( skipTests );
+    try {
+      elementTransfer = ElementTransfer.getInstance();
+    } catch ( UnsatisfiedLinkError e ) {
+      System.out.println( "UnsatisfiedLinkError likely due to swt configuration.  Skipping tests" );
+      skipTests = true;
+      org.junit.Assume.assumeFalse( skipTests );
+    }
     ElementTransfer.testMode = true; //Set mode to test so it doesn't pass the data to the OS
   }
 
   @Test
   public void getTypeIds() {
+
     assertArrayEquals( new int[]{ ElementTransfer.TYPEID },  elementTransfer.getTypeIds() );
   }
 
