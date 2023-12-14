@@ -506,7 +506,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         targetPath = targetPath.substring( 7 );
       }
       java.io.File filePath = new java.io.File( targetPath );
-      if ( !filePath.exists() ) {
+      if ( !filePath.exists() && !isFileProviderTypeRepository( fileDialogOperation ) ) {
         return;
       } else if ( filePath.isFile() ) {
         targetPath = filePath.getParent();
@@ -1895,12 +1895,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           if ( fileDialogOperation.getProvider() == null ) {
             // Since the provider is null this could be local provider
             return ProviderServiceService.get().get( ProviderFilterType.LOCAL.toString() );
-          } else if ( !isKettleFile && fileDialogOperation.getProvider()
-            .equalsIgnoreCase( ProviderFilterType.REPOSITORY.toString() ) ) {
+          } else if ( !isKettleFile && isFileProviderTypeRepository( fileDialogOperation ) ) {
             // It is user file which is not a transformation or job and the user is connected to repository.
             // Default the provider to local
             return ProviderServiceService.get().get( ProviderFilterType.LOCAL.toString() );
-          } else if ( fileDialogOperation.getProvider().equalsIgnoreCase( ProviderFilterType.REPOSITORY.toString() ) ) {
+          } else if ( isFileProviderTypeRepository( fileDialogOperation ) ) {
             // It is a kettle transformation or job and user is connected to repository, set the provider to repository
             return ProviderServiceService.get().get( ProviderFilterType.REPOSITORY.toString() );
           }
@@ -1916,6 +1915,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } catch ( InvalidFileProviderException e ) {
       return null;
     }
+  }
+
+  private static boolean isFileProviderTypeRepository( FileDialogOperation fileDialogOperation ) {
+    return Optional.ofNullable( fileDialogOperation.getProvider() )
+      .map( provider -> provider.equalsIgnoreCase( ProviderFilterType.REPOSITORY.toString() ) ).orElse( Boolean.FALSE );
   }
 
   private void saveStructuredSelectionPath( IStructuredSelection selection ) {
