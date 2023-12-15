@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.waitforfile;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
@@ -169,6 +170,14 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
+
+    // Validate if Real Maximum Timeout is only digits.
+    if ( !NumberUtils.isDigits( getRealMaximumTimeout() ) ) {
+      result.setResult( false );
+      result.setNrErrors( 1 );
+      logError( "Invalid value for Maximum Timeout." );
+      return result;
+    }
 
     // starttime (in seconds)
     long timeStart = System.currentTimeMillis() / 1000;
