@@ -188,6 +188,7 @@ jobGroups:
      - jobID           :  big-data-plugin-lowdeps
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -P lowdeps
+       scmBranch       :  scheduler-plugin
 
   1410:
      - jobID           :  big-data-hadoop-shims-common
@@ -345,6 +346,7 @@ jobGroups:
      - jobID           :  big-data-plugin-highdeps
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -P highdeps
+       scmBranch       :  scheduler-plugin
 
      - jobID           :  pdi-data-refinery-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-data-refinery.git
@@ -440,6 +442,7 @@ jobGroups:
      - jobID           :  big-data-plugin-features
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -DfeaturesOnly
+       scmBranch       :  scheduler-plugin
        root            :  assemblies
 
      - jobID           :  container-utils-public
@@ -502,6 +505,7 @@ jobGroups:
      - jobID           :  big-data-plugin-assembly
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -DassemblyOnly
+       scmBranch       :  scheduler-plugin
        archivable      :  true
        root            :  assemblies
 

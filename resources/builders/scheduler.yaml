@@ -63,6 +63,11 @@ jobGroups:
       scmUrl          : https://github.com/pentaho/pentaho-platform.git
       scmBranch       : scheduler-plugin
       directives      : += -DskipDefault -P platform-api
+  1400:
+    - jobID           :  big-data-plugin-lowdeps
+      scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+      directives      :  += -DskipDefault -P lowdeps
+      scmBranch       :  scheduler-plugin
 
   2100:
     - jobID           : platform-base
@@ -89,6 +94,11 @@ jobGroups:
       scmBranch       : scheduler-plugin
       directives      : += -DskipDefault -P platform-user-console
       #parallelize     :  true
+
+    - jobID           :  big-data-plugin-highdeps
+      scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+      directives      :  += -DskipDefault -P highdeps
+      scmBranch       :  scheduler-plugin
       
   2800:
     - jobID           :  pdi-plugins-ee
@@ -137,6 +147,13 @@ jobGroups:
       scmBranch       : scheduler-plugin
       directives      : += -Dagilebi
       archivable      : true
+      
+  3500:
+    - jobID           :  big-data-plugin-features
+      scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+      directives      :  += -DskipDefault -DfeaturesOnly
+      scmBranch       :  scheduler-plugin
+      root            :  assemblies
 
   3600:
     - jobID           : karaf-assembly
@@ -153,6 +170,13 @@ jobGroups:
       scmBranch       : scheduler-plugin
       archivable      : true
       parallelize     : true
+     
+    - jobID           :  big-data-plugin-assembly
+      scmUrl          :  https://github.com/pentaho/big-data-plugin.git
+      directives      :  += -DskipDefault -DassemblyOnly
+      scmBranch       :  scheduler-plugin
+      archivable      :  true
+      root            :  assemblies
 
   3800:
     - jobID           : karaf-assembly-ee
