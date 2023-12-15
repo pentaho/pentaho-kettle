@@ -94,6 +94,8 @@ public class PropsUI extends Props {
   protected List<LastUsedFile> openTabFiles;
   protected Map<String, List<LastUsedFile>> lastUsedRepoFiles;
 
+  protected String lastUsedLocalFile;
+
   protected String overriddenFileName;
 
   private Hashtable<String, WindowProperty> screens;
@@ -369,6 +371,7 @@ public class PropsUI extends Props {
   }
 
   public void setLastFiles() {
+    properties.setProperty( "lastUsedLocalFile", lastUsedLocalFile );
     properties.setProperty( "lastfiles", "" + lastUsedFiles.size() );
     for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
       LastUsedFile lastUsedFile = lastUsedFiles.get( i );
@@ -469,6 +472,14 @@ public class PropsUI extends Props {
     addLastRepoFile( lastUsedFile );
   }
 
+  public void setLastUsedLocalFile( String filePath ) {
+    lastUsedLocalFile = filePath;
+  }
+
+  public String getLastUsedLocalFile() {
+    return lastUsedLocalFile;
+  }
+
   private void addLastRepoFile( LastUsedFile lastUsedFile ) {
     String repositoryName = lastUsedFile.getRepositoryName();
     String username = lastUsedFile.getUsername() != null ? lastUsedFile.getUsername() : "";
@@ -530,6 +541,8 @@ public class PropsUI extends Props {
         new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, isOpened,
           openItemTypes ) );
     }
+
+    lastUsedLocalFile = properties.getProperty( "lastUsedLocalFile" );
   }
 
   public void loadLastUsedRepoFiles() {

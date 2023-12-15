@@ -305,7 +305,6 @@ import org.pentaho.di.ui.xul.KettleWaitBox;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.di.version.BuildVersion;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
@@ -775,11 +774,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     log = new LogChannel( APP_NAME, false, false );
     SpoonFactory.setSpoonInstance( this );
 
-    setRepository( rep );
-
     props = PropsUI.getInstance();
     sharedObjectsFileMap = new Hashtable<>();
     // sharedObjectSyncUtil = new SharedObjectSyncUtil( delegates, sharedObjectsFileMap );
+    setRepository( rep );
+
     Thread uiThread = Thread.currentThread();
 
     display = Display.findDisplay( uiThread );
@@ -4653,6 +4652,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // default to user's home
         defaultFileDialogOperationToUserHome( fileDialogOperation );
       }
+    } else if ( getActiveMeta() != null ) {
+      // There is an opened file, lets set that as the file open browser location
+      setFileOperatioPathForNonRepositoryFile( fileDialogOperation, getActiveMeta(), false );
     } else {
       // Unable to find last open file so setting the file open browser to user's home
       defaultFileDialogOperationToUserHome( fileDialogOperation );
@@ -4673,6 +4675,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         variables.setVariable( CONNECTION, fileDialogOperation.getConnection() );
         openFile( path, variables, importFile );
         lastFileOpened = path;
+        props.setLastUsedLocalFile( path );
         lastFileOpenedConnection = fileDialogOperation.getConnection();
         lastFileOpenedProvider = fileDialogOperation.getProvider();
       }
@@ -8921,7 +8924,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setRepository( Repository rep ) {
     this.rep = rep;
-    this.repositoryName = rep != null ? rep.getName() : null;
+    if ( rep != null ) {
+      this.repositoryName = rep.getName();
+      lastFileOpened = null;
+    } else {
+      this.repositoryName = null;
+      lastFileOpened = props.getLastUsedLocalFile();
+      lastFileOpenedProvider = ProviderFilterType.LOCAL.toString();
+    }
       if ( rep != null ) {
         this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
       }
@@ -9503,6 +9513,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       checkEnvironment();
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonStart.id, commandLineOptions );
       // Load the last loaded files
+      lastFileOpened = props.getLastUsedLocalFile();
       loadLastUsedFiles();
       waitForDispose();
       // runEventLoop2(getShell());

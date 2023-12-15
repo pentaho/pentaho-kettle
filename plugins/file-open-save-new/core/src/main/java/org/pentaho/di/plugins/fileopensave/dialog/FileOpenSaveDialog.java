@@ -506,7 +506,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         targetPath = targetPath.substring( 7 );
       }
       java.io.File filePath = new java.io.File( targetPath );
-      if ( !filePath.exists() ) {
+      if ( !filePath.exists() && !ProviderFilterType.REPOSITORY.toString().equalsIgnoreCase( fileDialogOperation.getProvider() ) ) {
         return;
       } else if ( filePath.isFile() ) {
         targetPath = filePath.getParent();
@@ -1895,12 +1895,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           if ( fileDialogOperation.getProvider() == null ) {
             // Since the provider is null this could be local provider
             return ProviderServiceService.get().get( ProviderFilterType.LOCAL.toString() );
-          } else if ( !isKettleFile && fileDialogOperation.getProvider()
-            .equalsIgnoreCase( ProviderFilterType.REPOSITORY.toString() ) ) {
+          } else if ( !isKettleFile && ProviderFilterType.REPOSITORY.toString().equalsIgnoreCase( fileDialogOperation.getProvider() ) ) {
             // It is user file which is not a transformation or job and the user is connected to repository.
             // Default the provider to local
             return ProviderServiceService.get().get( ProviderFilterType.LOCAL.toString() );
-          } else if ( fileDialogOperation.getProvider().equalsIgnoreCase( ProviderFilterType.REPOSITORY.toString() ) ) {
+          } else if ( ProviderFilterType.REPOSITORY.toString().equalsIgnoreCase( fileDialogOperation.getProvider() ) ) {
             // It is a kettle transformation or job and user is connected to repository, set the provider to repository
             return ProviderServiceService.get().get( ProviderFilterType.REPOSITORY.toString() );
           }
