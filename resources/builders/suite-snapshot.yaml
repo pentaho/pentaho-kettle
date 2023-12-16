@@ -99,6 +99,7 @@ jobGroups:
 
      - jobID           :  gwt-widgets
        scmUrl          :  https://github.com/pentaho/pentaho-commons-gwt-modules.git
+       scmBranch       :  scheduler-plugin
 
      - jobID           :  connections
        scmUrl          :  https://github.com/pentaho/pentaho-connections.git
