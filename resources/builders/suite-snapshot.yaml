@@ -286,6 +286,7 @@ jobGroups:
 
      - jobID           :  cpf-plugin
        scmUrl          :  https://github.com/webdetails/cpf.git
+       scmBranch       :  scheduler-plugin
 
      - jobID           :  ccc-plugin
        scmUrl          :  https://github.com/webdetails/ccc.git
@@ -334,6 +335,7 @@ jobGroups:
   2700:
      - jobID           :  data-access-plugin
        scmUrl          :  https://github.com/pentaho/data-access.git
+       scmBranch       :  scheduler-plugin
 
      - jobID           :  marketplace-plugin
        scmUrl          :  https://github.com/pentaho/marketplace.git
