@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -449,6 +450,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     FileObject fileObject = null;
     String realScript = null;
     FileObject tempFile = null;
+    final String TEMP_DIR = "java.io.tmpdir";
+    final String KETTLE = "kettle";
+
 
     try {
       // What's the exact command?
@@ -470,19 +474,20 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         base = new String[] { "command.com", "/C" };
         if ( insertScript ) {
           tempFile =
-            KettleVFS.createTempFile( "kettle", "shell.bat", System.getProperty( "java.io.tmpdir" ), this );
+            KettleVFS.createTempFile( KETTLE, "shell.bat", System.getProperty( TEMP_DIR ), this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else if ( Const.getOS().startsWith( "Windows" ) ) {
         base = new String[] { "cmd.exe", "/C" };
         if ( insertScript ) {
           tempFile =
-            KettleVFS.createTempFile( "kettle", "shell.bat", System.getProperty( "java.io.tmpdir" ), this );
+            KettleVFS.createTempFile( KETTLE, "shell.bat", System.getProperty( TEMP_DIR ), this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else {
         if ( insertScript ) {
           realScript = environmentSubstitute( script );
+          tempFile = KettleVFS.createTempFile( KETTLE, "shell", System.getProperty( TEMP_DIR ), this );
         } else {
           String realFilename = environmentSubstitute( getFilename() );
           URI uri = new URI( realFilename );
@@ -490,8 +495,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           try ( FileInputStream fis = new FileInputStream( realFilename ) ) {
             realScript = IOUtils.toString( fis, "UTF-8" );
           }
+          // PDI-19676 - creating a temp file in same file location to avoid script failure.
+          String parentDir = Paths.get(realFilename).getParent().toString();
+          tempFile = KettleVFS.createTempFile( KETTLE, "shell",parentDir , this );
         }
-        tempFile = KettleVFS.createTempFile( "kettle", "shell", System.getProperty( "java.io.tmpdir" ), this );
         fileObject = createTemporaryShellFile( tempFile, realScript );
         base = new String[] { KettleVFS.getFilename( fileObject ) };
       }
