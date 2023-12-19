@@ -178,6 +178,10 @@ jobGroups:
       archivable      :  true
       root            :  assemblies
 
+    - jobID           :  pdi-scheduler-plugin
+      scmUrl          :  https://github.com/pentaho/pdi-scheduler-plugin.git
+      scmBranch       :  scheduler-plugin
+
   3800:
     - jobID           : karaf-assembly-ee
       scmUrl          : https://github.com/pentaho/pentaho-karaf-ee-assembly.git
