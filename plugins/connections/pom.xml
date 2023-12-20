@@ -32,7 +32,6 @@
     <require-css.version>0.1.8</require-css.version>
     <swt.version>4.6</swt.version>
     <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
-    <dependency.javax.ws.rs-api.version>2.0</dependency.javax.ws.rs-api.version>
     <dojo.version>1.9.2</dojo.version>
   </properties>
   <dependencyManagement>
