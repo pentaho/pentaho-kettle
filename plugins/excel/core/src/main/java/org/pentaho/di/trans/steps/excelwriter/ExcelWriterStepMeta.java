@@ -1158,13 +1158,13 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   @Override
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+  public ExcelWriterStep getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new ExcelWriterStep( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
   @Override
-  public StepDataInterface getStepData() {
+  public ExcelWriterStepData getStepData() {
     return new ExcelWriterStepData();
   }
 
