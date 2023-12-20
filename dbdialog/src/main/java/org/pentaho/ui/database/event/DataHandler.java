@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1449,13 +1449,13 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.getAttributes().put( JDBC_AUTH_METHOD, jdbcAuthMethod.getValue() );
     }
     if ( iamAccessKeyId != null ) {
-      meta.getAttributes().put( IAM_ACCESS_KEY_ID, iamAccessKeyId.getValue() );
+      meta.getAttributes().put( IAM_ACCESS_KEY_ID, Encr.encryptPassword( iamAccessKeyId.getValue() ) );
     }
     if ( iamSecretKeyId != null ) {
       meta.getAttributes().put( IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( iamSecretKeyId.getValue() ) );
     }
     if ( iamSessionToken != null ) {
-      meta.getAttributes().put( IAM_SESSION_TOKEN, iamSessionToken.getValue() );
+      meta.getAttributes().put( IAM_SESSION_TOKEN, Encr.encryptPassword( iamSessionToken.getValue() ) );
     }
     if ( iamProfileName != null ) {
       meta.getAttributes().put( IAM_PROFILE_NAME, iamProfileName.getValue() );
@@ -1618,13 +1618,13 @@ public class DataHandler extends AbstractXulEventHandler {
       setAuthFieldsVisible();
     }
     if ( iamAccessKeyId != null ) {
-      iamAccessKeyId.setValue( meta.getAttributes().getProperty( IAM_ACCESS_KEY_ID ) );
+      iamAccessKeyId.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( IAM_ACCESS_KEY_ID ) ) );
     }
     if ( iamSecretKeyId != null ) {
       iamSecretKeyId.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( IAM_SECRET_ACCESS_KEY ) ) );
     }
     if ( iamSessionToken != null ) {
-      iamSessionToken.setValue( meta.getAttributes().getProperty( IAM_SESSION_TOKEN ) );
+      iamSessionToken.setValue( Encr.decryptPassword( meta.getAttributes().getProperty( IAM_SESSION_TOKEN ) ) );
     }
     if ( iamProfileName != null ) {
       iamProfileName.setValue( meta.getAttributes().getProperty( IAM_PROFILE_NAME ) );
