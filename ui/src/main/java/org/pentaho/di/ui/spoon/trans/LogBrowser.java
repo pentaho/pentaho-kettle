@@ -130,7 +130,7 @@ public class LogBrowser {
                 lastNr = Math.min( lastNr, lastLogId.get() + MAX_NR_LOG_LINES_CHUNK );
 
                 List<KettleLoggingEvent> logLines =
-                  KettleLogStore.getLogBufferFromTo( childIds, true, lastLogId.get(), lastNr );
+                  KettleLogStore.getLogBufferFromTo( childIds, true, lastLogId.get() + 1, lastNr );
 
                 synchronized ( text ) {
 
