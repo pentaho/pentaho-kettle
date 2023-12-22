@@ -2657,6 +2657,22 @@ public class Const {
   }
 
   /**
+   * Implements Oracle style NVL function for generic arguments
+   *
+   * @param source
+   *          The source argument
+   * @param def
+   *          The default value in case source is null
+   * @return source if source is not null, otherwise return def
+   */
+  public static <T> T NVL( T source, T def ) {
+    if ( source == null ) {
+      return def;
+    }
+    return source;
+  }
+
+  /**
    * Return empty string "" in case the given parameter is null, otherwise return the same value.
    *
    * @param source
