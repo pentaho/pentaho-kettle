@@ -657,7 +657,6 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
     Object[] nextRow = getRow(); // Get row from input rowset & set row busy!
     if ( nextRow == null ) { // no more input to be expected...
-      finishStep();
       return false;
     }
 
@@ -888,11 +887,11 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    finishStep();
     super.dispose( smi, sdi );
   }
 
-  private void finishStep() {
+  @Override
+  public boolean afterFinishProcessing( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( data.db != null && data.db.getConnection() != null ) {
       try {
         if ( !data.db.getConnection().isClosed() ) {
@@ -951,5 +950,6 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         }
       }
     }
+    return true;
   }
 }
