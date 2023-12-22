@@ -172,12 +172,25 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     result.setResult( false );
 
     // Validate if Real Maximum Timeout is only digits.
+    int errorsCount = 0;
     if ( !NumberUtils.isDigits( getRealMaximumTimeout() ) ) {
-      result.setResult( false );
-      result.setNrErrors( 1 );
+      errorsCount++;
       logError( "Invalid value for Maximum Timeout." );
       return result;
     }
+
+    // Validate if Real Check Cycle Time is only digits.
+    if ( !NumberUtils.isDigits( getRealCheckCycleTime() ) ) {
+      errorsCount++;
+      logError( "Invalid value for Check Cycle Time." );
+      return result;
+    }
+
+    if ( errorsCount > 0 ) {
+      result.setResult( false );
+      result.setNrErrors( errorsCount );
+    }
+
 
     // starttime (in seconds)
     long timeStart = System.currentTimeMillis() / 1000;
