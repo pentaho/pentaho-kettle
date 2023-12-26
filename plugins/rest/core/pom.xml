@@ -288,7 +288,7 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>${jetty.version}</version>
+      <version>${jetty-server.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
