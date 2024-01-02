@@ -4783,6 +4783,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       } else if ( fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null ) {
         String filename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
         lastFileOpened = filename;
+        props.setLastUsedLocalFile( filename );
         lastFileOpenedConnection = fileDialogOperation.getConnection();
         lastFileOpenedProvider = fileDialogOperation.getProvider();
         if ( lastFileOpenedConnection != null && meta instanceof VariableSpace ) {

@@ -50,6 +50,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -251,6 +252,7 @@ public class PropsUI extends Props {
     lastUsedRepoFiles = new LinkedHashMap<>();
     openTabFiles = new ArrayList<LastUsedFile>();
     screens = new Hashtable<String, WindowProperty>();
+    lastUsedLocalFile = StringUtil.EMPTY_STRING;
 
     properties.setProperty( STRING_LOG_LEVEL, getLogLevel() );
     properties.setProperty( STRING_LOG_FILTER, getLogFilter() );
@@ -542,7 +544,7 @@ public class PropsUI extends Props {
           openItemTypes ) );
     }
 
-    lastUsedLocalFile = properties.getProperty( "lastUsedLocalFile" );
+    lastUsedLocalFile = Const.NVL( properties.getProperty( "lastUsedLocalFile" ), "" );
   }
 
   public void loadLastUsedRepoFiles() {
