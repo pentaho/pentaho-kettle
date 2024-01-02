@@ -58,7 +58,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
   private SynchronizeAfterMergeData data;
 
   public SynchronizeAfterMerge( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+                                Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -84,7 +84,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
     try {
       if ( operation == null ) {
         throw new KettleException( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.OperationFieldEmpty", meta
-            .getOperationOrderField() ) );
+          .getOperationOrderField() ) );
       }
 
       if ( meta.istablenameInField() ) {
@@ -94,7 +94,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
           throw new KettleStepException( "The name of the table is not specified!" );
         }
         data.realSchemaTable =
-            data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.realSchemaName, data.realTableName );
+          data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.realSchemaName, data.realTableName );
       }
 
       if ( operation.equals( data.insertValue ) ) {
@@ -111,7 +111,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         // The values to insert are those in the update section
         //
         Object[] insertRowData = new Object[data.valuenrs.length];
-        for ( int i = 0; i < data.valuenrs.length; i++ ) {
+        for (int i = 0; i < data.valuenrs.length; i++) {
           insertRowData[i] = row[data.valuenrs[i]];
         }
 
@@ -151,7 +151,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
         Object[] lookupRow = new Object[data.keynrs.length];
         int lookupIndex = 0;
-        for ( int i = 0; i < meta.getKeyStream().length; i++ ) {
+        for (int i = 0; i < meta.getKeyStream().length; i++) {
           if ( data.keynrs[i] >= 0 ) {
             lookupRow[lookupIndex] = row[data.keynrs[i]];
             lookupIndex++;
@@ -184,7 +184,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
           data.db.setValues( data.lookupParameterRowMeta, lookupRow, data.lookupStatement );
           if ( log.isRowLevel() ) {
             logRowlevel( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.ValuesSetForLookup",
-                data.lookupParameterRowMeta.getString( lookupRow ) ) );
+              data.lookupParameterRowMeta.getString( lookupRow ) ) );
           }
           Object[] add = data.db.getLookup( data.lookupStatement );
           incrementLinesInput();
@@ -194,10 +194,10 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
             if ( data.stringErrorKeyNotFound == null ) {
               data.stringErrorKeyNotFound =
-                  BaseMessages.getString( PKG, "SynchronizeAfterMerge.Exception.KeyCouldNotFound" )
-                      + data.lookupParameterRowMeta.getString( lookupRow );
+                BaseMessages.getString( PKG, "SynchronizeAfterMerge.Exception.KeyCouldNotFound" )
+                  + data.lookupParameterRowMeta.getString( lookupRow );
               data.stringFieldnames = "";
-              for ( int i = 0; i < data.lookupParameterRowMeta.size(); i++ ) {
+              for (int i = 0; i < data.lookupParameterRowMeta.size(); i++) {
                 if ( i > 0 ) {
                   data.stringFieldnames += ", ";
                 }
@@ -206,15 +206,15 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
             }
             data.lookupFailure = true;
             throw new KettleDatabaseException( BaseMessages.getString( PKG,
-                "SynchronizeAfterMerge.Exception.KeyCouldNotFound", data.lookupParameterRowMeta.getString(
-                    lookupRow ) ) );
+              "SynchronizeAfterMerge.Exception.KeyCouldNotFound", data.lookupParameterRowMeta.getString(
+                lookupRow ) ) );
           } else {
             if ( log.isRowLevel() ) {
               logRowlevel( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.FoundRowForUpdate",
-                  data.insertRowMeta.getString( row ) ) );
+                data.insertRowMeta.getString( row ) ) );
             }
 
-            for ( int i = 0; i < data.valuenrs.length; i++ ) {
+            for (int i = 0; i < data.valuenrs.length; i++) {
               if ( meta.getUpdate()[i].booleanValue() ) {
                 ValueMetaInterface valueMeta = data.inputRowMeta.getValueMeta( data.valuenrs[i] );
                 ValueMetaInterface retMeta = data.db.getReturnRowMeta().getValueMeta( i );
@@ -250,7 +250,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
             // Create the update row...
             Object[] updateRow = new Object[data.updateParameterRowMeta.size()];
             int j = 0;
-            for ( int i = 0; i < data.valuenrs.length; i++ ) {
+            for (int i = 0; i < data.valuenrs.length; i++) {
               if ( meta.getUpdate()[i].booleanValue() ) {
                 updateRow[j] = row[data.valuenrs[i]]; // the setters
                 j++;
@@ -258,7 +258,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
             }
 
             // add the where clause parameters, they are exactly the same for lookup and update
-            for ( int i = 0; i < lookupRow.length; i++ ) {
+            for (int i = 0; i < lookupRow.length; i++) {
               updateRow[j + i] = lookupRow[i];
             }
 
@@ -271,7 +271,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
             data.db.setValues( data.updateParameterRowMeta, updateRow, data.updateStatement );
             if ( log.isRowLevel() ) {
               logRowlevel( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.SetValuesForUpdate",
-                  data.updateParameterRowMeta.getString( updateRow ), data.inputRowMeta.getString( row ) ) );
+                data.updateParameterRowMeta.getString( updateRow ), data.inputRowMeta.getString( row ) ) );
             }
             data.db.insertRow( data.updateStatement, data.batchMode );
             performUpdate = true;
@@ -301,7 +301,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
           Object[] deleteRow = new Object[data.deleteParameterRowMeta.size()];
           int deleteIndex = 0;
 
-          for ( int i = 0; i < meta.getKeyStream().length; i++ ) {
+          for (int i = 0; i < meta.getKeyStream().length; i++) {
             if ( data.keynrs[i] >= 0 ) {
               deleteRow[deleteIndex] = row[data.keynrs[i]];
               deleteIndex++;
@@ -321,7 +321,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
           data.db.setValues( data.deleteParameterRowMeta, deleteRow, data.deleteStatement );
           if ( log.isRowLevel() ) {
             logRowlevel( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.SetValuesForDelete",
-                data.deleteParameterRowMeta.getString( deleteRow ), data.inputRowMeta.getString( row ) ) );
+              data.deleteParameterRowMeta.getString( deleteRow ), data.inputRowMeta.getString( row ) ) );
           }
           data.db.insertRow( data.deleteStatement, data.batchMode );
           performDelete = true;
@@ -383,7 +383,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
               }
             } catch ( SQLException ex ) {
               throw Database.createKettleDatabaseBatchException( BaseMessages.getString( PKG,
-                  "SynchronizeAfterMerge.Error.UpdatingBatch" ), ex );
+                "SynchronizeAfterMerge.Error.UpdatingBatch" ), ex );
             } catch ( Exception ex ) {
               throw new KettleDatabaseException( "Unexpected error inserting row", ex );
             }
@@ -423,7 +423,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         StringBuilder msg = new StringBuilder( "Error batch inserting rows into table [" + data.realTableName + "]." );
         msg.append( Const.CR );
         msg.append( "Errors encountered (first 10):" ).append( Const.CR );
-        for ( int x = 0; x < be.getExceptionsList().size() && x < 10; x++ ) {
+        for (int x = 0; x < be.getExceptionsList().size() && x < 10; x++) {
           Exception exception = be.getExceptionsList().get( x );
           if ( exception.getMessage() != null ) {
             msg.append( exception.getMessage() ).append( Const.CR );
@@ -452,7 +452,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         setErrors( getErrors() + 1 );
         data.db.rollback();
         throw new KettleException( "Error inserting row into table [" + data.realTableName + "] with values: "
-            + data.inputRowMeta.getString( row ), dbe );
+          + data.inputRowMeta.getString( row ), dbe );
       }
     }
 
@@ -471,7 +471,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         }
 
         if ( rowIsSafe ) { // A commit was done and the rows are all safe (no error)
-          for ( int i = 0; i < data.batchBuffer.size(); i++ ) {
+          for (int i = 0; i < data.batchBuffer.size(); i++) {
             Object[] rowb = data.batchBuffer.get( i );
             putRow( data.outputRowMeta, rowb );
             if ( data.inputRowMeta.getString( rowb, data.indexOfOperationOrderField ).equals( data.insertValue ) ) {
@@ -506,7 +506,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
     //
     if ( updateCounts != null ) {
       int errNr = 0;
-      for ( int i = 0; i < updateCounts.length; i++ ) {
+      for (int i = 0; i < updateCounts.length; i++) {
         Object[] row = data.batchBuffer.get( i );
         if ( updateCounts[i] > 0 ) {
           // send the error forward
@@ -526,7 +526,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
       // If we don't have update counts, it probably means the DB doesn't support it.
       // In this case we don't have a choice but to consider all inserted rows to be error rows.
       //
-      for ( int i = 0; i < data.batchBuffer.size(); i++ ) {
+      for (int i = 0; i < data.batchBuffer.size(); i++) {
         Object[] row = data.batchBuffer.get( i );
         putError( data.outputRowMeta, row, 1L, errorMessage, null, "SUYNC003" );
       }
@@ -545,7 +545,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
     String sql = "SELECT ";
 
-    for ( int i = 0; i < meta.getUpdateLookup().length; i++ ) {
+    for (int i = 0; i < meta.getUpdateLookup().length; i++) {
       if ( i != 0 ) {
         sql += ", ";
       }
@@ -555,7 +555,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
     sql += " FROM " + data.realSchemaTable + " WHERE ";
 
-    for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
+    for (int i = 0; i < meta.getKeyLookup().length; i++) {
       if ( i != 0 ) {
         sql += " AND ";
       }
@@ -566,7 +566,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         data.lookupParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream2()[i] ) );
       } else {
         if ( "IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) || "IS NOT NULL".equalsIgnoreCase( meta
-            .getKeyCondition()[i] ) ) {
+          .getKeyCondition()[i] ) ) {
           sql += " " + meta.getKeyCondition()[i] + " ";
         } else {
           sql += " " + meta.getKeyCondition()[i] + " ? ";
@@ -587,7 +587,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
     boolean comma = false;
 
-    for ( int i = 0; i < meta.getUpdateLookup().length; i++ ) {
+    for (int i = 0; i < meta.getUpdateLookup().length; i++) {
       if ( meta.getUpdate()[i].booleanValue() ) {
         if ( comma ) {
           sql += ",   ";
@@ -603,7 +603,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
     sql += "WHERE ";
 
-    for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
+    for (int i = 0; i < meta.getKeyLookup().length; i++) {
       if ( i != 0 ) {
         sql += "AND   ";
       }
@@ -613,7 +613,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream()[i] ) );
         data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream2()[i] ) );
       } else if ( "IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) || "IS NOT NULL".equalsIgnoreCase( meta
-          .getKeyCondition()[i] ) ) {
+        .getKeyCondition()[i] ) ) {
         sql += " " + meta.getKeyCondition()[i] + " ";
       } else {
         sql += " " + meta.getKeyCondition()[i] + " ? ";
@@ -631,7 +631,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
     sql += "WHERE ";
 
-    for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
+    for (int i = 0; i < meta.getKeyLookup().length; i++) {
       if ( i != 0 ) {
         sql += "AND   ";
       }
@@ -641,7 +641,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream()[i] ) );
         data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream2()[i] ) );
       } else if ( "IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) || "IS NOT NULL".equalsIgnoreCase( meta
-          .getKeyCondition()[i] ) ) {
+        .getKeyCondition()[i] ) ) {
         sql += " " + meta.getKeyCondition()[i] + " ";
       } else {
         sql += " " + meta.getKeyCondition()[i] + " ? ";
@@ -657,7 +657,6 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
     Object[] nextRow = getRow(); // Get row from input rowset & set row busy!
     if ( nextRow == null ) { // no more input to be expected...
-      finishStep();
       return false;
     }
 
@@ -673,7 +672,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
           data.indexOfTableNameField = data.inputRowMeta.indexOfValue( meta.gettablenameField() );
           if ( data.indexOfTableNameField < 0 ) {
             String message =
-                "It was not possible to find table [" + meta.gettablenameField() + "] in the input fields.";
+              "It was not possible to find table [" + meta.gettablenameField() + "] in the input fields.";
             logError( message );
             throw new KettleStepException( message );
           }
@@ -684,7 +683,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
           throw new KettleStepException( "The table name is not specified (or the input field is empty)" );
         }
         data.realSchemaTable =
-            data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.realSchemaName, data.realTableName );
+          data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.realSchemaName, data.realTableName );
       }
 
       // Cache the position of the operation order field
@@ -692,8 +691,8 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
         data.indexOfOperationOrderField = data.inputRowMeta.indexOfValue( meta.getOperationOrderField() );
         if ( data.indexOfOperationOrderField < 0 ) {
           String message =
-              "It was not possible to find operation field [" + meta.getOperationOrderField()
-                  + "] in the input stream!";
+            "It was not possible to find operation field [" + meta.getOperationOrderField()
+              + "] in the input stream!";
           logError( message );
           throw new KettleStepException( message );
         }
@@ -712,31 +711,31 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
       data.keynrs = new int[meta.getKeyStream().length];
       data.keynrs2 = new int[meta.getKeyStream().length];
-      for ( int i = 0; i < meta.getKeyStream().length; i++ ) {
+      for (int i = 0; i < meta.getKeyStream().length; i++) {
         data.keynrs[i] = data.inputRowMeta.indexOfValue( meta.getKeyStream()[i] );
         if ( data.keynrs[i] < 0 && // couldn't find field!
-            !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
-            !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
+          !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
+          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Exception.FieldRequired",
-              meta.getKeyStream()[i] ) );
+            meta.getKeyStream()[i] ) );
         }
         data.keynrs2[i] = data.inputRowMeta.indexOfValue( meta.getKeyStream2()[i] );
         if ( data.keynrs2[i] < 0 && // couldn't find field!
-            "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
+          "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Exception.FieldRequired",
-              meta.getKeyStream2()[i] ) );
+            meta.getKeyStream2()[i] ) );
         }
 
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.FieldHasDataNumbers", meta
-              .getKeyStream()[i] ) + data.keynrs[i] );
+            .getKeyStream()[i] ) + data.keynrs[i] );
         }
       }
 
       // Insert the update fields: just names. Type doesn't matter!
-      for ( int i = 0; i < meta.getUpdateLookup().length; i++ ) {
+      for (int i = 0; i < meta.getUpdateLookup().length; i++) {
         ValueMetaInterface insValue = data.insertRowMeta.searchValueMeta( meta.getUpdateLookup()[i] );
         if ( insValue == null ) { // Don't add twice!
           // we already checked that this value exists so it's probably safe to ignore lookup failure...
@@ -745,22 +744,22 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
           data.insertRowMeta.addValueMeta( insertValue );
         } else {
           throw new KettleStepException( BaseMessages.getString( PKG,
-              "SynchronizeAfterMerge.Error.SameColumnInsertedTwice", insValue.getName() ) );
+            "SynchronizeAfterMerge.Error.SameColumnInsertedTwice", insValue.getName() ) );
         }
       }
 
       // Cache the position of the compare fields in Row row
       //
       data.valuenrs = new int[meta.getUpdateLookup().length];
-      for ( int i = 0; i < meta.getUpdateLookup().length; i++ ) {
+      for (int i = 0; i < meta.getUpdateLookup().length; i++) {
         data.valuenrs[i] = data.inputRowMeta.indexOfValue( meta.getUpdateStream()[i] );
         if ( data.valuenrs[i] < 0 ) { // couldn't find field!
           throw new KettleStepException( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Exception.FieldRequired",
-              meta.getUpdateStream()[i] ) );
+            meta.getUpdateStream()[i] ) );
         }
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.FieldHasDataNumbers", meta
-              .getUpdateStream()[i] ) + data.valuenrs[i] );
+            .getUpdateStream()[i] ) + data.valuenrs[i] );
         }
       }
 
@@ -865,7 +864,7 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
 
       // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
       data.specialErrorHandling =
-              getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates();
+        getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates();
 
       data.supportsSavepoints = meta.getDatabaseMeta().getDatabaseInterface().useSafePoints();
 
@@ -887,69 +886,70 @@ public class SynchronizeAfterMerge extends BaseDatabaseStep implements StepInter
     return PKG;
   }
 
-  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    finishStep();
-    super.dispose( smi, sdi );
-  }
+  @Override
+  public boolean afterFinishProcessing( StepMetaInterface smi, StepDataInterface sdi ) {
 
-  private void finishStep() {
-    if ( data.db != null && data.db.getConnection() != null ) {
-      try {
-        if ( !data.db.getConnection().isClosed() ) {
-          for ( String schemaTable : data.preparedStatements.keySet() ) {
-            // Get a commit counter per prepared statement to keep track of separate tables, etc.
-            //
-            Integer batchCounter = data.commitCounterMap.get( schemaTable );
-            if ( batchCounter == null ) {
-              batchCounter = 0;
-            }
+    if ( data.db == null || data.db.getConnection() == null ) {
+      return true;
+    }
+    try {
+      if ( data.db.getConnection().isClosed() ) {
+        return true;
+      }
+      for ( String schemaTable : data.preparedStatements.keySet() ) {
+        // Get a commit counter per prepared statement to keep track of separate tables, etc.
+        Integer batchCounter = Const.NVL( data.commitCounterMap.get( schemaTable ), 0 );
 
-            PreparedStatement insertStatement = data.preparedStatements.get( schemaTable );
+        PreparedStatement insertStatement = data.preparedStatements.get( schemaTable );
 
-            data.db.emptyAndCommit( insertStatement, data.batchMode, batchCounter );
-          }
-          for ( int i = 0; i < data.batchBuffer.size(); i++ ) {
-            Object[] row = data.batchBuffer.get( i );
-            putRow( data.outputRowMeta, row );
-            if ( data.inputRowMeta.getString( row, data.indexOfOperationOrderField ).equals( data.insertValue ) ) {
-              incrementLinesOutput();
-            }
-          }
-          // Clear the buffer
-          data.batchBuffer.clear();
-        }
-      } catch ( KettleDatabaseBatchException be ) {
-        if ( getStepMeta().isDoingErrorHandling() ) {
-          // Right at the back we are experiencing a batch commit problem...
-          // OK, we have the numbers...
-          try {
-            processBatchException( be.toString(), be.getUpdateCounts(), be.getExceptionsList() );
-          } catch ( KettleException e ) {
-            logError( "Unexpected error processing batch error", e );
-            setErrors( 1 );
-            stopAll();
-          }
-        } else {
-          logError( "Unexpected batch update error committing the database connection.", be );
-          setErrors( 1 );
-          stopAll();
-        }
-      } catch ( Exception dbe ) {
-        logError( "Unexpected error committing the database connection.", dbe );
-        logError( Const.getStackTracker( dbe ) );
-        setErrors( 1 );
-        stopAll();
-      } finally {
-        setOutputDone();
-
-        if ( getErrors() > 0 ) {
-          try {
-            data.db.rollback();
-          } catch ( KettleDatabaseException e ) {
-            logError( "Unexpected error rolling back the database connection.", e );
-          }
+        data.db.emptyAndCommit( insertStatement, data.batchMode, batchCounter );
+      }
+      for ( Object[] row : data.batchBuffer ) {
+        putRow( data.outputRowMeta, row );
+        if ( data.inputRowMeta.getString( row, data.indexOfOperationOrderField ).equals( data.insertValue ) ) {
+          incrementLinesOutput();
         }
       }
+      // Clear the buffer
+      data.batchBuffer.clear();
+
+    } catch ( KettleDatabaseBatchException be ) {
+      performErrorHandling( be );
+      return false;
+    } catch ( Exception dbe ) {
+      logError( "Unexpected error committing the database connection.", dbe );
+      setErrors( 1 );
+      stopAll();
+
+      return false;
+    } finally {
+      setOutputDone();
+      if ( getErrors() > 0 ) {
+        try {
+          data.db.rollback();
+        } catch ( KettleDatabaseException e ) {
+          logError( "Unexpected error rolling back the database connection.", e );
+        }
+      }
+    }
+    return true;
+  }
+
+  private void performErrorHandling( KettleDatabaseBatchException be ) {
+    if ( getStepMeta().isDoingErrorHandling() ) {
+      // Right at the back we are experiencing a batch commit problem...
+      // OK, we have the numbers...
+      try {
+        processBatchException( be.toString(), be.getUpdateCounts(), be.getExceptionsList() );
+      } catch ( KettleException e ) {
+        logError( "Unexpected error processing batch error", e );
+        setErrors( 1 );
+        stopAll();
+      }
+    } else {
+      logError( "Unexpected batch update error committing the database connection.", be );
+      setErrors( 1 );
+      stopAll();
     }
   }
 }
