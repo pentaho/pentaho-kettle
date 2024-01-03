@@ -504,6 +504,10 @@ jobGroups:
        parallelize     :  false
        versionProperty :  pentaho-reporting-plugin.version
 
+  2950:
+     - jobID           : pentaho-scheduler-plugin
+       scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
+
   3000:
      - jobID           :  big-data-hadoop-shims-ee
        scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
@@ -585,6 +589,10 @@ jobGroups:
                  test  :  test
        archivable      :  true
        versionProperty :  container-utils.version
+
+       #- jobID           :  pentaho-scheduler-plugin-ee
+       #  scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin-ee.git
+       #  versionProperty :  pentaho-scheduler-plugin-ee.version
 
   3600:
      - jobID           :  data-exploration-ee
