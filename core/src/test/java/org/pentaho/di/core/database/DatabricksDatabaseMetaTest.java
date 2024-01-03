@@ -26,7 +26,7 @@ public class DatabricksDatabaseMetaTest {
     assertEquals( DatabricksDatabaseMeta.class, meta.getDatabaseInterface().getClass() );
     assertEquals( "com.databricks.client.jdbc.Driver", meta.getDriverClass() );
     assertEquals( "databricks", meta.getDatabaseInterface().getXulOverlayFile() );
-    assertEquals( "useSchemaNameForTableList", true, meta.useSchemaNameForTableList() );
+    assertEquals( "useSchemaNameForTableList", false, meta.useSchemaNameForTableList() );
   }
 
   @Test
