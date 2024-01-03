@@ -70,7 +70,8 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
         domain = "/" + domain;
       }
       url = vfsConnectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
-      if ( url.matches( DOMAIN_ROOT ) ) {
+      //TODO Looks like a bug. For now excluding this for connections with hasBuckets. For future, needs to be re-analyzed.
+      if ( url.matches( DOMAIN_ROOT ) && vfsConnectionDetails.hasBuckets() ) {
         url += vfsConnectionDetails.getName();
       }
     }
