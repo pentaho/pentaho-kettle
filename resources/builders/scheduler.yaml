@@ -69,6 +69,12 @@ jobGroups:
       directives      :  += -DskipDefault -P lowdeps
       scmBranch       :  scheduler-plugin
 
+  1100:
+    - jobID           :  pdi-engine-core
+      scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+      scmBranch       : scheduler-plugin
+      directives      :  += -DskipDefault -P base,plugins,lowdeps
+
   2100:
     - jobID           : platform-base
       scmUrl          : https://github.com/pentaho/pentaho-platform.git
@@ -76,12 +82,21 @@ jobGroups:
       directives      : += -DskipDefault -P platform-base
       parallelize     : true
       archivable      : true
-
+      
+  2400:
+    - jobID           :  pdi-core-plugins
+      scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+      scmBranch       : scheduler-plugin
+      directives      :  += -DskipDefault -P highdeps
+      root            :  plugins
+      parallelize     :  true
+      
   2500:
      - jobID           :  pdi-platform-plugin
        scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
        scmBranch       :  scheduler-plugin
        testable        :  false
+       
   2600:
     - jobID           : common-ui
       scmUrl          : https://github.com/pentaho/pentaho-platform-plugin-common-ui.git
@@ -192,11 +207,26 @@ jobGroups:
       scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
       testable        :  false
       archivable      :  true
-
+      
+  4200:
+    - jobID           :  pdi-client-assembly
+      scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+      scmBranch       :  scheduler-plugin
+      directives      :  += -DskipDefault -P assemblies
+      testable        :  false
+      archivable      :  true
+      
   4300:
     - jobID           :  pdi-client-assembly-ee
       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
       scmBranch       :  scheduler-plugin
+      testable        :  false
+      archivable      :  true
+
+    - jobID           :  pdi-client-assembly-osgi
+      scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+      scmBranch       :  scheduler-plugin
+      directives      :  += -Dosgi -DskipDefault -P assemblies
       testable        :  false
       archivable      :  true
 

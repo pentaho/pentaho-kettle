@@ -143,6 +143,7 @@ jobGroups:
   1100:
      - jobID           :  pdi-engine-core
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       scmBranch       : scheduler-plugin
        directives      :  += -DskipDefault -P base,plugins,lowdeps
 
   1200:
@@ -277,6 +278,7 @@ jobGroups:
 
      - jobID           :  pdi-core-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       scmBranch       : scheduler-plugin
        directives      :  += -DskipDefault -P highdeps
        root            :  plugins
        parallelize     :  true
@@ -562,6 +564,7 @@ jobGroups:
   4200:
      - jobID           :  pdi-client-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       scmBranch       :  scheduler-plugin
        directives      :  += -DskipDefault -P assemblies
        testable        :  false
        archivable      :  true
@@ -575,6 +578,7 @@ jobGroups:
 
      - jobID           :  pdi-client-assembly-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
+       scmBranch       :  scheduler-plugin
        directives      :  += -Dosgi -DskipDefault -P assemblies
        testable        :  false
        archivable      :  true
