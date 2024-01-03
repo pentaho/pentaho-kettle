@@ -123,6 +123,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         vfsLocation.setPath( vfsConnectionDetails.getType() + "://" + vfsConnectionDetails.getDomain() );
         vfsLocation.setDomain( vfsConnectionDetails.getDomain() );
         vfsLocation.setConnection( connectionDetails.getName() );
+        vfsLocation.setCanAddChildren( vfsConnectionDetails.hasBuckets() );
         if ( connectionDetails.getType().startsWith( "s3" ) || connectionDetails.getType().startsWith( "snw" ) ) {
           vfsLocation.setHasBuckets( true );
         }
@@ -147,7 +148,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
     VFSConnectionDetails vfsConnectionDetails =
       (VFSConnectionDetails) ConnectionManager.getInstance().getConnectionDetails( file.getConnection() );
-
+    if( !vfsConnectionDetails.hasBuckets() ) {
+      return null;
+    }
     @SuppressWarnings( "unchecked" )
     VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
       (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance()
@@ -189,7 +192,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   @Override
   public List<VFSFile> getFiles( VFSFile file, String filters, VariableSpace space ) throws FileException {
     if ( file.getPath().matches( DOMAIN_ROOT ) ) {
-      return getRoot( file );
+      List<VFSFile> rootFiles = getRoot( file );
+      if ( rootFiles != null ) {
+        return rootFiles;
+      }
     }
     FileObject fileObject;
     try {
