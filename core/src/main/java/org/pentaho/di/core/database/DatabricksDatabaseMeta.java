@@ -1,5 +1,6 @@
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -85,7 +86,7 @@ public class DatabricksDatabaseMeta extends BaseDatabaseMeta {
       // user/pass will be passed as properties if set
       appendProperty( urlBuilder, Params.AUTH_MECH, "3" );
       appendProperty( urlBuilder, Params.USER, "token" );
-      appendProperty( urlBuilder, Params.PASS, getMandatoryAttribute( Attributes.TOKEN ) );
+      appendProperty( urlBuilder, Params.PASS, Encr.decryptPassword( getMandatoryAttribute( Attributes.TOKEN ) ) );
     }
     if ( StringUtils.isNotBlank( databaseName ) ) {
       appendProperty( urlBuilder, Params.CATALOG, databaseName );
@@ -113,11 +114,11 @@ public class DatabricksDatabaseMeta extends BaseDatabaseMeta {
   }
 
   public Optional<String> getToken() {
-    return getAttribute( Attributes.TOKEN );
+    return getAttribute( Attributes.TOKEN ).map( Encr::decryptPassword );
   }
 
   public void setToken( String token ) {
-    addAttribute( Attributes.TOKEN, token );
+    addAttribute( Attributes.TOKEN, Encr.encryptPassword( token ) );
     // if there, user and pass will always be added to connection properties
     // and override token auth;
     setUsername( null );
@@ -206,11 +207,6 @@ public class DatabricksDatabaseMeta extends BaseDatabaseMeta {
   @Override
   public String[] getUsedLibraries() {
     return new String[] {};
-  }
-
-  @Override
-  public boolean useSchemaNameForTableList() {
-    return true;
   }
 
   /**
