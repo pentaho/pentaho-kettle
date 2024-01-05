@@ -31,6 +31,7 @@ import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.ext.awt.RenderingHintsKeyExt;
 import org.apache.batik.gvt.GraphicsNode;
 import org.pentaho.di.core.svg.SvgImage;
 
@@ -86,6 +87,12 @@ public class SwingUniversalImageSvg extends SwingUniversalImage {
     affineTransform.translate( -svgGraphicsSize.getWidth() / 2, -svgGraphicsSize.getHeight() / 2 );
 
     svgGraphicsNode.setTransform( affineTransform );
+
+    // Fix to remove the thrown warning message:
+    // Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint
+    if ( gc.getRenderingHint( RenderingHintsKeyExt.KEY_TRANSCODING ) == null ) {
+      gc.setRenderingHint( RenderingHintsKeyExt.KEY_TRANSCODING, RenderingHintsKeyExt.VALUE_TRANSCODING_PRINTING );
+    }
 
     svgGraphicsNode.paint( gc );
   }
