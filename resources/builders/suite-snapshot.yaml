@@ -12,13 +12,20 @@ buildProperties:
   # we are running in containers, let the maven process have most of the memory available
   MAVEN_OPTS: -Xmx4g -XX:MaxRAMPercentage=90.0
 
-  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-snapshot-orl/
-  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-snapshot-orl/
+  ARTIFACT_DEPLOYER_CREDENTIALS_ID: jfrog-pentaho-service-cicd
 
-  DOCKER_PUBLIC_PUSH_REPO        : pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com/
-  DOCKER_PRIVATE_PUSH_REPO       : pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com/
+  MAVEN_RESOLVE_REPO_URL         : https://one.hitachivantara.com/artifactory/pnt-mvn/
+  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://one.hitachivantara.com/artifactory/pntpub-maven-snapshot/
+  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://one.hitachivantara.com/artifactory/pntprv-maven-snapshot/
 
-  HELM_REPOSITORY_URL            : https://repo.orl.eng.hitachivantara.com/artifactory/lumadadataintegration-helm-dev-orl
+  DOCKER_REGISTRY_URL            : https://one.hitachivantara.com
+  DOCKER_IMAGE_HOST              : one.hitachivantara.com/pnt-docker
+  DOCKER_PUBLIC_PUSH_REPO        : one.hitachivantara.com/pntpub-docker-dev
+  DOCKER_PRIVATE_PUSH_REPO       : one.hitachivantara.com/pntprv-docker-dev
+
+  NODEJS_BUNDLE_REPO_URL          : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
+  NPM_RELEASE_REPO_URL            : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
+
 
   # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
   # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly

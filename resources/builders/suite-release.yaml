@@ -10,18 +10,17 @@ buildProperties:
     build: clean deploy -DskipTests -Drelease
     test: test
 
-  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-dev-orl/
-  MAVEN_PRIVATE_RELEASE_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-dev-orl/
+  MAVEN_RESOLVE_REPO_URL         : https://one.hitachivantara.com/artifactory/pnt-mvn/
+  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://one.hitachivantara.com/artifactory/pntpub-maven-dev/
+  MAVEN_PRIVATE_RELEASE_REPO_URL : https://one.hitachivantara.com/artifactory/pntprv-maven-dev/
 
-  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-snapshot-orl/
-  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn-snapshot-orl/
+  DOCKER_REGISTRY_URL            : https://one.hitachivantara.com
+  DOCKER_IMAGE_HOST              : one.hitachivantara.com/pnt-docker
+  DOCKER_PUBLIC_PUSH_REPO        : one.hitachivantara.com/pntpub-docker-dev
+  DOCKER_PRIVATE_PUSH_REPO       : one.hitachivantara.com/pntprv-docker-dev
 
-  DOCKER_PUBLIC_PUSH_REPO        : pntpub-docker-dev-orl.repo.orl.eng.hitachivantara.com
-  DOCKER_PRIVATE_PUSH_REPO       : pntprv-docker-dev-orl.repo.orl.eng.hitachivantara.com
-
-  GENERIC_PRIVATE_REPO           : https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-generic-dev-orl
-
-  HELM_REPOSITORY_URL            : https://repo.orl.eng.hitachivantara.com/artifactory/lumadadataintegration-helm-dev-orl
+  NODEJS_BUNDLE_REPO_URL          : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
+  NPM_RELEASE_REPO_URL            : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
 
   ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
 

@@ -10,18 +10,29 @@
 # 6. OVERRIDE_PARAMS param
 
 # Build Tools
-JENKINS_ANT_FOR_BUILDS: ant-auto
-JENKINS_JDK_FOR_BUILDS: Java8_auto
-JENKINS_MAVEN_FOR_BUILDS: maven3-auto
+JENKINS_ANT_FOR_BUILDS   : ant-auto
+JENKINS_JDK_FOR_BUILDS   : Java8_auto
+JENKINS_MAVEN_FOR_BUILDS : maven3-auto
 JENKINS_GRADLE_FOR_BUILDS: gradle-auto
 
-# Maven
-MAVEN_RESOLVE_REPO_URL: https://repo.orl.eng.hitachivantara.com/artifactory/pntprv-mvn
-MAVEN_TEST_OPTS: -DsurefireArgLine=-Xmx1g
-MAVEN_SETTINGS: ${BUILD_CONFIG_ROOT_PATH}/maven/settings.xml
+# Repos
+MAVEN_RESOLVE_REPO_URL         : https://one.hitachivantara.com/artifactory/pnt-mvn/
+MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://one.hitachivantara.com/artifactory/pntpub-maven-snapshot/
+MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://one.hitachivantara.com/artifactory/pntprv-maven-snapshot/
+MAVEN_PUBLIC_RELEASE_REPO_URL  : https://one.hitachivantara.com/artifactory/pntpub-maven-dev/
+MAVEN_PRIVATE_RELEASE_REPO_URL : https://one.hitachivantara.com/artifactory/pntprv-maven-dev/
 
-# Docker
-DOCKER_RESOLVE_REPO: pnt-docker.repo.orl.eng.hitachivantara.com/
+DOCKER_REGISTRY_URL            : https://one.hitachivantara.com
+DOCKER_IMAGE_HOST              : one.hitachivantara.com/pnt-docker
+DOCKER_PUBLIC_PUSH_REPO        : one.hitachivantara.com/pntpub-docker-dev
+DOCKER_PRIVATE_PUSH_REPO       : one.hitachivantara.com/pntprv-docker-dev
+
+NODEJS_BUNDLE_REPO_URL         : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
+NPM_RELEASE_REPO_URL           : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
+
+# Maven
+MAVEN_TEST_OPTS     : -DsurefireArgLine=-Xmx1g
+MAVEN_SETTINGS      : ${BUILD_CONFIG_ROOT_PATH}/maven/settings.xml
 
 # Stage execution
 RUN_STAGE_CHECKOUT  : true
@@ -34,50 +45,47 @@ RUN_STAGE_ARCHIVE   : true
 RUN_STAGE_REPORT    : true
 
 # General
-NOOP: false
-BUILD_RETRIES: 1
-BUILD_TIMEOUT: 480
-SLAVE_NODE_LABEL: non-master
-ARTIFACT_DEPLOYER_CREDENTIALS_ID: nexus-buildguy
-BUILD_ORDER_REPORT: false
+NOOP                             : false
+BUILD_RETRIES                    : 1
+BUILD_TIMEOUT                    : 480
+SLAVE_NODE_LABEL                 : non-master
+ARTIFACT_DEPLOYER_CREDENTIALS_ID : jfrog-pentaho-service-cicd
+BUILD_ORDER_REPORT               : false
 
 # SCM
-SCM_CREDENTIALS_ID: github-buildguy
-SCM_API_TOKEN_CREDENTIALS_ID: github-api-token-buildguy
-DEFAULT_BRANCH: master
+SCM_CREDENTIALS_ID               : github-buildguy
+SCM_API_TOKEN_CREDENTIALS_ID     : github-api-token-buildguy
+DEFAULT_BRANCH                   : master
 
 # Version control properties
-RELEASE_BUILD_NUMBER: ${BUILD_NUMBER}
-RELEASE_VERSION: 10.1.0.0
-DEPLOYMENT_FOLDER: 10.1.0.0
-BUILD_ID_TAIL: -${RELEASE_BUILD_NUMBER}
-RELEASE_MODE: false
+RELEASE_BUILD_NUMBER             : ${BUILD_NUMBER}
+RELEASE_VERSION                  : 10.1.0.0
+DEPLOYMENT_FOLDER                : 10.1.0.0
+BUILD_ID_TAIL                    : -${RELEASE_BUILD_NUMBER}
+RELEASE_MODE                     : false
 
 # Tagging
-TAG_NAME: ${RELEASE_VERSION}-${RELEASE_BUILD_NUMBER}
-TAG_MESSAGE: Tag created by ${JOB_NAME} ${BUILD_NUMBER}
-TICKET_MANAGER_URL: 'https://jira.pentaho.com/browse'
+TAG_NAME                         : ${RELEASE_VERSION}-${RELEASE_BUILD_NUMBER}
+TAG_MESSAGE                      : Tag created by ${JOB_NAME} ${BUILD_NUMBER}
+TICKET_MANAGER_URL               : 'https://jira.pentaho.com/browse'
 
 # Skip tagging if the RELEASE_VERSION is a SNAPSHOT
-TAG_SKIP_SNAPSHOT: true
+TAG_SKIP_SNAPSHOT                : true
 
 # Slack Integration
-SLACK_INTEGRATION: false
-SLACK_CHANNEL: 'slack-channel-name'
-SLACK_TEAM_DOMAIN: 'hitachivantara-eng'
-SLACK_CREDENTIALS_ID: 'slack-token'
+SLACK_INTEGRATION                : false
+SLACK_CHANNEL                    : 'slack-channel-name'
+SLACK_TEAM_DOMAIN                : 'hitachivantara-eng'
+SLACK_CREDENTIALS_ID             : 'slack-token'
 
 # Security parameters
-RUN_NEXUS_LIFECYCLE: false
-RUN_DEPENDENCY_CHECK: false
-VULNERABILITY_DATABASE_PATH: '/build/security/national-vulnerability-database'
+RUN_NEXUS_LIFECYCLE              : false
+RUN_DEPENDENCY_CHECK             : false
+VULNERABILITY_DATABASE_PATH      : '/build/security/national-vulnerability-database'
 DEPENDENCY_CHECK_SUPPRESSION_PATH: '/home/buildguy/suppress.xml'
 
-# Docker
-DOCKER_IMAGE_HOST: pntprv-docker-release.repo.orl.eng.hitachivantara.com
-DOCKER_REGISTRY_URL: https://pntprv-docker-release.repo.orl.eng.hitachivantara.com
-
-HELM_REPOSITORY_URL: https://repo.orl.eng.hitachivantara.com/artifactory/lumadadataintegration-helm-dev-orl
+# Helm (not used as of 2024-01-06)
+HELM_REPOSITORY_URL              : https://repo.orl.eng.hitachivantara.com/artifactory/lumadadataintegration-helm-dev-orl
 
 # Minions
-MINION_PIPELINE_TEMPLATE: resources/templates/minion-pipeline-default.vm
+MINION_PIPELINE_TEMPLATE         : resources/templates/minion-pipeline-default.vm
