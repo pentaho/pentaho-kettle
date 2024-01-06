@@ -1,48 +1,48 @@
 buildProperties:
-  BUILD_PLAN_ID: Suite Snapshot Build
+  BUILD_PLAN_ID                    : Suite Snapshot Build
 
-  USE_MINION_JOBS: true
-  IGNORE_PIPELINE_FAILURE: true
-  RELEASE_BUILD_NUMBER: latest
+  USE_MINION_JOBS                  : true
+  IGNORE_PIPELINE_FAILURE          : true
+  RELEASE_BUILD_NUMBER             : latest
 
-  ARCHIVING_CONFIG: ${BUILD_CONFIG_ROOT_PATH}/artifacts/snapshot-manifest.yaml
-  ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
+  ARCHIVING_CONFIG                 : ${BUILD_CONFIG_ROOT_PATH}/artifacts/snapshot-manifest.yaml
+  ARCHIVING_PATH_GROUP_REGEX       : '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
 
-  MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
+  MAVEN_DEFAULT_COMMAND_OPTIONS    : -B -e
   # we are running in containers, let the maven process have most of the memory available
-  MAVEN_OPTS: -Xmx4g -XX:MaxRAMPercentage=90.0
+  MAVEN_OPTS                       : -Xmx4g -XX:MaxRAMPercentage=90.0
 
-  ARTIFACT_DEPLOYER_CREDENTIALS_ID: jfrog-pentaho-service-cicd
+  ARTIFACT_DEPLOYER_CREDENTIALS_ID : jfrog-pentaho-service-cicd
 
-  MAVEN_RESOLVE_REPO_URL         : https://one.hitachivantara.com/artifactory/pnt-mvn/
-  MAVEN_PUBLIC_SNAPSHOT_REPO_URL : https://one.hitachivantara.com/artifactory/pntpub-maven-snapshot/
-  MAVEN_PRIVATE_SNAPSHOT_REPO_URL: https://one.hitachivantara.com/artifactory/pntprv-maven-snapshot/
+  MAVEN_RESOLVE_REPO_URL           : https://one.hitachivantara.com/artifactory/pnt-mvn/
+  MAVEN_PUBLIC_SNAPSHOT_REPO_URL   : https://one.hitachivantara.com/artifactory/pntpub-maven-snapshot/
+  MAVEN_PRIVATE_SNAPSHOT_REPO_URL  : https://one.hitachivantara.com/artifactory/pntprv-maven-snapshot/
 
-  DOCKER_REGISTRY_URL            : https://one.hitachivantara.com
-  DOCKER_IMAGE_HOST              : one.hitachivantara.com/pnt-docker
-  DOCKER_PUBLIC_PUSH_REPO        : one.hitachivantara.com/pntpub-docker-dev
-  DOCKER_PRIVATE_PUSH_REPO       : one.hitachivantara.com/pntprv-docker-dev
+  DOCKER_REGISTRY_URL              : https://one.hitachivantara.com
+  DOCKER_IMAGE_HOST                : one.hitachivantara.com/pnt-docker
+  DOCKER_PUBLIC_PUSH_REPO          : one.hitachivantara.com/pntpub-docker-dev
+  DOCKER_PRIVATE_PUSH_REPO         : one.hitachivantara.com/pntprv-docker-dev
 
-  NODEJS_BUNDLE_REPO_URL          : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
-  NPM_RELEASE_REPO_URL            : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
+  NODEJS_BUNDLE_REPO_URL           : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
+  NPM_RELEASE_REPO_URL             : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
 
 
   # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
   # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
   # parallel tasks like checkout, test, tagging, and archiving, reduce
   # to a reasonable size to reduce the risk of timeout failures.
-  PARALLEL_SIZE_CHECKOUT: 15
-  PARALLEL_SIZE_TEST    : 20
-  PARALLEL_SIZE_TAG     : 20
-  PARALLEL_SIZE_ARCHIVE : 10
+  PARALLEL_SIZE_CHECKOUT           : 15
+  PARALLEL_SIZE_TEST               : 20
+  PARALLEL_SIZE_TAG                : 20
+  PARALLEL_SIZE_ARCHIVE            : 10
 
   MAVEN_DEFAULT_DIRECTIVES:
-    build: clean deploy -DskipTests
-    test: test
+    build        : clean deploy -DskipTests
+    test         : test
 
-  JOB_ITEM_DEFAULTS :
-    dockerImage     : jenkins-build/maven/open-jdk/11
-    scmBranch       : master
+  JOB_ITEM_DEFAULTS:
+    dockerImage  : jenkins-build/maven/open-jdk/11
+    scmBranch    : master
 
 jobGroups:
   200:
