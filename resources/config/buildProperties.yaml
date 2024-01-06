@@ -27,6 +27,8 @@ DOCKER_IMAGE_HOST              : one.hitachivantara.com/pnt-docker
 DOCKER_PUBLIC_PUSH_REPO        : one.hitachivantara.com/pntpub-docker-dev
 DOCKER_PRIVATE_PUSH_REPO       : one.hitachivantara.com/pntprv-docker-dev
 
+GENERIC_PRIVATE_REPO           : https://one.hitachivantara.com/artifactory/pntprv-generic-dev
+
 NODEJS_BUNDLE_REPO_URL         : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
 NPM_RELEASE_REPO_URL           : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
 

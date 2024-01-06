@@ -1,65 +1,69 @@
 buildProperties:
-  BUILD_PLAN_ID                  : Suite Release Build
+  BUILD_PLAN_ID                    : Suite Release Build
 
-  USE_MINION_JOBS                : true
-  BUILD_RETRIES                  : 3
+  USE_MINION_JOBS                  : true
+  BUILD_RETRIES                    : 3
 
   # Maven
-  MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
+  MAVEN_DEFAULT_COMMAND_OPTIONS    : -B -e
   MAVEN_DEFAULT_DIRECTIVES:
-    build: clean deploy -DskipTests -Drelease
-    test: test
+    build  : clean deploy -DskipTests -Drelease
+    test   : test
 
-  MAVEN_RESOLVE_REPO_URL         : https://one.hitachivantara.com/artifactory/pnt-mvn/
-  MAVEN_PUBLIC_RELEASE_REPO_URL  : https://one.hitachivantara.com/artifactory/pntpub-maven-dev/
-  MAVEN_PRIVATE_RELEASE_REPO_URL : https://one.hitachivantara.com/artifactory/pntprv-maven-dev/
+  ARTIFACT_DEPLOYER_CREDENTIALS_ID : jfrog-pentaho-service-cicd
 
-  DOCKER_REGISTRY_URL            : https://one.hitachivantara.com
-  DOCKER_IMAGE_HOST              : one.hitachivantara.com/pnt-docker
-  DOCKER_PUBLIC_PUSH_REPO        : one.hitachivantara.com/pntpub-docker-dev
-  DOCKER_PRIVATE_PUSH_REPO       : one.hitachivantara.com/pntprv-docker-dev
+  MAVEN_RESOLVE_REPO_URL           : https://one.hitachivantara.com/artifactory/pnt-mvn/
+  MAVEN_PUBLIC_RELEASE_REPO_URL    : https://one.hitachivantara.com/artifactory/pntpub-maven-dev/
+  MAVEN_PRIVATE_RELEASE_REPO_URL   : https://one.hitachivantara.com/artifactory/pntprv-maven-dev/
 
-  NODEJS_BUNDLE_REPO_URL          : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
-  NPM_RELEASE_REPO_URL            : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
+  DOCKER_REGISTRY_URL              : https://one.hitachivantara.com
+  DOCKER_IMAGE_HOST                : one.hitachivantara.com/pnt-docker
+  DOCKER_PUBLIC_PUSH_REPO          : one.hitachivantara.com/pntpub-docker-dev
+  DOCKER_PRIVATE_PUSH_REPO         : one.hitachivantara.com/pntprv-docker-dev
 
-  ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
+  GENERIC_PRIVATE_REPO             : https://one.hitachivantara.com/artifactory/pntprv-generic-dev
+
+  NODEJS_BUNDLE_REPO_URL           : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
+  NPM_RELEASE_REPO_URL             : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
+
+  ARCHIVING_PATH_GROUP_REGEX       : '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
 
   # Version based control properties
-  RUN_STAGE_VERSION              : ${RUN_STAGE_BUILD}
-  VERSION_MERGER_LOG_LEVEL       : WARN
-  RELEASE_VERSION                : 10.1.0.0
-  DEPLOYMENT_FOLDER              : 10.1-QAT
-  RELEASE_MODE                   : true
-  DEFAULT_BRANCH                 : master
-  SUITE_BUILD_RESOURCES_BRANCH   : 10.1.0.0
-  SERVICEPACK_BRANCH             : 10.1
-  JENKINS_FOLDER_NAME            : '10.1'
+  RUN_STAGE_VERSION                : ${RUN_STAGE_BUILD}
+  VERSION_MERGER_LOG_LEVEL         : WARN
+  RELEASE_VERSION                  : 10.1.0.0
+  DEPLOYMENT_FOLDER                : 10.1-QAT
+  RELEASE_MODE                     : true
+  DEFAULT_BRANCH                   : master
+  SUITE_BUILD_RESOURCES_BRANCH     : 10.1.0.0
+  SERVICEPACK_BRANCH               : 10.1
+  JENKINS_FOLDER_NAME              : '10.1'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/open-jdk/11
     scmBranch   : master
 
   # We need to override this until this pipeline is the nightly
-  BUILD_HOSTING_ROOT: /build2/artifacts/hosted
+  BUILD_HOSTING_ROOT               : /build2/artifacts/hosted
 
   # Tagging
-  RUN_STAGE_TAG: true
-  TAG_NAME: ${RELEASE_VERSION}-${RELEASE_BUILD_NUMBER}
+  RUN_STAGE_TAG                    : true
+  TAG_NAME                         : ${RELEASE_VERSION}-${RELEASE_BUILD_NUMBER}
 
   # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
   # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
   # parallel tasks like checkout, test, tagging, and archiving, reduce
   # to a reasonable size to reduce the risk of timeout failures.
-  PARALLEL_SIZE_CHECKOUT: 15
-  PARALLEL_SIZE_TEST    : 20
-  PARALLEL_SIZE_TAG     : 20
-  PARALLEL_SIZE_ARCHIVE : 10
+  PARALLEL_SIZE_CHECKOUT           : 15
+  PARALLEL_SIZE_TEST               : 20
+  PARALLEL_SIZE_TAG                : 20
+  PARALLEL_SIZE_ARCHIVE            : 10
 
   # Reports
-  BUILD_ORDER_REPORT  : false
+  BUILD_ORDER_REPORT               : false
 
-  BUILD_SLACK_CHANNEL : 'buildteam-alerts'
-  SLACK_INTEGRATION   : true
+  BUILD_SLACK_CHANNEL              : 'buildteam-alerts'
+  SLACK_INTEGRATION                : true
   SLACK_CHANNEL:
     BUILD_FAILURE     : 'qat-builds,buildteam-alerts'
     BUILD_ABORTED     : 'buildteam-alerts'
@@ -67,9 +71,9 @@ buildProperties:
     BUILD_SUCCESS     : 'qat-builds,buildteam-alerts'
 
   # SP specific parameters
-  PREVIOUS_RELEASE_VERSION       : ''
-  SP_RELEASE_VERSION             : '202006'
-  DO_AUTO_PATCH                  : false
+  PREVIOUS_RELEASE_VERSION         : ''
+  SP_RELEASE_VERSION               : '202006'
+  DO_AUTO_PATCH                    : false
 
 
 jobGroups:
@@ -807,7 +811,7 @@ jobGroups:
                               echo sh(script: 'env | sort', returnStdout: true)
                               echo sh(script: 'pwd', returnStdout: true)
                             }
-                            withCredentials([string(credentialsId: 'thanos-gh-token', variable: 'GITHUB_TOKEN')]) {
+                            withCredentials([string(credentialsId: '${SCM_API_TOKEN_CREDENTIALS_ID}', variable: 'GITHUB_TOKEN')]) {
                               def script2Run = """\
                                 # dispatch the github workflow
                                 curl -L \
@@ -816,7 +820,7 @@ jobGroups:
                                   -H 'Authorization: Bearer ${GITHUB_TOKEN}'\
                                   -H 'X-GitHub-Api-Version: 2022-11-28' \
                                   https://api.github.com/repos/pentaho/pentaho-container-images-ee/actions/workflows/build-all-products.yaml/dispatches \
-                                  -d '{ "ref":"${DEFAULT_BRANCH}", \
+                                  -d '{ "ref":"ONE-89", \
                                         "inputs":{ \
                                           "qat_triggered":"true", \
                                           "pentaho_release_version":"${RELEASE_VERSION}", \
