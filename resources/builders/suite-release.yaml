@@ -862,7 +862,7 @@ jobGroups:
                               echo sh(script: 'env | sort', returnStdout: true)
                               echo sh(script: 'pwd', returnStdout: true)
                             }
-                            withCredentials([string(credentialsId: 'thanos-gh-token', variable: 'GITHUB_TOKEN')]) {
+                            withCredentials([string(credentialsId: '${SCM_API_TOKEN_CREDENTIALS_ID}', variable: 'GITHUB_TOKEN')]) {
                               def script2Run = """\
                                 # dispatch the github workflow
                                 curl -L \
@@ -873,7 +873,7 @@ jobGroups:
                                   https://api.github.com/repos/pentaho/pentaho-installer/actions/workflows/generate-upgrades.yaml/dispatches \
                                   -d '{ "ref":"master", \
                                         "inputs":{ \
-                                          "arti_host":"https://repo.orl.eng.hitachivantara.com", \
+                                          "arti_host":"${DOCKER_REGISTRY_URL}", \
                                           "pentaho_release_version":"${RELEASE_VERSION}", \
                                           "pentaho_build_number":"${RELEASE_BUILD_NUMBER}", \
                                           "pentaho_deployment_folder":"${DEPLOYMENT_FOLDER}" \
