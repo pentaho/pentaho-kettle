@@ -282,7 +282,9 @@ public class WebServer {
     securityHandler.setHandler( handlers );
 
     server.setHandler( securityHandler );
-
+    
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.BeforeCarteStartup.id, server );
+    
     // Start execution
     createListeners();
 
@@ -310,7 +312,7 @@ public class WebServer {
     } catch ( KettleException e ) {
       // Log error but continue regular operations to make sure Carte can be shut down properly.
       //
-      log.logError( "Error calling extension point CarteStartup", e );
+      log.logError( "Error calling extension point CarteShutdown", e );
     }
 
     try {
