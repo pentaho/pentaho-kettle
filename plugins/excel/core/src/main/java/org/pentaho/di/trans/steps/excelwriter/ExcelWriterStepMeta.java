@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,7 +53,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
@@ -218,6 +217,9 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 
   @Injection( name = "OMIT_HEADER" )
   private boolean appendOmitHeader = false;
+
+  @Injection( name = "EXTEND_DATA_VALIDATION" )
+  private boolean extendDataValidationRanges = false;
 
   // WHEN WRITING TO EXISTING SHEET GROUP END
 
@@ -621,6 +623,14 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     this.leaveExistingStylesUnchanged = leaveExistingStylesUnchanged;
   }
 
+  public boolean isExtendDataValidationRanges() {
+    return extendDataValidationRanges;
+  }
+
+  public void setExtendDataValidationRanges( boolean value ) {
+    extendDataValidationRanges = value;
+  }
+
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
@@ -644,6 +654,10 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     return retval;
   }
 
+  private boolean readBooleanTag( Node stepNode, String tagName ) {
+    return "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepNode, tagName ) );
+  }
+
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
 
@@ -661,6 +675,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "forceFormulaRecalculation" ) );
       leaveExistingStylesUnchanged =
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "leaveExistingStylesUnchanged" ) );
+
+      extendDataValidationRanges = readBooleanTag( stepnode, "extendDataValidationRanges" );
 
       String addToResult = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
       if ( Utils.isEmpty( addToResult ) ) {
@@ -871,6 +887,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       XMLHandler.addTagValue( "forceFormulaRecalculation", forceFormulaRecalculation ) );
     retval.append( "    " ).append(
       XMLHandler.addTagValue( "leaveExistingStylesUnchanged", leaveExistingStylesUnchanged ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "extendDataValidationRanges", extendDataValidationRanges ) );
     retval.append( "    " + XMLHandler.addTagValue( "appendLines", appendLines ) );
     retval.append( "    " + XMLHandler.addTagValue( "add_to_result_filenames", addToResultFilenames ) );
 
@@ -943,6 +961,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       appendLines = rep.getStepAttributeBoolean( id_step, "appendLines" );
       forceFormulaRecalculation = rep.getStepAttributeBoolean( id_step, "forceFormulaRecalculation" );
       leaveExistingStylesUnchanged = rep.getStepAttributeBoolean( id_step, "leaveExistingStylesUnchanged" );
+      extendDataValidationRanges = rep.getStepAttributeBoolean( id_step, "extendDataValidationRanges" );
 
       String addToResult = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
       if ( Utils.isEmpty( addToResult ) ) {
@@ -1022,6 +1041,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       rep.saveStepAttribute( id_transformation, id_step, "forceFormulaRecalculation", forceFormulaRecalculation );
       rep.saveStepAttribute(
         id_transformation, id_step, "leaveExistingStylesUnchanged", leaveExistingStylesUnchanged );
+      rep.saveStepAttribute( id_transformation, id_step, "extendDataValidationRanges", extendDataValidationRanges );
 
       rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );
       rep.saveStepAttribute( id_transformation, id_step, "file_split", splitEvery );

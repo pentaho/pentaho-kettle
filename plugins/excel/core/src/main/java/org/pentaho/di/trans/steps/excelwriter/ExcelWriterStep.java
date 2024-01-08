@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,8 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.DataValidation;
+import org.apache.poi.ss.usermodel.DataValidationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -49,6 +51,8 @@ import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -134,17 +138,17 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
         // Let's remember where the fields are in the input row
         int outputFieldsCount = meta.getOutputFields().length;
-        data.commentauthorfieldnrs = new int[ outputFieldsCount ];
-        data.commentfieldnrs = new int[ outputFieldsCount ];
-        data.linkfieldnrs = new int[ outputFieldsCount ];
-        data.fieldnrs = new int[ outputFieldsCount ];
+        data.commentauthorfieldnrs = new int[outputFieldsCount];
+        data.commentfieldnrs = new int[outputFieldsCount];
+        data.linkfieldnrs = new int[outputFieldsCount];
+        data.fieldnrs = new int[outputFieldsCount];
 
         int i = 0;
         for ( ExcelWriterStepField outputField : meta.getOutputFields() ) {
           // Output Fields
           String outputFieldName = outputField.getName();
-          data.fieldnrs[ i ] = data.inputRowMeta.indexOfValue( outputFieldName );
-          if ( data.fieldnrs[ i ] < 0 ) {
+          data.fieldnrs[i] = data.inputRowMeta.indexOfValue( outputFieldName );
+          if ( data.fieldnrs[i] < 0 ) {
             logError( "Field [" + outputFieldName + "] couldn't be found in the input stream!" );
             setErrors( 1 );
             stopAll();
@@ -153,8 +157,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
           // Comment Fields
           String commentField = outputField.getCommentField();
-          data.commentfieldnrs[ i ] = data.inputRowMeta.indexOfValue( commentField );
-          if ( data.commentfieldnrs[ i ] < 0 && !Utils.isEmpty( commentField ) ) {
+          data.commentfieldnrs[i] = data.inputRowMeta.indexOfValue( commentField );
+          if ( data.commentfieldnrs[i] < 0 && !Utils.isEmpty( commentField ) ) {
             logError( "Comment Field [" + commentField + "] couldn't be found in the input stream!" );
             setErrors( 1 );
             stopAll();
@@ -163,8 +167,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
           // Comment Author Fields
           String commentAuthorField = outputField.getCommentAuthorField();
-          data.commentauthorfieldnrs[ i ] = data.inputRowMeta.indexOfValue( commentAuthorField );
-          if ( data.commentauthorfieldnrs[ i ] < 0 && !Utils.isEmpty( commentAuthorField ) ) {
+          data.commentauthorfieldnrs[i] = data.inputRowMeta.indexOfValue( commentAuthorField );
+          if ( data.commentauthorfieldnrs[i] < 0 && !Utils.isEmpty( commentAuthorField ) ) {
             logError( "Comment Author Field [" + commentAuthorField + "] couldn't be found in the input stream!" );
             setErrors( 1 );
             stopAll();
@@ -173,8 +177,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
           // Link Fields
           String hyperlinkField = outputField.getHyperlinkField();
-          data.linkfieldnrs[ i ] = data.inputRowMeta.indexOfValue( hyperlinkField );
-          if ( data.linkfieldnrs[ i ] < 0 && !Utils.isEmpty( hyperlinkField ) ) {
+          data.linkfieldnrs[i] = data.inputRowMeta.indexOfValue( hyperlinkField );
+          if ( data.linkfieldnrs[i] < 0 && !Utils.isEmpty( hyperlinkField ) ) {
             logError( "Link Field [" + hyperlinkField + "] couldn't be found in the input stream!" );
             setErrors( 1 );
             stopAll();
@@ -266,6 +270,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           }
         }
       }
+
+      if ( meta.isExtendDataValidationRanges() ) {
+        extendDataValidationRanges();
+      }
+
       // force recalculation of formulas if requested
       if ( meta.isForceFormulaRecalculation() ) {
         recalculateAllWorkbookFormulas();
@@ -276,6 +285,27 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     } finally {
       IOUtils.closeQuietly( data.wb );
       data.wb = null;
+    }
+  }
+
+  private void extendDataValidationRanges() {
+    DataValidationHelper helper = data.sheet.getDataValidationHelper();
+    for ( DataValidation validation : data.sheet.getDataValidations() ) {
+      CellRangeAddressList rangeList = validation.getRegions();
+      // extend ranges that include data rows
+      boolean updated = false;
+      for ( CellRangeAddress range : rangeList.getCellRangeAddresses() ) {
+        // extend any ranges that apply to the first data row but not the last
+        if ( range.containsRow( data.startingRow ) && !range.containsRow( data.posY ) ) {
+          range.setLastRow( data.posY );
+          updated = true;
+        }
+      }
+      if ( updated ) {
+        // modified ranges won't get applied, we need to add new validations.
+        DataValidation newValidation = helper.createValidation( validation.getValidationConstraint(), validation.getRegions() );
+        data.sheet.addValidationData( newValidation );
+      }
     }
   }
 
@@ -317,18 +347,18 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         // Write all values in stream to text file.
         int nr = data.inputRowMeta.size();
         data.clearStyleCache( nr );
-        data.linkfieldnrs = new int[ nr ];
-        data.commentfieldnrs = new int[ nr ];
+        data.linkfieldnrs = new int[nr];
+        data.commentfieldnrs = new int[nr];
         for ( int i = 0; i < nr; i++ ) {
-          writeField( r[ i ], data.inputRowMeta.getValueMeta( i ), null, xlsRow, data.posX++, r, i, false );
+          writeField( r[i], data.inputRowMeta.getValueMeta( i ), null, xlsRow, data.posX++, r, i, false );
         }
       } else {
         /*
          * Only write the fields specified!
          */
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-          Object v = r[ data.fieldnrs[i ]];
-          writeField( v, data.inputRowMeta.getValueMeta( data.fieldnrs[ i ] ), meta.getOutputFields()[ i ], xlsRow,
+          Object v = r[data.fieldnrs[i]];
+          writeField( v, data.inputRowMeta.getValueMeta( data.fieldnrs[i] ), meta.getOutputFields()[i], xlsRow,
             data.posX++, r, i, false );
         }
 
@@ -384,8 +414,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   }
 
   // VisibleForTesting
-  void writeField( Object v, ValueMetaInterface vMeta, ExcelWriterStepField excelField, Row xlsRow,
-    int posX, Object[] row, int fieldNr, boolean isTitle ) throws KettleException {
+  void writeField( Object v, ValueMetaInterface vMeta, ExcelWriterStepField excelField, Row xlsRow, int posX,
+      Object[] row, int fieldNr, boolean isTitle )
+    throws KettleException {
     try {
       boolean cellExisted = true;
       // get the cell
@@ -434,9 +465,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
 
       // create link on cell if requested
-      if ( !isTitle && excelField != null && data.linkfieldnrs[ fieldNr ] >= 0 ) {
+      if ( !isTitle && excelField != null && data.linkfieldnrs[fieldNr] >= 0 ) {
         String link =
-            data.inputRowMeta.getValueMeta( data.linkfieldnrs[ fieldNr ] ).getString( row[ data.linkfieldnrs[fieldNr ]] );
+            data.inputRowMeta.getValueMeta( data.linkfieldnrs[fieldNr] ).getString( row[data.linkfieldnrs[fieldNr]] );
         if ( !Utils.isEmpty( link ) ) {
           CreationHelper ch = data.wb.getCreationHelper();
           // set the link on the cell depending on link type
@@ -488,15 +519,15 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
 
       // create comment on cell if requested
-      if ( !isTitle && excelField != null && data.commentfieldnrs[ fieldNr ] >= 0 && data.wb instanceof XSSFWorkbook ) {
+      if ( !isTitle && excelField != null && data.commentfieldnrs[fieldNr] >= 0 && data.wb instanceof XSSFWorkbook ) {
         String comment =
-            data.inputRowMeta.getValueMeta( data.commentfieldnrs[ fieldNr ] )
-                .getString( row[ data.commentfieldnrs[fieldNr ]] );
+            data.inputRowMeta.getValueMeta( data.commentfieldnrs[fieldNr] )
+                .getString( row[data.commentfieldnrs[fieldNr]] );
         if ( !Utils.isEmpty( comment ) ) {
           String author =
-              data.commentauthorfieldnrs[ fieldNr ] >= 0
-                  ? data.inputRowMeta.getValueMeta( data.commentauthorfieldnrs[ fieldNr ] )
-                      .getString( row[ data.commentauthorfieldnrs[fieldNr ]] )
+              data.commentauthorfieldnrs[fieldNr] >= 0
+                  ? data.inputRowMeta.getValueMeta( data.commentauthorfieldnrs[fieldNr] )
+                      .getString( row[data.commentauthorfieldnrs[fieldNr]] )
                   : "Kettle PDI";
           cell.setCellComment( createCellComment( author, comment ) );
         }
@@ -840,15 +871,15 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           String fieldName =
-              !Utils.isEmpty( meta.getOutputFields()[ i ].getTitle() ) ? meta.getOutputFields()[ i ].getTitle()
-                  : meta.getOutputFields()[ i ].getName();
+              !Utils.isEmpty( meta.getOutputFields()[i].getTitle() ) ? meta.getOutputFields()[i].getTitle()
+                  : meta.getOutputFields()[i].getName();
           ValueMetaInterface vMeta = new ValueMetaString( fieldName );
-          writeField( fieldName, vMeta, meta.getOutputFields()[ i ], xlsRow, posX++, null, -1, true );
+          writeField( fieldName, vMeta, meta.getOutputFields()[i], xlsRow, posX++, null, -1, true );
         }
         // Just put all field names in
       } else if ( data.inputRowMeta != null ) {
         for ( int i = 0; i < data.inputRowMeta.size(); i++ ) {
-          String fieldName = data.inputRowMeta.getFieldNames()[ i ];
+          String fieldName = data.inputRowMeta.getFieldNames()[i];
           ValueMetaInterface vMeta = new ValueMetaString( fieldName );
           writeField( fieldName, vMeta, null, xlsRow, posX++, null, -1, true );
         }

@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.excelwriter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -38,26 +39,42 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.AssertionFailedError;
+
+import org.apache.poi.ss.formula.DataValidationEvaluator;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataValidation;
+import org.apache.poi.ss.usermodel.DataValidationConstraint;
+import org.apache.poi.ss.usermodel.DataValidationConstraint.OperatorType;
+import org.apache.poi.ss.usermodel.DataValidationConstraint.ValidationType;
+import org.apache.poi.ss.usermodel.DataValidationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/** Less mocky tests */
+/** Tests using full file reading and writing */
 public class ExcelWriterFullTest {
   private StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData> helper;
 
@@ -109,11 +126,15 @@ public class ExcelWriterFullTest {
       runStep( meta, inputs, 3 );
 
     } finally {
-      for ( File file : outDir.toFile().listFiles() ) {
-        file.delete();
-      }
-      Files.delete( outDir );
+      removeDir( outDir );
     }
+  }
+
+  private void removeDir( Path outDir ) throws IOException {
+    for ( File file : outDir.toFile().listFiles() ) {
+      file.delete();
+    }
+    Files.delete( outDir );
   }
 
   @Test
@@ -153,10 +174,75 @@ public class ExcelWriterFullTest {
       }
 
     } finally {
-      for ( File file : outDir.toFile().listFiles() ) {
-        file.delete();
+      removeDir( outDir );
+    }
+  }
+
+  @Test
+  public void testDataValidationExtension() throws Exception {
+    Path outDir = Files.createTempDirectory( ExcelWriterFullTest.class.getSimpleName() );
+
+    // copy template to change it first
+    Path origTemplate = Paths.get( ExcelWriterStepTest.getTemplateWithFormattingXlsx().toURI() );
+    Path template = outDir.resolve( "validation_template.xlsx" );
+    final String sheetName = "TicketData";
+
+    // set up: add data validation constraint in a new template
+    try ( InputStream in = KettleVFS.getInputStream( origTemplate.toString() );
+        XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
+
+      XSSFSheet sheet = wb.getSheet( sheetName );
+      DataValidationHelper validationHelper = sheet.getDataValidationHelper();
+      // get a validation on B2
+      DataValidationConstraint constr = validationHelper.createTextLengthConstraint( OperatorType.EQUAL, "2", null );
+      CellRangeAddressList rangeList = new CellRangeAddressList( 1, 1, 1, 1 );
+      DataValidation lenValidation = validationHelper.createValidation( constr, rangeList );
+      sheet.addValidationData( lenValidation );
+
+      try ( OutputStream out = KettleVFS.getOutputStream( template.toString(), false ) ) {
+        wb.write( out );
       }
-      Files.delete( outDir );
+    }
+
+    try {
+      // actual test run
+      ExcelWriterStepMeta meta = new ExcelWriterStepMeta();
+      meta.setDefault();
+      meta.setTemplateEnabled( true );
+      meta.setTemplateFileName( template.toString() );
+      meta.setSheetname( sheetName );
+      meta.setStartingCell( "B2" );
+
+      meta.setIfSheetExists( ExcelWriterStepMeta.IF_SHEET_EXISTS_REUSE );
+      meta.setHeaderEnabled( false );
+
+      meta.setStreamingData( true );
+      String outFile = outDir.resolve( "test_output" ).toString();
+      meta.setFileName( outFile );
+      meta.setExtension( "xlsx" );
+
+      meta.setExtendDataValidationRanges(true);
+
+      RowSet inputs =
+          createRowSet( createRowMeta( new ValueMetaString( "vals" ) ), row( "aa" ), row( "abc" ), row( "bb" ),
+            row( "c" ) );
+      runStep( meta, inputs, 4 );
+
+      // check validation got extended to last row
+      try ( InputStream in = KettleVFS.getInputStream( outFile + ".xlsx" ); XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
+        wb.setActiveSheet( 0 );
+        XSSFFormulaEvaluator evaluatorProvider = new XSSFFormulaEvaluator( wb );
+        DataValidationEvaluator evaluator = new DataValidationEvaluator( wb, evaluatorProvider );
+        DataValidation validation = evaluator.getValidationForCell( new CellReference( sheetName + "!B4" ) );
+        assertNotNull( "validation not extended", validation );
+        DataValidationConstraint constraint = validation.getValidationConstraint();
+        assertEquals( constraint.getValidationType(), ValidationType.TEXT_LENGTH );
+        assertEquals( constraint.getOperator(), OperatorType.EQUAL );
+        assertEquals( constraint.getFormula1(), "2" );
+      }
+
+    } finally {
+      removeDir( outDir );
     }
   }
 
@@ -179,7 +265,8 @@ public class ExcelWriterFullTest {
     step.afterFinishProcessing( meta, data );
     step.dispose( meta, data );
     if ( rowCount < expectedCalls ) {
-      throw new AssertionFailedError( String.format( "%d calls expected, but got %d", expectedCalls, rowCount ) );
+      long errors = step.getErrors();
+      throw new AssertionFailedError( String.format( "%d calls expected, but got %d (there were %d errors)", expectedCalls, rowCount, errors ) );
     }
   }
 
@@ -200,7 +287,6 @@ public class ExcelWriterFullTest {
   }
 
   public static Object[] row( Object... obj ) {
-    // just to prevent formatter getting messing up on the {}
     return obj;
   }
 

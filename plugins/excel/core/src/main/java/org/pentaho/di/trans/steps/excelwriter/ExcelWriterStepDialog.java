@@ -228,6 +228,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
   private Button wMakeActiveSheet;
   private Button wForceFormulaRecalculation;
   private Button wLeaveExistingStylesUnchanged;
+  private Button wExtendDataValidation;
 
   private int middle;
 
@@ -1130,6 +1131,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     wContentGroup.setLayout( ContentGroupgroupLayout );
 
     createContentGroup( lsSel, lsMod, middle, margin, wContentGroup );
+    FormData fdContentGroup = fd().left( 0, margin ).top( 0, margin ).right( 100, -margin ).result();
+    wContentGroup.setLayoutData( fdContentGroup );
 
     // / END OF CONTENT GROUP
 
@@ -1435,14 +1438,22 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     // leave existing styles alone?
     Label wlLeaveExistingStylesUnchanged = createLabel( wContentGroup, "ExcelWriterDialog.LeaveExistingStylesUnchanged.Label", "ExcelWriterDialog.LeaveExistingStylesUnchanged.Tooltip" );
     wLeaveExistingStylesUnchanged = new Button( wContentGroup, SWT.CHECK );
-    // props.setLook( wLeaveExistingStylesUnchanged );
     wLeaveExistingStylesUnchanged.setToolTipText( BaseMessages.getString(
       PKG, "ExcelWriterDialog.LeaveExistingStylesUnchanged.Tooltip" ) );
     lastWidget = layoutLabelControlPair( wlLeaveExistingStylesUnchanged, wLeaveExistingStylesUnchanged, lastWidget );
     wLeaveExistingStylesUnchanged.addSelectionListener( lsSel );
 
-    FormData fdContentGroup = fd().left( 0, margin ).top( 0, margin ).right( 100, -margin ).result();
-    wContentGroup.setLayoutData( fdContentGroup );
+    // extend data validation
+    Label lblExtendDataValidation = createLabel( wContentGroup, "ExcelWriterDialog.ExtendDataValidation.Label" );
+    wExtendDataValidation = new Button( wContentGroup, SWT.CHECK );
+    wExtendDataValidation.setToolTipText( getMsg( "ExcelWriterDialog.Injection.EXTEND_DATA_VALIDATION" ) );
+    lastWidget = layoutLabelControlPair( lblExtendDataValidation, wExtendDataValidation, lastWidget );
+    wExtendDataValidation.addSelectionListener( lsSel );
+
+  }
+
+  private String getMsg( String key ) {
+    return BaseMessages.getString( PKG, key );
   }
 
   private void enableAppend() {
@@ -1559,6 +1570,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     wOmitHeader.setSelection( input.isAppendOmitHeader() );
     wForceFormulaRecalculation.setSelection( input.isForceFormulaRecalculation() );
     wLeaveExistingStylesUnchanged.setSelection( input.isLeaveExistingStylesUnchanged() );
+    wExtendDataValidation.setSelection( input.isExtendDataValidationRanges() );
 
     if ( input.getStartingCell() != null ) {
       wStartingCell.setText( input.getStartingCell() );
@@ -1686,6 +1698,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     tfoi.setRowWritingMethod( (String) wRowWritingMethod.getData( wRowWritingMethod.getText() ) );
     tfoi.setForceFormulaRecalculation( wForceFormulaRecalculation.getSelection() );
     tfoi.setLeaveExistingStylesUnchanged( wLeaveExistingStylesUnchanged.getSelection() );
+    tfoi.setExtendDataValidationRanges( wExtendDataValidation.getSelection() );
 
     tfoi.setDateTimeFormat( wDateTimeFormat.getText() );
     tfoi.setSpecifyFormat( wSpecifyFormat.getSelection() );
