@@ -46,7 +46,7 @@ import java.util.Base64;
  */
 public class SchedulerRequest {
 
-  public static final String API_SCHEDULER_JOB = "/api/scheduler/job";
+  public static final String API_SCHEDULER_JOB = "/plugin/scheduler-plugin/api/scheduler/job";
   public static final String CONTENT_TYPE = "Content-Type";
   public static final String APPLICATION_XML = "application/xml";
   public static final String UTF_8 = "UTF-8";
