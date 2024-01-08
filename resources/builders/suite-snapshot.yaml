@@ -273,6 +273,9 @@ jobGroups:
 #     - jobID           :  layout-editor
 #       scmUrl          :  https://github.com/pentaho/layout-editor.git
 
+  2350:
+      - jobID           : pentaho-scheduler-plugin
+        scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
   2400:
      - jobID           :  big-data-mongodb-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
@@ -370,10 +373,6 @@ jobGroups:
      - jobID           :  platform-reporting-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-reporting.git
        #parallelize     :  true
-
-  2950:
-    - jobID           : pentaho-scheduler-plugin
-      scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
 
   3000:
      - jobID           :  big-data-hadoop-shims-ee
