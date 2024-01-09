@@ -828,7 +828,7 @@ jobGroups:
                                   -H 'Authorization: Bearer ${GITHUB_TOKEN}'\
                                   -H 'X-GitHub-Api-Version: 2022-11-28' \
                                   https://api.github.com/repos/pentaho/pentaho-container-images-ee/actions/workflows/build-all-products.yaml/dispatches \
-                                  -d '{ "ref":"ONE-89", \
+                                  -d '{ "ref":"${DEFAULT_BRANCH}", \
                                         "inputs":{ \
                                           "qat_triggered":"true", \
                                           "pentaho_release_version":"${RELEASE_VERSION}", \
