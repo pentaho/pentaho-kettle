@@ -23,7 +23,10 @@
 package org.pentaho.di.trans.steps.rest;
 
 import org.glassfish.jersey.client.ClientConfig;
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.pentaho.di.core.exception.KettleException;
@@ -40,11 +43,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MediaType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -57,20 +60,6 @@ import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 @PowerMockIgnore( "jdk.internal.reflect.*" )
 @PrepareForTest( Client.class )
 public class RestTest {
-
-  @Test
-  public void testCreateMultivalueMap() {
-    StepMeta stepMeta = new StepMeta();
-    stepMeta.setName( "TestRest" );
-    TransMeta transMeta = new TransMeta();
-    transMeta.setName( "TestRest" );
-    transMeta.addStep( stepMeta );
-    Rest rest = new Rest( stepMeta, mock( StepDataInterface.class ),
-      1, transMeta, mock( Trans.class ) );
-    MultivaluedHashMap map = rest.createMultivalueMap( "param1", "{a:{[val1]}}" );
-    String val1 = map.getFirst( "param1" ).toString();
-    assertTrue( val1.contains( "%7D" ) );
-  }
 
   @Test
   public void testCallEndpointWithGetVerb() throws KettleException {
@@ -116,4 +105,70 @@ public class RestTest {
     //GET request should succeed.
     assertEquals( 200L, output[ 2 ] );
   }
+
+  /**
+   * This test test to makes sure the parameters are uri encoded. If the parameters is not encoded, it will throw
+   * IllegalStateException
+   * @throws KettleException
+   */
+  @Test
+  public void testEncodingParams() throws KettleException {
+
+    Object[] params = new Object[1];
+    params[0] = "{a:{[val1]}}";
+
+    Invocation.Builder builder = mock( Invocation.Builder.class );
+
+    WebTarget resource = mock( WebTarget.class );
+    doReturn( builder ).when( resource ).request();
+
+    Client client = mock( Client.class );
+    doReturn( resource ).when( client ).target( anyString() );
+
+    ClientBuilder clientBuilder = mock( ClientBuilder.class );
+    when( clientBuilder.build() ).thenReturn( client );
+
+    RestMeta meta = mock( RestMeta.class );
+    doReturn( false ).when( meta ).isDetailed();
+    doReturn( false ).when( meta ).isUrlInField();
+    doReturn( false ).when( meta ).isDynamicMethod();
+
+    RowMetaInterface rmi = mock( RowMetaInterface.class );
+    doReturn( 1 ).when( rmi ).size();
+    doReturn( params[0] ).when( rmi ).getString( params, 0 );
+
+    RestData data = mock( RestData.class );
+    data.method = RestMeta.HTTP_METHOD_POST;
+    data.config = new ClientConfig();
+    data.inputRowMeta = rmi;
+    data.resultFieldName = "result";
+    data.resultCodeFieldName = "status";
+    data.resultHeaderFieldName = "headers";
+    data.realUrl = "http://localhost:8080/pentaho";
+    data.useParams = true;
+    data.nrParams = 1;
+    data.mediaType = MediaType.APPLICATION_JSON_TYPE;
+
+    // Add one index to this array
+    data.indexOfParamFields = new int[] {0};
+    data.paramNames = new String[] {"param1"};
+
+    Rest rest = mock( Rest.class, Answers.RETURNS_DEFAULTS.get() );
+    doCallRealMethod().when( rest ).callRest( any() );
+    doCallRealMethod().when( rest ).searchForHeaders( any() );
+
+    setInternalState( rest, "meta", meta );
+    setInternalState( rest, "data", data );
+
+    try {
+      Object[] output = rest.callRest( params );
+    } catch ( Exception exception ) {
+      // Ignore the ConnectExcepion which is expected as rest call to localhost:8080 will fail in unit test
+      // IllegalStateException is throws when the parameters are not encoded
+      if ( exception.getCause() instanceof IllegalStateException ) {
+        Assert.fail();
+      }
+    }
+  }
+
 }

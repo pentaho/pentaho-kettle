@@ -84,13 +84,6 @@ public class Rest extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  /* for unit test*/
-  MultivaluedHashMap createMultivalueMap( String paramName, String paramValue ) {
-    MultivaluedHashMap queryParams = new MultivaluedHashMap();
-    queryParams.add( paramName, UriComponent.encode( paramValue, UriComponent.Type.QUERY_PARAM ) );
-    return queryParams;
-  }
-
   protected Object[] callRest( Object[] rowData ) throws KettleException {
     // get dynamic url ?
     if ( meta.isUrlInField() ) {
@@ -154,7 +147,7 @@ public class Rest extends BaseStep implements StepInterface {
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[ i ], value ) );
           }
-          webResource = webResource.queryParam( data.paramNames[ i ], value );
+          webResource = webResource.queryParam( data.paramNames[ i ],  UriComponent.encode( value, UriComponent.Type.QUERY_PARAM ) );
         }
       }
       if ( isDebug() ) {
