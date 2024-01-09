@@ -46,7 +46,7 @@
                 <include>com.google.oauth-client:google-oauth-client:jar</include>
                 <include>com.google.oauth-client:google-oauth-client-java6:jar</include>
                 <include>com.google.oauth-client:google-oauth-client-jetty:jar</include>
-                <include>com.google.guava:guava-jdk5:jar</include>
+                <include>com.google.guava:guava:jar</include>
                 <include>org.apache.httpcomponents:httpclient:jar</include>
                 <include>org.apache.httpcomponents:httpcore:jar</include>
                 <include>org.mortbay.jetty:jetty:jar</include>
