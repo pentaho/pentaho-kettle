@@ -133,7 +133,8 @@ vertica-bulkloader-plugin.version=10.1.0.0-BUILDTAG
 vfs-metastore-plugin.version=10.1.0.0-BUILDTAG
 worker-nodes.version=10.1.0.0-BUILDTAG
 worker-nodes-custom-resources.version=10.1.0.0
-
+pentaho-scheduler-plugin.version=10.1.0.0-BUILDTAG
+pentaho-scheduler-plugin-ee.version=10.1.0.0-BUILDTAG
 docker.image.tag=10.1-latest
 pentaho-cwm.version=1.5.4
 pentaho-ofc4j.version=1.1.0
