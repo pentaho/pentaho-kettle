@@ -440,9 +440,9 @@ jobGroups:
        archivable      :  true
        versionProperty :  container-utils.version
 
-     #- jobID           :  pentaho-scheduler-plugin-ee
-     #  scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin-ee.git
-     #  versionProperty :  pentaho-scheduler-plugin-ee.version
+     - jobID           :  pentaho-scheduler-plugin-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin-ee.git
+       versionProperty :  pentaho-scheduler-plugin-ee.version
 
   3600:
      - jobID           :  data-exploration-ee
