@@ -642,13 +642,19 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         }
       }
 
-      Path path = Paths.get( realLocalDirectory );
-      if ( !Files.isReadable( path ) || !Files.isWritable( path ) ) {
-        throw new FTPException( BaseMessages.getString( PKG, "JobFTPPUT.LocalDir.NoPermission" ) );
+      boolean isStandardFileSystem = !realLocalDirectory.contains( "://" ) || realLocalDirectory.equalsIgnoreCase( "file" );
+      if ( isStandardFileSystem ) {
+        if ( realLocalDirectory.charAt( 0 ) == '/' ) {
+          realLocalDirectory = realLocalDirectory.substring( 1 );
+        }
+        Path path = Paths.get( realLocalDirectory );
+        if ( ( !Files.isReadable( path ) ) || ( !Files.isWritable( path ) ) ) {
+          throw new FTPException( BaseMessages.getString( PKG, "JobFTPPUT.LocalDir.NoPermission" ) );
+        }
       }
 
       final List<String> files;
-      File localFiles = new File( path.toString() );
+      File localFiles = new File( realLocalDirectory );
       File[] children = localFiles.listFiles();
       if ( children == null ) {
         files = Collections.emptyList();
