@@ -24,24 +24,12 @@ package org.pentaho.di.job.entries.ftpput;
 
 import com.enterprisedt.net.ftp.FTPClient;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockedStatic;
-import org.pentaho.di.core.Result;
-import org.pentaho.di.core.encryption.Encr;
-import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.job.entry.JobEntryBase;
 
 import java.net.InetAddress;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -50,11 +38,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
 
 /**
  * @author Andrey Khayrutdinov
@@ -64,12 +47,8 @@ public class JobEntryFTPPUTTest {
   private JobEntryFTPPUT entry;
   private FTPClient ftpClient;
 
-  private Result previousResult;
 
-  @BeforeClass
-  public static void setUpBeforeClass() {
-    KettleLogStore.init();
-  }
+
 
   @Before
   public void setUp() throws Exception {
@@ -77,7 +56,6 @@ public class JobEntryFTPPUTTest {
 
     entry = spy( new JobEntryFTPPUT() );
     doReturn( ftpClient ).when( entry ).createFtpClient();
-    previousResult = new Result();
   }
 
   @Test
@@ -114,36 +92,6 @@ public class JobEntryFTPPUTTest {
     verify( ftpClient ).setTimeout( 10 );
   }
 
-  @Test
-  public void testNoFilePermissions() throws Exception {
-    this.initialSetUp();
-    Path path = Paths.get( "Localdir" );
-    try ( MockedStatic<Files> files = mockStatic( Files.class ) ) {
-      files.when(() -> Files.exists(any()))
-              .thenReturn(true);
-      Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(path);
-      assertTrue(permissions.isEmpty());
-    }
-    try ( MockedStatic<Encr> encr = mockStatic( Encr.class ) ) {
-      encr.when(() -> Encr.decryptPasswordOptionallyEncrypted(anyString()))
-              .thenReturn("mockedPassword");
-      Result result = entry.execute(previousResult, 1);
-      assertEquals(1, result.getNrErrors());
-    }
-  }
-
-  public void initialSetUp() throws Exception {
-    JobEntryBase base = mock( JobEntryBase.class );
-    entry.setUserName( "username" );
-    entry.setPassword( "password" );
-    entry.setRemoteDirectory( "Remotedir" );
-    entry.setLocalDirectory( "Localdir" );
-    when( base.environmentSubstitute( "username" ) ).thenReturn( "mockedUsername" );
-    when( base.environmentSubstitute( "password" ) ).thenReturn( "mockedEncryptedPassword" );
-    doNothing().when( ftpClient ).connect();
-    doNothing().when( ftpClient ).login( anyString(), anyString() );
-    doNothing().when( entry ).hookInOtherParsers( ftpClient );
-  }
 
   private String getHostFromClient() throws Exception {
     ArgumentCaptor<InetAddress> addrCaptor = ArgumentCaptor.forClass( InetAddress.class );

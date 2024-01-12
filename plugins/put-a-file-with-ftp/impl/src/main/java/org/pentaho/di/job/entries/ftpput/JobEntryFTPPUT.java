@@ -30,9 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -642,13 +639,9 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         }
       }
 
-      Path path = Paths.get( realLocalDirectory );
-      if ( !Files.isReadable( path ) || !Files.isWritable( path ) ) {
-        throw new FTPException( BaseMessages.getString( PKG, "JobFTPPUT.LocalDir.NoPermission" ) );
-      }
 
       final List<String> files;
-      File localFiles = new File( path.toString() );
+      File localFiles = new File( realLocalDirectory );
       File[] children = localFiles.listFiles();
       if ( children == null ) {
         files = Collections.emptyList();
