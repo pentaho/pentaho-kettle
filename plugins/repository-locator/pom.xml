@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-204</version>
   </parent>
   <artifactId>pentaho-kettle-repository-locator</artifactId>
-  <version>10.1.0.0-SNAPSHOT</version>
+  <version>10.1.0.0-204</version>
   <packaging>pom</packaging>
   <developers>
     <developer>
