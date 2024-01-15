@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>mail-job-assemblies</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-206</version>
   </parent>
 
 
   <artifactId>mail-job-plugins</artifactId>
-  <version>10.1.0.0-SNAPSHOT</version>
+  <version>10.1.0.0-206</version>
   <packaging>pom</packaging>
 
   <name>PDI Mail Job Plugins Distribution</name>
