@@ -147,6 +147,14 @@ public class CubeInput extends BaseStep implements StepInterface {
       logError( BaseMessages.getString( PKG, "CubeInput.Log.ErrorClosingCube" ) + e.toString() );
       setErrors( 1 );
       stopAll();
+
+    // HACK! This is a temporary workaround for commons-vfs bug in 2.8.0 where a null pointer gets thrown
+    // when the stream gets closed from a different thread. This has been fixed in 2.9.0, but we can't move
+    // to that version due to a bug involving truncation on writes. This should be removed when can update
+    // this library. See BACKLOG-39189, https://github.com/apache/commons-vfs/pull/167
+    } catch ( NullPointerException e ) {
+      logDebug( "Catching exception to work around commons-vfs 2.8.0 close() bug: " + e.toString() );
+      stopAll();
     }
 
     super.dispose( smi, sdi );
