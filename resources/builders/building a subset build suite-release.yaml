@@ -1,0 +1,151 @@
+buildProperties:
+  BUILD_PLAN_ID                    : Suite Release Build
+
+  USE_MINION_JOBS                  : true
+  BUILD_RETRIES                    : 3
+
+  # Maven
+  MAVEN_DEFAULT_COMMAND_OPTIONS    : -B -e
+  MAVEN_DEFAULT_DIRECTIVES:
+    build  : clean deploy -DskipTests -Drelease
+    test   : test
+
+  ARTIFACT_DEPLOYER_CREDENTIALS_ID : jfrog-pentaho-service-cicd
+
+  MAVEN_RESOLVE_REPO_URL           : https://one.hitachivantara.com/artifactory/pnt-mvn/
+  MAVEN_PUBLIC_RELEASE_REPO_URL    : https://one.hitachivantara.com/artifactory/pntpub-maven-dev/
+  MAVEN_PRIVATE_RELEASE_REPO_URL   : https://one.hitachivantara.com/artifactory/pntprv-maven-dev/
+
+  DOCKER_REGISTRY_URL              : https://one.hitachivantara.com
+  DOCKER_IMAGE_HOST                : one.hitachivantara.com/pnt-docker
+  DOCKER_PUBLIC_PUSH_REPO          : one.hitachivantara.com/pntpub-docker-dev
+  DOCKER_PRIVATE_PUSH_REPO         : one.hitachivantara.com/pntprv-docker-dev
+
+  GENERIC_PRIVATE_REPO             : https://one.hitachivantara.com/artifactory/pntprv-generic-dev
+
+  NODEJS_BUNDLE_REPO_URL           : https://one.hitachivantara.com/artifactory/nodejs-generic-remote/
+  NPM_RELEASE_REPO_URL             : https://one.hitachivantara.com/artifactory/npm-release/npm/-/
+
+  ARCHIVING_PATH_GROUP_REGEX       : '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
+
+  # Version based control properties
+  RUN_STAGE_VERSION                : ${RUN_STAGE_BUILD}
+  VERSION_MERGER_LOG_LEVEL         : WARN
+  RELEASE_VERSION                  : 10.1.0.0
+  DEPLOYMENT_FOLDER                : 10.1-QAT
+  RELEASE_MODE                     : true
+  DEFAULT_BRANCH                   : master
+  SUITE_BUILD_RESOURCES_BRANCH     : 10.1.0.0
+  SERVICEPACK_BRANCH               : 10.1
+  JENKINS_FOLDER_NAME              : '10.1'
+
+  JOB_ITEM_DEFAULTS:
+    dockerImage : jenkins-build/maven/open-jdk/11
+    scmBranch   : master
+
+  # We need to override this until this pipeline is the nightly
+  BUILD_HOSTING_ROOT               : /build2/artifacts/hosted
+
+  # Tagging
+  RUN_STAGE_TAG                    : true
+  TAG_NAME                         : ${RELEASE_VERSION}-${RELEASE_BUILD_NUMBER}
+
+  # Jenkins can timeout if a groovy method takes longer than 5 minutes (see
+  # https://issues.jenkins-ci.org/browse/JENKINS-46507). For highly
+  # parallel tasks like checkout, test, tagging, and archiving, reduce
+  # to a reasonable size to reduce the risk of timeout failures.
+  PARALLEL_SIZE_CHECKOUT           : 15
+  PARALLEL_SIZE_TEST               : 20
+  PARALLEL_SIZE_TAG                : 20
+  PARALLEL_SIZE_ARCHIVE            : 10
+
+  # Reports
+  BUILD_ORDER_REPORT               : false
+
+  BUILD_SLACK_CHANNEL              : 'buildteam-alerts'
+  SLACK_INTEGRATION                : true
+  SLACK_CHANNEL:
+    BUILD_FAILURE     : 'qat-builds,buildteam-alerts'
+    BUILD_ABORTED     : 'buildteam-alerts'
+    BUILD_UNSTABLE    : 'qat-builds,buildteam-alerts'
+    BUILD_SUCCESS     : 'qat-builds,buildteam-alerts'
+
+  # SP specific parameters
+  PREVIOUS_RELEASE_VERSION         : ''
+  SP_RELEASE_VERSION               : '202006'
+  DO_AUTO_PATCH                    : false
+
+
+jobGroups:
+  3500:
+     - jobID           :  pentaho-scheduler-plugin-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin-ee.git
+       versionProperty :  pentaho-scheduler-plugin-ee.version
+
+
+  4500:
+     - jobID           :  platform-server-assembly-ee
+       scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
+       directives      :  += -DskipDefault -P platform-ee-assemble -Deula-wrap
+       testable        :  false
+       archivable      :  true
+       versionProperty :  platform.version
+
+  4800:
+     - jobID           :  installers
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
+       archivable      :  true
+       testable        :  false
+       parallelize     :  true
+       versionProperty :  pentaho.version
+
+  4900:
+     - jobID           :  installer-tool
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       dockerImage     :  jenkins-build/installanywhere-installbuilder:1.0.2
+       root            :  installer-tool
+       versionProperty :  pentaho.version
+
+  5000:
+     - jobID           :  trigger-upgrade-hash-files-generation
+       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
+       buildFramework  :  DSL_SCRIPT
+       script          :  |
+                          { ->
+                            script {
+                              echo sh(script: 'env | sort', returnStdout: true)
+                              echo sh(script: 'pwd', returnStdout: true)
+                            }
+                            withCredentials([string(credentialsId: '${SCM_API_TOKEN_CREDENTIALS_ID}', variable: 'GITHUB_TOKEN')]) {
+                              def script2Run = """\
+                                # dispatch the github workflow
+                                curl -L \
+                                  -X POST \
+                                  -H 'Accept: application/vnd.github+json' \
+                                  -H 'Authorization: Bearer ${GITHUB_TOKEN}'\
+                                  -H 'X-GitHub-Api-Version: 2022-11-28' \
+                                  https://api.github.com/repos/pentaho/pentaho-installer/actions/workflows/generate-upgrades.yaml/dispatches \
+                                  -d '{ "ref":"master", \
+                                        "inputs":{ \
+                                          "maven_private_repo":"${MAVEN_PRIVATE_RELEASE_REPO_URL}", \
+                                          "pentaho_release_version":"${RELEASE_VERSION}", \
+                                          "pentaho_build_number":"${RELEASE_BUILD_NUMBER}", \
+                                          "pentaho_deployment_folder":"${DEPLOYMENT_FOLDER}" \
+                                        } \
+                                      }'
+                              """
+                              def response = sh(script: script2Run, returnStdout: true).trim()
+                              echo response
+                            }
+                          }
+       testable        :  false
+
+     - jobID           :  jenkins-pipelines
+       # for branching and tagging with version-merger application purposes only
+       scmUrl          :  https://github.com/pentaho/jenkins-pipelines.git
+       directives      :
+                 build :  clean -version
+                 test  :  clean -version
+       testable        :  false
+
