@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -194,6 +194,10 @@ public class KettleVFS {
     }
 
     return normalizedPath;
+  }
+
+  public static boolean hasSchemePattern( String path ) {
+    return hasSchemePattern( path, PROVIDER_PATTERN_SCHEME );
   }
 
   protected static boolean hasSchemePattern( String path, String patternString ) {
