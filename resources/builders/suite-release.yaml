@@ -383,11 +383,7 @@ jobGroups:
 #       scmUrl          :  https://github.com/pentaho/layout-editor.git
 #       versionProperty :  layout-editor.version
 
-  2350:
-     - jobID           :  pentaho-scheduler-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin.git
-       versionProperty :  pentaho-scheduler-plugin.version
-       
+      
   2400:
      - jobID           :  big-data-mongodb-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
@@ -482,6 +478,10 @@ jobGroups:
      - jobID           :  pdi-data-refinery-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-data-refinery.git
        versionProperty :  pdi-data-refinery-plugin.version
+  2750:
+     - jobID           :  pentaho-scheduler-plugin
+       scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin.git
+       versionProperty :  pentaho-scheduler-plugin.version       
 
   2800:
      - jobID           :  pdi-plugins-ee
