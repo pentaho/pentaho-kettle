@@ -426,10 +426,6 @@ jobGroups:
        root            :  libraries
        versionProperty :  pentaho-reporting.version
 
-     - jobID           :  pdi-platform-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
-       versionProperty :  pentaho-pdi-plugin.version
-
      - jobID           :  pdi-platform-utils-plugin
        scmUrl          :  https://github.com/pentaho/pdi-platform-utils-plugin.git
        versionProperty :  pdi-platform-utils-plugin.version
@@ -476,6 +472,11 @@ jobGroups:
        versionProperty :  pentaho-scheduler-plugin.version       
 
   2800:
+  
+     - jobID           :  pdi-platform-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
+       versionProperty :  pentaho-pdi-plugin.version
+       
      - jobID           :  cpf-plugin
        scmUrl          :  https://github.com/webdetails/cpf.git
        versionProperty :  pentaho-cpf-plugin.version
