@@ -286,12 +286,6 @@ jobGroups:
      - jobID           :  modeler
        scmUrl          :  https://github.com/pentaho/modeler.git
 
-     - jobID           :  cpf-plugin
-       scmUrl          :  https://github.com/webdetails/cpf.git
-
-     - jobID           :  ccc-plugin
-       scmUrl          :  https://github.com/webdetails/ccc.git
-
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
 
@@ -353,6 +347,12 @@ jobGroups:
         scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
         
   2800:
+     - jobID           :  cpf-plugin
+       scmUrl          :  https://github.com/webdetails/cpf.git
+
+     - jobID           :  ccc-plugin
+       scmUrl          :  https://github.com/webdetails/ccc.git
+       
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        archivable      :  true
