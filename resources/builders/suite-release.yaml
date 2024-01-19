@@ -400,14 +400,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/modeler.git
        versionProperty :  pentaho-modeler.version
 
-     - jobID           :  cpf-plugin
-       scmUrl          :  https://github.com/webdetails/cpf.git
-       versionProperty :  pentaho-cpf-plugin.version
-
-     - jobID           :  ccc-plugin
-       scmUrl          :  https://github.com/webdetails/ccc.git
-       versionProperty :  pentaho-ccc-plugin.version
-
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
        versionProperty :  commons-ee.version
@@ -484,6 +476,14 @@ jobGroups:
        versionProperty :  pentaho-scheduler-plugin.version       
 
   2800:
+     - jobID           :  cpf-plugin
+       scmUrl          :  https://github.com/webdetails/cpf.git
+       versionProperty :  pentaho-cpf-plugin.version
+
+     - jobID           :  ccc-plugin
+       scmUrl          :  https://github.com/webdetails/ccc.git
+       versionProperty :  pentaho-ccc-plugin.version
+       
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        directives      :  += -Deula-wrap
