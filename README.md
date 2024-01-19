@@ -20,7 +20,7 @@ PDI engine extensions
 PDI core plugins
 * **integration:** 
 Integration tests
-
+-------------
 How to build
 --------------
 
