@@ -306,10 +306,6 @@ jobGroups:
        directives      :  += -Phighdeps
        root            :  libraries
 
-     - jobID           :  pdi-platform-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
-       testable        :  false
-
      - jobID           :  pdi-platform-utils-plugin
        scmUrl          :  https://github.com/pentaho/pdi-platform-utils-plugin.git
 
@@ -347,6 +343,11 @@ jobGroups:
         scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
         
   2800:
+  
+     - jobID           :  pdi-platform-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
+       testable        :  false
+       
      - jobID           :  cpf-plugin
        scmUrl          :  https://github.com/webdetails/cpf.git
 
