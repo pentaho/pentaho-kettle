@@ -273,6 +273,9 @@ jobGroups:
 #     - jobID           :  layout-editor
 #       scmUrl          :  https://github.com/pentaho/layout-editor.git
 
+  2350:
+      - jobID           : pentaho-scheduler-plugin
+        scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
   2400:
      - jobID           :  big-data-mongodb-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
@@ -285,6 +288,12 @@ jobGroups:
 
      - jobID           :  modeler
        scmUrl          :  https://github.com/pentaho/modeler.git
+
+     - jobID           :  cpf-plugin
+       scmUrl          :  https://github.com/webdetails/cpf.git
+
+     - jobID           :  ccc-plugin
+       scmUrl          :  https://github.com/webdetails/ccc.git
 
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
@@ -306,11 +315,18 @@ jobGroups:
        directives      :  += -Phighdeps
        root            :  libraries
 
+     - jobID           :  pdi-platform-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
+       testable        :  false
+
      - jobID           :  pdi-platform-utils-plugin
        scmUrl          :  https://github.com/pentaho/pdi-platform-utils-plugin.git
 
      - jobID           :  platform-plugin-jpivot
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-jpivot.git
+
+     - jobID           :  cdf-plugin
+       scmUrl          :  https://github.com/webdetails/cdf.git
 
   2600:
      - jobID           :  common-ui
@@ -335,22 +351,7 @@ jobGroups:
      - jobID           :  pdi-data-refinery-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-data-refinery.git
 
-  2750:
-      - jobID           : pentaho-scheduler-plugin
-        scmUrl          : https://github.com/pentaho/pentaho-scheduler-plugin.git
-        
   2800:
-  
-     - jobID           :  pdi-platform-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
-       testable        :  false
-       
-     - jobID           :  cpf-plugin
-       scmUrl          :  https://github.com/webdetails/cpf.git
-
-     - jobID           :  ccc-plugin
-       scmUrl          :  https://github.com/webdetails/ccc.git
-       
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        archivable      :  true
@@ -366,10 +367,6 @@ jobGroups:
        scmUrl          :  https://github.com/webdetails/cgg.git
 
   2900:
-  
-     - jobID           :  cdf-plugin
-       scmUrl          :  https://github.com/webdetails/cdf.git
-       
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
 
