@@ -434,10 +434,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-jpivot.git
        versionProperty :  pentaho-jpivot-plugin.version
 
-     - jobID           :  cdf-plugin
-       scmUrl          :  https://github.com/webdetails/cdf.git
-       versionProperty :  pentaho-cdf-plugin.version
-
   2600:
      - jobID           :  common-ui
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-common-ui.git
@@ -504,6 +500,10 @@ jobGroups:
        versionProperty :  pentaho-cgg-plugin.version
 
   2900:
+     - jobID           :  cdf-plugin
+       scmUrl          :  https://github.com/webdetails/cdf.git
+       versionProperty :  pentaho-cdf-plugin.version
+       
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
        versionProperty :  pentaho-sparkl-plugin.version
