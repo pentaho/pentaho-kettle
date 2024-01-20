@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>get-repository-names</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-221</version>
   </parent>
 
   <artifactId>get-repository-names-plugins-impl</artifactId>
