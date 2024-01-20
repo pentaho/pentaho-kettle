@@ -383,7 +383,11 @@ jobGroups:
 #       scmUrl          :  https://github.com/pentaho/layout-editor.git
 #       versionProperty :  layout-editor.version
 
-      
+  2350:
+     - jobID           :  pentaho-scheduler-plugin
+       scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin.git
+       versionProperty :  pentaho-scheduler-plugin.version
+       
   2400:
      - jobID           :  big-data-mongodb-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
@@ -399,6 +403,14 @@ jobGroups:
      - jobID           :  modeler
        scmUrl          :  https://github.com/pentaho/modeler.git
        versionProperty :  pentaho-modeler.version
+
+     - jobID           :  cpf-plugin
+       scmUrl          :  https://github.com/webdetails/cpf.git
+       versionProperty :  pentaho-cpf-plugin.version
+
+     - jobID           :  ccc-plugin
+       scmUrl          :  https://github.com/webdetails/ccc.git
+       versionProperty :  pentaho-ccc-plugin.version
 
      - jobID           :  commons-ee
        scmUrl          :  https://github.com/pentaho/commons-ee.git
@@ -426,6 +438,10 @@ jobGroups:
        root            :  libraries
        versionProperty :  pentaho-reporting.version
 
+     - jobID           :  pdi-platform-plugin
+       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
+       versionProperty :  pentaho-pdi-plugin.version
+
      - jobID           :  pdi-platform-utils-plugin
        scmUrl          :  https://github.com/pentaho/pdi-platform-utils-plugin.git
        versionProperty :  pdi-platform-utils-plugin.version
@@ -433,6 +449,10 @@ jobGroups:
      - jobID           :  platform-plugin-jpivot
        scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-jpivot.git
        versionProperty :  pentaho-jpivot-plugin.version
+
+     - jobID           :  cdf-plugin
+       scmUrl          :  https://github.com/webdetails/cdf.git
+       versionProperty :  pentaho-cdf-plugin.version
 
   2600:
      - jobID           :  common-ui
@@ -462,25 +482,8 @@ jobGroups:
      - jobID           :  pdi-data-refinery-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-data-refinery.git
        versionProperty :  pdi-data-refinery-plugin.version
-  2750:
-     - jobID           :  pentaho-scheduler-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin.git
-       versionProperty :  pentaho-scheduler-plugin.version       
 
   2800:
-  
-     - jobID           :  pdi-platform-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-platform-plugin.git
-       versionProperty :  pentaho-pdi-plugin.version
-       
-     - jobID           :  cpf-plugin
-       scmUrl          :  https://github.com/webdetails/cpf.git
-       versionProperty :  pentaho-cpf-plugin.version
-
-     - jobID           :  ccc-plugin
-       scmUrl          :  https://github.com/webdetails/ccc.git
-       versionProperty :  pentaho-ccc-plugin.version
-       
      - jobID           :  pdi-plugins-ee
        scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
        directives      :  += -Deula-wrap
@@ -500,10 +503,6 @@ jobGroups:
        versionProperty :  pentaho-cgg-plugin.version
 
   2900:
-     - jobID           :  cdf-plugin
-       scmUrl          :  https://github.com/webdetails/cdf.git
-       versionProperty :  pentaho-cdf-plugin.version
-       
      - jobID           :  sparkl-plugin
        scmUrl          :  https://github.com/webdetails/sparkl.git
        versionProperty :  pentaho-sparkl-plugin.version
