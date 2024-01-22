@@ -99,30 +99,20 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
   private FormData fdFileComp, fdContentComp;
 
-  private Label wlFilename;
   private Button wbFilename;
   private TextVar wFilename;
-  private FormData fdlFilename, fdbFilename, fdFilename;
 
-  private Label wlExtension;
   private CCombo wExtension;
-  private FormData fdlExtension, fdExtension;
 
-  private Label wlStreamData;
   private Button wStreamData;
-  private FormData fdlStreamData, fdStreamData;
 
-  private Label wlAddStepnr;
   private Button wAddStepnr;
-  private FormData fdlAddStepnr, fdAddStepnr;
 
   private Label wlAddDate;
   private Button wAddDate;
-  private FormData fdlAddDate, fdAddDate;
 
   private Label wlAddTime;
   private Button wAddTime;
-  private FormData fdlAddTime, fdAddTime;
 
   private Label wlProtectSheet;
   private Button wProtectSheet;
@@ -135,9 +125,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
   private Button wFooter;
 
-  private Label wlSplitEvery;
   private Text wSplitEvery;
-  private FormData fdlSplitEvery, fdSplitEvery;
 
   private Label wlTemplate;
   private Button wTemplate;
@@ -309,317 +297,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     fileLayout.marginHeight = 3;
     wFileComp.setLayout( fileLayout );
 
-    Group fileGroup = new Group( wFileComp, SWT.SHADOW_NONE );
-    props.setLook( fileGroup );
-    fileGroup.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.fileGroup.Label" ) );
-
-    FormLayout fileGroupgroupLayout = new FormLayout();
-    fileGroupgroupLayout.marginWidth = 10;
-    fileGroupgroupLayout.marginHeight = 10;
-    fileGroup.setLayout( fileGroupgroupLayout );
-
-    // Filename line
-    wlFilename = new Label( fileGroup, SWT.RIGHT );
-    wlFilename.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.Filename.Label" ) );
-    props.setLook( wlFilename );
-    fdlFilename = new FormData();
-    fdlFilename.left = new FormAttachment( 0, 0 );
-    fdlFilename.top = new FormAttachment( 0, margin );
-    fdlFilename.right = new FormAttachment( middle, -margin );
-    wlFilename.setLayoutData( fdlFilename );
-
-    wbFilename = new Button( fileGroup, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbFilename );
-    wbFilename.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
-    fdbFilename = new FormData();
-    fdbFilename.right = new FormAttachment( 100, 0 );
-    fdbFilename.top = new FormAttachment( 0, 0 );
-    wbFilename.setLayoutData( fdbFilename );
-
-    wFilename = new TextVar( transMeta, fileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wFilename );
-    wFilename.addModifyListener( lsMod );
-    wFilename.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.Filename.Tooltip" ) );
-    fdFilename = new FormData();
-    fdFilename.left = new FormAttachment( middle, 0 );
-    fdFilename.top = new FormAttachment( 0, margin );
-    fdFilename.right = new FormAttachment( wbFilename, -margin );
-    wFilename.setLayoutData( fdFilename );
-
-    // Extension line
-    wlExtension = new Label( fileGroup, SWT.RIGHT );
-    wlExtension.setText( BaseMessages.getString( PKG, "System.Label.Extension" ) );
-    props.setLook( wlExtension );
-    fdlExtension = new FormData();
-    fdlExtension.left = new FormAttachment( 0, 0 );
-    fdlExtension.top = new FormAttachment( wFilename, margin );
-    fdlExtension.right = new FormAttachment( middle, -margin );
-    wlExtension.setLayoutData( fdlExtension );
-    wExtension = new CCombo( fileGroup, SWT.LEFT | SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY );
-
-    String xlsLabel = BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLS.Label" );
-    String xlsxLabel = BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLSX.Label" );
-    wExtension.setItems( new String[] { xlsLabel, xlsxLabel } );
-    wExtension.setData( xlsLabel, "xls" );
-    wExtension.setData( xlsxLabel, "xlsx" );
-
-    props.setLook( wExtension );
-    wExtension.addModifyListener( lsMod );
-
-    wExtension.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
-        enableExtension();
-      }
-    } );
-
-    wExtension.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.Extension.Tooltip" ) );
-
-    fdExtension = new FormData();
-    fdExtension.left = new FormAttachment( middle, 0 );
-    fdExtension.top = new FormAttachment( wFilename, margin );
-    fdExtension.right = new FormAttachment( wbFilename, -margin );
-    wExtension.setLayoutData( fdExtension );
-
-    wlStreamData = new Label( fileGroup, SWT.RIGHT );
-    wlStreamData.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.StreamData.Label" ) );
-    props.setLook( wlStreamData );
-    fdlStreamData = new FormData();
-    fdlStreamData.left = new FormAttachment( 0, 0 );
-    fdlStreamData.top = new FormAttachment( wExtension, margin );
-    fdlStreamData.right = new FormAttachment( middle, -margin );
-    wlStreamData.setLayoutData( fdlStreamData );
-    wStreamData = new Button( fileGroup, SWT.CHECK );
-    props.setLook( wStreamData );
-    fdStreamData = new FormData();
-    fdStreamData.left = new FormAttachment( middle, 0 );
-    fdStreamData.top = new FormAttachment( wExtension, margin );
-    fdStreamData.right = new FormAttachment( 100, 0 );
-    wStreamData.setLayoutData( fdStreamData );
-    wStreamData.addSelectionListener( lsSel );
-
-    // split every x rows
-    wlSplitEvery = new Label( fileGroup, SWT.RIGHT );
-    wlSplitEvery.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.SplitEvery.Label" ) );
-    props.setLook( wlSplitEvery );
-    fdlSplitEvery = new FormData();
-    fdlSplitEvery.left = new FormAttachment( 0, 0 );
-    fdlSplitEvery.top = new FormAttachment( wStreamData, margin );
-    fdlSplitEvery.right = new FormAttachment( middle, -margin );
-    wlSplitEvery.setLayoutData( fdlSplitEvery );
-    wSplitEvery = new Text( fileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wSplitEvery );
-    wSplitEvery.addModifyListener( lsMod );
-    wSplitEvery.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.SplitEvery.Tooltip" ) );
-    fdSplitEvery = new FormData();
-    fdSplitEvery.left = new FormAttachment( middle, 0 );
-    fdSplitEvery.top = new FormAttachment( wStreamData, margin );
-    fdSplitEvery.right = new FormAttachment( 100, 0 );
-    wSplitEvery.setLayoutData( fdSplitEvery );
-
-    // Create multi-part file?
-    wlAddStepnr = new Label( fileGroup, SWT.RIGHT );
-    wlAddStepnr.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.AddStepnr.Label" ) );
-    props.setLook( wlAddStepnr );
-    fdlAddStepnr = new FormData();
-    fdlAddStepnr.left = new FormAttachment( 0, 0 );
-    fdlAddStepnr.top = new FormAttachment( wSplitEvery, margin );
-    fdlAddStepnr.right = new FormAttachment( middle, -margin );
-    wlAddStepnr.setLayoutData( fdlAddStepnr );
-    wAddStepnr = new Button( fileGroup, SWT.CHECK );
-    props.setLook( wAddStepnr );
-    fdAddStepnr = new FormData();
-    fdAddStepnr.left = new FormAttachment( middle, 0 );
-    fdAddStepnr.top = new FormAttachment( wSplitEvery, margin );
-    fdAddStepnr.right = new FormAttachment( 100, 0 );
-    wAddStepnr.setLayoutData( fdAddStepnr );
-    wAddStepnr.addSelectionListener( lsSel );
-
-    // Create multi-part file?
-    wlAddDate = new Label( fileGroup, SWT.RIGHT );
-    wlAddDate.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.AddDate.Label" ) );
-    props.setLook( wlAddDate );
-    fdlAddDate = new FormData();
-    fdlAddDate.left = new FormAttachment( 0, 0 );
-    fdlAddDate.top = new FormAttachment( wAddStepnr, margin );
-    fdlAddDate.right = new FormAttachment( middle, -margin );
-    wlAddDate.setLayoutData( fdlAddDate );
-    wAddDate = new Button( fileGroup, SWT.CHECK );
-    props.setLook( wAddDate );
-    fdAddDate = new FormData();
-    fdAddDate.left = new FormAttachment( middle, 0 );
-    fdAddDate.top = new FormAttachment( wAddStepnr, margin );
-    fdAddDate.right = new FormAttachment( 100, 0 );
-    wAddDate.setLayoutData( fdAddDate );
-    wAddDate.addSelectionListener( lsSel );
-    // Create multi-part file?
-    wlAddTime = new Label( fileGroup, SWT.RIGHT );
-    wlAddTime.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.AddTime.Label" ) );
-    props.setLook( wlAddTime );
-    fdlAddTime = new FormData();
-    fdlAddTime.left = new FormAttachment( 0, 0 );
-    fdlAddTime.top = new FormAttachment( wAddDate, margin );
-    fdlAddTime.right = new FormAttachment( middle, -margin );
-    wlAddTime.setLayoutData( fdlAddTime );
-    wAddTime = new Button( fileGroup, SWT.CHECK );
-    props.setLook( wAddTime );
-    fdAddTime = new FormData();
-    fdAddTime.left = new FormAttachment( middle, 0 );
-    fdAddTime.top = new FormAttachment( wAddDate, margin );
-    fdAddTime.right = new FormAttachment( 100, 0 );
-    wAddTime.setLayoutData( fdAddTime );
-    wAddTime.addSelectionListener( lsSel );
-    // Specify date time format?
-    wlSpecifyFormat = new Label( fileGroup, SWT.RIGHT );
-    wlSpecifyFormat.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.SpecifyFormat.Label" ) );
-    props.setLook( wlSpecifyFormat );
-    fdlSpecifyFormat = new FormData();
-    fdlSpecifyFormat.left = new FormAttachment( 0, 0 );
-    fdlSpecifyFormat.top = new FormAttachment( wAddTime, margin );
-    fdlSpecifyFormat.right = new FormAttachment( middle, -margin );
-    wlSpecifyFormat.setLayoutData( fdlSpecifyFormat );
-    wSpecifyFormat = new Button( fileGroup, SWT.CHECK );
-    props.setLook( wSpecifyFormat );
-    wSpecifyFormat.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.SpecifyFormat.Tooltip" ) );
-    fdSpecifyFormat = new FormData();
-    fdSpecifyFormat.left = new FormAttachment( middle, 0 );
-    fdSpecifyFormat.top = new FormAttachment( wAddTime, margin );
-    fdSpecifyFormat.right = new FormAttachment( 100, 0 );
-    wSpecifyFormat.setLayoutData( fdSpecifyFormat );
-    wSpecifyFormat.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
-        setDateTimeFormat();
-      }
-    } );
-
-    // Prepare a list of possible DateTimeFormats...
-    String[] dats = Const.getDateFormats();
-
-    // DateTimeFormat
-    wlDateTimeFormat = new Label( fileGroup, SWT.RIGHT );
-    wlDateTimeFormat.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.DateTimeFormat.Label" ) );
-    props.setLook( wlDateTimeFormat );
-    fdlDateTimeFormat = new FormData();
-    fdlDateTimeFormat.left = new FormAttachment( 0, 0 );
-    fdlDateTimeFormat.top = new FormAttachment( wSpecifyFormat, margin );
-    fdlDateTimeFormat.right = new FormAttachment( middle, -margin );
-    wlDateTimeFormat.setLayoutData( fdlDateTimeFormat );
-    wDateTimeFormat = new CCombo( fileGroup, SWT.BORDER | SWT.READ_ONLY );
-    wDateTimeFormat.setEditable( true );
-    props.setLook( wDateTimeFormat );
-    wDateTimeFormat.addModifyListener( lsMod );
-    fdDateTimeFormat = new FormData();
-    fdDateTimeFormat.left = new FormAttachment( middle, 0 );
-    fdDateTimeFormat.top = new FormAttachment( wSpecifyFormat, margin );
-    fdDateTimeFormat.right = new FormAttachment( 100, 0 );
-    wDateTimeFormat.setLayoutData( fdDateTimeFormat );
-    for ( int x = 0; x < dats.length; x++ ) {
-      wDateTimeFormat.add( dats[x] );
-    }
-
-    wbShowFiles = new Button( fileGroup, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbShowFiles );
-    wbShowFiles.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.ShowFiles.Button" ) );
-    fdbShowFiles = new FormData();
-    fdbShowFiles.left = new FormAttachment( middle, 0 );
-    fdbShowFiles.top = new FormAttachment( wDateTimeFormat, margin * 3 );
-    wbShowFiles.setLayoutData( fdbShowFiles );
-    wbShowFiles.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        ExcelWriterStepMeta tfoi = new ExcelWriterStepMeta();
-        getInfo( tfoi );
-        String[] files = tfoi.getFiles( transMeta );
-        if ( files != null && files.length > 0 ) {
-          EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, files,
-              BaseMessages.getString( PKG, "ExcelWriterDialog.SelectOutputFiles.DialogTitle" ),
-              BaseMessages.getString( PKG, "ExcelWriterDialog.SelectOutputFiles.DialogMessage" ) );
-          esd.setViewOnly();
-          esd.open();
-        } else {
-          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-          mb.setMessage( BaseMessages.getString( PKG, "ExcelWriterDialog.NoFilesFound.DialogMessage" ) );
-          mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
-          mb.open();
-        }
-      }
-    } );
-
-    // If output file exists line
-    wlIfFileExists = new Label( fileGroup, SWT.RIGHT );
-    wlIfFileExists.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.IfFileExists.Label" ) );
-    props.setLook( wlIfFileExists );
-    fdlIfFileExists = new FormData();
-    fdlIfFileExists.left = new FormAttachment( 0, 0 );
-    fdlIfFileExists.top = new FormAttachment( wbShowFiles, 2 * margin, margin );
-    fdlIfFileExists.right = new FormAttachment( middle, -margin );
-    wlIfFileExists.setLayoutData( fdlIfFileExists );
-    wIfFileExists = new CCombo( fileGroup, SWT.LEFT | SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY );
-
-    String createNewLabel = BaseMessages.getString( PKG, "ExcelWriterDialog.IfFileExists.CreateNew.Label" );
-    String reuseLabel = BaseMessages.getString( PKG, "ExcelWriterDialog.IfFileExists.Reuse.Label" );
-    wIfFileExists.setItems( new String[] { createNewLabel, reuseLabel } );
-    wIfFileExists.setData( createNewLabel, ExcelWriterStepMeta.IF_FILE_EXISTS_CREATE_NEW );
-    wIfFileExists.setData( reuseLabel, ExcelWriterStepMeta.IF_FILE_EXISTS_REUSE );
-
-    props.setLook( wIfFileExists );
-    wIfFileExists.addModifyListener( lsMod );
-    wIfFileExists.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.IfFileExists.Tooltip" ) );
-
-    FormData fdIfFileExists = new FormData();
-    fdIfFileExists.left = new FormAttachment( middle, 0 );
-    fdIfFileExists.top = new FormAttachment( wbShowFiles, 2 * margin, margin );
-    fdIfFileExists.right = new FormAttachment( 100, 0 );
-    wIfFileExists.setLayoutData( fdIfFileExists );
-
-    // Open new File at Init
-    wlDoNotOpenNewFileInit = new Label( fileGroup, SWT.RIGHT );
-    wlDoNotOpenNewFileInit.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.DoNotOpenNewFileInit.Label" ) );
-    props.setLook( wlDoNotOpenNewFileInit );
-    fdlDoNotOpenNewFileInit = new FormData();
-    fdlDoNotOpenNewFileInit.left = new FormAttachment( 0, 0 );
-    fdlDoNotOpenNewFileInit.top = new FormAttachment( wIfFileExists, 2 * margin, margin );
-    fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
-    wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
-    wDoNotOpenNewFileInit = new Button( fileGroup, SWT.CHECK );
-    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
-      PKG, "ExcelWriterDialog.DoNotOpenNewFileInit.Tooltip" ) );
-    props.setLook( wDoNotOpenNewFileInit );
-    fdDoNotOpenNewFileInit = new FormData();
-    fdDoNotOpenNewFileInit.left = new FormAttachment( middle, 0 );
-    fdDoNotOpenNewFileInit.top = new FormAttachment( wIfFileExists, 2 * margin, margin );
-    fdDoNotOpenNewFileInit.right = new FormAttachment( 100, 0 );
-    wDoNotOpenNewFileInit.setLayoutData( fdDoNotOpenNewFileInit );
-    wDoNotOpenNewFileInit.addSelectionListener( lsSel );
-
-    // Add File to the result files name
-    wlAddToResult = new Label( fileGroup, SWT.RIGHT );
-    wlAddToResult.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.AddFileToResult.Label" ) );
-    props.setLook( wlAddToResult );
-    fdlAddToResult = new FormData();
-    fdlAddToResult.left = new FormAttachment( 0, 0 );
-    fdlAddToResult.top = new FormAttachment( wDoNotOpenNewFileInit );
-    fdlAddToResult.right = new FormAttachment( middle, -margin );
-    wlAddToResult.setLayoutData( fdlAddToResult );
-    wAddToResult = new Button( fileGroup, SWT.CHECK );
-    wAddToResult.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.AddFileToResult.Tooltip" ) );
-    props.setLook( wAddToResult );
-    fdAddToResult = new FormData();
-    fdAddToResult.left = new FormAttachment( middle, 0 );
-    fdAddToResult.top = new FormAttachment( wDoNotOpenNewFileInit );
-    fdAddToResult.right = new FormAttachment( 100, 0 );
-    wAddToResult.setLayoutData( fdAddToResult );
-    wAddToResult.addSelectionListener( lsSel );
-
-    FormData fsFileGroup = new FormData();
-    fsFileGroup.left = new FormAttachment( 0, margin );
-    fsFileGroup.top = new FormAttachment( 0, margin );
-    fsFileGroup.right = new FormAttachment( 100, -margin );
-    fileGroup.setLayoutData( fsFileGroup );
+    Group fileGroup = createFileGroup( lsSel, lsMod, margin, wFileComp );
 
     // END OF FILE GROUP
 
@@ -1105,6 +783,248 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
       }
     }
     return stepname;
+  }
+
+  private Group createGroup( Composite parent, String labelKey ) {
+    Group group = new Group( parent, SWT.SHADOW_NONE );
+    props.setLook( group );
+    group.setText( getMsg( labelKey ) );
+
+    FormLayout groupLayout = new FormLayout();
+    groupLayout.marginWidth = 10;
+    groupLayout.marginHeight = 10;
+    group.setLayout( groupLayout );
+
+    return group;
+  }
+
+  private Group createFileGroup( SelectionAdapter lsSel, ModifyListener lsMod, int margin, Composite wFileComp ) {
+    Group fileGroup = createGroup( wFileComp, "ExcelWriterDialog.fileGroup.Label" );
+
+    // Filename line
+    Label wlFilename = createLabel( fileGroup, "ExcelWriterDialog.Filename.Label" );
+    wlFilename.setLayoutData( fd().right( middle, -margin ).top( 0, margin ).result() );
+
+    wbFilename = new Button( fileGroup, SWT.PUSH | SWT.CENTER );
+    wbFilename.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
+    FormData fdbFilename = new FormData();
+    fdbFilename.right = new FormAttachment( 100, 0 );
+    fdbFilename.top = new FormAttachment( 0, 0 );
+    wbFilename.setLayoutData( fdbFilename );
+
+    wFilename = new TextVar( transMeta, fileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wFilename.addModifyListener( lsMod );
+    wFilename.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.Filename.Tooltip" ) );
+    FormData fdFilename = fd().left( middle, 0 ).top( 0, margin ).right(wbFilename, -margin).result();
+    wFilename.setLayoutData( fdFilename );
+    Control lastWidget = wFilename;
+    // Extension line
+    Label wlExtension = createLabel( fileGroup, "System.Label.Extension" );
+    wExtension = new CCombo( fileGroup, SWT.LEFT | SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY );
+    String xlsLabel = BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLS.Label" );
+    String xlsxLabel = BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLSX.Label" );
+    wExtension.setItems( new String[] { xlsLabel, xlsxLabel } );
+    wExtension.setData( xlsLabel, "xls" );
+    wExtension.setData( xlsxLabel, "xlsx" );
+
+    props.setLook( wExtension );
+    wExtension.addModifyListener( lsMod );
+
+    wExtension.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+        enableExtension();
+      }
+    } );
+    wExtension.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.Extension.Tooltip" ) );
+
+    wlExtension.setLayoutData( fd().left().right( middle, -margin ).top( lastWidget, margin ).result() );
+    wExtension.setLayoutData( fd().left( middle, 0 ).right( wbFilename, -margin ).top( lastWidget, margin ).result() );
+    lastWidget = wExtension;
+
+    Label wlStreamData = createLabel( fileGroup, "ExcelWriterDialog.StreamData.Label" );
+    wStreamData = new Button( fileGroup, SWT.CHECK );
+    wStreamData.addSelectionListener( lsSel );
+    lastWidget = layoutLabelControlPair( wlStreamData, wStreamData, lastWidget );
+
+    // split every x rows
+    Label wlSplitEvery = createLabel(fileGroup, "ExcelWriterDialog.SplitEvery.Label" ); new Label( fileGroup, SWT.RIGHT );
+    wSplitEvery = new Text( fileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wSplitEvery.addModifyListener( lsMod );
+    wSplitEvery.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.SplitEvery.Tooltip" ) );
+    lastWidget = layoutLabelControlPair( wlSplitEvery, wSplitEvery, lastWidget );
+
+    // include step number
+    Label wlAddStepnr = createLabel(fileGroup, "ExcelWriterDialog.AddStepnr.Label" );
+    wAddStepnr = new Button( fileGroup, SWT.CHECK );
+    wAddStepnr.addSelectionListener( lsSel );
+    lastWidget = layoutLabelControlPair( wlAddStepnr, wAddStepnr, lastWidget );
+
+    // include date
+    wlAddDate = createLabel( fileGroup,  "ExcelWriterDialog.AddDate.Label" );
+    wAddDate = new Button( fileGroup, SWT.CHECK );
+    wAddDate.addSelectionListener( lsSel );
+    lastWidget = layoutLabelControlPair( wlAddDate, wAddDate, lastWidget );
+
+    // include time
+    wlAddTime = createLabel( fileGroup, "ExcelWriterDialog.AddTime.Label" );
+    wAddTime = new Button( fileGroup, SWT.CHECK );
+    props.setLook( wAddTime );
+    wAddTime.addSelectionListener( lsSel );
+    lastWidget = layoutLabelControlPair( wlAddTime, wAddTime, lastWidget );
+
+    // Specify date time format?
+    wlSpecifyFormat = new Label( fileGroup, SWT.RIGHT );
+    wlSpecifyFormat.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.SpecifyFormat.Label" ) );
+    props.setLook( wlSpecifyFormat );
+    fdlSpecifyFormat = new FormData();
+    fdlSpecifyFormat.left = new FormAttachment( 0, 0 );
+    fdlSpecifyFormat.top = new FormAttachment( wAddTime, margin );
+    fdlSpecifyFormat.right = new FormAttachment( middle, -margin );
+    wlSpecifyFormat.setLayoutData( fdlSpecifyFormat );
+    wSpecifyFormat = new Button( fileGroup, SWT.CHECK );
+    props.setLook( wSpecifyFormat );
+    wSpecifyFormat.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.SpecifyFormat.Tooltip" ) );
+    fdSpecifyFormat = new FormData();
+    fdSpecifyFormat.left = new FormAttachment( middle, 0 );
+    fdSpecifyFormat.top = new FormAttachment( wAddTime, margin );
+    fdSpecifyFormat.right = new FormAttachment( 100, 0 );
+    wSpecifyFormat.setLayoutData( fdSpecifyFormat );
+    wSpecifyFormat.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+        setDateTimeFormat();
+      }
+    } );
+
+    // Prepare a list of possible DateTimeFormats...
+    String[] dats = Const.getDateFormats();
+
+    // DateTimeFormat
+    wlDateTimeFormat = new Label( fileGroup, SWT.RIGHT );
+    wlDateTimeFormat.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.DateTimeFormat.Label" ) );
+    props.setLook( wlDateTimeFormat );
+    fdlDateTimeFormat = new FormData();
+    fdlDateTimeFormat.left = new FormAttachment( 0, 0 );
+    fdlDateTimeFormat.top = new FormAttachment( wSpecifyFormat, margin );
+    fdlDateTimeFormat.right = new FormAttachment( middle, -margin );
+    wlDateTimeFormat.setLayoutData( fdlDateTimeFormat );
+    wDateTimeFormat = new CCombo( fileGroup, SWT.BORDER | SWT.READ_ONLY );
+    wDateTimeFormat.setEditable( true );
+    props.setLook( wDateTimeFormat );
+    wDateTimeFormat.addModifyListener( lsMod );
+    fdDateTimeFormat = new FormData();
+    fdDateTimeFormat.left = new FormAttachment( middle, 0 );
+    fdDateTimeFormat.top = new FormAttachment( wSpecifyFormat, margin );
+    fdDateTimeFormat.right = new FormAttachment( 100, 0 );
+    wDateTimeFormat.setLayoutData( fdDateTimeFormat );
+    for ( int x = 0; x < dats.length; x++ ) {
+      wDateTimeFormat.add( dats[x] );
+    }
+
+    wbShowFiles = new Button( fileGroup, SWT.PUSH | SWT.CENTER );
+    props.setLook( wbShowFiles );
+    wbShowFiles.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.ShowFiles.Button" ) );
+    fdbShowFiles = new FormData();
+    fdbShowFiles.left = new FormAttachment( middle, 0 );
+    fdbShowFiles.top = new FormAttachment( wDateTimeFormat, margin * 3 );
+    wbShowFiles.setLayoutData( fdbShowFiles );
+    wbShowFiles.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        ExcelWriterStepMeta tfoi = new ExcelWriterStepMeta();
+        getInfo( tfoi );
+        String[] files = tfoi.getFiles( transMeta );
+        if ( files != null && files.length > 0 ) {
+          EnterSelectionDialog esd =
+            new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "ExcelWriterDialog.SelectOutputFiles.DialogTitle" ),
+              BaseMessages.getString( PKG, "ExcelWriterDialog.SelectOutputFiles.DialogMessage" ) );
+          esd.setViewOnly();
+          esd.open();
+        } else {
+          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( BaseMessages.getString( PKG, "ExcelWriterDialog.NoFilesFound.DialogMessage" ) );
+          mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
+          mb.open();
+        }
+      }
+    } );
+
+    // If output file exists line
+    wlIfFileExists = new Label( fileGroup, SWT.RIGHT );
+    wlIfFileExists.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.IfFileExists.Label" ) );
+    props.setLook( wlIfFileExists );
+    fdlIfFileExists = new FormData();
+    fdlIfFileExists.left = new FormAttachment( 0, 0 );
+    fdlIfFileExists.top = new FormAttachment( wbShowFiles, 2 * margin, margin );
+    fdlIfFileExists.right = new FormAttachment( middle, -margin );
+    wlIfFileExists.setLayoutData( fdlIfFileExists );
+    wIfFileExists = new CCombo( fileGroup, SWT.LEFT | SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY );
+
+    String createNewLabel = BaseMessages.getString( PKG, "ExcelWriterDialog.IfFileExists.CreateNew.Label" );
+    String reuseLabel = BaseMessages.getString( PKG, "ExcelWriterDialog.IfFileExists.Reuse.Label" );
+    wIfFileExists.setItems( new String[] { createNewLabel, reuseLabel } );
+    wIfFileExists.setData( createNewLabel, ExcelWriterStepMeta.IF_FILE_EXISTS_CREATE_NEW );
+    wIfFileExists.setData( reuseLabel, ExcelWriterStepMeta.IF_FILE_EXISTS_REUSE );
+
+    props.setLook( wIfFileExists );
+    wIfFileExists.addModifyListener( lsMod );
+    wIfFileExists.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.IfFileExists.Tooltip" ) );
+
+    FormData fdIfFileExists = new FormData();
+    fdIfFileExists.left = new FormAttachment( middle, 0 );
+    fdIfFileExists.top = new FormAttachment( wbShowFiles, 2 * margin, margin );
+    fdIfFileExists.right = new FormAttachment( 100, 0 );
+    wIfFileExists.setLayoutData( fdIfFileExists );
+
+    // Open new File at Init
+    wlDoNotOpenNewFileInit = new Label( fileGroup, SWT.RIGHT );
+    wlDoNotOpenNewFileInit.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.DoNotOpenNewFileInit.Label" ) );
+    props.setLook( wlDoNotOpenNewFileInit );
+    fdlDoNotOpenNewFileInit = new FormData();
+    fdlDoNotOpenNewFileInit.left = new FormAttachment( 0, 0 );
+    fdlDoNotOpenNewFileInit.top = new FormAttachment( wIfFileExists, 2 * margin, margin );
+    fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
+    wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
+    wDoNotOpenNewFileInit = new Button( fileGroup, SWT.CHECK );
+    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
+      PKG, "ExcelWriterDialog.DoNotOpenNewFileInit.Tooltip" ) );
+    props.setLook( wDoNotOpenNewFileInit );
+    fdDoNotOpenNewFileInit = new FormData();
+    fdDoNotOpenNewFileInit.left = new FormAttachment( middle, 0 );
+    fdDoNotOpenNewFileInit.top = new FormAttachment( wIfFileExists, 2 * margin, margin );
+    fdDoNotOpenNewFileInit.right = new FormAttachment( 100, 0 );
+    wDoNotOpenNewFileInit.setLayoutData( fdDoNotOpenNewFileInit );
+    wDoNotOpenNewFileInit.addSelectionListener( lsSel );
+
+    // Add File to the result files name
+    wlAddToResult = new Label( fileGroup, SWT.RIGHT );
+    wlAddToResult.setText( BaseMessages.getString( PKG, "ExcelWriterDialog.AddFileToResult.Label" ) );
+    props.setLook( wlAddToResult );
+    fdlAddToResult = new FormData();
+    fdlAddToResult.left = new FormAttachment( 0, 0 );
+    fdlAddToResult.top = new FormAttachment( wDoNotOpenNewFileInit );
+    fdlAddToResult.right = new FormAttachment( middle, -margin );
+    wlAddToResult.setLayoutData( fdlAddToResult );
+    wAddToResult = new Button( fileGroup, SWT.CHECK );
+    wAddToResult.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.AddFileToResult.Tooltip" ) );
+    props.setLook( wAddToResult );
+    fdAddToResult = new FormData();
+    fdAddToResult.left = new FormAttachment( middle, 0 );
+    fdAddToResult.top = new FormAttachment( wDoNotOpenNewFileInit );
+    fdAddToResult.right = new FormAttachment( 100, 0 );
+    wAddToResult.setLayoutData( fdAddToResult );
+    wAddToResult.addSelectionListener( lsSel );
+
+    FormData fsFileGroup = new FormData();
+    fsFileGroup.left = new FormAttachment( 0, margin );
+    fsFileGroup.top = new FormAttachment( 0, margin );
+    fsFileGroup.right = new FormAttachment( 100, -margin );
+    fileGroup.setLayoutData( fsFileGroup );
+    return fileGroup;
   }
 
   private void createContentTab( SelectionAdapter lsSel, ModifyListener lsMod, int middle, int margin, ScrolledComposite sc ) {
