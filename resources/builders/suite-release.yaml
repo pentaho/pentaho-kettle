@@ -221,6 +221,7 @@ jobGroups:
   1250:
      - jobID           :  revenera-validator
        scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git
+       directives      :  -Plinux_64
        versionProperty :  revenera-lic-validator.version
 
   1260:
