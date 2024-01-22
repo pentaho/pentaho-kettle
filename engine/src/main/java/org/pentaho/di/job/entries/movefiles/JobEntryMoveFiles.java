@@ -28,6 +28,7 @@ import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.FileStore;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -616,6 +617,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
               String destinationfilenamefull =
                 KettleVFS.getFilename( destinationfilefolder ) + Const.FILE_SEPARATOR + shortfilename;
+              destinationfilenamefull = fixUpDestinationPath( realSourceFilefoldername, destinationfilenamefull );
               FileObject destinationfile = KettleVFS.getFileObject( destinationfilenamefull, this );
 
               entrystatus =
@@ -640,6 +642,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
               String destinationfilenamefull =
                 KettleVFS.getFilename( destinationfile.getParent() ) + Const.FILE_SEPARATOR + shortfilename;
+              destinationfilenamefull = fixUpDestinationPath( realSourceFilefoldername, destinationfilenamefull );
               destinationfile = KettleVFS.getFileObject( destinationfilenamefull, this );
 
               entrystatus =
@@ -1232,8 +1235,20 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
     String dest = removeFilePrefix( realDestinationPath );
     Path sourcePath = Paths.get( removeFilePrefix( realSourcePath ) );
+    if ( !sourcePath.toFile().exists() ) {
+      // will be handled elsewhere, and would throw an NPE in getFileStore
+      return realDestinationPath;
+    }
+
     Path destPath = Paths.get( dest );
-    boolean sameMount = Objects.equals( Files.getFileStore( sourcePath ), Files.getFileStore( destPath ) );
+    FileStore srcFS = Files.getFileStore( sourcePath );
+
+    Path tpath = destPath;
+    while ( tpath != null && !tpath.toFile().exists() ) {
+      tpath = tpath.getParent();
+    }
+    FileStore destFS = Files.getFileStore( tpath );
+    boolean sameMount = Objects.equals( srcFS, destFS );
 
     if ( sourceHasFilePrefix == sameMount ) {
       return FILE_PREFIX + dest;
