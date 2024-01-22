@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,9 @@
 
 package org.pentaho.di.connections;
 
+import org.pentaho.di.connections.utils.ConnectionDetailsUtils;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -39,7 +41,7 @@ public interface ConnectionDetails {
 
   String getDescription();
 
-   /**
+  /**
    * Gets props associated with this ConnectionDetails.
    * Allows implementors to expose connection properties without
    * requiring clients to have the implementation as a dependency.
@@ -53,7 +55,7 @@ public interface ConnectionDetails {
     return null;
   }
 
-  default void closeDialog( ) {
+  default void closeDialog() {
     //noop if not defined
   }
 
@@ -67,5 +69,16 @@ public interface ConnectionDetails {
 
   default boolean hasBuckets() {
     return true;
+  }
+
+  /**
+   * Clones the connection details instance.
+   * <p>
+   * The default implementation delegates cloning to {@link ConnectionDetailsUtils#cloneMeta(ConnectionDetails)}.
+   *
+   * @return The cloned connection details.
+   */
+  default ConnectionDetails cloneDetails() throws MetaStoreException {
+    return ConnectionDetailsUtils.cloneMeta( this );
   }
 }
