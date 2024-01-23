@@ -462,7 +462,9 @@ public class Rest extends BaseStep implements StepInterface {
         }
         data.useHeaders = true;
       }
-      if ( RestMeta.isActiveParameters( meta.getMethod() ) ) {
+
+      String substitutedMethod = environmentSubstitute( meta.getMethod() );
+      if ( RestMeta.isActiveParameters( substitutedMethod ) ) {
         // Parameters
         int nrparams = meta.getParameterField() == null ? 0 : meta.getParameterField().length;
         if ( nrparams > 0 ) {
@@ -503,7 +505,7 @@ public class Rest extends BaseStep implements StepInterface {
       }
 
       // Do we need to set body
-      if ( RestMeta.isActiveBody( meta.getMethod() ) ) {
+      if ( RestMeta.isActiveBody( substitutedMethod ) ) {
         String field = environmentSubstitute( meta.getBodyField() );
         if ( !Utils.isEmpty( field ) ) {
           data.indexOfBodyField = data.inputRowMeta.indexOfValue( field );
