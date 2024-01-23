@@ -109,6 +109,7 @@ public enum KettleExtensionPoint {
     BeforeCheckStep( "BeforeCheckStep", "Right before a step is about to be verified." ),
     AfterCheckStep( "AfterCheckStep", "After a step has been checked for warnings/errors." ),
 
+    BeforeCarteStartup( "BeforeCarteStartup", "Right before the Carte webserver is started" ),
     CarteStartup( "CarteStartup", "Right after the Carte webserver has started and is fully functional" ),
     CarteShutdown( "CarteShutdown", "Right before the Carte webserver will shut down" ),
 
