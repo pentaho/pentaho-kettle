@@ -542,11 +542,15 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           case ValueMetaInterface.TYPE_DATE:
             if ( v != null && vMeta.getDate( v ) != null ) {
               cell.setCellValue( vMeta.getDate( v ) );
+            } else if ( v == null && !meta.isRetainNullValues() ) {
+              cell.setCellValue( "" );
             }
             break;
           case ValueMetaInterface.TYPE_BOOLEAN:
             if ( v != null ) {
               cell.setCellValue( vMeta.getBoolean( v ) );
+            } else if ( !meta.isRetainNullValues() ) {
+              cell.setCellValue( "" );
             }
             break;
           case ValueMetaInterface.TYPE_BIGNUMBER:
@@ -554,12 +558,16 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           case ValueMetaInterface.TYPE_INTEGER:
             if ( v != null ) {
               cell.setCellValue( vMeta.getNumber( v ) );
+            } else if ( !meta.isRetainNullValues() ) {
+              cell.setCellValue( "" );
             }
             break;
           default:
             // fallthrough: output the data value as a string
             if ( v != null ) {
               cell.setCellValue( vMeta.getString( v ) );
+            } else if ( !meta.isRetainNullValues() ) {
+              cell.setCellValue( "" );
             }
             break;
         }
@@ -823,6 +831,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
    * Creates a new Excel file
    */
   private void createFile() throws KettleException, IOException {
+
+    if ( meta.isCreateParentFolders() && !data.file.getParent().exists() ) {
+      data.file.getParent().createFolder();
+    }
+
     // if template file is enabled
     if ( meta.isTemplateEnabled() ) {
       // handle template case (must have same format)

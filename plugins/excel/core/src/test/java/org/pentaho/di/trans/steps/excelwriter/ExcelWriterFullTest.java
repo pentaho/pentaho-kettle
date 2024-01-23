@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.excelwriter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +57,7 @@ import junit.framework.AssertionFailedError;
 
 import org.apache.poi.ss.formula.DataValidationEvaluator;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.DataValidationConstraint.OperatorType;
@@ -221,7 +223,7 @@ public class ExcelWriterFullTest {
       meta.setFileName( outFile );
       meta.setExtension( "xlsx" );
 
-      meta.setExtendDataValidationRanges(true);
+      meta.setExtendDataValidationRanges( true );
 
       RowSet inputs =
           createRowSet( createRowMeta( new ValueMetaString( "vals" ) ), row( "aa" ), row( "abc" ), row( "bb" ),
@@ -239,6 +241,117 @@ public class ExcelWriterFullTest {
         assertEquals( constraint.getValidationType(), ValidationType.TEXT_LENGTH );
         assertEquals( constraint.getOperator(), OperatorType.EQUAL );
         assertEquals( constraint.getFormula1(), "2" );
+      }
+
+    } finally {
+      removeDir( outDir );
+    }
+  }
+
+  @Test
+  public void testCreateFolder() throws Exception {
+    Path outDir = Files.createTempDirectory( ExcelWriterFullTest.class.getSimpleName() );
+    try {
+      ExcelWriterStepMeta meta = new ExcelWriterStepMeta();
+      meta.setDefault();
+
+      meta.setSheetname( "Sheet1" );
+      meta.setMakeSheetActive( true );
+      meta.setHeaderEnabled( false );
+
+      meta.setStreamingData( true );
+      String outFile = outDir.resolve( "out/there/test_output" ).toString();
+      meta.setFileName( outFile );
+      meta.setExtension( "xlsx" );
+
+      meta.setStartingCell( "A1" );
+
+      meta.setCreateParentFolders( true );
+
+      RowSet inputs =
+          createRowSet( createRowMeta( new ValueMetaString( "str1" ), new ValueMetaInteger( "int2" ),
+            new ValueMetaInteger( "int3" ) ), row( "a", 1L, 1L ), row( "b", 2L, 2L ), row( "c", 3L, 3L ) );
+      runStep( meta, inputs, 3 );
+
+      File writtenFile = new File( outFile + ".xlsx" );
+      assertTrue( writtenFile.exists() );
+
+    } finally {
+      removeDir( outDir.resolve( "out/there" ) );
+      removeDir( outDir.resolve( "out" ) );
+      removeDir( outDir );
+    }
+  }
+
+  @Test
+  public void testNullsBlank() throws Exception {
+    Path outDir = Files.createTempDirectory( ExcelWriterFullTest.class.getSimpleName() );
+    try {
+      ExcelWriterStepMeta meta = new ExcelWriterStepMeta();
+      meta.setDefault();
+
+      meta.setSheetname( "Sheet1" );
+      meta.setMakeSheetActive( true );
+      meta.setHeaderEnabled( false );
+
+      meta.setStreamingData( true );
+      String outFile = outDir.resolve( "test_output" ).toString();
+      meta.setFileName( outFile );
+      meta.setExtension( "xlsx" );
+
+      meta.setStartingCell( "A1" );
+
+      meta.setRetainNullValues( true );
+
+      RowSet inputs =
+          createRowSet( createRowMeta( new ValueMetaString( "str1" ), new ValueMetaString( "int2" ),
+            new ValueMetaInteger( "int3" ) ), row( "a", null, 1L ), row( "b", "not null", null ), row( "c", null, 3L ) );
+      runStep( meta, inputs, 3 );
+
+      try ( InputStream in = KettleVFS.getInputStream( outFile + ".xlsx" ); XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
+        XSSFSheet sheet1 = wb.getSheetAt( 0 );
+        assertEquals( CellType.BLANK, getCell( sheet1, "B1" ).getCellType() );
+        assertEquals( CellType.BLANK, getCell( sheet1, "C2" ).getCellType() );
+      }
+
+    } finally {
+      removeDir( outDir );
+    }
+  }
+
+  @Test
+  public void testNullsEmptyStr() throws Exception {
+    Path outDir = Files.createTempDirectory( ExcelWriterFullTest.class.getSimpleName() );
+    try {
+      ExcelWriterStepMeta meta = new ExcelWriterStepMeta();
+      meta.setDefault();
+
+      meta.setSheetname( "Sheet1" );
+      meta.setMakeSheetActive( true );
+      meta.setHeaderEnabled( false );
+
+      meta.setStreamingData( true );
+      String outFile = outDir.resolve( "test_output" ).toString();
+      meta.setFileName( outFile );
+      meta.setExtension( "xlsx" );
+
+      meta.setStartingCell( "A1" );
+
+      meta.setRetainNullValues( false );
+
+      RowSet inputs =
+          createRowSet( createRowMeta( new ValueMetaString( "str1" ), new ValueMetaString( "str2" ),
+            new ValueMetaInteger( "int3" ) ), row( "a", null, 1L ), row( "b", "not null", null ), row( "c", null, 3L ) );
+      runStep( meta, inputs, 3 );
+
+      try ( InputStream in = KettleVFS.getInputStream( outFile + ".xlsx" ); XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
+        XSSFSheet sheet1 = wb.getSheetAt( 0 );
+        Cell b1 = getCell( sheet1, "B1" );
+        assertEquals( CellType.STRING, b1.getCellType() );
+        assertEquals( "", b1.getStringCellValue() );
+        Cell c2 = getCell( sheet1, "C2" );
+        assertEquals( CellType.STRING, c2.getCellType() );
+        assertEquals( "", c2.getStringCellValue() );
       }
 
     } finally {
@@ -266,7 +379,8 @@ public class ExcelWriterFullTest {
     step.dispose( meta, data );
     if ( rowCount < expectedCalls ) {
       long errors = step.getErrors();
-      throw new AssertionFailedError( String.format( "%d calls expected, but got %d (there were %d errors)", expectedCalls, rowCount, errors ) );
+      throw new AssertionFailedError(
+          String.format( "%d calls expected, but got %d (there were %d errors)", expectedCalls, rowCount, errors ) );
     }
   }
 

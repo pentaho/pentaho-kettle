@@ -104,6 +104,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
   private CCombo wExtension;
 
+  private Button wCreateParentFolder;
+
   private Button wStreamData;
 
   private Button wAddStepnr;
@@ -169,6 +171,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
   private FormData fdlDateTimeFormat, fdDateTimeFormat;
 
   private Button wAutoSize;
+
+  private Button wRetainNullValues;
 
   private Group wTemplateGroup;
   private FormData fdTemplateGroup;
@@ -843,6 +847,11 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     wExtension.setLayoutData( fd().left( middle, 0 ).right( wbFilename, -margin ).top( lastWidget, margin ).result() );
     lastWidget = wExtension;
 
+    Label wlCreateParentFolder = createLabel( fileGroup, "ExcelWriterDialog.CreateParentFolder.Label" );
+    wCreateParentFolder = new Button( fileGroup, SWT.CHECK );
+    wCreateParentFolder.addSelectionListener( lsSel );
+    lastWidget = layoutLabelControlPair( wlCreateParentFolder, wCreateParentFolder, lastWidget );
+
     Label wlStreamData = createLabel( fileGroup, "ExcelWriterDialog.StreamData.Label" );
     wStreamData = new Button( fileGroup, SWT.CHECK );
     wStreamData.addSelectionListener( lsSel );
@@ -1347,6 +1356,12 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     lastWidget = layoutLabelControlPair( wlAutoSize, wAutoSize, lastWidget );
     wAutoSize.addSelectionListener( lsSel );
 
+    Label wlRetainNullValues = createLabel( wContentGroup, "ExcelWriterDialog.NullIsBlank.Label" );
+    wRetainNullValues = new Button( wContentGroup, SWT.CHECK );
+    wRetainNullValues.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.NullIsBlank.Tooltip" ) );
+    wRetainNullValues.addSelectionListener( lsSel );
+    lastWidget = layoutLabelControlPair( wlRetainNullValues, wRetainNullValues, lastWidget );
+
     // force formula recalculation?
     Label wlForceFormulaRecalculation = createLabel(wContentGroup, "ExcelWriterDialog.ForceFormulaRecalculation.Label" );
     wForceFormulaRecalculation = new Button( wContentGroup, SWT.CHECK );
@@ -1479,7 +1494,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
       }
 
     }
-
+    wCreateParentFolder.setSelection( input.isCreateParentFolders() );
     wStreamData.setSelection( input.isStreamingData() );
     wSplitEvery.setText( "" + input.getSplitEvery() );
     wEmptyRows.setText( "" + input.getAppendEmpty() );
@@ -1599,6 +1614,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
   private void getInfo( ExcelWriterStepMeta tfoi ) {
     tfoi.setFileName( wFilename.getText() );
+    tfoi.setCreateParentFolders( wCreateParentFolder.getSelection() );
     tfoi.setStreamingData( wStreamData.getSelection() );
     tfoi.setDoNotOpenNewFileInit( wDoNotOpenNewFileInit.getSelection() );
     tfoi.setAppendOmitHeader( wOmitHeader.getSelection() );
