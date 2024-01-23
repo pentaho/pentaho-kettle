@@ -41,6 +41,9 @@ public class EncryptUtils {
 
   /**
    * A transformer for encrypting and decrypting, which can throw a checked exception.
+   * <p>
+   * The ability to throw a checked exception is important to be able to support other existing encoders/decoders.
+   * See, for example, {@code org.pentaho.platform.api.util.IPasswordService}.
    */
   @FunctionalInterface
   public interface Transformer<E extends Exception> {
