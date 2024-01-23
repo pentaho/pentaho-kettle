@@ -160,7 +160,7 @@ jobGroups:
   1250:
      - jobID           :  revenera-validator
        scmUrl          :  https://github.com/pentaho/pentaho-license-validator-revenera.git
-       directives      :  -Plinux_64
+       directives      :  += -Plinux_64
 
   1300:
      - jobID           :  database-gwt
