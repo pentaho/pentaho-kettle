@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 - 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,37 +39,58 @@ public class EncryptUtils {
   private static final String SET_PREFIX = "set";
   private static final String GET_PREFIX = "get";
 
+  /**
+   * A transformer for encrypting and decrypting, which can throw a checked exception.
+   * <p>
+   * The ability to throw a checked exception is important to be able to support other existing encoders/decoders.
+   * See, for example, {@code org.pentaho.platform.api.util.IPasswordService}.
+   */
+  @FunctionalInterface
+  public interface Transformer<E extends Exception> {
+    /**
+     * Transforms a given string.
+     *
+     * @param value The value to transform.
+     * @return The transformed value.
+     */
+    String transform( String value ) throws E;
+  }
+
   private EncryptUtils() {
 
   }
 
   public static void encryptFields( Object object ) {
-    List<Field> fields = getFields( object );
-    fields.forEach( field -> {
-      String value = getValue( object, field );
-      if ( value != null ) {
-        String encrypted = Encr.encryptPasswordIfNotUsingVariables( value );
-        setValue( object, field, encrypted );
-      }
-    } );
+    transformFields( object, Encr::encryptPasswordIfNotUsingVariables );
   }
 
   public static void decryptFields( Object connectionDetails ) {
-    List<Field> fields = getFields( connectionDetails );
-    fields.forEach( field -> {
-      String value = getValue( connectionDetails, field );
+    transformFields( connectionDetails, Encr::decryptPasswordOptionallyEncrypted );
+  }
+
+  /**
+   * Transforms the values of the fields of an object which are marked with the
+   * {@link Encrypted} annotation.
+   *
+   * @param object      The object whose fields to transform.
+   * @param transformer The transformer function.
+   */
+  public static <E extends Exception> void transformFields( Object object, Transformer<E> transformer ) throws E {
+    List<Field> fields = getFields( object );
+    for ( Field field : fields ) {
+      String value = getValue( object, field );
       if ( value != null ) {
-        String decrypted = Encr.decryptPasswordOptionallyEncrypted( value );
-        setValue( connectionDetails, field, decrypted );
+        String transformed = transformer.transform( value );
+        setValue( object, field, transformed );
       }
-    } );
+    }
   }
 
   private static List<Field> getFields( Object connectionDetails ) {
     List<Field> fields = new ArrayList<>();
     for ( Field field : connectionDetails.getClass().getDeclaredFields() ) {
       Annotation annotation = Arrays.stream( field.getAnnotations() ).filter(
-        annotation1 -> annotation1 instanceof Encrypted ).findAny().orElse( null );
+        Encrypted.class::isInstance ).findAny().orElse( null );
       if ( annotation != null ) {
         fields.add( field );
       }
@@ -91,14 +112,9 @@ public class EncryptUtils {
     try {
       Method getMethod =
         object.getClass().getMethod( GET_PREFIX + StringUtils.capitalize( field.getName() ) );
-      if ( getMethod != null ) {
-        return (String) getMethod.invoke( object );
-      } else {
-        return null;
-      }
+      return (String) getMethod.invoke( object );
     } catch ( NoSuchMethodException | IllegalAccessException | InvocationTargetException e ) {
       return null;
     }
   }
-
 }
