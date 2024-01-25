@@ -22,6 +22,7 @@
 
 package org.pentaho.di.connections.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
@@ -56,8 +57,24 @@ public class ConnectionDetailsUtils {
     MetaStoreFactory<T> metaStoreFactory =
       new MetaStoreFactory<>( (Class<T>) instance.getClass(), metaStore, NAMESPACE );
 
+    String originalName = instance.getName();
+
+    // Meta-store requires a name to save and load.
+    boolean hasBlankName = StringUtils.isBlank( originalName );
+    if ( hasBlankName ) {
+      instance.setName( "NAME" );
+    }
+
     metaStoreFactory.saveElement( instance );
 
-    return metaStoreFactory.loadElement( instance.getName() );
+    T clone = metaStoreFactory.loadElement( instance.getName() );
+
+    if ( hasBlankName ) {
+      // Restore previous blank state.
+      instance.setName( originalName );
+      clone.setName( originalName );
+    }
+
+    return clone;
   }
 }
