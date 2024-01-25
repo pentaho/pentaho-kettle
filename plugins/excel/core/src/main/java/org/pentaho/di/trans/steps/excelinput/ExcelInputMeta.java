@@ -77,7 +77,7 @@ import org.pentaho.di.core.annotations.Step;
         description = "BaseStep.TypeTooltipDesc.ExcelInput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
         image = "XLI.svg",
-        documentationUrl = "Products/Microsoft_Excel_Input",
+        documentationUrl = "mk-95pdia003/pdi-transformation-steps/microsoft-excel-input",
         i18nPackageName = "org.pentaho.di.trans.steps.excelinput" )
 @InjectionSupported( localizationPrefix = "ExcelInput.Injection.", groups = { "FIELDS", "SHEETS", "FILENAME_LINES" } )
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {

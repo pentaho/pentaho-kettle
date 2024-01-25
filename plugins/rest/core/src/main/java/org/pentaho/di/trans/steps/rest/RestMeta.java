@@ -60,7 +60,7 @@ import java.util.List;
  *
  */
 @Step( id = "Rest", image = "REST.svg", i18nPackageName = "org.pentaho.di.trans.step.Rest",
-  documentationUrl = "Products/REST_Client", name = "Rest.name",
+  documentationUrl = "mk-95pdia003/pdi-transformation-steps/rest-client", name = "Rest.name",
   description = "Rest.description", categoryDescription = "Rest.category" )
 public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!

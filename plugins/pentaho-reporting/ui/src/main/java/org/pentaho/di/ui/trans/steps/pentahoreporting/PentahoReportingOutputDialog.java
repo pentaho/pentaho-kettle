@@ -74,7 +74,7 @@ import org.pentaho.reporting.engine.classic.core.parameters.ReportParameterDefin
 
 @PluginDialog( id = "PentahoReportingOutput", image = "JFR.svg",
         pluginType = PluginDialog.PluginType.STEP,
-        documentationUrl = "Products/Pentaho_Reporting_Output" )
+        documentationUrl = "mk-95pdia003/pdi-transformation-steps/pentaho-reporting-output" )
 public class PentahoReportingOutputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = PentahoReportingOutput.class; // for i18n purposes, needed by Translator2!!
 
