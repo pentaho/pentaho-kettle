@@ -70,7 +70,7 @@ import org.pentaho.di.core.annotations.Step;
         description = "BaseStep.TypeTooltipDesc.ExcelOutput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
         image = "XLO.svg",
-        documentationUrl = "Products/Microsoft_Excel_Output",
+        documentationUrl = "mk-95pdia003/pdi-transformation-steps/microsoft-excel-output",
         i18nPackageName = "org.pentaho.di.trans.steps.exceloutput" )
 @InjectionSupported( localizationPrefix = "ExcelOutput.Injection.", groups = { "FIELDS", "CUSTOM", "CONTENT" } )
 public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {

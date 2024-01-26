@@ -71,7 +71,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.core.annotations.PluginDialog;
 
 @PluginDialog( id = "MondrianInput", image = "MON.svg", pluginType = PluginDialog.PluginType.STEP,
-        documentationUrl = "Products/Mondrian_Input" )
+        documentationUrl = "mk-95pdia003/pdi-transformation-steps/mondrian-input" )
 public class MondrianInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MondrianInputMeta.class; // for i18n purposes, needed by Translator2!!
 

@@ -85,7 +85,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.core.annotations.PluginDialog;
 @PluginDialog( id = "TypeExitExcelWriterStep", image = "XWS.svg", pluginType = PluginDialog.PluginType.STEP,
-        documentationUrl = "Products/Microsoft_Excel_Writer" +
+        documentationUrl = "mk-95pdia003/pdi-transformation-steps/microsoft-excel-writer" +
                 "" )
 public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ExcelWriterStepMeta.class; // for i18n

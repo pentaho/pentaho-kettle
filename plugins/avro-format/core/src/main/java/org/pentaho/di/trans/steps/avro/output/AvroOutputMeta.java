@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepMeta;
 
 @Step( id = "AvroOutput", image = "AO.svg", name = "AvroOutput.Name", description = "AvroOutput.Description",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.BigData",
-    documentationUrl = "Products/Avro_Output",
+    documentationUrl = "mk-95pdia003/pdi-transformation-steps/avro-output",
     i18nPackageName = "org.pentaho.di.trans.steps.avro.output" )
 @InjectionSupported( localizationPrefix = "AvroOutput.Injection.", groups = { "FIELDS" } )
 public class AvroOutputMeta extends AvroOutputMetaBase {

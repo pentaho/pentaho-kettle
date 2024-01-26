@@ -70,7 +70,7 @@ import static org.pentaho.dictionary.DictionaryConst.NODE_TYPE_EXTERNAL_CONNECTI
   name = "JmsProducer.TypeLongDesc",
   description = "JmsProducer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
-  documentationUrl = "Products/JMS_Producer" )
+  documentationUrl = "mk-95pdia003/pdi-transformation-steps/jms-producer" )
 @Metaverse.CategoryMap ( entity = JMS_DESTINATION_METAVERSE, category = CATEGORY_MESSAGE_QUEUE )
 @Metaverse.CategoryMap ( entity = JMS_SERVER_METAVERSE, category = CATEGORY_DATASOURCE )
 @Metaverse.EntityLink ( entity = JMS_SERVER_METAVERSE, link = LINK_PARENT_CONCEPT, parentEntity =
