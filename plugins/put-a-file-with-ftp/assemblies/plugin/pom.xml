@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>put-a-file-with-ftp-assemblies</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-229</version>
   </parent>
 
 
   <artifactId>put-a-file-with-ftp-plugins</artifactId>
-  <version>10.1.0.0-SNAPSHOT</version>
+  <version>10.1.0.0-229</version>
   <packaging>pom</packaging>
 
   <name>PDI Put a File With FTP Plugins Distribution</name>
