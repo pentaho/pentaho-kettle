@@ -74,6 +74,7 @@ ee:
         - pentaho-streaming-kafka-plugin-zip-${platform.version}-dist.zip
         - elasticsearch-rest-plugin-${platform.version}-dist.zip
         - kafka-job-plugins-${platform.version}-dist.zip
+        - pdi-ga4-plugin-${platform.version}-dist.zip
     server:
         - pentaho-server-ee-${platform.version}-dist.zip
         - pentaho-server-manual-ee-${platform.version}-dist.zip
