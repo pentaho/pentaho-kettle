@@ -1,5 +1,5 @@
 // This is the master top-level pipeline that triggers both the build pipeline and the downstream triggered jobs
-library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20231220-1'}", changelog: false)
+library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: 'file-utils-verbose'}", changelog: false)
 
 String buildJobName =  'suite-release'
 Map suiteParameters
