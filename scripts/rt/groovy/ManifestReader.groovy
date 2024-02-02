@@ -1,3 +1,4 @@
+@GrabResolver(name='pentaho', root='https://${PENTAHO_JFROG_SA_USERNAME}:${PENTAHO_JFROG_SA_TOKEN}@one.hitachivantara.com/artifactory/pnt-mvn', m2Compatible='true')
 @Grapes([
   @Grab(group = 'org.yaml', module = 'snakeyaml', version = '1.26')
 ])

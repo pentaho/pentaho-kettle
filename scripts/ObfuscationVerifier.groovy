@@ -1,3 +1,4 @@
+@GrabResolver(name='pentaho', root='https://${PENTAHO_JFROG_SA_USERNAME}:${PENTAHO_JFROG_SA_TOKEN}@one.hitachivantara.com/artifactory/pnt-mvn', m2Compatible='true')
 @Grab(group='org.bitbucket.mstrobel', module='procyon-compilertools', version='0.5.32')
 import com.strobel.decompiler.Decompiler
 import com.strobel.decompiler.DecompilerSettings
