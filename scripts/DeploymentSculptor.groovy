@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-@GrabResolver(name='pentaho', root='https://${PENTAHO_JFROG_SA_USERNAME}:${PENTAHO_JFROG_SA_TOKEN}@one.hitachivantara.com/artifactory/pnt-mvn', m2Compatible='true')
+@GrabResolver(name='pentaho', root='https://one.hitachivantara.com/artifactory/pnt-mvn', m2Compatible='true')
 @Grab('org.yaml:snakeyaml:1.18')
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.DumperOptions
