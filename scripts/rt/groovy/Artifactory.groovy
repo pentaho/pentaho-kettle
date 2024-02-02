@@ -1,5 +1,6 @@
+@GrabResolver(name='pentaho', root='https://${PENTAHO_JFROG_SA_USERNAME}:${PENTAHO_JFROG_SA_TOKEN}@one.hitachivantara.com/artifactory/pnt-mvn', m2Compatible='true')
 @Grapes([
-  @Grab(group = 'org.jfrog.buildinfo', module = 'build-info-api', version = '2.17.1'),
+  @Grab(group = 'org.jfrog.buildinfo', module = 'build-info-api', version = '2.39.8'),
   @Grab(group = 'com.squareup.okhttp3', module = 'okhttp', version = '4.4.1')
 ])
 
