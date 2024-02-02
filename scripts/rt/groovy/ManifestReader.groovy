@@ -1,4 +1,4 @@
-@GrabResolver(name='pentaho', root='https://one.hitachivantara.com/artifactory/pnt-mvn', m2Compatible='true')
+@GrabResolver(name='pentaho', root='https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn', m2Compatible='true')
 @Grapes([
   @Grab(group = 'org.yaml', module = 'snakeyaml', version = '1.26')
 ])
