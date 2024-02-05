@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
+import java.util.Optional;
+
 public class ExcelWriterStepData extends BaseStepData implements StepDataInterface {
 
   public RowMetaInterface outputRowMeta;
@@ -42,6 +44,8 @@ public class ExcelWriterStepData extends BaseStepData implements StepDataInterfa
   public int posX;
   public int posY;
   public Sheet sheet;
+  /** the inner template, if streaming */
+  public Optional<Sheet> innerSheet = Optional.empty();
   public Workbook wb;
   public int[] fieldnrs;
   public RowMetaInterface inputRowMeta;
