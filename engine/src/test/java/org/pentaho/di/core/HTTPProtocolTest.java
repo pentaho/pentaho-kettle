@@ -56,7 +56,7 @@ public class HTTPProtocolTest {
 
   public static final String HELLO_WORLD = "Hello world!";
   @ClassRule
-  public static WireMockClassRule wireMockRule = new WireMockClassRule( 55555 );
+  public static WireMockClassRule wireMockRule = new WireMockClassRule( 55554 );
 
   @Rule
   public WireMockClassRule instanceRule = wireMockRule;
@@ -68,7 +68,7 @@ public class HTTPProtocolTest {
         .withHeader( "Content-Type", "text/plain" )
         .withBody( HELLO_WORLD ) ) );
     HTTPProtocol httpProtocol = new HTTPProtocol();
-    assertEquals( HELLO_WORLD, httpProtocol.get( "http://localhost:55555/some/thing", "", "" ) );
+    assertEquals( HELLO_WORLD, httpProtocol.get( "http://localhost:55554/some/thing", "", "" ) );
   }
 
   @Test
