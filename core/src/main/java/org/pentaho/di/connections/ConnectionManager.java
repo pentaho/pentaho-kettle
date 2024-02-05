@@ -379,7 +379,10 @@ public class ConnectionManager {
     List<ConnectionProvider<? extends ConnectionDetails>> providers =
       Collections.list( connectionProviders.elements() );
     for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-      detailNames.addAll( getNames( metaStore, provider ) );
+      List<String> names = getNames( metaStore, provider );
+      if ( names != null) {
+        detailNames.addAll( names );
+      }
     }
     return detailNames;
   }
@@ -438,7 +441,10 @@ public class ConnectionManager {
         connectionProvider -> clazz.isAssignableFrom( connectionProvider.getClass() )
       ).collect( Collectors.toList() );
     for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-      detailNames.addAll( getNames( provider ) );
+      List<String> names = getNames( provider );
+      if ( names != null) {
+        detailNames.addAll( names );
+      }
     }
     return detailNames;
   }
@@ -455,7 +461,10 @@ public class ConnectionManager {
       Collections.list( connectionProviders.elements() ).stream()
         .filter( connectionProvider -> connectionProvider.getKey().equals( key ) ).collect( Collectors.toList() );
     for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-      detailNames.addAll( getNames( provider ) );
+      List<String> names = getNames( provider );
+      if ( names != null) {
+        detailNames.addAll( names );
+      }
     }
     return detailNames;
   }

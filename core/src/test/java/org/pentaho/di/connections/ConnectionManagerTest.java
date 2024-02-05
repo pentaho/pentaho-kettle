@@ -182,6 +182,22 @@ public class ConnectionManagerTest {
   }
 
   @Test
+  public void testGetNamesByTypeEmpty() {
+    addProvider();
+
+    List<String> names = connectionManager.getNamesByType( ConnectionProvider.class );
+    Assert.assertEquals( 0, names.size() );
+  }
+
+  @Test
+  public void testGetNamesByKeyEmpty() {
+    addProvider();
+
+    List<String> names = connectionManager.getNamesByKey( "not there" );
+    Assert.assertEquals( 0, names.size() );
+  }
+
+  @Test
   public void testCreateConnectionDetails() {
     addProvider();
     Assert.assertNotNull( connectionManager.createConnectionDetails( TestConnectionProvider.SCHEME ) );
