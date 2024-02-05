@@ -27,6 +27,10 @@ node('non-master') {
           job.trigger(buildJobName, suiteParameters)
         }
 
+        stage('Archive') {
+          job.trigger('archive-all', suiteParameters)
+        }
+
         stage('Deployment') {
           stage('Construct Hosted') {
             parallel(
