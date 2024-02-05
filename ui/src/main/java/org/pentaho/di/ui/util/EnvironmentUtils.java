@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 - 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017 - 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.ui.util;
 
+import com.cronutils.utils.VisibleForTesting;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
@@ -35,18 +36,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EnvironmentUtils {
+  private static final EnvironmentUtils instance = new EnvironmentUtils();
 
-  private static final EnvironmentUtils ENVIRONMENT_UTILS = new EnvironmentUtils( );
-  private static final Pattern MSIE_PATTERN = Pattern.compile( "MSIE (\\d+)" );
-  private static final Pattern SAFARI_PATTERN = Pattern.compile( "AppleWebKit\\/(\\d+)" );
+  private static final Pattern EDGE_PATTERN = Pattern.compile( "Edge?/(\\d+)" );
+  private static final Pattern SAFARI_PATTERN = Pattern.compile( "AppleWebKit/(\\d+)" );
+
   private static final String SUPPORTED_DISTRIBUTION_NAME = "ubuntu";
   public static final String UBUNTU_BROWSER = "Midori";
   public static final String MAC_BROWSER = "Safari";
-  public static final String WINDOWS_BROWSER = "MSIE";
+  public static final String WINDOWS_BROWSER = "Edge";
   private final LogChannelInterface log = new LogChannel( this );
 
-  public static EnvironmentUtils getInstance( ) {
-    return ENVIRONMENT_UTILS;
+  @VisibleForTesting
+  EnvironmentUtils() {}
+
+  public static EnvironmentUtils getInstance() {
+    return instance;
   }
 
   /**
@@ -55,19 +60,28 @@ public class EnvironmentUtils {
    * @return 'true' if in a unSupported browser environment 'false' otherwise.
    */
   public synchronized boolean isUnsupportedBrowserEnvironment() {
-    if ( getEnvironmentName().contains( "linux" ) ) {
+    String environment = getEnvironmentName();
+    if ( environment.contains( "linux" ) ) {
       return false;
     }
+
     final String userAgent = getUserAgent();
     if ( userAgent == null ) {
       return true;
     }
-    return checkUserAgent( MSIE_PATTERN.matcher( userAgent ), getSupportedVersion( "min.windows.browser.supported" )  )
-      || checkUserAgent( SAFARI_PATTERN.matcher( userAgent ), getSupportedVersion( "min.mac.browser.supported" )  );
+
+    if ( environment.contains( "windows" ) ) {
+      Matcher edgeMatcher = EDGE_PATTERN.matcher( userAgent );
+      int edgeMinVersion = getSupportedVersion( "min.windows.browser.supported" );
+
+      return !edgeMatcher.find() || checkUserAgent( edgeMatcher, edgeMinVersion );
+    }
+
+    return checkUserAgent( SAFARI_PATTERN.matcher( userAgent ), getSupportedVersion( "min.mac.browser.supported" ) );
   }
 
   private boolean checkUserAgent( Matcher matcher, int version ) {
-    return  ( matcher.find() && Integer.parseInt( matcher.group( 1 ) ) < version );
+    return matcher.find() && Integer.parseInt( matcher.group( 1 ) ) < version;
   }
 
   /**
@@ -75,16 +89,20 @@ public class EnvironmentUtils {
    *
    * @return a string that contains the user agent of the browser.
    */
-  protected String getUserAgent() {
+  @VisibleForTesting
+  String getUserAgent() {
     Browser browser;
+
     try {
-      browser = new Browser(  new Shell(), SWT.NONE );
+      browser = new Browser( new Shell(), SWT.NONE );
     } catch ( SWTError e ) {
       log.logError( "Could not open a browser", e );
       return  "";
     }
+
     String userAgent = browser.evaluate( "return window.navigator.userAgent;" ).toString();
     browser.close();
+
     return userAgent;
   }
 
@@ -96,7 +114,8 @@ public class EnvironmentUtils {
   public synchronized boolean isWebkitUnavailable() {
     String path = getWebkitPath();
     String osName = getEnvironmentName();
-    return  ( path == null || path.length() < 1 || !path.contains( "webkit" ) ) && osName.contains( SUPPORTED_DISTRIBUTION_NAME );
+
+    return  ( path == null || !path.contains("webkit") ) && osName.contains( SUPPORTED_DISTRIBUTION_NAME );
   }
 
   /**
@@ -104,7 +123,8 @@ public class EnvironmentUtils {
    *
    * @return a string that contains the path or 'null' if not found.
    */
-  protected String getWebkitPath() {
+  @VisibleForTesting
+  String getWebkitPath() {
     return System.getenv( "LIBWEBKITGTK" );
   }
 
@@ -118,10 +138,12 @@ public class EnvironmentUtils {
     if ( osName.contentEquals( "linux" ) ) {
       return osName + " " + getLinuxDistribution().toLowerCase();
     }
+
     return osName;
   }
 
-  protected String getOsName() {
+  @VisibleForTesting
+  String getOsName() {
     return System.getProperty( "os.name" ).toLowerCase();
   }
 
@@ -131,7 +153,8 @@ public class EnvironmentUtils {
    * @param property a string with the required property.
    * @return the value of the requiredProperty.
    */
-  protected int getSupportedVersion( String property ) {
+  @VisibleForTesting
+  int getSupportedVersion( String property ) {
     return PropsUI.getInstance().getSupportedVersion( property );
   }
 
@@ -147,17 +170,19 @@ public class EnvironmentUtils {
   /**
    * Ask for the running linux distribution.
    *
-   * @return a string that contains the distribution name or a empty string if it could not find the name.
+   * @return a string that contains the distribution name or an empty string if it could not find the name.
    */
   private String getLinuxDistribution() {
-    Process p = null;
+    Process command;
+
     try {
-      p = ExecuteCommand( "lsb_release -d" );
+      command = executeLSBCommand();
     } catch ( IOException e ) {
       log.logError( "Could not execute command", e );
       return "";
     }
-    BufferedReader in = getBufferedReaderFromProcess( p );
+
+    BufferedReader in = getBufferedReaderFromProcess( command );
     try {
       return in.readLine();
     } catch ( IOException e ) {
@@ -166,12 +191,14 @@ public class EnvironmentUtils {
     }
   }
 
-  protected Process ExecuteCommand( String command ) throws IOException {
-    return Runtime.getRuntime().exec( command );
+  @VisibleForTesting
+  Process executeLSBCommand() throws IOException {
+    return Runtime.getRuntime().exec( "lsb_release -d" );
   }
 
-  protected BufferedReader getBufferedReaderFromProcess( Process p ) {
-    return new BufferedReader( new InputStreamReader( p.getInputStream() ) );
+  @VisibleForTesting
+  BufferedReader getBufferedReaderFromProcess( Process process ) {
+    return new BufferedReader( new InputStreamReader( process.getInputStream() ) );
   }
 
   /**
@@ -184,14 +211,16 @@ public class EnvironmentUtils {
     if ( userAgent == null ) {
       return "";
     }
-    if ( userAgent.contains( WINDOWS_BROWSER ) ) {
+
+    String edgeUserAgent = WINDOWS_BROWSER.substring( 0, 3 ); // Edg
+    if ( userAgent.contains( edgeUserAgent ) ) {
       return  WINDOWS_BROWSER;
     } else if ( userAgent.contains( UBUNTU_BROWSER ) ) {
       return  UBUNTU_BROWSER;
     } else if ( userAgent.contains( MAC_BROWSER ) ) {
       return MAC_BROWSER;
     }
+
     return "";
   }
-
 }

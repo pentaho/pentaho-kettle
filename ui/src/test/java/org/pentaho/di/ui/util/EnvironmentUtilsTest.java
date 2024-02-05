@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020 - 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.ui.util.EnvironmentUtils.MAC_BROWSER;
+import static org.pentaho.di.ui.util.EnvironmentUtils.UBUNTU_BROWSER;
+import static org.pentaho.di.ui.util.EnvironmentUtils.WINDOWS_BROWSER;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import java.io.BufferedReader;
@@ -34,63 +38,94 @@ import java.io.IOException;
 public class EnvironmentUtilsTest {
 
   @Test
-  public void isUnSupportedBrowserEnvironmentTest( ) {
+  public void testIsUnSupportedBrowserEnvironment_ubuntu() {
     EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU );
     assertTrue( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
+
     mock = new EnvironmentUtilsMock( Case.UBUNTU_WRONG );
     assertFalse( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
-    mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
+  }
+
+  @Test
+  public void testIsUnSupportedBrowserEnvironment_windows() {
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.WINDOWS );
     assertFalse( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
-    mock = new EnvironmentUtilsMock( Case.WINDOWS );
-    assertFalse( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
-    mock = new EnvironmentUtilsMock( Case.MACOS_X_WRONG );
-    assertTrue( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
+
     mock = new EnvironmentUtilsMock( Case.WINDOWS_WRONG );
     assertTrue( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
   }
 
   @Test
-  public void isWebkitUnavailableTest( ) {
+  public void testIsUnSupportedBrowserEnvironment_mac() {
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
+    assertFalse( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
+
+    mock = new EnvironmentUtilsMock( Case.MAC_OS_X_WRONG );
+    assertTrue( mock.getMockedInstance().isUnsupportedBrowserEnvironment() );
+  }
+
+  @Test
+  public void testIsWebkitUnavailable_ubuntu() {
     EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU );
     assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
-    mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
-    assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
-    mock = new EnvironmentUtilsMock( Case.WINDOWS );
-    assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
+
     mock = new EnvironmentUtilsMock( Case.UBUNTU_WRONG );
     assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
   }
 
   @Test
-  public void getBrowserName( ) {
+  public void testIsWebkitUnavailable_mac() {
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
+    assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
+  }
+
+  @Test
+  public void testIsWebkitUnavailable_windows() {
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.WINDOWS );
+    assertFalse( mock.getMockedInstance().isWebkitUnavailable() );
+  }
+
+  @Test
+  public void testGetBrowserName_ubuntu() {
     EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.UBUNTU );
-    assertEquals( mock.getMockedInstance().getBrowserName(), "Midori" );
-    mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
-    assertEquals( mock.getMockedInstance().getBrowserName(), "Safari" );
-    mock = new EnvironmentUtilsMock( Case.MACOS_X_WRONG );
-    assertEquals( mock.getMockedInstance().getBrowserName(), "Safari" );
-    mock = new EnvironmentUtilsMock( Case.WINDOWS );
-    assertEquals( mock.getMockedInstance().getBrowserName(), "MSIE" );
+    assertEquals( UBUNTU_BROWSER, mock.getMockedInstance().getBrowserName() );
+  }
+
+  @Test
+  public void testGetBrowserName_mac() {
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.MAC_OS_X );
+    assertEquals( MAC_BROWSER, mock.getMockedInstance().getBrowserName() );
+
+    mock = new EnvironmentUtilsMock( Case.MAC_OS_X_WRONG );
+    assertEquals( MAC_BROWSER, mock.getMockedInstance().getBrowserName() );
+  }
+
+  @Test
+  public void testGetBrowserName_windows() {
+    EnvironmentUtilsMock mock = new EnvironmentUtilsMock( Case.WINDOWS );
+    assertEquals( WINDOWS_BROWSER, mock.getMockedInstance().getBrowserName() );
+
     mock = new EnvironmentUtilsMock( Case.WINDOWS_WRONG );
-    assertEquals( mock.getMockedInstance().getBrowserName(), "MSIE" );
+    assertEquals("", mock.getMockedInstance().getBrowserName() );
   }
 
   class EnvironmentUtilsMock extends EnvironmentUtils {
-
-    private Case option;
+    private final Case option;
     private static final String WEBKIT_PATH = "/path/mock/webkit";
     private static final String MAC_OS_X_NAME = "mac os x";
     private static final String UBUNTU_NAME = "ubuntu";
     private static final String UBUNTU_WRONG_NAME = "linux";
     private static final String WINDOWS_NAME = "windows";
-    private static final String IE_10_AGENT = "Mozilla/4.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/5.0)";
+
     private static final String MIDORI_AGENT = "Mozilla/5.0 (X11; Linux) AppleWebKit/538.15 ("
       + "KHTML, like Gecko) Chrome/46.0.2490.86 Safari/538.15 Midori/0.5";
     private static final String SAFARI_7_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 "
       + "(KHTML, like Gecko) Version/7.0.3 Safari/7046A194A";
-    private static final String IE_11_AGENT = "Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0;  rv:11.0) like Gecko";
     private static final String SAFARI_9_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.75.14 "
-      + "(KHTML, like Gecko) Version/9.3.2 Safari/537.75.14";
+            + "(KHTML, like Gecko) Version/9.3.2 Safari/537.75.14";
+    private static final String IE_11_AGENT = "Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0;  rv:11.0) like Gecko";
+    private static final String EDGE_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            + "(KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.2277.98";
 
     public EnvironmentUtilsMock( Case option ) {
       this.option = option;
@@ -101,7 +136,7 @@ public class EnvironmentUtilsTest {
     }
 
     @Override
-    protected String getWebkitPath() {
+    String getWebkitPath() {
       switch ( option ) {
         case UBUNTU:
           return WEBKIT_PATH;
@@ -113,14 +148,14 @@ public class EnvironmentUtilsTest {
     }
 
     @Override
-    protected String getOsName() {
+    String getOsName() {
       switch ( option ) {
         case UBUNTU_WRONG:
           return UBUNTU_WRONG_NAME;
         case UBUNTU:
           return UBUNTU_NAME;
         case MAC_OS_X:
-        case MACOS_X_WRONG:
+        case MAC_OS_X_WRONG:
           return MAC_OS_X_NAME;
         case WINDOWS:
         case WINDOWS_WRONG:
@@ -131,40 +166,41 @@ public class EnvironmentUtilsTest {
     }
 
     @Override
-    protected String getUserAgent() {
+    String getUserAgent() {
       switch ( option ) {
         case UBUNTU:
           return MIDORI_AGENT;
         case MAC_OS_X:
           return SAFARI_9_AGENT;
-        case MACOS_X_WRONG:
+        case MAC_OS_X_WRONG:
           return SAFARI_7_AGENT;
         case WINDOWS:
-          return IE_11_AGENT;
+          return EDGE_AGENT;
         case WINDOWS_WRONG:
-          return IE_10_AGENT;
+          return IE_11_AGENT;
         default:
           return null;
       }
     }
 
     @Override
-    protected int getSupportedVersion( String property ) {
+    int getSupportedVersion( String property ) {
       if ( property.contains( "min.mac.browser.supported" ) ) {
         return 601;
       } else if ( property.contains( "min.windows.browser.supported" ) ) {
-        return 11;
+        return 116;
       }
+
       return 0;
     }
 
     @Override
-    protected Process ExecuteCommand( String command ) throws IOException {
+    Process executeLSBCommand() {
       return Mockito.mock( Process.class );
     }
 
     @Override
-    protected BufferedReader getBufferedReaderFromProcess( Process p ) {
+    BufferedReader getBufferedReaderFromProcess( Process p ) {
       BufferedReader bufferedReader = Mockito.mock( BufferedReader.class );
       try {
         switch ( option ) {
@@ -186,7 +222,7 @@ public class EnvironmentUtilsTest {
   }
 
   enum Case {
-    UBUNTU, UBUNTU_WRONG, MAC_OS_X, MACOS_X_WRONG, WINDOWS, WINDOWS_WRONG
+    UBUNTU, UBUNTU_WRONG, MAC_OS_X, MAC_OS_X_WRONG, WINDOWS, WINDOWS_WRONG
   }
 
 }
