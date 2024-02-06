@@ -31,13 +31,13 @@ buildProperties:
   # Version based control properties
   RUN_STAGE_VERSION                : ${RUN_STAGE_BUILD}
   VERSION_MERGER_LOG_LEVEL         : WARN
-  RELEASE_VERSION                  : 10.1.0.0
-  DEPLOYMENT_FOLDER                : 10.1-QAT
+  RELEASE_VERSION                  : 10.2.0.0
+  DEPLOYMENT_FOLDER                : 10.2-QAT
   RELEASE_MODE                     : true
   DEFAULT_BRANCH                   : master
-  SUITE_BUILD_RESOURCES_BRANCH     : 10.1.0.0
-  SERVICEPACK_BRANCH               : 10.1
-  JENKINS_FOLDER_NAME              : '10.1'
+  SUITE_BUILD_RESOURCES_BRANCH     : 10.2.0.0
+  SERVICEPACK_BRANCH               : 10.2
+  JENKINS_FOLDER_NAME              : '10.2'
 
   JOB_ITEM_DEFAULTS:
     dockerImage : jenkins-build/maven/open-jdk/11
