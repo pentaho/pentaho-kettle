@@ -68,10 +68,11 @@ import org.pentaho.di.core.annotations.Step;
  */
 @Step( id = "ExcelOutput", name = "BaseStep.TypeLongDesc.ExcelOutput",
         description = "BaseStep.TypeTooltipDesc.ExcelOutput",
-        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
-        image = "XLO.svg",
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
+        image = "ui/images/deprecated.svg",
         documentationUrl = "mk-95pdia003/pdi-transformation-steps/microsoft-excel-output",
-        i18nPackageName = "org.pentaho.di.trans.steps.exceloutput" )
+        i18nPackageName = "org.pentaho.di.trans.steps.exceloutput",
+        suggestion = "ExcelOutput.Suggestion" )
 @InjectionSupported( localizationPrefix = "ExcelOutput.Injection.", groups = { "FIELDS", "CUSTOM", "CONTENT" } )
 public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!
