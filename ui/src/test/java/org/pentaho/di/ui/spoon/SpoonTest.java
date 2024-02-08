@@ -782,6 +782,7 @@ public class SpoonTest {
     doReturn( saveXMLFile ).when( spoon ).save( metaData, filename, false );
 
     doReturn( fileType ).when( metaData ).getFileType();
+	doReturn( mockRepository ).when( spoon ).getRepository();
   }
 
   @Test
