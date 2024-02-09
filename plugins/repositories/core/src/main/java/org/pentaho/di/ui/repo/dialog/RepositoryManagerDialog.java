@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -281,15 +281,15 @@ public class RepositoryManagerDialog extends Dialog {
             case "PentahoEnterpriseRepository":
               return Stream.of(
                 new RepositoryInfo( pi, new PentahoEnterpriseRepoFormComposite( stackComposite, SWT.NONE ) ) );
-            // Commented out per Jira Case BACKLOG-36707. If the File Repository option is needed again, just uncomment
-            // the next 3 lines.
-            // case "KettleFileRepository":
-            // return Stream.of(
-            // new RepositoryInfo( pi, new KettleFileRepoFormComposite( stackComposite, SWT.NONE ) ) );
-            case "KettleDatabaseRepository":
+            case "KettleFileRepository":
               return Stream.of(
-                new RepositoryInfo( pi, new KettleDatabaseRepoFormComposite( stackComposite, SWT.NONE ) {
-                } ) );
+                new RepositoryInfo( pi, new KettleFileRepoFormComposite( stackComposite, SWT.NONE ) ) );
+            // Commented out per Jira Case BACKLOG-39876. If the Database Repository option is needed again, just uncomment
+            // the next 4 lines.
+            // case "KettleDatabaseRepository":
+            //  return Stream.of(
+            //    new RepositoryInfo( pi, new KettleDatabaseRepoFormComposite( stackComposite, SWT.NONE ) {
+            //    } ) );
             default:
               return Stream.empty();
           }
