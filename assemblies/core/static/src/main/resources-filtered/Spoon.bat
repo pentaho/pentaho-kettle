@@ -22,7 +22,7 @@ REM limitations under the License.
 REM
 REM *****************************************************************************
 
-setlocal 
+setlocal
 
 cd /D %~dp0
 
@@ -158,6 +158,9 @@ REM ******************************************************************
 if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xms1024m" "-Xmx2048m"
 
 set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin" %JAVA_ENDORSED_DIRS% %JAVA_LOCALE_COMPAT% "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
+
+REM Force SWT to use Edge instead of Internet Explorer (not supported by Pentaho anymore)
+set OPT=%OPT% "-Dorg.eclipse.swt.browser.DefaultType=edge"
 
 REM ***************
 REM ** Run...    **
