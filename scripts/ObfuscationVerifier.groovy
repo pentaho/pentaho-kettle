@@ -1,5 +1,5 @@
 @GrabResolver(name='pentaho', root='https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn', m2Compatible='true')
-@Grab(group='org.bitbucket.mstrobel', module='procyon-compilertools', version='0.5.32')
+@Grab(group='org.bitbucket.mstrobel', module='procyon-compilertools', version='0.6.0')
 import com.strobel.decompiler.Decompiler
 import com.strobel.decompiler.DecompilerSettings
 import com.strobel.decompiler.PlainTextOutput
