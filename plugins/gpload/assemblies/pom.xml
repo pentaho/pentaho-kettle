@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>gpload</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.0-18</version>
   </parent>
 
   <artifactId>gpload-assemblies</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.2.0.0-18</version>
   <packaging>pom</packaging>
 
   <name>PDI GPLoad Plugin Assemblies</name>
