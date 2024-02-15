@@ -753,7 +753,7 @@ See sample "Merge rows - mergs 2 streams of data and add a flag"</note>
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>value</name>
+        <name>val</name>
         <type>String</type>
         <format/>
         <currency/>
