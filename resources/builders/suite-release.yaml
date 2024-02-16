@@ -820,6 +820,7 @@ jobGroups:
                             script {
                               echo sh(script: 'env | sort', returnStdout: true)
                               echo sh(script: 'pwd', returnStdout: true)
+                              env.ENVIRONMENT="QAT"
                             }
                             withCredentials([string(credentialsId: '${SCM_API_TOKEN_CREDENTIALS_ID}', variable: 'GITHUB_TOKEN')]) {
                               def script2Run = """\
@@ -832,7 +833,7 @@ jobGroups:
                                   https://api.github.com/repos/pentaho/pentaho-container-images-ee/actions/workflows/build-all-products.yaml/dispatches \
                                   -d '{ "ref":"${DEFAULT_BRANCH}", \
                                         "inputs":{ \
-                                          "qat_triggered":"true", \
+                                          "environment":"${env.ENVIRONMENT}", \
                                           "pentaho_release_version":"${RELEASE_VERSION}", \
                                           "pentaho_build_number":"${RELEASE_BUILD_NUMBER}", \
                                           "docker_private_push_repo":"${DOCKER_PRIVATE_PUSH_REPO}", \

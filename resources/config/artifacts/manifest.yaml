@@ -85,6 +85,25 @@ ee:
         - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}-dist.zip
         - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}-dist.zip
+    container-images:
+        - pdi-carte-ee-aws-${platform.version}.tar.gz
+        - pdi-carte-ee-bigdata-aws-${platform.version}.tar.gz
+        - pdi-cli-ee-aws-${platform.version}.tar.gz
+        - pdi-cli-ee-bigdata-aws-${platform.version}.tar.gz
+        - pdi-server-ee-aws-${platform.version}.tar.gz
+        - platform-server-ee-aws-${platform.version}.tar.gz
+        - pdi-carte-ee-azure-${platform.version}.tar.gz
+        - pdi-carte-ee-bigdata-azure-${platform.version}.tar.gz
+        - pdi-cli-ee-azure-${platform.version}.tar.gz
+        - pdi-cli-ee-bigdata-azure-${platform.version}.tar.gz
+        - pdi-server-ee-azure-${platform.version}.tar.gz
+        - platform-server-ee-azure-${platform.version}.tar.gz
+        - pdi-carte-ee-gcp-${platform.version}.tar.gz
+        - pdi-carte-ee-bigdata-gcp-${platform.version}.tar.gz
+        - pdi-cli-ee-gcp-${platform.version}.tar.gz
+        - pdi-cli-ee-bigdata-gcp-${platform.version}.tar.gz
+        - pdi-server-ee-gcp-${platform.version}.tar.gz
+        - platform-server-ee-gcp-${platform.version}.tar.gz
     upgrade:
         - PentahoServer-UP-${platform.version}-Linux.zip
         - PentahoServer-UP-${platform.version}-Mac.zip
