@@ -821,11 +821,11 @@ jobGroups:
                               echo sh(script: 'env | sort', returnStdout: true)
                               echo sh(script: 'pwd', returnStdout: true)
                               echo sh(script: 'echo "DEPLOYMENT_FOLDER: ${DEPLOYMENT_FOLDER}"', returnStdout: true)
-                              if [[ ${DEPLOYMENT_FOLDER} = *'QAT'* ]]; then
+                              if ( "${DEPLOYMENT_FOLDER".contains("QAT") {
                                 env.ENVIRONMENT="QAT"
-                              else
+                              } else {
                                 env.ENVIRONMENT="RELEASE"
-                              fi
+                              }
                             }
                             withCredentials([string(credentialsId: '${SCM_API_TOKEN_CREDENTIALS_ID}', variable: 'GITHUB_TOKEN')]) {
                               def script2Run = """\
