@@ -821,7 +821,7 @@ jobGroups:
                               echo sh(script: 'env | sort', returnStdout: true)
                               echo sh(script: 'pwd', returnStdout: true)
                               echo sh(script: 'echo "DEPLOYMENT_FOLDER: ${DEPLOYMENT_FOLDER}"', returnStdout: true)
-                              if ( "${DEPLOYMENT_FOLDER".contains("QAT") {
+                              if ( "${DEPLOYMENT_FOLDER}".contains("QAT") {
                                 env.ENVIRONMENT="QAT"
                               } else {
                                 env.ENVIRONMENT="RELEASE"
