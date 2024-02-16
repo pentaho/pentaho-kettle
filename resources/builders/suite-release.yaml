@@ -826,7 +826,6 @@ jobGroups:
                               else
                                 env.ENVIRONMENT="RELEASE"
                               fi
-                              echo sh(script: 'echo "ENVIRONMENT: ${env.ENVIRONMENT}"', returnStdout: true)
                             }
                             withCredentials([string(credentialsId: '${SCM_API_TOKEN_CREDENTIALS_ID}', variable: 'GITHUB_TOKEN')]) {
                               def script2Run = """\
