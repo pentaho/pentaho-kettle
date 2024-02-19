@@ -50,7 +50,6 @@
     <pdi-sap-plugin.version>10.2.0.0-SNAPSHOT</pdi-sap-plugin.version>
     <jms-streaming-plugin.version>${project.version}</jms-streaming-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
-    <pentaho-cassandra-plugin.version>10.2.0.0-SNAPSHOT</pentaho-cassandra-plugin.version>
     <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
     <pdi-platform-utils-plugin.version>10.2.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
     <vertica-bulkloader-plugin.version>10.2.0.0-SNAPSHOT</vertica-bulkloader-plugin.version>
@@ -484,18 +483,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>kettle-sap-plugin</artifactId>
       <version>${pdi-sap-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>pentaho-cassandra-plugin-package</artifactId>
-      <version>${pentaho-cassandra-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
