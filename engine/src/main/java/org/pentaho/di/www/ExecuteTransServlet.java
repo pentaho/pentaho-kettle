@@ -23,15 +23,14 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
@@ -51,7 +50,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransAdapter;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -69,6 +67,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
   private static final String PASS = "pass";
   private static final String TRANS = "trans";
   private static final String LEVEL = "level";
+  private static final String XML_REQUEST_BODY = "Xml request body";
 
   public static final String CONTEXT_PATH = "/kettle/executeTrans";
 
@@ -226,135 +225,28 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     }
 
     if ( log.isDebug() ) {
-      logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransRequested" ) );
+      logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransGetCallRequested" ) );
     }
 
     // Options taken from PAN
     //
-    String[] knownOptions = new String[] { REP, USER, PASS, TRANS, LEVEL };
-
     String repOption = request.getParameter( REP );
     String userOption = request.getParameter( USER );
     String passOption = Encr.decryptPasswordOptionallyEncrypted( request.getParameter( PASS ) );
     String transOption = request.getParameter( TRANS );
-    String levelOption = request.getParameter( LEVEL );
 
     response.setStatus( HttpServletResponse.SC_OK );
-
-    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
-      response.setCharacterEncoding( encoding );
-      response.setContentType( "text/html; charset=" + encoding );
-    }
-
-    PrintWriter out = response.getWriter();
-
     if ( transOption == null ) {
-      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-              PKG, "ExecuteTransServlet.Error.MissingMandatoryParameter", TRANS ) ) );
+      sendBadRequest(response, TRANS);
       return;
     }
 
     try {
-
       final Repository repository = openRepository( repOption, userOption, passOption );
       final TransMeta transMeta = loadTransformation( repository, transOption );
-
-      // Set the servlet parameters as variables in the transformation
-      //
-      String[] parameters = transMeta.listParameters();
-      Enumeration<?> parameterNames = request.getParameterNames();
-      while ( parameterNames.hasMoreElements() ) {
-        String parameter = (String) parameterNames.nextElement();
-        String[] values = request.getParameterValues( parameter );
-
-        // Ignore the known options. set the rest as variables
-        //
-        if ( Const.indexOfString( parameter, knownOptions ) < 0 ) {
-          // If it's a trans parameter, set it, otherwise simply set the variable
-          //
-          if ( Const.indexOfString( parameter, parameters ) < 0 ) {
-            transMeta.setVariable( parameter, values[0] );
-          } else {
-            transMeta.setParameterValue( parameter, values[0] );
-          }
-        }
-      }
-
-      TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
-      LogLevel logLevel = LogLevel.getLogLevelForCode( levelOption );
-      transExecutionConfiguration.setLogLevel( logLevel );
-      TransConfiguration transConfiguration = new TransConfiguration( transMeta, transExecutionConfiguration );
-
-      String carteObjectId = UUID.randomUUID().toString();
-      SimpleLoggingObject servletLoggingObject =
-        new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
-      servletLoggingObject.setContainerObjectId( carteObjectId );
-      servletLoggingObject.setLogLevel( logLevel );
-
-      // Create the transformation and store in the list...
-      //
-      final Trans trans = new Trans( transMeta, servletLoggingObject );
-
-      trans.setRepository( repository );
-      trans.setSocketRepository( getSocketRepository() );
-
-      getTransformationMap().addTransformation( transMeta.getName(), carteObjectId, trans, transConfiguration );
-      trans.setContainerObjectId( carteObjectId );
-
-      if ( repository != null ) {
-        // The repository connection is open: make sure we disconnect from the repository once we
-        // are done with this transformation.
-        //
-        trans.addTransListener( new TransAdapter() {
-          @Override public void transFinished( Trans trans ) {
-            repository.disconnect();
-          }
-        } );
-      }
-
-      // Pass the servlet print writer to the transformation...
-      //
-      trans.setServletPrintWriter( out );
-      trans.setServletReponse( response );
-      trans.setServletRequest( request );
-
-      try {
-        // Execute the transformation...
-        //
-        executeTrans( trans );
-        String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
-        if ( trans.isFinishedOrStopped() && trans.getErrors() > 0 ) {
-          response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
-          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-            PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ) ) );
-        }
-        out.flush();
-      } catch ( Exception executionException ) {
-        String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
-        throw new KettleException( BaseMessages.getString( PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ), executionException );
-      }
+      executeTransformation( transMeta , request , response);
     } catch ( Exception ex ) {
-      // When we get to this point KettleAuthenticationException has already been wrapped in an Execution Exception
-      // and that in a KettleException
-      Throwable kettleExceptionCause = ex.getCause();
-      if ( kettleExceptionCause != null && kettleExceptionCause instanceof ExecutionException ) {
-        Throwable executionExceptionCause = kettleExceptionCause.getCause();
-        if ( executionExceptionCause != null && executionExceptionCause instanceof KettleAuthenticationException ) {
-          response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
-          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-                  PKG, "ExecuteTransServlet.Error.Authentication", getContextPath() ) ) );
-        }
-      } else if ( ex.getMessage().contains( UNABLE_TO_FIND_TRANS ) ) {
-        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-                PKG, "ExecuteTransServlet.Error.UnableToFindTransformation", transOption ) ) );
-      } else {
-        response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-          PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
-      }
+      handleExecuteTransError( ex , response , transOption );
     }
   }
 
@@ -432,6 +324,131 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
   public String getContextPath() {
     return CONTEXT_PATH;
+  }
+
+  protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+          IOException {
+    if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
+      return;
+    }
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransPostCallRequested" ) );
+    }
+    response.setStatus( HttpServletResponse.SC_OK );
+    InputStream requestInputStream = request.getInputStream();
+    if (  requestInputStream == null) {
+      sendBadRequest(response, XML_REQUEST_BODY);
+      return;
+    }
+    TransMeta transMeta = null;
+    try {
+      transMeta = new TransMeta(requestInputStream,null,true,null,null);
+      executeTransformation( transMeta, request, response);
+    } catch ( Exception ex ) {
+      handleExecuteTransError(ex,response,transMeta.getFilename());
+    }
+  }
+
+  private  void sendBadRequest(HttpServletResponse response,  String parameterName) throws IOException {
+    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    PrintWriter out = response.getWriter();
+    out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "ExecuteTransServlet.Error.MissingMandatoryParameter", parameterName)));
+  }
+
+  private void handleExecuteTransError(Exception ex, HttpServletResponse response, String transName) throws IOException {
+    PrintWriter out = response.getWriter();
+    // When we get to this point KettleAuthenticationException has already been wrapped in an Execution Exception
+    // and that in a KettleException
+    Throwable kettleExceptionCause = ex.getCause();
+    if (kettleExceptionCause instanceof ExecutionException) {
+      Throwable executionExceptionCause = kettleExceptionCause.getCause();
+      if (executionExceptionCause instanceof KettleAuthenticationException) {
+        response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+                PKG, "ExecuteTransServlet.Error.Authentication", getContextPath() ) ) );
+      }
+    } else if ( ex.getMessage().contains( UNABLE_TO_FIND_TRANS ) ) {
+      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+              PKG, "ExecuteTransServlet.Error.UnableToFindTransformation", transName ) ) );
+    } else {
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+              PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+    }
+  }
+
+  void executeTransformation(TransMeta transMeta, HttpServletRequest request, HttpServletResponse response) throws KettleException, IOException {
+    PrintWriter out = response.getWriter();
+
+    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
+      response.setCharacterEncoding( encoding );
+      response.setContentType( "text/html; charset=" + encoding );
+    }
+    String[] knownOptions = new String[] { REP, USER, PASS, TRANS, LEVEL };
+    // Options taken from PAN
+    String levelOption = request.getParameter( LEVEL );
+    // Set the servlet parameters as variables in the transformation
+    //
+    String[] parameters = transMeta.listParameters();
+    Enumeration<?> parameterNames = request.getParameterNames();
+    while ( parameterNames.hasMoreElements() ) {
+      String parameter = (String) parameterNames.nextElement();
+      String[] values = request.getParameterValues( parameter );
+
+      // Ignore the known options. set the rest as variables
+      //
+      if ( Const.indexOfString( parameter, knownOptions ) < 0 ) {
+        // If it's a trans parameter, set it, otherwise simply set the variable
+        //
+        if ( Const.indexOfString( parameter, parameters ) < 0 ) {
+          transMeta.setVariable( parameter, values[0] );
+        } else {
+          transMeta.setParameterValue( parameter, values[0] );
+        }
+      }
+    }
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+    LogLevel logLevel = LogLevel.getLogLevelForCode( levelOption );
+    transExecutionConfiguration.setLogLevel( logLevel );
+    TransConfiguration transConfiguration = new TransConfiguration( transMeta, transExecutionConfiguration );
+
+    String carteObjectId = UUID.randomUUID().toString();
+    SimpleLoggingObject servletLoggingObject =
+            new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+    servletLoggingObject.setContainerObjectId( carteObjectId );
+    servletLoggingObject.setLogLevel( logLevel );
+
+    // Create the transformation and store in the list...
+    //
+    final Trans trans = new Trans( transMeta, servletLoggingObject );
+
+    // trans.setRepository( repository );
+    trans.setSocketRepository( getSocketRepository() );
+
+    getTransformationMap().addTransformation( transMeta.getName(), carteObjectId, trans, transConfiguration );
+    trans.setContainerObjectId( carteObjectId );
+    trans.setServletPrintWriter( out );
+    trans.setServletReponse( response );
+    trans.setServletRequest( request );
+//
+    try {
+      // Execute the transformation...
+      //
+      executeTrans( trans );
+      String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
+      if ( trans.isFinishedOrStopped() && trans.getErrors() > 0 ) {
+        response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+                PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ) ) );
+      }
+      out.flush();
+    } catch ( Exception executionException ) {
+      String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
+      throw new KettleException( BaseMessages.getString( PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ), executionException );
+    }
   }
 
 }
