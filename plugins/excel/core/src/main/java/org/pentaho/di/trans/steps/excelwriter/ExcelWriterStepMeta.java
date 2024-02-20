@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.pentaho.di.core.annotations.Step;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -53,7 +56,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
@@ -87,6 +89,10 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   /** The file extension in case of a generated filename */
   @Injection( name = "EXTENSION" )
   private String extension;
+
+  /** if the parent folders should be created if they don't exist */
+  @Injection( name = "CREATE_PARENT_FOLDERS" )
+  private boolean createParentFolders;
 
   /** Do we need to stream data to handle very large files? */
   @Injection( name = "STREAM_XSLX_DATA" )
@@ -219,6 +225,12 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   @Injection( name = "OMIT_HEADER" )
   private boolean appendOmitHeader = false;
 
+  @Injection( name = "EXTEND_DATA_VALIDATION" )
+  private boolean extendDataValidationRanges = false;
+
+  @Injection( name = "RETAIN_NULL_VALUES" )
+  private boolean retainNullValues = true;
+
   // WHEN WRITING TO EXISTING SHEET GROUP END
 
   /* THE FIELD SPECIFICATIONS ... */
@@ -330,6 +342,14 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
    */
   public String getFileName() {
     return fileName;
+  }
+
+  public boolean isCreateParentFolders() {
+    return createParentFolders;
+  }
+
+  public void setCreateParentFolders( boolean value ) {
+    createParentFolders = value;
   }
 
   /**
@@ -621,6 +641,23 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     this.leaveExistingStylesUnchanged = leaveExistingStylesUnchanged;
   }
 
+  public boolean isExtendDataValidationRanges() {
+    return extendDataValidationRanges;
+  }
+
+  public void setExtendDataValidationRanges( boolean value ) {
+    extendDataValidationRanges = value;
+  }
+
+
+  public boolean isRetainNullValues() {
+    return retainNullValues;
+  }
+
+  public void setRetainNullValues( boolean value ) {
+    retainNullValues = value;
+  }
+
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
@@ -644,6 +681,13 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     return retval;
   }
 
+  /** node names for xml/repo save/load */
+  private static class Tags {
+    static final String CREATE_PARENT_FOLDER = "create_parent";
+    static final String EXTEND_DATA_VALIDATION = "extend_data_validation";
+    static final String RETAIN_NULL_VALUES = "retain_null_values";
+  }
+
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
 
@@ -662,6 +706,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       leaveExistingStylesUnchanged =
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "leaveExistingStylesUnchanged" ) );
 
+      extendDataValidationRanges = getBooleanValue( stepnode, Tags.EXTEND_DATA_VALIDATION, false );
+
       String addToResult = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
       if ( Utils.isEmpty( addToResult ) ) {
         addToResultFilenames = true;
@@ -669,8 +715,11 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         addToResultFilenames = "Y".equalsIgnoreCase( addToResult );
       }
 
+      Node fileNode = XMLHandler.getSubNode(stepnode, "file" );
+
       fileName = XMLHandler.getTagValue( stepnode, "file", "name" );
       extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
+      createParentFolders = getBooleanValue( fileNode, Tags.CREATE_PARENT_FOLDER, false );
 
       doNotOpenNewFileInit =
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
@@ -681,6 +730,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       date_time_format = XMLHandler.getTagValue( stepnode, "file", "date_time_format" );
 
       autosizecolums = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "autosizecolums" ) );
+      retainNullValues = getBooleanValue( fileNode, Tags.RETAIN_NULL_VALUES, true );
       streamingData = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "stream_data" ) );
       protectsheet = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "protect_sheet" ) );
       password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "file", "password" ) );
@@ -723,6 +773,11 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
+  }
+
+  private boolean getBooleanValue( Node node, String tag, boolean defaultValue ) {
+    String value = XMLHandler.getTagValue( node, tag );
+    return Optional.ofNullable( value ).filter( StringUtils::isNotBlank ).map( val -> "Y".equals( val ) ).orElse( defaultValue );
   }
 
   public String getNewLine( String fformat ) {
@@ -771,6 +826,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     appendOmitHeader = false;
     makeSheetActive = true;
     forceFormulaRecalculation = false;
+    retainNullValues = true;
 
     allocate( 0 );
 
@@ -871,12 +927,15 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       XMLHandler.addTagValue( "forceFormulaRecalculation", forceFormulaRecalculation ) );
     retval.append( "    " ).append(
       XMLHandler.addTagValue( "leaveExistingStylesUnchanged", leaveExistingStylesUnchanged ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( Tags.EXTEND_DATA_VALIDATION, extendDataValidationRanges ) );
     retval.append( "    " + XMLHandler.addTagValue( "appendLines", appendLines ) );
     retval.append( "    " + XMLHandler.addTagValue( "add_to_result_filenames", addToResultFilenames ) );
 
     retval.append( "    <file>" ).append( Const.CR );
     retval.append( "      " ).append( XMLHandler.addTagValue( "name", fileName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "extention", extension ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( Tags.CREATE_PARENT_FOLDER, createParentFolders ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "do_not_open_newfile_init", doNotOpenNewFileInit ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "split", stepNrInFilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_date", dateInFilename ) );
@@ -885,6 +944,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_format", date_time_format ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sheetname", sheetname ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "autosizecolums", autosizecolums ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( Tags.RETAIN_NULL_VALUES, retainNullValues ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "stream_data", streamingData ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "protect_sheet", protectsheet ) );
     retval.append( "      " ).append(
@@ -943,6 +1003,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       appendLines = rep.getStepAttributeBoolean( id_step, "appendLines" );
       forceFormulaRecalculation = rep.getStepAttributeBoolean( id_step, "forceFormulaRecalculation" );
       leaveExistingStylesUnchanged = rep.getStepAttributeBoolean( id_step, "leaveExistingStylesUnchanged" );
+      extendDataValidationRanges = rep.getStepAttributeBoolean( id_step, Tags.EXTEND_DATA_VALIDATION );
 
       String addToResult = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
       if ( Utils.isEmpty( addToResult ) ) {
@@ -953,6 +1014,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 
       fileName = rep.getStepAttributeString( id_step, "file_name" );
       extension = rep.getStepAttributeString( id_step, "file_extention" );
+      createParentFolders = rep.getStepAttributeBoolean( id_step, Tags.CREATE_PARENT_FOLDER );
 
       doNotOpenNewFileInit = rep.getStepAttributeBoolean( id_step, "do_not_open_newfile_init" );
 
@@ -964,6 +1026,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       date_time_format = rep.getStepAttributeString( id_step, "date_time_format" );
 
       autosizecolums = rep.getStepAttributeBoolean( id_step, "autosizecolums" );
+      retainNullValues = rep.getStepAttributeBoolean( id_step, 0, Tags.RETAIN_NULL_VALUES, true );
       streamingData = rep.getStepAttributeBoolean( id_step, "stream_data" );
       protectsheet = rep.getStepAttributeBoolean( id_step, "protect_sheet" );
       password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
@@ -1022,6 +1085,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       rep.saveStepAttribute( id_transformation, id_step, "forceFormulaRecalculation", forceFormulaRecalculation );
       rep.saveStepAttribute(
         id_transformation, id_step, "leaveExistingStylesUnchanged", leaveExistingStylesUnchanged );
+      rep.saveStepAttribute( id_transformation, id_step, Tags.EXTEND_DATA_VALIDATION, extendDataValidationRanges );
 
       rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );
       rep.saveStepAttribute( id_transformation, id_step, "file_split", splitEvery );
@@ -1032,6 +1096,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       rep.saveStepAttribute( id_transformation, id_step, "date_time_format", date_time_format );
 
       rep.saveStepAttribute( id_transformation, id_step, "autosizecolums", autosizecolums );
+      rep.saveStepAttribute( id_transformation, id_step, Tags.RETAIN_NULL_VALUES, retainNullValues );
       rep.saveStepAttribute( id_transformation, id_step, "stream_data", streamingData );
       rep.saveStepAttribute( id_transformation, id_step, "protect_sheet", protectsheet );
       rep.saveStepAttribute( id_transformation, id_step, "protected_by", protectedBy );

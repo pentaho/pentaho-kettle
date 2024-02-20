@@ -32,6 +32,7 @@ import java.util.UUID;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
@@ -55,7 +56,8 @@ public class ExcelWriterStepMetaTest {
       "appendLines", "add_to_result_filenames", "name", "extention", "do_not_open_newfile_init", "split", "add_date",
       "add_time", "SpecifyFormat", "date_time_format", "sheetname", "autosizecolums", "stream_data", "protect_sheet",
       "password", "protected_by", "splitevery", "if_file_exists", "if_sheet_exists", "enabled", "sheet_enabled",
-      "filename", "sheetname", "outputfields", "TemplateSheetHidden" );
+      "filename", "sheetname", "outputfields", "TemplateSheetHidden", "extend_data_validation", "retain_null_values",
+      "create_parent" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     getterMap.put( "header", "isHeaderEnabled" );
@@ -93,6 +95,9 @@ public class ExcelWriterStepMetaTest {
     getterMap.put( "filename", "getTemplateFileName" );
     getterMap.put( "sheetname", "getTemplateSheetName" );
     getterMap.put( "outputfields", "getOutputFields" );
+    getterMap.put( "extend_data_validation", "isExtendDataValidationRanges" );
+    getterMap.put( "retain_null_values", "isRetainNullValues" );
+    getterMap.put( "create_parent", "isCreateParentFolders" );
 
     Map<String, String> setterMap = new HashMap<String, String>();
     setterMap.put( "header", "setHeaderEnabled" );
@@ -130,6 +135,9 @@ public class ExcelWriterStepMetaTest {
     setterMap.put( "filename", "setTemplateFileName" );
     setterMap.put( "sheetname", "setTemplateSheetName" );
     setterMap.put( "outputfields", "setOutputFields" );
+    setterMap.put( "extend_data_validation", "setExtendDataValidationRanges" );
+    setterMap.put( "retain_null_values", "setRetainNullValues" );
+    setterMap.put( "create_parent", "setCreateParentFolders" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap =
       new HashMap<String, FieldLoadSaveValidator<?>>();

@@ -73,6 +73,9 @@ public class ExcelWriterStepMetadataInjectionTest extends BaseMetadataInjectionT
     check( "OFFSET_BY_ROWS", () -> meta.getAppendOffset() );
     check( "BEGIN_BY_WRITING_EMPTY_LINES", () -> meta.getAppendEmpty() );
     check( "OMIT_HEADER", () -> meta.isAppendOmitHeader() );
+    check( "EXTEND_DATA_VALIDATION" , () -> meta.isExtendDataValidationRanges() );
+    check( "CREATE_PARENT_FOLDERS" , () -> meta.isCreateParentFolders() );
+    check( "RETAIN_NULL_VALUES" , () -> meta.isRetainNullValues() );
 
     // Fields
     check( "NAME", () -> meta.getOutputFields()[0].getName() );
