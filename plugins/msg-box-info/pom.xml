@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.0-35</version>
   </parent>
 
   <artifactId>msg-box-info</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.2.0.0-35</version>
   <packaging>pom</packaging>
 
   <name>PDI Msg Box Info Plugin</name>
@@ -34,7 +34,7 @@
   </licenses>
 
   <properties>
-    <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>10.2.0.0-35</pdi.version>
   </properties>
 
   <dependencyManagement>
