@@ -1,0 +1,12 @@
+<table border="0">
+  <tr>
+    <td>|</td>
+    <td><a href="./latest">latest</a></td>
+    <td>|</td>
+  #foreach ($build in $builds )
+    <td><a href="javascript:changeBuild('$build')">$build</a></td>
+    <td>|</td>
+  #end
+  </tr>
+</table>
+<br>
