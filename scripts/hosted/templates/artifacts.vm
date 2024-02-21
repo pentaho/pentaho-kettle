@@ -1,0 +1,37 @@
+<div id="$version" class="build-item">
+    <table border="0">
+      <tr>
+        <th align="left">$buildHeaderInfo</th>
+        <th align="center" width=90>OS</th>
+        <th align="center" width=90>Size (MB)</th>
+        <th align="center" width=90>Checksums&nbsp;</th>
+        <th style="border-bottom: 0px;"></th>
+      </tr>
+
+    #foreach ($file in $files )
+      #set ($fileSize = $numberFormat.format( $file.size / 1024.00 / 1024.00) )
+      #set ($fileName = ${file.name})
+      #set ($fileName = $fileName.toString())
+      #set ($osName = "all")
+      #if ($fileName.contains(".mac.") || $fileName.contains("-mac") || $fileName.contains(".app."))
+        #set ($osName = "os x")
+      #elseif ($fileName.contains("-win") || $fileName.contains(".win.") )
+        #set ($osName = "windows")
+      #end
+      #if ($fileName.endsWith(".bin") && $osName != 'os x')
+        #set ($osName = "unix")
+      #elseif ($fileName.endsWith(".exe"))
+        #set ($osName = "windows")
+      #end
+
+      <tr>
+        <td align="left"><a href="${artifatoryURL}${file.path}/${file.name}" target="_new">${file.name}</a></td>
+        <td align="center">$osName</td>
+        <td align="right">$fileSize</td>
+        <td align="left">SHA1=<b>${file.actual_sha1}</b></td>
+        <td><a title="Copy to the Clipboard" href="javascript:navigator.clipboard.writeText('${file.actual_sha1}');">&#128203;</a></td>
+      </tr>
+    #end
+
+  </table>
+</div>
