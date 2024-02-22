@@ -646,7 +646,7 @@ jobGroups:
               usernameVariable: 'JF_USER', passwordVariable: 'JF_TOKEN')]) {
               def scriptToRun = """\
                 ${WORKSPACE}/scripts/hosted/hosted.groovy \
-                  --rtURL '${ARTIFACTORY_BASE_API_URL}' \
+                  --rtURL '${MAVEN_RESOLVE_REPO_URL}' \
                   --rtUsername '${JF_USER}' \
                   --rtPassword '${JF_TOKEN}' \
                   --buildHostingRoot ${BUILD_HOSTING_ROOT} \
