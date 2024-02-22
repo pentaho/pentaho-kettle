@@ -1,0 +1,35 @@
+name: (Re)Generate Hosted download page
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+
+
+env:
+
+
+jobs:
+  generate-hosted-page:
+    name: (Re)Generate Hosted download page
+    runs-on: k8s
+
+    container:
+      image: one.hitachivantara.com/docker/groovy-hosted
+      credentials:
+        username: ${{ secrets.PENTAHO_CICD_ONE_USER }}
+        password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
+      volumes:
+        - /home/runner/caches/pentaho/.m2:/root/.m2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      #- run: git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
+
+      - name: Generating Download Page
+        shell: bash
+        run: |
+          echo "something"
+
+  
