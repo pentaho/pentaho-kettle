@@ -27,7 +27,7 @@ class Artifactory {
 
   Artifactory(CLI cli) {
     this.cli = cli
-    this.baseUrl = HttpUrl.get(rtURL)
+    this.baseUrl = HttpUrl.get(rtURL.endsWith('/') ? rtURL.substring(0, rtURL.length() - 1) : rtURL)
     this.http = new OkHttpClient.Builder()
         .authenticator({ Route route, Response response ->
           if (response.request().header("Authorization") != null) {
@@ -88,6 +88,7 @@ class Artifactory {
   def aql(String query, MediaType type) {
     println(query)
     def url = baseUrl.newBuilder('api/search/aql').build()
+
     safeRequest(new Request.Builder().url(url)
         .post(RequestBody.create(query, type))
         .build()
@@ -95,11 +96,12 @@ class Artifactory {
   }
 
   def safeRequest(Request request) { return httpRequest(request, true) }
+
   def httpRequest(Request request, boolean safeCall = false) throws IOException {
     http.newCall(request).execute().withCloseable { Response response ->
       if (response.isSuccessful() || safeCall) {
         String body = response.body().string()
-        if (!response.isSuccessful()){
+        if (!response.isSuccessful()) {
           printError(body)
         }
         return body ? parser.parseText(body) : body
