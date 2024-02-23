@@ -1088,6 +1088,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       rep.saveStepAttribute( id_transformation, id_step, Tags.EXTEND_DATA_VALIDATION, extendDataValidationRanges );
 
       rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );
+      rep.saveStepAttribute( id_transformation, id_step, Tags.CREATE_PARENT_FOLDER, createParentFolders );
       rep.saveStepAttribute( id_transformation, id_step, "file_split", splitEvery );
       rep.saveStepAttribute( id_transformation, id_step, "file_add_stepnr", stepNrInFilename );
       rep.saveStepAttribute( id_transformation, id_step, "file_add_date", dateInFilename );
