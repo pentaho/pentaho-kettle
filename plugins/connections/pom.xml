@@ -25,7 +25,7 @@
     <dependency.karaf.version>3.0.3</dependency.karaf.version>
     <dependency.osgi.version>4.3.1</dependency.osgi.version>
     <version.for.license>${project.version}</version.for.license>
-    <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n,uirouter__core,uirouter__angularjs</js.project.list>
+    <js.project.list>prantlf__requirejs,requirejs-text,angular,require-css,angular-i18n,uirouter__core,uirouter__angularjs</js.project.list>
     <pentaho-osgi-bundles.version>10.2.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <cxf.karaf.version>3.0.13</cxf.karaf.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
