@@ -55,18 +55,45 @@ class Artifactory {
         .build()
   }
 
+  String getRepoAqlPart(List<String> inputRepoLst){
+    List<String> outReposLst = []
+    for (String repo : inputRepoLst) {
+      outReposLst.add('{"repo": {"\$match":"' + repo + '"}}')
+    }
+    return '"$or": [' << outReposLst.join(',') << ']'
+  }
+
+  String getRepoAql(){
+    List<String> releaseRepos = rtReleaseRepos?.split(',')*.trim() //  ['pntpub-maven-rc', 'pntpub-maven-release']
+    List<String> qatRepos = rtQatRepos?.split(',')*.trim() //['pntpub-maven-dev']
+
+    if (rtRepo in qatRepos) {
+      //repo = '"repo": {"\$match":"pntpub-maven-dev"}'
+      return getRepoAqlPart(qatRepos)
+    } else if (rtRepo in releaseRepos) {
+      //repo = '"$or": [ {"repo": {"\$match":"pntpub-maven-rc"}}, {"repo": {"\$match":"pntpub-maven-release"}}]'
+      return getRepoAqlPart(releaseRepos)
+    }
+    return ''
+  }
+
   List<Map> searchArtifacts(
       List<String> filenames,
       final String pathMatch,
       String pathNotMatch = null,
       String sortingDirection = "\$asc",
-      Integer limit = null
+      Integer limit = null,
+      Boolean processRepo = Boolean.FALSE
   ) {
+    String repo = ''
+    if (processRepo.booleanValue() && rtRepo) {
+      repo = getRepoAql()
+    }
 
-    String repo = ''//baseUrl.pathSegments().last()
     def sb = "" << "items.find({"
-    if (repo) sb << '"repo": "' << repo << '", '
-    sb << '"type": "file", "path": {"\$match":"*/' << pathMatch << '"},'
+    if (repo) sb << repo << ', '
+    sb << '"type": "file",'
+    if (pathMatch) sb << '"path": {"\$match":"*/' << pathMatch << '"},'
     if (pathNotMatch) sb << '"path": {"\$nmatch":"*/' << pathNotMatch << '"},'
     sb << '"$or": ['
     int lastIdx = filenames.size() - 1
@@ -86,7 +113,6 @@ class Artifactory {
   }
 
   def aql(String query, MediaType type) {
-    println(query)
     def url = baseUrl.newBuilder('api/search/aql').build()
 
     safeRequest(new Request.Builder().url(url)

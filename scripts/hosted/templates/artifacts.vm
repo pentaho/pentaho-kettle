@@ -25,7 +25,7 @@
       #end
 
       <tr>
-        <td align="left"><a href="${artifatoryURL}${file.path}/${file.name}" target="_new">${file.name}</a></td>
+        <td align="left"><a href="${artifactoryURL}${file.repo}/${file.path}/${file.name}" target="_new">${file.name}</a></td>
         <td align="center">$osName</td>
         <td align="right">$fileSize</td>
         <td align="left">SHA1=<b>${file.actual_sha1}</b></td>

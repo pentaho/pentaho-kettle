@@ -21,22 +21,29 @@
     }
 </style>
 <script>
-function changeBuild(pageName) {
-  // Hide all elements with class="tabcontent" by default */
-  var i, tabcontent;
-  tabcontent = document.getElementsByClassName("build-item");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
+  function changeBuild(pageName) {
+    // Hide all elements with class="tabcontent" by default */
+    var i, tabcontent;
+    tabcontent = document.getElementsByClassName("build-item");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+
+    // Show the specific tab content
+    document.getElementById(pageName).style.display = "block";
   }
 
-  // Show the specific tab content
-  document.getElementById(pageName).style.display = "block";
-}
+  window.onload=function(){
+    tabcontent = document.getElementsByClassName("build-item");
+    for (i = 0; i < tabcontent.length; i++) {
+      let displayValue="block"
+      if (i != 0) {
+         displayValue = "none";
+      }
+      tabcontent[i].style.display = displayValue;
+    }
+  };
 
-tabcontent = document.getElementsByClassName("build-item");
-  if (tabcontent[i] !== null) {
-    tabcontent[i].style.display = "block";
-  }
 </script>
 <pre style="font-size: 2px">
                  .::::.                                                                                              :--

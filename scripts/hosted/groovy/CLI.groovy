@@ -13,7 +13,10 @@ class Options {
   @Option(description = 'build specific deployment folder') String deploymentFolder
   @Option(description = 'release build number') String releaseBuildNumber
   @Option(description = 'release version') String releaseVersion
-  @Option(description = 'is a snapshot build?') Boolean isSnapshot
+  @Option(description = 'is a snapshot build?') String isSnapshot
+  @Option(description = 'artifactory repo') String rtRepo
+  @Option(description = 'artifactory release repos. Comma separated string') String rtReleaseRepos
+  @Option(description = 'artifactory QAT repos. Comma separated string') String rtQatRepos
 }
 
 class CLI {
