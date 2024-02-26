@@ -112,6 +112,23 @@ class Artifactory {
     aql?.results as List<Map> ?: []
   }
 
+  List<Map> addArtifactsSignedURLs(List<Map> results) {
+    return results.collect {
+      it.put('signedURL',
+          getArtifactSignedURL("${it.repo}/${it.path}/${it.name}"))
+      return it
+    }
+  }
+
+  String getArtifactSignedURL(final String filePath) {
+    def url = baseUrl.newBuilder('api/signed/url').build()
+    String data = '{ "repo_path": "' << filePath << '", "valid_for_secs":172800 }' //2 days
+    MediaType mediaType = MediaType.parse("application/json");
+    RequestBody body = RequestBody.create(data, mediaType);
+
+    httpRequest(new Request.Builder().url(url).post(body).build(), true, false)
+  }
+
   def aql(String query, MediaType type) {
     def url = baseUrl.newBuilder('api/search/aql').build()
 
@@ -123,14 +140,14 @@ class Artifactory {
 
   def safeRequest(Request request) { return httpRequest(request, true) }
 
-  def httpRequest(Request request, boolean safeCall = false) throws IOException {
+  def httpRequest(Request request, boolean safeCall = false, boolean jsonResponse = true) throws IOException {
     http.newCall(request).execute().withCloseable { Response response ->
       if (response.isSuccessful() || safeCall) {
         String body = response.body().string()
         if (!response.isSuccessful()) {
           printError(body)
         }
-        return body ? parser.parseText(body) : body
+        return body && jsonResponse ? parser.parseText(body) : body
       }
       throw new IOException("$response")
     }

@@ -24,8 +24,11 @@ class HostedArtifactsManager implements Serializable {
   @Delegate
   CLI cli
 
+  Artifactory artifactoryHandler
+
   HostedArtifactsManager(CLI cli) {
     this.cli = cli
+    this.artifactoryHandler = new Artifactory(cli)
   }
 
   /**
@@ -53,7 +56,6 @@ class HostedArtifactsManager implements Serializable {
 
     } else {
       Files.createDirectories(Paths.get(hostedRoot))
-      Artifactory artifactoryHandler = new Artifactory(cli)
 
       final String header = resolveTemplate("templates/header", [:], false)
       StringBuilder content = new StringBuilder(header)
@@ -63,14 +65,22 @@ class HostedArtifactsManager implements Serializable {
         String pathMatcher = "$releaseVersion-SNAPSHOT"
         List<String> fileNames = getArtifactsNames()
         if (fileNames) {
-          List<Map> artifactsMetadata = artifactoryHandler.searchArtifacts(fileNames, pathMatcher)
-          content.append(buildHtmlPortion(artifactsMetadata, pathMatcher, null))
+          List<Map> artifactsMetadata = this.artifactoryHandler.searchArtifacts(fileNames, pathMatcher)
+
+          content.append(buildHtmlPortion(artifactsMetadata, pathMatcher, null, {
+            artifactsMetadata = artifactsMetadata.collect {
+              String fileName = it.name as String
+              fileName = fileName.replaceAll("($releaseVersion-[\\d]+.[\\d]+-[\\d]+)", pathMatcher)
+              it.put("name", fileName)
+              return it
+            }
+          }))
         } else {
           println("No file names to search for")
         }
 
       } else {
-        List<Map> versionsData = artifactoryHandler
+        List<Map> versionsData = this.artifactoryHandler
             .searchArtifacts(
                 ["pentaho-parent-pom-${releaseVersion}-*.pom"],
                 "$releaseVersion-*",
@@ -105,9 +115,11 @@ class HostedArtifactsManager implements Serializable {
           for (Map build : relevantBuilds) {
             String pathMatcher = "$releaseVersion-$build.number"
             String createDate = "$build.created"
-            List<Map> artifactsMetadata = artifactoryHandler.searchArtifacts(getArtifactsNames("$build.number"), null)
+            List<Map> artifactsMetadata = this.artifactoryHandler.searchArtifacts(getArtifactsNames("$build.number"), null)
+
             if (artifactsMetadata?.size() > 0) {
               println("${artifactsMetadata.size()} artifacts found for version ${pathMatcher}")
+
               String htmlPortion = buildHtmlPortion(artifactsMetadata, pathMatcher, createDate)
               content.append(htmlPortion)
 
@@ -123,9 +135,13 @@ class HostedArtifactsManager implements Serializable {
 //                  writeFile("$hostedRoot/${file.name}.sum", "SHA1=${file.actual_sha1}")
 //                }
 
-                // creates the index in the 'latest' folder
-                writeFile("$hostedRoot/../latest/index.html", "$header $htmlPortion")
-
+                String versionFreeHtmlPortion = buildHtmlPortion(artifactsMetadata, pathMatcher, createDate, {
+                  artifactsMetadata = artifactsMetadata.collect {
+                    it.put("name", (it.name as String).replace("-$pathMatcher", ""))
+                    return it
+                  }
+                })
+                writeFile("$hostedRoot/../latest/new-layout/index.html", "$header $versionFreeHtmlPortion")
               }
 
             } else {
@@ -139,7 +155,7 @@ class HostedArtifactsManager implements Serializable {
       }
 
       // creates index at the main build folder
-      writeFile("${hostedRoot}/../index.html-new", content.toString())
+      writeFile("${hostedRoot}/../new-layout/index.html", content.toString())
       println("Index HTML page (re)generated at ${hostedRoot}/../")
     }
   }
@@ -155,11 +171,17 @@ class HostedArtifactsManager implements Serializable {
   String buildHtmlPortion(
       List<Map> artifactsMetadata,
       String version,
-      String createDate
+      String createDate,
+      Closure replaceDisplayLinkText = null
   ) {
 
     if (isSnapshotBuild()) {
       artifactsMetadata = getLatestArtifacts(artifactsMetadata)
+    }
+    artifactsMetadata = this.artifactoryHandler.addArtifactsSignedURLs(artifactsMetadata)
+
+    if (replaceDisplayLinkText != null) {
+      replaceDisplayLinkText.call()
     }
 
     return createHtmlPortion(artifactsMetadata, version, createDate)

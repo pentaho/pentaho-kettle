@@ -73,7 +73,7 @@ class ManifestReader {
 
   def filterFilenames(Set<String> strings) {
     def version = { prop, number ->
-      isSnapshot ?
+      Boolean.valueOf(isSnapshot as String).booleanValue() ?
           prop.replace('BUILDTAG', '*').replace('SNAPSHOT', '*') :
           prop.replace('BUILDTAG', number).replace(releaseBuildNumber, this.buildNbr)
     }.memoize()
