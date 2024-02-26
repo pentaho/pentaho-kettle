@@ -72,7 +72,11 @@ class ManifestReader {
   }
 
   def filterFilenames(Set<String> strings) {
-    def version = { prop, number -> isSnapshot ? prop.replace('BUILDTAG', '*').replace('SNAPSHOT', '*') : prop.replace('BUILDTAG', number).replace('SNAPSHOT', '*') }.memoize()
+    def version = { prop, number ->
+      isSnapshot ?
+          prop.replace('BUILDTAG', '*').replace('SNAPSHOT', '*') :
+          prop.replace('BUILDTAG', number).replace(releaseBuildNumber, this.buildNbr)
+    }.memoize()
     Set<String> miss = []
 
     strings*.replaceAll(/\$\{(.*?)}/) { m, k ->

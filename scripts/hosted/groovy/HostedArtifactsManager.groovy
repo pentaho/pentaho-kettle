@@ -76,7 +76,8 @@ class HostedArtifactsManager implements Serializable {
                 "$releaseVersion-*",
                 "$releaseVersion-SNAPSHOT",
                 "\$desc",
-                4
+                4,
+                true
             )
 
         if (!versionsData) {
@@ -104,8 +105,9 @@ class HostedArtifactsManager implements Serializable {
           for (Map build : relevantBuilds) {
             String pathMatcher = "$releaseVersion-$build.number"
             String createDate = "$build.created"
-            List<Map> artifactsMetadata = artifactoryHandler.searchArtifacts(getArtifactsNames("$build.number"), pathMatcher)
+            List<Map> artifactsMetadata = artifactoryHandler.searchArtifacts(getArtifactsNames("$build.number"), null)
             if (artifactsMetadata?.size() > 0) {
+              println("${artifactsMetadata.size()} artifacts found for version ${pathMatcher}")
               String htmlPortion = buildHtmlPortion(artifactsMetadata, pathMatcher, createDate)
               content.append(htmlPortion)
 
@@ -116,9 +118,10 @@ class HostedArtifactsManager implements Serializable {
               */
               if (isLatest) {
                 // creates the checksum files
-                for (Map file : artifactsMetadata) {
-                  writeFile("$hostedRoot/${file.name}.sum", "SHA1=${file.actual_sha1}")
-                }
+                //TODO uncomment sum files creation when going into production
+//                for (Map file : artifactsMetadata) {
+//                  writeFile("$hostedRoot/${file.name}.sum", "SHA1=${file.actual_sha1}")
+//                }
 
                 // creates the index in the 'latest' folder
                 writeFile("$hostedRoot/../latest/index.html", "$header $htmlPortion")
@@ -126,7 +129,7 @@ class HostedArtifactsManager implements Serializable {
               }
 
             } else {
-              println("No artifacts were found in Artifactory for build $buildNbr!")
+              println("No artifacts were found in Artifactory for build ${build.number}!")
             }
             isLatest = false
           }
@@ -136,7 +139,7 @@ class HostedArtifactsManager implements Serializable {
       }
 
       // creates index at the main build folder
-      writeFile("${hostedRoot}/../index.html", content.toString())
+      writeFile("${hostedRoot}/../index.html-new", content.toString())
       println("Index HTML page (re)generated at ${hostedRoot}/../")
     }
   }
@@ -177,7 +180,7 @@ class HostedArtifactsManager implements Serializable {
   }
 
   boolean isSnapshotBuild() {
-    return isSnapshot // set in CLI
+    return Boolean.valueOf(isSnapshot).booleanValue() // set in CLI
   }
 
   String createMenus(List<String> relevantBuildNbrs) {
@@ -202,7 +205,7 @@ class HostedArtifactsManager implements Serializable {
     Map bindings = [
         files          : artifactsMetadata,
         buildHeaderInfo: "Build ${version} | ${buildDateString}",
-        artifatoryURL  : rtURL.endsWith('/') ? rtURL : rtURL + '/',
+        artifactoryURL  : rtURL.endsWith('/') ? rtURL : rtURL + '/',
         numberFormat   : new DecimalFormat("###,##0.000"),
         version        : version
     ]
