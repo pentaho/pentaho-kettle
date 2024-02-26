@@ -22,7 +22,7 @@
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <eclipse.version>3.6.0</eclipse.version>
     <junit.version>4.11</junit.version>
-    <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
+    <js.project.list>prantlf__requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
   </properties>
 
   <dependencies>
