@@ -61,6 +61,8 @@ public class TextFileInputReader implements IBaseFileInputReader {
 
   protected long lineNumberInFile;
 
+  protected long linesWritten;
+
   public TextFileInputReader( IBaseFileInputStepControl step, TextFileInputMeta meta, TextFileInputData data,
       FileObject file, LogChannelInterface log ) throws Exception {
     this.step = step;
@@ -210,7 +212,7 @@ public class TextFileInputReader implements IBaseFileInputReader {
           // Read a normal line on a page of data.
           data.pageLinesRead++;
           lineInFile++;
-          long useNumber = meta.content.rowNumberByFile ? lineInFile : step.getLinesWritten() + 1;
+          long useNumber = meta.content.rowNumberByFile ? lineInFile : linesWritten + 1;
           r =
               TextFileInputUtils.convertLineToRow( log, textLine, meta, data.currentPassThruFieldsRow,
                   data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber,
@@ -299,7 +301,7 @@ public class TextFileInputReader implements IBaseFileInputReader {
           if ( data.filePlayList.isProcessingNeeded( textLine.file, textLine.lineNumber,
               AbstractFileErrorHandler.NO_PARTS ) ) {
             lineInFile++;
-            long useNumber = meta.content.rowNumberByFile ? lineInFile : step.getLinesWritten() + 1;
+            long useNumber = meta.content.rowNumberByFile ? lineInFile : linesWritten + 1;
             r =
                 TextFileInputUtils.convertLineToRow( log, textLine, meta, data.currentPassThruFieldsRow,
                     data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber,
@@ -348,6 +350,7 @@ public class TextFileInputReader implements IBaseFileInputReader {
         log.logRowlevel( "Putting row: " + data.outputRowMeta.getString( r ) );
       }
       step.putRow( data.outputRowMeta, r );
+      linesWritten++;
 
       if ( step.getLinesInput() >= meta.content.rowLimit && meta.content.rowLimit > 0 ) {
         close();
