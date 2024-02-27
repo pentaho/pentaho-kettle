@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j2 Configuration                                                  -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!--
+   | For more configuration information and examples see the Apache Log4j
+   | website: https://logging.apache.org/log4j/2.x/manual/configuration.html
+ -->
+
+<Configuration name="PentahoKettle" status="ERROR" dest="out">
+<Properties>
+        <Property name="dateFormat">${}</Property>
+</Properties>
+    <Appenders>
+
+        <!-- ============================== -->
+        <!-- Append messages to the console -->
+        <!-- ============================== -->
+        <Console name="PENTAHOCONSOLE">
+            <ThresholdFilter level="INFO"/>
+            <PatternLayout>
+                <Pattern>%d{ABSOLUTE} %-5p [%c{1}] %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+
+        <RollingFile name="pdi-execution-appender-test" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{}{} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-1" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss,SSS} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-2" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss,nnnn} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-3" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{dd MMM yyyy HH:mm:ss,SSS} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-4" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{dd MMM yyyy HH:mm:ss,nnnn} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-5" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{dd-MMM-yyyy HH:mm:ss,SSS} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-6" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{dd/MMM/yyyy HH:mm:ss,SSS} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-7" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{MMM dd,yyyy HH:mm:ss} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-8" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{MMM-dd,yyyy} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-9" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{MMM/dd,yyyy HH:mm:ss}{} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-10" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{MMM dd,yyyy HH:mm:ss}{GMT+0} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-11" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss}{GMT-5} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="no appender name" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss}{GMT-5} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <RollingFile name="pdi-execution-appender-test-13" fileName="logs/pdi.log" filePattern="logs/pdi.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss}{TEST} %-5p &lt;%t&gt; %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+    </Appenders>
+
+    <!-- ================ -->
+    <!-- Limit categories -->
+    <!-- ================ -->
+    <Loggers>
+        <!-- ======================= -->
+        <!-- Setup the Root category -->
+        <!-- ======================= -->
+
+        <Root level="ERROR">
+            <appender-ref ref="PENTAHOCONSOLE"/>
+        </Root>
+    </Loggers>
+</Configuration>
