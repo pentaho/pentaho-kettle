@@ -25,10 +25,10 @@
       #end
 
       <tr>
-        <td align="left"><a href="${artifactoryURL}${file.repo}/${file.path}/${file.name}" target="_new">${file.name}</a></td>
-        <td align="center">$osName</td>
-        <td align="right">$fileSize</td>
-        <td align="left">SHA1=<b>${file.actual_sha1}</b></td>
+        <td class="Item" align="left"><a href="${file.signedURL}" target="_new">${file.name}</a></td>
+        <td class="Item" align="center">$osName</td>
+        <td class="Item" align="right">$fileSize</td>
+        <td class="Item" align="left">SHA1=<b>${file.actual_sha1}</b></td>
         <td><a title="Copy to the Clipboard" href="javascript:navigator.clipboard.writeText('${file.actual_sha1}');">&#128203;</a></td>
       </tr>
     #end
