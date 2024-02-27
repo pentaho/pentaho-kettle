@@ -40,7 +40,7 @@ buildProperties:
 
   MAVEN_DEFAULT_DIRECTIVES:
     build        : clean deploy -DskipTests
-    test         : test
+    test         : test -Djs.no.sandbox
 
   JOB_ITEM_DEFAULTS:
     dockerImage  : jenkins-build/maven/open-jdk/11
