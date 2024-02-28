@@ -1,4 +1,4 @@
-library(identifier: "jenkins-shared-libraries@20231220-1", changelog: false)
+library(identifier: "jenkins-shared-libraries@20240215", changelog: false)
 
 node(params.SLAVE_NODE_LABEL) {
   config.stage()
