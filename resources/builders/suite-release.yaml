@@ -8,7 +8,7 @@ buildProperties:
   MAVEN_DEFAULT_COMMAND_OPTIONS    : -B -e
   MAVEN_DEFAULT_DIRECTIVES:
     build  : clean deploy -DskipTests -Drelease
-    test   : test
+    test   : test -Djs.no.sandbox
 
   ARTIFACT_DEPLOYER_CREDENTIALS_ID : jfrog-pentaho-service-cicd
   ARTIFACTORY_BASE_URL             : https://one.hitachivantara.com
@@ -390,7 +390,7 @@ jobGroups:
      - jobID           :  pentaho-scheduler-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-scheduler-plugin.git
        versionProperty :  pentaho-scheduler-plugin.version
-       
+
   2400:
      - jobID           :  big-data-mongodb-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-mongodb-plugin.git
