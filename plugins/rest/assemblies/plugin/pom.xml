@@ -5,17 +5,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>rest-assemblies</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.0-47</version>
   </parent>
 
   <artifactId>kettle-rest-plugin</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.2.0.0-47</version>
   <packaging>pom</packaging>
 
   <name>PDI Rest Plugin Distribution</name>
 
   <properties>
-    <project.revision>10.2.0.0-SNAPSHOT</project.revision>
+    <project.revision>10.2.0.0-47</project.revision>
     <jersey2-apache-connector.version>2.30</jersey2-apache-connector.version>
     <jersey2.version>2.38</jersey2.version>
     <jaxrs.version>2.1.6</jaxrs.version>
