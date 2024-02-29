@@ -1,0 +1,36 @@
+<vbox id="database-options-box" orient="vertical" flex="1"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:pen="http://www.pentaho.org/2008/xul"
+  handler="athenaHandler.getInfoHandler()"
+  >
+  <script id="athenaHandler" src="org.pentaho.ui.database.event.athena.AthenaHandler" />
+  <groupbox>
+    <caption label="${DatabaseDialog.USER_SETTINGS}" />
+    <label id="workgroup-name-label" value="${DatabaseDialog.label.WorkGroup}" />
+    <textbox pen:customclass="variabletextbox" id="workgroup-text" />
+    <label id="region-name-label" value="${DatabaseDialog.label.Region}" />
+    <textbox pen:customclass="variabletextbox" id="region-text" />
+    <label id="catalog-name-label" value="${DatabaseDialog.label.Catalog}" />
+    <textbox pen:customclass="variabletextbox" id="catalog-text" />
+    <label id="database-name-label" value="${DatabaseDialog.label.DatabaseName}" />
+    <textbox pen:customclass="variabletextbox" id="database-name-text" />
+    <label id="output-location-name-label" value="${DatabaseDialog.label.OutputLocation}" />
+    <textbox pen:customclass="variabletextbox" id="output-location-text" />
+
+  </groupbox>
+  <groupbox id="database-authentication" orient="vertical" flex="1">
+    <caption label="${DatabaseDialog.label.AuthenticationMethod}" />
+    <radiogroup id="auth-radio" orient="horizontal">
+      <radio id="auth-radio-default" label="Default" command="athenaHandler.selectAuth()"/>
+      <radio id="auth-radio-profile" label="AWS Configuration Profile"/>
+    </radiogroup>
+    <deck id="auth-deck" visible="true">
+      <vbox id="authentication-default">
+      </vbox>
+      <vbox id="authentication-profile-name">
+        <label id="profile-name-label" value="${DatabaseDialog.label.ProfileName}" />
+        <textbox pen:customclass="variabletextbox" id="profile-name-text" />
+      </vbox>
+    </deck>
+  </groupbox>
+</vbox>
