@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>mondrianinput</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.1-320</version>
   </parent>
 
   <artifactId>mondrianinput-ui</artifactId>
