@@ -201,11 +201,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-mongodb-plugin.version
 
-     - jobID           :  big-data-cassandra-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-cassandra-plugin.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  pentaho-cassandra-plugin.version
-
      - jobID           :  mondrian-schema-workbench-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-mondrianschemaworkbench-plugins.git
        scmBranch       :  ${DEFAULT_BRANCH}

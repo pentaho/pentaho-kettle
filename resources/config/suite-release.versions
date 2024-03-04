@@ -59,7 +59,6 @@ pdi-xml-plugin.version=10.2.0.0-BUILDTAG
 pdi.version=10.2.0.0-BUILDTAG
 pentaho-actionsequence-dom.version=10.2.0.0-BUILDTAG
 pentaho-camel.version=10.2.0.0-BUILDTAG
-pentaho-cassandra-plugin.version=10.2.0.0-BUILDTAG
 pentaho-ccc-plugin.version=10.2.0.0-BUILDTAG
 pentaho-cda-plugin.version=10.2.0.0-BUILDTAG
 pentaho-cde-plugin.version=10.2.0.0-BUILDTAG
