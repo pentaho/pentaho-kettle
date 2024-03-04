@@ -122,7 +122,7 @@ class Artifactory {
 
   String getArtifactSignedURL(final String filePath) {
     def url = baseUrl.newBuilder('api/signed/url').build()
-    String data = '{ "repo_path": "' << filePath << '", "valid_for_secs":172800 }' //2 days
+    String data = '{ "repo_path": "' << filePath << '", "valid_for_secs":604800 }' //7 days
     MediaType mediaType = MediaType.parse("application/json");
     RequestBody body = RequestBody.create(data, mediaType);
 
