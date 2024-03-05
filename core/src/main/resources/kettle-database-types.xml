@@ -234,4 +234,9 @@
     <description>Databricks</description>
     <classname>org.pentaho.di.core.database.DatabricksDatabaseMeta</classname>
   </database-type>
+
+  <database-type id="ATHENA">
+    <description>Athena</description>
+    <classname>org.pentaho.di.core.database.AthenaDatabaseMeta</classname>
+  </database-type>
 </database-types>
