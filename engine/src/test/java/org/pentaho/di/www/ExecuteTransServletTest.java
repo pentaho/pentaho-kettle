@@ -52,6 +52,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Mockito.doThrow;
@@ -184,7 +185,7 @@ public class ExecuteTransServletTest {
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
     Trans trans = initMocksForTransExecution( mockHttpServletRequest, mockHttpServletResponse );
-    doThrow( new KettleException( "Unable to find transformation" ) ).when( executeTransServlet ).executeTrans( trans );
+    doThrow( new KettleException( "Unable to find transformation" ) ).when( executeTransServlet ).executeTrans( trans, new HashMap<>());
 
     executeTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 

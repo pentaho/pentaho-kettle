@@ -43,8 +43,9 @@
   <servlet id="registerJob"> <description>Add a job to the server</description> <classname>org.pentaho.di.www.RegisterJobServlet</classname> </servlet>
   <servlet id="registerTrans"> <description>Add a transformation to the server</description> <classname>org.pentaho.di.www.RegisterTransServlet</classname> </servlet>
   <servlet id="registerPackage"> <description>Upload a resources export file</description> <classname>org.pentaho.di.www.RegisterPackageServlet</classname> </servlet>
-  
-  
+  <servlet id="registeredDatabasePlugins"> <description>Get list of registered Database Plugins</description> <classname>org.pentaho.di.www.GetDatabaseDetailsServlet</classname> </servlet>
+  <servlet id="registeredSteps"> <description>Get list of registered Step Plugins</description> <classname>org.pentaho.di.www.GetRegisteredStepsServlet</classname> </servlet>
+
   <!-- The dynamic clustering ... -->
   
   <servlet id="registerSlave"> <description>Register a slave server</description> <classname>org.pentaho.di.www.RegisterSlaveServlet</classname> </servlet>
