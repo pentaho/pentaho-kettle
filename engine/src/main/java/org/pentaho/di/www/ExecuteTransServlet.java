@@ -538,8 +538,6 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       } );
     }
     return previewDataMap;
-
-
   }
 
 }
