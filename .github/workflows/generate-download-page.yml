@@ -4,10 +4,46 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
-
-
-env:
-
+      deployment-folder:
+        required: true
+        description: 'folder, in hosted, where things should be copied to'
+        default: '10.2.0.0-SNAPSHOT'
+      is-snapshot:
+        required: true
+        default: 'true'
+        description: 'is snapshot build'
+        type: choice
+        options:
+          - true
+          - false
+      archiving-config:
+        required: true
+        default: 'resources/config/artifacts/snapshot-manifest.yaml'
+        description: 'artifacts manifest file'
+      versions-file:
+        required: true
+        default: 'resources/config/version.properties'
+        description: 'artifacts manifest file'
+      release-build-number:
+        required: true
+        description: 'build number'
+        default: 'latest'
+      release-version:
+        required: true
+        default: '10.2.0.0'
+        description: 'release version'
+      artifactory-repo:
+        required: false
+        description: "to where artifacts were uploaded"
+        default: 'pnt-unknown'
+      remote-hosted-server:
+        required: true
+        description: "server where index.html, and any other files/folders, should be copied to"
+        default: 'svdorlnfsn0.orl.eng.hitachivantara.com'
+      remote-hosted-path:
+        required: true
+        description: "path where index.html, and any other files/folders, should be copied to"
+        default: '/mnt/nfs/build_hosted/hosted/tests/'
 
 jobs:
   generate-hosted-page:
@@ -20,16 +56,44 @@ jobs:
         username: ${{ secrets.PENTAHO_CICD_ONE_USER }}
         password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
       volumes:
-        - /home/runner/caches/pentaho/.m2:/root/.m2
+        - /home/runner/caches/pentaho/.groovy:/root/.groovy
 
     steps:
       - uses: actions/checkout@v4
 
-      #- run: git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
+      - name: Create temp files
+        shell: bash
+        run: |
+          # Create ssh cert
+          echo "${{ secrets.SSH_IDENTITY_FILE }}" > $RUNNER_TEMP/infra.key
+          
+          chmod 400 $RUNNER_TEMP/infra.key
 
       - name: Generating Download Page
         shell: bash
         run: |
-          echo "something"
+          rnd=$(date +"%s")
+          tmp_folder="$rnd/"
+          mkdir -p "$RUNNER_TEMP/$tmp_folder"
 
-  
+          ${GITHUB_WORKSPACE}/scripts/hosted/hosted.groovy \
+            --rtURL https://one.hitachivantara.com/artifactory \
+            --rtUsername '${{ secrets.PENTAHO_CICD_ONE_USER }}' \
+            --rtPassword '${{ secrets.PENTAHO_CICD_ONE_KEY }}' \
+            --buildHostingRoot "$RUNNER_TEMP/$tmp_folder" \
+            --deploymentFolder ${{ inputs.deployment-folder }} \
+            --manifest-file ${GITHUB_WORKSPACE}/${{ inputs.archiving-config }} \
+            --versions-file ${GITHUB_WORKSPACE}/${{ inputs.versions-file }} \
+            --releaseBuildNumber ${{ inputs.release-build-number }} \
+            --releaseVersion ${{ inputs.release-version }} \
+            --rtRepo ${{ inputs.artifactory-repo }} \
+            --rtReleaseRepos pntpub-maven-rc,pntpub-maven-release \
+            --rtQatRepos pntpub-maven-dev \
+            --isSnapshot ${{ inputs.is-snapshot }}
+
+          echo "Copying to remote server"
+          scp -v -o ConnectTimeout=30 -o StrictHostKeyChecking=no -i $RUNNER_TEMP/infra.key -r "$RUNNER_TEMP/$tmp_folder" ${{ secrets.INFRAOPS_USER }}@${{ inputs.remote-hosted-server }}:"/tmp/$tmp_folder"
+          
+          echo "Copying things around in the remote server"
+          cmd="sudo cp -R /tmp/$tmp_folder* ${{ inputs.remote-hosted-path }} && sudo chown -R 1000:1000 ${{ inputs.remote-hosted-path }}"
+          ssh -n -o ConnectTimeout=30 -o StrictHostKeyChecking=no -i $RUNNER_TEMP/infra.key ${{ secrets.INFRAOPS_USER }}@${{ inputs.remote-hosted-server }} "$cmd"
