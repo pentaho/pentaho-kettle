@@ -154,10 +154,18 @@ class HostedArtifactsManager implements Serializable {
         }
       }
 
+      content.append(createFooter())
+
       // creates index at the main build folder
       writeFile("${hostedRoot}/../new-layout/index.html", content.toString())
       println("Index HTML page (re)generated at ${hostedRoot}/../")
     }
+  }
+
+  String createFooter() {
+    LocalDateTime buildDate = LocalDateTime.now()
+    String pageCreationDate = String.format('%tF %<tH:%<tM', buildDate)
+    return resolveTemplate("templates/footer.vm", ["creationDate": pageCreationDate])
   }
 
   static def writeFile(String location, String text) {
@@ -227,7 +235,7 @@ class HostedArtifactsManager implements Serializable {
     Map bindings = [
         files          : artifactsMetadata,
         buildHeaderInfo: "Build ${version} | ${buildDateString}",
-        artifactoryURL  : rtURL.endsWith('/') ? rtURL : rtURL + '/',
+        artifactoryURL : rtURL.endsWith('/') ? rtURL : rtURL + '/',
         numberFormat   : new DecimalFormat("###,##0.000"),
         version        : version
     ]

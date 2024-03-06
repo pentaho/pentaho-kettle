@@ -56,7 +56,7 @@ jobs:
         username: ${{ secrets.PENTAHO_CICD_ONE_USER }}
         password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
       volumes:
-        - /home/runner/caches/pentaho/.groovy:/root/.groovy
+        - /home/runner/caches/pentaho/.groovy:/home/groovy/.groovy
 
     steps:
       - uses: actions/checkout@v4
@@ -87,8 +87,8 @@ jobs:
             --releaseBuildNumber ${{ inputs.release-build-number }} \
             --releaseVersion ${{ inputs.release-version }} \
             --rtRepo ${{ inputs.artifactory-repo }} \
-            --rtReleaseRepos pntpub-maven-rc,pntpub-maven-release \
-            --rtQatRepos pntpub-maven-dev \
+            --rtReleaseRepos pntpub-maven-rc,pntpub-maven-release,pntprv-docker-rc,pntprv-docker-release \
+            --rtQatRepos pntpub-maven-dev,pntprv-docker-dev \
             --isSnapshot ${{ inputs.is-snapshot }}
 
           echo "Copying to remote server"
