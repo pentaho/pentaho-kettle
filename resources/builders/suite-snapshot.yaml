@@ -213,9 +213,6 @@ jobGroups:
      - jobID           :  big-data-splunk-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
 
-     - jobID           :  big-data-cassandra-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-cassandra-plugin.git
-
   1600:
      - jobID           :  mondrian-workbench
        scmUrl          :  https://github.com/pentaho/mondrian.git
