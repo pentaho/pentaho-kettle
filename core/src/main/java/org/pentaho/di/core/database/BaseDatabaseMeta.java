@@ -36,6 +36,7 @@ import org.pentaho.di.repository.ObjectId;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -173,6 +174,15 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   public static final String SEQUENCE_FOR_BATCH_ID = "SEQUENCE_FOR_BATCH_ID";
   public static final String AUTOINCREMENT_SQL_FOR_BATCH_ID = "AUTOINCREMENT_SQL_FOR_BATCH_ID";
   public static final String NAMED_CLUSTER_ID = "NAMED_CLUSTER_ID";
+
+  public static final List<String> ATTRIBUTE_KEYLIST = Arrays.asList( ATTRIBUTE_PORT_NUMBER,
+      ATTRIBUTE_SQL_CONNECT, ATTRIBUTE_USE_POOLING, ATTRIBUTE_MAXIMUM_POOL_SIZE, ATTRIBUTE_INITIAL_POOL_SIZE,
+      ATTRIBUTE_PREFIX_EXTRA_OPTION, ATTRIBUTE_IS_CLUSTERED, ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX,
+      ATTRIBUTE_CLUSTER_PORT_PREFIX, ATTRIBUTE_CLUSTER_DBNAME_PREFIX, ATTRIBUTE_CLUSTER_USERNAME_PREFIX,
+      ATTRIBUTE_CLUSTER_PASSWORD_PREFIX, ATTRIBUTE_POOLING_PARAMETER_PREFIX, ATTRIBUTE_USE_RESULT_STREAMING,
+      ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR, ATTRIBUTE_QUOTE_ALL_FIELDS, ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE,
+      ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE, ATTRIBUTE_PREFERRED_SCHEMA_NAME, ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE,
+      ATTRIBUTE_SUPPORTS_TIMESTAMP_DATA_TYPE, ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE );
 
   /**
    * Boolean to indicate if savepoints can be released Most databases do, so we set it to true. Child classes can
