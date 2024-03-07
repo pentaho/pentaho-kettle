@@ -6,7 +6,7 @@ on:
 
 jobs:
   reusable-pr-workflow:
-     uses: pentaho/actions-common/.github/workflows/pr.yml@HNC-537
+     uses: pentaho/actions-common/.github/workflows/pr.yml@HNC-563
      with:
       slack_channels: ""
       sonar_project_key: "com.pentaho.reporting.plugin:pentaho-interactive-reporting"
