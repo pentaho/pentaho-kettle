@@ -10,6 +10,6 @@ jobs:
     uses: pentaho/actions-common/.github/workflows/pr.yml@HNC-563
     with:
       slack_channels: ""
-      #sonar_project_key: "pentaho:pentaho-analyzer"
+      sonar_project_key: "org.pentaho.di:pdi"
     secrets: inherit
     
