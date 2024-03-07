@@ -1,8 +1,8 @@
 name: pentaho-kettle pull request workflow
 on:
   pull_request:
-    branches-ignore:
-      - HNC-541
+    branches:
+      - master
 
 jobs:
 
