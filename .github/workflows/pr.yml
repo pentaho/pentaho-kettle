@@ -1,4 +1,4 @@
-name: pentaho-analyzer pull request workflow
+name: pentaho-kettle pull request workflow
 on:
   pull_request:
     branches-ignore:
@@ -10,6 +10,6 @@ jobs:
     uses: pentaho/actions-common/.github/workflows/pr.yml@HNC-563
     with:
       slack_channels: ""
-      sonar_project_key: "pentaho:pentaho-analyzer"
+      #sonar_project_key: "pentaho:pentaho-analyzer"
     secrets: inherit
     
