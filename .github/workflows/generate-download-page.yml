@@ -43,7 +43,7 @@ on:
       remote-hosted-path:
         required: true
         description: "path where index.html, and any other files/folders, should be copied to"
-        default: '/mnt/nfs/build_hosted/hosted/tests/'
+        default: '/mnt/nfs/build_hosted/hosted/'
 
 jobs:
   generate-hosted-page:
