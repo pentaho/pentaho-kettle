@@ -5,14 +5,14 @@
 
   <groupId>org.pentaho.di.plugins</groupId>
   <artifactId>pdi-plugins</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.2.0.0-58</version>
   <packaging>pom</packaging>
 
   <name>PDI Plugins</name>
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.0-58</version>
   </parent>
 
   <properties>
