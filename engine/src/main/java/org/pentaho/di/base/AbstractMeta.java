@@ -33,6 +33,8 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.HasBowlInterface;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
@@ -96,7 +98,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
   EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
-  LoggingObjectInterface {
+  HasBowlInterface, LoggingObjectInterface {
 
   /**
    * Constant = 1
@@ -133,6 +135,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected String filename;
 
   protected RepositoryDirectoryInterface directory;
+
+  protected Bowl bowl;
 
   /**
    * The repository to reference in the one-off case that it is needed
@@ -397,6 +401,14 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   public void setRepositoryDirectory( RepositoryDirectoryInterface directory ) {
     this.directory = directory;
     setInternalKettleVariables();
+  }
+
+  public Bowl getBowl() {
+    return bowl;
+  }
+
+  public void setBowl( Bowl bowl ) {
+    this.bowl = bowl;
   }
 
   /**

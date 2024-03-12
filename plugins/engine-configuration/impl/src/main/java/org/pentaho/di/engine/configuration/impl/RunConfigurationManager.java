@@ -24,14 +24,19 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.metastore.MetaStoreConst;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.Supplier;
 import java.util.List;
 
 /**
@@ -48,6 +53,37 @@ public class RunConfigurationManager implements RunConfigurationService {
       instance = new RunConfigurationManager();
     }
     return instance;
+  }
+
+  public static RunConfigurationManager getInstance( Bowl bowl ) {
+
+    Supplier<IMetaStore> metastoreSupplier = MetaStoreConst.getMetastoreForBowlSupplier( bowl );
+
+    // this should probably have been a Supplier
+    MetastoreLocator bowlLocator = new MetastoreLocator() {
+        @Override
+        public IMetaStore getMetastore( String providerKey ) {
+          return metastoreSupplier.get();
+        }
+
+        @Override
+        public IMetaStore getMetastore() {
+          return metastoreSupplier.get();
+        }
+
+        @Override public String setEmbeddedMetastore( IMetaStore metastore ) {
+          return null;
+        }
+
+        @Override public void disposeMetastoreProvider( String providerKey ) {
+
+        }
+        @Override public IMetaStore getExplicitMetastore( String providerKey ) {
+          return null;
+        }
+      };
+    RunConfigurationProvider provider = new DefaultRunConfigurationProvider( bowlLocator );
+    return  new RunConfigurationManager( Collections.singletonList( provider ) );
   }
 
   public RunConfigurationManager( List<RunConfigurationProvider> runConfigurationProviders ) {

@@ -2,6 +2,7 @@
 .classpath
 .settings
 build
+logs
 target
 release.properties
 pom.xml.releaseBackup
