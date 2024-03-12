@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -41,10 +41,10 @@ import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
  */
 public abstract class MetaStoreRunConfigurationFactory implements RunConfigurationFactory {
 
-  protected MetastoreLocator metastoreLocator;
+  protected CheckedMetaStoreSupplier metastoreSupplier;
 
-  public MetaStoreRunConfigurationFactory( MetastoreLocator metastoreLocator ) {
-    this.metastoreLocator = metastoreLocator;
+  public MetaStoreRunConfigurationFactory( CheckedMetaStoreSupplier metastoreSupplier ) {
+    this.metastoreSupplier = metastoreSupplier;
   }
 
   private <T extends RunConfiguration> MetaStoreFactory<T> getMetastoreFactory( Class<T> clazz,
@@ -54,7 +54,7 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
 
   protected <T extends RunConfiguration> MetaStoreFactory<T> getMetastoreFactory( Class<T> clazz )
     throws MetaStoreException {
-    return getMetastoreFactory( clazz, metastoreLocator.getMetastore() );
+    return getMetastoreFactory( clazz, metastoreSupplier.get() );
   }
 
   protected abstract <T extends RunConfiguration> MetaStoreFactory<T> getMetaStoreFactory() throws MetaStoreException;
@@ -122,7 +122,7 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
     }
   }
 
-  public void setMetastoreLocator( MetastoreLocator metastoreLocator ) {
-    this.metastoreLocator = metastoreLocator;
+  public void setMetastoreSupplier( CheckedMetaStoreSupplier metastoreSupplier ) {
+    this.metastoreSupplier = metastoreSupplier;
   }
 }
