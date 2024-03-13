@@ -1,0 +1,24 @@
+name: CUST workflow
+on:
+  workflow_dispatch:
+    inputs:
+      modules_to_build:
+        required: true
+        description: "The modules to build when running from the root of the project."
+      slack_channels:
+        required: false
+        description: 'Slack channels where to send notificatons to'
+
+jobs:
+
+  reusable-merge-workflow:
+    uses: pentaho/actions-common/.github/workflows/merge.yml@HNC-578
+    with:
+      version: "${{ github.ref_name }}-R"
+      base_version: ""
+      slack_channels: "${{ inputs.slack_channels }}"
+      sonar_project_key: "org.pentaho.di:pdi"
+      modules_to_build: ${{ inputs.modules_to_build }}
+      run_snapshot: false
+      run_versioning: false
+    secrets: inherit

@@ -46,6 +46,7 @@
   </licenses>
 
   <properties>
+    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
     <maven-surefire-plugin.argLine>-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Duser.language=en -Duser.country=US -Djava.locale.providers=COMPAT,SPI</maven-surefire-plugin.argLine>
 
@@ -318,6 +319,40 @@
         <module>assemblies</module>
       </modules>
     </profile>
+    <profile>
+      <id>cicd-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jfrog.buildinfo</groupId>
+            <artifactId>artifactory-maven-plugin</artifactId>
+            <version>3.6.1</version>
+            <executions>
+              <execution>
+                <id>build-info</id>
+                <goals>
+                  <goal>publish</goal>
+                </goals>
+                <configuration>
+                  <buildInfo>
+                    <buildName>${build.name}</buildName>
+                    <buildNumber>${build.number}</buildNumber>
+                    <buildUrl>${env.JFROG_CLI_BUILD_URL}</buildUrl>
+                  </buildInfo>
+                  <publisher>
+                    <contextUrl>${env.ARTIFACTORY_BASE_URL}/</contextUrl>
+                    <username>${env.NEXUS_DEPLOY_USER}</username>
+                    <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
+                    <repoKey>${env.PRIVATE_RELEASE_REPO}</repoKey>
+                    <snapshotRepoKey>${env.PRIVATE_SNAPSHOT_REPO}</snapshotRepoKey>
+                  </publisher>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
 
@@ -350,6 +385,5 @@
       </releases>
     </pluginRepository>
   </pluginRepositories>
-
 
 </project>
