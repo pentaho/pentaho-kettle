@@ -46,7 +46,7 @@
   </licenses>
 
   <properties>
-    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+    <!--jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version-->
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
     <maven-surefire-plugin.argLine>-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Duser.language=en -Duser.country=US -Djava.locale.providers=COMPAT,SPI</maven-surefire-plugin.argLine>
 

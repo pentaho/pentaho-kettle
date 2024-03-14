@@ -1,0 +1,64 @@
+name: pdi-plugins-ee release workflow
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        required: true
+        description: "The version to be released"
+        type: string
+      arti_host:
+        required: false
+        type: string
+        default: https://one.hitachivantara.com
+        description: "Artifactory's Host name"
+      box_upload:
+        type: boolean
+        default: true
+        description: "Box upload."
+      create_release_bundle:
+        type: boolean
+        default: true
+        description: "Create Release Bundle."
+      promote_artifacts:
+        type: boolean
+        default: true
+        description: "Promote artifacts in Artifactory."
+      dry_run:
+        type: boolean
+        default: true
+        description: "Dry run. No real changes should occur."
+      release_bundle_name:
+        description: "Release Bundle Name"
+        required: true
+        type: string
+      release_bundle_version:
+        description: "Release Bundle Version"
+        required: true
+        type: string
+      signing_key_name:
+        description: "The GPG/RSA key-pair name given in Artifactory."
+        required: true
+        type: string
+      release_method:
+        description: "Source type to create release bundle (i.e artifacts or builds)."
+        required: true
+        default: artifacts
+        type: choice
+        options:
+          - artifacts
+          - builds
+jobs:
+  release:
+    uses: pentaho/actions-common/.github/workflows/release.yml@HNC-578
+    with:
+      release_version: ${{ inputs.release_version }}
+      box_upload: ${{ inputs.box_upload }}
+      create_release_bundle: ${{ inputs.create_release_bundle}}
+      arti_host: ${{ inputs.arti_host }}
+      dry_run: ${{ inputs.dry_run }}
+      promote_artifacts: ${{ inputs.promote_artifacts }}
+      release_bundle_name: ${{ inputs.release_bundle_name }}
+      release_bundle_version: ${{ inputs.release_bundle_version }}
+      signing_key_name: ${{ inputs.signing_key_name }}
+      release_method: ${{ inputs.release_method }}
+    secrets: inherit
