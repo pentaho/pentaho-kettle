@@ -321,6 +321,9 @@
     </profile>
     <profile>
       <id>cicd-release</id>
+      <properties>
+        <build.retention.count>-1</build.retention.count>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -338,6 +341,7 @@
                     <buildName>${build.name}</buildName>
                     <buildNumber>${build.number}</buildNumber>
                     <buildUrl>${env.JFROG_CLI_BUILD_URL}</buildUrl>
+                    <buildRetentionCount>${build.retention.count}</buildRetentionCount>
                   </buildInfo>
                   <publisher>
                     <contextUrl>${env.ARTIFACTORY_BASE_URL}/</contextUrl>

@@ -47,6 +47,7 @@ on:
         options:
           - artifacts
           - builds
+
 jobs:
   release:
     uses: pentaho/actions-common/.github/workflows/release.yml@HNC-578
