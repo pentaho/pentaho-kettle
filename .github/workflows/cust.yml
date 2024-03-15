@@ -14,7 +14,7 @@ jobs:
   reusable-merge-workflow:
     uses: pentaho/actions-common/.github/workflows/merge.yml@HNC-578
     with:
-      version: "${{ github.ref_name }}-R"
+      version: "${{ github.ref_name }}"
       base_version: ""
       slack_channels: "${{ inputs.slack_channels }}"
       sonar_project_key: "org.pentaho.di:pdi"
