@@ -122,20 +122,21 @@ public class Variables implements VariableSpace {
 
   @Override
   public void initializeVariablesFrom( VariableSpace parent ) {
-    this.parent = parent;
-
-    // Clone the system properties to avoid ConcurrentModificationException while iterating
-    // and then add all of them to properties variable.
-    Set<String> systemPropertiesNames = System.getProperties().stringPropertyNames();
-    for ( String key : systemPropertiesNames ) {
-      String value = System.getProperties().getProperty( key );
-      if ( value != null ) {
-        getProperties().put( key, value );
+    // only read these once. Don't overwrite values that have already been set on this variable space from other APIs
+    if ( !initialized ) {
+      // Clone the system properties to avoid ConcurrentModificationException while iterating
+      // and then add all of them to properties variable.
+      Set<String> systemPropertiesNames = System.getProperties().stringPropertyNames();
+      for ( String key : systemPropertiesNames ) {
+        String value = System.getProperties().getProperty( key );
+        if ( value != null ) {
+          getProperties().put( key, value );
+        }
       }
-
     }
 
     if ( parent != null ) {
+      this.parent = parent;
       copyVariablesFrom( parent );
     }
     if ( injection != null ) {
