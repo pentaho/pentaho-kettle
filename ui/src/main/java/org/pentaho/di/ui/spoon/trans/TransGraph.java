@@ -202,8 +202,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import org.springframework.util.ObjectUtils;
-import java.time.LocalDateTime;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc. One transformation
@@ -4147,24 +4145,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     if ( ( running && !halting ) ) {
       halting = true;
       trans.stopAll();
-      if ( !ObjectUtils.isEmpty( trans.getResult() ) && trans.getResult().getResult()) {
-        log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.ProcessingOfTransformationStopped" ) );
-        log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-          BaseMessages.getString( PKG, "TransGraph.Comment.EndTime",LocalDateTime.now() ) );
-        log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-          BaseMessages.getString( PKG, "TransGraph.Comment.UserContext",System.getProperty("user.name") ) );
-        log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-          BaseMessages.getString( PKG, "TransGraph.Comment.SuccessStatus") );
-      } else{
-        log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.ProcessingOfTransformationStopped" ) );
-        log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-          BaseMessages.getString( PKG, "TransGraph.Comment.EndTime",LocalDateTime.now() ) );
-        log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-          BaseMessages.getString( PKG, "TransGraph.Comment.UserContext",System.getProperty("user.name") ) );
-        log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-          BaseMessages.getString( PKG, "TransGraph.Comment.SuccessFailure") );
-      }
-
+      log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.ProcessingOfTransformationStopped" ) );
       running = false;
       initialized = false;
       halted = false;
@@ -4409,24 +4390,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private void checkTransEnded() {
     if ( trans != null ) {
       if ( trans.isFinished() && ( running || halted ) ) {
-        if ( !ObjectUtils.isEmpty( trans.getResult() ) && trans.getResult().getResult()) {
-          log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.TransformationHasFinished" ) );
-          log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-            BaseMessages.getString( PKG, "TransGraph.Comment.EndTime",LocalDateTime.now() ) );
-          log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-            BaseMessages.getString( PKG, "TransGraph.Comment.UserContext",System.getProperty("user.name") ) );
-          log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-            BaseMessages.getString( PKG, "TransGraph.Comment.SuccessStatus") );
-        } else{
-          log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.TransformationHasFinished" ) );
-          log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-            BaseMessages.getString( PKG, "TransGraph.Comment.EndTime",LocalDateTime.now() ) );
-          log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-            BaseMessages.getString( PKG, "TransGraph.Comment.UserContext",System.getProperty("user.name") ) );
-          log.logMinimal( BaseMessages.getString( PKG, "TransGraph.Comment.RunId",transMeta.getLogChannelId() ) + ","+
-            BaseMessages.getString( PKG, "TransGraph.Comment.SuccessFailure") );
-        }
-
+        log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.TransformationHasFinished" ) );
         running = false;
         initialized = false;
         halted = false;
