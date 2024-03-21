@@ -254,7 +254,7 @@ then
 else
 # required for Java 11 date/time formatting backwards compatibility
   JAVA_LOCALE_COMPAT="-Djava.locale.providers=COMPAT,SPI"
-  JAVA_ADD_OPENS="--add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
+  JAVA_ADD_OPENS="--add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/sun.reflect.misc=ALL-UNNAMED --add-opens java.management/javax.management=ALL-UNNAMED --add-opens java.management/javax.management.openmbean=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
 fi
 
 # ******************************************************************
