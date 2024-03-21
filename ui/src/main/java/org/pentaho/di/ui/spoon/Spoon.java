@@ -618,6 +618,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public Text selectionFilter;
 
+  // licensing related property so that Revenera can properly identify execution is triggered by spoon
+  private static final String EXECUTION_TYPE_PROP = "system-property.pentaho.execution.type";
+
   /**
    * This is the main procedure for Spoon.
    *
@@ -705,6 +708,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       initLogging( commandLineOptions );
       // remember...
+
+      // setting property to designer so that Revenera can properly identify execution is triggered by spoon
+      System.setProperty( EXECUTION_TYPE_PROP, "designer" );
 
       staticSpoon = new Spoon();
       staticSpoon.commandLineOptions = commandLineOptions;
