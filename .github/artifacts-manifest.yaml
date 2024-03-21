@@ -1,0 +1,11 @@
+
+# If the release version is something like 9.5.1.0-123, the below structure will become
+# 9.5-Releases:
+#   9.5.1.0:
+#     ee:
+#       plugins:
+#         - hierarchical-datatype-plugin-9.5.1.0-123.zip
+
+${SHORT_VERSION}-Releases:
+  ${RELEASE_VERSION}:
+    - kettle-core-${RELEASE_VERSION}.jar
