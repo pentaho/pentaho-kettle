@@ -104,19 +104,7 @@ for /f "tokens=4-7 delims=[.] " %%i in ('ver') do @(if %%i=="10.0" (set WINDOWS_
 REM Convert WINDOWS_BUILD_VERSION to a number
 set /A WINDOWS_BUILD_NUMBER=%WINDOWS_BUILD_VERSION%
 
-set ISWINDOWS11ANDJAVA8=""
-REM First build number of Windows 11 is 20000, if the number is less than that it's not Windows 11
-if %WINDOWS_BUILD_NUMBER% LSS 20000 GOTO :ISNOTWINDOWS11ANDJAVA8
-if %ISJAVA8% NEQ 1 GOTO :ISNOTWINDOWS11ANDJAVA8
-SET ISWINDOWS11ANDJAVA8=true
-
-:ISNOTWINDOWS11ANDJAVA8
-if %ISJAVA8% NEQ 1 GOTO :SETJAVASWT
-set LIBSPATH=libswt\win64_java8
-set SWTJAR=..\libswt\win64_java8
-GOTO :CONTINUE
-:SETJAVASWT
-set LIBSPATH=libswt\win64
+set LIBSPATH=libswt\win64;native-lib\win64;..\native-lib\win64
 set SWTJAR=..\libswt\win64
 :CONTINUE
 popd
@@ -124,19 +112,25 @@ popd
 REM **************************************************
 REM ** Setup Karaf endorsed libraries directory     **
 REM **************************************************
-set JAVA_ENDORSED_DIRS=
 set JAVA_LOCALE_COMPAT=
 set JAVA_ADD_OPENS=
-IF NOT %ISJAVA8% == 1 GOTO :SKIPENDORSEDJARS
 
-if not "%_PENTAHO_JAVA_HOME%" == "" set JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;
-set JAVA_ENDORSED_DIRS="-Djava.endorsed.dirs=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed"
-GOTO :COLLECTARGUMENTS
-
-:SKIPENDORSEDJARS
 REM required for Java 11 date/time formatting backwards compatibility
 set JAVA_LOCALE_COMPAT=-Djava.locale.providers=COMPAT,SPI
-set JAVA_ADD_OPENS=--add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/sun.reflect.misc=ALL-UNNAMED --add-opens java.management/javax.management=ALL-UNNAMED --add-opens java.management/javax.management.openmbean=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+rem Sets options that only get read by Java 11 to remove illegal reflective access warnings
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.net=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.security=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.net.www.protocol.file=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.net.www.protocol.ftp=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.net.www.protocol.http=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.reflect.misc=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.management/javax.management=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.management/javax.management.openmbean=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.naming/com.sun.jndi.ldap=ALL-UNNAMED"
 
 :COLLECTARGUMENTS
 REM **********************
@@ -159,7 +153,7 @@ REM ******************************************************************
 
 if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xms1024m" "-Xmx2048m"
 
-set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin" %JAVA_ENDORSED_DIRS% %JAVA_LOCALE_COMPAT% "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
+set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin" %JAVA_LOCALE_COMPAT% "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
 
 REM Force SWT to use Edge instead of Internet Explorer (not supported by Pentaho anymore)
 set OPT=%OPT% "-Dorg.eclipse.swt.browser.DefaultType=edge"
@@ -170,11 +164,6 @@ REM ***************
 
 REM If %STARTTITLE% is set, start Spoon even if it is Windows 8 on Windows 11
 if NOT "%STARTTITLE%"=="" GOTO :NORMALSTART
-REM IF %ISWINDOWS11ANDJAVA8% is not set, start normally
-if %ISWINDOWS11ANDJAVA8%=="" GOTO :NORMALSTART
-echo ERROR: Spoon UI requires Java 11 to function on Windows 11
-pause
-GOTO :EOF
 :NORMALSTART
 if %STARTTITLE%!==! SET STARTTITLE="Spoon"
 REM Eventually call java instead of javaw and do not run in a separate window
