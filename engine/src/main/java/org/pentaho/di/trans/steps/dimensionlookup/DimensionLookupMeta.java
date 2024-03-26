@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,9 @@
 
 package org.pentaho.di.trans.steps.dimensionlookup;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.injection.AfterInjection;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -42,6 +34,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.injection.InjectionTypeConverter;
@@ -52,6 +45,7 @@ import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -64,6 +58,12 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Matt
@@ -430,6 +430,20 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
     this.fieldUpdate = fieldUpdate;
   }
 
+  /**
+   * @param position
+   *   Index to array of property fieldUpdate.
+   * @param desc
+   *   Update type code or value meta type name.
+   *
+   * @see #getUpdateType(boolean, String)
+   */
+  public void setFieldUpdateValue(int position, String desc) {
+    fieldUpdate[position] = getUpdateType( update, desc );
+    if ( !update ) {
+      returnType[position] = fieldUpdate[position];
+    }
+  }
   /**
    * @return Returns the returnType.
    */
@@ -937,7 +951,7 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
         fieldStream[i] = XMLHandler.getTagValue( fnode, "name" );
         fieldLookup[i] = XMLHandler.getTagValue( fnode, "lookup" );
         upd = XMLHandler.getTagValue( fnode, "update" );
-        fieldUpdate[i] = getUpdateType( update, upd );
+        setFieldUpdateValue( i, upd );
       }
 
       if ( update ) {
@@ -998,10 +1012,7 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
       for ( int i = 0; i < nrfields; i++ ) {
         fieldStream[i] = rep.getStepAttributeString( id_step, i, "field_name" );
         fieldLookup[i] = rep.getStepAttributeString( id_step, i, "field_lookup" );
-        fieldUpdate[i] = getUpdateType( update, rep.getStepAttributeString( id_step, i, "field_update" ) );
-        if ( !update ) {
-          returnType[i] = fieldUpdate[i];
-        }
+        setFieldUpdateValue( i, rep.getStepAttributeString( id_step, i, "field_update" ) );
       }
 
       keyField = rep.getStepAttributeString( id_step, "return_name" );

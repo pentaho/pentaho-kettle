@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,12 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.dimensionlookup;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -63,7 +57,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -72,6 +65,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -88,6 +82,12 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.ui.util.HelpUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Dialog for the Dimension Lookup/Update step.
@@ -1454,7 +1454,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       TableItem item = wUpIns.getNonEmpty( i );
       in.getFieldLookup()[i] = item.getText( 1 );
       in.getFieldStream()[i] = item.getText( 2 );
-      in.getFieldUpdate()[i] = DimensionLookupMeta.getUpdateType( in.isUpdate(), item.getText( 3 ) );
+      in.setFieldUpdateValue( i, item.getText( 3 ) );
     }
 
     in.setSchemaName( wSchema.getText() );
