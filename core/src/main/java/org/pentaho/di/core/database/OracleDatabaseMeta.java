@@ -39,7 +39,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 
 public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
 
-  private static final String STRICT_BIGNUMBER_INTERPRETATION = "STRICT_NUMBER_38_INTERPRETATION";
+  public static final String STRICT_BIGNUMBER_INTERPRETATION = "STRICT_NUMBER_38_INTERPRETATION";
 
   @Override
   public int[] getAccessTypeList() {
