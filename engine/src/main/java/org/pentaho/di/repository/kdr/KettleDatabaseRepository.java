@@ -22,29 +22,17 @@
 
 package org.pentaho.di.repository.kdr;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,6 +43,8 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
@@ -95,6 +85,17 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryValueDele
 import org.pentaho.di.repository.kdr.delegates.metastore.KettleDatabaseRepositoryMetaStore;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 /**
  *
@@ -1826,6 +1827,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   public ObjectId getJobId( String name, RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
+    if ( repositoryDirectory == null ) {
+      throw new IdNotFoundException( name, null, RepositoryObjectType.JOB );
+    }
     return jobDelegate.getJobID( name, repositoryDirectory.getObjectId() );
   }
 
@@ -1838,6 +1842,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   public ObjectId getTransformationID( String name, RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
+    if ( repositoryDirectory == null ) {
+      throw new IdNotFoundException( name, null, RepositoryObjectType.TRANSFORMATION );
+    }
     return transDelegate.getTransformationID( name, repositoryDirectory.getObjectId() );
   }
 
