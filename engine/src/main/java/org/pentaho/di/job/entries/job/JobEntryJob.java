@@ -731,7 +731,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
       while ( ( first && !execPerRow )
-        || ( execPerRow && rows != null && !rows.isEmpty() && iteration <= rows.size() && result.getNrErrors() == 0 ) ) {
+        || ( execPerRow && rows != null && !rows.isEmpty() && iteration <= rows.size() && result.getNrErrors() == 0 )
+        || shouldConsiderOldBehaviourForEveryInputRow( rows.size() ) ) {
 
         first = false;
         // Clear the result rows of the result
@@ -1237,6 +1238,18 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return result;
   }
 
+  private boolean shouldConsiderOldBehaviourForEveryInputRow( int numOfRows ) {
+    boolean shouldExecuteWithZeroRows = "Y".equalsIgnoreCase( System.getProperty( Const.COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, "N" ) );
+    if ( numOfRows == 0 ) {
+      if ( shouldExecuteWithZeroRows ) {
+        log.logBasic( "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+      } else {
+        log.logBasic( "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+      }
+    }
+    return shouldExecuteWithZeroRows;
+  }
+
   private boolean createParentFolder( String filename ) {
     // Check for parent folder
     FileObject parentfolder = null;
@@ -1384,7 +1397,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   @Deprecated
   public JobMeta getJobMeta( Repository rep, VariableSpace space ) throws KettleException {
     parentJobMeta.getMetaFileCache( ); //Get the cache from the parent or create it
-      return getJobMeta( rep, getMetaStore(), space );
+    return getJobMeta( rep, getMetaStore(), space );
   }
 
   protected JobMeta getJobMetaFromRepository( Repository rep, CurrentDirectoryResolver r, String transPath, VariableSpace tmpSpace ) throws KettleException {
