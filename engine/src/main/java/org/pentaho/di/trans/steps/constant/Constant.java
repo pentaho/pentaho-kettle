@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.constant;
 
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +93,7 @@ public class Constant extends BaseStep implements StepInterface {
           String stringValue = meta.getValue()[i];
 
           // If the value is empty: consider it to be NULL.
-          if ( stringValue == null || stringValue.length() == 0 ) {
+          if ( stringValue == null || stringValue.isEmpty() ) {
             rowData[i] = null;
 
             if ( value.getType() == ValueMetaInterface.TYPE_NONE ) {
@@ -108,16 +109,16 @@ public class Constant extends BaseStep implements StepInterface {
                   if ( meta.getFieldFormat()[i] != null
                     || meta.getDecimal()[i] != null || meta.getGroup()[i] != null
                     || meta.getCurrency()[i] != null ) {
-                    if ( meta.getFieldFormat()[i] != null && meta.getFieldFormat()[i].length() >= 1 ) {
+                    if ( meta.getFieldFormat()[i] != null && !meta.getFieldFormat()[ i ].isEmpty() ) {
                       data.df.applyPattern( meta.getFieldFormat()[i] );
                     }
-                    if ( meta.getDecimal()[i] != null && meta.getDecimal()[i].length() >= 1 ) {
+                    if ( meta.getDecimal()[i] != null && !meta.getDecimal()[ i ].isEmpty() ) {
                       data.dfs.setDecimalSeparator( meta.getDecimal()[i].charAt( 0 ) );
                     }
-                    if ( meta.getGroup()[i] != null && meta.getGroup()[i].length() >= 1 ) {
+                    if ( meta.getGroup()[i] != null && !meta.getGroup()[ i ].isEmpty() ) {
                       data.dfs.setGroupingSeparator( meta.getGroup()[i].charAt( 0 ) );
                     }
-                    if ( meta.getCurrency()[i] != null && meta.getCurrency()[i].length() >= 1 ) {
+                    if ( meta.getCurrency()[i] != null && !meta.getCurrency()[ i ].isEmpty() ) {
                       data.dfs.setCurrencySymbol( meta.getCurrency()[i] );
                     }
 
@@ -195,6 +196,18 @@ public class Constant extends BaseStep implements StepInterface {
                   String message =
                     BaseMessages.getString(
                       PKG, "Constant.BuildRow.Error.Parsing.Timestamp", value.getName(), stringValue, e
+                        .toString() );
+                  remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
+                }
+                break;
+
+              case ValueMetaInterface.TYPE_INET:
+                try {
+                  rowData[i] = InetAddress.getByName( stringValue );
+                } catch ( Exception e ) {
+                  String message =
+                    BaseMessages.getString(
+                      PKG, "Constant.BuildRow.Error.Parsing.InternetAddress", value.getName(), stringValue, e
                         .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
