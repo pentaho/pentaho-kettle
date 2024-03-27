@@ -441,6 +441,8 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
         return convertNumberToInternetAddress( meta2.getNumber( data2 ) );
       case TYPE_BIGNUMBER:
         return convertBigNumberToInternetAddress( meta2.getBigNumber( data2 ) );
+      case TYPE_INET:
+        return ( (ValueMetaInternetAddress) meta2 ).getInternetAddress( data2 );
       default:
         throw new KettleValueException( meta2.toStringMeta() + " : can't be converted to an Internet Address" );
     }

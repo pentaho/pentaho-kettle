@@ -166,7 +166,7 @@ public interface ValueMetaInterface extends Cloneable {
   /** Value type indicating that the value contains a date-time with nanosecond precision */
   int TYPE_TIMESTAMP = 9;
 
-  /** Value type indicating that the value contains a Internet address */
+  /** Value type indicating that the value contains an Internet address */
   int TYPE_INET = 10;
 
   /** The Constant typeCodes. */
@@ -618,7 +618,7 @@ public interface ValueMetaInterface extends Cloneable {
   boolean isLargeTextField();
 
   /**
-   * Set to true if the this is to be a large text field (CLOB, TEXT) with arbitrary length.
+   * Set to true if this is to be a large text field (CLOB, TEXT) with arbitrary length.
    *
    * @param largeTextField
    *          Set to true if this is to be a large text field (CLOB, TEXT) with arbitrary length.
@@ -626,10 +626,10 @@ public interface ValueMetaInterface extends Cloneable {
   void setLargeTextField( boolean largeTextField );
 
   /**
-   * Returns true of the date format is leniant, false if it is strict. <br/>
-   * See also {@link setDateFormatLenient(boolean)}
+   * Returns true of the date format is lenient, false if it is strict. <br/>
+   * See also {@link #setDateFormatLenient(boolean)}
    *
-   * @return true if the the date formatting (parsing) is to be lenient.
+   * @return true if the date formatting (parsing) is to be lenient.
    *
    */
   boolean isDateFormatLenient();
@@ -645,7 +645,7 @@ public interface ValueMetaInterface extends Cloneable {
    * Set to false for stricter formatting validation.
    *
    * @param dateFormatLenient
-   *          true if the the date formatting (parsing) is to be set to lenient.
+   *          true if the date formatting (parsing) is to be set to lenient.
    */
   void setDateFormatLenient( boolean dateFormatLenient );
 
