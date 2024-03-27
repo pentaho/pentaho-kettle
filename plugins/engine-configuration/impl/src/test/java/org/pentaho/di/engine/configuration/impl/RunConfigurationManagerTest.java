@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -35,7 +35,6 @@ import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.util.ArrayList;
@@ -59,10 +58,10 @@ public class RunConfigurationManagerTest {
   public void setup() throws Exception {
 
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-    MetastoreLocator metastoreLocator = createMetastoreLocator( memoryMetaStore );
+    CheckedMetaStoreSupplier metastoreSupplier = () -> memoryMetaStore;
 
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( metastoreLocator );
+      new DefaultRunConfigurationProvider( metastoreSupplier );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
@@ -149,9 +148,9 @@ public class RunConfigurationManagerTest {
   @Test
   public void testOrdering() {
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-    MetastoreLocator metastoreLocator = createMetastoreLocator( memoryMetaStore );
+    CheckedMetaStoreSupplier metastoreSupplier = () -> memoryMetaStore;
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( metastoreLocator );
+      new DefaultRunConfigurationProvider( metastoreSupplier );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
 
@@ -191,29 +190,4 @@ public class RunConfigurationManagerTest {
     assertEquals( "z", names.get( 4 ) );
   }
 
-  private static MetastoreLocator createMetastoreLocator( IMetaStore memoryMetaStore ) {
-    return new MetastoreLocator() {
-
-      @Override
-      public IMetaStore getMetastore( String providerKey ) {
-        return memoryMetaStore;
-      }
-
-      @Override
-      public IMetaStore getMetastore() {
-        return memoryMetaStore;
-      }
-
-      @Override public String setEmbeddedMetastore( IMetaStore metastore ) {
-        return null;
-      }
-
-      @Override public void disposeMetastoreProvider( String providerKey ) {
-      }
-
-      @Override public IMetaStore getExplicitMetastore( String providerKey ) {
-        return null;
-      }
-    };
-  }
 }

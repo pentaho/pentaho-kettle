@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -30,6 +30,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
+import org.pentaho.di.engine.configuration.impl.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.impl.MetaStoreRunConfigurationFactory;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -71,16 +72,16 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
     super( null );
     try {
       Collection<MetastoreLocator> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocator.class );
-      metastoreLocator = metastoreLocators.stream().findFirst().get();
-      super.setMetastoreLocator( metastoreLocator );
+      MetastoreLocator metastoreLocator = metastoreLocators.stream().findFirst().get();
+      super.setMetastoreSupplier( () -> metastoreLocator.getMetastore() );
     } catch ( Exception e ) {
       logger.warn( "Error getting MetastoreLocator", e );
     }
     this.defaultRunConfigurationExecutor = DefaultRunConfigurationExecutor.getInstance();
   }
 
-  public DefaultRunConfigurationProvider( MetastoreLocator metastoreLocator ) {
-    super( metastoreLocator );
+  public DefaultRunConfigurationProvider( CheckedMetaStoreSupplier metastoreSupplier ) {
+    super( metastoreSupplier );
     this.defaultRunConfigurationExecutor = DefaultRunConfigurationExecutor.getInstance();
   }
 
