@@ -26,13 +26,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.TestFileProvider;
-import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
-import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
-import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Date;
 import java.util.Objects;
 
