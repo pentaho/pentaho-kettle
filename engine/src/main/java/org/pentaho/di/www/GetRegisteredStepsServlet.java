@@ -62,6 +62,11 @@ public class GetRegisteredStepsServlet extends BaseHttpServlet implements CarteP
   @VisibleForTesting
   CarteStatusCache cache = CarteStatusCache.getInstance();
 
+  /**
+   * Adding this constructor as Carte needs default constructor for registering the servlet
+   */
+  public GetRegisteredStepsServlet() {
+  }
   public GetRegisteredStepsServlet( TransformationMap transformationMap ) {
     super( transformationMap );
   }
