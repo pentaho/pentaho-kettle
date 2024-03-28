@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.provider.URLFileName;
 import org.apache.commons.vfs2.util.RandomAccessMode;
 import org.pentaho.di.core.vfs.AliasedFileObject;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -145,9 +146,13 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
     String connectionName = ( (ConnectionFileName) this.getName() ).getConnection();
     StringBuilder connectionPath = new StringBuilder();
     connectionPath.append( ConnectionFileProvider.SCHEME );
-    connectionPath.append( "://" );
-    connectionPath.append( connectionName );
-    connectionPath.append( DELIMITER );
+    if ( fileObject.getName().toString().toLowerCase().startsWith( KettleVFS.SMB_SCHEME_COLON ) ) {
+      connectionPath.append( ":/" );
+    } else {
+      connectionPath.append( "://" );
+      connectionPath.append( connectionName );
+      connectionPath.append( DELIMITER );
+    }
     if ( domain == null || domain.equals( "" ) ) {
       // S3 does not return a URLFleName; but Google does hence the difference here
       if ( fileObject.getName() instanceof URLFileName ) {
