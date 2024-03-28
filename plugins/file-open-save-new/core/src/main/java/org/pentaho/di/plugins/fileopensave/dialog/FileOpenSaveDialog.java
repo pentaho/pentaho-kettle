@@ -121,6 +121,8 @@ import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.FileDialogOperation.CustomImage;
+import org.pentaho.di.ui.core.FileDialogOperation.CustomImageProvider;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.WarningDialog;
@@ -145,11 +147,15 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+// This dialog's use of generics is inconsistent and will likely never be fixed,
+// so we might as well not be swamped by warnings
+@SuppressWarnings( { "rawtypes", "unchecked" } )
 public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private static final Class<?> PKG = FileOpenSaveDialog.class;
 
@@ -178,6 +184,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private static final String PASTE_ACTION_SKIP = "skip";
   private static final String PASTE_ACTION_REPLACE = "replace";
   private static final String PASTE_ACTION_KEEP_BOTH = "keep-both";
+
+  /** default size of a file icon in the file browser */
+  private static final int SIZE_ICON_BROWSER = 25;
+
   private FilterFileType[] validFileTypes;
   private String shellTitle = "Open";
   private String objectId;
@@ -222,9 +232,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   protected boolean isCutActionSelected = false;
   protected boolean isApplyToAll = false;
 
-
-  private static final FileController FILE_CONTROLLER;
-
   private Label lblComboFilter;
 
   private TypedComboBox<FilterFileType> typedComboBox;
@@ -249,6 +256,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private Image imgFile;
   private Image imgTrans;
   private Image imgJob;
+
+  private final Map<String, Image> customImages = new HashMap<>();
 
   // Dialogs
 
@@ -283,9 +292,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   Label noRecentFilesLabel = null;
 
-  static {
-    FILE_CONTROLLER = new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.get() );
-  }
+  private FileController fileController;
 
   public FileOpenSaveDialog( Shell parentShell, int width, int height, LogChannelInterface logger ) {
     super( parentShell );
@@ -293,13 +300,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     this.width = width;
     this.height = height;
     setShellStyle( OPTIONS );
-    ObjectMapper objectMapper = new ObjectMapper();
-    try {
-      InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream( FILE_EXTENSION_RESOURCE_PATH );
-      String jsonString = new BufferedReader(
-        new InputStreamReader( inputStream, StandardCharsets.UTF_8 ) )
-        .lines()
-        .collect( Collectors.joining( "\n" ) );
+    try (
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream( FILE_EXTENSION_RESOURCE_PATH );
+        BufferedReader reader = new BufferedReader( new InputStreamReader( inputStream, StandardCharsets.UTF_8 ) ) ) {
+      ObjectMapper objectMapper = new ObjectMapper();
+      String jsonString = reader.lines().collect( Collectors.joining( "\n" ) );
       validFileTypes = objectMapper.readValue( jsonString, FilterFileType[].class );
     } catch ( Exception ex ) {
       log.logError( "Could not load resource", ex );
@@ -310,7 +315,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     this.fileDialogOperation = fileDialogOperation;
     command = fileDialogOperation.getCommand();
+    this.fileController =
+        new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.get(), fileDialogOperation.getFileLoadListener() );
+
     shellTitle = BaseMessages.getString( PKG, "FileOpenSaveDialog.dialog." + command + ".title" );
+
+
     open();
     if ( getShell() != null ) {
       while ( !getShell().isDisposed() ) {
@@ -320,6 +330,17 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
     } else {
       clearState();
+    }
+  }
+
+  private void loadCustomImages( CustomImageProvider customImageProvider, Map<String, Image> customImages,
+      ClassLoader defaultClassLoader ) {
+    for ( Map.Entry<String, CustomImage> entry : customImageProvider.getCustomImages().entrySet() ) {
+      CustomImage location = entry.getValue();
+      ClassLoader classLoader = location.getClassLoader().orElse( defaultClassLoader );
+      // returns a default image if unable to load
+      Image image = rasterImage( classLoader, location.getPath(), SIZE_ICON_BROWSER, SIZE_ICON_BROWSER );
+      customImages.put( entry.getKey(), image );
     }
   }
 
@@ -567,7 +588,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
               treeViewer.setSelection( new StructuredSelection( currentFile ), true );
               treeViewer.setExpandedState( currentFile, true );
               try {
-                children = FILE_CONTROLLER.getFiles( currentFile, null, true );
+                children = fileController.getFiles( currentFile, null, true );
                 // Sort in increasing order
                 if ( children.size() > 0 ) {
                   sortFileList( children );
@@ -729,7 +750,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           && StringUtils.isNotEmpty( txtFileName.getText() ) ) {
           processOnSavePressed( (File) structuredSelection.getFirstElement() );
           // clear the parent directory from the cache so the file shows up on next dialog open
-          FILE_CONTROLLER.clearCache( (File) ( treeSelection ).getFirstElement() );
+          fileController.clearCache( (File) ( treeSelection ).getFirstElement() );
         }
       }
     } );
@@ -1092,7 +1113,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( file.get().getPath().equals( path ) ) {
           break;
         }
-        childrenAsFiles = FILE_CONTROLLER.getFiles( file.get(), null, true );
+        childrenAsFiles = fileController.getFiles( file.get(), null, true );
         if ( file.isPresent() ) {
           treeViewer.setSelection( new StructuredSelection( file.get() ), true );
           parent = file;
@@ -1154,7 +1175,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           log.logDebug( "Unable to find provider" );
         }
         for ( Object file : ( (Tree) treeViewerSelection.getFirstElement() ).getChildren() ) {
-          FILE_CONTROLLER.clearCache( (File) file );
+          fileController.clearCache( (File) file );
         }
         treeViewer.collapseAll();
       } else {
@@ -1164,7 +1185,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         } catch ( Exception ex ) {
           log.logDebug( "Unable to find provider" );
         }
-        FILE_CONTROLLER.clearCache( (File) ( treeViewerSelection.getFirstElement() ) );
+        fileController.clearCache( (File) ( treeViewerSelection.getFirstElement() ) );
       }
       if ( fileProvider != null ) {
         fileProvider.clearProviderCache();
@@ -1181,7 +1202,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       try {
         fileProvider = ProviderServiceService.get().get( fileDialogOperation.getProvider() );
         fileProvider.clearProviderCache();
-        treeViewer.setInput( FILE_CONTROLLER.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
+        treeViewer.setInput( fileController.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
         treeViewer.refresh( true );
         fileTableViewer.refresh( true );
       } catch ( Exception ex ) {
@@ -1209,6 +1230,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     imgFile = rasterImage( "img/file_icons/Doc.S_D.svg", 25, 25 );
     imgTrans = rasterImage( "img/file_icons/Transformation.S_D.svg", 25, 25 );
     imgJob = rasterImage( "img/file_icons/Job.S_D.svg", 25, 25 );
+    fileDialogOperation.getCustomImageProvider()
+        .ifPresent( provider -> loadCustomImages( provider, customImages, getClass().getClassLoader() ) );
     Composite browser = new Composite( parent, SWT.NONE );
     PropsUI.getInstance().setLook( browser );
     GridLayout gridLayout = new GridLayout();
@@ -1237,10 +1260,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
     treeViewer.setLabelProvider( labelProvider );
 
-    treeViewer.setContentProvider( new FileTreeContentProvider( FILE_CONTROLLER, this ) );
+    treeViewer.setContentProvider( new FileTreeContentProvider( fileController, this ) );
 
     // Load the various tree types on the left
-    treeViewer.setInput( FILE_CONTROLLER.load( providerFilter ).toArray() );
+    treeViewer.setInput( fileController.load( providerFilter ).toArray() );
 
     treeViewer.addPostSelectionChangedListener( e -> {
       IStructuredSelection selection = (IStructuredSelection) e.getSelection();
@@ -1445,19 +1468,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
 
       @Override public Image getImage( Object element ) {
-        if ( element instanceof Directory ) {
-          return imgFolder;
-        } else if ( element instanceof File ) {
+        if ( element instanceof File ) {
           File file = (File) element;
-          if ( file != null && file.getType() != null ) {
-            if ( file.getType().equals( File.TRANSFORMATION ) ) {
-              return imgTrans;
-            } else if ( file.getType().equals( File.JOB ) ) {
-              return imgJob;
-            } else {
-              return imgFile;
-            }
-          }
+          String path = file.getPath();
+          return fileDialogOperation.getCustomImageProvider().flatMap( provider -> provider.getImage( path ) )
+              .map( customImages::get ).filter( Objects::nonNull ).orElseGet( () -> getImageForFile( file ) );
         }
         return null;
       }
@@ -1538,7 +1553,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         while ( directory != null && !treeViewer.getExpandedState( directory ) ) {
           parentDirectories.add( directory );
           try {
-            File file = FILE_CONTROLLER.getParent( directory );
+            File file = fileController.getParent( directory );
             if ( file instanceof Directory && StringUtils.isNotEmpty( file.getPath() ) ) {
               directory = (Directory) file;
             } else {
@@ -1634,15 +1649,27 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         colComparator = colComparator.reversed();
       }
       fileTableViewerComparator = baseComparator.thenComparing( colComparator );
-      
+
     } else {
       //no comparator, use default
       fileTableViewerComparator = null;
     }
-    
+
     fileTableViewer.refresh( true ); 
   }
-  
+
+  private Image getImageForFile( File file ) {
+    if ( file instanceof Directory ) {
+      return imgFolder;
+    } else if ( file != null && file.getType() != null ) {
+      if ( file.getType().equals( File.TRANSFORMATION ) ) {
+        return imgTrans;
+      } else if ( file.getType().equals( File.JOB ) ) {
+        return imgJob;
+      }
+    }
+    return imgFile;
+  }
 
   private void performRename( SelectionEvent e ) {
     selectedItems.clear();
@@ -1662,7 +1689,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       File file = (File) fileTableViewer.getTable().getItem( index ).getData();
       selectedItems.add( file );
     }
-    FILE_CONTROLLER.delete( new ArrayList<File>( selectedItems ) );
+    fileController.delete( new ArrayList<File>( selectedItems ) );
     refreshDisplay( e );
 
   }
@@ -1691,7 +1718,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
       String newFilePath = getNewFilePath( file.getName(), destFolder );
 
-      if ( FILE_CONTROLLER.fileExists( destFolder, newFilePath ) == Boolean.TRUE ) {
+      if ( fileController.fileExists( destFolder, newFilePath ) == Boolean.TRUE ) {
         if ( !isCutActionSelected ) {
           if ( !isApplyToAll ) {
             createPasteWarningDialog( file.getName() );
@@ -1703,9 +1730,9 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
               break;
             case PASTE_ACTION_KEEP_BOTH:
               if ( StringUtils.isNotEmpty( newFilePath ) ) {
-                result = FILE_CONTROLLER.getNewName( destFolder, newFilePath );
+                result = fileController.getNewName( destFolder, newFilePath );
                 if ( result.getStatus() == Result.Status.SUCCESS ) {
-                  FILE_CONTROLLER.copyFile( file, destFolder, (String) result.getData(),
+                  fileController.copyFile( file, destFolder, (String) result.getData(),
                     new OverwriteStatus( getShell(), OverwriteMode.RENAME ) );
                 }
               }
@@ -1728,7 +1755,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       if ( isCutActionSelected && deleteCutFileFlag ) {
         List<File> cutFiles = new ArrayList<File>();
         cutFiles.add( file );
-        FILE_CONTROLLER.delete( cutFiles );
+        fileController.delete( cutFiles );
       }
     } );
 
@@ -1751,7 +1778,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   private Result copyFile( File file, File destFolder, String path, OverwriteStatus overwriteStatus ) {
     if ( StringUtils.isNotEmpty( path ) ) {
-      return FILE_CONTROLLER.copyFile( file, destFolder, path, overwriteStatus );
+      return fileController.copyFile( file, destFolder, path, overwriteStatus );
     }
     return null;
   }
@@ -1763,7 +1790,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       String newPath = file.getParent() + "/" + renameValue;
       // Prevent rename folder to the same name
       if ( !file.getPath().equals( newPath ) ) {
-        FILE_CONTROLLER.rename( file, newPath, new OverwriteStatus( null, OverwriteMode.OVERWRITE ) );
+        fileController.rename( file, newPath, new OverwriteStatus( null, OverwriteMode.OVERWRITE ) );
       }
     }
   }
@@ -1805,17 +1832,22 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
       openStructuredSelectionPath( (IStructuredSelection) fileTableViewer.getSelection() );
 
+      boolean canOpen = canOpen( command, name, path ) && fileDialogOperation.getOpenCondition().test( path );
+      btnOpen.setEnabled( canOpen );
+    }
+  }
+
+  private boolean canOpen( String command, String name, String path ) {
       if ( command.equalsIgnoreCase( FileDialogOperation.SELECT_FILE_FOLDER ) ) {
-        btnOpen.setEnabled( StringUtils.isNotEmpty( path ) || StringUtils.isNotEmpty( name ) );
+        return StringUtils.isNotEmpty( path ) || StringUtils.isNotEmpty( name );
       } else if ( command.equals( FileDialogOperation.SELECT_FOLDER ) ) {
-        btnOpen.setEnabled( StringUtils.isNotEmpty( path ) && StringUtils.isEmpty( name ) );
+        return StringUtils.isNotEmpty( path ) && StringUtils.isEmpty( name );
       } else if ( command.equals( FileDialogOperation.SELECT_FILE ) || command.equals( FileDialogOperation.OPEN )
         || command.equals( FileDialogOperation.IMPORT ) ) {
-        btnOpen.setEnabled( StringUtils.isNotEmpty( name ) );
+        return StringUtils.isNotEmpty( name );
       } else {
-        btnOpen.setEnabled( false );
+        return false;
       }
-    }
   }
 
   private boolean isSaveState() {
@@ -1986,10 +2018,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         for ( Object file : selection ) {
           selectionList.add( (File) file );
         }
-        Result result = FILE_CONTROLLER.delete( selectionList );
+        Result result = fileController.delete( selectionList );
         List<File> filesToDelete = (List<File>) result.getData();
         if ( filesToDelete.size() > 0 ) {
-          FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
+          fileController.clearCache( (File) treeViewerDestination );
           treeViewer.refresh( treeViewerDestination, true );
           selectPath( treeViewerDestination );
           treeViewer.setSelection( treeViewerSelection, true );
@@ -2083,7 +2115,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
             BaseMessages.getString( PKG, "file-open-save-plugin.error.unable-to-create-folder.message" ), listenerMap );
           warningDialog.open();
         }
-        FILE_CONTROLLER.clearCache( (File) treeViewerDestination );
+        fileController.clearCache( (File) treeViewerDestination );
         treeViewer.refresh( treeViewerDestination, true );
 
         selectPath( treeViewerDestination );
@@ -2114,8 +2146,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private Image rasterImage( String path, int width, int height ) {
+    return rasterImage( getClass().getClassLoader(), path, width, height );
+  }
+
+  private Image rasterImage( ClassLoader classLoader, String path, int width, int height ) {
     SwtUniversalImage img =
-      SwtSvgImageUtil.getUniversalImage( getShell().getDisplay(), getClass().getClassLoader(), path );
+      SwtSvgImageUtil.getUniversalImage( getShell().getDisplay(), classLoader, path );
     Image image = img.getAsBitmapForSize( getShell().getDisplay(), width, height );
     getShell().addDisposeListener( e -> {
       img.dispose();
@@ -2123,6 +2159,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } );
     return image;
   }
+
+
 
   boolean hasParentFolder( IStructuredSelection structuredSelection ) {
     return !structuredSelection.isEmpty() && structuredSelection.getFirstElement() instanceof Directory;
@@ -2220,8 +2258,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
             currentFilters = currentFilters.replace( "\\", "" );
           }
           List<File> files = search ?
-            FILE_CONTROLLER.searchFiles( (File) selectedElement, currentFilters, searchString ) :
-            FILE_CONTROLLER.getFiles( (File) selectedElement, currentFilters, useCache );
+            fileController.searchFiles( (File) selectedElement, currentFilters, searchString ) :
+            fileController.getFiles( (File) selectedElement, currentFilters, useCache );
+          if ( fileDialogOperation.isShowOnlyFolders() ) {
+            files.removeIf( f -> !( f instanceof Directory ) );
+          }
           fileTableViewer.setInput( files.stream()
             .sorted( DEFAULT_FILE_TABLE_VIEWER_COMPARATOR )
             .toArray() );
