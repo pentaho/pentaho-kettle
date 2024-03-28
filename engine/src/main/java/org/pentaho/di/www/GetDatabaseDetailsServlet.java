@@ -54,6 +54,11 @@ public class GetDatabaseDetailsServlet extends BaseHttpServlet implements CarteP
 
   public static final String CONTEXT_PATH = "/kettle/registeredDatabasePlugins";
 
+  /**
+   * Adding this constructor as Carte needs default constructor for registering the servlet
+   */
+  public GetDatabaseDetailsServlet() {
+  }
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
           IOException {
 

@@ -242,7 +242,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     }
 
     if ( log.isDebug() ) {
-      logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransGetCallRequested" ) );
+      logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransRequested" ) );
     }
     isPostCall = false;
 
@@ -350,7 +350,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       return;
     }
     if ( log.isDebug() ) {
-      logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransPostCallRequested" ) );
+      logDebug( BaseMessages.getString( PKG, "ExecuteTransServlet.Log.ExecuteTransRequested" ) );
     }
     isPostCall = true;
     response.setStatus( HttpServletResponse.SC_OK );
