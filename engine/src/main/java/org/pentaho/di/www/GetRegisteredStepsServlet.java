@@ -59,18 +59,6 @@ public class GetRegisteredStepsServlet extends BaseHttpServlet implements CarteP
 
   private static final String PLUGIN_TYPE = "pluginType";
 
-  @VisibleForTesting
-  CarteStatusCache cache = CarteStatusCache.getInstance();
-
-  /**
-   * Adding this constructor as Carte needs default constructor for registering the servlet
-   */
-  public GetRegisteredStepsServlet() {
-  }
-  public GetRegisteredStepsServlet( TransformationMap transformationMap ) {
-    super( transformationMap );
-  }
-
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
           IOException {
 
