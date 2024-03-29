@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1640,7 +1640,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     return sharedObjects;
   }
 
-  protected boolean loadSharedObject( SharedObjectInterface object ) {
+  public boolean loadSharedObject( SharedObjectInterface object ) {
     if ( object instanceof DatabaseMeta ) {
       DatabaseMeta databaseMeta = (DatabaseMeta) object;
       databaseMeta.shareVariablesWith( this );
