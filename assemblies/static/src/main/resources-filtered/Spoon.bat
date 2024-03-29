@@ -131,6 +131,10 @@ set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.reflect.misc=ALL-
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.management/javax.management=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.management/javax.management.openmbean=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.naming/com.sun.jndi.ldap=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.math=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.io=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.lang.Object=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.nio.ch=ALL-UNNAMED"
 
 :COLLECTARGUMENTS
 REM **********************
