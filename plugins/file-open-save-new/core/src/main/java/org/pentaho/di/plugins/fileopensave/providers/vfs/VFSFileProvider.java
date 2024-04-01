@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -120,7 +120,13 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         vfsLocation.setRoot( NAME );
         vfsLocation.setHasChildren( true );
         vfsLocation.setCanDelete( false );
-        vfsLocation.setPath( vfsConnectionDetails.getType() + "://" + vfsConnectionDetails.getDomain() );
+        String path = vfsConnectionDetails.getType() + "://";
+        if ( KettleVFS.SMB_SCHEME.equals( vfsConnectionDetails.getType() ) ) {
+          path += vfsConnectionDetails.getName();
+        } else {
+          path += vfsConnectionDetails.getDomain();
+        }
+        vfsLocation.setPath( path );
         vfsLocation.setDomain( vfsConnectionDetails.getDomain() );
         vfsLocation.setConnection( connectionDetails.getName() );
         vfsLocation.setCanAddChildren( vfsConnectionDetails.hasBuckets() );
