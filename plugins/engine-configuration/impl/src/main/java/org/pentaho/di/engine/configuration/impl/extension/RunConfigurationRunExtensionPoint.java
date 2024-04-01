@@ -24,10 +24,10 @@
 
 package org.pentaho.di.engine.configuration.impl.extension;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -41,6 +41,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 
+import com.google.common.annotations.VisibleForTesting;
+import java.util.function.Function;
+
 /**
  * Created by bmorrise on 3/16/17.
  */
@@ -49,8 +52,9 @@ import org.pentaho.di.trans.TransMeta;
 public class RunConfigurationRunExtensionPoint implements ExtensionPointInterface {
 
   private static Class<?> PKG = RunConfigurationRunExtensionPoint.class;
-
-  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
+  // basically exists for testing.
+  private Function<Bowl, RunConfigurationManager> rcmProvider = bowl ->
+    RunConfigurationManager.getInstance( bowl );
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     ExecutionConfiguration executionConfiguration = (ExecutionConfiguration) ( (Object[]) o )[ 0 ];
@@ -59,6 +63,7 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
     Repository repository = (Repository) ( (Object[]) o )[ 3 ];
     EmbeddedMetaStore embeddedMetaStore = meta.getEmbeddedMetaStore();
 
+    RunConfigurationManager runConfigurationManager = rcmProvider.apply( meta.getBowl() );
     RunConfiguration runConfiguration =
       runConfigurationManager.load( executionConfiguration.getRunConfiguration() );
 
@@ -87,7 +92,7 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
   }
 
   @VisibleForTesting
-  void setRunConfigurationManager( RunConfigurationManager runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
+  void setRunConfigurationManagerProvider ( Function<Bowl, RunConfigurationManager> provider ) {
+    this.rcmProvider = provider;
   }
 }
