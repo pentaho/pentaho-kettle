@@ -809,9 +809,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           String path = fullName.substring( fullName.indexOf( baseFolder ) + baseFolder.length() + 1 );
           file_name = destinationFolderObject.resolveFile( path, NameScope.DESCENDENT );
 
-          if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
+          if ( !info.getFile().getParent().getURI().toString().equals( info.getBaseFolder().getURI().toString() ) ) {
 
-            // Not in the Base Folder..Only if include sub folders
+            // Not in the Base Folder..Only if Normally include sub folders
             if ( include_subfolders ) {
               // Folders..only if include subfolders
               if ( info.getFile().getType() == FileType.FOLDER ) {
