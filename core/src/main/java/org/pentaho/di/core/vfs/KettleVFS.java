@@ -116,6 +116,15 @@ public class KettleVFS {
     return kettleVFS;
   }
 
+  /** only use this method as a last resort if you don't yet have a variables object.  Since VFS connections can be used
+   * with variables for the dialog fields, it is important to pass the Variables to getFileObject.  Failure to do this
+   * means any settings for the job/ktr will not be available for variables substitution.
+   * Use getFileObject( String vfsFilename, VariableSpace space ), instead and pass the steps/entries variable space.
+   * @param vfsFilename
+   * @return
+   * @throws KettleFileException
+   */
+  @Deprecated
   public static FileObject getFileObject( String vfsFilename ) throws KettleFileException {
     return getFileObject( vfsFilename, defaultVariableSpace );
   }
