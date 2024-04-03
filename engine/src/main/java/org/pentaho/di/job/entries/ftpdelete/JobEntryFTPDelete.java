@@ -1071,6 +1071,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
     // Create ftp client to host:port ...
     ftpclient = new FTPClient();
+    ftpclient.setControlEncoding("UTF-8");
     ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
     if ( realport != 0 ) {
       ftpclient.setRemotePort( realport );
