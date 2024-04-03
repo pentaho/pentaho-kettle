@@ -52,11 +52,6 @@
 
     <!-- Third-party dependencies -->
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.13.0</version> <!-- [vulnerable 2.14.1] latest 2.22.0 -->
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
