@@ -28,6 +28,7 @@ import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
+import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.providers.model.TestDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.model.TestFile;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class TestFileProvider extends BaseFileProvider<TestFile> {
 
@@ -74,7 +76,7 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     testFileSystem.get( file.getPath() ).forEach( testFile -> {
       if ( testFile instanceof TestDirectory ) {
         files.add( TestDirectory.create( testFile.getName(), testFile.getPath(), testFile.getParent() ) );
-      } else {
+      } else if ( Utils.matches(testFile.getName(), filters) ) {
         files.add( TestFile.create( testFile.getName(), testFile.getPath(), testFile.getParent() ) );
       }
     } );
