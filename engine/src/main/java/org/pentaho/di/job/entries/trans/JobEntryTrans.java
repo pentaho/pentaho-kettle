@@ -746,7 +746,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
     while ( ( first && !execPerRow )
-      || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 )
+      || ( execPerRow && rows != null && iteration <= rows.size() && result.getNrErrors() == 0
+      || shouldConsiderOldBehaviourForEveryInputRow( rows.size() ) )
       && !parentJob.isStopped() ) {
       // Clear the result rows of the result
       // Otherwise we double the amount of rows every iteration in the simple cases.
@@ -1262,6 +1263,18 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     setLoggingObjectInUse( false );
     return result;
+  }
+
+  private boolean shouldConsiderOldBehaviourForEveryInputRow( int numOfRows ) {
+    boolean shouldExecuteWithZeroRows = "Y".equalsIgnoreCase( System.getProperty( Const.COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, "N" ) );
+    if ( numOfRows == 0 ) {
+      if ( shouldExecuteWithZeroRows ) {
+        log.logBasic( "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+      } else {
+        log.logBasic( "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+      }
+    }
+    return shouldExecuteWithZeroRows;
   }
 
   protected void updateResult( Result result ) {
