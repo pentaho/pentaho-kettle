@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.connections.common.bucket.TestConnectionDetails;
 import org.pentaho.di.connections.common.bucket.TestConnectionProvider;
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -50,6 +51,8 @@ public class ConnectionManagerTest {
   private static String CONNECTION_NAME = "Connection Name";
   private static String PASSWORD = "testpassword";
   private static String PASSWORD2 = "testpassword2";
+  private static String ROLE1 = "role1";
+  private static String ROLE2 = "role2";
 
   private ConnectionManager connectionManager;
 
@@ -235,6 +238,23 @@ public class ConnectionManagerTest {
     Assert.assertNull( fileSystemOptions );
   }
 
+  @Test
+  public void testBaRolesNotNull() {
+    addOne();
+    TestConnectionDetails connectionDetails = (TestConnectionDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
+    Assert.assertNotNull( connectionDetails );
+    Assert.assertNotNull( connectionDetails.getBaRoles() );
+  }
+
+  @Test
+  public void testDefaultPropertiesNotNull() {
+    addOne();
+    TestConnectionDetails connectionDetails = (TestConnectionDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
+    Assert.assertNotNull( connectionDetails );
+    Assert.assertNotNull( connectionDetails.getProperties() );
+    Assert.assertNotNull( connectionDetails.getProperties().get( "baRoles" ) );
+  }
+
   private void addProvider() {
     TestConnectionProvider testConnectionProvider = new TestConnectionProvider( connectionManager );
     connectionManager.addConnectionProvider( TestConnectionProvider.SCHEME, testConnectionProvider );
@@ -247,6 +267,8 @@ public class ConnectionManagerTest {
     testConnectionDetails.setName( CONNECTION_NAME );
     testConnectionDetails.setPassword( PASSWORD );
     testConnectionDetails.setPassword1( PASSWORD2 );
+    testConnectionDetails.getBaRoles().add( ROLE1 );
+    testConnectionDetails.getBaRoles().add( ROLE2 );
     connectionManager.save( testConnectionDetails );
   }
 
