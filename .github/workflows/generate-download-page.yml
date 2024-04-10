@@ -1,6 +1,9 @@
 name: (Re)Generate Hosted download page
 
 on:
+  schedule:
+    - cron: "*/30 * * * *"
+  
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
