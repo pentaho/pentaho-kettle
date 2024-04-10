@@ -27,12 +27,12 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -56,33 +56,21 @@ public abstract class SalesforceStepDialog extends BaseStepDialog implements Ste
 
     boolean successConnection = true;
     String msgError = null;
-    SalesforceConnection connection = null;
     String realUsername = null;
     try {
+      Trans trans = new Trans( transMeta, null );
+
+      SalesforceStep step =
+        (SalesforceStep) stepMeta.getStepMetaInterface().getStep( stepMeta, null, 0, transMeta, trans );
+
       SalesforceStepMeta meta = META_CLASS.newInstance();
-      getInfo( meta );
-
-      // get real values
-      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
       realUsername = transMeta.environmentSubstitute( meta.getUsername() );
-      String realPassword = Utils.resolvePassword( transMeta, meta.getPassword() );
-      int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeout() ), 0 );
-
-      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
-      connection.setTimeOut( realTimeOut );
-      connection.connect();
-
+      successConnection = step.testConnection();
     } catch ( Exception e ) {
       successConnection = false;
       msgError = e.getMessage();
-    } finally {
-      if ( connection != null ) {
-        try {
-          connection.close();
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
     }
+
     if ( successConnection ) {
 
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );

@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.salesforce;
 
 import com.google.common.primitives.Ints;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -37,6 +38,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -141,5 +144,58 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
       value = Ints.checkedCast( (Long) value );
     }
     return value;
+  }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = SalesforceStep.class.getDeclaredMethod( fieldName + "Action" );
+      response = (JSONObject) actionMethod.invoke( this );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject testButtonAction( ) {
+    JSONObject response = new JSONObject();
+    boolean successConnection = testConnection();
+    response.put( "connectionStatus", successConnection );
+    return response;
+  }
+
+  public boolean testConnection() {
+    boolean successConnection = true;
+    SalesforceConnection connection = null;
+
+    try {
+      String realURL = getTransMeta().environmentSubstitute( meta.getTargetURL() );
+      String realUsername = getTransMeta().environmentSubstitute( meta.getUsername() );
+      String realPassword = Utils.resolvePassword( getTransMeta(), meta.getPassword() );
+      int realTimeOut = Const.toInt( getTransMeta().environmentSubstitute( meta.getTimeout() ), 0 );
+
+      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
+      connection.setTimeOut( realTimeOut );
+      connection.connect();
+
+    } catch ( Exception e ) {
+      successConnection = false;
+      logError( e.getMessage() );
+    } finally {
+      if ( connection != null ) {
+        try {
+          connection.close();
+        } catch ( Exception e ) {
+          successConnection = false;
+          logError( e.getMessage() );
+        }
+      }
+    }
+    return successConnection;
   }
 }
