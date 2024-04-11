@@ -731,8 +731,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
       while ( ( first && !execPerRow )
-        || ( execPerRow && rows != null && !rows.isEmpty() && iteration <= rows.size() && result.getNrErrors() == 0 )
-        || shouldConsiderOldBehaviourForEveryInputRow( rows.size() ) ) {
+        || ( execPerRow && !rows.isEmpty() && iteration <= rows.size() && result.getNrErrors() == 0 )
+        || ( execPerRow && rows.isEmpty() && shouldConsiderOldBehaviourForEveryInputRow() ) ) {
 
         first = false;
         // Clear the result rows of the result
@@ -1238,13 +1238,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return result;
   }
 
-  private boolean shouldConsiderOldBehaviourForEveryInputRow( int numOfRows ) {
+  private boolean shouldConsiderOldBehaviourForEveryInputRow( ) {
     boolean shouldExecuteWithZeroRows = "Y".equalsIgnoreCase( System.getProperty( Const.COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, "N" ) );
-    if ( numOfRows == 0 ) {
+    if ( "Y".equalsIgnoreCase( System.getProperty( Const.COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW, "N" ) ) ) {
       if ( shouldExecuteWithZeroRows ) {
-        log.logBasic( "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+        log.logBasic(
+          "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
       } else {
-        log.logBasic( "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+        log.logBasic(
+          "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
       }
     }
     return shouldExecuteWithZeroRows;
