@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MetaFileCacheImpl implements IMetaFileCache {
+
   private LogChannelInterface logger;
 
   protected Map<String, MetaFileCacheEntry<? extends AbstractMeta>> cacheMap = new ConcurrentHashMap<>();
@@ -39,23 +40,26 @@ public class MetaFileCacheImpl implements IMetaFileCache {
     this.logger = logger;
   }
 
+  public static final String KTR = ".ktr";
+  public static final String KJB = ".kjb";
+
   @Override public JobMeta getCachedJobMeta( String key ) {
-    String keyNormalized = key.endsWith( ".kjb" ) ? key : key + ".kjb";
+    String keyNormalized = key.endsWith( KJB ) ? key : key + KJB;
     return cacheMap.get( keyNormalized ) == null ? null : ( (JobMeta) cacheMap.get( keyNormalized ).getMeta() );
   }
 
   @Override public TransMeta getCachedTransMeta( String key ) {
-    String keyNormalized = key.endsWith( ".ktr" ) ? key : key + ".ktr";
+    String keyNormalized = key.endsWith( KTR ) ? key : key + KTR;
     return cacheMap.get( keyNormalized ) == null ? null : ( (TransMeta) cacheMap.get( keyNormalized ).getMeta() );
   }
 
   @Override public void cacheMeta( String key, JobMeta meta ) {
-    String keyNormalized = key.endsWith( ".kjb" ) ? key : key + ".kjb";
+    String keyNormalized = key.endsWith( KJB ) ? key : key + KJB;
     cacheMap.put( keyNormalized,  new MetaFileCacheEntry<>( key, (JobMeta) meta.realClone( false ) ) );
   }
 
   @Override public void cacheMeta( String key, TransMeta meta ) {
-    String keyNormalized = key.endsWith( ".ktr" ) ? key : key + ".ktr";
+    String keyNormalized = key.endsWith( KTR ) ? key : key + KTR;
     cacheMap.put( keyNormalized, new MetaFileCacheEntry<>( key, (TransMeta) meta.realClone( false ) ) );
   }
 
@@ -83,10 +87,10 @@ public class MetaFileCacheImpl implements IMetaFileCache {
     MetaFileCacheEntry( String key, T meta ) {
 
       if ( meta instanceof JobMeta ) {
-        this.key = key.endsWith( ".kjb" ) ? key : key + ".kjb";
+        this.key = key.endsWith( KJB ) ? key : key + KJB;
         this.meta = (T) ( (JobMeta) meta ).realClone( false );  //always clone the meta
       } else if ( meta instanceof TransMeta ) {
-        this.key = key.endsWith( ".ktr" ) ? key : key + ".ktr";
+        this.key = key.endsWith( KTR ) ? key : key + KTR;
         this.meta = (T) ( (TransMeta) meta ).realClone( false );  //always clone the meta
       }
     }
