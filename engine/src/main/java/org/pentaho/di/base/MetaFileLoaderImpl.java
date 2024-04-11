@@ -260,13 +260,13 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
         TransMeta transMeta = (TransMeta) theMeta;
         transMeta.setMetaFileCache( metaFileCache );
         if ( cacheKey != null ) {
-          metaFileCache.cacheMeta( metaFileCache.getKey( specificationMethod, cacheKey ), transMeta );
+          metaFileCache.cacheMeta( metaFileCache.getKey( specificationMethod, cacheKey.endsWith( ".ktr" ) ? cacheKey : cacheKey + ".ktr" ), transMeta );
         }
       } else {
         JobMeta jobMeta = (JobMeta) theMeta;
         jobMeta.setMetaFileCache( metaFileCache );
         if ( cacheKey != null ) {
-          metaFileCache.cacheMeta( metaFileCache.getKey( specificationMethod, cacheKey ), jobMeta );
+          metaFileCache.cacheMeta( metaFileCache.getKey( specificationMethod, cacheKey.endsWith( ".kjb" ) ? cacheKey : cacheKey + ".kjb" ), jobMeta );
         }
       }
     }
@@ -333,8 +333,8 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       return null;
     }
     return isTransMeta()
-      ? (T) metaFileCache.getCachedTransMeta( metaFileCache.getKey( specificationMethod, realFilename ) )
-      : (T) metaFileCache.getCachedJobMeta( metaFileCache.getKey( specificationMethod, realFilename ) );
+      ? (T) metaFileCache.getCachedTransMeta( metaFileCache.getKey( specificationMethod, realFilename.endsWith( ".ktr" ) ? realFilename : realFilename + ".ktr" ) )
+      : (T) metaFileCache.getCachedJobMeta( metaFileCache.getKey( specificationMethod, realFilename.endsWith( ".kjb" ) ? realFilename : realFilename + ".kjb" ) );
   }
 
   private boolean isTransMeta() {
