@@ -746,7 +746,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     while ( ( first && !execPerRow )
       || ( execPerRow && !rows.isEmpty() && iteration <= rows.size() && result.getNrErrors() == 0 )
-      || ( execPerRow && rows.isEmpty() && shouldConsiderOldBehaviourForEveryInputRow() )
+      || ( execPerRow && rows.isEmpty() && iteration <= rows.size() && shouldConsiderOldBehaviourForEveryInputRow() )
       && !parentJob.isStopped() ) {
       // Clear the result rows of the result
       // Otherwise we double the amount of rows every iteration in the simple cases.
@@ -754,7 +754,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       if ( execPerRow ) {
         result.getRows().clear();
       }
-      if ( rows != null && execPerRow ) {
+
+      if ( rows != null && execPerRow && !rows.isEmpty() ) {
+        // This check is for avoiding OutOfBoundException in next statement as iteration <= rows.size() condition is not leaving while loop
+        // after processing the last row. Otherwise if iteration == rows.size() indicates that we processed already the last row and just need to break from the loop
         resultRow = rows.get( iteration );
       } else {
         resultRow = null;
