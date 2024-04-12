@@ -747,7 +747,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     while ( ( first && !execPerRow )
       || ( execPerRow && !rows.isEmpty() && iteration <= rows.size() && result.getNrErrors() == 0 )
-      || ( execPerRow && rows.isEmpty() && shouldConsiderOldBehaviourForEveryInputRow() )
+      || ( execPerRow && rows.isEmpty() && iteration <= rows.size() && shouldConsiderOldBehaviourForEveryInputRow() )
       && !parentJob.isStopped() ) {
       // Clear the result rows of the result
       // Otherwise we double the amount of rows every iteration in the simple cases.
@@ -755,7 +755,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       if ( execPerRow ) {
         result.getRows().clear();
       }
-      if ( rows != null && execPerRow ) {
+
+      if ( rows != null && execPerRow && !rows.isEmpty() ) {
         resultRow = rows.get( iteration );
       } else {
         resultRow = null;
