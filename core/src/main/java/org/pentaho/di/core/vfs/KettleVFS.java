@@ -66,6 +66,9 @@ public class KettleVFS {
   private static final int TIMEOUT_LIMIT = 9000;
   private static final int TIME_TO_SLEEP_STEP = 50;
   private static final String PROVIDER_PATTERN_SCHEME = "^[\\w\\d]+://(.*)";
+  private static final Pattern SMB_PATTERN = Pattern.compile( "^[Ss][Mm][Bb]://[/]?([^:/]+)(?::([^/]+))?.*$" );
+  public static final String SMB_SCHEME = "smb";
+  public static final String SMB_SCHEME_COLON = SMB_SCHEME + ":";
 
   private static VariableSpace defaultVariableSpace;
 
@@ -113,6 +116,15 @@ public class KettleVFS {
     return kettleVFS;
   }
 
+  /** only use this method as a last resort if you don't yet have a variables object.  Since VFS connections can be used
+   * with variables for the dialog fields, it is important to pass the Variables to getFileObject.  Failure to do this
+   * means any settings for the job/ktr will not be available for variables substitution.
+   * Use getFileObject( String vfsFilename, VariableSpace space ), instead and pass the steps/entries variable space.
+   * @param vfsFilename
+   * @return
+   * @throws KettleFileException
+   */
+  @Deprecated
   public static FileObject getFileObject( String vfsFilename ) throws KettleFileException {
     return getFileObject( vfsFilename, defaultVariableSpace );
   }
@@ -254,6 +266,13 @@ public class KettleVFS {
       KettleFileSystemConfigBuilderFactory.getConfigBuilder( varSpace, scheme );
 
     FileSystemOptions fsOptions = ( sourceOptions == null ) ? new FileSystemOptions() : sourceOptions;
+
+    if ( scheme.equals( SMB_SCHEME ) ) {
+      Matcher matcher = SMB_PATTERN.matcher( vfsFilename );
+      if ( matcher.matches() ) {
+        return VFSHelper.getOpts( vfsFilename, matcher.group( 1 ), varSpace );
+      }
+    }
 
     String[] varList = varSpace.listVariables();
 
@@ -436,12 +455,16 @@ public class KettleVFS {
   }
 
   public static String getFriendlyURI( String filename ) {
+    return getFriendlyURI( filename, defaultVariableSpace );
+  }
+  public static String getFriendlyURI( String filename, VariableSpace space ) {
     if ( filename == null ) {
       return null;
     }
+
     String friendlyName;
     try {
-      friendlyName = getFriendlyURI( KettleVFS.getFileObject( filename ) );
+      friendlyName = getFriendlyURI( KettleVFS.getFileObject( filename, space ) );
     } catch ( Exception e ) {
       // unable to get a friendly name from VFS object.
       // Cleanse name of pwd before returning

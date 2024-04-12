@@ -18,10 +18,47 @@ package org.pentaho.di.ui.core;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
+
 /**
  * Created by bmorrise on 8/17/17.
  */
 public class FileDialogOperation {
+
+
+  /** Will be called whenever files are loaded by this dialog */
+  public interface FileLoadListener {
+    void onFileLoaded( FileLookupInfo file );
+  }
+
+  /** File information and lookup */
+  public interface FileLookupInfo {
+    /** The full path of the file */
+    String getPath();
+    String getName();
+
+    boolean isFolder();
+
+    /** Lookup children for a folder */
+    boolean hasChildFile( String folderPath );
+  }
+
+  /** A provider for additional images, to be applied based on path */
+  public interface CustomImageProvider {
+    /** identifier -> custom image */
+    Map<String, CustomImage> getCustomImages();
+
+    /** @return identifier of custom image to use for that file */
+    Optional<String> getImage( String path );
+  }
+
+  /** An image location. If a classloader is supplied, paths will be resolved within it. */
+  public interface CustomImage {
+    String getPath();
+    Optional<ClassLoader> getClassLoader();
+  }
 
   public static final String SELECT_FOLDER = "selectFolder";
   public static final String SELECT_FILE = "selectFile";
@@ -59,6 +96,11 @@ public class FileDialogOperation {
   private String providerFilter;
   private String connectionTypeFilter;
   private boolean useSchemaPath;
+
+  private Optional<CustomImageProvider> customImageProvider = Optional.empty();
+  private Optional<FileLoadListener> fileLoadListener = Optional.empty();
+  private boolean showOnlyFolders = false;
+  private Predicate<String> openCondition = any -> true;
 
   public FileDialogOperation( String command ) {
     this.command = command;
@@ -207,4 +249,39 @@ public class FileDialogOperation {
             || command.equalsIgnoreCase( EXPORT) || command.equalsIgnoreCase( EXPORT_ALL) );
   }
 
+  /** To load additional images and define what files they apply to */
+  public void setCustomImageProvider( CustomImageProvider provider ) {
+    this.customImageProvider = Optional.of( provider );
+  }
+
+  public Optional<CustomImageProvider> getCustomImageProvider() {
+    return customImageProvider;
+  }
+
+  public Optional<FileLoadListener> getFileLoadListener() {
+    return fileLoadListener;
+  }
+
+  /** Add a listener to inspect files as they are loaded */
+  public void setFileLoadListener( FileLoadListener fileLoadListener ) {
+    this.fileLoadListener = Optional.of( fileLoadListener );
+  }
+
+  public boolean isShowOnlyFolders() {
+    return showOnlyFolders;
+  }
+
+  /** Omit any files and show only folders in the dialog */
+  public void setShowOnlyFolders( boolean value ) {
+    showOnlyFolders = value;
+  }
+
+  public Predicate<String> getOpenCondition() {
+    return openCondition;
+  }
+
+  /** Additional condition for opening a file, based on its path */
+  public void setOpenCondition( Predicate<String> value ) {
+    openCondition = value;
+  }
 }
