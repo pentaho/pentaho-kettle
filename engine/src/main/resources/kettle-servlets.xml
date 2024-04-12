@@ -60,5 +60,6 @@
   <!-- Sequence generation ... -->
 
   <servlet id="nextSequence"> <description>Get the next block of values for a sequence</description> <classname>org.pentaho.di.www.NextSequenceValueServlet</classname> </servlet>
+  <servlet id="stepAction"> <description>Perform step specific action by taking in the ktr xml file</description> <classname>org.pentaho.di.www.StepActionServlet</classname> </servlet>
   
 </servlets>
