@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,10 @@ package org.pentaho.di.connections.ui.tree;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
 
@@ -57,5 +59,16 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
   @Override
   public String getTitle() {
     return STRING_VFS_CONNECTIONS;
+  }
+
+  @Override
+  public void create( AbstractMeta meta, TreeNode parent ) {
+    Repository repository = Spoon.getInstance().getRepository();
+    if( repository != null && repository.getUserInfo() != null && repository.getUserInfo().isAdmin() != null
+      && Boolean.FALSE.equals( repository.getUserInfo().isAdmin() ) ) {
+      return;
+    }
+    refresh( meta, createTreeNode( parent, getTitle(), getTreeImage() ), null );
+
   }
 }

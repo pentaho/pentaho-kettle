@@ -235,9 +235,9 @@
       <artifactId>gwt-servlet</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>${snakeyaml.version}</version>
+      <groupId>com.konloch</groupId>
+      <artifactId>safeyaml</artifactId>
+      <version>${safeyaml.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

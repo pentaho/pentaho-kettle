@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -24,25 +24,14 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
-import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
-import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
 
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Created by bmorrise on 5/4/17.
- */
-public class EmbeddedRunConfigurationManager {
-  public static RunConfigurationManager build( EmbeddedMetaStore embeddedMetaStore ) {
-    DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( () -> embeddedMetaStore );
 
-    List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-    runConfigurationProviders.add( defaultRunConfigurationProvider );
+@FunctionalInterface
+public interface CheckedMetaStoreSupplier {
 
-    return new RunConfigurationManager( runConfigurationProviders );
-  }
+  IMetaStore get() throws MetaStoreException;
+
 }
