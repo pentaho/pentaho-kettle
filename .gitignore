@@ -2,6 +2,7 @@
 .classpath
 .settings
 build
+logs
 target
 release.properties
 pom.xml.releaseBackup
@@ -14,6 +15,7 @@ bin
 *.ear
 .DS_Store
 routes.yml
+logs
 
 rebel.xml
 rebel-remote.xml

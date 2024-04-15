@@ -36,6 +36,8 @@ import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.plugins.fileopensave.util.Util;
+import org.pentaho.di.ui.core.FileDialogOperation.FileLoadListener;
+import org.pentaho.di.ui.core.FileDialogOperation.FileLookupInfo;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
@@ -53,20 +55,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Created by bmorrise on 2/13/19.
  */
+
+@SuppressWarnings( { "rawtypes", "unchecked" } )
 public class FileController {
 
   protected final FileCache fileCache;
   private final ProviderService providerService;
   private VariableSpace space = Variables.getADefaultVariableSpace();
 
+  private final Optional<FileLoadListener> fileListener;
+
   public FileController( FileCache fileCache, ProviderService providerService ) {
     this.fileCache = fileCache;
     this.providerService = providerService;
+    this.fileListener = Optional.empty();
+  }
+  public FileController( FileCache fileCache, ProviderService providerService, Optional<FileLoadListener> fileListener ) {
+    this.fileCache = fileCache;
+    this.providerService = providerService;
+    this.fileListener = fileListener;
   }
 
   public boolean clearCache( File file ) {
@@ -115,17 +129,21 @@ public class FileController {
   public List<File> getFiles( File file, String filters, boolean useCache ) throws FileException {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
+      List<File> files;
       if ( fileCache.containsKey( file ) && useCache ) {
-        return fileCache.getFiles( file ).stream()
+        files = fileCache.getFiles( file ).stream()
           .filter( f -> f instanceof Directory
             || ( f instanceof RepositoryFile && ( (RepositoryFile) f ).passesTypeFilter( filters ) )
             || org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), filters ) )
           .collect( Collectors.toList() );
       } else {
-        List<File> files = fileProvider.getFiles( file, filters, space );
+        files = fileProvider.getFiles( file, filters, space );
         fileCache.setFiles( file, files );
-        return files;
       }
+
+      fileListener.ifPresent( listener -> files.stream().map( this::toLookupInfo ).forEach( listener::onFileLoaded ) );
+      return files;
+
     } catch ( InvalidFileProviderException e ) {
       return Collections.emptyList();
     }
@@ -286,6 +304,42 @@ public class FileController {
     return null;
   }
 
+  private FileLookupInfo toLookupInfo( File file ) {
+    return new FileLookupInfo() {
+
+      @Override
+      public String getPath() {
+        return file.getPath();
+      }
+
+      @Override
+      public String getName() {
+        return file.getName();
+      }
+
+      @Override
+      public boolean isFolder() {
+        return file instanceof Directory;
+      }
+
+      @Override
+      public boolean hasChildFile( String filter ) {
+        Predicate<File> fileFilter = f -> org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), filter );
+        Predicate<File> notDir = f -> !(f instanceof Directory);
+        try {
+          FileProvider<File> fileProvider = providerService.get( file.getProvider() );
+          if ( fileCache.containsKey( file ) ) {
+            return fileCache.getFiles( file ).stream().filter( fileFilter ).anyMatch( notDir );
+          } else {
+            return fileProvider.getFiles( file, filter, space ).stream().anyMatch( notDir );
+          }
+        } catch ( InvalidFileProviderException | FileException e ) {
+          return false;
+        }
+      }
+
+    };
+  }
   /**
    * This method makes recursive calls to do the copy
    * @param fromFileProvider the FileProvider associated with the source

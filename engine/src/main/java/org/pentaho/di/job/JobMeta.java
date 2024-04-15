@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -974,6 +974,9 @@ public class JobMeta extends AbstractMeta
             .logError( BaseMessages.getString( PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
         LogChannel.GENERAL.logError( Const.getStackTracker( e ) );
       }
+
+      // Call the extension point after the shared objects are loaded
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobSharedObjectsLoaded.id, this );
 
       // Load the database connections, slave servers, cluster schemas & partition schemas into this object.
       //
