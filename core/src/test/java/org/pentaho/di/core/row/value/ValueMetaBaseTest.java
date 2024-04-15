@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -93,9 +93,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -568,34 +569,34 @@ public class ValueMetaBaseTest {
   @Test
   public void testCompareIntegers() throws KettleValueException {
     ValueMetaBase intMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_INTEGER );
-    Long int1 = new Long( 6223372036854775804L );
-    Long int2 = new Long( -6223372036854775804L );
+    Long int1 =  6223372036854775804L;
+    Long int2 = -6223372036854775804L;
     assertEquals( 1, intMeta.compare( int1, int2 ) );
     assertEquals( -1, intMeta.compare( int2, int1 ) );
     assertEquals( 0, intMeta.compare( int1, int1 ) );
     assertEquals( 0, intMeta.compare( int2, int2 ) );
 
-    int1 = new Long( 9223372036854775804L );
-    int2 = new Long( -9223372036854775804L );
+    int1 = 9223372036854775804L;
+    int2 = -9223372036854775804L;
     assertEquals( 1, intMeta.compare( int1, int2 ) );
     assertEquals( -1, intMeta.compare( int2, int1 ) );
     assertEquals( 0, intMeta.compare( int1, int1 ) );
     assertEquals( 0, intMeta.compare( int2, int2 ) );
 
-    int1 = new Long( 6223372036854775804L );
-    int2 = new Long( -9223372036854775804L );
+    int1 = 6223372036854775804L;
+    int2 = -9223372036854775804L;
     assertEquals( 1, intMeta.compare( int1, int2 ) );
     assertEquals( -1, intMeta.compare( int2, int1 ) );
     assertEquals( 0, intMeta.compare( int1, int1 ) );
 
-    int1 = new Long( 9223372036854775804L );
-    int2 = new Long( -6223372036854775804L );
+    int1 = 9223372036854775804L;
+    int2 = -6223372036854775804L;
     assertEquals( 1, intMeta.compare( int1, int2 ) );
     assertEquals( -1, intMeta.compare( int2, int1 ) );
     assertEquals( 0, intMeta.compare( int1, int1 ) );
 
     int1 = null;
-    int2 = new Long( 6223372036854775804L );
+    int2 = 6223372036854775804L;
     assertEquals( -1, intMeta.compare( int1, int2 ) );
     intMeta.setSortedDescending( true );
     assertEquals( 1, intMeta.compare( int1, int2 ) );
@@ -605,9 +606,9 @@ public class ValueMetaBaseTest {
   @Test
   public void testCompareIntegerToDouble() throws KettleValueException {
     ValueMetaBase intMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_INTEGER );
-    Long int1 = new Long( 2L );
+    Long int1 = 2L;
     ValueMetaBase numberMeta = new ValueMetaBase( "number", ValueMetaInterface.TYPE_NUMBER );
-    Double double2 = new Double( 1.5 );
+    Double double2 = 1.5D;
     assertEquals( 1, intMeta.compare( int1, numberMeta, double2 ) );
   }
 
@@ -838,7 +839,7 @@ public class ValueMetaBaseTest {
     valueMetaInteger.setType( 5 ); // Integer
     valueMetaInteger.setStorageType( 1 ); // STORAGE_TYPE_BINARY_STRING
 
-    assertEquals( "2", valueMetaInteger.getCompatibleString( new Long( 2 ) ) ); //BACKLOG-15750
+    assertEquals( "2", valueMetaInteger.getCompatibleString( 2L )  ); //BACKLOG-15750
   }
 
   @Test
