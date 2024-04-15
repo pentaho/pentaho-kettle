@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.pentaho.di.connections.common.bucket.TestConnectionDetails;
 import org.pentaho.di.connections.common.bucket.TestConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.persist.MetaStoreFactory;
@@ -230,8 +231,8 @@ public class ConnectionManagerTest {
   }
 
   @Test
-  public void testNullConnectionName() {
-    FileSystemOptions fileSystemOptions = VFSHelper.getOpts( "file://fakefile.ktr", null, null );
+  public void testNullConnectionName() throws Exception {
+    FileSystemOptions fileSystemOptions = VFSHelper.getOpts( DefaultBowl.getInstance(), "file://fakefile.ktr", null, null );
     Assert.assertNull( fileSystemOptions );
   }
 

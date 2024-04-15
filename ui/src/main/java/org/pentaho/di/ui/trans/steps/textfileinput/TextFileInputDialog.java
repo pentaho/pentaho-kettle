@@ -2593,7 +2593,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     TextFileInputMeta meta = new TextFileInputMeta();
     getInfo( meta );
     TextFileInputMeta previousMeta = (TextFileInputMeta) meta.clone();
-    FileInputList textFileList = meta.getTextFileList( transMeta );
+    FileInputList textFileList = meta.getTextFileList( transMeta.getBowl(), transMeta );
     InputStream fileInputStream;
     CompressionInputStream inputStream = null;
     StringBuilder lineStringBuilder = new StringBuilder( 256 );
@@ -2826,7 +2826,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     getInfo( info );
 
     try {
-      if ( info.getTextFileList( transMeta ).nrOfFiles() > 0 ) {
+      if ( info.getTextFileList( transMeta.getBowl(), transMeta ).nrOfFiles() > 0 ) {
         String shellText = BaseMessages.getString( PKG, "TextFileInputDialog.LinesToView.DialogTitle" );
         String lineText = BaseMessages.getString( PKG, "TextFileInputDialog.LinesToView.DialogMessage" );
         EnterNumberDialog end = new EnterNumberDialog( shell, 100, shellText, lineText );
@@ -2869,7 +2869,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
     TextFileInputMeta meta = new TextFileInputMeta();
     getInfo( meta );
-    FileInputList textFileList = meta.getTextFileList( transMeta );
+    FileInputList textFileList = meta.getTextFileList( transMeta.getBowl(), transMeta );
 
     InputStream fi;
     CompressionInputStream f = null;

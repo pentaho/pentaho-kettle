@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,12 @@ package org.pentaho.di.connections.vfs;
 
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.util.function.Supplier;
 
@@ -33,15 +37,34 @@ import java.util.function.Supplier;
  * Created by bmorrise on 2/13/19.
  */
 public class VFSHelper {
-  public static FileSystemOptions getOpts( String file, String connection, VariableSpace space ){
+
+  /**
+   * @deprecated, use the version with the Bowl
+   */
+  @Deprecated
+  public static FileSystemOptions getOpts( String file, String connection, VariableSpace space ) {
+    try {
+      return getOpts( DefaultBowl.getInstance(), file, connection, space );
+    } catch ( MetaStoreException ex ) {
+      // deprecated behavior was to ignore failures and return nulls.
+      return null;
+    }
+  }
+
+  public static FileSystemOptions getOpts( Bowl bowl, String file, String connection, VariableSpace space )
+    throws MetaStoreException {
     if ( connection != null ) {
       VFSConnectionDetails vfsConnectionDetails =
-        (VFSConnectionDetails) ConnectionManager.getInstance().getConnectionDetails( file, connection );
+        (VFSConnectionDetails) bowl.getConnectionManager().getConnectionDetails( file, connection );
       VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
-        (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance().getConnectionProvider( file );
+        (VFSConnectionProvider<VFSConnectionDetails>) bowl.getConnectionManager().getConnectionProvider( file );
       if ( vfsConnectionDetails != null && vfsConnectionProvider != null ) {
         vfsConnectionDetails.setSpace( space );
-        return vfsConnectionProvider.getOpts( vfsConnectionDetails );
+        FileSystemOptions opts = vfsConnectionProvider.getOpts( vfsConnectionDetails );
+
+        KettleGenericFileSystemConfigBuilder.getInstance().setBowl( opts, bowl );
+
+        return opts;
       }
     }
     return null;

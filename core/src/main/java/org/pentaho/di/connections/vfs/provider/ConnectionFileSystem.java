@@ -34,20 +34,20 @@ import org.apache.commons.vfs2.provider.AbstractFileSystem;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
+import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
 
 import java.util.Collection;
-import java.util.function.Supplier;
 
 public class ConnectionFileSystem extends AbstractFileSystem implements FileSystem {
 
   public static final String CONNECTION = "connection";
   public static final String DOMAIN_ROOT = "[\\w]+://";
-  private Supplier<ConnectionManager> connectionManager = ConnectionManager::getInstance;
 
   public ConnectionFileSystem( FileName rootName, FileSystemOptions fileSystemOptions ) {
     super( rootName, null, fileSystemOptions );
@@ -86,8 +86,9 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
   protected FileObject createFile( AbstractFileName abstractFileName ) throws Exception {
 
     String connectionName = ( (ConnectionFileName) abstractFileName ).getConnection();
+    Bowl bowl = KettleGenericFileSystemConfigBuilder.getInstance().getBowl( getFileSystemOptions() );
     VFSConnectionDetails connectionDetails =
-      (VFSConnectionDetails) connectionManager.get().getConnectionDetails( connectionName );
+      (VFSConnectionDetails) bowl.getConnectionManager().getConnectionDetails( connectionName );
     FileSystemOptions opts = super.getFileSystemOptions();
     IKettleFileSystemConfigBuilder configBuilder = KettleFileSystemConfigBuilderFactory.getConfigBuilder
       ( new Variables(), ConnectionFileProvider.SCHEME );
@@ -103,7 +104,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     if ( url != null ) {
       domain = connectionDetails.getDomain();
       varSpace.setVariable( CONNECTION, connectionName );
-      fileObject = (AbstractFileObject) KettleVFS.getFileObject( url, varSpace );
+      fileObject = (AbstractFileObject) KettleVFS.getInstance( bowl ).getFileObject( url, varSpace );
     }
 
     return new ConnectionFileObject( abstractFileName, this, fileObject, domain );

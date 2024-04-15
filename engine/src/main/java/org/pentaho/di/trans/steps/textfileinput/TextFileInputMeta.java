@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -1591,14 +1592,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   @Override
-  public String[] getFilePaths( VariableSpace space ) {
+  public String[] getFilePaths( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFilePathList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
-  public FileInputList getTextFileList( VariableSpace space ) {
+  public FileInputList getTextFileList( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFileList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -1636,7 +1637,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       remarks.add( cr );
     }
 
-    FileInputList textFileList = getTextFileList( transMeta );
+    FileInputList textFileList = getTextFileList( transMeta.getBowl(), transMeta );
     if ( textFileList.nrOfFiles() == 0 ) {
       if ( !isAcceptingFilenames() ) {
         cr =

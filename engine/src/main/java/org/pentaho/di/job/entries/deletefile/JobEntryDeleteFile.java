@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -158,7 +158,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 
       FileObject fileObject = null;
       try {
-        fileObject = KettleVFS.getFileObject( realFilename, this );
+        fileObject = KettleVFS.getInstance( getParentJobMeta().getBowl() ).getFileObject( realFilename, this );
 
         if ( !fileObject.exists() ) {
           if ( isFailIfFileNotExists() ) {
