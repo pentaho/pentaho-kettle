@@ -2566,7 +2566,10 @@ public class TransMeta extends AbstractMeta
     if ( includeDatabase ) {
       for ( int i = 0; i < nrDatabases(); i++ ) {
         DatabaseMeta dbMeta = getDatabase( i );
-        if ( props != null && props.areOnlyUsedConnectionsSavedToXML() ) {
+        //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
+        // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
+        // needs to have "N" in the server startup script file
+        if ( props != null && props.areOnlyUsedConnectionsSavedToXML() || props == null && areOnlyUsedConnectionsSavedToXMLInServer() ) {
           if ( isDatabaseConnectionUsed( dbMeta ) ) {
             retval.append( dbMeta.getXML() );
           }
@@ -2619,6 +2622,11 @@ public class TransMeta extends AbstractMeta
     retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return XMLFormatter.format( retval.toString() );
+  }
+
+  public boolean areOnlyUsedConnectionsSavedToXMLInServer() {
+    String show = System.getProperty( Const.STRING_ONLY_USED_DB_TO_XML, "Y" );
+    return "Y".equalsIgnoreCase( show ); // Default: save only used connections
   }
 
   /**
