@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -171,11 +171,11 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
 
-      Response response = null;
-      String entityString = null;
+      Response response;
+      String entityString = "";
       if ( data.useBody ) {
         // Set Http request entity
-        entityString = Const.NVL( data.inputRowMeta.getString( rowData, data.indexOfBodyField ), null );
+        entityString = Const.NVL( data.inputRowMeta.getString( rowData, data.indexOfBodyField ), "" );
         if ( isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "Rest.Log.BodyValue", entityString ) );
         }
