@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -181,8 +181,10 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
             result.setResult( false );
             result.setNrErrors( 1 );
           }
-          if ( log.isBasic() ) {
-            logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFile.File_Deleted", realFilename ) );
+          else {
+            if ( log.isBasic() ) {
+              logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFile.File_Deleted", realFilename ) );
+            }
           }
           result.setResult( true );
         }
