@@ -18,7 +18,6 @@
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
     <version>10.2.0.0-SNAPSHOT</version>
   </parent>
-
   <scm>
     <developerConnection>scm:git:git@github.com:pentaho/pentaho-kettle.git</developerConnection>
     <tag>HEAD</tag>
