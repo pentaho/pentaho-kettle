@@ -25,7 +25,6 @@ ee:
         - pentaho-business-analytics-${platform.version}-x64.app.tar.gz
         - pentaho-business-analytics-${platform.version}-x64.bin
         - pentaho-business-analytics-${platform.version}-x64.exe
-        - pentaho-update-${platform.version}-Mac.zip
         - pentaho-update-${platform.version}-Windows.zip
         - pentaho-update-${platform.version}-Linux.zip
     other:
