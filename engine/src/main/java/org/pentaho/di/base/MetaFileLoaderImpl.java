@@ -62,6 +62,7 @@ import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAM
  * @param <T> Either a TransMeta or JobMeta
  */
 public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
+
   JobEntryBase jobEntryBase;
 
   private ObjectLocationSpecificationMethod specificationMethod;
@@ -74,6 +75,9 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
   private String filename;
 
   private BaseStepMeta baseStepMeta;
+
+  public static final String KJB = ".kjb";
+  public static final String KTR = ".ktr";
 
   /**
    * @param jobEntryBase        either a JobEntryTrans or JobEntryJob Object
@@ -260,13 +264,13 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
         TransMeta transMeta = (TransMeta) theMeta;
         transMeta.setMetaFileCache( metaFileCache );
         if ( cacheKey != null ) {
-          metaFileCache.cacheMeta( metaFileCache.getKey( specificationMethod, cacheKey ), transMeta );
+          metaFileCache.cacheMeta( metaFileCache.getKey( specificationMethod, cacheKey.endsWith( KTR ) ? cacheKey : cacheKey + KTR ), transMeta );
         }
       } else {
         JobMeta jobMeta = (JobMeta) theMeta;
         jobMeta.setMetaFileCache( metaFileCache );
         if ( cacheKey != null ) {
-          metaFileCache.cacheMeta( metaFileCache.getKey( specificationMethod, cacheKey ), jobMeta );
+          metaFileCache.cacheMeta( metaFileCache.getKey( specificationMethod, cacheKey.endsWith( KJB ) ? cacheKey : cacheKey + KJB ), jobMeta );
         }
       }
     }
@@ -333,8 +337,8 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       return null;
     }
     return isTransMeta()
-      ? (T) metaFileCache.getCachedTransMeta( metaFileCache.getKey( specificationMethod, realFilename ) )
-      : (T) metaFileCache.getCachedJobMeta( metaFileCache.getKey( specificationMethod, realFilename ) );
+      ? (T) metaFileCache.getCachedTransMeta( metaFileCache.getKey( specificationMethod, realFilename.endsWith( KTR ) ? realFilename : realFilename + KTR ) )
+      : (T) metaFileCache.getCachedJobMeta( metaFileCache.getKey( specificationMethod, realFilename.endsWith( KJB ) ? realFilename : realFilename + KJB ) );
   }
 
   private boolean isTransMeta() {
