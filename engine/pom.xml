@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>9.3.0.7-831</version>
+  <version>9.3.0.7-C279</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
@@ -103,12 +103,12 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.7-C279</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pdi-engine-api</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.7-831</version>
     </dependency>
 
     <!-- Pentaho dependencies -->
@@ -135,7 +135,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.7-831</version>
     </dependency>
 
     <!-- Reporting dependencies -->
@@ -904,7 +904,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>9.3.0.7-C279</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
