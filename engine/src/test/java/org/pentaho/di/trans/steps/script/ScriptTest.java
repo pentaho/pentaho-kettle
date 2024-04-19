@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.script;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -59,8 +59,8 @@ public class ScriptTest {
     Script step = new Script( helper.stepMeta, helper.stepDataInterface, 1, helper.transMeta, helper.trans );
     step.init( helper.initStepMetaInterface, helper.initStepDataInterface );
 
-    RowSet rs = helper.getMockInputRowSet( new Object[ 0 ][ 0 ] );
-    List<RowSet> in = new ArrayList<RowSet>();
+    RowSet rs = helper.getMockInputRowSet();
+    List<RowSet> in = new ArrayList<>();
     in.add( rs );
     step.setInputRowSets( in );
 

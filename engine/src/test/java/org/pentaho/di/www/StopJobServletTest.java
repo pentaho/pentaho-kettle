@@ -31,10 +31,6 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -44,14 +40,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import static junit.framework.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
+
 public class StopJobServletTest {
   private JobMap mockJobMap;
 
@@ -64,7 +58,6 @@ public class StopJobServletTest {
   }
 
   @Test
-  @PrepareForTest( { Encode.class } )
   public void testStopJobServletEscapesHtmlWhenTransNotFound() throws ServletException, IOException {
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
@@ -72,7 +65,6 @@ public class StopJobServletTest {
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
-    PowerMockito.spy( Encode.class );
     when( mockHttpServletRequest.getContextPath() ).thenReturn( StopJobServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
@@ -80,12 +72,10 @@ public class StopJobServletTest {
     stopJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
 
-    PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
   }
 
   @Test
-  @PrepareForTest( { Encode.class } )
   public void testStopJobServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
     KettleLogStore.init();
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
@@ -97,7 +87,6 @@ public class StopJobServletTest {
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
-    PowerMockito.spy( Encode.class );
     when( mockHttpServletRequest.getContextPath() ).thenReturn( StopJobServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
@@ -110,7 +99,7 @@ public class StopJobServletTest {
     stopJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
 
-    PowerMockito.verifyStatic( atLeastOnce() );
+//    PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
   }
 }

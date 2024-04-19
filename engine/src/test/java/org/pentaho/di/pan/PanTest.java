@@ -52,8 +52,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,7 +67,7 @@ public class PanTest {
   private ByteArrayOutputStream sysOutContent;
   private ByteArrayOutputStream sysErrContent;
 
-  private SecurityManager oldSecurityManager;
+//  private SecurityManager oldSecurityManager;
 
   RepositoriesMeta mockRepositoriesMeta;
   RepositoryMeta mockRepositoryMeta;
@@ -81,10 +81,10 @@ public class PanTest {
 
   @Before
   public void setUp() {
-    oldSecurityManager = System.getSecurityManager();
+//    oldSecurityManager = System.getSecurityManager();
     sysOutContent = new ByteArrayOutputStream();
     sysErrContent = new ByteArrayOutputStream();
-    System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
+//    System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
     mockRepositoriesMeta = mock( RepositoriesMeta.class );
     mockRepositoryMeta = mock( RepositoryMeta.class );
     mockRepository = mock( Repository.class );
@@ -93,7 +93,7 @@ public class PanTest {
 
   @After
   public void tearDown() {
-    System.setSecurityManager( oldSecurityManager );
+//    System.setSecurityManager( oldSecurityManager );
     sysOutContent = null;
     sysErrContent = null;
     mockRepositoriesMeta = null;
@@ -103,7 +103,7 @@ public class PanTest {
   }
 
   @Test
-  public void testPanStatusCodes() throws Exception {
+  public void testPanStatusCodes() {
 
     assertNull( CommandExecutorCodes.Pan.getByCode( 9999 ) );
     assertNotNull( CommandExecutorCodes.Pan.getByCode( 0 ) );
@@ -207,10 +207,11 @@ public class PanTest {
     final String DUMMY_DIR_1 = "test-dir-1";
     final String DUMMY_DIR_2 = "test-dir-2";
 
-    when( mockRepository.getDirectoryNames( anyObject() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
+    when( mockRepository.getDirectoryNames( any() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    PanCommandExecutor testPanCommandExecutor = new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
+    PanCommandExecutor testPanCommandExecutor =
+      new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
     origSysOut = System.out;
     origSysErr = System.err;
@@ -255,10 +256,11 @@ public class PanTest {
     final String DUMMY_TRANS_1 = "test-trans-name-1";
     final String DUMMY_TRANS_2 = "test-trans-name-2";
 
-    when( mockRepository.getTransformationNames( anyObject(), anyBoolean() ) ).thenReturn( new String[]{ DUMMY_TRANS_1, DUMMY_TRANS_2 } );
+    when( mockRepository.getTransformationNames( any(), anyBoolean() ) ).thenReturn( new String[]{ DUMMY_TRANS_1, DUMMY_TRANS_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    PanCommandExecutor testPanCommandExecutor = new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta,  null );
+    PanCommandExecutor testPanCommandExecutor =
+      new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
     origSysOut = System.out;
     origSysErr = System.err;
@@ -294,11 +296,11 @@ public class PanTest {
     }
   }
 
-  private class PanCommandExecutorForTesting extends PanCommandExecutor {
+  private static class PanCommandExecutorForTesting extends PanCommandExecutor {
 
-    private Repository testRepository;
-    private RepositoryMeta testRepositoryMeta;
-    private RepositoriesMeta testRepositoriesMeta;
+    private final Repository testRepository;
+    private final RepositoryMeta testRepositoryMeta;
+    private final RepositoriesMeta testRepositoriesMeta;
 
     public PanCommandExecutorForTesting( Repository testRepository, RepositoryMeta testRepositoryMeta,
                                          RepositoriesMeta testRepositoriesMeta ) {
@@ -322,30 +324,30 @@ public class PanTest {
 
     @Override
     public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
-                                                     final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+                                                     final RepositoryOperation... operations ) throws KettleException {
       return testRepository != null ? testRepository : super.establishRepositoryConnection( repositoryMeta, username, password, operations );
     }
   }
 
-  public class MySecurityManager extends SecurityManager {
-
-    private SecurityManager baseSecurityManager;
-
-    public MySecurityManager( SecurityManager baseSecurityManager ) {
-      this.baseSecurityManager = baseSecurityManager;
-    }
-
-    @Override
-    public void checkPermission( Permission permission ) {
-      if ( permission.getName().startsWith( "exitVM" ) ) {
-        throw new SecurityException( "System exit not allowed" );
-      }
-      if ( baseSecurityManager != null ) {
-        baseSecurityManager.checkPermission( permission );
-      } else {
-        return;
-      }
-    }
-
-  }
+//  public class MySecurityManager extends SecurityManager {
+//
+//    private SecurityManager baseSecurityManager;
+//
+//    public MySecurityManager( SecurityManager baseSecurityManager ) {
+//      this.baseSecurityManager = baseSecurityManager;
+//    }
+//
+//    @Override
+//    public void checkPermission( Permission permission ) {
+//      if ( permission.getName().startsWith( "exitVM" ) ) {
+//        throw new SecurityException( "System exit not allowed" );
+//      }
+//      if ( baseSecurityManager != null ) {
+//        baseSecurityManager.checkPermission( permission );
+//      } else {
+//        return;
+//      }
+//    }
+//
+//  }
 }

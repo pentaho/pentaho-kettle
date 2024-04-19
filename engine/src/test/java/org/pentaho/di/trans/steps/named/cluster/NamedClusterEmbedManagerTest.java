@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,9 +34,9 @@ import org.pentaho.metastore.persist.MetaStoreFactory;
 
 import java.util.Arrays;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -50,10 +50,8 @@ import static org.mockito.Mockito.when;
 public class NamedClusterEmbedManagerTest {
   private final String CLUSTER1_NAME = "cluster1_name";
   private final String CLUSTER2_NAME = "cluster2_name";
-  private final String KEY = "KEY";
   private AbstractMeta mockMeta;
   private NamedClusterEmbedManager namedClusterEmbedManager;
-  private LogChannelInterface mockLog;
   private NamedClusterOsgi mockNamedCluster1;
   private NamedClusterOsgi mockNamedCluster2;
   private MetaStoreFactory mockMetaStoreFactory;
@@ -61,7 +59,7 @@ public class NamedClusterEmbedManagerTest {
 
   @Before
   public void setUp() {
-    mockLog = mock( LogChannelInterface.class );
+    LogChannelInterface mockLog = mock( LogChannelInterface.class );
     mockMeta = mock( AbstractMeta.class );
     mockMetaStoreFactory = mock( MetaStoreFactory.class );
     NamedClusterEmbedManager.testMetaStoreFactory = mockMetaStoreFactory;
@@ -101,7 +99,7 @@ public class NamedClusterEmbedManagerTest {
   @Test
   public void testRegisterUrlFullVariable() throws Exception {
     when( mockNamedClusterService.listNames( mockMeta.getMetaStore() ) )
-      .thenReturn( Arrays.asList( new String[] { CLUSTER1_NAME, CLUSTER2_NAME } ) );
+      .thenReturn( Arrays.asList( CLUSTER1_NAME, CLUSTER2_NAME ) );
 
     namedClusterEmbedManager.registerUrl( "${variable)" );
     verify( mockMetaStoreFactory ).saveElement( mockNamedCluster1 );
@@ -112,7 +110,7 @@ public class NamedClusterEmbedManagerTest {
   @Test
   public void testRegisterUrlClusterVariable() throws Exception {
     when( mockNamedClusterService.listNames( mockMeta.getMetaStore() ) )
-      .thenReturn( Arrays.asList( new String[] { CLUSTER1_NAME, CLUSTER2_NAME } ) );
+      .thenReturn( Arrays.asList( CLUSTER1_NAME, CLUSTER2_NAME ) );
 
     namedClusterEmbedManager.registerUrl( "hc://${variable)/dir1/file" );
     verify( mockMetaStoreFactory ).saveElement( mockNamedCluster1 );
@@ -129,7 +127,7 @@ public class NamedClusterEmbedManagerTest {
   @Test
   public void testClear() throws Exception {
     when( mockMetaStoreFactory.getElements() )
-      .thenReturn( Arrays.asList( new NamedClusterOsgi[] { mockNamedCluster1, mockNamedCluster2 } ) );
+      .thenReturn( Arrays.asList( mockNamedCluster1, mockNamedCluster2 ) );
 
     namedClusterEmbedManager.clear( );
     verify( mockMetaStoreFactory ).deleteElement( CLUSTER1_NAME );

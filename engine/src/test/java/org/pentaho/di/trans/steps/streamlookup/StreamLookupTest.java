@@ -22,8 +22,8 @@
 
 package org.pentaho.di.trans.steps.streamlookup;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -65,7 +65,7 @@ public class StreamLookupTest {
   @Before
   public void setUp() {
     smh =
-      new StepMockHelper<StreamLookupMeta, StreamLookupData>( "StreamLookup", StreamLookupMeta.class,
+      new StepMockHelper<>( "StreamLookup", StreamLookupMeta.class,
         StreamLookupData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       smh.logChannelInterface );

@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.update;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,7 +54,7 @@ public class PDI_11152_Test {
 
   @Before
   public void setUp() {
-    smh = new StepMockHelper<UpdateMeta, UpdateData>( "Update", UpdateMeta.class, UpdateData.class );
+    smh = new StepMockHelper<>( "Update", UpdateMeta.class, UpdateData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,7 @@ import java.util.Vector;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -57,13 +57,13 @@ public class SFTPClientTest {
   @ClassRule
   public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
-  private int port = 22;
-  private String username = "admin";
-  private String password = "password";
-  private Session session = mock( Session.class );
-  private ChannelSftp channel = mock( ChannelSftp.class );
-  private InetAddress server = mock( InetAddress.class );
-  private JSch jSch = mock( JSch.class );
+  private final int port = 22;
+  private final String username = "admin";
+  private final String password = "password";
+  private final Session session = mock( Session.class );
+  private final ChannelSftp channel = mock( ChannelSftp.class );
+  private final InetAddress server = mock( InetAddress.class );
+  private final JSch jSch = mock( JSch.class );
 
   @Before
   public void setUp() throws JSchException {

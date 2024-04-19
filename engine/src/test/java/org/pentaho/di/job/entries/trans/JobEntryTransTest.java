@@ -22,29 +22,6 @@
 
 package org.pentaho.di.job.entries.trans;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.doReturn;
-import static org.powermock.reflect.Whitebox.setInternalState;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -72,9 +49,32 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.test.util.InternalState;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JobEntryTransTest {
   private final String JOB_ENTRY_TRANS_NAME = "JobEntryTransName";
@@ -356,8 +356,8 @@ public class JobEntryTransTest {
     meta.setVariable( param3, childValue3 );
 
     Mockito.doReturn( meta ).when( rep )
-      .loadTransformation( Mockito.eq( "test.ktr" ), Mockito.anyObject(), Mockito.anyObject(), Mockito.anyBoolean(),
-        Mockito.anyObject() );
+      .loadTransformation( Mockito.eq( "test.ktr" ), Mockito.any(), Mockito.any(), Mockito.anyBoolean(),
+        Mockito.any() );
 
     VariableSpace parentSpace = new Variables();
     parentSpace.setVariable( param1, parentValue1 );
@@ -404,8 +404,8 @@ public class JobEntryTransTest {
     meta.setVariable( param2, "childValue2 should be override" );
 
     Mockito.doReturn( meta ).when( rep )
-            .loadTransformation( Mockito.eq( "test" ), Mockito.anyObject(), Mockito.anyObject(), Mockito.anyBoolean(),
-                    Mockito.anyObject() );
+            .loadTransformation( Mockito.eq( "test" ), Mockito.any(), Mockito.any(), Mockito.anyBoolean(),
+                    Mockito.any() );
 
     VariableSpace parentSpace = new Variables();
     parentSpace.setVariable( param1, parentValue1 );
@@ -433,7 +433,7 @@ public class JobEntryTransTest {
   public void updateResultTest() {
     JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
     Trans transMock = mock( Trans.class );
-    setInternalState( jobEntryTrans, "trans", transMock );
+    InternalState.setInternalState( jobEntryTrans, "trans", transMock );
     //Transformation returns result with 5 rows
     when( transMock.getResult() ).thenReturn( generateDummyResult( 5 ) );
     //Previous result has 3 rows
@@ -448,7 +448,7 @@ public class JobEntryTransTest {
   public void updateResultTestWithZeroRows() {
     JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
     Trans transMock = mock( Trans.class );
-    setInternalState( jobEntryTrans, "trans", transMock );
+    InternalState.setInternalState( jobEntryTrans, "trans", transMock );
     //Transformation returns result with 0 rows
     when( transMock.getResult() ).thenReturn( generateDummyResult( 0 ) );
     //Previous result has 3 rows
@@ -463,7 +463,7 @@ public class JobEntryTransTest {
   public void updateResultTestWithZeroRowsForced() {
     JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
     Trans transMock = mock( Trans.class );
-    setInternalState( jobEntryTrans, "trans", transMock );
+    InternalState.setInternalState( jobEntryTrans, "trans", transMock );
     //Transformation returns result with 0 rows
     when( transMock.getResult() ).thenReturn( generateDummyResult( 0 ) );
     //Previous result has 3 rows

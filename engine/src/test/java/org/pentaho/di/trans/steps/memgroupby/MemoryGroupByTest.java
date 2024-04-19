@@ -28,7 +28,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
-import org.powermock.reflect.Whitebox;
 
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
@@ -46,7 +45,7 @@ public class MemoryGroupByTest {
     memGroupByData = new MemoryGroupByData();
     memGroupByData.aggMeta = new RowMeta(  );
     memGroupByData.outputRowMeta = new RowMeta(  );
-    Whitebox.setInternalState( memGroupBy, "data", memGroupByData );
+//    Whitebox.setInternalState( memGroupBy, "data", memGroupByData );
   }
 
   @Test

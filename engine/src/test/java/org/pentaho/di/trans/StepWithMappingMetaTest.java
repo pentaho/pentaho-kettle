@@ -24,12 +24,9 @@ package org.pentaho.di.trans;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -41,10 +38,6 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,6 +48,7 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,8 +57,6 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Yury_Bakhmutski on 2/8/2017.
  */
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class StepWithMappingMetaTest {
 
   @Mock
@@ -80,7 +72,6 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
-  @PrepareForTest( { StepWithMappingMeta.class, MetaFileLoaderImpl.class } )
   public void loadMappingMeta() throws Exception {
     String variablePath = "Internal.Entry.Current.Directory";
     String virtualDir = "/testFolder/CDA-91";
@@ -104,33 +95,25 @@ public class StepWithMappingMetaTest {
     // mock repo and answers
     Repository rep = mock( Repository.class );
 
-    Mockito.doAnswer( new Answer<TransMeta>() {
-      @Override
-      public TransMeta answer( final InvocationOnMock invocation ) throws Throwable {
-        final String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
-        // be sure that the variable was replaced by real path
-        assertEquals( virtualDir, originalArgument );
-        return null;
-      }
+    Mockito.doAnswer( (Answer<TransMeta>) invocation -> {
+      final String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
+      // be sure that the variable was replaced by real path
+      assertEquals( virtualDir, originalArgument );
+      return null;
     } ).when( rep ).findDirectory( anyString() );
 
-    Mockito.doAnswer( new Answer<TransMeta>() {
-      @Override
-      public TransMeta answer( final InvocationOnMock invocation ) throws Throwable {
-        final String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
-        // be sure that transformation name was resolved correctly
-        assertEquals( fileName, originalArgument );
-        return mock( TransMeta.class );
-      }
+    Mockito.doAnswer( (Answer<TransMeta>) invocation -> {
+      final String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
+      // be sure that transformation name was resolved correctly
+      assertEquals( fileName, originalArgument );
+      return mock( TransMeta.class );
     } ).when( rep ).loadTransformation( anyString(), any( RepositoryDirectoryInterface.class ),
       any( ProgressMonitorListener.class ), anyBoolean(), anyString() );
 
     StepWithMappingMeta.loadMappingMeta( mappingMetaMock, rep, null, variables, true );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void testExportResources() throws Exception {
     StepWithMappingMeta stepWithMappingMeta = spy( new StepWithMappingMeta() {
 
@@ -149,7 +132,6 @@ public class StepWithMappingMetaTest {
       }
     } );
     String testName = "test";
-    PowerMockito.mockStatic( StepWithMappingMeta.class );
     when( StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any() ) ).thenReturn( transMeta );
     when( transMeta.exportResources( any(), anyMap(), any(), any(), any() ) ).thenReturn( testName );
 
@@ -159,7 +141,6 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void loadMappingMetaTest() throws Exception {
 
     String childParam = "childParam";
@@ -209,12 +190,11 @@ public class StepWithMappingMetaTest {
     Assert.assertEquals( childValue, transMeta.getVariable( childParam ) );
 
     //All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
-    //variables from the transformation?' option is checked)
+    //variables from the transformation?' option is checked).
     Assert.assertEquals( parentValue, transMeta.getVariable( parentParam ) );
   }
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void loadMappingMetaTest_PathShouldBeTakenFromParentTrans() throws Exception {
 
     String fileName = "subtrans-executor-sub.ktr";
@@ -251,7 +231,6 @@ public class StepWithMappingMetaTest {
 
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void activateParamsTest() throws Exception {
     String childParam = "childParam";
     String childValue = "childValue";
@@ -276,7 +255,6 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void activateParamsWithFalsePassParametersFlagTest() throws Exception {
     String childParam = "childParam";
     String childValue = "childValue";
@@ -307,7 +285,6 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void activateParamsWithTruePassParametersFlagTest() throws Exception {
     String childParam = "childParam";
     String childValue = "childValue";
@@ -341,7 +318,6 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void activateParamsTestWithNoParameterChild() throws Exception {
     String newParam = "newParamParent";
     String parentValue = "parentValue";
@@ -358,7 +334,6 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void testFileNameAsVariable() throws Exception {
 
     String transName = "test.ktr";
@@ -395,7 +370,6 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void replaceVariablesWithJobInternalVariablesTest()  {
     String variableOverwrite = "paramOverwrite";
     String variableChildOnly = "childValueVariable";
@@ -423,7 +397,6 @@ public class StepWithMappingMetaTest {
   }
 
   @Test
-  @PrepareForTest( StepWithMappingMeta.class )
   public void replaceVariablesWithTransInternalVariablesTest()  {
     String variableOverwrite = "paramOverwrite";
     String variableChildOnly = "childValueVariable";

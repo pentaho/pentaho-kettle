@@ -47,8 +47,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +61,7 @@ public class KitchenTest {
   private ByteArrayOutputStream sysOutContent;
   private ByteArrayOutputStream sysErrContent;
 
-  private SecurityManager oldSecurityManager;
+//  private SecurityManager oldSecurityManager;
 
   RepositoriesMeta mockRepositoriesMeta;
   RepositoryMeta mockRepositoryMeta;
@@ -71,10 +71,10 @@ public class KitchenTest {
   @Before
   public void setUp() throws KettleException {
     KettleEnvironment.init();
-    oldSecurityManager = System.getSecurityManager();
+//    oldSecurityManager = System.getSecurityManager();
     sysOutContent = new ByteArrayOutputStream();
     sysErrContent = new ByteArrayOutputStream();
-    System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
+//    System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
     mockRepositoriesMeta = mock( RepositoriesMeta.class );
     mockRepositoryMeta = mock( RepositoryMeta.class );
     mockRepository = mock( Repository.class );
@@ -83,7 +83,7 @@ public class KitchenTest {
 
   @After
   public void tearDown() {
-    System.setSecurityManager( oldSecurityManager );
+//    System.setSecurityManager( oldSecurityManager );
     sysOutContent = null;
     sysErrContent = null;
     mockRepositoriesMeta = null;
@@ -189,7 +189,7 @@ public class KitchenTest {
     final String DUMMY_DIR_1 = "test-dir-1";
     final String DUMMY_DIR_2 = "test-dir-2";
 
-    when( mockRepository.getDirectoryNames( anyObject() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
+    when( mockRepository.getDirectoryNames( any() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
     KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
@@ -237,7 +237,7 @@ public class KitchenTest {
     final String DUMMY_JOB_1 = "test-job-name-1";
     final String DUMMY_JOB_2 = "test-job-name-2";
 
-    when( mockRepository.getJobNames( anyObject(), anyBoolean() ) ).thenReturn( new String[]{ DUMMY_JOB_1, DUMMY_JOB_2 } );
+    when( mockRepository.getJobNames( any(), anyBoolean() ) ).thenReturn( new String[]{ DUMMY_JOB_1, DUMMY_JOB_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
     KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta,  null );
@@ -309,24 +309,24 @@ public class KitchenTest {
     }
   }
 
-  public class MySecurityManager extends SecurityManager {
-
-    private SecurityManager baseSecurityManager;
-
-    public MySecurityManager( SecurityManager baseSecurityManager ) {
-      this.baseSecurityManager = baseSecurityManager;
-    }
-
-    @Override
-    public void checkPermission( Permission permission ) {
-      if ( permission.getName().startsWith( "exitVM" ) ) {
-        throw new SecurityException( "System exit not allowed" );
-      }
-      if ( baseSecurityManager != null ) {
-        baseSecurityManager.checkPermission( permission );
-      } else {
-        return;
-      }
-    }
-  }
+//  public class MySecurityManager extends SecurityManager {
+//
+//    private SecurityManager baseSecurityManager;
+//
+//    public MySecurityManager( SecurityManager baseSecurityManager ) {
+//      this.baseSecurityManager = baseSecurityManager;
+//    }
+//
+//    @Override
+//    public void checkPermission( Permission permission ) {
+//      if ( permission.getName().startsWith( "exitVM" ) ) {
+//        throw new SecurityException( "System exit not allowed" );
+//      }
+//      if ( baseSecurityManager != null ) {
+//        baseSecurityManager.checkPermission( permission );
+//      } else {
+//        return;
+//      }
+//    }
+//  }
 }

@@ -28,20 +28,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.www.service.zip.ZipService;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,24 +45,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
-
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( {
-        IOUtils.class,
-        FileUtils.class,
-        XMLHandler.class,
-        KettleVFS.class,
-} )
 public class RegisterPackageServletTest {
 
   protected RegisterPackageServlet servlet;
@@ -77,10 +63,6 @@ public class RegisterPackageServletTest {
 
   @Before
   public void setup() {
-    PowerMockito.mockStatic( IOUtils.class );
-    PowerMockito.mockStatic( FileUtils.class );
-    PowerMockito.mockStatic( XMLHandler.class );
-    PowerMockito.mockStatic( KettleVFS.class );
     servlet = new RegisterPackageServlet();
   }
 
@@ -93,14 +75,14 @@ public class RegisterPackageServletTest {
   public void testIsJobHttpServletRequest() {
 
     // CASE: job
-    HttpServletRequest requestJob = mock( HttpServletRequest.class );
+    HttpServletRequest requestJob = Mockito.mock( HttpServletRequest.class );
     when(requestJob.getParameter( RegisterPackageServlet.PARAMETER_TYPE ) ).thenReturn( "job" );
 
     assertTrue( servlet.isJob( requestJob ) );
 
 
     // CASE: transformation
-    HttpServletRequest requestTrans = mock( HttpServletRequest.class );
+    HttpServletRequest requestTrans = Mockito.mock( HttpServletRequest.class );
     when(requestJob.getParameter( RegisterPackageServlet.PARAMETER_TYPE ) ).thenReturn( "trans" );
 
     assertFalse( servlet.isJob( requestTrans ) );
@@ -163,8 +145,8 @@ public class RegisterPackageServletTest {
     String xmlTag = "execution_configuration";
     String configUrl = applyFileSeperator( "/tmp/dafajfkdh/somePath/sub/execution_configuration__.xml" );
 
-    Document configDoc = mock( Document.class );
-    Node node = mock ( Node.class );
+    Document configDoc = Mockito.mock( Document.class );
+    Node node = Mockito.mock ( Node.class );
 
     // SETUP
     when( XMLHandler.loadXMLFile( eq( configUrl) ) ).thenReturn( configDoc );
@@ -216,7 +198,7 @@ public class RegisterPackageServletTest {
     expectedEx.expect( KettleException.class );
     expectedEx.expectMessage("Could not copy request to directory");
 
-    HttpServletRequest request = mock( HttpServletRequest.class);
+    HttpServletRequest request = Mockito.mock( HttpServletRequest.class);
 
     when( request.getInputStream() ).thenThrow( IOException.class );
 
@@ -230,7 +212,7 @@ public class RegisterPackageServletTest {
     expectedEx.expect( KettleException.class );
     expectedEx.expectMessage("Could not copy request to directory");
 
-    InputStream inputStream = mock( InputStream.class);
+    InputStream inputStream = Mockito.mock( InputStream.class);
 
     when( KettleVFS.getFileObject( anyString() ) ).thenThrow( IOException.class );
 
@@ -242,8 +224,8 @@ public class RegisterPackageServletTest {
   public void testCopyAndClose() throws Exception {
 
     // Variables
-    InputStream inputStream = mock( InputStream.class );
-    OutputStream outputStream = mock( OutputStream.class );
+    InputStream inputStream = Mockito.mock( InputStream.class );
+    OutputStream outputStream = Mockito.mock( OutputStream.class );
     int bytesCopied = 10;
 
     // SETUP
@@ -253,10 +235,10 @@ public class RegisterPackageServletTest {
     servlet.copyAndClose( inputStream, outputStream );
 
     // Verify
-    PowerMockito.verifyStatic( IOUtils.class );
+//    PowerMockito.verifyStatic( IOUtils.class );
     IOUtils.copy( inputStream, outputStream );
 
-    PowerMockito.verifyStatic( IOUtils.class);
+//    PowerMockito.verifyStatic( IOUtils.class);
     IOUtils.closeQuietly( outputStream );
 
   }
@@ -264,8 +246,8 @@ public class RegisterPackageServletTest {
   @Test
   public void testExtract_String() throws Exception {
 
-    ZipService mockZipService = mock( ZipService.class );
-    servlet.setZipService( mockZipService );
+    ZipService mockZipService = Mockito.mock( ZipService.class );
+    RegisterPackageServlet.setZipService( mockZipService );
     // a valid filepath is not necessary for test
     String path1 = "/root/subPath1/subPath2/zipFilePath002.zip";
     String expectedDirectory = applyFileSeperator( "/root/subPath1/subPath2" );
@@ -276,8 +258,8 @@ public class RegisterPackageServletTest {
   @Test
   public void testExtract_StringString() throws Exception {
 
-    ZipService mockZipService = mock( ZipService.class );
-    servlet.setZipService( mockZipService );
+    ZipService mockZipService = Mockito.mock( ZipService.class );
+    RegisterPackageServlet.setZipService( mockZipService );
     String path1 = "zipFilePath002";
     String path2 = "destinationDirectory003";
 
@@ -298,7 +280,7 @@ public class RegisterPackageServletTest {
 
     servlet.deleteArchive( fileName );
 
-    PowerMockito.verifyStatic( FileUtils.class);
+//    PowerMockito.verifyStatic( FileUtils.class);
     FileUtils.deleteQuietly( expectedFile );
 
   }

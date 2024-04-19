@@ -23,7 +23,7 @@
 package org.pentaho.di.trans.cluster;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -82,7 +82,7 @@ public class TransSplitterTest {
   }
 
   @Test
-   public void testTransSplitterRowsetSize() throws KettleException {
+   public void testTransSplitterRowsetSize() {
     TransMeta originalMeta = new TransMeta();
     originalMeta.setSizeRowset( 0 );
     TransMetaFactory factory = new TransMetaFactoryImpl();

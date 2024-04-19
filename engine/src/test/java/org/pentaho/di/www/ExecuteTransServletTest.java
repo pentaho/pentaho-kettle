@@ -24,7 +24,7 @@ package org.pentaho.di.www;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
@@ -42,9 +42,6 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,16 +53,13 @@ import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
+import static org.pentaho.test.util.InternalState.setInternalState;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { ExecuteTransServlet.class, PluginRegistry.class } )
 public class ExecuteTransServletTest {
   private ExecuteTransServlet executeTransServlet;
 
@@ -126,7 +120,7 @@ public class ExecuteTransServletTest {
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
     RepositoriesMeta repositoriesMeta = mock( RepositoriesMeta.class );
-
+    spy( RepositoriesMeta.class );
     KettleLogStore.init();
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
@@ -134,8 +128,11 @@ public class ExecuteTransServletTest {
     when( mockHttpServletRequest.getParameter( "rep" ) ).thenReturn( "Repo" );
     when( mockHttpServletRequest.getParameter( "trans" ) ).thenReturn( "Trans" );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
-    whenNew( RepositoriesMeta.class ).withNoArguments().thenReturn( repositoriesMeta );
-
+//    whenNew( RepositoriesMeta.class ).withNoArguments().thenReturn( repositoriesMeta );
+//    try ( MockedConstruction<RepositoriesMeta> mocked = mockConstruction( RepositoriesMeta.class ) ) {
+//      RepositoriesMeta meta = new RepositoriesMeta();
+//      when
+//    }
     executeTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
     verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
@@ -162,9 +159,8 @@ public class ExecuteTransServletTest {
     when( mockHttpServletRequest.getParameter( "user" ) ).thenReturn( "wrongUser" );
     when( mockHttpServletRequest.getParameter( "pass" ) ).thenReturn( "wrongPass" );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
-    whenNew( RepositoriesMeta.class ).withNoArguments().thenReturn( repositoriesMeta );
+//    whenNew( RepositoriesMeta.class ).withNoArguments().thenReturn( repositoriesMeta );
     when( repositoriesMeta.findRepository( "Repo" ) ).thenReturn( repositoryMeta );
-    mockStatic( PluginRegistry.class );
     when( PluginRegistry.getInstance() ).thenReturn( pluginRegistry );
     when( pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class ) ).thenReturn( repository );
 
@@ -243,9 +239,8 @@ public class ExecuteTransServletTest {
     when( mockHttpServletRequest.getParameter( "user" ) ).thenReturn( "user" );
     when( mockHttpServletRequest.getParameter( "pass" ) ).thenReturn( "pass" );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
-    whenNew( RepositoriesMeta.class ).withNoArguments().thenReturn( repositoriesMeta );
+//    whenNew( RepositoriesMeta.class ).withNoArguments().thenReturn( repositoriesMeta );
     when( repositoriesMeta.findRepository( "Repo" ) ).thenReturn( repositoryMeta );
-    mockStatic( PluginRegistry.class );
     when( PluginRegistry.getInstance() ).thenReturn( pluginRegistry );
     when( pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class ) )
       .thenReturn( repository );
@@ -255,7 +250,7 @@ public class ExecuteTransServletTest {
     when( repository.getTransformationID( "Trans", repositoryDirectoryInterface ) ).thenReturn( objectId );
     when( repository.loadTransformation( objectId, null ) ).thenReturn( transMeta );
     when( mockHttpServletRequest.getParameterNames() ).thenReturn( Collections.enumeration( new ArrayList<>() ) );
-    whenNew( Trans.class ).withAnyArguments().thenReturn( trans );
+//    whenNew( Trans.class ).withAnyArguments().thenReturn( trans );
     setInternalState( executeTransServlet, "socketRepository", mock( SocketRepository.class ) );
     setInternalState( executeTransServlet, "transformationMap", mock( TransformationMap.class ) );
     return trans;

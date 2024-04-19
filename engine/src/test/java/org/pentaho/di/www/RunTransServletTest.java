@@ -25,11 +25,9 @@ package org.pentaho.di.www;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -53,11 +51,12 @@ import java.util.StringTokenizer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import static org.mockito.ArgumentMatchers.any;
 
 
-@RunWith( MockitoJUnitRunner.class )
 public class RunTransServletTest {
 
   @Mock
@@ -98,24 +97,21 @@ public class RunTransServletTest {
   }
 
   @Test
-  public void testFinishProcessingTransWithoutServletOutputSteps() throws Exception {
+  public void testFinishProcessingTransWithoutServletOutputSteps() {
     runTransServlet.finishProcessing( trans, out );
     assertEquals( expectedOutputIfNoServletOutputSteps, outData.toString() );
   }
 
   @Test
-  public void testFinishProcessingTransWithServletOutputSteps() throws Exception {
+  public void testFinishProcessingTransWithServletOutputSteps() {
     StepMetaDataCombi stepMetaDataCombi = new StepMetaDataCombi();
     StepMetaInterface stepMeta = mock( StepMetaInterface.class );
     when( stepMeta.passDataToServletOutput() ).thenReturn( true );
     stepMetaDataCombi.meta = stepMeta;
     stepList.add( stepMetaDataCombi );
-    doAnswer( new Answer<Void>() {
-      @Override
-      public Void answer( InvocationOnMock invocation ) throws Throwable {
-        Thread.currentThread().sleep( 2000 );
-        return null;
-      }
+    doAnswer( (Answer<Void>) invocation -> {
+      Thread.sleep( 2000 );
+      return null;
     } ).when( trans ).waitUntilFinished();
     runTransServlet.finishProcessing( trans, out );
     assertTrue( outData.toString().isEmpty() );
@@ -160,11 +156,11 @@ public class RunTransServletTest {
     Mockito.when( request.getParameterValues( testParameter ) ).thenReturn( new String[] { testValue } );
 
     RunTransServlet runTransServlet = Mockito.mock( RunTransServlet.class );
-    Mockito.doCallRealMethod().when( runTransServlet ).doGet( Mockito.anyObject(), Mockito.anyObject() );
+    Mockito.doCallRealMethod().when( runTransServlet ).doGet( any(), any() );
 
     Trans trans =
       new Trans( transMeta, new SimpleLoggingObject( RunTransServlet.CONTEXT_PATH, LoggingObjectType.CARTE, null ) );
-    Mockito.when( runTransServlet.createTrans( Mockito.anyObject(), Mockito.anyObject() ) ).thenReturn( trans );
+    Mockito.when( runTransServlet.createTrans( any(), any() ) ).thenReturn( trans );
     Mockito.when( transMeta.getParameterValue( Mockito.eq( testParameter ) ) ).thenReturn( testValue );
 
     runTransServlet.log = new LogChannel( "RunTransServlet" );

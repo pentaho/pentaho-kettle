@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,7 +49,6 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.metastore.api.IMetaStore;
-import org.powermock.reflect.Whitebox;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -62,7 +61,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -521,19 +520,10 @@ public class JobMetaTest {
   @Test
   public void isGatheringMetricsTest() {
     JobMeta jobMetaTest = new JobMeta();
-    Whitebox.setInternalState( jobMetaTest, "gatheringMetrics", true );
-    assertTrue( jobMetaTest.isGatheringMetrics() );
-    Whitebox.setInternalState( jobMetaTest, "gatheringMetrics", false );
-    assertFalse( jobMetaTest.isGatheringMetrics() );
-  }
-
-  @Test
-  public void setGatheringMetricsTest() {
-    JobMeta jobMetaTest = new JobMeta();
     jobMetaTest.setGatheringMetrics( true );
-    assertTrue( Whitebox.getInternalState( jobMetaTest, "gatheringMetrics" ) );
+    assertTrue( jobMetaTest.isGatheringMetrics() );
     jobMetaTest.setGatheringMetrics( false );
-    assertFalse( Whitebox.getInternalState( jobMetaTest, "gatheringMetrics" ) );
+    assertFalse( jobMetaTest.isGatheringMetrics() );
   }
 
 }

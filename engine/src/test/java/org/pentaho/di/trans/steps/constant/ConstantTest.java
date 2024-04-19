@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,7 +38,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,9 +46,9 @@ import static org.mockito.Mockito.when;
 public class ConstantTest {
 
   private StepMockHelper<ConstantMeta, ConstantData> mockHelper;
-  private ConstantMeta constantMeta = mock( ConstantMeta.class );
-  private ConstantData constantData = mock( ConstantData.class );
-  private RowMetaAndData rowMetaAndData = mock( RowMetaAndData.class );
+  private final ConstantMeta constantMeta = mock( ConstantMeta.class );
+  private final ConstantData constantData = mock( ConstantData.class );
+  private final RowMetaAndData rowMetaAndData = mock( RowMetaAndData.class );
   private Constant constantSpy;
 
   @ClassRule

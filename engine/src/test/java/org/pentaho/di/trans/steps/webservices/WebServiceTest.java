@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -55,7 +55,7 @@ public class WebServiceTest {
   @Before
   public void setUpBefore() {
     mockHelper =
-        new StepMockHelper<WebServiceMeta, WebServiceData>( "WebService", WebServiceMeta.class, WebServiceData.class );
+      new StepMockHelper<>( "WebService", WebServiceMeta.class, WebServiceData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );

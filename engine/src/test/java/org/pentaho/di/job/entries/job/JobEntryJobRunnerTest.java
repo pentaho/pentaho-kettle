@@ -35,8 +35,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -109,7 +109,7 @@ public class JobEntryJobRunnerTest {
     when( parentJob.isStopped() ).thenReturn( false );
     when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenReturn( mockResult );
 
-    doThrow( Exception.class ).when( mockJob ).fireJobFinishListeners();
+    doThrow( KettleException.class ).when( mockJob ).fireJobFinishListeners();
 
     jobRunner.run();
     verify( mockJob, times( 1 ) ).setResult( Mockito.any( Result.class ) );
@@ -148,21 +148,21 @@ public class JobEntryJobRunnerTest {
   }
 
   @Test
-  public void testGetSetResult() throws Exception {
+  public void testGetSetResult() {
     assertEquals( mockResult, jobRunner.getResult() );
     jobRunner.setResult( null );
     assertNull( jobRunner.getResult() );
   }
 
   @Test
-  public void testGetSetLog() throws Exception {
+  public void testGetSetLog() {
     assertEquals( mockLog, jobRunner.getLog() );
     jobRunner.setLog( null );
     assertNull( jobRunner.getLog() );
   }
 
   @Test
-  public void testGetSetJob() throws Exception {
+  public void testGetSetJob() {
     assertEquals( mockJob, jobRunner.getJob() );
     jobRunner.setJob( null );
     assertNull( jobRunner.getJob() );

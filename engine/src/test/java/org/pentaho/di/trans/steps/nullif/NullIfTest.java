@@ -22,8 +22,8 @@
 
 package org.pentaho.di.trans.steps.nullif;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -69,7 +69,7 @@ public class NullIfTest {
 
   @Before
   public void setUp() {
-    smh = new StepMockHelper<NullIfMeta, NullIfData>( "Field NullIf processor", NullIfMeta.class, NullIfData.class );
+    smh = new StepMockHelper<>( "Field NullIf processor", NullIfMeta.class, NullIfData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
@@ -84,7 +84,7 @@ public class NullIfTest {
     return smh.getMockInputRowSet( new Object[][] { { "value1", "nullable-value", "value3" } } );
   }
 
-  private NullIfMeta mockProcessRowMeta() throws KettleStepException {
+  private NullIfMeta mockProcessRowMeta() {
     NullIfMeta processRowMeta = smh.processRowsStepMetaInterface;
     Field[] fields = createArrayWithOneField( "nullable-field", "nullable-value" );
     doReturn( fields ).when( processRowMeta ).getFields();
@@ -155,7 +155,7 @@ public class NullIfTest {
     return inputRowMeta;
   }
 
-  private NullIfMeta mockProcessRowMeta2() throws KettleStepException {
+  private NullIfMeta mockProcessRowMeta2() {
     NullIfMeta processRowMeta = smh.processRowsStepMetaInterface;
     Field[] fields = new Field[4];
     fields[0] = createArrayWithOneField( "value1", "20150606" )[0];

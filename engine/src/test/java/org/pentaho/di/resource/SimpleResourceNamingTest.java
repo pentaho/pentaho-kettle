@@ -27,7 +27,7 @@ import org.junit.Test;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
-import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.pentaho.test.util.InternalState.getInternalState;
 
 public class SimpleResourceNamingTest {
 

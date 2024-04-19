@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,8 @@
 
 package org.pentaho.di.core.logging;
 
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,7 +39,7 @@ import org.pentaho.di.core.gui.Point;
 
 public class MetricsPainterTest {
   MetricsPainter metricsPainter;
-  List<MetricsDuration> durations = null;
+  List<MetricsDuration> durations = new ArrayList<>();
   final int heightStub = 0;
   final double pixelsPerMsStub = 0;
   final long periodInMsStub = 0;
@@ -71,7 +71,7 @@ public class MetricsPainterTest {
   }
 
   private void callPaint( List<MetricsDuration> durations ) {
-    doCallRealMethod().when( metricsPainter ).paint( anyListOf( MetricsDuration.class ) );
+    doCallRealMethod().when( metricsPainter ).paint( anyList() );
     metricsPainter.paint( durations );
 
   }

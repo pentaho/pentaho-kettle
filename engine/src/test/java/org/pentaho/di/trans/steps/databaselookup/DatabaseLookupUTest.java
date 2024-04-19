@@ -22,50 +22,14 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
@@ -94,6 +58,42 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.pentaho.test.util.InternalState.setInternalState;
 
 /**
  * @author Andrey Khayrutdinov
@@ -142,7 +142,7 @@ public class DatabaseLookupUTest {
 
   private StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> createMockHelper() {
     StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper =
-      new StepMockHelper<DatabaseLookupMeta, DatabaseLookupData>( "test DatabaseLookup", DatabaseLookupMeta.class,
+      new StepMockHelper<>( "test DatabaseLookup", DatabaseLookupMeta.class,
         DatabaseLookupData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
@@ -155,7 +155,7 @@ public class DatabaseLookupUTest {
 
     when( mockHelper.trans.findRowSet( anyString(), anyInt(), anyString(), anyInt() ) ).thenReturn( rowSet );
 
-    when( mockHelper.transMeta.findNextSteps( Matchers.any( StepMeta.class ) ) )
+    when( mockHelper.transMeta.findNextSteps( ArgumentMatchers.any( StepMeta.class ) ) )
       .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
     when( mockHelper.transMeta.findPreviousSteps( any( StepMeta.class ), anyBoolean() ) )
       .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
@@ -187,13 +187,11 @@ public class DatabaseLookupUTest {
     meta.setReturnValueDefault( new String[] { "" } );
 
     meta = spy( meta );
-    doAnswer( new Answer() {
-      @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
-        RowMetaInterface row = (RowMetaInterface) invocation.getArguments()[ 0 ];
-        ValueMetaInterface v = new ValueMetaBinary( BINARY_FIELD );
-        row.addValueMeta( v );
-        return null;
-      }
+    doAnswer( invocation -> {
+      RowMetaInterface row = (RowMetaInterface) invocation.getArguments()[ 0 ];
+      ValueMetaInterface v = new ValueMetaBinary( BINARY_FIELD );
+      row.addValueMeta( v );
+      return null;
     } ).when( meta ).getFields(
       any( RowMetaInterface.class ),
       anyString(),
@@ -293,13 +291,11 @@ public class DatabaseLookupUTest {
     meta.setReturnValueDefault( new String[] { "", "" } );
 
     meta = spy( meta );
-    doAnswer( new Answer() {
-      @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
-        RowMetaInterface row = (RowMetaInterface) invocation.getArguments()[ 0 ];
-        ValueMetaInterface v = new ValueMetaBinary( BINARY_FIELD );
-        row.addValueMeta( v );
-        return null;
-      }
+    doAnswer( invocation -> {
+      RowMetaInterface row = (RowMetaInterface) invocation.getArguments()[ 0 ];
+      ValueMetaInterface v = new ValueMetaBinary( BINARY_FIELD );
+      row.addValueMeta( v );
+      return null;
     } ).when( meta ).getFields(
       any( RowMetaInterface.class ),
       anyString(),
@@ -618,11 +614,11 @@ public class DatabaseLookupUTest {
     doReturn( inputRowMeta ).when( dbLookup ).getInputRowMeta();
     doReturn( rowMeta ).when( db ).getTableFields( "lookuptable" );
     //Internal State Init
-    Whitebox.setInternalState( dbLookup, "data", dbLookupData );
-    Whitebox.setInternalState( dbLookupData, "db", db );
-    Whitebox.setInternalState( dbLookupData, "outputRowMeta", rowMetaOutput );
-    Whitebox.setInternalState( dbLookup, "meta", dbLookupMeta );
-    Whitebox.setInternalState( dbLookup, "variables", new Variables() );
+    setInternalState( dbLookup, "data", dbLookupData );
+    setInternalState( dbLookupData, "db", db );
+    setInternalState( dbLookupData, "outputRowMeta", rowMetaOutput );
+    setInternalState( dbLookup, "meta", dbLookupMeta );
+    setInternalState( dbLookup, "variables", new Variables() );
 
     doCallRealMethod().when( dbLookup ).setVariable( anyString(), anyString() );
     doCallRealMethod().when( dbLookup ).getVariable( anyString(), anyString() );

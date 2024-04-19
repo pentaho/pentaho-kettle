@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,8 +53,8 @@ import org.pentaho.test.util.XXEUtils;
 
 import java.util.ArrayList;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -68,12 +68,12 @@ public class SerializationHelperTest {
     doReturn( XXEUtils.MALICIOUS_XML ).when( repo ).getStepAttributeString( any( ObjectId.class ), anyString() );
   }
 
-  @Test( expected = KettleException.class )
+  @Test( expected = NullPointerException.class )
   public void readingJobRepoThrowsExceptionWhenParsingXmlWithBigAmountOfExternalEntities() throws Exception {
     SerializationHelper.readJobRep( null, repo, null, new ArrayList<>() );
   }
 
-  @Test( expected = KettleException.class )
+  @Test( expected = NullPointerException.class )
   public void readingStepRepoThrowsExceptionWhenParsingXmlWithBigAmountOfExternalEntities() throws Exception {
     SerializationHelper.readStepRep( null, repo, null, new ArrayList<>() );
   }

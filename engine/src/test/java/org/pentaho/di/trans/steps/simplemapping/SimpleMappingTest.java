@@ -21,12 +21,13 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.simplemapping;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -62,15 +63,15 @@ public class SimpleMappingTest {
   private StepMockHelper<SimpleMappingMeta, SimpleMappingData> stepMockHelper;
 
   // Using real SimpleMappingData object
-  private SimpleMappingData simpleMpData = new SimpleMappingData();
+  private final SimpleMappingData simpleMpData = new SimpleMappingData();
 
   private SimpleMapping smp;
 
   @Before
   public void setup() throws Exception {
     stepMockHelper =
-        new StepMockHelper<SimpleMappingMeta, SimpleMappingData>( "SIMPLE_MAPPING_TEST", SimpleMappingMeta.class,
-            SimpleMappingData.class );
+      new StepMockHelper<>( "SIMPLE_MAPPING_TEST", SimpleMappingMeta.class,
+        SimpleMappingData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
@@ -128,7 +129,7 @@ public class SimpleMappingTest {
   }
 
   @Test
-  public void testStepShouldProcessError_WhenMappingTransHasError() throws KettleException {
+  public void testStepShouldProcessError_WhenMappingTransHasError() {
 
     // Set Up TransMock to return the error
     int errorCount = 1;
@@ -151,7 +152,7 @@ public class SimpleMappingTest {
     verify( stepMockHelper.trans, times( 1 ) ).removeActiveSubTransformation( anyString() );
     verify( stepMockHelper.trans, never() ).getActiveSubTransformation( anyString() );
     verify( stepMockHelper.trans, times( 1 ) ).getErrors();
-    assertTrue( "The step contains the errors", smp.getErrors() == errorCount );
+    assertEquals( "The step contains the errors", smp.getErrors(), errorCount );
 
   }
 
@@ -198,7 +199,7 @@ public class SimpleMappingTest {
   }
 
   @Test
-  public void testDispose() throws KettleException {
+  public void testDispose() {
 
     // Set Up TransMock to return the error
     when( stepMockHelper.trans.getErrors() ).thenReturn( 0 );
