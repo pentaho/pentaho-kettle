@@ -15,8 +15,10 @@
       #set ($osName = "all")
       #if ($fileName.contains(".mac.") || $fileName.contains("-mac") || $fileName.contains(".app."))
         #set ($osName = "os x")
-      #elseif ($fileName.contains("-win") || $fileName.contains(".win.") )
+      #elseif ($fileName.contains("-win") || $fileName.contains(".win.") || $fileName.contains("-Windows") )
         #set ($osName = "windows")
+      #elseif ($fileName.contains("-linux") || $fileName.contains("-Linux") )
+              #set ($osName = "linux")
       #end
       #if ($fileName.endsWith(".bin") && $osName != 'os x')
         #set ($osName = "unix")
