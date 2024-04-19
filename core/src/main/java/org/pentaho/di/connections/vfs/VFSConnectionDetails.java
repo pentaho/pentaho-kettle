@@ -34,4 +34,19 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   default String getDomain() {
     return "";
   }
+
+  default boolean isSupportsRootPath() {
+    return false;
+  }
+
+  default boolean isRootPathRequired() {
+    return false;
+  }
+
+  default String getRootPath() {
+    return null;
+  }
+
+  default void setRootPath(String RootPath ) {}
+
 }
