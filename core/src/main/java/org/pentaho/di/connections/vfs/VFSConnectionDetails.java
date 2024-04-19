@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,4 +34,40 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   default String getDomain() {
     return "";
   }
+
+  /**
+   * Returns true if vfs connection supports root path
+   * Defaults to {@code false}.
+   *
+   */
+  default boolean isSupportsRootPath() {
+    return false;
+  }
+
+  /**
+   * Returns true if vfs connection requires root path
+   * Defaults to {@code false}.
+   *
+   */
+  default boolean isRootPathRequired() {
+    return false;
+  }
+
+  /**
+   *
+   * Gets the root path of a vfs connection.
+   *
+   * Defaults to {@code null}
+   * return the root path.
+   */
+  default String getRootPath() {
+    return null;
+  }
+
+  /**
+   * Sets the root path, given as a string
+   *
+   * @param rootPath The root path
+   */
+  default void setRootPath(String rootPath ) {}
 }
