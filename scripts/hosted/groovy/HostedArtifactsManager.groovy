@@ -142,6 +142,8 @@ class HostedArtifactsManager implements Serializable {
                   }
                 })
                 writeFile("$hostedRoot/../latest/new-layout/index.html", "$header $versionFreeHtmlPortion")
+                String buildDateString = createDate.replace('T', ' ').substring(0, 16)
+                writeFile("$hostedRoot/../latest/new-layout/build.info", "$build.number\n$buildDateString\n")
               }
 
             } else {
