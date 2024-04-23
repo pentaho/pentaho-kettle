@@ -687,6 +687,9 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
       // Get all the files in the current directory...
       String[] filelist = null;
+      if ( copyprevious ) {
+        realFtpDirectory = "";
+      }
       if ( protocol.equals( PROTOCOL_FTP ) ) {
         // If socks proxy server was provided
         if ( !Utils.isEmpty( socksProxyHost ) ) {
@@ -709,6 +712,9 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
               PKG, "JobEntryFTPDelete.SocksProxy.IncompleteCredentials",
               environmentSubstitute( socksProxyHost ), getName() ) );
           }
+        }
+        if ( copyprevious ) {
+          realFtpDirectory = "";
         }
 
         // establish the connection
