@@ -2569,11 +2569,7 @@ public class TransMeta extends AbstractMeta
         //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
         // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
         // needs to have "N" in the server startup script file
-        if ( props != null && props.areOnlyUsedConnectionsSavedToXML() || props == null && areOnlyUsedConnectionsSavedToXMLInServer() ) {
-          if ( isDatabaseConnectionUsed( dbMeta ) ) {
-            retval.append( dbMeta.getXML() );
-          }
-        } else {
+        if ( isDatabaseConnectionUsed( dbMeta ) || ( props != null && !props.areOnlyUsedConnectionsSavedToXML() ) || ( props == null && !areOnlyUsedConnectionsSavedToXMLInServer() ) ) {
           retval.append( dbMeta.getXML() );
         }
       }
