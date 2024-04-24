@@ -7,7 +7,6 @@
   <artifactId>kettle-core</artifactId>
   <version>10.2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-
   <name>PDI Core</name>
 
   <parent>
