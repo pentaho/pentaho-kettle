@@ -620,19 +620,6 @@ jobGroups:
        directives      :  += -Dosgi
        archivable      :  true
 
-  4700:
-     - jobID           :  installers
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/bitrock-installbuilder-8
-       archivable      :  true
-       testable        :  false
-       parallelize     :  true
-
-     - jobID           :  pentaho-update
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/installanywhere-installbuilder
-       root            :  installer-tool
-
   5000:
     - jobID: generate-download-page
       scmUrl: https://github.com/pentaho/jenkins-pipelines.git
