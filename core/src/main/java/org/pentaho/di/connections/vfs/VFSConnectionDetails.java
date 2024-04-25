@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,9 @@
 package org.pentaho.di.connections.vfs;
 
 import org.pentaho.di.connections.ConnectionDetails;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by bmorrise on 2/13/19.
@@ -69,5 +72,17 @@ public interface VFSConnectionDetails extends ConnectionDetails {
    *
    * @param rootPath The root path
    */
-  default void setRootPath(String rootPath ) {}
+  default void setRootPath( String rootPath ) { }
+
+  /**
+   * Gets the list of roles with access to the connection from the Business Analytics product.
+   * <p>
+   * Access control does not distinguish between types of access operations (such as read, write, delete).
+   * Access is granted to either all or none of the operations.
+   * @return A non-null list of roles.
+   */
+  default List<String> getBaRoles() {
+    // remove after implementation
+    return Collections.emptyList();
+  }
 }
