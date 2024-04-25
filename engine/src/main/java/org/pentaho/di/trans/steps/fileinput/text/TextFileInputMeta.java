@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -67,7 +68,6 @@ import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
 import org.pentaho.di.trans.steps.file.BaseFileInputMeta;
-import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -78,7 +78,7 @@ import java.util.Map;
 @SuppressWarnings( "deprecation" )
 @InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
 public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditionalField, BaseFileInputFiles, BaseFileField>
-    implements StepMetaInterface, ResolvableResource, CsvInputAwareMeta {
+    implements StepMetaInterface, CsvInputAwareMeta {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! TODO: check i18n
                                                          // for base
 
@@ -1125,7 +1125,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
       remarks.add( cr );
     }
 
-    FileInputList textFileList = getFileInputList( transMeta );
+    FileInputList textFileList = getFileInputList( transMeta.getBowl(), transMeta );
     if ( textFileList.nrOfFiles() == 0 ) {
       if ( !inputFiles.acceptingFilenames ) {
         cr =
@@ -1347,15 +1347,15 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
     return inputFiles.acceptingField;
   }
 
-  public String[] getFilePaths( VariableSpace space ) {
+  public String[] getFilePaths( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFilePathList(
-        space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
+        bowl, space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
         inputFiles.fileRequired, inputFiles.includeSubFolderBoolean() );
   }
 
-  public FileInputList getTextFileList( VariableSpace space ) {
+  public FileInputList getTextFileList( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFileList(
-        space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
+        bowl, space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
         inputFiles.fileRequired, inputFiles.includeSubFolderBoolean() );
   }
 
@@ -1364,22 +1364,6 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
    */
   FileObject getFileObject( String vfsFileName, VariableSpace variableSpace ) throws KettleFileException {
     return KettleVFS.getFileObject( variableSpace.environmentSubstitute( vfsFileName ), variableSpace );
-  }
-
-  @Override
-  public void resolve() {
-    for ( int i = 0; i < inputFiles.fileName.length; i++ ) {
-      if ( inputFiles.fileName[i] != null && !inputFiles.fileName[i].isEmpty() ) {
-        try {
-          FileObject fileObject = KettleVFS.getFileObject( getParentStepMeta().getParentTransMeta().environmentSubstitute( inputFiles.fileName[i] ) );
-          if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-            inputFiles.fileName[i] = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
-          }
-        } catch ( KettleFileException e ) {
-          throw new RuntimeException( e );
-        }
-      }
-    }
   }
 
   @Override
@@ -1404,7 +1388,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
 
   @Override
   public FileObject getHeaderFileObject( final TransMeta transMeta ) {
-    final FileInputList fileList = getFileInputList( transMeta );
+    final FileInputList fileList = getFileInputList( transMeta.getBowl(), transMeta );
     return fileList.nrOfFiles() == 0 ? null : fileList.getFile( 0 );
   }
 }

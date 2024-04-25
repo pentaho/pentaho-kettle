@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,9 +37,31 @@ public interface ConnectionProvider<T extends ConnectionDetails> {
 
   Class<T> getClassType();
 
-  List<String> getNames();
+  /**
+   * @deprecated use getNames( ConnectionManager )
+   */
+  @Deprecated
+  default List<String> getNames() {
+    throw new UnsupportedOperationException( "Deprecated method" );
+  }
 
-  List<T> getConnectionDetails();
+  /**
+   * @deprecated use getNames( ConnectionManager )
+   */
+  @Deprecated
+  default List<T> getConnectionDetails() {
+    throw new UnsupportedOperationException( "Deprecated method" );
+  }
+
+  // Subclasses should implement this to work with Bowls.
+  default List<String> getNames( ConnectionManager connectionManager ) {
+    return getNames();
+  }
+
+  // Subclasses should implement this to work with Bowls.
+  default List<T> getConnectionDetails( ConnectionManager connectionManager ) {
+    return getConnectionDetails();
+  }
 
   boolean test( T connectionDetails ) throws KettleException;
 
