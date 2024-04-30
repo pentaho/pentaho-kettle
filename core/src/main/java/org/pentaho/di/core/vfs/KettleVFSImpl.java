@@ -152,7 +152,7 @@ public class KettleVFSImpl implements IKettleVFS {
 
       return fsOptions != null ? fsManager.resolveFile( filename, fsOptions ) : fsManager.resolveFile( filename );
 
-    } catch ( IOException | MetaStoreException e ) {
+    } catch ( IOException e ) {
       throw new KettleFileException( "Unable to get VFS File object for filename '"
         + KettleVFS.cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
     }
@@ -161,7 +161,7 @@ public class KettleVFSImpl implements IKettleVFS {
   @Override
   public FileSystemOptions getFileSystemOptions( String scheme, String vfsFilename, VariableSpace space,
                                                   FileSystemOptions fileSystemOptions )
-    throws IOException, MetaStoreException {
+    throws IOException {
     if ( scheme == null ) {
       return fileSystemOptions;
     }
@@ -170,7 +170,7 @@ public class KettleVFSImpl implements IKettleVFS {
   }
 
   private FileSystemOptions buildFsOptions( VariableSpace parentVariableSpace, FileSystemOptions sourceOptions,
-                                            String vfsFilename, String scheme ) throws IOException, MetaStoreException {
+                                            String vfsFilename, String scheme ) throws IOException {
     VariableSpace varSpace = parentVariableSpace;
     if ( vfsFilename == null ) {
       return null;
@@ -185,37 +185,42 @@ public class KettleVFSImpl implements IKettleVFS {
     FileSystemOptions fsOptions = ( sourceOptions == null ) ? new FileSystemOptions() : sourceOptions;
     configBuilder.setBowl( fsOptions, bowl );
 
-    if ( scheme.equals( KettleVFS.SMB_SCHEME ) ) {
-      Matcher matcher = SMB_PATTERN.matcher( vfsFilename );
-      if ( matcher.matches() ) {
-        return VFSHelper.getOpts( bowl, vfsFilename, matcher.group( 1 ), varSpace );
-      }
-    }
-
-    String[] varList = varSpace.listVariables();
-
-    for (String var : varList) {
-      if ( var.equalsIgnoreCase( CONNECTION ) && varSpace.getVariable( var ) != null ) {
-        FileSystemOptions fileSystemOptions = VFSHelper.getOpts( bowl, vfsFilename, varSpace.getVariable( var ),
-                                                                 varSpace );
-        if ( fileSystemOptions != null ) {
-          return fileSystemOptions;
+    try {
+      if ( scheme.equals( KettleVFS.SMB_SCHEME ) ) {
+        Matcher matcher = SMB_PATTERN.matcher( vfsFilename );
+        if ( matcher.matches() ) {
+          return VFSHelper.getOpts( bowl, vfsFilename, matcher.group( 1 ), varSpace );
         }
       }
-      if ( var.startsWith( "vfs." ) ) {
-        String param = configBuilder.parseParameterName( var, scheme );
-        String varScheme = KettleGenericFileSystemConfigBuilder.extractScheme( var );
-        if ( param != null ) {
-          if ( varScheme == null || varScheme.equals( "sftp" ) || varScheme.equals( scheme ) ) {
-            configBuilder.setParameter( fsOptions, param, varSpace.getVariable( var ), var, vfsFilename );
+
+      String[] varList = varSpace.listVariables();
+
+      for (String var : varList) {
+        if ( var.equalsIgnoreCase( CONNECTION ) && varSpace.getVariable( var ) != null ) {
+          FileSystemOptions fileSystemOptions = VFSHelper.getOpts( bowl, vfsFilename, varSpace.getVariable( var ),
+                                                                   varSpace );
+          if ( fileSystemOptions != null ) {
+            return fileSystemOptions;
           }
-        } else {
-          throw new IOException( "FileSystemConfigBuilder could not parse parameter: " + var );
+        }
+        if ( var.startsWith( "vfs." ) ) {
+          String param = configBuilder.parseParameterName( var, scheme );
+          String varScheme = KettleGenericFileSystemConfigBuilder.extractScheme( var );
+          if ( param != null ) {
+            if ( varScheme == null || varScheme.equals( "sftp" ) || varScheme.equals( scheme ) ) {
+              configBuilder.setParameter( fsOptions, param, varSpace.getVariable( var ), var, vfsFilename );
+            }
+          } else {
+            throw new IOException( "FileSystemConfigBuilder could not parse parameter: " + var );
+          }
         }
       }
-    }
-    if ( scheme.equals( "pvfs" ) ) {
-      configBuilder.setParameter( fsOptions, "VariableSpace", varSpace, vfsFilename );
+      if ( scheme.equals( "pvfs" ) ) {
+        configBuilder.setParameter( fsOptions, "VariableSpace", varSpace, vfsFilename );
+      }
+    } catch ( MetaStoreException ex ) {
+      // keep backward compatible API in KettleVFS
+      throw new IOException( ex );
     }
     return fsOptions;
   }
