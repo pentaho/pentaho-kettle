@@ -45,7 +45,6 @@ import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
 import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -220,7 +219,7 @@ public class KettleVFS {
   @Deprecated
   static FileSystemOptions getFileSystemOptions( String scheme, String vfsFilename, VariableSpace space,
                                                  FileSystemOptions fileSystemOptions )
-    throws IOException, MetaStoreException {
+    throws IOException {
     return ikettleVFS.getFileSystemOptions( scheme, vfsFilename, space, fileSystemOptions );
   }
 

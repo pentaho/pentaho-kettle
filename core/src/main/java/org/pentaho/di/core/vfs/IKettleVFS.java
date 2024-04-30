@@ -24,7 +24,6 @@ package org.pentaho.di.core.vfs;
 
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -54,7 +53,7 @@ public interface IKettleVFS {
   // warning, was not public
   FileSystemOptions getFileSystemOptions( String scheme, String vfsFilename, VariableSpace space,
                                           FileSystemOptions fileSystemOptions )
-    throws IOException, MetaStoreException;
+    throws IOException;
 
   String getFriendlyURI( String filename );
 
