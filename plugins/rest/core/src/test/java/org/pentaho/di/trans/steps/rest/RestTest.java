@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,17 +24,11 @@ package org.pentaho.di.trans.steps.rest;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepMeta;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -107,7 +101,7 @@ public class RestTest {
   }
 
   /**
-   * This test test to makes sure the parameters are uri encoded. If the parameters is not encoded, it will throw
+   * This test makes sure the parameters are uri encoded. If the parameters are not encoded, it will throw
    * IllegalStateException
    * @throws KettleException
    */
@@ -167,6 +161,59 @@ public class RestTest {
       // IllegalStateException is throws when the parameters are not encoded
       if ( exception.getCause() instanceof IllegalStateException ) {
         Assert.fail();
+      }
+    }
+  }
+
+  /**
+   * Verifies that a PUT request with an empty body does not trigger an IllegalStateException
+   * @throws KettleException
+   */
+  @Test
+  public void testPutWithEmptyBody() throws KettleException {
+
+    Invocation.Builder builder = mock( Invocation.Builder.class );
+
+    WebTarget resource = mock( WebTarget.class );
+    doReturn( builder ).when( resource ).request();
+
+    Client client = mock( Client.class );
+    doReturn( resource ).when( client ).target( anyString() );
+
+    ClientBuilder clientBuilder = mock( ClientBuilder.class );
+    when( clientBuilder.build() ).thenReturn( client );
+
+    RestMeta meta = mock( RestMeta.class );
+    doReturn( false ).when( meta ).isDetailed();
+    doReturn( false ).when( meta ).isUrlInField();
+    doReturn( false ).when( meta ).isDynamicMethod();
+
+    RowMetaInterface rmi = mock( RowMetaInterface.class );
+    doReturn( 1 ).when( rmi ).size();
+
+    RestData data = mock( RestData.class );
+    data.method = RestMeta.HTTP_METHOD_PUT;
+    data.config = new ClientConfig();
+    data.inputRowMeta = rmi;
+    data.realUrl = "http://localhost:8080/pentaho";
+    data.mediaType = MediaType.TEXT_PLAIN_TYPE;
+    data.useBody = true;
+    // do not set data.indexOfBodyField
+
+    Rest rest = mock( Rest.class, Answers.RETURNS_DEFAULTS.get() );
+    doCallRealMethod().when( rest ).callRest( any() );
+    doCallRealMethod().when( rest ).searchForHeaders( any() );
+
+    setInternalState( rest, "meta", meta );
+    setInternalState( rest, "data", data );
+
+    try {
+      rest.callRest( new Object[] { 0 } );
+    } catch ( Exception exception ) {
+      // Ignore the ConnectException which is expected as rest call to localhost:8080 will fail in unit test
+      // IllegalStateException is throws when the body is null
+      if ( exception.getCause().getCause() instanceof IllegalStateException ) {
+          Assert.fail( "PUT request with an empty body should not have failed with an IllegalStateException" );
       }
     }
   }

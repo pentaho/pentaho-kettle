@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.textfileinput;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
@@ -39,7 +41,17 @@ public interface InputFileMetaInterface extends StepMetaInterface {
 
   public int getNrHeaderLines();
 
-  public String[] getFilePaths( VariableSpace space );
+  /**
+   * @deprecated replaced by getFilePaths( Bowl bowl, VariableSpace space )
+   */
+  @Deprecated
+  default String[] getFilePaths( VariableSpace space ) {
+    throw new UnsupportedOperationException( "deprecated" );
+  }
+
+  default String[] getFilePaths( Bowl bowl, VariableSpace space ) {
+    return getFilePaths( space );
+  }
 
   public boolean isErrorIgnored();
 

@@ -97,6 +97,8 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.AddUndoPositionInterface;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -482,6 +484,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public PropsUI props;
 
+  // should never be null
+  private Bowl bowl = DefaultBowl.getInstance();
+
   public Repository rep;
   private String repositoryName;
 
@@ -618,6 +623,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public Text selectionFilter;
 
+  // licensing related property so that Revenera can properly identify execution is triggered by spoon
+  private static final String EXECUTION_TYPE_PROP = "system-property.pentaho.execution.type";
+
   /**
    * This is the main procedure for Spoon.
    *
@@ -705,6 +713,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       initLogging( commandLineOptions );
       // remember...
+
+      // setting property to designer so that Revenera can properly identify execution is triggered by spoon
+      System.setProperty( EXECUTION_TYPE_PROP, "designer" );
 
       staticSpoon = new Spoon();
       staticSpoon.commandLineOptions = commandLineOptions;
@@ -9564,6 +9575,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setMetaStoreSupplier( Supplier<IMetaStore> metaStoreSupplier ) {
     this.metaStoreSupplier = metaStoreSupplier;
+  }
+
+  public Bowl getBowl() {
+    return bowl;
+  }
+
+  public void setBowl( Bowl bowl ) {
+    this.bowl = Objects.requireNonNull( bowl );
   }
 
   private void onLoginError( Throwable t ) {

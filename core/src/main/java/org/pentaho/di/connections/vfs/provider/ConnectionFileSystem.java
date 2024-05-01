@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,20 +34,20 @@ import org.apache.commons.vfs2.provider.AbstractFileSystem;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
+import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
 
 import java.util.Collection;
-import java.util.function.Supplier;
 
 public class ConnectionFileSystem extends AbstractFileSystem implements FileSystem {
 
   public static final String CONNECTION = "connection";
   public static final String DOMAIN_ROOT = "[\\w]+://";
-  private Supplier<ConnectionManager> connectionManager = ConnectionManager::getInstance;
 
   public ConnectionFileSystem( FileName rootName, FileSystemOptions fileSystemOptions ) {
     super( rootName, null, fileSystemOptions );
@@ -65,12 +65,15 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     String url = null;
 
     if ( vfsConnectionDetails != null ) {
-      String domain = vfsConnectionDetails.getDomain();
-      if ( !domain.equals( "" ) ) {
-        domain = "/" + domain;
+      if ( KettleVFS.SMB_SCHEME.equalsIgnoreCase( vfsConnectionDetails.getType() ) ) {
+        url = abstractFileName.getURI().replaceFirst( "pvfs:", KettleVFS.SMB_SCHEME_COLON );
+      } else {
+        String domain = vfsConnectionDetails.getDomain();
+        if ( !domain.equals( "" ) ) {
+          domain = "/" + domain;
+        }
+        url = vfsConnectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
       }
-      url = vfsConnectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
-      //TODO Looks like a bug. For now excluding this for connections with hasBuckets. For future, needs to be re-analyzed.
       if ( url.matches( DOMAIN_ROOT ) && vfsConnectionDetails.hasBuckets() ) {
         url += vfsConnectionDetails.getName();
       }
@@ -83,8 +86,9 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
   protected FileObject createFile( AbstractFileName abstractFileName ) throws Exception {
 
     String connectionName = ( (ConnectionFileName) abstractFileName ).getConnection();
+    Bowl bowl = KettleGenericFileSystemConfigBuilder.getInstance().getBowl( getFileSystemOptions() );
     VFSConnectionDetails connectionDetails =
-      (VFSConnectionDetails) connectionManager.get().getConnectionDetails( connectionName );
+      (VFSConnectionDetails) bowl.getConnectionManager().getConnectionDetails( connectionName );
     FileSystemOptions opts = super.getFileSystemOptions();
     IKettleFileSystemConfigBuilder configBuilder = KettleFileSystemConfigBuilderFactory.getConfigBuilder
       ( new Variables(), ConnectionFileProvider.SCHEME );
@@ -100,7 +104,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     if ( url != null ) {
       domain = connectionDetails.getDomain();
       varSpace.setVariable( CONNECTION, connectionName );
-      fileObject = (AbstractFileObject) KettleVFS.getFileObject( url, varSpace );
+      fileObject = (AbstractFileObject) KettleVFS.getInstance( bowl ).getFileObject( url, varSpace );
     }
 
     return new ConnectionFileObject( abstractFileName, this, fileObject, domain );

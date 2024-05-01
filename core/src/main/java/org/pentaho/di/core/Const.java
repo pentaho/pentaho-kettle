@@ -1642,7 +1642,25 @@ public class Const {
    */
   public static final String KETTLE_PYTHON_STEP_REPLACE_NULLS = "KETTLE_PYTHON_STEP_REPLACE_NULLS";
 
+  /**
+   Value to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as job input mode.
+  */
+  public static final String COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT = "COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT";
 
+  /**
+   Value to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as trans input mode.
+   */
+    public static final String COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT = "COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT";
+
+  /**
+   Value to show/not show the Warning messages regarding the configured behaviour of the flag "Execute every Input Row"
+   */
+  public static final String COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
+
+  /**
+   Value to Configure if we want to export only the used connections to the XML file
+   */
+  public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer

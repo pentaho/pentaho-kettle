@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,13 @@
 
 package org.pentaho.di.core.vfs.configuration;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.variables.VariableSpace;
+
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileSystemOptions;
-import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * @author cboyden
@@ -53,4 +56,13 @@ public interface IKettleFileSystemConfigBuilder {
   default Object getVariableSpace( FileSystemOptions fileSystemOptions ) {
     return null;
   };
+
+  default void setBowl( FileSystemOptions opts, Bowl bowl ) {
+    // noop
+  }
+
+  default Bowl getBowl( FileSystemOptions opts ) {
+    return DefaultBowl.getInstance();
+  }
 }
+

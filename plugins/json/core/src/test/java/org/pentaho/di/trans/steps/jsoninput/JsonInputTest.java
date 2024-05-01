@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
@@ -1266,7 +1267,7 @@ public class JsonInputTest {
   protected JsonInputMeta createFileListMeta( final List<FileObject> files ) {
     JsonInputMeta meta = new JsonInputMeta() {
       @Override
-      public FileInputList getFileInputList( VariableSpace space ) {
+      public FileInputList getFileInputList( Bowl bowl, VariableSpace space ) {
         return new FileInputList() {
           @Override
           public List<FileObject> getFiles() {

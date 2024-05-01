@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.locator.api.MetastoreDirectoryProvider;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.pentaho.metastore.stores.xml.XmlUtil;
@@ -66,47 +67,99 @@ public class MetaStoreConst {
   // logic in MetastoreLocator. Should only be enabled in tests that don't load plugins.
   private static volatile boolean defaultToLocalXml = false;
 
+  // NOTE: Suppliers are needed for a couple reasons: First, things that need metastores can be initialized before
+  // plugins (such as MetastoreLocatorImpl) are fully loaded, and the Supplier defers initialization until usage time.
+  // Nothing actually uses the metastore before plugins finish loading.
+  // Second, things like connecting to Repositories can change the metastore at runtime, so it's better to hold onto
+  // a Supplier than a specific instance.
+
   private static final Supplier<MetastoreLocator> metastoreLocatorSupplier = new Supplier<MetastoreLocator> () {
     private volatile MetastoreLocator metastoreLocator;
 
     public MetastoreLocator get() {
-      if ( metastoreLocator == null ) {
-        synchronized ( this ) {
-          try {
-            if ( metastoreLocator == null ) {
-              Collection<MetastoreLocator> metastoreLocators =
-                PluginServiceLoader.loadServices( MetastoreLocator.class );
-              metastoreLocator = metastoreLocators.stream().findFirst().orElse( null );
-            }
-          } catch ( KettlePluginException e ) {
-            logger.error( "Error getting metastore locator", e );
-          }
-        }
+      // double-checked idiom because this can fail until the plugin is loaded.
+      MetastoreLocator result = metastoreLocator;
+      if ( result != null ) {
+        return result;
       }
-      return metastoreLocator;
+      synchronized ( this ) {
+        try {
+          if ( metastoreLocator == null ) {
+            Collection<MetastoreLocator> metastoreLocators =
+              PluginServiceLoader.loadServices( MetastoreLocator.class );
+            metastoreLocator = result = metastoreLocators.stream().findFirst().orElse( null );
+          }
+        } catch ( KettlePluginException e ) {
+          logger.error( "Error getting metastore locator", e );
+        }
+        return metastoreLocator;
+      }
     }
   };
 
+  private static final MetastoreDirectoryProvider NULL_METASTORE_DIRECTORY_PROVIDER =
+    new MetastoreDirectoryProvider() {
+      @Override
+      public IMetaStore getMetastoreForDirectory(String rootFolder) {
+        return null;
+      }
+    };
+
+  private static final Supplier<MetastoreDirectoryProvider> metastoreDirectoryProviderSupplier =
+    new Supplier<MetastoreDirectoryProvider> () {
+    private volatile MetastoreDirectoryProvider metastoreDirectoryProvider;
+
+    public MetastoreDirectoryProvider get() {
+      // double-checked idiom because this can fail until the plugin is loaded.
+      MetastoreDirectoryProvider result = metastoreDirectoryProvider;
+      if ( result != null ) {
+        return result;
+      }
+      synchronized ( this ) {
+        try {
+          if ( metastoreDirectoryProvider == null ) {
+            Collection<MetastoreDirectoryProvider> metastoreDirectoryProviders =
+              PluginServiceLoader.loadServices( MetastoreDirectoryProvider.class );
+            metastoreDirectoryProvider = result = metastoreDirectoryProviders.stream().findFirst().orElse( null );
+            if ( result == null ) {
+              // cache the null so we don't constantly try to look this up.
+              metastoreDirectoryProvider = result = NULL_METASTORE_DIRECTORY_PROVIDER;
+            }
+          }
+        } catch ( KettlePluginException e ) {
+          logger.error( "Error getting metastore directory provider", e );
+        }
+        return metastoreDirectoryProvider;
+      }
+    }
+  };
+
+
   private static final Supplier<IMetaStore> metaStoreSupplier = new Supplier<IMetaStore> () {
     private volatile IMetaStore metaStore;
+
     public IMetaStore get() {
-      if ( metaStore == null ) {
-        synchronized( this ) {
-          if ( metaStore == null ) {
-            MetastoreLocator locator = metastoreLocatorSupplier.get();
-            if ( locator != null ) {
-              metaStore = new SuppliedMetaStore( () -> locator.getMetastore() );
-            } else if ( defaultToLocalXml ) {
-              try {
-                return openLocalPentahoMetaStore();
-              } catch ( MetaStoreException e ) {
-                logger.error( "Error opening local XML metastore", e );
-              }
+      // double-checked idiom because this can fail until the plugin is loaded.
+      IMetaStore result = metaStore;
+      if ( result != null ) {
+        return result;
+      }
+      synchronized( this ) {
+        if ( metaStore == null ) {
+          MetastoreLocator locator = metastoreLocatorSupplier.get();
+          if ( locator != null ) {
+            metaStore = result = new SuppliedMetaStore( () -> locator.getMetastore() );
+          } else if ( defaultToLocalXml ) {
+            try {
+              // Do not store as metaStore
+              return openLocalPentahoMetaStore();
+            } catch ( MetaStoreException e ) {
+              logger.error( "Error opening local XML metastore", e );
             }
           }
         }
+        return metaStore;
       }
-      return metaStore;
     }
   };
 
@@ -154,6 +207,29 @@ public class MetaStoreConst {
     return metaStoreSupplier.get();
   }
 
+  /**
+   * Returns a metastore implementation at the given path. Different implementations may support different types of
+   * paths (e.g. local, vfs)
+   *
+   * NOTE that this supplier can do some non-trivial work and the result should never change, so the Supplier should
+   * only be used for deffered initialization, and the result should generally be held onto.
+   *
+   *
+   * @param rootFolder path to the metastore parent directory. The ".metastore" directory will be created under this
+   *                  path.
+   *
+   * @return IMetaStore a metastore implementation at the given path, or null
+   *
+   */
+  public static Supplier<IMetaStore> getMetastoreForDirectorySupplier( String rootFolder ) {
+    return () -> {
+      MetastoreDirectoryProvider provider = metastoreDirectoryProviderSupplier.get();
+      if ( provider == null ) {
+        return null;
+      }
+      return provider.getMetastoreForDirectory( rootFolder );
+    };
+  }
 
   /**
    * When this is enabled, if the MetastoreLocator returns null, a local xml metastore will be returned. This should

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -28,7 +28,6 @@ import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.locator.api.MetastoreLocator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,38 +38,11 @@ import java.util.List;
 public class EmbeddedRunConfigurationManager {
   public static RunConfigurationManager build( EmbeddedMetaStore embeddedMetaStore ) {
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ) );
+      new DefaultRunConfigurationProvider( () -> embeddedMetaStore );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     runConfigurationProviders.add( defaultRunConfigurationProvider );
 
     return new RunConfigurationManager( runConfigurationProviders );
   }
-
-  private static MetastoreLocator createMetastoreLocator( IMetaStore embeddedMetaStore ) {
-    return new MetastoreLocator() {
-
-      @Override
-      public IMetaStore getMetastore( String providerKey ) {
-        return embeddedMetaStore;
-      }
-
-      @Override
-      public IMetaStore getMetastore() {
-        return embeddedMetaStore;
-      }
-
-      @Override public String setEmbeddedMetastore( IMetaStore metastore ) {
-        return null;
-      }
-
-      @Override public void disposeMetastoreProvider( String providerKey ) {
-
-      }
-      @Override public IMetaStore getExplicitMetastore( String providerKey ) {
-        return null;
-      }
-    };
-  }
-
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
@@ -73,16 +74,20 @@ public class VFSFile extends BaseEntity implements File {
     if ( root == null || connection == null ) {
       return null;
     }
-    String replacement = DOMAIN_ROOT + ( Utils.isEmpty( domain ) ? "" : domain );
-    StringBuilder path = new StringBuilder();
-    path.append( ConnectionFileProvider.SCHEME );
-    path.append( PROTOCOL_SEPARATOR );
-    path.append( connection );
-    if ( Utils.isEmpty( domain ) ) {
-      path.append( DELIMITER );
+    if ( ConnectionFileProvider.SCHEME.equals( "pvfs") && root.startsWith( KettleVFS.SMB_SCHEME_COLON ) ) {
+      return root.replaceFirst( KettleVFS.SMB_SCHEME, "pvfs" );
+    } else {
+      String replacement = DOMAIN_ROOT + ( Utils.isEmpty( domain ) ? "" : domain );
+      StringBuilder path = new StringBuilder();
+      path.append( ConnectionFileProvider.SCHEME );
+      path.append( PROTOCOL_SEPARATOR );
+      path.append( connection );
+      if ( Utils.isEmpty( domain ) ) {
+        path.append( DELIMITER );
+      }
+      path.append( root.replaceAll( replacement, "" ) );
+      return path.toString();
     }
-    path.append( root.replaceAll( replacement, "" ) );
-    return path.toString();
   }
 
   public static VFSFile create( String parent, FileObject fileObject, String connection, String domain ) {
