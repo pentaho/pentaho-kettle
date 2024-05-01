@@ -122,6 +122,17 @@ public class EncryptUtils {
     }
   }
 
+  /**
+   * Unlike Class#getDeclaredMethod which returns all declared
+   * private, protected and public methods declared in the specific Class
+   *
+   * EncryptUtils#getDeclaredMethod returns all declared
+   * private, protected and public methods declared in the specific Class and its Parent Classes
+   *
+   * @param parentClass The class whose declared methods are needed.
+   * @param name The field/method name.
+   * @param parameterTypes Return Type of the field/method
+   */
   private static Method getDeclaredMethod( Class<?> parentClass, String name, Class<?>... parameterTypes ) throws NoSuchMethodException {
     if ( parentClass == Object.class ) {
       throw new NoSuchMethodException();

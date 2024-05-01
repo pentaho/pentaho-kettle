@@ -20,44 +20,23 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.vfs;
+package org.pentaho.di.connections.common.bucket;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
- * A class to put common fields for all types of VFS Connection Details to avoid code duplication
+ * Child class to validate encrypted fields in Parent Classes getting encrypted without failure
  */
-public abstract class BaseVFSConnectionDetails implements VFSConnectionDetails {
+public class TestConnectionDetailsChild extends TestConnectionDetails {
 
-  @NonNull
   @MetaStoreAttribute
-  private List<String> baRoles = new ArrayList<>();
+  private String password3;
 
-  @NonNull
-  @Override
-  public List<String> getBaRoles() {
-    return baRoles;
+  public void setPassword3( String password3 ) {
+    this.password3 = password3;
   }
 
-  @Override
-  public Map<String, String> getProperties() {
-    Map<String, String> props = new HashMap<>();
-    fillProperties( props );
-    return props;
-  }
-
-  /**
-   * Adds base/default properties to properties of connection instance.
-   * <p>
-   * @param props The properties map
-   */
-  protected void fillProperties( Map<String, String> props ) {
-    props.put( "baRoles", getBaRoles().toString() );
+  public String getPassword3() {
+    return password3;
   }
 }
