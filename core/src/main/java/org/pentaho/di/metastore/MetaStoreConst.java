@@ -79,20 +79,21 @@ public class MetaStoreConst {
     public MetastoreLocator get() {
       // double-checked idiom because this can fail until the plugin is loaded.
       MetastoreLocator result = metastoreLocator;
-      if ( result == null ) {
-        synchronized ( this ) {
-          try {
-            if ( metastoreLocator == null ) {
-              Collection<MetastoreLocator> metastoreLocators =
-                PluginServiceLoader.loadServices( MetastoreLocator.class );
-              metastoreLocator = result = metastoreLocators.stream().findFirst().orElse( null );
-            }
-          } catch ( KettlePluginException e ) {
-            logger.error( "Error getting metastore locator", e );
-          }
-        }
+      if ( result != null ) {
+        return result;
       }
-      return result;
+      synchronized ( this ) {
+        try {
+          if ( metastoreLocator == null ) {
+            Collection<MetastoreLocator> metastoreLocators =
+              PluginServiceLoader.loadServices( MetastoreLocator.class );
+            metastoreLocator = result = metastoreLocators.stream().findFirst().orElse( null );
+          }
+        } catch ( KettlePluginException e ) {
+          logger.error( "Error getting metastore locator", e );
+        }
+        return metastoreLocator;
+      }
     }
   };
 
@@ -111,24 +112,25 @@ public class MetaStoreConst {
     public MetastoreDirectoryProvider get() {
       // double-checked idiom because this can fail until the plugin is loaded.
       MetastoreDirectoryProvider result = metastoreDirectoryProvider;
-      if ( result == null ) {
-        synchronized ( this ) {
-          try {
-            if ( metastoreDirectoryProvider == null ) {
-              Collection<MetastoreDirectoryProvider> metastoreDirectoryProviders =
-                PluginServiceLoader.loadServices( MetastoreDirectoryProvider.class );
-              metastoreDirectoryProvider = result = metastoreDirectoryProviders.stream().findFirst().orElse( null );
-              if ( result == null ) {
-                // cache the null so we don't constantly try to look this up.
-                metastoreDirectoryProvider = result = NULL_METASTORE_DIRECTORY_PROVIDER;
-              }
-            }
-          } catch ( KettlePluginException e ) {
-            logger.error( "Error getting metastore directory provider", e );
-          }
-        }
+      if ( result != null ) {
+        return result;
       }
-      return result;
+      synchronized ( this ) {
+        try {
+          if ( metastoreDirectoryProvider == null ) {
+            Collection<MetastoreDirectoryProvider> metastoreDirectoryProviders =
+              PluginServiceLoader.loadServices( MetastoreDirectoryProvider.class );
+            metastoreDirectoryProvider = result = metastoreDirectoryProviders.stream().findFirst().orElse( null );
+            if ( result == null ) {
+              // cache the null so we don't constantly try to look this up.
+              metastoreDirectoryProvider = result = NULL_METASTORE_DIRECTORY_PROVIDER;
+            }
+          }
+        } catch ( KettlePluginException e ) {
+          logger.error( "Error getting metastore directory provider", e );
+        }
+        return metastoreDirectoryProvider;
+      }
     }
   };
 
@@ -139,24 +141,25 @@ public class MetaStoreConst {
     public IMetaStore get() {
       // double-checked idiom because this can fail until the plugin is loaded.
       IMetaStore result = metaStore;
-      if ( result == null ) {
-        synchronized( this ) {
-          if ( metaStore == null ) {
-            MetastoreLocator locator = metastoreLocatorSupplier.get();
-            if ( locator != null ) {
-              metaStore = result = new SuppliedMetaStore( () -> locator.getMetastore() );
-            } else if ( defaultToLocalXml ) {
-              try {
-                // Do not store as metaStore
-                return openLocalPentahoMetaStore();
-              } catch ( MetaStoreException e ) {
-                logger.error( "Error opening local XML metastore", e );
-              }
+      if ( result != null ) {
+        return result;
+      }
+      synchronized( this ) {
+        if ( metaStore == null ) {
+          MetastoreLocator locator = metastoreLocatorSupplier.get();
+          if ( locator != null ) {
+            metaStore = result = new SuppliedMetaStore( () -> locator.getMetastore() );
+          } else if ( defaultToLocalXml ) {
+            try {
+              // Do not store as metaStore
+              return openLocalPentahoMetaStore();
+            } catch ( MetaStoreException e ) {
+              logger.error( "Error opening local XML metastore", e );
             }
           }
         }
+        return metaStore;
       }
-      return result;
     }
   };
 

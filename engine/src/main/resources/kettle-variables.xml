@@ -663,5 +663,4 @@
     <variable>COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW</variable>
     <default-value>Y</default-value>
   </kettle-variable>
-
 </kettle-variables>

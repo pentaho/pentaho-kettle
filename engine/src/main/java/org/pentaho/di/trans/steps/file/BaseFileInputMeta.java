@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.trans.steps.file;
 import java.util.List;
 
 import com.google.common.base.Preconditions;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -112,8 +114,12 @@ public abstract class BaseFileInputMeta<A extends BaseFileInputAdditionalField, 
   }
 
   public FileInputList getFileInputList( VariableSpace space ) {
+    return getFileInputList( DefaultBowl.getInstance(), space );
+  }
+
+  public FileInputList getFileInputList( Bowl bowl, VariableSpace space ) {
     inputFiles.normalizeAllocation( inputFiles.fileName.length );
-    return FileInputList.createFileList( space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
+    return FileInputList.createFileList( bowl, space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
         inputFiles.fileRequired, inputFiles.includeSubFolderBoolean() );
   }
 
@@ -143,7 +149,7 @@ public abstract class BaseFileInputMeta<A extends BaseFileInputAdditionalField, 
     if ( parentStepMeta != null ) {
       final TransMeta parentTransMeta = parentStepMeta.getParentTransMeta();
       if ( parentTransMeta != null ) {
-        final FileInputList inputList = getFileInputList( parentTransMeta );
+        final FileInputList inputList = getFileInputList( parentTransMeta.getBowl(), parentTransMeta );
         if ( inputList != null ) {
           return inputList.getFileStrings();
         }

@@ -64,7 +64,7 @@ public class MetaFileCacheImplTest {
     assertEquals( transMeta, metaFileCacheImpl.getCachedTransMeta( TRANS_KEY ) );
 
     metaFileCacheImpl.getCachedJobMeta( JOB_KEY );
-    MetaFileCacheImpl.MetaFileCacheEntry entry = metaFileCacheImpl.cacheMap.get( JOB_KEY );
+    MetaFileCacheImpl.MetaFileCacheEntry entry = metaFileCacheImpl.cacheMap.get( JOB_KEY + ".kjb" );
     assertEquals( 2, entry.getTimesUsed() );
   }
 
@@ -72,6 +72,6 @@ public class MetaFileCacheImplTest {
   public void logCacheSummaryTest() {
     cacheMetaAndGetCacheTest();
     metaFileCacheImpl.logCacheSummary( logger );
-    verify( logger, times(3) ).logDetailed( anyString() );
+    verify( logger, times( 3 ) ).logDetailed( anyString() );
   }
 }
