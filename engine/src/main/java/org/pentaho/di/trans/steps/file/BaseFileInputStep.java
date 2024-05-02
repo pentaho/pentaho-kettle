@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -106,7 +106,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
     initErrorHandling();
 
     meta.additionalOutputFields.normalize();
-    data.files = meta.getFileInputList( this );
+    data.files = meta.getFileInputList( getTransMeta().getBowl(), this );
     data.currentFileIndex = 0;
 
     // If there are missing files,
@@ -320,7 +320,8 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
       }
       String fileValue = prevInfoFields.getString( fileRow, idx );
       try {
-        FileObject parentFileObject = KettleVFS.getFileObject( environmentSubstitute( fileValue ), getTransMeta() );
+        FileObject parentFileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( environmentSubstitute( fileValue ), getTransMeta() );
         boolean isDir = ( parentFileObject != null && parentFileObject.getType() == FileType.FOLDER );
         int startingIndex = data.files.nrOfFiles();
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,11 +51,19 @@ public class TestConnectionProvider implements ConnectionProvider<TestConnection
   }
 
   @Override public List<String> getNames() {
+    return getNames( connectionManager );
+  }
+
+  @Override public List<String> getNames( ConnectionManager connectionManager ) {
     return connectionManager.getNamesByType( getClass() );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Override public List<TestConnectionDetails> getConnectionDetails() {
+    return getConnectionDetails( connectionManager );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  @Override public List<TestConnectionDetails> getConnectionDetails( ConnectionManager connectionManager ) {
     return (List<TestConnectionDetails>) connectionManager.getConnectionDetailsByScheme( getKey() );
   }
 

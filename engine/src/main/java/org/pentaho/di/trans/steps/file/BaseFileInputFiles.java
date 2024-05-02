@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -163,8 +163,8 @@ public class BaseFileInputFiles implements Cloneable {
     references.add( reference );
 
     String[] textFiles =
-        FileInputList.createFilePathList( transMeta, fileName, fileMask, excludeFileMask, fileRequired,
-            includeSubFolderBoolean() );
+        FileInputList.createFilePathList( transMeta.getBowl(), transMeta, fileName, fileMask,
+            excludeFileMask, fileRequired, includeSubFolderBoolean() );
     if ( textFiles != null ) {
       for ( int i = 0; i < textFiles.length; i++ ) {
         reference.getEntries().add( new ResourceEntry( textFiles[i], ResourceType.FILE ) );

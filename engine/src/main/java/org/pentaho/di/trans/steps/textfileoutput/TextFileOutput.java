@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -207,7 +207,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           data.getFileStreamsCollection().add( filename, fileStreams );
 
           if ( log.isDetailed() ) {
-            logDetailed( "Opened new file with name [" + KettleVFS.getFriendlyURI( filename ) + "]" );
+            logDetailed( "Opened new file with name [" + KettleVFS.getInstance( getTransMeta().getBowl() )
+                         .getFriendlyURI( filename ) + "]" );
           }
         } else if ( fileStreams.getBufferedOutputStream() == null ) { // File was previously opened and now needs to be reopened.
           int maxOpenFiles = getMaxOpenFiles();
@@ -227,7 +228,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
       } catch ( Exception e ) {
         if ( !( e instanceof KettleException ) ) {
-          throw new KettleException( "Error opening new file : " + e.toString() );
+          throw new KettleException( "Error opening new file : " + e.toString(), e );
         } else {
           throw (KettleException) e;
         }
@@ -828,10 +829,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         } catch ( Exception e ) {
           if ( getParentVariableSpace() == null ) {
             logError( "Couldn't open file "
-                + KettleVFS.getFriendlyURI( meta.getFileName() ) + "." + meta.getExtension(), e );
+                + KettleVFS.getInstance( getTransMeta().getBowl() )
+                      .getFriendlyURI( meta.getFileName() ) + "." + meta.getExtension(), e );
           } else {
             logError( "Couldn't open file "
-                + KettleVFS.getFriendlyURI( getParentVariableSpace().environmentSubstitute( meta.getFileName() ) )
+                + KettleVFS.getInstance( getTransMeta().getBowl() )
+                      .getFriendlyURI( getParentVariableSpace().environmentSubstitute( meta.getFileName() ) )
                 + "." + getParentVariableSpace().environmentSubstitute( meta.getExtension() ), e );
           }
           setErrors( 1L );
@@ -1005,7 +1008,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt",
-              KettleVFS.getFriendlyURI( parentfolder ), KettleVFS.getFriendlyURI( filename ) ) );
+            KettleVFS.getFriendlyURI( parentfolder ),
+            KettleVFS.getInstance( getTransMeta().getBowl() ).getFriendlyURI( filename ) ) );
         }
       }
     } finally {
@@ -1059,15 +1063,15 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   protected FileObject getFileObject( String vfsFilename ) throws KettleFileException {
-    return KettleVFS.getFileObject( vfsFilename );
+    return KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( vfsFilename );
   }
 
   protected FileObject getFileObject( String vfsFilename, VariableSpace space ) throws KettleFileException {
-    return KettleVFS.getFileObject( vfsFilename, space );
+    return KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( vfsFilename, space );
   }
 
   protected OutputStream getOutputStream( String vfsFilename, VariableSpace space, boolean append ) throws KettleFileException {
-    return KettleVFS.getOutputStream( vfsFilename, space, append );
+    return KettleVFS.getInstance( getTransMeta().getBowl() ).getOutputStream( vfsFilename, space, append );
   }
 
 }

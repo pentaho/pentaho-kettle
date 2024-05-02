@@ -34,6 +34,7 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.bowl.HasBowlInterface;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
@@ -136,7 +137,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   protected RepositoryDirectoryInterface directory;
 
-  protected Bowl bowl;
+  protected Bowl bowl = DefaultBowl.getInstance();
 
   /**
    * The repository to reference in the one-off case that it is needed

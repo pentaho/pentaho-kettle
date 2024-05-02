@@ -36,6 +36,8 @@ import org.pentaho.di.connections.vfs.VFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSRoot;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -51,6 +53,7 @@ import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +62,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Created by bmorrise on 2/14/19.
@@ -70,8 +72,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   public static final String TYPE = "vfs";
   public static final String DOMAIN_ROOT = "[\\w]+://";
 
-  private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
+  private Bowl bowl = DefaultBowl.getInstance();
   private Map<String, List<VFSFile>> roots = new HashMap<>();
+
 
   @Override public Class<VFSFile> getFileClass() {
     return VFSFile.class;
@@ -109,36 +112,39 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   @Override public VFSTree getTree( List<String> connectionTypes ) {
     VFSTree vfsTree = new VFSTree( NAME );
 
-    List<ConnectionProvider<? extends ConnectionDetails>> providers =
-      connectionManagerSupplier.get().getProvidersByType( VFSConnectionProvider.class );
+    try {
+      List<ConnectionProvider<? extends ConnectionDetails>> providers =
+        bowl.getConnectionManager().getProvidersByType( VFSConnectionProvider.class );
 
-    for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-      for ( ConnectionDetails connectionDetails : provider.getConnectionDetails() ) {
-        VFSConnectionDetails vfsConnectionDetails = (VFSConnectionDetails) connectionDetails;
-        VFSLocation vfsLocation = new VFSLocation();
-        vfsLocation.setName( connectionDetails.getName() );
-        vfsLocation.setRoot( NAME );
-        vfsLocation.setHasChildren( true );
-        vfsLocation.setCanDelete( false );
-        String path = vfsConnectionDetails.getType() + "://";
-        if ( KettleVFS.SMB_SCHEME.equals( vfsConnectionDetails.getType() ) ) {
-          path += vfsConnectionDetails.getName();
-        } else {
-          path += vfsConnectionDetails.getDomain();
-        }
-        vfsLocation.setPath( path );
-        vfsLocation.setDomain( vfsConnectionDetails.getDomain() );
-        vfsLocation.setConnection( connectionDetails.getName() );
-        vfsLocation.setCanAddChildren( vfsConnectionDetails.hasBuckets() );
-        if ( connectionDetails.getType().startsWith( "s3" ) || connectionDetails.getType().startsWith( "snw" ) ) {
-          vfsLocation.setHasBuckets( true );
-        }
-        if ( connectionTypes.isEmpty() || connectionTypes.contains( connectionDetails.getType() ) ) {
-          vfsTree.addChild( vfsLocation );
+      for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
+        for ( ConnectionDetails connectionDetails : provider.getConnectionDetails( bowl.getConnectionManager() ) ) {
+          VFSConnectionDetails vfsConnectionDetails = (VFSConnectionDetails) connectionDetails;
+          VFSLocation vfsLocation = new VFSLocation();
+          vfsLocation.setName( connectionDetails.getName() );
+          vfsLocation.setRoot( NAME );
+          vfsLocation.setHasChildren( true );
+          vfsLocation.setCanDelete( false );
+          String path = vfsConnectionDetails.getType() + "://";
+          if ( KettleVFS.SMB_SCHEME.equals( vfsConnectionDetails.getType() ) ) {
+            path += vfsConnectionDetails.getName();
+          } else {
+            path += vfsConnectionDetails.getDomain();
+          }
+          vfsLocation.setPath( path );
+          vfsLocation.setDomain( vfsConnectionDetails.getDomain() );
+          vfsLocation.setConnection( connectionDetails.getName() );
+          vfsLocation.setCanAddChildren( vfsConnectionDetails.hasBuckets() );
+          if ( connectionDetails.getType().startsWith( "s3" ) || connectionDetails.getType().startsWith( "snw" ) ) {
+            vfsLocation.setHasBuckets( true );
+          }
+          if ( connectionTypes.isEmpty() || connectionTypes.contains( connectionDetails.getType() ) ) {
+            vfsTree.addChild( vfsLocation );
+          }
         }
       }
+    } catch ( MetaStoreException e ) {
+      // ignored
     }
-
     return vfsTree;
   }
 
@@ -152,18 +158,21 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     }
     List<VFSFile> files = new ArrayList<>();
 
-    VFSConnectionDetails vfsConnectionDetails =
-      (VFSConnectionDetails) ConnectionManager.getInstance().getConnectionDetails( file.getConnection() );
-    if( !vfsConnectionDetails.hasBuckets() ) {
-      return null;
-    }
-    @SuppressWarnings( "unchecked" )
-    VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
-      (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance()
-        .getConnectionProvider( vfsConnectionDetails.getType() );
-
     List<VFSRoot> vfsRoots = new ArrayList<>();
+    VFSConnectionDetails vfsConnectionDetails;
+    VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider;
     try {
+      vfsConnectionDetails = (VFSConnectionDetails) bowl.getConnectionManager()
+        .getConnectionDetails( file.getConnection() );
+      if( !vfsConnectionDetails.hasBuckets() ) {
+        return null;
+      }
+      @SuppressWarnings( "unchecked" )
+      VFSConnectionProvider<VFSConnectionDetails> temp =
+        (VFSConnectionProvider<VFSConnectionDetails>) bowl
+        .getConnectionManager().getConnectionProvider( vfsConnectionDetails.getType() );
+      vfsConnectionProvider = temp;
+
       vfsRoots = vfsConnectionProvider.getLocations( vfsConnectionDetails );
     } catch ( Exception e ) {
       throw new FileException( "Error getting VFS locations. Check your credentials and for connectivity." + e.getMessage(), e );
@@ -205,9 +214,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     }
     FileObject fileObject;
     try {
-      fileObject = KettleVFS
-        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
-    } catch ( KettleFileException e ) {
+      fileObject = KettleVFS.getInstance( bowl )
+        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(),
+                                                                            space ) );
+    } catch ( KettleFileException | MetaStoreException e ) {
       throw new FileNotFoundException( file.getPath(), TYPE );
     }
     return populateChildren( file, fileObject, filters );
@@ -269,7 +279,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   @Override public VFSFile getFile( VFSFile file, VariableSpace space ) {
     try {
       FileObject fileObject = KettleVFS
-        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
+        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(),
+                                                                            space ) );
       if ( !fileObject.exists() ) {
         return null;
       }
@@ -284,7 +295,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       } else {
         return VFSFile.create( parent, fileObject, null, file.getDomain() );
       }
-    } catch ( KettleFileException | FileSystemException e ) {
+    } catch ( KettleFileException | FileSystemException | MetaStoreException e ) {
       // File does not exist
     }
     return null;
@@ -301,11 +312,12 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     for ( VFSFile file : files ) {
       try {
         FileObject fileObject = KettleVFS
-          .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
+          .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( bowl, file.getPath(),
+                                                                              file.getConnection(), space ) );
         if ( fileObject.delete( getAllFileSelector() ) > 0 ) {
           deletedFiles.add( file );
         }
-      } catch ( KettleFileException | FileSystemException kfe ) {
+      } catch ( KettleFileException | FileSystemException | MetaStoreException kfe ) {
         // Ignore don't add
       }
     }
@@ -320,11 +332,11 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     try {
       FileObject fileObject = KettleVFS
         .getFileObject( folder.getPath(), space,
-          VFSHelper.getOpts( folder.getPath(), folder.getConnection(), space ) );
+          VFSHelper.getOpts( bowl, folder.getPath(), folder.getConnection(), space ) );
       fileObject.createFolder();
       String parent = folder.getPath().substring( 0, folder.getPath().length() - 1 );
       return VFSDirectory.create( parent, fileObject, folder.getConnection(), folder.getDomain() );
-    } catch ( KettleFileException | FileSystemException ignored ) {
+    } catch ( KettleFileException | FileSystemException | MetaStoreException ignored ) {
       // Ignored
     }
     return null;
@@ -362,9 +374,11 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   private VFSFile doMove( VFSFile file, String newPath, OverwriteStatus overwriteStatus, VariableSpace space ) {
     try {
       FileObject fileObject = KettleVFS
-        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
+        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(),
+                                                                            space ) );
       FileObject renameObject = KettleVFS
-        .getFileObject( newPath, new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
+        .getFileObject( newPath, new Variables(), VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(),
+                                                                     space ) );
 
       if ( renameObject.exists() ) {
         overwriteStatus.promptOverwriteIfNecessary( file.getPath(),
@@ -379,7 +393,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
               file.getDomain() );
           newPath = getNewName( vfsDir, newPath, space  );
           renameObject = KettleVFS
-            .getFileObject( newPath, new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
+            .getFileObject( newPath, new Variables(), VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(),
+                                                                         space ) );
         }
       }
       fileObject.moveTo( renameObject );
@@ -390,7 +405,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         return VFSFile.create( renameObject.getParent().getPublicURIString(), renameObject, file.getConnection(),
           file.getDomain() );
       }
-    } catch ( KettleFileException | FileSystemException| FileException e ) {
+    } catch ( KettleFileException | FileSystemException | FileException | MetaStoreException e ) {
       return null;
     }
   }
@@ -410,10 +425,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       overwriteStatus.setCurrentFileInProgressDialog( file.getPath() );
 
       FileObject fileObject = KettleVFS
-        .getFileObject( file.getPath(), space, VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
+        .getFileObject( file.getPath(), space, VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(), space ) );
       FileObject copyObject =
         KettleVFS.getFileObject( toPath, new Variables(),
-          VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
+          VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(), space ) );
       overwriteStatus.promptOverwriteIfNecessary( copyObject.exists(), toPath,
         file.getEntityType().isDirectory() ? "folder" : "file"
         , null,
@@ -429,7 +444,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         toDirectory = VFSDirectory.create( copyObject.getParent().getPublicURIString(), copyObject,
           file.getConnection(), file.getDomain() );
         String newDestination = getNewName( toDirectory, copyObject.getName().toString(), space );
-        copyObject = KettleVFS.getFileObject( newDestination, new Variables(), VFSHelper.getOpts( file.getPath(),
+        copyObject = KettleVFS.getFileObject( newDestination, new Variables(), VFSHelper.getOpts( bowl, file.getPath(),
           file.getConnection(), space ) );
       }
 
@@ -443,7 +458,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         return VFSFile
           .create( copyObject.getParent().getPublicURIString(), fileObject, file.getConnection(), file.getDomain() );
       }
-    } catch ( KettleFileException | FileSystemException e ) {
+    } catch ( KettleFileException | FileSystemException | MetaStoreException e ) {
       throw new FileException();
     }
   }
@@ -458,9 +473,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     path = sanitizeName( dir, path );
     try {
       FileObject fileObject =
-        KettleVFS.getFileObject( path, space, VFSHelper.getOpts( path, dir.getConnection(), space ) );
+        KettleVFS.getFileObject( path, space, VFSHelper.getOpts( bowl, path, dir.getConnection(), space ) );
       return fileObject.exists();
-    } catch ( KettleFileException | FileSystemException e ) {
+    } catch ( KettleFileException | FileSystemException | MetaStoreException e ) {
       throw new FileException();
     }
   }
@@ -474,9 +489,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   public InputStream readFile( VFSFile file, VariableSpace space ) {
     try {
       FileObject fileObject = KettleVFS
-        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( file.getPath(), file.getConnection(), space ) );
+        .getFileObject( file.getPath(), new Variables(), VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(),
+                                                                            space ) );
       return fileObject.getContent().getInputStream();
-    } catch ( KettleException | FileSystemException e ) {
+    } catch ( KettleException | FileSystemException | MetaStoreException e ) {
       return null;
     }
   }
@@ -495,8 +511,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     FileObject fileObject = null;
     try {
       fileObject = KettleVFS
-        .getFileObject( path, new Variables(), VFSHelper.getOpts( destDir.getPath(), destDir.getConnection(), space ) );
-    } catch ( KettleException ke ) {
+        .getFileObject( path, new Variables(), VFSHelper.getOpts( bowl, destDir.getPath(), destDir.getConnection(),
+                                                                  space ) );
+    } catch ( KettleException | MetaStoreException ke ) {
       throw new FileException();
     }
     if ( fileObject != null ) {
@@ -541,7 +558,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     String testName = sanitizeName( destDir, newPath );
     try {
       while ( KettleVFS
-        .getFileObject( testName, new Variables(), VFSHelper.getOpts( testName, destDir.getConnection(), space ) )
+        .getFileObject( testName, new Variables(), VFSHelper.getOpts( bowl, testName, destDir.getConnection(), space ) )
         .exists() ) {
         if ( Utils.isValidExtension( extension ) ) {
           testName = sanitizeName( destDir, parent + name + "_" + i + "." + extension );
@@ -550,7 +567,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
         }
         i++;
       }
-    } catch ( KettleFileException | FileSystemException e ) {
+    } catch ( KettleFileException | FileSystemException | MetaStoreException e ) {
       return testName;
     }
     return testName;
@@ -571,15 +588,19 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     if ( newPath.startsWith( ConnectionFileProvider.SCHEME + "://" ) ) {
       return newPath;
     }
-      return getConnectionProvider( newPath ).sanitizeName( newPath );
+    return getConnectionProvider( newPath ).sanitizeName( newPath );
   }
 
-  private VFSConnectionProvider<VFSConnectionDetails> getConnectionProvider( String key ) {
-    @SuppressWarnings( "unchecked" )
-    VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
-      (VFSConnectionProvider<VFSConnectionDetails>) ConnectionManager.getInstance()
-        .getConnectionProvider( key );
-    return vfsConnectionProvider;
+  private VFSConnectionProvider<VFSConnectionDetails> getConnectionProvider( String key )  {
+    try {
+      @SuppressWarnings( "unchecked" )
+      VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
+        (VFSConnectionProvider<VFSConnectionDetails>) bowl.getConnectionManager()
+          .getConnectionProvider( key );
+      return vfsConnectionProvider;
+    } catch ( MetaStoreException ex ) {
+      return null;
+    }
   }
 
   public void clearProviderCache() {
@@ -590,11 +611,11 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     try {
       FileObject fileObject = KettleVFS
         .getFileObject( file.getPath() + VFSFile.DELIMITER + newDirectoryName, new Variables(),
-          VFSHelper.getOpts( file.getPath(), file.getConnection(), new Variables() ) );
+          VFSHelper.getOpts( bowl, file.getPath(), file.getConnection(), new Variables() ) );
       fileObject.createFolder();
 
       return VFSDirectory.create( parentPath, fileObject, file.getConnection(), file.getDomain() );
-    } catch ( KettleFileException | FileSystemException ignored ) {
+    } catch ( KettleFileException | FileSystemException | MetaStoreException ignored ) {
       // Ignored
     }
     return null;

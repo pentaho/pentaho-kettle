@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.util.DelegatingFileSystemOptionsBuilder;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -46,6 +47,9 @@ import org.pentaho.di.core.vfs.KettleVFS;
  */
 public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilder implements
   IKettleFileSystemConfigBuilder {
+
+  private static final String BOWL_KEY = "kettle.bowl";
+  private static final String VAR_SPACE_KEY = "kettle.VariableSpace";
 
   private static final KettleGenericFileSystemConfigBuilder builder = new KettleGenericFileSystemConfigBuilder();
   private static final LogChannelInterface log = new LogChannel( "cfgbuilder" );
@@ -141,13 +145,21 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
 
   @Override
   public void setParameter( FileSystemOptions opts, String name, VariableSpace value, String vfsUrl ) {
-    DelegatingFileSystemOptionsBuilder delegateFSOptionsBuilder =
-      new DelegatingFileSystemOptionsBuilder( KettleVFS.getInstance().getFileSystemManager() );
-      super.setParam( opts, "VariableSpace", value );
+    super.setParam( opts, VAR_SPACE_KEY, value );
   }
 
   @Override
   public Object getVariableSpace( FileSystemOptions fileSystemOptions ) {
-    return getParam( fileSystemOptions, "VariableSpace" );
+    return getParam( fileSystemOptions, VAR_SPACE_KEY );
+  }
+
+  @Override
+  public void setBowl( FileSystemOptions opts, Bowl bowl ) {
+    super.setParam( opts, BOWL_KEY, bowl );
+  }
+
+  @Override
+  public Bowl getBowl( FileSystemOptions opts ) {
+    return super.getParam( opts, BOWL_KEY );
   }
 }
