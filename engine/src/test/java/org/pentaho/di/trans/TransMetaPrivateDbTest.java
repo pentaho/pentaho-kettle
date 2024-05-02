@@ -71,9 +71,15 @@ public class TransMetaPrivateDbTest extends PrivateDatabasesTestTemplate<TransMe
 
 
   @Test
-  public void onePrivate_TwoShared() throws Exception {
-    doTest_OnePrivate_TwoShared();
+  public void onePrivate_TwoSharedWithProp() throws Exception {
+    doTest_OnePrivate_TwoSharedOnlyUsed();
   }
+
+  @Test
+  public void onePrivate_TwoSharedNoProp() throws Exception {
+    doTest_OnePrivate_TwoSharedAllExport();
+  }
+
 
   @Test
   public void noPrivate() throws Exception {
@@ -81,7 +87,13 @@ public class TransMetaPrivateDbTest extends PrivateDatabasesTestTemplate<TransMe
   }
 
   @Test
-  public void onePrivate_NoShared() throws Exception {
-    doTest_OnePrivate_NoShared();
+  public void onePrivate_NoSharedOnlyUsed() throws Exception {
+    doTest_OnePrivate_NoSharedOnlyUsed();
+  }
+  
+  @Test
+  public void onePrivate_NoSharedExportAll() throws Exception {
+    doTest_OnePrivate_NoSharedExportAll();
   }
 }
+

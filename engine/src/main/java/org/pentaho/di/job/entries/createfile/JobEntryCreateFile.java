@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -162,7 +162,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
       String realFilename = getRealFilename();
       FileObject fileObject = null;
       try {
-        fileObject = KettleVFS.getFileObject( realFilename, this );
+        fileObject = KettleVFS.getInstance( getParentJobMeta().getBowl() ).getFileObject( realFilename, this );
 
         if ( fileObject.exists() ) {
           if ( isFailIfFileExists() ) {
@@ -213,7 +213,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
   private void addFilenameToResult( String targetFilename, Result result, Job parentJob ) throws KettleException {
     FileObject targetFile = null;
     try {
-      targetFile = KettleVFS.getFileObject( targetFilename, this );
+      targetFile = KettleVFS.getInstance( getParentJobMeta().getBowl() ).getFileObject( targetFilename, this );
 
       // Add to the result files...
       ResultFile resultFile =
