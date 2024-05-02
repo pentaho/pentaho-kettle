@@ -57,20 +57,83 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   }
 
   /**
+   * Gets the root folder path of this VFS connection.
+   * <p>
+   * The root folder path allows limiting the files exposed through a <code>pvfs</code> URL.
+   * <p>
+   * The default interface implementation exists to ensure backward compatibility and returns {@code null}.
+   * <h3>
+   *   Semantics of the Root Folder Path
+   * </h3>
+   * Assume a connection without a configured root folder path, <code>connection-name</code>.
+   * The general structure of a <code>pvfs</code> URL that resolves to a file in this connection is
+   * <code>pvfs://(connection-name)/(rest-path)</code>.
+   * If the <code>rest-path</code> component is split in two parts, the root path and the remainder,
+   * the following form is achieved: <code>pvfs://(connection-name)/(root-path)/(rest-rest-path)</code>.
+   * <p>
+   * Assume a connection configured with the root folder path <code>root-path</code>, all other configurations equal,
+   * named <code>connection-with-root-path</code>.
+   * The same file would be exposed by a <code>pvfs</code> URL in which the <code>root-path</code> component is omitted:
+   * <code>pvfs://(connection-with-root-path)/(rest-rest-path)</code>.
+   * <p>
+   * Necessarily, the configured root path must identify a file of type folder.
+   * <p>
+   * Files which are not descendant of a connection's root folder path cannot be identified/accessed using a
+   * <code>pvfs</code> URL. Folder segments of a <code>pvfs</code> URL cannot have the special names <code>.</code> or
+   * <code>..</code>.
+   * <h3>
+   *   Syntax of the Root Folder Path
+   * </h3>
+   * The syntax of the root folder path is that of one or more folder names separated by a folder separator,
+   * <code>/</code>. For example, the following would be syntactically valid: <code>my-vfs-bucket/my-folder</code>.
+   * While a leading or a trailing folder separator should be tolerated, a <i>normalized</i> root folder path
+   * should have none.
+   * <p>
+   * The value stored in this property is subject to variable substitution and thus may not conform to the syntax
+   * of a root folder path. The syntax is validated only after variable substitution is performed.
+   * <h3>
+   *   Impact of Root Folder Path on Provider URLs
+   * </h3>
+   * While omitted from the <code>pvfs</code> URL, the root folder path is incorporated in the <i>provider-specific</i>
+   * (a.k.a. internal) URL, as a result of the conversion process from <code>pvfs</code> to <code>provider</code> URL.
+   * The root folder path is not a required component of provider URLs, and files which are not descendants of the root
+   * folder path are still resolvable. The root folder path is not a security feature, by itself.
+   * <p>
+   * The general structure of a provider URL corresponding to the above <code>pvfs</code> URL is like:
+   * <code>(scheme):// [(domain) /] [(root-path) /] [(rest-rest-path)]</code>
+   * <p>
+   * Where the <i>scheme</i> component is given by the {@link #getType()} property, and the <i>domain</i> component is
+   * given by the {@link #getDomain()} property.
+   * <p>
+   * The provider URL structure for specific providers may vary from this general structure. However, the semantics of
+   * the root folder path property should be respected.
+   * <h3>
+   *   Examples of <code>pvfs</code> and Provider URLs
+   * </h3>
+   * Given an S3 connection, with a configured root folder path of <code>my-bucket/my-folder</code>,
+   * the <code>pvfs</code> URL, <code>pvfs://my-s3-connection/my-sub-folder/my-file</code>, would convert to the
+   * provider URL, <code>s3://my-bucket/my-folder/my-sub-folder/my-file</code>.
+   * <p>
+   * Given an HCP connection, with a configured root folder path of <code>my-folder</code>, and a configured domain of
+   * <code>my-domain.com:3000</code>,the <code>pvfs</code> URL,
+   * <code>pvfs://my-hcp-connection/my-sub-folder/my-file</code>, would convert to the provider URL,
+   * <code>hcp://my-domain.com:3000/my-folder/my-sub-folder/my-file</code>.
    *
-   * Gets the root path of a vfs connection.
-   *
-   * Defaults to {@code null}
-   * return the root path.
+   * @return A non-empty root path, if any; {@code null}, otherwise.
    */
   default String getRootPath() {
     return null;
   }
 
   /**
-   * Sets the root path, given as a string
+   * Sets the root folder path, given as a string.
+   * <p>
+   * An empty root folder path value should be converted to {@code null}.
+   * Further syntax validation is performed only after variable substitution.
+   * <p>
+   * The default interface implementation exists to ensure backward compatibility and does nothing.
    *
-   * @param rootPath The root path
+   * @param rootPath The root path.
    */
   default void setRootPath( String rootPath ) { }
 
