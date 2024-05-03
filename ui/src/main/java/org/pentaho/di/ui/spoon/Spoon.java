@@ -97,6 +97,8 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.AddUndoPositionInterface;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -481,6 +483,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private Cursor cursor_hourglass, cursor_hand;
 
   public PropsUI props;
+
+  // should never be null
+  private Bowl bowl = DefaultBowl.getInstance();
 
   public Repository rep;
   private String repositoryName;
@@ -9570,6 +9575,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setMetaStoreSupplier( Supplier<IMetaStore> metaStoreSupplier ) {
     this.metaStoreSupplier = metaStoreSupplier;
+  }
+
+  public Bowl getBowl() {
+    return bowl;
+  }
+
+  public void setBowl( Bowl bowl ) {
+    this.bowl = Objects.requireNonNull( bowl );
   }
 
   private void onLoginError( Throwable t ) {

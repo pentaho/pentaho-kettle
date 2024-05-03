@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.connections.ui;
 
 import org.pentaho.di.connections.annotations.Encrypted;
-import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
@@ -31,7 +31,7 @@ import org.pentaho.metastore.persist.MetaStoreElementType;
 @MetaStoreElementType(
   name = "Test VFS Connection",
   description = "Defines the connection details for a test vfs connection" )
-public class TestConnectionDetails implements VFSConnectionDetails {
+public class TestConnectionDetails extends BaseVFSConnectionDetails {
 
   private static String TYPE = "test";
   private VariableSpace space;

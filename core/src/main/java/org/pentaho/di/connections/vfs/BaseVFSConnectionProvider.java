@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,13 +38,25 @@ public abstract class BaseVFSConnectionProvider<T extends VFSConnectionDetails> 
 
   private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
 
-  @Override public List<String> getNames() {
+  @Override
+  public List<String> getNames() {
     return connectionManagerSupplier.get().getNamesByType( getClass() );
   }
 
+  @Override
+  public List<T> getConnectionDetails() {
+    return getConnectionDetails( connectionManagerSupplier.get() );
+  }
+
+  @Override
+  public List<String> getNames( ConnectionManager connectionManager ) {
+    return connectionManager.getNamesByType( getClass() );
+  }
+
   @SuppressWarnings( "unchecked" )
-  @Override public List<T> getConnectionDetails() {
-    return (List<T>) connectionManagerSupplier.get().getConnectionDetailsByScheme( getKey() );
+  @Override
+  public List<T> getConnectionDetails( ConnectionManager connectionManager ) {
+    return (List<T>) connectionManager.getConnectionDetailsByScheme( getKey() );
   }
 
   @Override public T prepare( T connectionDetails ) throws KettleException {

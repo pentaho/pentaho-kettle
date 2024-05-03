@@ -25,6 +25,7 @@ package org.pentaho.di.base;
 import org.junit.matchers.JUnitMatchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -44,10 +46,11 @@ import static org.junit.Assert.assertNotNull;
  */
 public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
 
-  protected void doTest_OnePrivate_TwoShared() throws Exception {
+  protected void doTest_OnePrivate_TwoSharedAllExport() throws Exception {
     T meta = createMeta();
     DatabaseMeta privateMeta = createDatabase( "privateMeta" );
     meta.addDatabase( privateMeta );
+    System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "N" );
 
     String xml = toXml( meta );
 
@@ -68,6 +71,33 @@ public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
     assertNotNull( privateDatabases );
     assertEquals( 1, privateDatabases.size() );
     assertTrue( privateDatabases.contains( "privateMeta" ) );
+    System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "Y" );
+  }
+
+  protected void doTest_OnePrivate_TwoSharedOnlyUsed() throws Exception {
+    T meta = createMeta();
+    DatabaseMeta privateMeta = createDatabase( "privateMeta" );
+    meta.addDatabase( privateMeta );
+
+    String xml = toXml( meta );
+
+    DatabaseMeta meta1 = createDatabase( "meta1" );
+    meta1.setShared( true );
+    DatabaseMeta meta2 = createDatabase( "meta2" );
+    meta2.setShared( true );
+
+    SharedObjects fakeSharedObjects = createFakeSharedObjects( meta1, meta2 );
+
+    T loaded = fromXml( xml, fakeSharedObjects );
+
+    List<String> loadedDbs = Arrays.asList( loaded.getDatabaseNames() );
+    assertEquals( 2, loadedDbs.size() );
+    assertThat( loadedDbs, JUnitMatchers.hasItems( "meta1", "meta2" ) );
+
+    Set<String> privateDatabases = loaded.getPrivateDatabases();
+    assertNotNull( privateDatabases );
+    assertEquals( 0, privateDatabases.size() );
+    assertFalse( privateDatabases.contains( "privateMeta" ) );
   }
 
   protected void doTest_NoPrivate() throws Exception {
@@ -82,11 +112,11 @@ public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
     assertTrue( privateDatabases.isEmpty() );
   }
 
-  protected void doTest_OnePrivate_NoShared() throws Exception {
+  protected void doTest_OnePrivate_NoSharedExportAll() throws Exception {
     T meta = createMeta();
     DatabaseMeta privateMeta = createDatabase( "privateMeta" );
     meta.addDatabase( privateMeta );
-
+    System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "N" );
     String xml = toXml( meta );
 
     SharedObjects fakeSharedObjects = createFakeSharedObjects();
@@ -99,6 +129,25 @@ public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
     assertNotNull( privateDatabases );
     assertEquals( 1, privateDatabases.size() );
     assertTrue( privateDatabases.contains( privateMeta.getName() ) );
+    System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "Y" );
+  }
+
+  protected void doTest_OnePrivate_NoSharedOnlyUsed() throws Exception {
+    T meta = createMeta();
+    DatabaseMeta privateMeta = createDatabase( "privateMeta" );
+    meta.addDatabase( privateMeta );
+    String xml = toXml( meta );
+
+    SharedObjects fakeSharedObjects = createFakeSharedObjects();
+    T loaded = fromXml( xml, fakeSharedObjects );
+
+    List<String> loadedDbs = Arrays.asList( loaded.getDatabaseNames() );
+    assertFalse( loadedDbs.contains( "privateMeta" ) );
+
+    Set<String> privateDatabases = loaded.getPrivateDatabases();
+    assertNotNull( privateDatabases );
+    assertEquals( 0, privateDatabases.size() );
+    assertFalse( privateDatabases.contains( privateMeta.getName() ) );
   }
 
 

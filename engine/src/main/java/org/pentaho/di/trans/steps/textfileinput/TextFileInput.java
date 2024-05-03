@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1532,7 +1532,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       initErrorHandling();
       initReplayFactory();
 
-      data.setFiles( meta.getTextFileList( this ) );
+      data.setFiles( meta.getTextFileList( getTransMeta().getBowl(), this ) );
       data.filterProcessor = new TextFileFilterProcessor( meta.getFilter() );
 
       // If there are missing files,

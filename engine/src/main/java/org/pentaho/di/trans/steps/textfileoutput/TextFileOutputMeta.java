@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,7 +54,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.file.BaseFileOutputMeta;
-import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -67,7 +66,7 @@ import java.util.Map;
  *
  */
 @InjectionSupported( localizationPrefix = "TextFileOutput.Injection.", groups = { "OUTPUT_FIELDS" } )
-public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaInterface, ResolvableResource {
+public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaInterface {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   // Strings used in XML
@@ -1148,20 +1147,6 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   @Override
   public boolean passDataToServletOutput() {
     return servletOutput;
-  }
-
-  @Override
-  public void resolve() {
-    if ( fileName != null && !fileName.isEmpty() ) {
-      try {
-        FileObject fileObject = KettleVFS.getFileObject( getParentStepMeta().getParentTransMeta().environmentSubstitute( fileName ) );
-        if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-          fileName = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
-        }
-      } catch ( KettleFileException e ) {
-        throw new RuntimeException( e );
-      }
-    }
   }
 
   /**

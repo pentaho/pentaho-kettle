@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.connections;
 
 import org.pentaho.di.connections.utils.EncryptUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
@@ -94,8 +95,37 @@ public class ConnectionManager {
     initialized = false;
   }
 
+  /**
+   * This getter should not generally be used because it is limited to the global scope. It would be better to have
+   * almost all callers use Bowl.getConnectionManager().
+   *
+   * This instance may still be used to register ConnectionProviders and Lookup Filters.
+   *
+   * @return ConnectionManager
+   */
   public static ConnectionManager getInstance() {
     return instance;
+  }
+
+  /**
+   * Construct a new instance of a ConnectionManager using the metastore from the supplier.
+   *
+   * Instances returned by this will not share in-memory state with any other instannces. If you need the
+   * ConnectionManager for a Bowl, use Bowl.getConnectionManager() instead.
+   *
+   *
+   * @param bowl
+   *
+   * @return ConnectionManager
+   */
+  public static ConnectionManager getInstance( Supplier<IMetaStore> metastoreSupplier ) {
+    ConnectionManager newManager = new ConnectionManager();
+    newManager.setMetastoreSupplier( metastoreSupplier );
+    // share the same set of connection providers and lookup filters. Everyone already registers with the one
+    // from getInstance()
+    newManager.connectionProviders = instance.connectionProviders;
+    newManager.lookupFilters = instance.lookupFilters;
+    return newManager;
   }
 
   /**

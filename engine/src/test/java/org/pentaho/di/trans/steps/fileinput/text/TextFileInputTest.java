@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -293,6 +294,7 @@ public class TextFileInputTest {
     Mockito.when( input.getRowFrom( rowset ) ).thenReturn( obj1, obj2, null );
     Mockito.doReturn( rwi ).when( rowset ).getRowMeta();
     Mockito.when( rwi.getString( obj2, 0 ) ).thenReturn( "filename1", "filename2" );
+    Mockito.when( input.getTransMeta().getBowl() ).thenReturn( DefaultBowl.getInstance() );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 0, false );
 
     List<String> passThroughKeys = new ArrayList<>( data.passThruFields.keySet() );
@@ -348,6 +350,7 @@ public class TextFileInputTest {
     Mockito.when( input.getTransMeta().listVariables() ).thenReturn( space.listVariables() );
     Mockito.when( input.getTransMeta().getVariable( anyString() ) ).thenAnswer( (Answer<String>)
       invocation -> space.getVariable( (String) invocation.getArguments()[0] ) );
+    Mockito.when( input.getTransMeta().getBowl() ).thenReturn( DefaultBowl.getInstance() );
 
     Mockito.doReturn( rwi ).when( rowset ).getRowMeta();
     Mockito.when( rwi.getString( obj2, 0 ) ).thenReturn( "ram:///." );

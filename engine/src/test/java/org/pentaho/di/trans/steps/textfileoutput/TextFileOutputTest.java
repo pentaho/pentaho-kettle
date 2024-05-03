@@ -66,6 +66,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.compress.CompressionOutputStream;
@@ -224,6 +225,7 @@ public class TextFileOutputTest {
     when( stepMockHelper.processRowsStepMetaInterface.getEnclosure() ).thenReturn( "\"" );
     when( stepMockHelper.processRowsStepMetaInterface.getNewline() ).thenReturn( "\n" );
     when( stepMockHelper.transMeta.listVariables() ).thenReturn( new String[0] );
+    when( stepMockHelper.transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
   }
 
   @After
