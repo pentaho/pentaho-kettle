@@ -26,6 +26,7 @@
   <servlet id="listSocket"> <description>Lists server socket allocation information</description> <classname>org.pentaho.di.www.ListServerSocketServlet</classname> </servlet>
   <servlet id="sniffStep"> <description>Sniff test a transformation step</description> <classname>org.pentaho.di.www.SniffStepServlet</classname> </servlet>
   <servlet id="executeTrans"> <description>Execute (prepare and start) a specific transformation and pass output to the servlet</description> <classname>org.pentaho.di.www.ExecuteTransServlet</classname> </servlet>
+  <servlet id="previewStepData"> <description>Preview data inside the step</description> <classname>org.pentaho.di.www.PreviewStepData</classname> </servlet>
   <servlet id="transImage"> <description>Generate a PNG image of a transformation</description> <classname>org.pentaho.di.www.GetTransImageServlet</classname> </servlet>
   <servlet id="runTrans"> <description>Run a transformation directly from a repository</description> <classname>org.pentaho.di.www.RunTransServlet</classname> </servlet>
   <servlet id="databaseFeatureList"> <description>Feature List of a database connection</description> <classname>org.pentaho.di.www.DatabaseFeatureListServlet</classname> </servlet>
@@ -62,5 +63,5 @@
 
   <servlet id="nextSequence"> <description>Get the next block of values for a sequence</description> <classname>org.pentaho.di.www.NextSequenceValueServlet</classname> </servlet>
   <servlet id="stepAction"> <description>Perform step specific action by taking in the ktr xml file</description> <classname>org.pentaho.di.www.StepActionServlet</classname> </servlet>
-  
+
 </servlets>
