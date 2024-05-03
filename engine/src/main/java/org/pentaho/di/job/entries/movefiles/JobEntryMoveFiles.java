@@ -38,6 +38,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
@@ -1228,6 +1229,10 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
    * "rename" is significantly faster, and should be used when possible.
    */
   private String fixUpDestinationPath( String realSourcePath, String realDestinationPath ) throws IOException {
+    if ( SystemUtils.IS_OS_WINDOWS ) {
+      return realDestinationPath;
+    }
+
     if ( ! ( isLocalFile( realSourcePath ) && isLocalFile( realDestinationPath ) ) ) {
       return realDestinationPath;
     }
