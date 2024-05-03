@@ -31,6 +31,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.tree.provider.HopsFolderProvider;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -53,7 +55,7 @@ public class SpoonRefreshHopsSubtreeTest {
   }
 
   private void callRefreshWith( TransMeta meta, String filter ) {
-    hopsFolderProvider.refresh( meta, treeNode, filter );
+    hopsFolderProvider.refresh( Optional.of( meta ), treeNode, filter );
   }
 
   private void verifyNumberOfNodesCreated( int times ) {

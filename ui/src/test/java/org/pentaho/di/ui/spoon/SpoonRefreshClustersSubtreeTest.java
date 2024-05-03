@@ -35,6 +35,7 @@ import org.pentaho.di.ui.spoon.tree.provider.ClustersFolderProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -54,7 +55,7 @@ public class SpoonRefreshClustersSubtreeTest {
   }
 
   private void callRefreshWith( TransMeta meta, String filter ) {
-    clustersFolderProvider.refresh( meta, treeNode, filter );
+    clustersFolderProvider.refresh( Optional.of( meta ), treeNode, filter );
   }
 
   private void verifyNumberOfNodesCreated( int times ) {

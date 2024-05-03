@@ -34,6 +34,7 @@ import org.pentaho.di.ui.spoon.tree.provider.SlavesFolderProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,7 +55,7 @@ public class SpoonRefreshSlavesSubtreeTest {
   }
 
   private void callRefreshWith( AbstractMeta meta, String filter ) {
-    slavesFolderProvider.refresh( meta, treeNode, filter );
+    slavesFolderProvider.refresh( Optional.of( meta ), treeNode, filter );
   }
 
   private void verifyNumberOfNodesCreated( int times ) {

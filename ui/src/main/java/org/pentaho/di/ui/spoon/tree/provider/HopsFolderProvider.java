@@ -31,6 +31,9 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 
+import java.util.Optional;
+
+
 /**
  * Created by bmorrise on 6/28/18.
  */
@@ -50,9 +53,11 @@ public class HopsFolderProvider extends AutomaticTreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-
-    TransMeta transMeta = (TransMeta) meta;
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    if ( !( meta.isPresent() && meta.get() instanceof TransMeta ) ) {
+      return;
+    }
+    TransMeta transMeta = (TransMeta) meta.get();
     // Put the steps below it.
     for ( int i = 0; i < transMeta.nrTransHops(); i++ ) {
       TransHopMeta hopMeta = transMeta.getTransHop( i );

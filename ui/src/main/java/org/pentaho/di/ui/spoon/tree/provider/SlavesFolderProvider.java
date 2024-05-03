@@ -31,6 +31,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by bmorrise on 6/28/18.
@@ -50,8 +51,11 @@ public class SlavesFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-    List<SlaveServer> servers = meta.getSlaveServers();
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    if ( !meta.isPresent() ) {
+      return;
+    }
+    List<SlaveServer> servers = meta.get().getSlaveServers();
 
     servers.sort( ( s1, s2 ) -> String.CASE_INSENSITIVE_ORDER.compare( s1.getName(), s2.getName() ) );
 

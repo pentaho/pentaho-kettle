@@ -32,8 +32,8 @@ import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleListener;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.service.PluginServiceLoader;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,32 +53,26 @@ public class ConnectionLifecycleListener implements LifecycleListener {
 
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
-  private MetastoreLocator metastoreLocator;
 
   public ConnectionLifecycleListener() {
-    try {
-      Collection<MetastoreLocator> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocator.class );
-      metastoreLocator = metastoreLocators.stream().findFirst().get();
-    } catch ( Exception e ) {
-      logger.error( "Error getting MetastoreLocator", e );
-      throw new IllegalStateException( e );
-    }
   }
 
   @Override
   public void onStart( LifeEventHandler handler ) throws LifecycleException {
-    Spoon spoon = spoonSupplier.get();
-    if ( spoon != null ) {
-      spoon.getTreeManager()
-        .addTreeProvider( Spoon.STRING_TRANSFORMATIONS, new ConnectionFolderProvider( metastoreLocator ) );
-      spoon.getTreeManager().addTreeProvider( Spoon.STRING_JOBS, new ConnectionFolderProvider( metastoreLocator ) );
-    }
+    connectionManagerSupplier.get().setMetastoreSupplier( MetaStoreConst.getDefaultMetastoreSupplier() );
     connectionManagerSupplier.get()
       .addConnectionProvider( OtherConnectionDetailsProvider.SCHEME, new OtherConnectionDetailsProvider() );
     VFSLookupFilter vfsLookupFilter = new VFSLookupFilter();
     vfsLookupFilter.addKeyLookup( FTP_SCHEMA, OTHER );
     vfsLookupFilter.addKeyLookup( HTTP_SCHEMA, OTHER );
     connectionManagerSupplier.get().addLookupFilter( vfsLookupFilter );
+
+    Spoon spoon = spoonSupplier.get();
+    if ( spoon != null ) {
+      spoon.getTreeManager()
+        .addTreeProvider( Spoon.STRING_TRANSFORMATIONS, new ConnectionFolderProvider() );
+      spoon.getTreeManager().addTreeProvider( Spoon.STRING_JOBS, new ConnectionFolderProvider() );
+    }
   }
 
   @Override

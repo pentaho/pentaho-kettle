@@ -37,6 +37,7 @@ import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by bmorrise on 6/28/18.
@@ -58,9 +59,11 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-
-    TransMeta transMeta = (TransMeta) meta;
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    if ( !( meta.isPresent() && meta.get() instanceof TransMeta ) ) {
+      return;
+    }
+    TransMeta transMeta = (TransMeta) meta.get();
 
     List<PartitionSchema> partitionSchemas;
     try {

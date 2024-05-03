@@ -34,6 +34,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
+import java.util.Optional;
+
 /**
  * Created by bmorrise on 7/6/18.
  */
@@ -49,7 +51,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
     GUIResource guiResource = GUIResource.getInstance();
     for ( RunConfiguration runConfiguration : runConfigurationDelegate.load() ) {
       if ( !filterMatch( runConfiguration.getName(), filter ) ) {
@@ -79,6 +81,11 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     return STRING_RUN_CONFIGURATIONS;
   }
 
+  @Override
+  public Class getType() {
+    return RunConfiguration.class;
+  }
+
   private TreeNode createChildTreeNode( TreeNode parent, String text, Image image ) {
     return super.createTreeNode( parent, text, image );
   }
@@ -86,7 +93,6 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
   @Override
   public TreeNode createTreeNode( TreeNode parent, String text, Image image ) {
     TreeNode treeNode = super.createTreeNode( parent, text, image );
-    treeNode.setIndex( 0 );
     return treeNode;
   }
 }
