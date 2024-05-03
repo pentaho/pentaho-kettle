@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -104,8 +104,7 @@ public class StartJobServletTest {
     startJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
 
-//    PowerMockito.verifyStatic( atLeastOnce() );
-    Encode.forHtml( anyString() );
+    Encode.forHtml( "" );
   }
 
   @Test

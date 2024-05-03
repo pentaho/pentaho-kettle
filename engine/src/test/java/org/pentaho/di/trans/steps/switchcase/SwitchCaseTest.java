@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,44 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -70,15 +100,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+// todo Fix Me!!!
+
 public class SwitchCaseTest {
 
   private StepMockHelper<SwitchCaseMeta, SwitchCaseData> mockHelper;
-  private static final Boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = false;
+  private static Boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = false;
 
   @Before
   public void setUp() throws Exception {
     mockHelper =
-      new StepMockHelper<>(
+      new StepMockHelper<SwitchCaseMeta, SwitchCaseData>(
         "Switch Case", SwitchCaseMeta.class, SwitchCaseData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       mockHelper.logChannelInterface );
@@ -141,25 +173,27 @@ public class SwitchCaseTest {
     assertEquals( "Default row set collects the rest of rows", 8, def.size() );
 
     // now - check the data is correct in every row set:
-    assertTrue( "First row set contains only 3: ", isRowSetContainsValue(
-      rowSetOne, new Object[] { 3 }, new Object[] {} ) );
-    assertTrue( "Second row set contains only 3: ", isRowSetContainsValue(
-      rowSetTwo, new Object[] { 3 }, new Object[] {} ) );
+    assertEquals( "First row set contains only 3: ", true, isRowSetContainsValue(
+      rowSetOne, new Object[] { 3 }, new Object[] { } ) );
+    assertEquals( "Second row set contains only 3: ", true, isRowSetContainsValue(
+      rowSetTwo, new Object[] { 3 }, new Object[] { } ) );
 
-    assertTrue( "First null row set contains only null: ", isRowSetContainsValue(
-      rowSetNullOne, new Object[] { null }, new Object[] {} ) );
-    assertTrue( "Second null row set contains only null: ", isRowSetContainsValue(
-      rowSetNullTwo, new Object[] { null }, new Object[] {} ) );
+    assertEquals( "First null row set contains only null: ", true, isRowSetContainsValue(
+      rowSetNullOne, new Object[] { null }, new Object[] { } ) );
+    assertEquals( "Second null row set contains only null: ", true, isRowSetContainsValue(
+      rowSetNullTwo, new Object[] { null }, new Object[] { } ) );
 
-    assertTrue( "Default row set do not contains null or 3, but other", isRowSetContainsValue(
+    assertEquals( "Default row set do not contains null or 3, but other", true, isRowSetContainsValue(
       def, new Object[] { 1, 2, 4, 5 }, new Object[] { 3, null } ) );
   }
 
   private boolean isRowSetContainsValue( RowSet rowSet, Object[] allowed, Object[] illegal ) {
     boolean ok = true;
 
-    Set<Object> yes = new HashSet<>( Arrays.asList( allowed ) );
-    Set<Object> no = new HashSet<>( Arrays.asList( illegal ) );
+    Set<Object> yes = new HashSet<Object>();
+    yes.addAll( Arrays.asList( allowed ) );
+    Set<Object> no = new HashSet<Object>();
+    no.addAll( Arrays.asList( illegal ) );
 
     for ( int i = 0; i < rowSet.size(); i++ ) {
       Object[] row = rowSet.getRow();
@@ -188,17 +222,18 @@ public class SwitchCaseTest {
     SwitchCaseCustom krasavez = new SwitchCaseCustom( mockHelper );
 
     // load step info value-case mapping from xml.
-    List<DatabaseMeta> emptyList = new ArrayList<>();
+    List<DatabaseMeta> emptyList = new ArrayList<DatabaseMeta>();
     krasavez.meta.loadXML( loadStepXmlMetadata( "SwitchCaseTest.xml" ), emptyList, mock( IMetaStore.class ) );
 
     KeyToRowSetMap expectedNN = new KeyToRowSetMap();
-    Set<RowSet> nulls = new HashSet<>();
+    Set<RowSet> nulls = new HashSet<RowSet>();
 
     // create real steps for all targets
     List<SwitchCaseTarget> list = krasavez.meta.getCaseTargets();
     for ( SwitchCaseTarget item : list ) {
       StepMetaInterface smInt = new DummyTransMeta();
-      item.caseTargetStep = new StepMeta( item.caseTargetStepname, smInt );
+      StepMeta stepMeta = new StepMeta( item.caseTargetStepname, smInt );
+      item.caseTargetStep = stepMeta;
 
       // create and put row set for this
       RowSet rw = new QueueRowSet();
@@ -245,7 +280,7 @@ public class SwitchCaseTest {
     }
     // we have already check that there is only one item.
     for ( RowSet rowset : krasavez.data.defaultRowSetSet ) {
-      assertEquals( "Output map for default case contains expected row set", rowset, rw );
+      assertTrue( "Output map for default case contains expected row set", rowset.equals( rw ) );
     }
   }
 
@@ -255,17 +290,18 @@ public class SwitchCaseTest {
     SwitchCaseCustom krasavez = new SwitchCaseCustom( mockHelper );
 
     // load step info value-case mapping from xml.
-    List<DatabaseMeta> emptyList = new ArrayList<>();
+    List<DatabaseMeta> emptyList = new ArrayList<DatabaseMeta>();
     krasavez.meta.loadXML( loadStepXmlMetadata( "SwitchCaseBinaryTest.xml" ), emptyList, mock( IMetaStore.class ) );
 
     KeyToRowSetMap expectedNN = new KeyToRowSetMap();
-    Set<RowSet> nulls = new HashSet<>();
+    Set<RowSet> nulls = new HashSet<RowSet>();
 
     // create real steps for all targets
     List<SwitchCaseTarget> list = krasavez.meta.getCaseTargets();
     for ( SwitchCaseTarget item : list ) {
       StepMetaInterface smInt = new DummyTransMeta();
-      item.caseTargetStep = new StepMeta( item.caseTargetStepname, smInt );
+      StepMeta stepMeta = new StepMeta( item.caseTargetStepname, smInt );
+      item.caseTargetStep = stepMeta;
 
       // create and put row set for this
       RowSet rw = new QueueRowSet();
@@ -312,7 +348,7 @@ public class SwitchCaseTest {
     }
     // we have already check that there is only one item.
     for ( RowSet rowset : krasavez.data.defaultRowSetSet ) {
-      assertEquals( "Output map for default case contains expected row set", rowset, rw );
+      assertTrue( "Output map for default case contains expected row set", rowset.equals( rw ) );
     }
   }
 
@@ -341,9 +377,9 @@ public class SwitchCaseTest {
   @Test
   public void processRow_NullsArePutIntoDefaultWhenNotSpecified() throws Exception {
     SwitchCaseCustom step = new SwitchCaseCustom( mockHelper );
-    step.meta.loadXML( loadStepXmlMetadata( "SwitchCaseTest_PDI-12671.xml" ), Collections.emptyList(), mock( IMetaStore.class ) );
+    step.meta.loadXML( loadStepXmlMetadata( "SwitchCaseTest_PDI-12671.xml" ), Collections.<DatabaseMeta>emptyList(), mock( IMetaStore.class ) );
 
-    List<RowSet> outputRowSets = new LinkedList<>();
+    List<RowSet> outputRowSets = new LinkedList<RowSet>();
     for ( SwitchCaseTarget item : step.meta.getCaseTargets() ) {
       StepMetaInterface smInt = new DummyTransMeta();
       item.caseTargetStep = new StepMeta( item.caseTargetStepname, smInt );
@@ -372,17 +408,17 @@ public class SwitchCaseTest {
   }
 
   @Test
-  public void prepareObjectTypeBinaryTest_Equals() {
+  public void prepareObjectTypeBinaryTest_Equals() throws Exception {
     assertEquals(  Arrays.hashCode(  new byte[] { 1, 2, 3 } ), SwitchCase.prepareObjectType( new byte[] { 1, 2, 3 } ) ) ;
   }
 
   @Test
-  public void prepareObjectTypeBinaryTest_NotEquals() {
+  public void prepareObjectTypeBinaryTest_NotEquals() throws Exception {
     assertNotEquals(  Arrays.hashCode(  new byte[] { 1, 2, 4 } ), SwitchCase.prepareObjectType( new byte[] { 1, 2, 3 } ) ) ;
   }
 
   @Test
-  public void prepareObjectTypeBinaryTest_Null() {
+  public void prepareObjectTypeBinaryTest_Null() throws Exception {
     byte[] given = null;
     byte[] expected = null;
 
@@ -390,18 +426,18 @@ public class SwitchCaseTest {
   }
 
   @Test
-  public void prepareObjectTypeTest_Equals() {
+  public void prepareObjectTypeTest_Equals() throws Exception {
     assertEquals(  "2", SwitchCase.prepareObjectType( "2" )  ) ;
   }
 
   @Test
-  public void prepareObjectTypeTest_NotEquals() {
+  public void prepareObjectTypeTest_NotEquals() throws Exception {
     assertNotEquals(  "2", SwitchCase.prepareObjectType( "1" )  ) ;
   }
 
   @Test
-  public void prepareObjectTypeTest_Null() {
-    assertNull( SwitchCase.prepareObjectType( null ) );
+  public void prepareObjectTypeTest_Null() throws Exception {
+    assertEquals(  null, SwitchCase.prepareObjectType( null )  ) ;
   }
 
   /**
@@ -410,14 +446,14 @@ public class SwitchCaseTest {
    */
   private static class SwitchCaseCustom extends SwitchCase {
 
-    Queue<Object[]> input = new LinkedList<>();
+    Queue<Object[]> input = new LinkedList<Object[]>();
     RowMetaInterface rowMetaInterface;
 
     // we will use real data and meta.
     SwitchCaseData data = new SwitchCaseData();
     SwitchCaseMeta meta = new SwitchCaseMeta();
 
-    Map<String, RowSet> map = new HashMap<>();
+    Map<String, RowSet> map = new HashMap<String, RowSet>();
 
     SwitchCaseCustom( StepMockHelper<SwitchCaseMeta, SwitchCaseData> mockHelper ) throws KettleValueException {
       super( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
@@ -427,37 +463,45 @@ public class SwitchCaseTest {
       // call to convert value will returns same value.
       data.valueMeta = mock( ValueMetaInterface.class );
       when( data.valueMeta.convertData( any( ValueMetaInterface.class ), any() ) ).thenAnswer(
-        invocation -> {
-          Object[] objArr = invocation.getArguments();
-          return ( objArr != null && objArr.length > 1 ) ? objArr[ 1 ] : null;
+        new Answer<Object>() {
+          @Override
+          public Object answer( InvocationOnMock invocation ) throws Throwable {
+            Object[] objArr = invocation.getArguments();
+            return ( objArr != null && objArr.length > 1 ) ? objArr[1] : null;
+          }
         } );
       // same when call to convertDataFromString
       when( data.valueMeta.convertDataFromString( Mockito.anyString(), any( ValueMetaInterface.class ),
         Mockito.anyString(), Mockito.anyString(), Mockito.anyInt() ) ).thenAnswer(
         //CHECKSTYLE:Indentation:OFF
-        invocation -> {
-          Object[] objArr = invocation.getArguments();
-          return ( objArr != null && objArr.length > 1 ) ? objArr[ 0 ] : null;
+        new Answer<Object>() {
+          public Object answer( InvocationOnMock invocation ) throws Throwable {
+            Object[] objArr = invocation.getArguments();
+            return ( objArr != null && objArr.length > 1 ) ? objArr[0] : null;
+          }
         } );
       // null-check
-      when( data.valueMeta.isNull( any() ) ).thenAnswer( invocation -> {
-        Object[] objArr = invocation.getArguments();
-        Object obj = objArr[0];
-        if ( obj == null ) {
-          return true;
-        }
-        if ( EMPTY_STRING_AND_NULL_ARE_DIFFERENT ) {
-          return false;
-        }
-
-        // If it's a string and the string is empty, it's a null value as well
-        //
-        if ( obj instanceof String ) {
-          if ( ( (String) obj ).length() == 0 ) {
+      when( data.valueMeta.isNull( any() ) ).thenAnswer( new Answer<Object>() {
+        @Override
+        public Object answer( InvocationOnMock invocation ) throws Throwable {
+          Object[] objArr = invocation.getArguments();
+          Object obj = objArr[0];
+          if ( obj == null ) {
             return true;
           }
+          if ( EMPTY_STRING_AND_NULL_ARE_DIFFERENT ) {
+            return false;
+          }
+
+          // If it's a string and the string is empty, it's a null value as well
+          //
+          if ( obj instanceof String ) {
+            if ( ( (String) obj ).length() == 0 ) {
+              return true;
+            }
+          }
+          return false;
         }
-        return false;
       } );
 
     }
@@ -489,7 +533,7 @@ public class SwitchCaseTest {
     public String getInputDataOverview() {
       StringBuilder sb = new StringBuilder();
       for ( Object[] row : input ) {
-        sb.append( row[ 0 ] ).append( ", " );
+        sb.append( row[0] + ", " );
       }
       return sb.toString();
     }
@@ -498,7 +542,7 @@ public class SwitchCaseTest {
      * mock step data processing
      */
     @Override
-    public Object[] getRow() {
+    public Object[] getRow() throws KettleException {
       return input.poll();
     }
 
@@ -515,7 +559,7 @@ public class SwitchCaseTest {
     }
 
     @Override
-    public RowSet findOutputRowSet( String targetStep ) {
+    public RowSet findOutputRowSet( String targetStep ) throws KettleStepException {
       return map.get( targetStep );
     }
 

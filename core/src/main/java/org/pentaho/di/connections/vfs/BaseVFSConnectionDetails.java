@@ -22,7 +22,6 @@
 
 package org.pentaho.di.connections.vfs;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 
 import java.util.ArrayList;
@@ -35,11 +34,11 @@ import java.util.Map;
  */
 public abstract class BaseVFSConnectionDetails implements VFSConnectionDetails {
 
-  @NonNull
+
   @MetaStoreAttribute
   private List<String> baRoles = new ArrayList<>();
 
-  @NonNull
+
   @Override
   public List<String> getBaRoles() {
     return baRoles;

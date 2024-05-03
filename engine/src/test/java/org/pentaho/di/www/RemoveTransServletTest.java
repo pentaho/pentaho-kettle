@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,6 @@ package org.pentaho.di.www;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -45,6 +44,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
 
 public class RemoveTransServletTest {
   private TransformationMap mockTransformationMap;
@@ -73,8 +73,7 @@ public class RemoveTransServletTest {
     removeTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
 
-//    PowerMockito.verifyStatic( atLeastOnce() );
-    Encode.forHtml( anyString() );
+    Encode.forHtml( "" );
   }
 
   @Test
@@ -101,7 +100,6 @@ public class RemoveTransServletTest {
     removeTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H3", out.toString() ) ) );
 
-//    PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
   }
 }

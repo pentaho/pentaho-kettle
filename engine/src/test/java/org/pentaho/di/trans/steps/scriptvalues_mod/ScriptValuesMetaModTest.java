@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,8 @@ import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+
+import static org.pentaho.test.util.InternalState.setInternalState;
 
 public class ScriptValuesMetaModTest implements InitializerInterface<StepMetaInterface> {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -164,10 +166,10 @@ public class ScriptValuesMetaModTest implements InitializerInterface<StepMetaInt
 
     meta = new ScriptValuesMetaMod();
     // set some values, uneven lengths
-//    Whitebox.setInternalState( meta, "fieldname", new String[] { "Field 1", "Field 2", "Field 3" } );
-//    Whitebox.setInternalState( meta, "rename", new String[] { "Field 1 - new" } );
-//    Whitebox.setInternalState( meta, "type", new int[] { ValueMetaInterface.TYPE_STRING, ValueMetaInterface
-//      .TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER } );
+    setInternalState( meta, "fieldname", new String[] { "Field 1", "Field 2", "Field 3" } );
+    setInternalState( meta, "rename", new String[] { "Field 1 - new" } );
+    setInternalState( meta, "type", new int[] { ValueMetaInterface.TYPE_STRING, ValueMetaInterface
+      .TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER } );
 
     meta.extend( 3 );
     validateExtended( meta );

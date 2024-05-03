@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.math.RoundingMode;
 
 import org.junit.After;
 import org.junit.Before;

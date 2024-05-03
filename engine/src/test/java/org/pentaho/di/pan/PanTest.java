@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -67,7 +67,7 @@ public class PanTest {
   private ByteArrayOutputStream sysOutContent;
   private ByteArrayOutputStream sysErrContent;
 
-//  private SecurityManager oldSecurityManager;
+  private SecurityManager oldSecurityManager;
 
   RepositoriesMeta mockRepositoriesMeta;
   RepositoryMeta mockRepositoryMeta;
@@ -81,10 +81,10 @@ public class PanTest {
 
   @Before
   public void setUp() {
-//    oldSecurityManager = System.getSecurityManager();
+    oldSecurityManager = System.getSecurityManager();
     sysOutContent = new ByteArrayOutputStream();
     sysErrContent = new ByteArrayOutputStream();
-//    System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
+    System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
     mockRepositoriesMeta = mock( RepositoriesMeta.class );
     mockRepositoryMeta = mock( RepositoryMeta.class );
     mockRepository = mock( Repository.class );
@@ -93,7 +93,7 @@ public class PanTest {
 
   @After
   public void tearDown() {
-//    System.setSecurityManager( oldSecurityManager );
+    System.setSecurityManager( oldSecurityManager );
     sysOutContent = null;
     sysErrContent = null;
     mockRepositoriesMeta = null;
@@ -324,30 +324,30 @@ public class PanTest {
 
     @Override
     public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
-                                                     final RepositoryOperation... operations ) throws KettleException {
+                                                     final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
       return testRepository != null ? testRepository : super.establishRepositoryConnection( repositoryMeta, username, password, operations );
     }
   }
 
-//  public class MySecurityManager extends SecurityManager {
-//
-//    private SecurityManager baseSecurityManager;
-//
-//    public MySecurityManager( SecurityManager baseSecurityManager ) {
-//      this.baseSecurityManager = baseSecurityManager;
-//    }
-//
-//    @Override
-//    public void checkPermission( Permission permission ) {
-//      if ( permission.getName().startsWith( "exitVM" ) ) {
-//        throw new SecurityException( "System exit not allowed" );
-//      }
-//      if ( baseSecurityManager != null ) {
-//        baseSecurityManager.checkPermission( permission );
-//      } else {
-//        return;
-//      }
-//    }
-//
-//  }
+  public class MySecurityManager extends SecurityManager {
+
+    private SecurityManager baseSecurityManager;
+
+    public MySecurityManager( SecurityManager baseSecurityManager ) {
+      this.baseSecurityManager = baseSecurityManager;
+    }
+
+    @Override
+    public void checkPermission( Permission permission ) {
+      if ( permission.getName().startsWith( "exitVM" ) ) {
+        throw new SecurityException( "System exit not allowed" );
+      }
+      if ( baseSecurityManager != null ) {
+        baseSecurityManager.checkPermission( permission );
+      } else {
+        return;
+      }
+    }
+
+  }
 }

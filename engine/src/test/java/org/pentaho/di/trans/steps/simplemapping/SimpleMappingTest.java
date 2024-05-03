@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,15 +63,15 @@ public class SimpleMappingTest {
   private StepMockHelper<SimpleMappingMeta, SimpleMappingData> stepMockHelper;
 
   // Using real SimpleMappingData object
-  private final SimpleMappingData simpleMpData = new SimpleMappingData();
+  private SimpleMappingData simpleMpData = new SimpleMappingData();
 
   private SimpleMapping smp;
 
   @Before
   public void setup() throws Exception {
     stepMockHelper =
-      new StepMockHelper<>( "SIMPLE_MAPPING_TEST", SimpleMappingMeta.class,
-        SimpleMappingData.class );
+        new StepMockHelper<SimpleMappingMeta, SimpleMappingData>( "SIMPLE_MAPPING_TEST", SimpleMappingMeta.class,
+            SimpleMappingData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
@@ -129,7 +129,7 @@ public class SimpleMappingTest {
   }
 
   @Test
-  public void testStepShouldProcessError_WhenMappingTransHasError() {
+  public void testStepShouldProcessError_WhenMappingTransHasError() throws KettleException {
 
     // Set Up TransMock to return the error
     int errorCount = 1;
@@ -152,7 +152,7 @@ public class SimpleMappingTest {
     verify( stepMockHelper.trans, times( 1 ) ).removeActiveSubTransformation( anyString() );
     verify( stepMockHelper.trans, never() ).getActiveSubTransformation( anyString() );
     verify( stepMockHelper.trans, times( 1 ) ).getErrors();
-    assertEquals( "The step contains the errors", smp.getErrors(), errorCount );
+    assertTrue( "The step contains the errors", smp.getErrors() == errorCount );
 
   }
 
@@ -199,7 +199,7 @@ public class SimpleMappingTest {
   }
 
   @Test
-  public void testDispose() {
+  public void testDispose() throws KettleException {
 
     // Set Up TransMock to return the error
     when( stepMockHelper.trans.getErrors() ).thenReturn( 0 );

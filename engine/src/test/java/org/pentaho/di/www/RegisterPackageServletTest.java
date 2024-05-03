@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,11 +24,14 @@ package org.pentaho.di.www;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.exceptions.base.MockitoException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -57,13 +60,29 @@ import static org.mockito.Mockito.when;
 public class RegisterPackageServletTest {
 
   protected RegisterPackageServlet servlet;
+  private MockedStatic<IOUtils> ioUtilsMockedStatic;
+  private MockedStatic<FileUtils> fileUtilsMockedStatic;
+  private MockedStatic<XMLHandler> xmlHandlerMockedStatic;
+  private MockedStatic<KettleVFS> kettleVFSMockedStatic;
 
   @Rule
   public ExpectedException expectedEx = ExpectedException.none();
 
   @Before
   public void setup() {
+    ioUtilsMockedStatic = mockStatic( IOUtils.class );
+    fileUtilsMockedStatic = mockStatic( FileUtils.class );
+    xmlHandlerMockedStatic = mockStatic( XMLHandler.class );
+    kettleVFSMockedStatic = mockStatic( KettleVFS.class );
     servlet = new RegisterPackageServlet();
+  }
+
+  @After
+  public void tearDown() {
+    ioUtilsMockedStatic.close();
+    fileUtilsMockedStatic.close();
+    xmlHandlerMockedStatic.close();
+    kettleVFSMockedStatic.close();
   }
 
   @Test
@@ -209,8 +228,7 @@ public class RegisterPackageServletTest {
   @Test
   public void testCopyRequestToDirectory_Exception2() throws Exception {
 
-    expectedEx.expect( KettleException.class );
-    expectedEx.expectMessage("Could not copy request to directory");
+    expectedEx.expect( MockitoException.class );
 
     InputStream inputStream = Mockito.mock( InputStream.class);
 

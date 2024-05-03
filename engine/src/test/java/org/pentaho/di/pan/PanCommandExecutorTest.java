@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Result;
@@ -82,6 +83,7 @@ public class PanCommandExecutorTest {
   private IMetaStore repoMetaStore;
   private RepositoryDirectoryInterface directoryInterface;
   private PanCommandExecutor mockedPanCommandExecutor;
+  private MockedStatic<BaseMessages> baseMessageMockStatic;
   interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
 
@@ -112,6 +114,7 @@ public class PanCommandExecutorTest {
     doCallRealMethod().when( mockedPanCommandExecutor ).loadTransFromRepository( any(), anyString(), anyString() );
     doCallRealMethod().when( mockedPanCommandExecutor ).decodeBase64ToZipFile( any(), anyBoolean() );
     doCallRealMethod().when( mockedPanCommandExecutor ).decodeBase64ToZipFile( any(), anyString() );
+    baseMessageMockStatic = mockStatic( BaseMessages.class );
   }
 
   @After
@@ -122,6 +125,7 @@ public class PanCommandExecutorTest {
     repoMetaStore = null;
     directoryInterface = null;
     mockedPanCommandExecutor = null;
+    baseMessageMockStatic.close();
   }
 
   @Test

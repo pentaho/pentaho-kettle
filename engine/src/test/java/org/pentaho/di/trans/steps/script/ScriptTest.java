@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,8 +59,8 @@ public class ScriptTest {
     Script step = new Script( helper.stepMeta, helper.stepDataInterface, 1, helper.transMeta, helper.trans );
     step.init( helper.initStepMetaInterface, helper.initStepDataInterface );
 
-    RowSet rs = helper.getMockInputRowSet();
-    List<RowSet> in = new ArrayList<>();
+    RowSet rs = helper.getMockInputRowSet( new Object[ 0 ][ 0 ] );
+    List<RowSet> in = new ArrayList<RowSet>();
     in.add( rs );
     step.setInputRowSets( in );
 

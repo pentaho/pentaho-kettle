@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,12 +56,12 @@ import static org.mockito.Mockito.when;
 
 import static org.mockito.ArgumentMatchers.any;
 
+// todo Fix Me!!!
 
 public class RunTransServletTest {
 
-  @Mock
+
   TransMeta transMeta;
-  @Mock
   Trans trans;
 
   List<StepMetaDataCombi> stepList;
@@ -81,6 +81,8 @@ public class RunTransServletTest {
 
   @Before
   public void setup() throws Exception {
+    transMeta = mock( TransMeta.class );
+    trans = mock( Trans.class );
     runTransServlet = new RunTransServlet();
     outData = new ByteArrayOutputStream();
     out = new PrintWriter( outData );
@@ -97,21 +99,24 @@ public class RunTransServletTest {
   }
 
   @Test
-  public void testFinishProcessingTransWithoutServletOutputSteps() {
+  public void testFinishProcessingTransWithoutServletOutputSteps() throws Exception {
     runTransServlet.finishProcessing( trans, out );
     assertEquals( expectedOutputIfNoServletOutputSteps, outData.toString() );
   }
 
   @Test
-  public void testFinishProcessingTransWithServletOutputSteps() {
+  public void testFinishProcessingTransWithServletOutputSteps() throws Exception {
     StepMetaDataCombi stepMetaDataCombi = new StepMetaDataCombi();
     StepMetaInterface stepMeta = mock( StepMetaInterface.class );
     when( stepMeta.passDataToServletOutput() ).thenReturn( true );
     stepMetaDataCombi.meta = stepMeta;
     stepList.add( stepMetaDataCombi );
-    doAnswer( (Answer<Void>) invocation -> {
-      Thread.sleep( 2000 );
-      return null;
+    doAnswer( new Answer<Void>() {
+      @Override
+      public Void answer( InvocationOnMock invocation ) throws Throwable {
+        Thread.currentThread().sleep( 2000 );
+        return null;
+      }
     } ).when( trans ).waitUntilFinished();
     runTransServlet.finishProcessing( trans, out );
     assertTrue( outData.toString().isEmpty() );

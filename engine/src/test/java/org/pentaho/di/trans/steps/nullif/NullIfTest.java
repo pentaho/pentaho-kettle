@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,7 +69,7 @@ public class NullIfTest {
 
   @Before
   public void setUp() {
-    smh = new StepMockHelper<>( "Field NullIf processor", NullIfMeta.class, NullIfData.class );
+    smh = new StepMockHelper<NullIfMeta, NullIfData>( "Field NullIf processor", NullIfMeta.class, NullIfData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
@@ -84,7 +84,7 @@ public class NullIfTest {
     return smh.getMockInputRowSet( new Object[][] { { "value1", "nullable-value", "value3" } } );
   }
 
-  private NullIfMeta mockProcessRowMeta() {
+  private NullIfMeta mockProcessRowMeta() throws KettleStepException {
     NullIfMeta processRowMeta = smh.processRowsStepMetaInterface;
     Field[] fields = createArrayWithOneField( "nullable-field", "nullable-value" );
     doReturn( fields ).when( processRowMeta ).getFields();
@@ -155,7 +155,7 @@ public class NullIfTest {
     return inputRowMeta;
   }
 
-  private NullIfMeta mockProcessRowMeta2() {
+  private NullIfMeta mockProcessRowMeta2() throws KettleStepException {
     NullIfMeta processRowMeta = smh.processRowsStepMetaInterface;
     Field[] fields = new Field[4];
     fields[0] = createArrayWithOneField( "value1", "20150606" )[0];

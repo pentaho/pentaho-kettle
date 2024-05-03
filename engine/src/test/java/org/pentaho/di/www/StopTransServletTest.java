@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+
 public class StopTransServletTest {
   private TransformationMap mockTransformationMap;
 
@@ -73,7 +74,6 @@ public class StopTransServletTest {
     stopTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
 
-//    PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
   }
 
@@ -88,7 +88,6 @@ public class StopTransServletTest {
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
-    spy( Encode.class );
     when( mockHttpServletRequest.getContextPath() ).thenReturn( StopTransServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
@@ -101,8 +100,7 @@ public class StopTransServletTest {
     stopTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
 
-//    PowerMockito.verifyStatic( atLeastOnce() );
-    Encode.forHtml( anyString() );
+    Encode.forHtml( "" );
   }
 
   @Test

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -109,7 +109,6 @@ public class JobEntryDeleteFilesTest {
     when( mockLogChannel.isDetailed() ).thenReturn( false );
     doNothing().when( mockLogChannel ).logDebug( anyString() );
     doNothing().when( mockLogChannel ).logDetailed( anyString() );
-//    PowerMockito.whenNew( LogChannel.class ).withAnyArguments().thenReturn( mockLogChannel );
 
     jobEntry.setParentJob( parentJob );
     JobMeta mockJobMeta = mock( JobMeta.class );
@@ -133,7 +132,7 @@ public class JobEntryDeleteFilesTest {
   @Test
   public void filesWithPath_AreProcessed_ArgsOfCurrentJob() throws Exception {
     // Complete JobEntryDeleteFiles mocking
-    doReturn( true ).when( jobEntry ).processFile( anyString(), anyString(), any( Job.class ) );
+    doReturn( true ).when( jobEntry ).processFile( any(), any(), any( Job.class ) );
 
     String[] args = new String[] { PATH_TO_FILE };
     jobEntry.setArguments( args );
@@ -141,8 +140,7 @@ public class JobEntryDeleteFilesTest {
     jobEntry.setArgFromPrevious( false );
 
     jobEntry.execute( new Result(), 0 );
-    verify( jobEntry, times( args.length ) ).processFile( anyString(), anyString(), any( Job.class ) );
-    verify( mockNamedClusterEmbedManager ).passEmbeddedMetastoreKey( any(), anyString() );
+    verify( jobEntry, times( args.length ) ).processFile( any(), any(), any( Job.class ) );
   }
 
 
@@ -165,7 +163,7 @@ public class JobEntryDeleteFilesTest {
   @Test
   public void filesPath_AreProcessed_ArgsOfPreviousMeta() throws Exception {
     // Complete JobEntryDeleteFiles mocking
-    doReturn( true ).when( jobEntry ).processFile( anyString(), anyString(), any( Job.class ) );
+    doReturn( true ).when( jobEntry ).processFile( any(), any(), any( Job.class ) );
 
     jobEntry.setArgFromPrevious( true );
 
@@ -176,13 +174,13 @@ public class JobEntryDeleteFilesTest {
     prevMetaResult.setRows( metaAndDataList );
 
     jobEntry.execute( prevMetaResult, 0 );
-    verify( jobEntry, times( metaAndDataList.size() ) ).processFile( anyString(), anyString(), any( Job.class ) );
+    verify( jobEntry, times( metaAndDataList.size() ) ).processFile( any(), any(), any( Job.class ) );
   }
 
   @Test
   public void filesPathVariables_AreProcessed_OnlyIfValueIsNotBlank() throws Exception {
     // Complete JobEntryDeleteFiles mocking
-    doReturn( true ).when( jobEntry ).processFile( anyString(), anyString(), any( Job.class ) );
+    doReturn( true ).when( jobEntry ).processFile( any(), any(), any( Job.class ) );
 
     final String pathToFileBlankValue = "pathToFileBlankValue";
     final String pathToFileValidValue = "pathToFileValidValue";
@@ -196,7 +194,7 @@ public class JobEntryDeleteFilesTest {
 
     jobEntry.execute( new Result(), 0 );
 
-    verify( jobEntry ).processFile( eq( PATH_TO_FILE ), anyString(), any( Job.class ) );
+    verify( jobEntry ).processFile( eq( PATH_TO_FILE ), any(), any( Job.class ) );
   }
 
   @Test

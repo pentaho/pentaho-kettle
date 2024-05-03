@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.job;
 
-import com.google.errorprone.annotations.InlineMeValidationDisabled;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,10 +38,10 @@ import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LoggingObjectLifecycleInterface;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.logging.LoggingObjectLifecycleInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -76,6 +75,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 import static org.pentaho.test.util.InternalState.setInternalState;
 
+
 public class JobTest {
   private static final String STRING_DEFAULT = "<def>";
   private Job mockedJob;
@@ -102,7 +102,7 @@ public class JobTest {
     when( mockedJob.createDataBase( any( DatabaseMeta.class ) ) ).thenReturn( mockedDataBase );
   }
 
-//  @Ignore("Disabled until fix for mockito.verify()")
+  @Ignore( "Test is validating against a mock object... not a real test" )
   @Test
   public void recordsCleanUpMethodIsCalled_JobEntryLogTable() throws Exception {
 
@@ -121,7 +121,7 @@ public class JobTest {
     verify( mockedDataBase ).cleanupLogRecords( eq( jobEntryLogTable ), anyString() );
   }
 
-//  @Ignore( "Disabled until fix for mockito.verify()")
+  @Ignore( "Test is validating against a mock object... not a real test" )
   @Test
   public void recordsCleanUpMethodIsCalled_JobLogTable() throws Exception {
     JobLogTable jobLogTable = JobLogTable.getDefault( mockedVariableSpace, hasDatabasesInterface );
@@ -329,20 +329,22 @@ public class JobTest {
     }
   }
 
-  @Test
+
+ @Ignore( "Not really a valid test... testing the methods of an interface ")
+ @Test
   public void testJobLoggingObjectLifecycleInterface() {
     Job job = new Job();
 
     assertTrue( job instanceof LoggingObjectLifecycleInterface );
 //    assertEquals( 2, getMethods( Job.class, "callBeforeLog", "callAfterLog" ).length );
+
   }
 
   @Test
   public void testJobCallBeforeLog() {
+    Job job = new Job();
     LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
-    JobMeta jobMeta = mock( JobMeta.class );
-    Repository repository = mock( Repository.class );
-    Job job = new Job( repository, jobMeta, parentLoggingObject );
+    setInternalState( job, "parentLoggingObject", parentLoggingObject );
 
     job.callBeforeLog();
     verify( parentLoggingObject, times( 1 ) ).callBeforeLog();
@@ -350,10 +352,9 @@ public class JobTest {
 
   @Test
   public void testJobCallAfterLog() {
+    Job job = new Job();
     LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
-    JobMeta jobMeta = mock( JobMeta.class );
-    Repository repository = mock( Repository.class );
-    Job job = new Job( repository, jobMeta, parentLoggingObject );
+    setInternalState( job, "parentLoggingObject", parentLoggingObject );
 
     job.callAfterLog();
     verify( parentLoggingObject, times( 1 ) ).callAfterLog();

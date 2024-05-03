@@ -25,8 +25,21 @@ public class InternalState {
       f.setAccessible( true );
       return f.get( target );
     } catch (Exception e) {
-      throw new RuntimeException(
-        "Unable to get internal state on field: " + field + " of class: " + target, e);
+      try {
+        Field f = target.getClass().getField( field );
+        f.setAccessible( true );
+        Class<?> t = f.getType();
+        Object value = null;
+        if( t == int.class ){
+          value = f.getInt( null );
+        } else if( t == double.class ){
+          value = f.getDouble( null );
+        }
+        return value;
+      } catch ( NoSuchFieldException | IllegalAccessException ex ) {
+        throw new RuntimeException(
+          "Unable to get internal state on field: " + field + " of class: " + target, e );
+      }
     }
   }
 }

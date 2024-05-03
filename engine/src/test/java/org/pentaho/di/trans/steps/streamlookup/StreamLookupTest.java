@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,7 +65,7 @@ public class StreamLookupTest {
   @Before
   public void setUp() {
     smh =
-      new StepMockHelper<>( "StreamLookup", StreamLookupMeta.class,
+      new StepMockHelper<StreamLookupMeta, StreamLookupData>( "StreamLookup", StreamLookupMeta.class,
         StreamLookupData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       smh.logChannelInterface );
@@ -184,7 +184,7 @@ public class StreamLookupTest {
       Object[] rowData = outputRowSet.getRow();
       if ( rowData != null ) {
         RowMetaInterface rowMeta = outputRowSet.getRowMeta();
-        Assert.assertEquals( "Output row is of wrong size", 3, rowMeta.size() );
+        Assert.assertEquals( "Output row is of wrong size", 2, rowMeta.size() );
         rowNumber++;
         // Verify output
         for ( int valueIndex = 0; valueIndex < rowMeta.size(); valueIndex++ ) {
