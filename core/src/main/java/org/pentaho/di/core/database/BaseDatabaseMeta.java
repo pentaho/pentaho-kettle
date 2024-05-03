@@ -45,9 +45,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class contains the basic information on a database connection. It is not intended to be used other than the
@@ -176,15 +173,6 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   public static final String SEQUENCE_FOR_BATCH_ID = "SEQUENCE_FOR_BATCH_ID";
   public static final String AUTOINCREMENT_SQL_FOR_BATCH_ID = "AUTOINCREMENT_SQL_FOR_BATCH_ID";
   public static final String NAMED_CLUSTER_ID = "NAMED_CLUSTER_ID";
-
-  public static final Set<String> ATTRIBUTE_KEYLIST = Stream.of( ATTRIBUTE_PORT_NUMBER,
-      ATTRIBUTE_SQL_CONNECT, ATTRIBUTE_USE_POOLING, ATTRIBUTE_MAXIMUM_POOL_SIZE, ATTRIBUTE_INITIAL_POOL_SIZE,
-      ATTRIBUTE_PREFIX_EXTRA_OPTION, ATTRIBUTE_IS_CLUSTERED, ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX,
-      ATTRIBUTE_CLUSTER_PORT_PREFIX, ATTRIBUTE_CLUSTER_DBNAME_PREFIX, ATTRIBUTE_CLUSTER_USERNAME_PREFIX,
-      ATTRIBUTE_CLUSTER_PASSWORD_PREFIX, ATTRIBUTE_POOLING_PARAMETER_PREFIX, ATTRIBUTE_USE_RESULT_STREAMING,
-      ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR, ATTRIBUTE_QUOTE_ALL_FIELDS, ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE,
-      ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE, ATTRIBUTE_PREFERRED_SCHEMA_NAME, ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE,
-      ATTRIBUTE_SUPPORTS_TIMESTAMP_DATA_TYPE, ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE ).collect( Collectors.toSet() );
 
   /**
    * Boolean to indicate if savepoints can be released Most databases do, so we set it to true. Child classes can
