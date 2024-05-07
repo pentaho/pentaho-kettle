@@ -31,6 +31,8 @@ import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
+import java.util.Optional;
+
 /**
  * Created by bmorrise on 6/28/18.
  */
@@ -50,8 +52,11 @@ public class ClustersFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-    TransMeta transMeta = (TransMeta) meta;
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    if ( !( meta.isPresent() && meta.get() instanceof TransMeta ) ) {
+      return;
+    }
+    TransMeta transMeta = (TransMeta) meta.get();
     for ( ClusterSchema clusterSchema : transMeta.getClusterSchemas() ) {
       if ( !filterMatch( clusterSchema.getName(), filter ) ) {
         continue;

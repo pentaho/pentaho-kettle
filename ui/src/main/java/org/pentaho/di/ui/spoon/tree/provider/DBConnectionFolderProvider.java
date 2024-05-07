@@ -34,6 +34,8 @@ import org.pentaho.di.ui.spoon.DatabasesCollector;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
+import java.util.Optional;
+
 /**
  * Created by bmorrise on 6/28/18.
  */
@@ -55,15 +57,18 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-    DatabasesCollector collector = new DatabasesCollector( meta, spoon.getRepository() );
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    if ( !meta.isPresent() ) {
+      return;
+    }
+    DatabasesCollector collector = new DatabasesCollector( meta.get(), spoon.getRepository() );
     try {
       try {
         collector.collectDatabases();
       } catch ( KettleException e ) {
         if ( e.getCause() instanceof KettleRepositoryLostException ) {
           Spoon.getInstance().handleRepositoryLost( (KettleRepositoryLostException) e.getCause() );
-          collector = new DatabasesCollector( meta, null );
+          collector = new DatabasesCollector( meta.get(), null );
           collector.collectDatabases();
         } else {
           throw e;

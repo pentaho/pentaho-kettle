@@ -26,8 +26,10 @@ package org.pentaho.di.connections.ui.tree;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -73,13 +75,14 @@ public class ConnectionFolderProviderTest {
   @Test
   public void create_TestAdmin(){
     doReturn( mockRepository ).when( mockSpoon ).getRepository();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
     doReturn( mockUser ).when( mockRepository ).getUserInfo();
     doReturn( true ).when( mockUser ).isAdmin();
-    connectionFolderProvider = new ConnectionFolderProvider( mockMetastoreLocator );
+    connectionFolderProvider = new ConnectionFolderProvider();
     TreeNode parentTreeNode = new TreeNode();
     assertFalse( parentTreeNode.hasChildren() );
 
-    connectionFolderProvider.create( null, parentTreeNode );
+    connectionFolderProvider.create( Optional.empty(), parentTreeNode );
     assertTrue( parentTreeNode.hasChildren() );
     assertTrue( StringUtils.isNotBlank( connectionFolderProvider.getTitle() ) );
     assertNotNull( parentTreeNode.getChildren().stream().filter(
@@ -91,22 +94,23 @@ public class ConnectionFolderProviderTest {
     doReturn( mockRepository ).when( mockSpoon ).getRepository();
     doReturn( mockUser ).when( mockRepository ).getUserInfo();
     doReturn( false ).when( mockUser ).isAdmin();
-    connectionFolderProvider = new ConnectionFolderProvider( mockMetastoreLocator );
+    connectionFolderProvider = new ConnectionFolderProvider();
     TreeNode parentTreeNode = new TreeNode();
     assertFalse( parentTreeNode.hasChildren() );
 
-    connectionFolderProvider.create( null, parentTreeNode );
+    connectionFolderProvider.create( Optional.empty(), parentTreeNode );
     assertFalse( parentTreeNode.hasChildren() );
   }
 
   @Test
   public void create_TestNullRepo(){
     doReturn( null ).when( mockSpoon ).getRepository();
-    connectionFolderProvider = new ConnectionFolderProvider( mockMetastoreLocator );
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    connectionFolderProvider = new ConnectionFolderProvider();
     TreeNode parentTreeNode = new TreeNode();
     assertFalse( parentTreeNode.hasChildren() );
 
-    connectionFolderProvider.create( null, parentTreeNode );
+    connectionFolderProvider.create( Optional.empty(), parentTreeNode );
     assertTrue( parentTreeNode.hasChildren() );
     assertTrue( StringUtils.isNotBlank( connectionFolderProvider.getTitle() ) );
     assertNotNull( parentTreeNode.getChildren().stream().filter(
@@ -117,13 +121,14 @@ public class ConnectionFolderProviderTest {
   @Test
   public void create_TestNullIsAdmin(){
     doReturn( mockRepository ).when( mockSpoon ).getRepository();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
     doReturn( mockUser ).when( mockRepository ).getUserInfo();
     doReturn( null ).when( mockUser ).isAdmin();
-    connectionFolderProvider = new ConnectionFolderProvider( mockMetastoreLocator );
+    connectionFolderProvider = new ConnectionFolderProvider();
     TreeNode parentTreeNode = new TreeNode();
     assertFalse( parentTreeNode.hasChildren() );
 
-    connectionFolderProvider.create( null, parentTreeNode );
+    connectionFolderProvider.create( Optional.empty(), parentTreeNode );
     assertTrue( parentTreeNode.hasChildren() );
     assertTrue( StringUtils.isNotBlank( connectionFolderProvider.getTitle() ) );
     assertNotNull( parentTreeNode.getChildren().stream().filter(
@@ -134,12 +139,13 @@ public class ConnectionFolderProviderTest {
   @Test
   public void create_TestNullUser(){
     doReturn( mockRepository ).when( mockSpoon ).getRepository();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
     doReturn( null ).when( mockRepository ).getUserInfo();
-    connectionFolderProvider = new ConnectionFolderProvider( mockMetastoreLocator );
+    connectionFolderProvider = new ConnectionFolderProvider();
     TreeNode parentTreeNode = new TreeNode();
     assertFalse( parentTreeNode.hasChildren() );
 
-    connectionFolderProvider.create( null, parentTreeNode );
+    connectionFolderProvider.create( Optional.empty(), parentTreeNode );
     assertTrue( parentTreeNode.hasChildren() );
     assertTrue( StringUtils.isNotBlank( connectionFolderProvider.getTitle() ) );
     assertNotNull( parentTreeNode.getChildren().stream().filter(

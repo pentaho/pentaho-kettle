@@ -65,6 +65,12 @@ public class DefaultBowl extends BaseBowl {
     }
   }
 
+  @Override
+  public ConnectionManager getExplicitConnectionManager() throws MetaStoreException {
+    return getConnectionManager();
+  }
+
+
   @VisibleForTesting
   public void setMetastoreSupplier( Supplier<IMetaStore> metastoreSupplier ) {
     this.metastoreSupplier = metastoreSupplier;

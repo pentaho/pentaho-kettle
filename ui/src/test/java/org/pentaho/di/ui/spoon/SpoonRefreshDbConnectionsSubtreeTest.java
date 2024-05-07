@@ -33,6 +33,7 @@ import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;
@@ -55,7 +56,7 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
   }
 
   private void callRefreshWith( AbstractMeta meta, String filter ) {
-    dbConnectionFolderProvider.refresh( meta, treeNode, filter );
+    dbConnectionFolderProvider.refresh( Optional.of( meta ), treeNode, filter );
   }
 
   private void verifyNumberOfNodesCreated( int times ) {

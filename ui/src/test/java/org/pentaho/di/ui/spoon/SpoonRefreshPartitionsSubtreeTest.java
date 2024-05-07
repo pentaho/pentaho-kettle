@@ -33,6 +33,7 @@ import org.pentaho.di.ui.spoon.tree.provider.PartitionsFolderProvider;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Matchers.any;
@@ -55,7 +56,7 @@ public class SpoonRefreshPartitionsSubtreeTest {
   }
 
   private void callRefreshWith( TransMeta meta, String filter ) {
-    partitionsFolderProvider.refresh( meta, treeNode, filter );
+    partitionsFolderProvider.refresh( Optional.of( meta ), treeNode, filter );
   }
 
   private void verifyNumberOfNodesCreated( int times ) {

@@ -57,5 +57,16 @@ public interface Bowl {
    */
   ConnectionManager getConnectionManager() throws MetaStoreException;
 
+  /**
+   * Gets a ConnectionManager for this Bowl. Uses a metastore from getExplicitMetastore(). This ConnectionManager
+   * allows writes.
+   *
+   * Since constructing and initializing ConnectionManagers can be expensive, and ConnectionManager instances don't
+   * share state, consumers should always use this method instead of ConnectionManager.getInstance()
+   *
+   * @return ConnectionManager, never null.
+   */
+  ConnectionManager getExplicitConnectionManager() throws MetaStoreException;
+
 
 }

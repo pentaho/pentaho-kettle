@@ -356,6 +356,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -386,8 +387,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Spoon", LoggingObjectType.SPOON,
       null );
 
-  public static final String STRING_TRANSFORMATIONS = BaseMessages.getString( PKG, "Spoon.STRING_TRANSFORMATIONS" );
+  public static final String STRING_CONFIGURATIONS = BaseMessages.getString( PKG, "Spoon.STRING_CONFIGURATIONS" );
 
+  // These two are no longer used. Kept for backwards-compatibility.
+  public static final String STRING_TRANSFORMATIONS = BaseMessages.getString( PKG, "Spoon.STRING_TRANSFORMATIONS" );
   public static final String STRING_JOBS = BaseMessages.getString( PKG, "Spoon.STRING_JOBS" );
 
   public static final String STRING_BUILDING_BLOCKS = BaseMessages.getString( PKG, "Spoon.STRING_BUILDING_BLOCKS" );
@@ -1177,13 +1180,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       Object managedObject = entry.getObject().getManagedObject();
       if ( managedObject instanceof AbstractMeta ) {
-        if ( managedObject instanceof TransMeta ) {
-          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_TRANSFORMATIONS, props.isOnlyActiveFileShownInTree() );
-        }
-        if ( managedObject instanceof JobMeta ) {
-          selectionTreeManager.create( (AbstractMeta) managedObject, STRING_JOBS, props.isOnlyActiveFileShownInTree() );
-        }
-        selectionTreeManager.show( (AbstractMeta) managedObject );
         refreshTree( (AbstractMeta) managedObject );
       }
     }
@@ -6542,11 +6538,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     //
     selectionTree = new Tree( viewTreeComposite, SWT.SINGLE );
     selectionTreeManager = new TreeManager( selectionTree );
-    selectionTreeManager.addRoot( STRING_TRANSFORMATIONS, Arrays.asList( new DBConnectionFolderProvider(), new
-            StepsFolderProvider(), new HopsFolderProvider(), new PartitionsFolderProvider(), new SlavesFolderProvider(), new
-            ClustersFolderProvider() ) );
-    selectionTreeManager.addRoot( STRING_JOBS, Arrays.asList( new DBConnectionFolderProvider(), new
-            JobEntriesFolderProvider(), new SlavesFolderProvider() ) );
+    selectionTreeManager.addRoot( STRING_CONFIGURATIONS,
+                                  Arrays.asList( new DBConnectionFolderProvider(),
+                                                 new PartitionsFolderProvider(),
+                                                 new SlavesFolderProvider(),
+                                                 new ClustersFolderProvider() ) );
 
     props.setLook( selectionTree );
     selectionTree.setLayout( new FillLayout() );
@@ -6571,7 +6567,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void refreshTree( AbstractMeta abstractMeta ) {
-    selectionTreeManager.remove( abstractMeta );
     refreshTree();
   }
 
@@ -6592,30 +6587,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     selectionTreeManager.clear();
     TransMeta activeTransMeta = getActiveTransformation();
     JobMeta activeJobMeta = getActiveJob();
-    boolean showAll = activeTransMeta == null && activeJobMeta == null;
-    boolean showTrans = !props.isOnlyActiveFileShownInTree() || showAll || ( props.isOnlyActiveFileShownInTree()
-            && activeTransMeta != null );
-    boolean showJobs = !props.isOnlyActiveFileShownInTree() || showAll || ( props.isOnlyActiveFileShownInTree()
-            && activeJobMeta != null );
 
-    selectionTreeManager.showRoot( STRING_TRANSFORMATIONS, showTrans || showAll );
-    selectionTreeManager.showRoot( STRING_JOBS, showJobs || showAll );
+    selectionTreeManager.showRoot( STRING_CONFIGURATIONS, true );
 
-    if ( showTrans ) {
-      for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
-        Object managedObject = entry.getObject().getManagedObject();
-        if ( managedObject instanceof TransMeta ) {
-          showMetaTree( activeTransMeta, (TransMeta) managedObject, STRING_TRANSFORMATIONS, showAll );
-        }
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      Object managedObject = entry.getObject().getManagedObject();
+      if ( managedObject instanceof TransMeta ) {
+        showMetaTree( activeTransMeta, (TransMeta) managedObject, STRING_CONFIGURATIONS, true );
       }
     }
-
-    if ( showJobs ) {
-      for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
-        Object managedObject = entry.getObject().getManagedObject();
-        if ( managedObject instanceof JobMeta ) {
-          showMetaTree( activeJobMeta, (JobMeta) managedObject, STRING_JOBS, showAll );
-        }
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      Object managedObject = entry.getObject().getManagedObject();
+      if ( managedObject instanceof JobMeta ) {
+        showMetaTree( activeJobMeta, (JobMeta) managedObject, STRING_CONFIGURATIONS, true );
       }
     }
 
@@ -6628,15 +6612,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private void showMetaTree( AbstractMeta activeMeta, AbstractMeta meta, String type, boolean showAll ) {
     if ( !props.isOnlyActiveFileShownInTree() || showAll || ( activeMeta != null && activeMeta.equals( meta ) ) ) {
-      if ( !selectionTreeManager.hasNode( meta ) ) {
-        selectionTreeManager.create( meta, type, props.isOnlyActiveFileShownInTree() );
-      } else {
-        selectionTreeManager.checkUpdate( meta, type );
-        selectionTreeManager.reset( meta );
-      }
-      if ( activeMeta != null ) {
-        selectionTreeManager.show( meta );
-      }
+      selectionTreeManager.checkUpdate( Optional.of(meta), type );
+      selectionTreeManager.reset( meta );
     }
   }
 

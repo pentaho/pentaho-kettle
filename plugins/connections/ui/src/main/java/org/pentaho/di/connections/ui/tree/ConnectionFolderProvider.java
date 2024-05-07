@@ -23,14 +23,29 @@
 package org.pentaho.di.connections.ui.tree;
 
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
+
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+
 
 /**
  * Created by bmorrise on 7/6/18.
@@ -39,20 +54,40 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
 
   private static final Class<?> PKG = ConnectionFolderProvider.class;
   public static final String STRING_VFS_CONNECTIONS = BaseMessages.getString( PKG, "VFSConnectionsTree.Title" );
-  private ConnectionManager connectionManager;
 
-  public ConnectionFolderProvider( MetastoreLocator metastoreLocator ) {
-    this.connectionManager = ConnectionManager.getInstance();
-    connectionManager.setMetastoreSupplier( metastoreLocator::getMetastore );
+  public ConnectionFolderProvider() {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-    for ( String name : connectionManager.getNames() ) {
-      if ( !filterMatch( name, filter ) ) {
-        continue;
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    try {
+      Set<String> bowlNames = new HashSet<>();
+      Bowl currentBowl = Spoon.getInstance().getBowl();
+      if ( !currentBowl.equals( DefaultBowl.getInstance() ) ) {
+        ConnectionManager bowlCM = currentBowl.getExplicitConnectionManager();
+        for ( String name : bowlCM.getNames() ) {
+          if ( !filterMatch( name, filter ) ) {
+            continue;
+          }
+          bowlNames.add( name );
+          createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(), LEVEL.PROJECT, false );
+        }
       }
-      super.createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree() );
+
+      ConnectionManager globalCM = DefaultBowl.getInstance().getExplicitConnectionManager();
+      for ( String name : globalCM.getNames() ) {
+        if ( !filterMatch( name, filter ) ) {
+          continue;
+        }
+        createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(), LEVEL.GLOBAL,
+                        bowlNames.contains( name ) );
+      }
+    } catch ( MetaStoreException e ) {
+      new ErrorDialog( Spoon.getInstance().getShell(),
+              BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+              BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingVFSConnections" ),
+              e
+      );
     }
   }
 
@@ -62,7 +97,12 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public void create( AbstractMeta meta, TreeNode parent ) {
+  public Class getType() {
+    return ConnectionDetails.class;
+  }
+
+  @Override
+  public void create( Optional<AbstractMeta> meta, TreeNode parent ) {
     Repository repository = Spoon.getInstance().getRepository();
     if( repository != null && repository.getUserInfo() != null && repository.getUserInfo().isAdmin() != null
       && Boolean.FALSE.equals( repository.getUserInfo().isAdmin() ) ) {
@@ -71,4 +111,59 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
     refresh( meta, createTreeNode( parent, getTitle(), getTreeImage() ), null );
 
   }
+
+  // this could become common for all the types.
+  enum LEVEL {
+    PROJECT( "Project" ),
+    GLOBAL( "Global" ),
+    LOCAL( "Local" );
+
+    // will this need to be localized?
+    private final String name;
+
+    LEVEL( String name ){
+      this.name = name;
+    }
+    public String getName() {
+      return name;
+    }
+
+  }
+
+  private static class LeveledTreeNode extends TreeNode {
+    private static final String NAME_KEY = "name";
+    private static final String LEVEL_KEY = "level";
+
+    public LeveledTreeNode( String name, LEVEL level ) {
+      setData( NAME_KEY, name );
+      setData( LEVEL_KEY, level );
+    }
+
+    Comparator<TreeNode> COMPARATOR = Comparator.<TreeNode, String>comparing( t -> (String) t.getData().get( NAME_KEY ),
+                                                                              String.CASE_INSENSITIVE_ORDER )
+                                                .thenComparing( t -> (LEVEL) t.getData().get( LEVEL_KEY ) );
+    @Override
+    public int compareTo( TreeNode other ) {
+      return COMPARATOR.compare( this, other );
+    }
+
+  }
+
+  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LEVEL level, boolean overridden ) {
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level );
+    childTreeNode.setLabel( name + " [" + level.getName() + "]" );
+    childTreeNode.setImage( image );
+    if ( overridden ) {
+      childTreeNode.setForeground( getDisabledColor() );
+    }
+
+    parent.addChild( childTreeNode );
+    return childTreeNode;
+  }
+
+  private Color getDisabledColor() {
+    Device device = Display.getCurrent();
+    return new Color( device, 188, 188, 188 );
+  }
+
 }

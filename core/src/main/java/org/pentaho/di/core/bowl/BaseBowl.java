@@ -23,6 +23,7 @@ import org.pentaho.metastore.api.IMetaStore;
 public abstract class BaseBowl implements Bowl {
 
   private volatile ConnectionManager connectionManager;
+  private volatile ConnectionManager explicitConnectionManager;
 
   @Override
   public ConnectionManager getConnectionManager() throws MetaStoreException {
@@ -36,6 +37,21 @@ public abstract class BaseBowl implements Bowl {
         connectionManager = ConnectionManager.getInstance( () -> metastore );
       }
       return connectionManager;
+    }
+  }
+
+  @Override
+  public ConnectionManager getExplicitConnectionManager() throws MetaStoreException {
+    ConnectionManager result = explicitConnectionManager;
+    if ( result != null ) {
+      return result;
+    }
+    synchronized( this ) {
+      if ( explicitConnectionManager == null ) {
+        IMetaStore metastore = getExplicitMetastore();
+        explicitConnectionManager = ConnectionManager.getInstance( () -> metastore );
+      }
+      return explicitConnectionManager;
     }
   }
 

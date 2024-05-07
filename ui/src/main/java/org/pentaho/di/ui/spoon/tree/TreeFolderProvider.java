@@ -28,6 +28,8 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 
+import java.util.Optional;
+
 /**
  * Created by bmorrise on 6/26/18.
  */
@@ -35,14 +37,14 @@ public abstract class TreeFolderProvider {
 
   protected TreeManager treeManager;
 
-  public abstract void refresh( AbstractMeta meta, TreeNode treeNode, String filter );
+  public abstract void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter );
 
   public Class getType() {
     return Object.class;
   }
 
-  public void checkUpdate( AbstractMeta meta, TreeNode treeNode, String filter ) {
-    if ( treeManager.shouldUpdate( meta, getTitle() ) ) {
+  public void checkUpdate( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    if ( treeManager.shouldUpdate( getTitle() ) ) {
       treeNode.removeAll();
       refresh( meta, treeNode, filter );
     }
@@ -54,7 +56,7 @@ public abstract class TreeFolderProvider {
     return Utils.isEmpty( string ) || Utils.isEmpty( filter ) || string.toUpperCase().contains( filter.toUpperCase() );
   }
 
-  public void create( AbstractMeta meta, TreeNode parent ) {
+  public void create( Optional<AbstractMeta> meta, TreeNode parent ) {
     refresh( meta, createTreeNode( parent, getTitle(), getTreeImage() ), null );
   }
 
