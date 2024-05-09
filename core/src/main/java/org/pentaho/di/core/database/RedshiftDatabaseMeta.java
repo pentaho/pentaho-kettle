@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,9 +85,9 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
 
   @Override public void putOptionalOptions( Map<String, String> extraOptions ) {
     if ( IAM_CREDENTIALS.equals( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
-      extraOptions.put( "REDSHIFT.AccessKeyID", getAttribute( IAM_ACCESS_KEY_ID, "" ) );
+      extraOptions.put( "REDSHIFT.AccessKeyID", Encr.decryptPassword( getAttribute( IAM_ACCESS_KEY_ID, "" ) ) );
       extraOptions.put( "REDSHIFT.SecretAccessKey", Encr.decryptPassword( getAttribute( IAM_SECRET_ACCESS_KEY, "" ) ) );
-      extraOptions.put( "REDSHIFT.SessionToken", getAttribute( IAM_SESSION_TOKEN, "" ) );
+      extraOptions.put( "REDSHIFT.SessionToken", Encr.decryptPassword( getAttribute( IAM_SESSION_TOKEN, "" ) ) );
     } else if ( PROFILE_CREDENTIALS.equals( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
       extraOptions.put( "REDSHIFT.Profile", getAttribute( IAM_PROFILE_NAME, "" ) );
     }
