@@ -51,22 +51,21 @@ public class RunConfigurationTreeDelegateExtension implements ExtensionPointInte
     SpoonTreeDelegateExtension treeDelExt = (SpoonTreeDelegateExtension) extension;
 
     int caseNumber = treeDelExt.getCaseNumber();
-    AbstractMeta meta = treeDelExt.getTransMeta();
     String[] path = treeDelExt.getPath();
     List<TreeSelection> objects = treeDelExt.getObjects();
 
     TreeSelection object = null;
 
-    if ( path[2].equals( RunConfigurationViewTreeExtension.TREE_LABEL ) ) {
+    if ( path[1].equals( RunConfigurationViewTreeExtension.TREE_LABEL ) ) {
       switch ( caseNumber ) {
-        case 3:
-          object = new TreeSelection( path[2], RunConfiguration.class, meta );
+        case 2:
+          object = new TreeSelection( path[1], RunConfiguration.class );
           break;
-        case 4:
+        case 3:
           try {
-            final String name = path[ 3 ];
+            final String name = path[ 2 ];
             if ( !name.equalsIgnoreCase( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
-              object = new TreeSelection( path[ 3 ], path[ 3 ], meta );
+              object = new TreeSelection( path[ 2 ], path[ 2 ] );
             }
           } catch ( Exception e ) {
             // Do Nothing

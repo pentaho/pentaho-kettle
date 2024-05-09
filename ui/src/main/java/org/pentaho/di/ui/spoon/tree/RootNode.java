@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,11 +87,17 @@ public class RootNode extends TreeNode {
     return null;
   }
 
+  public void updateAll() {
+    for ( TreeFolderProvider tfp : treeFolderProviders ) {
+      update( tfp.getTitle() );
+    }
+  }
+
   public void update( String name ) {
     updates.add( name );
   }
 
-  public void clearUpdates( AbstractMeta abstractMeta ) {
+  public void clearUpdates() {
     updates.clear();
   }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,7 +61,7 @@ public abstract class TreeFolderProvider {
   }
 
   protected Image getTreeImage() {
-    return GUIResource.getInstance().getImageFolder();
+    return GUIResource.getInstance().getImageConfigurations();
   }
 
   public TreeNode createTreeNode( TreeNode parent, String text, Image image ) {
