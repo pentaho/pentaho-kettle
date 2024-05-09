@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -409,9 +409,9 @@ public class DatabaseMetaTest {
     DatabaseMeta dbmeta = new DatabaseMeta( "rs", "Redshift", "JDBC", "amazon-host", "stuff", "5432", "jerry", null );
     Properties props = dbmeta.getAttributes();
     props.setProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, RedshiftDatabaseMeta.STANDARD_CREDENTIALS );
-    props.setProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, "key" );
+    props.setProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, Encr.encryptPassword( "key" ) );
     props.setProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, Encr.encryptPassword( "secret" ) );
-    props.setProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, "token" );
+    props.setProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, Encr.encryptPassword( "token" ) );
     assertFalse( dbmeta.getURL().contains( "AccessKeyID" ) );
     assertFalse( dbmeta.getURL().contains( "secret" ) );
     assertFalse( dbmeta.getURL().startsWith( "jdbc:redshift:iam:" ) );
