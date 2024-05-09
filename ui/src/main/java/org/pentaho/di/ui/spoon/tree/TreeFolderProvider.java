@@ -61,7 +61,7 @@ public abstract class TreeFolderProvider {
   }
 
   protected Image getTreeImage() {
-    return GUIResource.getInstance().getImageFolder();
+    return GUIResource.getInstance().getImageConfigurations();
   }
 
   public TreeNode createTreeNode( TreeNode parent, String text, Image image ) {

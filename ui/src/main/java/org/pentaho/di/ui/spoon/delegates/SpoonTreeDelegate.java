@@ -78,135 +78,65 @@ public class SpoonTreeDelegate extends SpoonDelegate {
           case 0:
             break;
           case 1: // ------complete-----
-            if ( path[0].equals( Spoon.STRING_TRANSFORMATIONS ) ) { // the top level Transformations entry
+            if ( path[0].equals( Spoon.STRING_CONFIGURATIONS ) ) { // the top level config entry
 
-              object = new TreeSelection( path[0], TransMeta.class );
-            }
-            if ( path[0].equals( Spoon.STRING_JOBS ) ) { // the top level Jobs entry
-
-              object = new TreeSelection( path[0], JobMeta.class );
+              // nothing to do by selecting the Configurations node.
             }
             break;
 
           case 2: // ------complete-----
-            if ( path[0].equals( Spoon.STRING_BUILDING_BLOCKS ) ) { // the top level Transformations entry
-
-              if ( path[1].equals( Spoon.STRING_TRANS_BASE ) ) {
-                object = new TreeSelection( path[1], PluginInterface.class );
+            if ( path[0].equals( Spoon.STRING_CONFIGURATIONS ) ) {
+              if ( path[1].equals( Spoon.STRING_CONNECTIONS ) ) {
+                object = new TreeSelection( path[1], DatabaseMeta.class );
               }
-            }
-            if ( path[0].equals( Spoon.STRING_TRANSFORMATIONS ) ) { // Transformation title
-
-              object = new TreeSelection( path[1], spoon.delegates.trans.getTransformation( path[1] ) );
-            }
-            if ( path[0].equals( Spoon.STRING_JOBS ) ) { // Jobs title
-
-              object = new TreeSelection( path[1], spoon.delegates.jobs.getJob( path[1] ) );
+              if ( path[1].equals( Spoon.STRING_PARTITIONS ) ) {
+                object = new TreeSelection( path[1], PartitionSchema.class );
+              }
+              if ( path[1].equals( Spoon.STRING_SLAVES ) ) {
+                object = new TreeSelection( path[1], SlaveServer.class );
+              }
+              if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
+                object = new TreeSelection( path[1], ClusterSchema.class );
+              }
+              executeExtensionPoint( new SpoonTreeDelegateExtension( null, path, 2, objects ) );
             }
             break;
 
           case 3: // ------complete-----
-            if ( path[0].equals( Spoon.STRING_TRANSFORMATIONS ) ) { // Transformations title
+            if ( path[0].equals( Spoon.STRING_CONFIGURATIONS ) ) {
 
-              TransMeta transMeta = spoon.delegates.trans.getTransformation( path[1] );
-              if ( path[2].equals( Spoon.STRING_CONNECTIONS ) ) {
-                object = new TreeSelection( path[2], DatabaseMeta.class, transMeta );
-              }
-              if ( path[2].equals( Spoon.STRING_STEPS ) ) {
-                object = new TreeSelection( path[2], StepMeta.class, transMeta );
-              }
-              if ( path[2].equals( Spoon.STRING_HOPS ) ) {
-                object = new TreeSelection( path[2], TransHopMeta.class, transMeta );
-              }
-              if ( path[2].equals( Spoon.STRING_PARTITIONS ) ) {
-                object = new TreeSelection( path[2], PartitionSchema.class, transMeta );
-              }
-              if ( path[2].equals( Spoon.STRING_SLAVES ) ) {
-                object = new TreeSelection( path[2], SlaveServer.class, transMeta );
-              }
-              if ( path[2].equals( Spoon.STRING_CLUSTERS ) ) {
-                object = new TreeSelection( path[2], ClusterSchema.class, transMeta );
-              }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( transMeta, path, 3, objects ) );
-            }
-            if ( path[0].equals( Spoon.STRING_JOBS ) ) { // Jobs title
-
-              JobMeta jobMeta = spoon.delegates.jobs.getJob( path[1] );
-              if ( path[2].equals( Spoon.STRING_CONNECTIONS ) ) {
-                object = new TreeSelection( path[2], DatabaseMeta.class, jobMeta );
-              }
-              if ( path[2].equals( Spoon.STRING_JOB_ENTRIES ) ) {
-                object = new TreeSelection( path[2], JobEntryCopy.class, jobMeta );
-              }
-              if ( path[2].equals( Spoon.STRING_SLAVES ) ) {
-                object = new TreeSelection( path[2], SlaveServer.class, jobMeta );
-              }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( jobMeta, path, 3, objects ) );
+              // TODO BACKLOG-??? edit and delete for databases
+              // if ( path[1].equals( Spoon.STRING_CONNECTIONS ) ) {
+              //   String dbName = path[2];
+              //   DatabaseMeta databaseMeta = transMeta.findDatabase( dbName );
+              //   if ( databaseMeta != null ) {
+              //     dbName = databaseMeta.getName();
+              //   }
+              //
+              //   object = new TreeSelection( dbName, databaseMeta );
+              // }
+              // if ( path[1].equals( Spoon.STRING_PARTITIONS ) ) {
+              //   object = new TreeSelection( path[2], transMeta.findPartitionSchema( path[2] ) );
+              // }
+              // if ( path[1].equals( Spoon.STRING_SLAVES ) ) {
+              //   object = new TreeSelection( path[2], transMeta.findSlaveServer( path[2] ) );
+              // }
+              // if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
+              //   object = new TreeSelection( path[2], transMeta.findClusterSchema( path[2] ) );
+              // }
+              executeExtensionPoint( new SpoonTreeDelegateExtension( null, path, 3, objects ) );
             }
             break;
 
-          case 4: // ------complete-----
-            if ( path[0].equals( Spoon.STRING_TRANSFORMATIONS ) ) { // The name of a transformation
-              final TransMeta transMeta = spoon.delegates.trans.getTransformation( path[1] );
+          case 4:
+            if ( path[0].equals( Spoon.STRING_CONFIGURATIONS ) ) {
 
-              if ( transMeta != null ) {
-                if ( path[2].equals( Spoon.STRING_CONNECTIONS ) ) {
-                  String dbName = path[3];
-                  DatabaseMeta databaseMeta = transMeta.findDatabase( dbName );
-                  if ( databaseMeta != null ) {
-                    dbName = databaseMeta.getName();
-                  }
-
-                  object = new TreeSelection( dbName, databaseMeta, transMeta );
-                }
-                if ( path[2].equals( Spoon.STRING_STEPS ) ) {
-                  object = new TreeSelection( path[3], transMeta.findStep( path[3] ), transMeta );
-                }
-                if ( path[2].equals( Spoon.STRING_HOPS ) ) {
-                  object = new TreeSelection( path[3], transMeta.findTransHop( path[3] ), transMeta );
-                }
-                if ( path[2].equals( Spoon.STRING_PARTITIONS ) ) {
-                  object = new TreeSelection( path[3], transMeta.findPartitionSchema( path[3] ), transMeta );
-                }
-                if ( path[2].equals( Spoon.STRING_SLAVES ) ) {
-                  object = new TreeSelection( path[3], transMeta.findSlaveServer( path[3] ), transMeta );
-                }
-                if ( path[2].equals( Spoon.STRING_CLUSTERS ) ) {
-                  object = new TreeSelection( path[3], transMeta.findClusterSchema( path[3] ), transMeta );
-                }
-                executeExtensionPoint( new SpoonTreeDelegateExtension( transMeta, path, 4, objects ) );
-              }
-            }
-            if ( path[0].equals( Spoon.STRING_JOBS ) ) { // The name of a job
-              JobMeta jobMeta = spoon.delegates.jobs.getJob( path[1] );
-              if ( jobMeta != null && path[2].equals( Spoon.STRING_CONNECTIONS ) ) {
-                String dbName = path[3];
-                DatabaseMeta databaseMeta = jobMeta.findDatabase( dbName );
-                if ( databaseMeta != null ) {
-                  dbName = databaseMeta.getName();
-                }
-
-                object = new TreeSelection( dbName, databaseMeta, jobMeta );
-              }
-              if ( jobMeta != null && path[2].equals( Spoon.STRING_JOB_ENTRIES ) ) {
-                object = new TreeSelection( path[3], jobMeta.findJobEntry( path[3] ), jobMeta );
-              }
-              if ( jobMeta != null && path[2].equals( Spoon.STRING_SLAVES ) ) {
-                object = new TreeSelection( path[3], jobMeta.findSlaveServer( path[3] ), jobMeta );
-              }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( jobMeta, path, 4, objects ) );
-            }
-            break;
-
-          case 5:
-            if ( path[0].equals( Spoon.STRING_TRANSFORMATIONS ) ) { // The name of a transformation
-
-              TransMeta transMeta = spoon.delegates.trans.getTransformation( path[1] );
-              if ( transMeta != null && path[2].equals( Spoon.STRING_CLUSTERS ) ) {
-                ClusterSchema clusterSchema = transMeta.findClusterSchema( path[3] );
-                object =
-                  new TreeSelection( path[4], clusterSchema.findSlaveServer( path[4] ), clusterSchema, transMeta );
-              }
+              // TODO BACKLOG-??? edit and delete for clusters
+              //if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
+              //  ClusterSchema clusterSchema = transMeta.findClusterSchema( path[2] );
+              //  object =
+              //    new TreeSelection( path[3], clusterSchema.findSlaveServer( path[3]), clusterSchema, transMeta );
+              //}
             }
             break;
           default:

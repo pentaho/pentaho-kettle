@@ -2617,74 +2617,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  /**
-   * If you click in the tree, you might want to show the corresponding window.
-   */
-  public void showSelection() {
-    TreeSelection[] objects = getTreeObjects( selectionTree );
-    if ( objects.length != 1 ) {
-      return; // not yet supported, we can do this later when the OSX bug
-      // goes away
-    }
-
-    TreeSelection object = objects[0];
-
-    final Object selection = object.getSelection();
-    final Object parent = object.getParent();
-
-    TransMeta transMeta = null;
-    if ( selection instanceof TransMeta ) {
-      transMeta = (TransMeta) selection;
-    }
-    if ( parent instanceof TransMeta ) {
-      transMeta = (TransMeta) parent;
-    }
-
-    if ( transMeta != null ) {
-
-      TabMapEntry entry = delegates.tabs.findTabMapEntry( transMeta );
-      if ( entry != null ) {
-        int current = tabfolder.getSelectedIndex();
-        int desired = tabfolder.indexOf( entry.getTabItem() );
-        if ( current != desired ) {
-          tabfolder.setSelected( desired );
-        }
-        transMeta.setInternalKettleVariables();
-        if ( getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON ) {
-          // Switch the core objects in the lower left corner to the
-          // spoon trans types
-          refreshCoreObjects();
-        }
-      }
-    }
-
-    JobMeta jobMeta = null;
-    if ( selection instanceof JobMeta ) {
-      jobMeta = (JobMeta) selection;
-    }
-    if ( parent instanceof JobMeta ) {
-      jobMeta = (JobMeta) parent;
-    }
-    if ( jobMeta != null ) {
-
-      TabMapEntry entry = delegates.tabs.findTabMapEntry( jobMeta );
-      if ( entry != null ) {
-        int current = tabfolder.getSelectedIndex();
-        int desired = tabfolder.indexOf( entry.getTabItem() );
-        if ( current != desired ) {
-          tabfolder.setSelected( desired );
-        }
-        jobMeta.setInternalKettleVariables();
-        if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF ) {
-          // Switch the core objects in the lower left corner to the
-          // spoon job types
-          //
-          refreshCoreObjects();
-        }
-      }
-    }
-  }
-
   private Object selectionObjectParent = null;
 
   private Object selectionObject = null;
@@ -6553,7 +6485,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     selectionTree.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        showSelection();
+
       }
 
       @Override
@@ -6564,6 +6496,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // Set a listener on the tree
     addDragSourceToTree( selectionTree );
+  }
+
+  private void forceRefreshTree() {
+    if ( selectionTreeManager != null ) {
+      selectionTreeManager.updateAll();
+      refreshTree();
+    }
   }
 
   public void refreshTree( AbstractMeta abstractMeta ) {
@@ -6590,17 +6529,24 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     selectionTreeManager.showRoot( STRING_CONFIGURATIONS, true );
 
+    boolean hasMeta = false;
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       Object managedObject = entry.getObject().getManagedObject();
       if ( managedObject instanceof TransMeta ) {
+        hasMeta = true;
         showMetaTree( activeTransMeta, (TransMeta) managedObject, STRING_CONFIGURATIONS, true );
       }
     }
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       Object managedObject = entry.getObject().getManagedObject();
       if ( managedObject instanceof JobMeta ) {
+        hasMeta = true;
         showMetaTree( activeJobMeta, (JobMeta) managedObject, STRING_CONFIGURATIONS, true );
       }
+    }
+
+    if ( !hasMeta ) {
+      showMetaTree( null, null, STRING_CONFIGURATIONS, true );
     }
 
     selectionTreeManager.render();
@@ -6612,8 +6558,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private void showMetaTree( AbstractMeta activeMeta, AbstractMeta meta, String type, boolean showAll ) {
     if ( !props.isOnlyActiveFileShownInTree() || showAll || ( activeMeta != null && activeMeta.equals( meta ) ) ) {
-      selectionTreeManager.checkUpdate( Optional.of(meta), type );
-      selectionTreeManager.reset( meta );
+      selectionTreeManager.checkUpdate( Optional.ofNullable( meta ), type );
+      selectionTreeManager.reset();
     }
   }
 
@@ -9517,6 +9463,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     getMenuBarManager().updateAll( true );
 
+    // refresh the left hand tree after loading providers
+    refreshTree();
+
     return parent;
   }
 
@@ -9560,6 +9509,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setBowl( Bowl bowl ) {
     this.bowl = Objects.requireNonNull( bowl );
+    forceRefreshTree();
   }
 
   private void onLoginError( Throwable t ) {
