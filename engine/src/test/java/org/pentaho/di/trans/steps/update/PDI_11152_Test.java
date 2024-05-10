@@ -44,6 +44,8 @@ import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
+// todo Fix Me!!!
+
 /**
  * Regression test for PDI-11152
  *
@@ -54,7 +56,7 @@ public class PDI_11152_Test {
 
   @Before
   public void setUp() {
-    smh = new StepMockHelper<>( "Update", UpdateMeta.class, UpdateData.class );
+    smh = new StepMockHelper<UpdateMeta, UpdateData>( "Update", UpdateMeta.class, UpdateData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );

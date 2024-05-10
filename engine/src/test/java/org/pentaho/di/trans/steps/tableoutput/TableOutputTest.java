@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.tableoutput;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -50,6 +51,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+// todo Fix Me!!!
 public class TableOutputTest {
   private DatabaseMeta databaseMeta;
 

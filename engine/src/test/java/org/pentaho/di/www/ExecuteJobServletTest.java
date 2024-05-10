@@ -62,8 +62,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
-// todo Fix Me!!!
-
 public class ExecuteJobServletTest {
   private static Class<?> PKG = ExecuteJobServlet.class; // for i18n purposes, needed by Translator2!!
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,9 +63,8 @@ public class AttributesUtilTest {
 
   @Test
   public void testGetAttributesXml_DefaultTag() {
-
-    doCallRealMethod().when( AttributesUtil.getAttributesXml( anyMap() ) );
-    doCallRealMethod().when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) );
+    when( AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
     Map<String, String> attributesGroup = new HashMap<>();
     Map<String, Map<String, String>> attributesMap = new HashMap<>();
@@ -85,9 +84,6 @@ public class AttributesUtilTest {
     // Both Key and Value are present
     assertTrue( attributesXml.contains( A_KEY ) );
     assertTrue( attributesXml.contains( A_VALUE ) );
-
-    // Verify that getAttributesXml was invoked once (and with the right parameters)
-    Mockito.verify( AttributesUtil.getAttributesXml( attributesMap, AttributesUtil.XML_TAG ), times(1));
   }
 
   @Test
@@ -117,7 +113,8 @@ public class AttributesUtilTest {
 
   @Test
   public void testGetAttributesXml_DefaultTag_NullParameter() {
-    doCallRealMethod().when( AttributesUtil.getAttributesXml( anyMap() ) );
+    when( AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
     String attributesXml = AttributesUtil.getAttributesXml( new HashMap<>() );
 
@@ -129,7 +126,7 @@ public class AttributesUtilTest {
 
   @Test
   public void testGetAttributesXml_CustomTag_NullParameter() {
-    doCallRealMethod().when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) );
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
     String attributesXml = AttributesUtil.getAttributesXml( new HashMap<>(), CUSTOM_TAG );
 

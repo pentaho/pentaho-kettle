@@ -25,6 +25,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.Const;
@@ -35,9 +36,11 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.metastore.api.IMetaStore;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,13 +56,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+// todo Fix Me!!!
 
 /**
  * Created by Yury_Bakhmutski on 2/8/2017.
  */
 public class StepWithMappingMetaTest {
 
-  @Mock
   TransMeta transMeta;
 
   @Before
@@ -69,6 +72,7 @@ public class StepWithMappingMetaTest {
     // it I discovered that it's during the read of the shared objects xml which doesn't reference Oracle
     // at all. Initializing the environment fixed everything.
     KettleEnvironment.init();
+    transMeta = mock( TransMeta.class );
   }
 
   @Test
@@ -132,12 +136,14 @@ public class StepWithMappingMetaTest {
       }
     } );
     String testName = "test";
-    when( StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any() ) ).thenReturn( transMeta );
-    when( transMeta.exportResources( any(), anyMap(), any(), any(), any() ) ).thenReturn( testName );
+    MockedStatic<StepWithMappingMeta> mockedStatic = mockStatic( StepWithMappingMeta.class );
+    when( StepWithMappingMeta.loadMappingMeta( any( StepWithMappingMeta.class), any( Repository.class ), any( IMetaStore.class ), any( VariableSpace.class ) ) ).thenReturn( transMeta );
+    when( transMeta.exportResources( any( VariableSpace.class ), anyMap(), any( ResourceNamingInterface.class ), any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
 
     stepWithMappingMeta.exportResources( null, null, null, null, null );
     verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( stepWithMappingMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+    mockedStatic.close();
   }
 
   @Test

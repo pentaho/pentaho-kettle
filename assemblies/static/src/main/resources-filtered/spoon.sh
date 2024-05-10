@@ -247,8 +247,8 @@ JAVA_ADD_OPENS=""
 JAVA_LOCALE_COMPAT="-Djava.locale.providers=COMPAT,SPI"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.lang=ALL-UNNAMED"
-JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.io=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.io=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.net=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.security=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.util=ALL-UNNAMED"
@@ -261,9 +261,9 @@ JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens java.management/javax.management=ALL
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens java.management/javax.management.openmbean=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens java.naming/com.sun.jndi.ldap=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens java.base/java.math=ALL-UNNAMED"
-JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens java.base/java.io=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens java.base/java.lang.Object=ALL-UNNAMED"
 JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens java.base/sun.nio.ch=ALL-UNNAMED"
+JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens java.base/java.nio=ALL-UNNAMED"
 
 # ******************************************************************
 # ** Set java runtime options                                     **

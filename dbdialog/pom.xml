@@ -17,7 +17,7 @@
   </parent>
 
   <properties>
-    <powermock.version>1.6.3</powermock.version>
+    <powermock.version>2.0.9</powermock.version>
   </properties>
 
   <dependencies>
@@ -50,18 +50,6 @@
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>${powermock.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>${powermock.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
       <artifactId>powermock-core</artifactId>
       <version>${powermock.version}</version>
       <scope>test</scope>
@@ -72,10 +60,11 @@
       <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

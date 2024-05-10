@@ -121,6 +121,7 @@ rem Sets options that only get read by Java 11 to remove illegal reflective acce
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.io=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.net=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.security=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.util=ALL-UNNAMED"
@@ -133,9 +134,9 @@ set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.management/javax.managemen
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.management/javax.management.openmbean=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.naming/com.sun.jndi.ldap=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.math=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.io=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.lang.Object=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.nio.ch=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.nio=ALL-UNNAMED"
 
 :COLLECTARGUMENTS
 REM **********************
