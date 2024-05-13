@@ -4047,10 +4047,10 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     //the property KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY is only valid when KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y.
     //the isEmptyAndNullDiffer means that null and empty string should be different. normalizeNullStringToEmpty stops pentaho from making this transaction.
-    if ( isEmptyAndNullDiffer && pol == null && isStringValue ) {
-      if ( normalizeNullStringToEmpty ) {
+    if ( isEmptyAndNullDiffer && pol == null && isStringValue && normalizeNullStringToEmpty ) {
         pol = StringUtils.EMPTY;
-      }
+    } else if ( !isEmptyAndNullDiffer && pol == null && isStringValue ) {
+      pol = StringUtils.EMPTY;
     }
 
     if ( pol == null ) {
