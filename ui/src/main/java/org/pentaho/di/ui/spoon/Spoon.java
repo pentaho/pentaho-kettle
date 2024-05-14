@@ -3149,7 +3149,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         editSlaveServer( (SlaveServer) selection );
       }
 
-      editSelectionTreeExtension( selection );
+      editSelectionTreeExtension( object.getTreeItem(), selection );
     }
   }
 
@@ -6633,10 +6633,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  @VisibleForTesting void editSelectionTreeExtension( Object selection ) {
+  @VisibleForTesting void editSelectionTreeExtension( TreeItem treeItem, Object selection ) {
     try {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonViewTreeExtension.id,
-          new SelectionTreeExtension( selection, EDIT_SELECTION_EXTENSION ) );
+          new SelectionTreeExtension( treeItem, selection, EDIT_SELECTION_EXTENSION ) );
     } catch ( Exception e ) {
       log.logError( "Error handling menu right click on job entry through extension point", e );
     }

@@ -23,6 +23,10 @@
 package org.pentaho.di.ui.core.widget.tree;
 
 import java.util.Comparator;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TreeItem;
 
 public class LeveledTreeNode extends TreeNode {
   public enum LEVEL {
@@ -44,9 +48,13 @@ public class LeveledTreeNode extends TreeNode {
   private static final String NAME_KEY = "name";
   private static final String LEVEL_KEY = "level";
 
-  public LeveledTreeNode( String name, LEVEL level ) {
+  public LeveledTreeNode( String name, LEVEL level, boolean overridden) {
     setData( NAME_KEY, name );
     setData( LEVEL_KEY, level );
+    setLabel( name + " [" + level.getName() + "]" );
+    if ( overridden ) {
+      setForeground( getDisabledColor() );
+    }
   }
 
   Comparator<TreeNode> COMPARATOR = Comparator.<TreeNode, String>comparing( t -> (String)t.getData().get( NAME_KEY ),
@@ -56,6 +64,20 @@ public class LeveledTreeNode extends TreeNode {
   public int compareTo( TreeNode other ) {
     return COMPARATOR.compare( this, other );
   }
+
+  private Color getDisabledColor() {
+    Device device = Display.getCurrent();
+    return new Color( device, 188, 188, 188 );
+  }
+
+  public static String getName( TreeItem treeItem ) {
+    return (String) treeItem.getData( NAME_KEY );
+  }
+
+  public static LEVEL getLevel( TreeItem treeItem ) {
+    return (LeveledTreeNode.LEVEL) treeItem.getData( LeveledTreeNode.LEVEL_KEY );
+  }
+
 
 }
 

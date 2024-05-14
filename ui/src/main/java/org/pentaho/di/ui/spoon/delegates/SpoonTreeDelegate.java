@@ -87,18 +87,18 @@ public class SpoonTreeDelegate extends SpoonDelegate {
           case 2: // ------complete-----
             if ( path[0].equals( Spoon.STRING_CONFIGURATIONS ) ) {
               if ( path[1].equals( Spoon.STRING_CONNECTIONS ) ) {
-                object = new TreeSelection( path[1], DatabaseMeta.class );
+                object = new TreeSelection( treeItem, path[1], DatabaseMeta.class );
               }
               if ( path[1].equals( Spoon.STRING_PARTITIONS ) ) {
-                object = new TreeSelection( path[1], PartitionSchema.class );
+                object = new TreeSelection( treeItem, path[1], PartitionSchema.class );
               }
               if ( path[1].equals( Spoon.STRING_SLAVES ) ) {
-                object = new TreeSelection( path[1], SlaveServer.class );
+                object = new TreeSelection( treeItem, path[1], SlaveServer.class );
               }
               if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
-                object = new TreeSelection( path[1], ClusterSchema.class );
+                object = new TreeSelection( treeItem, path[1], ClusterSchema.class );
               }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( null, path, 2, objects ) );
+              executeExtensionPoint( new SpoonTreeDelegateExtension( treeItem, null, path, 2, objects ) );
             }
             break;
 
@@ -113,18 +113,18 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               //     dbName = databaseMeta.getName();
               //   }
               //
-              //   object = new TreeSelection( dbName, databaseMeta );
+              //   object = new TreeSelection( treeItem, dbName, databaseMeta );
               // }
               // if ( path[1].equals( Spoon.STRING_PARTITIONS ) ) {
-              //   object = new TreeSelection( path[2], transMeta.findPartitionSchema( path[2] ) );
+              //   object = new TreeSelection( treeItem, path[2], transMeta.findPartitionSchema( path[2] ) );
               // }
               // if ( path[1].equals( Spoon.STRING_SLAVES ) ) {
-              //   object = new TreeSelection( path[2], transMeta.findSlaveServer( path[2] ) );
+              //   object = new TreeSelection( treeItem, path[2], transMeta.findSlaveServer( path[2] ) );
               // }
               // if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
-              //   object = new TreeSelection( path[2], transMeta.findClusterSchema( path[2] ) );
+              //   object = new TreeSelection( treeItem, path[2], transMeta.findClusterSchema( path[2] ) );
               // }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( null, path, 3, objects ) );
+              executeExtensionPoint( new SpoonTreeDelegateExtension( treeItem, null, path, 3, objects ) );
             }
             break;
 
@@ -135,7 +135,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               //if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
               //  ClusterSchema clusterSchema = transMeta.findClusterSchema( path[2] );
               //  object =
-              //    new TreeSelection( path[3], clusterSchema.findSlaveServer( path[3]), clusterSchema, transMeta );
+              //    new TreeSelection( treeItem, path[3], clusterSchema.findSlaveServer( path[3]), clusterSchema, transMeta );
               //}
             }
             break;
@@ -181,7 +181,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               }
 
               if ( plugin != null ) {
-                object = new TreeSelection( path[1], plugin );
+                object = new TreeSelection( treeItem, path[1], plugin );
               }
             }
 
@@ -189,9 +189,9 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               String stepId = (String) treeItem.getData( "StepId" );
 
               if ( stepId != null ) {
-                object = new TreeSelection( path[1], PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, stepId ) );
+                object = new TreeSelection( treeItem, path[1], PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, stepId ) );
               } else {
-                object = new TreeSelection( path[1], PluginRegistry.getInstance().findPluginWithName( StepPluginType.class, path[1] ) );
+                object = new TreeSelection( treeItem, path[1], PluginRegistry.getInstance().findPluginWithName( StepPluginType.class, path[1] ) );
               }
             }
             break;
