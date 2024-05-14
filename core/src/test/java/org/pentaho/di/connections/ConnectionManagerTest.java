@@ -28,17 +28,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.connections.common.bucket.TestConnectionDetails;
 import org.pentaho.di.connections.common.bucket.TestConnectionProvider;
-import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
-import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.connections.vfs.VFSConnectionProvider;
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.util.List;
 
+import static org.mockito.Mockito.*;
 import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 
 /**
@@ -255,6 +259,31 @@ public class ConnectionManagerTest {
     Assert.assertNotNull( connectionDetails.getProperties() );
     Assert.assertNotNull( connectionDetails.getProperties().get( "baRoles" ) );
   }
+  @Test
+  public void testConnection() throws KettleException {
+
+    VFSConnectionTestOptions vfsConnectionTestOptions = new VFSConnectionTestOptions( true );
+    VFSConnectionProvider vfsConnectionProvider = mock( VFSConnectionProvider.class );
+    VFSConnectionDetails vfsConnectionDetails = mock( VFSConnectionDetails.class );
+
+    connectionManager.addConnectionProvider( "test", vfsConnectionProvider );
+    when( vfsConnectionDetails.getType() ).thenReturn( "test" );
+
+    connectionManager.test( vfsConnectionDetails, vfsConnectionTestOptions );
+    verify( vfsConnectionProvider, times(1)).test( vfsConnectionDetails, vfsConnectionTestOptions );
+  }
+
+  @Test
+  public void testConnectionWithEmptyVFSTestOptions() throws KettleException {
+    VFSConnectionProvider vfsConnectionProvider = mock( VFSConnectionProvider.class );
+    VFSConnectionDetails vfsConnectionDetails = mock( VFSConnectionDetails.class );
+
+    connectionManager.addConnectionProvider( "test", vfsConnectionProvider );
+    when( vfsConnectionDetails.getType() ).thenReturn( "test" );
+    when( vfsConnectionProvider.test( vfsConnectionDetails ) ).thenReturn( true );
+    connectionManager.test( vfsConnectionDetails, null );
+    verify( vfsConnectionProvider, times(1) ).test( eq( vfsConnectionDetails ), any( VFSConnectionTestOptions.class ) );
+  }
 
   private void addProvider() {
     TestConnectionProvider testConnectionProvider = new TestConnectionProvider( connectionManager );
@@ -297,9 +326,5 @@ public class ConnectionManagerTest {
     @Override public void setSpace( VariableSpace space ) {
 
     }
-
-
   }
-
-
 }
