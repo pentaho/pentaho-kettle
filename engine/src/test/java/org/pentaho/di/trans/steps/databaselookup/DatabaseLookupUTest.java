@@ -29,6 +29,8 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -53,8 +55,10 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.RowHandler;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
@@ -83,6 +87,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
@@ -247,16 +252,17 @@ public class DatabaseLookupUTest {
 
   private DatabaseLookup spyLookup( StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mocks, Database db,
                                     DatabaseMeta dbMeta ) {
+    mocks.stepDataInterface.db = db;
     DatabaseLookup lookup =
       new DatabaseLookup( mocks.stepMeta, mocks.stepDataInterface, 1, mocks.transMeta, mocks.trans );
-    lookup = Mockito.spy( lookup );
+    //DatabaseLookup lookup = Mockito.spy( lookup1 );
 
-    doReturn( db ).when( lookup ).getDatabase( eq( dbMeta ) );
-    for ( RowSet rowSet : lookup.getOutputRowSets() ) {
-      if ( mockingDetails( rowSet ).isMock() ) {
-        when( rowSet.putRow( any( RowMetaInterface.class ), any( Object[].class ) ) ).thenReturn( true );
-      }
-    }
+//    doReturn( db ).when( lookup ).getDatabase( eq( dbMeta ) );
+//    for ( RowSet rowSet : lookup.getOutputRowSets() ) {
+//      if ( mockingDetails( rowSet ).isMock() ) {
+//        when( rowSet.putRow( any( RowMetaInterface.class ), any( Object[].class ) ) ).thenReturn( true );
+//      }
+//    }
 
     return lookup;
   }
@@ -411,8 +417,11 @@ public class DatabaseLookupUTest {
                                           StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper,
                                           DatabaseLookupMeta meta ) throws KettleException {
     DatabaseLookup step = spyLookup( mockHelper, db, meta.getDatabaseMeta() );
-    doNothing().when( step ).determineFieldsTypesQueryingDb();
-    doReturn( null ).when( step ).lookupValues( any( RowMetaInterface.class ), any( Object[].class ) );
+//    doNothing().when( step ).determineFieldsTypesQueryingDb();
+//    doReturn( null ).when( step ).lookupValues( any( RowMetaInterface.class ), any( Object[].class ) );
+//    doCallRealMethod().when( step ).processRow( nullable( StepMetaInterface.class ), nullable( StepDataInterface.class ) );
+//    doCallRealMethod().when( step ).getRow();
+//    doCallRealMethod().when( step ).init( nullable( StepMetaInterface.class ), nullable( StepDataInterface.class ) );
 
     RowMeta input = new RowMeta();
     input.addValueMeta( new ValueMetaInteger( "Test" ) );
@@ -426,30 +435,43 @@ public class DatabaseLookupUTest {
     Database db = mock( Database.class );
     when( db.getRows( anyString(), anyInt() ) )
       .thenReturn( Arrays.asList( new Object[] { 1L }, new Object[] { 2L } ) );
+    doNothing().when( db ).connect();
+    doNothing().when( db ).connect( any() );
+
+    RowHandler mockRowhandler = mock( RowHandler.class );
+    when( mockRowhandler.getRow() ).thenReturn( new Object[0] );
 
     RowMeta returnRowMeta = new RowMeta();
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
+    when( db.getTableFields( nullable( String.class ) ) ).thenReturn( returnRowMeta );
 
     DatabaseLookupMeta meta = createTestMeta();
+    meta.setTableKeyField( new String[] { "foo" } );
     DatabaseLookupData data = new DatabaseLookupData();
+    data.db = db;
 
     DatabaseLookup step = createSpiedStep( db, mockHelper, meta );
-    step.init( meta, data );
+    try ( MockedConstruction<Database> databaseMockedConstruction =
+            Mockito.mockConstruction( Database.class, ( m, c ) -> doNothing().when( m ).connect( any() ) ) ) {
+      step.init( meta, data );
+      step.setStopped( false );
+      step.setRowHandler( mockRowhandler );
 
-    data.db = db;
-    data.keytypes = new int[] { ValueMetaInterface.TYPE_INTEGER };
-    data.allEquals = true;
-    data.conditions = new int[] { DatabaseLookupMeta.CONDITION_EQ };
+      data.db = db;
+      data.keytypes = new int[] { ValueMetaInterface.TYPE_INTEGER };
+      data.allEquals = true;
+      data.conditions = new int[] { DatabaseLookupMeta.CONDITION_EQ };
 
-    step.processRow( meta, data );
+      step.processRow( meta, data );
 
-    data.lookupMeta = new RowMeta();
-    data.lookupMeta.addValueMeta( new ValueMetaInteger() );
+      data.lookupMeta = new RowMeta();
+      data.lookupMeta.addValueMeta( new ValueMetaInteger() );
 
-    assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 1L } ) );
-    assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
+      assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 1L } ) );
+      assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
+    }
   }
 
   @Test
@@ -606,8 +628,13 @@ public class DatabaseLookupUTest {
     rowMetaOutput.setValueMetaList( outputValueMetaList );
 
     //Mock Init
-    DatabaseLookup dbLookup = mock( DatabaseLookup.class );
+    //DatabaseLookup dbLookup = mock( DatabaseLookup.class );
     DatabaseLookupMeta dbLookupMeta = mock( DatabaseLookupMeta.class );
+    StepMeta mockStepMeta = mock( StepMeta.class );
+    when( mockStepMeta.getName() ).thenReturn( "DBLookupTest" );
+    Trans mockTrans = mock( Trans.class );
+    TransMeta mockTransMeta = mock( TransMeta.class );
+    when( mockTransMeta.findStep( eq( "DBLookupTest" ) ) ).thenReturn( mockStepMeta );
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
     DatabaseLookupData dbLookupData = mock( DatabaseLookupData.class );
     Database db = mock( Database.class );
@@ -615,19 +642,21 @@ public class DatabaseLookupUTest {
     doReturn( new String[] { "int" } ).when( dbLookupMeta ).getTableKeyField();
     doReturn( new String[] { "num", "bignum" } ).when( dbLookupMeta ).getReturnValueField();
     doReturn( dbMeta ).when( dbLookupMeta ).getDatabaseMeta();
-    doReturn( "lookuptable" ).when( dbMeta ).getQuotedSchemaTableCombination( anyString(), anyString() );
-    doReturn( inputRowMeta ).when( dbLookup ).getInputRowMeta();
+    doReturn( "lookuptable" ).when( dbMeta ).getQuotedSchemaTableCombination( nullable(String.class), nullable(String.class) );
+    //doReturn( inputRowMeta ).when( dbLookup ).getInputRowMeta();
     doReturn( rowMeta ).when( db ).getTableFields( "lookuptable" );
     //Internal State Init
+    DatabaseLookup dbLookup = new DatabaseLookup( mockStepMeta, null, 0, mockTransMeta, mockTrans );
     setInternalState( dbLookup, "data", dbLookupData );
     setInternalState( dbLookupData, "db", db );
+    setInternalState( dbLookup, "inputRowMeta", inputRowMeta );
     setInternalState( dbLookupData, "outputRowMeta", rowMetaOutput );
     setInternalState( dbLookup, "meta", dbLookupMeta );
     setInternalState( dbLookup, "variables", new Variables() );
 
-    doCallRealMethod().when( dbLookup ).setVariable( anyString(), anyString() );
-    doCallRealMethod().when( dbLookup ).getVariable( anyString(), anyString() );
-    doCallRealMethod().when( dbLookup ).determineFieldsTypesQueryingDb();
+//    doCallRealMethod().when( dbLookup ).setVariable( anyString(), anyString() );
+//    doCallRealMethod().when( dbLookup ).getVariable( anyString(), anyString() );
+//    doCallRealMethod().when( dbLookup ).determineFieldsTypesQueryingDb();
     if ( kettlePropertyValue != null ) {
       dbLookup.setVariable( "KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI", kettlePropertyValue );
     }

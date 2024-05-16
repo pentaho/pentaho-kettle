@@ -25,9 +25,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -46,11 +48,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -111,8 +115,8 @@ public class StepWithMappingMetaTest {
       // be sure that transformation name was resolved correctly
       assertEquals( fileName, originalArgument );
       return mock( TransMeta.class );
-    } ).when( rep ).loadTransformation( anyString(), any( RepositoryDirectoryInterface.class ),
-      any( ProgressMonitorListener.class ), anyBoolean(), anyString() );
+    } ).when( rep ).loadTransformation( anyString(), nullable( RepositoryDirectoryInterface.class ),
+      nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ) );
 
     StepWithMappingMeta.loadMappingMeta( mappingMetaMock, rep, null, variables, true );
   }
@@ -136,14 +140,16 @@ public class StepWithMappingMetaTest {
       }
     } );
     String testName = "test";
-    MockedStatic<StepWithMappingMeta> mockedStatic = mockStatic( StepWithMappingMeta.class );
-    when( StepWithMappingMeta.loadMappingMeta( any( StepWithMappingMeta.class), any( Repository.class ), any( IMetaStore.class ), any( VariableSpace.class ) ) ).thenReturn( transMeta );
-    when( transMeta.exportResources( any( VariableSpace.class ), anyMap(), any( ResourceNamingInterface.class ), any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
+    try ( MockedConstruction<MetaFileLoaderImpl> mockedConstruction =
+            mockConstruction( MetaFileLoaderImpl.class, ( m,c ) -> when( m.getMetaForStep( any(), any(), any() ) ).thenReturn( transMeta ) ) ) {
 
-    stepWithMappingMeta.exportResources( null, null, null, null, null );
-    verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
-    verify( stepWithMappingMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
-    mockedStatic.close();
+      when( transMeta.exportResources( any(), any(), nullable( ResourceNamingInterface.class ),
+        nullable( Repository.class ), nullable( IMetaStore.class ) ) ).thenReturn( testName );
+
+      stepWithMappingMeta.exportResources( null, null, null, null, null );
+      verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
+      verify( stepWithMappingMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+    }
   }
 
   @Test
