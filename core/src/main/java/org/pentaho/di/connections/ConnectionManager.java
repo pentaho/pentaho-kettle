@@ -22,10 +22,13 @@
 
 package org.pentaho.di.connections;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.pentaho.di.connections.utils.EncryptUtils;
-import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.connections.vfs.VFSConnectionProvider;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
@@ -39,6 +42,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 
@@ -289,6 +293,27 @@ public class ConnectionManager {
     ConnectionProvider<T> connectionProvider =
       (ConnectionProvider<T>) connectionProviders.get( connectionDetails.getType() );
     return connectionProvider.test( connectionDetails );
+  }
+
+  /**
+   * Tests if a given VFS connection is valid, optionally, with certain testing options.
+   *
+   * @param connectionDetails The VFS connection.
+   * @param options The testing options, or {@code null}. When {@code null}, a default instance of
+   *    {@link VFSConnectionTestOptions} is constructed and used.
+   * @return {@code true} if the connection is valid; {@code false}, otherwise.
+   */
+  public <T extends VFSConnectionDetails> boolean test( @NonNull T connectionDetails, @Nullable VFSConnectionTestOptions options )
+          throws KettleException {
+    Objects.requireNonNull( connectionDetails );
+
+    if ( options == null ) {
+     options = new VFSConnectionTestOptions();
+    }
+
+    VFSConnectionProvider<T> connectionProvider = (VFSConnectionProvider<T>) connectionProviders.get(connectionDetails.getType());
+
+    return connectionProvider.test( connectionDetails, options );
   }
 
   /**

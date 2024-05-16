@@ -22,21 +22,34 @@
 
 package org.pentaho.di.connections.vfs;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import static org.pentaho.di.connections.vfs.provider.ConnectionFileObject.DELIMITER;
+
 public abstract class BaseVFSConnectionProvider<T extends VFSConnectionDetails> implements VFSConnectionProvider<T> {
 
   private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger( BaseVFSConnectionProvider.class );
 
   @Override
   public List<String> getNames() {
@@ -90,4 +103,74 @@ public abstract class BaseVFSConnectionProvider<T extends VFSConnectionDetails> 
   protected VariableSpace getSpace( ConnectionDetails connectionDetails ) {
     return connectionDetails.getSpace() == null ? Variables.getADefaultVariableSpace() : connectionDetails.getSpace();
   }
+
+  @Override
+  public boolean test( @NonNull T connectionDetails, @NonNull VFSConnectionTestOptions connectionTestOptions ) throws KettleException {
+    boolean valid = test( connectionDetails );
+    if ( !valid ) {
+      return false;
+    }
+
+    if ( !connectionDetails.isSupportsRootPath()  || connectionTestOptions.isIgnoreRootPath() ) {
+      return true;
+    }
+
+    String resolvedRootPath = getResolvedRootPath( connectionDetails );
+    if ( StringUtils.isEmpty( resolvedRootPath ) ) {
+      return !connectionDetails.isRootPathRequired();
+    }
+
+    String internalUrl = buildUrl( connectionDetails, resolvedRootPath );
+    FileObject fileObject = KettleVFS.getFileObject( internalUrl, new Variables(), getOpts( connectionDetails ) );
+
+    try {
+      return fileObject.exists() && this.isFolder( fileObject );
+    } catch ( FileSystemException fileSystemException ) {
+      LOGGER.error( fileSystemException.getMessage() );
+      return false;
+    }
+  }
+
+  @Override
+  public String getResolvedRootPath( @NonNull T connectionDetails ) {
+    if ( StringUtils.isNotEmpty( connectionDetails.getRootPath() ) ) {
+      VariableSpace space = getSpace( connectionDetails );
+      String resolvedRootPath = getVar( connectionDetails.getRootPath(), space );
+      if ( StringUtils.isNotBlank( resolvedRootPath ) ) {
+        return normalizeRootPath( resolvedRootPath );
+      }
+    }
+
+    return StringUtils.EMPTY;
+  }
+
+  private String normalizeRootPath( String rootPath ) {
+    if ( StringUtils.isNotEmpty( rootPath ) ) {
+      if ( !rootPath.startsWith( DELIMITER ) ) {
+        rootPath = DELIMITER + rootPath;
+      }
+      if (rootPath.endsWith( DELIMITER ) ) {
+        rootPath = rootPath.substring( 0, rootPath.length() - 1 );
+      }
+    }
+    return rootPath;
+  }
+
+  private String buildUrl( VFSConnectionDetails connectionDetails, String rootPath ) {
+    String domain = connectionDetails.getDomain();
+    if ( !domain.isEmpty() ) {
+      domain = DELIMITER + domain;
+    }
+    return connectionDetails.getType() + ":/" + domain + rootPath;
+  }
+
+  private boolean isFolder( @NonNull FileObject fileObject ) {
+    try {
+
+      return fileObject.getType() != null && fileObject.getType().equals( FileType.FOLDER );
+    } catch ( FileSystemException e ) {
+      return false;
+    }
+  }
 }
+
