@@ -51,7 +51,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// todo Fix Me!!!
 public class TableOutputTest {
   private DatabaseMeta databaseMeta;
 
@@ -116,7 +115,7 @@ public class TableOutputTest {
     when( tableOutputSpy.getUniqueStepNrAcrossSlaves() ).thenReturn( 0 );
 
     tableOutputSpy.truncateTable();
-    verify( db ).truncateTable( anyString(), anyString() );
+    verify( db ).truncateTable( any(), any() );
   }
 
   @Test
@@ -127,7 +126,7 @@ public class TableOutputTest {
     when( tableOutputSpy.getPartitionID() ).thenReturn( "partition id" );
 
     tableOutputSpy.truncateTable();
-    verify( db ).truncateTable( anyString(), anyString() );
+    verify( db ).truncateTable( any(), any() );
   }
 
   @Test

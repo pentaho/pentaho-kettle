@@ -81,6 +81,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -648,8 +649,9 @@ public class TransTest {
     verify( stepDataMock1 ).isDisposed();
     verify( stepDataMock2 ).isDisposed();
     // Only 'stepDataMock2' is to be disposed
-    verify( stepMock1, times( 0 ) ).dispose( any( StepMetaInterface.class ), any( StepDataInterface.class ) );
-   // The cleanup method is always invoked
+    verify( stepMock1, times( 0 ) ).dispose( nullable( StepMetaInterface.class ), nullable( StepDataInterface.class ) );
+    verify( stepMock2, times( 1 ) ).dispose( nullable( StepMetaInterface.class ), nullable( StepDataInterface.class ) );
+    // The cleanup method is always invoked
     verify( stepMock1 ).cleanup();
     verify( stepMock2 ).cleanup();
   }

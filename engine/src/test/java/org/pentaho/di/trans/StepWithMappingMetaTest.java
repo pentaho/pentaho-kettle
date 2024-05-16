@@ -60,8 +60,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// todo Fix Me!!!
-
 /**
  * Created by Yury_Bakhmutski on 2/8/2017.
  */

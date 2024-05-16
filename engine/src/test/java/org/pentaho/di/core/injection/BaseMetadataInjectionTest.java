@@ -48,8 +48,6 @@ import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
-// todo Fix Me!!!
-
 /**
  * Base class for test metadata injection.
  */
