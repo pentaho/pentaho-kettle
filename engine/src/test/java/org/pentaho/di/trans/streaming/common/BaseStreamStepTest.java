@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -57,8 +57,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.contains;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -116,7 +116,7 @@ public class BaseStreamStepTest {
 
 
   @Test
-  public void testInitFilenameSubstitution() throws IOException, KettleException {
+  public void testInitFilenameSubstitution() throws IOException {
     // verifies that filename resolution uses the parents ${Internal.Entry.Current.Directory}.
     // Necessary since the Current.Directory may change when running non-locally.
     // Variables should all be set in variableizedStepMeta after init, with the caveat that
@@ -130,13 +130,11 @@ public class BaseStreamStepTest {
     }
 
     when( meta.getParentStepMeta() ).thenReturn( parentStepMeta );
-    when( metaWithVariables.getFileName() ).thenReturn( "noSuchFilename.ktr" );
     when( meta.withVariables( baseStreamStep ) ).thenReturn( metaWithVariables );
     baseStreamStep.getParentVariableSpace()
       .setVariable( "Internal.Entry.Current.Directory",
         testFile.getParentFile().getAbsolutePath() );
 
-    when( metaWithVariables.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
     when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
     when( meta.getFileName() ).thenReturn( "${Internal.Entry.Current.Directory}/" + testFile.getName() );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.powermock.reflect.Whitebox;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,10 +39,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.test.util.InternalState.setInternalState;
 
 public class RunJobServletTest {
 
@@ -62,7 +62,7 @@ public class RunJobServletTest {
     TransformationMap transformationMap = mock( TransformationMap.class );
     SlaveServerConfig slaveServerConfig = mock( SlaveServerConfig.class );
     Repository repository = mock( Repository.class );
-    Whitebox.setInternalState( runJobServlet, "transformationMap", transformationMap );
+    setInternalState( runJobServlet, "transformationMap", transformationMap );
 
     KettleLogStore.init();
     StringWriter out = new StringWriter();
@@ -89,7 +89,7 @@ public class RunJobServletTest {
     TransformationMap transformationMap = mock( TransformationMap.class );
     SlaveServerConfig slaveServerConfig = mock( SlaveServerConfig.class );
     Repository repository = mock( Repository.class );
-    Whitebox.setInternalState( runJobServlet, "transformationMap", transformationMap );
+    setInternalState( runJobServlet, "transformationMap", transformationMap );
 
     KettleLogStore.init();
     StringWriter out = new StringWriter();
@@ -119,7 +119,7 @@ public class RunJobServletTest {
     RepositoryDirectoryInterface repDirInterface = mock( RepositoryDirectoryInterface.class );
     JobMeta jobMeta = mock( JobMeta.class );
     ObjectId objId = mock( ObjectId.class );
-    Whitebox.setInternalState( runJobServlet, "transformationMap", transformationMap );
+    setInternalState( runJobServlet, "transformationMap", transformationMap );
 
     KettleLogStore.init();
     StringWriter out = new StringWriter();
@@ -152,7 +152,7 @@ public class RunJobServletTest {
     Repository repository = mock( Repository.class );
     RepositoryDirectoryInterface repDirInterface = mock( RepositoryDirectoryInterface.class );
     ObjectId objId = mock( ObjectId.class );
-    Whitebox.setInternalState( runJobServlet, "transformationMap", transformationMap );
+    setInternalState( runJobServlet, "transformationMap", transformationMap );
 
     KettleLogStore.init();
     StringWriter out = new StringWriter();
@@ -185,7 +185,7 @@ public class RunJobServletTest {
     Repository repository = mock( Repository.class );
     RepositoryDirectoryInterface repDirInterface = mock( RepositoryDirectoryInterface.class );
     ObjectId objId = mock( ObjectId.class );
-    Whitebox.setInternalState( runJobServlet, "transformationMap", transformationMap );
+    setInternalState( runJobServlet, "transformationMap", transformationMap );
 
     KettleLogStore.init();
     StringWriter out = new StringWriter();
@@ -218,7 +218,7 @@ public class RunJobServletTest {
     Repository repository = mock( Repository.class );
     RepositoryDirectoryInterface repDirInterface = mock( RepositoryDirectoryInterface.class );
     ObjectId objId = mock( ObjectId.class );
-    Whitebox.setInternalState( runJobServlet, "transformationMap", transformationMap );
+    setInternalState( runJobServlet, "transformationMap", transformationMap );
 
     KettleLogStore.init();
     StringWriter out = new StringWriter();
@@ -251,7 +251,7 @@ public class RunJobServletTest {
     Repository repository = mock( Repository.class );
     RepositoryDirectoryInterface repDirInterface = mock( RepositoryDirectoryInterface.class );
     ObjectId objId = mock( ObjectId.class );
-    Whitebox.setInternalState( runJobServlet, "transformationMap", transformationMap );
+    setInternalState( runJobServlet, "transformationMap", transformationMap );
 
     KettleLogStore.init();
     StringWriter out = new StringWriter();

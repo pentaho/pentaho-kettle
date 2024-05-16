@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,11 +55,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.util.reflection.Whitebox.getInternalState;
+import static org.pentaho.test.util.InternalState.getInternalState;
 
 
 public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
@@ -73,15 +72,15 @@ public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
     List<String> attributes =
             Arrays.asList( "schemaName", "tableName", "commitSize", "databaseMeta", "keyFields" );
 
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
+    Map<String, String> getterMap = new HashMap<>();
+    Map<String, String> setterMap = new HashMap<>();
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-            new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+      new ArrayLoadSaveValidator<>( new StringLoadSaveValidator(), 5 );
 
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<>();
     attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
-    attrValidatorMap.put ("keyFields", new ArrayLoadSaveValidator<DeleteMeta.KeyFields>( new DeleteFieldLoadSaveValidator(), 5));
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put ("keyFields", new ArrayLoadSaveValidator<>( new DeleteFieldLoadSaveValidator(), 5 ));
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<>();
 
     loadSaveTester =
             new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
@@ -118,7 +117,7 @@ public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
     TransMeta transMeta = new TransMeta();
     transMeta.setName( "delete1" );
 
-    Map<String, String> vars = new HashMap<String, String>();
+    Map<String, String> vars = new HashMap<>();
     vars.put( "max.sz", "10" );
     transMeta.injectVariables( vars );
 
@@ -138,13 +137,13 @@ public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
   @Test
   public void testCommitCountFixed() {
     dmi.setCommitSize( "100" );
-    assertTrue( dmi.getCommitSize( del ) == 100 );
+    assertEquals( 100, dmi.getCommitSize( del ) );
   }
 
   @Test
   public void testCommitCountVar() {
     dmi.setCommitSize( "${max.sz}" );
-    assertTrue( dmi.getCommitSize( del ) == 10 );
+    assertEquals( 10, dmi.getCommitSize( del ) );
   }
 
   @Test
@@ -153,7 +152,7 @@ public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
     try {
       dmi.getCommitSize( del );
       fail();
-    } catch ( Exception ex ) {
+    } catch ( Exception ignored ) {
     }
   }
 

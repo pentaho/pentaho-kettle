@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.memgroupby;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -54,14 +54,13 @@ public class MemoryGroupByAggregationNullsTest {
 
   Aggregate aggregate;
   private ValueMetaInterface vmi;
-  private RowMetaInterface rmi;
   private MemoryGroupByMeta meta;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     mockHelper =
-        new StepMockHelper<MemoryGroupByMeta, MemoryGroupByData>( "Memory Group By", MemoryGroupByMeta.class,
-            MemoryGroupByData.class );
+      new StepMockHelper<>( "Memory Group By", MemoryGroupByMeta.class,
+        MemoryGroupByData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
@@ -81,12 +80,12 @@ public class MemoryGroupByAggregationNullsTest {
     meta.setAggregateField( new String[] { "x" } );
     vmi = new ValueMetaInteger();
     when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( meta );
-    rmi = Mockito.mock( RowMetaInterface.class );
+    RowMetaInterface rmi = Mockito.mock( RowMetaInterface.class );
     data.inputRowMeta = rmi;
     data.outputRowMeta = rmi;
     data.groupMeta = rmi;
     data.groupnrs = new int[] {};
-    data.map = new HashMap<HashEntry, Aggregate>();
+    data.map = new HashMap<>();
     when( rmi.getValueMeta( Mockito.anyInt() ) ).thenReturn( vmi );
     data.aggMeta = rmi;
     step = new MemoryGroupBy( mockHelper.stepMeta, data, 0, mockHelper.transMeta, mockHelper.trans );
@@ -104,9 +103,9 @@ public class MemoryGroupByAggregationNullsTest {
 
   /**
    * PDI-10250 - "Group by" step - Minimum aggregation doesn't work
-   * 
+   * <p>
    * KETTLE_AGGREGATION_MIN_NULL_IS_VALUED
-   * 
+   * <p>
    * Set this variable to Y to set the minimum to NULL if NULL is within an aggregate. Otherwise by default NULL is
    * ignored by the MIN aggregate and MIN is set to the minimum value that is not NULL. See also the variable
    * KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO.
@@ -155,7 +154,7 @@ public class MemoryGroupByAggregationNullsTest {
     aggregate.agg[0] = null;
     step.setAllNullsAreZero( true );
     Object[] row = step.getAggregateResult( aggregate );
-    Assert.assertEquals( "Returns 0 if aggregation is null", new Long( 0 ), row[0] );
+    Assert.assertEquals( "Returns 0 if aggregation is null", 0L, row[0] );
   }
 
   @Test

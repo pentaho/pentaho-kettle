@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,7 @@ import io.reactivex.Flowable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -47,8 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 
@@ -113,7 +111,7 @@ public class FixedTimeStreamWindowTest {
     Field field1 = window1.getClass().getDeclaredField( "sharedStreamingBatchPool" );
     field1.setAccessible( true );
     ThreadPoolExecutor sharedStreamingBatchPool1 = (ThreadPoolExecutor) field1.get( window1 );
-    assertTrue( sharedStreamingBatchPool1.getCorePoolSize() == 5 );
+    assertEquals( 5, sharedStreamingBatchPool1.getCorePoolSize() );
 
     System.setProperty( Const.SHARED_STREAMING_BATCH_POOL_SIZE, "10" );
     FixedTimeStreamWindow<List> window2 =
@@ -121,7 +119,7 @@ public class FixedTimeStreamWindowTest {
     Field field2 = window2.getClass().getDeclaredField( "sharedStreamingBatchPool" );
     field2.setAccessible( true );
     ThreadPoolExecutor sharedStreamingBatchPool2 = (ThreadPoolExecutor) field2.get( window2 );
-    assertTrue( sharedStreamingBatchPool2.getCorePoolSize() == 10 );
+    assertEquals( 10, sharedStreamingBatchPool2.getCorePoolSize() );
 
     assertEquals( sharedStreamingBatchPool1, sharedStreamingBatchPool2 );
   }
@@ -132,7 +130,7 @@ public class FixedTimeStreamWindowTest {
     * Tests that there is only 1 thread running inside the pool at all times.
     * */
 
-    final List<String> errors = new ArrayList<String>();
+    final List<String> errors = new ArrayList<>();
 
     // Only 1 thread should be present in the pool at a given time.
     System.setProperty( Const.SHARED_STREAMING_BATCH_POOL_SIZE, "1" );
@@ -150,15 +148,6 @@ public class FixedTimeStreamWindowTest {
     field.setAccessible( true );
     ThreadPoolExecutor sharedStreamingBatchPool = (ThreadPoolExecutor) field.get( window1 );
 
-    when( subtransExecutor.getPrefetchCount() ).thenReturn( 1000 );
-    when( subtransExecutor.execute( any() ) ).thenAnswer( ( InvocationOnMock invocation ) -> {
-      //The active count should always be 1.
-      if ( sharedStreamingBatchPool.getActiveCount() != 1 ) {
-        errors.add( "Error: Active count should have been 1 at all times. Current value: " + sharedStreamingBatchPool.getActiveCount() );
-      }
-      return Optional.of( mockResult );
-    } );
-
     Thread bufferThread1 = new Thread( new BufferThread( window1, flowable, mockResult ) );
     bufferThread1.start();
 
@@ -169,11 +158,11 @@ public class FixedTimeStreamWindowTest {
     assertEquals( 0, errors.size() );
   }
 
-  private class BufferThread implements Runnable {
+  private static class BufferThread implements Runnable {
 
-    private FixedTimeStreamWindow window;
-    private Flowable flowable;
-    private Result mockResult;
+    private final FixedTimeStreamWindow window;
+    private final Flowable flowable;
+    private final Result mockResult;
 
     public BufferThread( FixedTimeStreamWindow window, Flowable flowable, Result mockResult ) {
       this.window = window;

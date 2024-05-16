@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -147,7 +147,7 @@ public class JobEntryColumnsExistTest {
   @Test
   public void jobSuccess() throws KettleException {
     doReturn( db ).when( jobEntry ).getNewDatabaseFromMeta();
-    doNothing().when( db ).connect( anyString(), anyString() );
+    doNothing().when( db ).connect( any(), any() );
     doReturn( true ).when( db ).checkColumnExists( anyString(), anyString(), anyString() );
     doReturn( true ).when( db ).checkTableExists( anyString(), anyString() );
     final Result result = jobEntry.execute( new Result(), 0 );

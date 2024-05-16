@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,8 @@ package org.pentaho.di.trans.steps.fileinput.text;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -87,7 +87,7 @@ public class TextFileInputMetaTest {
   }
 
   @Test
-  public void testGetXmlWorksIfWeUpdateOnlyPartOfInputFilesInformation() throws Exception {
+  public void testGetXmlWorksIfWeUpdateOnlyPartOfInputFilesInformation() {
     inputMeta.inputFiles = new BaseFileInputFiles();
     inputMeta.inputFiles.fileName = new String[] { FILE_NAME_VALID_PATH };
 
@@ -100,7 +100,7 @@ public class TextFileInputMetaTest {
   }
 
   @Test
-  public void testClonelWorksIfWeUpdateOnlyPartOfInputFilesInformation() throws Exception {
+  public void testClonelWorksIfWeUpdateOnlyPartOfInputFilesInformation() {
     inputMeta.inputFiles = new BaseFileInputFiles();
     inputMeta.inputFiles.fileName = new String[] { FILE_NAME_VALID_PATH };
 

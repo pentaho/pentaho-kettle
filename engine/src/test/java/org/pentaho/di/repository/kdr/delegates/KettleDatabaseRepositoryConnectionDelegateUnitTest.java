@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,8 @@ package org.pentaho.di.repository.kdr.delegates;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -81,14 +81,14 @@ public class KettleDatabaseRepositoryConnectionDelegateUnitTest {
     String tablename = "test-tablename";
     String idfield = "test-idfield";
     String lookupfield = "test-lookupfield";
-    List<Object[]> rows = new ArrayList<Object[]>();
+    List<Object[]> rows = new ArrayList<>();
     int id = 1234;
     LongObjectId longObjectId = new LongObjectId( id );
     rows.add( new Object[] { lookupfield, id } );
     when( database.getRows( eq( "SELECT " + lookupfield + ", " + idfield + " FROM " + tablename ), any(
         RowMetaInterface.class ),
       eq( new Object[] {} ), eq( ResultSet.FETCH_FORWARD ),
-      eq( false ), eq( -1 ), eq( (ProgressMonitorListener) null ) ) ).thenReturn( rows );
+      eq( false ), eq( -1 ), eq( null ) ) ).thenReturn( rows );
     Map<String, LongObjectId> valueToIdMap =
       kettleDatabaseRepositoryConnectionDelegate.getValueToIdMap( tablename, idfield, lookupfield );
     assertEquals( 1, valueToIdMap.size() );

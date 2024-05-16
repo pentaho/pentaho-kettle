@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,9 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
-import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.junit.Assert.assertEquals;
+
+
 
 public class SimpleResourceNamingTest {
 
@@ -43,9 +44,9 @@ public class SimpleResourceNamingTest {
     ResourceNamingInterface.FileNamingType namingType = ResourceNamingInterface.FileNamingType.DATA_FILE;
 
     simpleResourceNaming1.nameResource( prefix, originalFilePath, extension, namingType );
-    assertEquals( 1, (int) getInternalState( SimpleResourceNaming.class, "parameterNr" ) );
+    assertEquals( 1, SimpleResourceNaming.getParameterNr() );
     simpleResourceNaming2.nameResource( prefix, originalFilePath, extension, namingType );
-    assertEquals( 2, (int) getInternalState( SimpleResourceNaming.class, "parameterNr" ) );
+    assertEquals( 2, SimpleResourceNaming.getParameterNr() );
   }
 
 }

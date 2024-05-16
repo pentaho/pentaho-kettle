@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.util.Date;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -56,7 +56,7 @@ public class PDI_2875_Test {
   public static void setUp() throws KettleException {
     KettleEnvironment.init();
     smh =
-      new StepMockHelper<TextFileInputMeta, TextFileInputData>( "CsvInputTest", TextFileInputMeta.class, TextFileInputData.class );
+      new StepMockHelper<>( "CsvInputTest", TextFileInputMeta.class, TextFileInputData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );

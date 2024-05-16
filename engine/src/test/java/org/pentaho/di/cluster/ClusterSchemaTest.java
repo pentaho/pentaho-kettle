@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,7 @@ import org.pentaho.di.www.SlaveServerDetection;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -81,14 +81,14 @@ public class ClusterSchemaTest {
 
     verify( master ).getStatus();
     verify( masterDetection, never() ).setActive( false );
-    verify( masterDetection, never() ).setLastInactiveDate( anyObject() );
+    verify( masterDetection, never() ).setLastInactiveDate( any() );
 
     verify( activeSlaveServer ).getStatus();
     verify( activeSlaveServerDetection, never() ).setActive( false );
-    verify( activeSlaveServerDetection, never() ).setLastInactiveDate( anyObject() );
+    verify( activeSlaveServerDetection, never() ).setLastInactiveDate( any() );
 
     verify( inactiveSlaveServer ).getStatus();
     verify( inactiveSlaveServerDetection ).setActive( false );
-    verify( inactiveSlaveServerDetection ).setLastInactiveDate( anyObject() );
+    verify( inactiveSlaveServerDetection ).setLastInactiveDate( any() );
   }
 }

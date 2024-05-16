@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,8 +62,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
@@ -73,20 +73,12 @@ public class LoadFileInputTest {
   private FileSystemManager fs;
   private String filesPath;
 
-  private String transName;
-  private TransMeta transMeta;
-  private Trans trans;
-
   private LoadFileInputMeta stepMetaInterface;
-  private StepDataInterface stepDataInterface;
-  private StepMeta stepMeta;
   private FileInputList stepInputFiles;
-  private int stepCopyNr;
 
   private LoadFileInput stepLoadFileInput;
 
   private StepMetaInterface runtimeSMI;
-  private StepDataInterface runtimeSDI;
   private LoadFileInputField inputField;
   private static String wasEncoding;
 
@@ -124,28 +116,28 @@ public class LoadFileInputTest {
     fs = VFS.getManager();
     filesPath = '/' + this.getClass().getPackage().getName().replace( '.', '/' ) + "/files/";
 
-    transName = "LoadFileInput";
-    transMeta = new TransMeta();
+    String transName = "LoadFileInput";
+    TransMeta transMeta = new TransMeta();
     transMeta.setName( transName );
-    trans = new Trans( transMeta );
+    Trans trans = new Trans( transMeta );
 
     stepMetaInterface = spy( new LoadFileInputMeta() );
     stepInputFiles = new FileInputList();
     Mockito.doReturn( stepInputFiles ).when( stepMetaInterface ).getFiles( any( VariableSpace.class ) );
     String stepId = PluginRegistry.getInstance().getPluginId( StepPluginType.class, stepMetaInterface );
-    stepMeta = new StepMeta( stepId, "Load File Input", stepMetaInterface );
+    StepMeta stepMeta = new StepMeta( stepId, "Load File Input", stepMetaInterface );
     transMeta.addStep( stepMeta );
 
-    stepDataInterface = new LoadFileInputData();
+    StepDataInterface stepDataInterface = new LoadFileInputData();
 
-    stepCopyNr = 0;
+    int stepCopyNr = 0;
 
     stepLoadFileInput = new LoadFileInput( stepMeta, stepDataInterface, stepCopyNr, transMeta, trans );
 
     assertSame( stepMetaInterface, stepMeta.getStepMetaInterface() );
 
     runtimeSMI = stepMetaInterface;
-    runtimeSDI = runtimeSMI.getStepData();
+    StepDataInterface runtimeSDI = runtimeSMI.getStepData();
 
     inputField = new LoadFileInputField();
     ((LoadFileInputMeta) runtimeSMI).setInputFields( new LoadFileInputField[] { inputField } );

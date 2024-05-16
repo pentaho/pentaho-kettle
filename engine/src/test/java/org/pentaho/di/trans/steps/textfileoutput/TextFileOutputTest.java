@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
+ *******************************************************************************/
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
@@ -28,11 +28,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -56,7 +55,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -398,8 +397,8 @@ public class TextFileOutputTest {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     textFileOutput.setInputRowMeta( inputRowMeta );
 
-    when( rowSet.getRowWait( anyInt(), any( TimeUnit.class ) ) )
-      .thenReturn( rows.isEmpty() ? null : rows.iterator().next() );
+//    when( rowSet.getRowWait( anyInt(), any( TimeUnit.class ) ) )
+//      .thenReturn( rows.isEmpty() ? null : rows.iterator().next() );
     when( rowSet.getRowMeta() ).thenReturn( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
 
@@ -531,7 +530,7 @@ public class TextFileOutputTest {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
 
     ValueMetaInterface valueMetaInterface = mock( ValueMetaInterface.class );
-    when( valueMetaInterface.getString( anyObject() ) ).thenReturn( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
+    when( valueMetaInterface.getString( any() ) ).thenReturn( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
     when( inputRowMeta.getValueMeta( anyInt() ) ).thenReturn( valueMetaInterface );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
 
@@ -589,7 +588,7 @@ public class TextFileOutputTest {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
 
     ValueMetaInterface valueMetaInterface = mock( ValueMetaInterface.class );
-    when( valueMetaInterface.getString( anyObject() ) ).thenReturn( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
+    when( valueMetaInterface.getString( any() ) ).thenReturn( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
     when( inputRowMeta.getValueMeta( anyInt() ) ).thenReturn( valueMetaInterface );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
 
@@ -808,12 +807,11 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosedForValueMetaInterface() throws Exception {
+  public void testWriteEnclosedForValueMetaInterface() {
     TextFileOutputData data = new TextFileOutputData();
     data.binarySeparator = new byte[1];
     data.binaryEnclosure = new byte[1];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureFixDisabled(false);
     TextFileOutput textFileOutput = getTextFileOutput(data, meta);
@@ -822,12 +820,11 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureForced() throws Exception {
+  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureForced() {
     TextFileOutputData data = new TextFileOutputData();
     data.binarySeparator = new byte[1];
     data.binaryEnclosure = new byte[1];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureForced(true);
     meta.setPadded(true);
@@ -838,11 +835,10 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureFixDisabled() throws Exception {
+  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureFixDisabled() {
     TextFileOutputData data = new TextFileOutputData();
     data.binaryEnclosure = new byte[1];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureForced(false);
     meta.setEnclosureFixDisabled(true);
@@ -852,12 +848,11 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureForcedAndEnclosureFixDisabled() throws Exception {
+  public void testWriteEnclosedForValueMetaInterfaceWithEnclosureForcedAndEnclosureFixDisabled() {
     TextFileOutputData data = new TextFileOutputData();
     data.binaryEnclosure = new byte[]{101};
     data.binarySeparator = new byte[]{101};
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureForced(false);
     meta.setEnclosureFixDisabled(false);
@@ -867,12 +862,11 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosureForFieldName() throws Exception {
+  public void testWriteEnclosureForFieldName() {
     TextFileOutputData data = new TextFileOutputData();
     data.binarySeparator = new byte[1];
     data.binaryEnclosure = new byte[1];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     stepMockHelper.stepMeta.setStepMetaInterface( meta );
     TextFileOutput textFileOutput = getTextFileOutput(data, meta);
@@ -881,12 +875,11 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosureForFieldNameWithEnclosureForced() throws Exception {
+  public void testWriteEnclosureForFieldNameWithEnclosureForced() {
     TextFileOutputData data = new TextFileOutputData();
     data.binarySeparator = new byte[1];
     data.binaryEnclosure = new byte[1];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureForced(true);
     meta.setEnclosureFixDisabled(false);
@@ -897,12 +890,11 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosureForFieldNameWithoutEnclosureFixDisabled() throws Exception {
+  public void testWriteEnclosureForFieldNameWithoutEnclosureFixDisabled() {
     TextFileOutputData data = new TextFileOutputData();
     data.binarySeparator = new byte[1];
     data.binaryEnclosure = new byte[1];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureForced(false);
     meta.setEnclosureFixDisabled(true);
@@ -913,12 +905,11 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosureForFieldNameWithEnclosureFixDisabled() throws Exception {
+  public void testWriteEnclosureForFieldNameWithEnclosureFixDisabled() {
     TextFileOutputData data = new TextFileOutputData();
     data.binarySeparator = new byte[]{102};
     data.binaryEnclosure = new byte[]{102};
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureForced(false);
     meta.setEnclosureFixDisabled(false);
@@ -929,11 +920,10 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosed() throws Exception {
+  public void testWriteEnclosed() {
     TextFileOutputData data = new TextFileOutputData();
     data.binaryEnclosure = new byte[1];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureForced(true);
     stepMockHelper.stepMeta.setStepMetaInterface( meta );
@@ -945,12 +935,11 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosureForWriteFieldWithSeparator() throws Exception {
+  public void testWriteEnclosureForWriteFieldWithSeparator() {
     TextFileOutputData data = new TextFileOutputData();
     data.binarySeparator = new byte[1];
     data.binaryEnclosure = new byte[1];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     stepMockHelper.stepMeta.setStepMetaInterface( meta );
     TextFileOutput textFileOutput = getTextFileOutput(data, meta);
@@ -959,10 +948,9 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosureForWriteFieldWithoutSeparator() throws Exception {
+  public void testWriteEnclosureForWriteFieldWithoutSeparator() {
     TextFileOutputData data = new TextFileOutputData();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     TextFileOutputMeta meta = getTextFileOutputMeta();
     stepMockHelper.stepMeta.setStepMetaInterface( meta );
     TextFileOutput textFileOutput = getTextFileOutput(data, meta);
@@ -971,10 +959,9 @@ public class TextFileOutputTest {
   }
 
   @Test
-  public void testWriteEnclosureForWriteFieldWithEnclosureForced() throws Exception {
+  public void testWriteEnclosureForWriteFieldWithEnclosureForced() {
     TextFileOutputData data = new TextFileOutputData();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    data.writer = baos;
+    data.writer = new ByteArrayOutputStream();
     data.binarySeparator = new byte[1];
     TextFileOutputMeta meta = getTextFileOutputMeta();
     meta.setEnclosureForced(true);
