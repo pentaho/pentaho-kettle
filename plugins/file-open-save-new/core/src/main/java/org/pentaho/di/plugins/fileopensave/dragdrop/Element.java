@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2023-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,7 +57,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Objects;
 
 public class Element {
   private String name = "";
@@ -65,8 +65,21 @@ public class Element {
   private String path = "";
   private String provider = "";
   private String repositoryName = "";//For repository types
-  //For VFS types
-  private String domain = "";
+
+  /**
+   * Separate VFS domain variable is no longer needed.
+   * @deprecated
+   * The domain handled is internally with the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
+  private String domain = "";  //For VFS types
+
+  /**
+   * Separate VFS connection name variable is no longer needed.
+   * @deprecated
+   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   private String connection = ""; //The VFS connection name
 
   @VisibleForTesting
@@ -80,27 +93,13 @@ public class Element {
     this( name, entityType, path, provider, "" );
   }
 
-  // Use for repository items
   public Element( String name, EntityType entityType, String path, String provider, String repositoryName ) {
-    this( name, entityType, path, provider, repositoryName, "", "" );
-  }
-
-  // Use for VFS items
-  public Element( String name, EntityType entityType, String path, String provider, String domain, String connection ) {
-    this( name, entityType, path, provider, "", domain, connection );
-  }
-
-  public Element( String name, EntityType entityType, String path, String provider, String repositoryName,
-                  String domain, String connection ) {
     this.name = name;
     this.entityType = entityType;
     this.path = path;
     this.provider = provider;
     this.repositoryName = repositoryName;
-    this.domain = domain;
-    this.connection = connection;
   }
-
 
   public Element( Object genericObject ) {
     if ( !( genericObject instanceof Entity ) ) {
@@ -126,14 +125,12 @@ public class Element {
         provider = file.getProvider();
         if ( entityType.isRepositoryType() ) {
           repositoryName = ( (RepositoryFile) file ).getRepository();
-        } else if ( entityType.isVFSType() ) {
-          domain = ( (VFSFile) file ).getDomain();
-          connection = ( (VFSFile) file ).getConnection();
         }
       }
     }
   }
 
+  @Override
   public boolean equals( Object object ) {
     if ( !( object instanceof Element ) ) {
       return false;
@@ -141,8 +138,15 @@ public class Element {
     if ( this == object ) {
       return true;
     }
-    Element element = ( (Element) object );
-    return name.equals( element.name ) && path.equals( element.path ) && provider.equals( element.provider );
+    Element other = ( (Element) object );
+    return Objects.equals( this.name, other.name )
+        && Objects.equals( this.path, other.path )
+        && Objects.equals( this.provider, other.provider );
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( name, path, provider );
   }
 
   public String getName() {
@@ -169,20 +173,34 @@ public class Element {
     return repositoryName;
   }
 
+  /**
+   * Separate VFS domain variable is no longer needed.
+   * @deprecated
+   * The domain handled is internally with the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public String getDomain() {
     return domain;
   }
 
+  /**
+   * Separate VFS domain variable is no longer needed.
+   * @deprecated
+   * The domain handled is internally with the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public void setDomain( String domain ) {
     this.domain = domain;
   }
 
+  /**
+   * Separate VFS connection name variable is no longer needed.
+   * @deprecated
+   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public String getConnection() {
     return connection;
-  }
-
-  public int hashCode() {
-    return name.hashCode() + path.hashCode() + provider.hashCode();
   }
 
   public EntityType getEntityType() {
@@ -346,7 +364,7 @@ public class Element {
 
       switch( scheme ) {
         case "pvfs":
-          newElement = new Element( name, EntityType.VFS_FILE, path, VFSFileProvider.TYPE, domain, connection );
+          newElement = new Element( name, EntityType.VFS_FILE, path, VFSFileProvider.TYPE );
           break;
         case "hc":
           newElement = new Element( name, EntityType.NAMED_CLUSTER_FILE, path, "clusters" );

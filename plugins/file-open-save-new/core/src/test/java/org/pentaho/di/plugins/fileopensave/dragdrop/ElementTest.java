@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2023-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,7 +48,9 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.spoon.Spoon;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -94,6 +96,9 @@ public class ElementTest {
     // Changing the file type does not effect equals because in a map, if the path and provider are the same then
     // the files would live in the same physical space.
     assertEquals( element1, element2 );
+
+    // future proofing for unexpected null values
+    assertNotEquals( new Element( null, null, null, null ), element2 );
   }
 
   @Test
@@ -132,13 +137,6 @@ public class ElementTest {
   }
 
   @Test
-  public void getConnection() {
-    assertEquals( "", element1.getConnection() );
-    Element element2 = new Element( NAME, TYPE, PATH, LOCAL_PROVIDER, DOMAIN, DUMMY_STRING );
-    assertEquals( DUMMY_STRING, element2.getConnection() );
-  }
-
-  @Test
   public void testHashCode() {
     Element element2 = new Element( NAME, TYPE, PATH, LOCAL_PROVIDER );
     assertEquals( element1.hashCode(), element2.hashCode() );
@@ -150,6 +148,10 @@ public class ElementTest {
     // Changing the file type does not effect equals because in a map, if the path and provider are the same then
     // the files would live in the same physical space.
     assertEquals( element1.hashCode(), element2.hashCode() );
+
+    // future proofing for unexpected null values
+    assertNotEquals( new Element( null, null, null, null ).hashCode(),
+        element2.hashCode() );
   }
 
   @Test
@@ -210,7 +212,7 @@ public class ElementTest {
 
     //Recent file - VFSFile
     String path = "pvfs://" + CONNECTION + PATH;
-    element = new Element( NAME, EntityType.RECENT_FILE, path, RECENT_PROVIDER, DOMAIN, CONNECTION );
+    element = new Element( NAME, EntityType.RECENT_FILE, path, RECENT_PROVIDER );
     checkRecentFileConversion( element, path, false );
     assertEquals( EntityType.VFS_FILE, element.convertRecent().getEntityType() );
 
@@ -259,7 +261,7 @@ public class ElementTest {
     //VFS Directory
     String path = "pvfs://" + CONNECTION + PATH;
     Element element =
-      new Element( NAME, EntityType.VFS_DIRECTORY, path, VFS_PROVIDER, DOMAIN, CONNECTION );
+      new Element( NAME, EntityType.VFS_DIRECTORY, path, VFS_PROVIDER );
     File file = element.convertToFile( space );
     assertTrue( file instanceof VFSDirectory );
     assertEquals( EntityType.VFS_DIRECTORY, file.getEntityType() );
@@ -276,7 +278,7 @@ public class ElementTest {
     //VFS Directory
     String path = "pvfs://" + CONNECTION + PATH;
     Element element =
-      new Element( NAME, EntityType.VFS_FILE, path, VFS_PROVIDER, DOMAIN, CONNECTION );
+      new Element( NAME, EntityType.VFS_FILE, path, VFS_PROVIDER );
     File file = element.convertToFile( space );
     assertTrue( file instanceof VFSFile );
     assertEquals( EntityType.VFS_FILE, file.getEntityType() );
@@ -294,7 +296,7 @@ public class ElementTest {
     String path = "hc://myCluster" + CONNECTION;
     setupNamedClusterMocks( path, EntityType.NAMED_CLUSTER_DIRECTORY );
     Element element =
-      new Element( NAME, EntityType.NAMED_CLUSTER_DIRECTORY, path, NAMED_CLUSTER_PROVIDER, DOMAIN, CONNECTION );
+      new Element( NAME, EntityType.NAMED_CLUSTER_DIRECTORY, path, NAMED_CLUSTER_PROVIDER );
     File file = element.convertToFile( space );
     assertEquals( EntityType.NAMED_CLUSTER_DIRECTORY, file.getEntityType() );
     assertEquals( NAME, file.getName() );
@@ -311,7 +313,7 @@ public class ElementTest {
     String path = "hc://myCluster" + CONNECTION;
     setupNamedClusterMocks( path, EntityType.NAMED_CLUSTER_FILE );
     Element element =
-      new Element( NAME, EntityType.NAMED_CLUSTER_FILE, path, NAMED_CLUSTER_PROVIDER, DOMAIN, CONNECTION );
+      new Element( NAME, EntityType.NAMED_CLUSTER_FILE, path, NAMED_CLUSTER_PROVIDER );
     File file = element.convertToFile( space );
     assertEquals( EntityType.NAMED_CLUSTER_FILE, file.getEntityType() );
     assertEquals( NAME, file.getName() );

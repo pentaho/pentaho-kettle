@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,7 +55,7 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
   private static final int WIDTH = ( Const.isOSX() || Const.isLinux() ) ? 930 : 947;
   private static final int HEIGHT = ( Const.isOSX() || Const.isLinux() ) ? 618 : 626;
 
-  private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
+  private final Supplier<Spoon> spoonSupplier;
   private final ProviderService providerService;
 
   public FileOpenSaveExtensionPoint() {
@@ -63,7 +63,12 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
   }
 
   public FileOpenSaveExtensionPoint( ProviderService providerService ) {
+    this( providerService, Spoon::getInstance );
+  }
+
+  public FileOpenSaveExtensionPoint( ProviderService providerService, Supplier<Spoon> spoonSupplier  ) {
     this.providerService = providerService;
+    this.spoonSupplier = spoonSupplier;
   }
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
@@ -74,8 +79,8 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
     final FileOpenSaveDialog fileOpenSaveDialog =
             new FileOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT, logChannelInterface );
 
-    fileOpenSaveDialog.setProviderFilter(fileDialogOperation.getProviderFilter());
-    fileOpenSaveDialog.open(fileDialogOperation);
+    fileOpenSaveDialog.setProviderFilter( fileDialogOperation.getProviderFilter() );
+    fileOpenSaveDialog.open( fileDialogOperation );
 
     fileDialogOperation.setPath( null );
     fileDialogOperation.setFilename( null );
@@ -92,15 +97,38 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
     }
   }
 
-  private void resolveProvider( FileDialogOperation op ) {
+  /**
+   * Calls {@link FileDialogOperation#setProvider(String)} for <code>op</code> with a best guess.
+   * @param op
+   */
+  protected void resolveProvider( FileDialogOperation op ) {
     if ( op.getProvider() == null ) {
-      if ( op.getConnection() != null ) {
+      if ( isVfsPath( op.getPath() ) ) {
         op.setProvider( VFSFileProvider.TYPE );
-      } else if ( spoonSupplier.get().rep != null ) {
+      } else if ( spoonSupplier.get().getRepository() != null ) {
         op.setProvider( RepositoryFileProvider.TYPE );
       } else {
         op.setProvider( LocalFileProvider.TYPE );
       }
     }
+  }
+
+  /**
+   * Determines if the <code>filePath</code> is a file from a provider of type {@value VFSFileProvider#TYPE}
+   * @param filePath
+   * @return file from a provider of type {@value VFSFileProvider#TYPE}, false otherwise
+   */
+  protected boolean isVfsPath( String filePath ) {
+    boolean ret = false;
+    try {
+      VFSFileProvider vfsFileProvider = (VFSFileProvider) providerService.get( VFSFileProvider.TYPE );
+      if ( vfsFileProvider == null ) {
+        return false;
+      }
+      return vfsFileProvider.isSupported( filePath );
+    } catch ( InvalidFileProviderException | ClassCastException e ) {
+      // DO NOTHING
+    }
+    return ret;
   }
 }

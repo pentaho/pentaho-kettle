@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,6 @@ import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.pentaho.di.base.AbstractMeta;
-import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -183,7 +182,6 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     FileDialogOperation fileDialogOperation = createFileDialogOperation( selectionOperation );
 
     setProviderFilters( fileDialogOperation, providerFilters );
-    setConnection( fileDialogOperation, initialFile );
     setProvider( fileDialogOperation, initialFile );
 
     String connectionFilter = connectionFilterTypes.stream()
@@ -268,11 +266,9 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
 
   void setProvider( FileDialogOperation op, FileObject initalFile ) {
     if ( op.getProviderFilter() == null ) {
-      if ( op.getConnection() != null ) {
-        op.setProvider( ProviderFilterType.VFS.toString() );
-      } else if ( isConnectedToRepository() ) {
+      if ( isConnectedToRepository() ) {
         op.setProvider( ProviderFilterType.REPOSITORY.toString() );
-      } else if ( ConnectionFileProvider.SCHEME.equalsIgnoreCase( initalFile.getURI().getScheme() ) ) {
+      } else if ( isConnectionFile( initalFile ) ) {
         op.setProvider( ProviderFilterType.VFS.toString() );
       } else if ( "hc".equalsIgnoreCase( initalFile.getURI().getScheme() ) ) {
         op.setProvider( ProviderFilterType.CLUSTERS.toString() );
@@ -280,7 +276,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
         op.setProvider( ProviderFilterType.LOCAL.toString() );
       }
     } else if ( op.getProviderFilter().equalsIgnoreCase( ProviderFilterType.DEFAULT.toString() ) ) {
-      if ( op.getConnection() != null ) {
+      if ( isConnectionFile( initalFile ) ) {
         op.setProvider( ProviderFilterType.VFS.toString() );
       } else if ( "hc".equalsIgnoreCase( initalFile.getURI().getScheme() ) ) {
         op.setProvider( ProviderFilterType.CLUSTERS.toString() );
@@ -290,11 +286,14 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     }
   }
 
-  void setConnection( FileDialogOperation op, FileObject initialFile ) {
-    if ( op.getConnection() == null && ConnectionFileProvider.SCHEME.equalsIgnoreCase( initialFile.getURI().getScheme() ) ) {
-      // pvfs connection format is pvfs://<connection_name>/<connection_path>, so extract connection_name
-      op.setConnection( ((ConnectionFileName) initialFile.getName()).getConnection() );
-    }
+  /**
+   * Determines if a <code>fileObject</code> is of type {@value ConnectionFileProvider#SCHEME}
+   * @param fileObject
+   * @return if connection file type, false otherwise.
+   */
+  protected boolean isConnectionFile( FileObject fileObject ) {
+    return fileObject != null && fileObject.getURI() != null
+        && ConnectionFileProvider.SCHEME.equalsIgnoreCase( fileObject.getURI().getScheme() );
   }
 
   /**

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,6 +84,11 @@ public class VFSDirectory extends VFSFile implements Directory {
   /**
    * Create a VFSDirectory.  Note that this creates an VFSDirectory object, it does not physically create the
    * directory.
+   * <p/>
+   * NOTE: logic for {@link #setRoot(String)} and {@link #setConnection(String)} is only used in
+   * {@link org.pentaho.di.plugins.fileopensave.dragdrop.ElementDragListener#dragSetData(org.eclipse.swt.dnd.DragSourceEvent)} for the
+   * scenario of "Recent Repository File".
+   *
    * @param parent The path to the parent folder
    * @param fileObject A VFSFileObject for the actual folder being created
    * @param connection The VFS connection associated with the directory

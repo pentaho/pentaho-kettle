@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,7 +39,7 @@ public abstract class BaseFileProvider<T extends File> implements FileProvider<T
   @Override public void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation ) {
     fileDialogOperation.setPath( fileDetails.getPath() );
     fileDialogOperation.setFilename( fileDetails.getName() );
-    fileDialogOperation.setConnection( fileDetails.getConnection() );
+    fileDialogOperation.setConnection( null );
     fileDialogOperation.setProvider( fileDetails.getProvider() );
   }
 
