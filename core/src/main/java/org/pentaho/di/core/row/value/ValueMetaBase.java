@@ -3602,7 +3602,10 @@ public class ValueMetaBase implements ValueMetaInterface {
         return true;
       }
 
-      if ( emptyStringDiffersFromNull ) {
+      if ( value.equals( StringUtils.EMPTY ) && !emptyStringDiffersFromNull ) {
+        return true;
+      }
+      if ( value.equals( StringUtils.EMPTY ) && emptyStringDiffersFromNull ) {
         return false;
       }
 
@@ -4064,7 +4067,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           // we have a match
           //
           if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
-            return emptyValue;
+            return isEmptyAndNullDiffer && pol.equalsIgnoreCase( "" ) ? emptyValue : null;
           }
         }
       } else {

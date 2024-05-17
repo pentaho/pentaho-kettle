@@ -77,8 +77,8 @@ public class FieldSplitter_EmptyStringVsNull_Test {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
     List<Object[]> expected = Arrays.asList(
       new Object[] { "a", "", "a" },
-      new Object[] { "b", null, "b" },
-      new Object[] { null }
+      new Object[] { "b", "", "b" },
+      new Object[] { "", "", ""}
     );
     executeAndAssertResults( expected );
   }
