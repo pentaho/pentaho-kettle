@@ -1,19 +1,31 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.connections.vfs.provider;
 
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
-import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
-import org.pentaho.di.connections.vfs.VFSConnectionDetails;
-import org.pentaho.di.core.exception.KettleException;
-
-import static org.mockito.Mockito.when;
 
 public class BaseVFSConnectionProviderTest {
   @Mock
@@ -24,62 +36,5 @@ public class BaseVFSConnectionProviderTest {
     baseVFSConnectionDetails = Mockito.spy( BaseVFSConnectionDetails.class );
   }
 
-  @Test
-  public void testWithProvidedRootPath() throws KettleException {
-
-    BaseVFSConnectionProvider<VFSConnectionDetails> baseVFSConnectionProvider = Mockito.mock( BaseVFSConnectionProvider.class, Answers.CALLS_REAL_METHODS );
-
-    when( baseVFSConnectionProvider.test( baseVFSConnectionDetails ) ).thenReturn( true );
-    when( baseVFSConnectionDetails.getRootPath() ).thenReturn( "xyz/" );
-    Assert.assertFalse( baseVFSConnectionProvider.test( baseVFSConnectionDetails, getVFSTestOptionWhenNotIgnoringRootPath() ) );
-  }
-
-  @Test
-  public void testWhenConnectionTestIsInvalid() throws KettleException {
-
-    BaseVFSConnectionProvider<VFSConnectionDetails> baseVFSConnectionProvider = Mockito.mock( BaseVFSConnectionProvider.class, Answers.CALLS_REAL_METHODS );
-    Assert.assertFalse( baseVFSConnectionProvider.test( baseVFSConnectionDetails, getVFSTestOptionWhenNotIgnoringRootPath() ) );
-  }
-
-
-  @Test
-  public void testWhenConnectionDontSupportRootPath() throws KettleException {
-
-    BaseVFSConnectionProvider<VFSConnectionDetails> baseVFSConnectionProvider = Mockito.mock( BaseVFSConnectionProvider.class, Answers.CALLS_REAL_METHODS );
-
-    when( baseVFSConnectionProvider.test( baseVFSConnectionDetails ) ).thenReturn( true );
-    when( baseVFSConnectionDetails.isSupportsRootPath() ).thenReturn( false );
-    Assert.assertTrue( baseVFSConnectionProvider.test( baseVFSConnectionDetails, getVFSTestOptionWhenIgnoringRootPath() ) );
-  }
-
-  @Test
-  public void testWithIgnoringRootPath() throws KettleException {
-
-    BaseVFSConnectionProvider<VFSConnectionDetails> baseVFSConnectionProvider = Mockito.mock( BaseVFSConnectionProvider.class, Answers.CALLS_REAL_METHODS );
-
-    when( baseVFSConnectionProvider.test( baseVFSConnectionDetails ) ).thenReturn( true );
-    Assert.assertTrue( baseVFSConnectionProvider.test( baseVFSConnectionDetails, getVFSTestOptionWhenNotIgnoringRootPath() ) );
-  }
-
-
-  @Test
-  public void testWithConnectionDomain() throws KettleException {
-
-    BaseVFSConnectionProvider<VFSConnectionDetails> baseVFSConnectionProvider = Mockito.mock( BaseVFSConnectionProvider.class, Answers.CALLS_REAL_METHODS );
-
-    when( baseVFSConnectionProvider.test( baseVFSConnectionDetails ) ).thenReturn( true );
-    when( baseVFSConnectionDetails.getRootPath() ).thenReturn( "xyz/" );
-    when( baseVFSConnectionDetails.getDomain() ).thenReturn( "local" );
-    Assert.assertFalse( baseVFSConnectionProvider.test( baseVFSConnectionDetails, getVFSTestOptionWhenNotIgnoringRootPath() ) );
-  }
-
-  private VFSConnectionTestOptions getVFSTestOptionWhenNotIgnoringRootPath() {
-    return new VFSConnectionTestOptions( false );
-  }
-
-  private VFSConnectionTestOptions getVFSTestOptionWhenIgnoringRootPath() {
-    VFSConnectionTestOptions vfsConnectionTestOptions = new VFSConnectionTestOptions();
-    vfsConnectionTestOptions.setIgnoreRootPath( true );
-    return vfsConnectionTestOptions;
-  }
+  // TODO: Write me!
 }

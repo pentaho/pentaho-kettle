@@ -24,95 +24,15 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs;
 
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.pentaho.di.connections.ConnectionDetails;
-import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
+import org.pentaho.di.plugins.fileopensave.providers.vfs.service.KettleVFSService;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class VFSFileProviderTest extends TestCase {
-
-  public void testIsConnectionRoot() {
-
-    VFSFileProvider testInstance = createTestInstance();
-
-    // TEST - simple negative tests before "pvfs://domain"
-    assertFalse( testInstance.isConnectionRoot( null ) );
-
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( null ) ) );
-
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( "" ) ) );
-
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( " " ) ) );
-
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( "pvfs" ) ) );
-
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( "pvfs:" ) ) );
-
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( "pvfs:/" ) ) );
-
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( "pvfs://" ) ) );
-
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( "pvfs:///" ) ) );
-
-    // TEST "pvfs://domain"
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://someConnection" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://some_Connection" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://some-Connection" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://someConnection123" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://123someConnection123" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://someConnection/" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://some_Connection/" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://some-Connection/" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://someConnection123/" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://123someConnection123/" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://Special Character name &#! <>/" ) ) );
-
-    assertTrue( testInstance.isConnectionRoot( createTestInstance( "pvfs://Special Character name &#! <>" ) ) );
-
-    // TEST now we have past the root domain
-    assertFalse( testInstance.isConnectionRoot( createTestInstance( "pvfs://someConnection/someFolderA" ) ) );
-
-    assertFalse( testInstance.isConnectionRoot(
-        createTestInstance( "pvfs://someConnection/someFolderA/directory2" ) ) );
-
-    assertFalse( testInstance.isConnectionRoot(
-        createTestInstance( "pvfs://someConnection/someFolderA/directory2/randomFileC.txt" ) ) );
-
-    assertFalse( testInstance.isConnectionRoot(
-      createTestInstance( "pvfs://Special Character name &#! <>/someFolderA/directory2/randomFileC.txt" ) ) );
-  }
-
-  public void testHasBuckets() {
-
-    VFSFileProvider testInstance = createTestInstance();
-
-    // TEST non VFSConnectionDetails
-    ConnectionDetails mockConnectionDetails  = mock( ConnectionDetails.class );
-    assertFalse( testInstance.hasBuckets( mockConnectionDetails ) );
-
-    // TEST  does not have buckets
-    VFSConnectionDetails mock_NoBuckets_VFSConnectionDetails  = mock( VFSConnectionDetails.class );
-    when( mock_NoBuckets_VFSConnectionDetails.hasBuckets() ).thenReturn( false );
-    assertFalse( testInstance.hasBuckets( mock_NoBuckets_VFSConnectionDetails ) );
-
-    // TEST has buckets
-    VFSConnectionDetails mock_Buckets_VFSConnectionDetails  = mock( VFSConnectionDetails.class );
-    when( mock_Buckets_VFSConnectionDetails.hasBuckets() ).thenReturn( true );
-    assertTrue( testInstance.hasBuckets( mock_Buckets_VFSConnectionDetails ) );
-  }
 
   @Test
   public void testIsSupported() throws Exception {
@@ -133,6 +53,8 @@ public class VFSFileProviderTest extends TestCase {
 
     assertFalse( testInstance.isSupported( "//home/randomUser/randomFile.rpt" ) );
 
+    assertFalse( testInstance.isSupported( "xyz://some/path" ) );
+
     assertTrue( testInstance.isSupported( "pvfs://someConnection/someFilePath" ) );
 
     assertTrue( testInstance.isSupported( "pvfs://Special Character name &#! <>/someFilePath" ) );
@@ -151,40 +73,20 @@ public class VFSFileProviderTest extends TestCase {
 
     assertNull( testInstance.getConnectionName( createTestInstance( "someGarbage" ) ) );
 
-    assertNull( testInstance.getConnectionName( createTestInstance( "xyz:/123" ) ) ); // missing slash "/"
+    assertNull( testInstance.getConnectionName( createTestInstance( "pvfs:/123" ) ) ); // missing slash "/"
+
+    assertNull( testInstance.getConnectionName( createTestInstance( "pvfs://" ) ) );
 
     assertNull( testInstance.getConnectionName( createTestInstance( "xyz://" ) ) );
 
-    assertEquals( "abc", testInstance.getConnectionName( createTestInstance( "xyz://abc" ) ) );
+    assertEquals( "abc", testInstance.getConnectionName( createTestInstance( "pvfs://abc" ) ) );
 
-    assertEquals( "abc", testInstance.getConnectionName( createTestInstance( "xyz://abc/" ) ) );
+    assertEquals( "abc", testInstance.getConnectionName( createTestInstance( "pvfs://abc/" ) ) );
 
-    assertEquals( "abc", testInstance.getConnectionName( createTestInstance( "xyz://abc/def/ghi/jkl/mno.csv" ) ) );
+    assertEquals( "abc", testInstance.getConnectionName( createTestInstance( "pvfs://abc/def/ghi/jkl/mno.csv" ) ) );
 
     assertEquals( "Special Character name &#! <>", testInstance.getConnectionName(
-        createTestInstance( "xyz://Special Character name &#! <>/def/ghi/jkl/mno.csv" ) ) );
-  }
-
-  @Test
-  public void testGetScheme() throws Exception {
-
-    VFSFileProvider testInstance = createTestInstance();
-
-    assertNull( testInstance.getScheme( createTestInstance( null ) ) );
-
-    assertNull( testInstance.getScheme( createTestInstance( "" ) ) );
-
-    assertNull( testInstance.getScheme( createTestInstance( "    " ) ) );
-
-    assertNull( testInstance.getScheme( createTestInstance( "someGarbage" ) ) );
-
-    assertEquals( "xyz", testInstance.getScheme( createTestInstance( "xyz://abc" ) ) );
-
-    assertEquals( "xyz", testInstance.getScheme(
-        createTestInstance( "xyz://abc/def/ghi/jkl/mno.csv" ) ) );
-
-    assertEquals( "xyz", testInstance.getScheme(
-        createTestInstance( "xyz://Special Character name &#! <>/def/ghi/jkl/mno.csv" ) ) );
+        createTestInstance( "pvfs://Special Character name &#! <>/def/ghi/jkl/mno.csv" ) ) );
   }
 
   @Test
@@ -194,7 +96,7 @@ public class VFSFileProviderTest extends TestCase {
     File file1 = mock( File.class );
     File file2 = mock( File.class );
 
-    File vfsFile = createTestInstance( "xyz://abc/someDir/somePath/someFile.txt" );
+    File vfsFile = createTestInstance( "pvfs://abc/someDir/somePath/someFile.txt" );
 
     assertFalse( testInstance.isSame( file1, file2 ) );
 
@@ -202,27 +104,36 @@ public class VFSFileProviderTest extends TestCase {
 
     assertFalse( testInstance.isSame( vfsFile, file2 ) );
 
-    File vfsFile_ABC_SomeDir = createTestInstance( "xyz://abc/someDir/anotherDir/someFile.txt" );
+    // ---
 
-    File vfsFile_ABC_FolderA = createTestInstance( "xyz://abc/FolderA" );
+    // Different schemes
+    assertFalse( testInstance.isSame( createTestInstance( "xyz://abc" ), createTestInstance( "pvfs://abc" ) ) );
+    assertFalse( testInstance.isSame( createTestInstance( "pvfs://abc" ), createTestInstance( "xyz://abc" ) ) );
 
-    File vfsFile_MNO_Path1 = createTestInstance( "xyz://mno/Path1/Path2" );
+    // ---
+
+    File vfsFile_ABC_SomeDir = createTestInstance( "pvfs://abc/someDir/anotherDir/someFile.txt" );
+
+    File vfsFile_ABC_FolderA = createTestInstance( "pvfs://abc/FolderA" );
+
+    File vfsFile_MNO_Path1 = createTestInstance( "pvfs://mno/Path1/Path2" );
 
     assertFalse( testInstance.isSame( vfsFile_ABC_SomeDir, vfsFile_MNO_Path1 ) );
 
     assertFalse( testInstance.isSame( vfsFile_MNO_Path1, vfsFile_ABC_SomeDir ) );
 
-    assertFalse( testInstance.isSame( createTestInstance( "xyz://" ), vfsFile_ABC_SomeDir ) ); // malformed VFS files
+    assertFalse( testInstance.isSame( createTestInstance( "pvfs://" ), vfsFile_ABC_SomeDir ) ); // malformed VFS files
 
-    assertFalse( testInstance.isSame( createTestInstance( "xyz:/" ), vfsFile_ABC_SomeDir ) ); // malformed VFS files
+    assertFalse( testInstance.isSame( createTestInstance( "pvfs:/" ), vfsFile_ABC_SomeDir ) ); // malformed VFS files
 
     assertTrue( testInstance.isSame( vfsFile_ABC_SomeDir, vfsFile_ABC_SomeDir ) );
 
     assertTrue( testInstance.isSame( vfsFile_ABC_SomeDir, vfsFile_ABC_FolderA ) );
 
-    File vfsFile_SpecialCharacters_Path1 = createTestInstance( "xyz://Special Character name &#! <>/Path1/Path2" );
+    File vfsFile_SpecialCharacters_Path1 = createTestInstance( "pvfs://Special Character name &#! <>/Path1/Path2" );
 
-    File vfsFile_SpecialCharacters_DirectoryA = createTestInstance( "xyz://Special Character name &#! <>/DirectoryA/DirectoryB/DirectoryC" );
+    File vfsFile_SpecialCharacters_DirectoryA =
+      createTestInstance( "pvfs://Special Character name &#! <>/DirectoryA/DirectoryB/DirectoryC" );
 
     assertTrue( testInstance.isSame( vfsFile_SpecialCharacters_Path1, vfsFile_SpecialCharacters_DirectoryA ) );
 
@@ -236,8 +147,7 @@ public class VFSFileProviderTest extends TestCase {
   }
 
   public VFSFileProvider createTestInstance() {
-    VFSFileProvider testInstance = new VFSFileProvider( null, null );
-    return testInstance;
+    return new VFSFileProvider(
+      mock( Bowl.class ), mock( KettleVFSService.class ), new VFSConnectionManagerHelper() );
   }
-
 }

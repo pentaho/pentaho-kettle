@@ -23,6 +23,7 @@
 package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
@@ -41,7 +42,7 @@ public class VFSFile extends BaseEntity implements File {
   public static final String TYPE = "file";
   public static final String DOMAIN_ROOT = "[\\w]+:///?";
   public static final String PROTOCOL_SEPARATOR = "://";
-  public static final String DELIMITER = "/";
+  public static final String DELIMITER = FileName.SEPARATOR;
 
   private String connection;
   private String domain;

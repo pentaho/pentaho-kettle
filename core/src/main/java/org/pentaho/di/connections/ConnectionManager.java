@@ -25,10 +25,12 @@ package org.pentaho.di.connections;
 import com.google.common.annotations.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.connections.utils.EncryptUtils;
-import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
 import org.pentaho.di.connections.vfs.VFSConnectionProvider;
+import org.pentaho.di.connections.vfs.VFSConnectionTestOptions;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
@@ -71,8 +73,12 @@ public class ConnectionManager {
   private ConcurrentHashMap<String, ConnectionProvider<? extends ConnectionDetails>> connectionProviders =
     new ConcurrentHashMap<>();
 
-  private Map<String, List<String>> namesByConnectionProvider = new ConcurrentHashMap<>();
-  private Map<String, ConnectionDetails> detailsByName = new ConcurrentHashMap<>();
+  private final Map<String, List<String>> namesByConnectionProvider = new ConcurrentHashMap<>();
+  private final Map<String, ConnectionDetails> detailsByName = new ConcurrentHashMap<>();
+
+  @NonNull
+  private final VFSConnectionManagerHelper vfsConnectionManagerHelper;
+
   private boolean initialized;
 
   private ConnectionManager() {
@@ -80,9 +86,18 @@ public class ConnectionManager {
     this( getMetastoreSupplierUnchecked( DefaultBowl.getInstance() ), DefaultBowl.getInstance() );
   }
 
-  @VisibleForTesting ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier, @NonNull Bowl bowl ) {
+  @VisibleForTesting
+  ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier, @NonNull Bowl bowl ) {
+    this( metaStoreSupplier, bowl, VFSConnectionManagerHelper.getInstance() );
+  }
+
+  @VisibleForTesting
+  ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier,
+                    @NonNull Bowl bowl,
+                    @NonNull VFSConnectionManagerHelper vfsConnectionManagerHelper ) {
     this.metaStoreSupplier = Objects.requireNonNull( metaStoreSupplier );
     this.bowl = Objects.requireNonNull( bowl );
+    this.vfsConnectionManagerHelper = Objects.requireNonNull( vfsConnectionManagerHelper );
   }
 
   @NonNull
@@ -115,7 +130,7 @@ public class ConnectionManager {
   }
 
   /**
-   * Resets the in-memory storage. The next call that needs it will will refresh the connection information from the
+   * Resets the in-memory storage. The next call that needs it will refresh the connection information from the
    * metastore.
    *
    */
@@ -200,7 +215,7 @@ public class ConnectionManager {
   @VisibleForTesting
   @NonNull
   Supplier<IMetaStore> getMetastoreSupplier() {
-    return this.metaStoreSupplier;
+    return metaStoreSupplier;
   }
 
   /**
@@ -212,6 +227,19 @@ public class ConnectionManager {
   public Bowl getBowl() {
     return bowl;
   }
+
+  /**
+   * Gets the VFS connection helper for the Connection Manager.
+   *
+   * @return A VFS connection helper.
+   */
+  @VisibleForTesting
+  @NonNull
+  VFSConnectionManagerHelper getVfsConnectionManagerHelper(  ) {
+    return vfsConnectionManagerHelper;
+  }
+
+  // region Provider
 
   /**
    * Add a key lookup filter
@@ -239,6 +267,10 @@ public class ConnectionManager {
    * @return The connection provider
    */
   public ConnectionProvider<? extends ConnectionDetails> getConnectionProvider( String key ) {
+    if ( key == null ) {
+      return null;
+    }
+
     return connectionProviders.get( getLookupKey( key ) );
   }
 
@@ -257,6 +289,7 @@ public class ConnectionManager {
     }
     return value;
   }
+  // endregion
 
   /**
    * Save a named connection to a specific meta store
@@ -332,39 +365,74 @@ public class ConnectionManager {
     return success;
   }
 
+  // region test
   /**
-   * Run a test operation on the named connection
+   * Tests if a connection is valid, given its details, with default testing options.
+   * <p>
+   * If the given connection details is a VFS connection, this method delegates to {@link #test(VFSConnectionDetails)}.
+   * Otherwise, this method delegates directly to {@link ConnectionProvider#test(ConnectionDetails)}.
    *
-   * @param connectionDetails The named connection details to test
-   * @return A boolean signifying the success of the test operation
+   * @param details The details of the connection to test.
+   * @return {@code true} if the connection is valid; {@code false} otherwise.
    */
   @SuppressWarnings( "unchecked" )
-  public <T extends ConnectionDetails> boolean test( T connectionDetails ) throws KettleException {
-    ConnectionProvider<T> connectionProvider =
-      (ConnectionProvider<T>) connectionProviders.get( connectionDetails.getType() );
-    return connectionProvider.test( connectionDetails );
+  public <T extends ConnectionDetails> boolean test( @NonNull T details ) throws KettleException {
+    // FIXME: At least Catalog is VFSConnectionDetails but only ConnectionProvider!
+    // Supposedly, as a means to not be browsable by File Open Save Dialog (which only shows VFS providers).
+    // Instead, define VFSConnectionProvider#isBrowsable().
+    ConnectionProvider<T> provider = (ConnectionProvider<T>) connectionProviders.get( details.getType() );
+    if ( provider instanceof VFSConnectionProvider && details instanceof VFSConnectionDetails ) {
+      return test( (VFSConnectionDetails) details );
+    }
+
+    // The specified connection details may not exist saved in the meta-store,
+    // but still needs to have a non-empty name in it, to be able to form a temporary PVFS URI.
+    if ( StringUtils.isEmpty( details.getName() ) ) {
+      return false;
+    }
+
+    return provider.test( details );
   }
 
   /**
-   * Tests if a given VFS connection is valid, optionally, with certain testing options.
+   * Tests if a VFS connection is valid, given its details, with default testing options.
+   * <p>
+   * This method delegates to {@link #test(VFSConnectionDetails, VFSConnectionTestOptions)} with a {@code null}
+   * {@code options} argument.
    *
-   * @param connectionDetails The VFS connection.
-   * @param options The testing options, or {@code null}. When {@code null}, a default instance of
-   *    {@link VFSConnectionTestOptions} is constructed and used.
-   * @return {@code true} if the connection is valid; {@code false}, otherwise.
+   * @param details The details of the VFS connection to test.
+   * @return {@code true} if the connection is valid; {@code false} otherwise.
    */
-  public <T extends VFSConnectionDetails> boolean test( @NonNull T connectionDetails, @Nullable VFSConnectionTestOptions options )
-          throws KettleException {
-    Objects.requireNonNull( connectionDetails );
-
-    if ( options == null ) {
-     options = new VFSConnectionTestOptions();
-    }
-
-    VFSConnectionProvider<T> connectionProvider = (VFSConnectionProvider<T>) connectionProviders.get(connectionDetails.getType());
-
-    return connectionProvider.test( connectionDetails, options );
+  public <T extends VFSConnectionDetails> boolean test( @NonNull T details )
+    throws KettleException {
+    return test( details, null );
   }
+
+  /**
+   * Tests if a VFS connection is valid, given its details, optionally, with certain testing options.
+   * <p>
+   * This method first delegates to {@link ConnectionProvider#test(ConnectionDetails)} to perform basic
+   * validation, independent of the connection's root path, {@link VFSConnectionDetails#getRootPath()}, if any,
+   * immediately returning {@code false}, when unsuccessful.
+   * <p>
+   * When base validation is successful, if {@code options} has a {@code true}
+   * {@link VFSConnectionTestOptions#isIgnoreRootPath()}, this method should immediately return {@code true}.
+   * <p>
+   * Otherwise, the method should validate that the connection's root folder path is valid, taking into account the
+   * values of {@link VFSConnectionDetails#isSupportsRootPath()}, {@link VFSConnectionDetails#isRootPathRequired()} and
+   * {@link VFSConnectionDetails#getRootPath()}.
+   *
+   * @param details The details of the VFS connection to test.
+   * @param options The testing options, or {@code null}. When {@code null}, a default instance of
+   *                {@link VFSConnectionTestOptions} is constructed and used.
+   * @return {@code true} if the connection is valid; {@code false} otherwise.
+   */
+  public <T extends VFSConnectionDetails> boolean test( @NonNull T details,
+                                                        @Nullable VFSConnectionTestOptions options )
+    throws KettleException {
+    return vfsConnectionManagerHelper.test( this, details, options );
+  }
+  // endregion
 
   /**
    * Delete a connection by name from the default
@@ -422,14 +490,16 @@ public class ConnectionManager {
   /**
    * Get a list of connection providers by type
    *
-   * @param clazz The type of provider to filter by
+   * @param providerClass The type of provider to filter by
    * @return A list of connection providers
    */
   public List<ConnectionProvider<? extends ConnectionDetails>> getProvidersByType(
-    Class<? extends ConnectionProvider> clazz ) {
-    return Collections.list( connectionProviders.elements() ).stream().filter(
-      connectionProvider -> clazz.isAssignableFrom( connectionProvider.getClass() )
-    ).collect( Collectors.toList() );
+    Class<? extends ConnectionProvider> providerClass ) {
+
+    return Collections.list( connectionProviders.elements() )
+      .stream()
+      .filter( provider -> providerClass.isAssignableFrom( provider.getClass() ) )
+      .collect( Collectors.toList() );
   }
 
   /**
@@ -536,21 +606,19 @@ public class ConnectionManager {
   /**
    * Get the names of named connection by connection provider type
    *
-   * @param clazz The connection provider type
+   * @param providerClass The connection provider type
    * @return A list of named connection names
    */
-  public List<String> getNamesByType( Class<? extends ConnectionProvider> clazz ) {
+  public <T extends ConnectionProvider<?>> List<String> getNamesByType( Class<T> providerClass ) {
     List<String> detailNames = new ArrayList<>();
-    List<ConnectionProvider<? extends ConnectionDetails>> providers =
-      Collections.list( connectionProviders.elements() ).stream().filter(
-        connectionProvider -> clazz.isAssignableFrom( connectionProvider.getClass() )
-      ).collect( Collectors.toList() );
-    for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
+
+    for ( ConnectionProvider<? extends ConnectionDetails> provider : getProvidersByType( providerClass ) ) {
       List<String> names = getNames( provider );
       if ( names != null) {
         detailNames.addAll( names );
       }
     }
+
     return detailNames;
   }
 
@@ -620,6 +688,38 @@ public class ConnectionManager {
   public ConnectionDetails getConnectionDetails( String name ) {
     initialize();
     return detailsByName.get( name );
+  }
+
+  /**
+   * Gets a connection given its name, casting it to the type parameter.
+   *
+   * @param name The connection name
+   * @return The named connection details
+   */
+  @SuppressWarnings( "unchecked" )
+  @Nullable
+  public <T extends ConnectionDetails> T getDetails( @Nullable String name ) {
+    return (T) getConnectionDetails( name );
+  }
+
+  /**
+   * Gets the details of a connection, given its name, casting it to the type parameter,
+   * and throwing if it does not exist.
+   *
+   * @param name The connection name
+   * @return The named connection details
+   * @throws KettleException When a connection with the given name is not defined.
+   */
+  @NonNull
+  public <T extends ConnectionDetails> T getExistingDetails( @Nullable String name )
+    throws KettleException {
+
+    T details = getDetails( name );
+    if ( details == null ) {
+      throw new KettleException( String.format( "Undefined connection '%s'.", name ) );
+    }
+
+    return details;
   }
 
   /**
@@ -756,12 +856,26 @@ public class ConnectionManager {
    * @return A list of value/label pairs of named connection types
    */
   public List<Type> getItems() {
+    return getItemsByType( null );
+  }
+
+  /**
+   * Get a list of value/label pairs of named connection types of a given provider class.
+   *
+   * @param providerClass The provider class.
+   * @return A list of value/label pairs of named connection types.
+   */
+  public <T extends ConnectionProvider<?>> List<Type> getItemsByType( @Nullable Class<T> providerClass ) {
+
     List<Type> types = new ArrayList<>();
-    List<ConnectionProvider<? extends ConnectionDetails>> providers =
-      Collections.list( connectionProviders.elements() );
-    for ( ConnectionProvider provider : providers ) {
-      types.add( new ConnectionManager.Type( provider.getKey(), provider.getName() ) );
+
+    List<ConnectionProvider<?>> providers = Collections.list( connectionProviders.elements() );
+    for ( ConnectionProvider<?> provider : providers ) {
+      if ( providerClass == null || providerClass.isAssignableFrom( provider.getClass() ) ) {
+        types.add( new ConnectionManager.Type( provider.getKey(), provider.getName() ) );
+      }
     }
+
     return types;
   }
 

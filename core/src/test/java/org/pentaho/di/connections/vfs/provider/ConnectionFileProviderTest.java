@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,13 +81,13 @@ public class ConnectionFileProviderTest {
   }
 
   private void addProvider() {
-    TestConnectionProvider testConnectionProvider = new TestConnectionProvider( connectionManager );
-    connectionManager.addConnectionProvider( TestConnectionProvider.SCHEME, testConnectionProvider );
+    connectionManager.addConnectionProvider(
+      TestConnectionProvider.SCHEME,
+      new TestConnectionProvider() );
 
-    TestConnectionWithDomainProvider testConnectionWithDomainProvider =
-      new TestConnectionWithDomainProvider( connectionManager );
-    connectionManager
-      .addConnectionProvider( TestConnectionWithDomainProvider.SCHEME, testConnectionWithDomainProvider );
+    connectionManager.addConnectionProvider(
+      TestConnectionWithDomainProvider.SCHEME,
+      new TestConnectionWithDomainProvider() );
   }
 
   private void addOne() {

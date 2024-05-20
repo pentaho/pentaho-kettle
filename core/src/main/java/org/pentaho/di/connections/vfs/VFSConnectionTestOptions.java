@@ -1,4 +1,3 @@
-
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -21,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.utils;
+package org.pentaho.di.connections.vfs;
 
 /**
  * This class contains options that control the testing of VFS Connection.
