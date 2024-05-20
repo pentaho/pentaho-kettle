@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2023-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,15 +32,11 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.Entity;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
-import org.pentaho.di.plugins.fileopensave.controllers.FileController;
-import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
-import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
-import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
-import org.pentaho.di.plugins.fileopensave.util.Util;
 
 import java.util.Arrays;
 
@@ -71,7 +67,6 @@ public class ElementTreeDropAdapter extends ViewerDropAdapter {
       errorBox.open();
       return false;
     }
-    Util.rawElementMassage( genericTarget );
     Element target = new Element( genericTarget );
 
     log.logDebug( "TreeDrop: last target element was \"" + target.getPath() + "\" location was " + location );
@@ -86,8 +81,7 @@ public class ElementTreeDropAdapter extends ViewerDropAdapter {
         String name = parent.replaceAll( "^.*[\\/\\\\]", "" ); //Strip off the path leaving file name
         // Making parent of target the new actual target to use.
         target =
-          new Element( name, target.calcParentEntityType(), parent, target.getProvider(), target.getRepositoryName(),
-            target.getDomain(), target.getConnection() );
+          new Element( name, target.calcParentEntityType(), parent, target.getProvider(), target.getRepositoryName() );
       }
     }
 
