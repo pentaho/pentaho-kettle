@@ -11,16 +11,16 @@
 #EE Stuff
 ee:
     client-tools:
-        - pad-ee-${platform.version}-dist.zip
-        - pdi-ee-client-${platform.version}-dist.zip
-        - pdi-ee-client-${platform.version}-hadoop-addon-dist.zip
-        - pentaho-analysis-ee-${platform.version}-dist.zip
-        - pentaho-big-data-ee-package-${platform.version}-dist.zip
-        - pme-ee-${platform.version}-dist.zip
-        - pme-ee-${platform.version}-hadoop-addon-dist.zip
-        - prd-ee-${platform.version}-dist.zip
-        - prd-ee-${platform.version}-hadoop-addon-dist.zip
-        - psw-ee-${mondrian.version}-dist.zip
+        - pad-ee-${platform.version}.zip
+        - pdi-ee-client-${platform.version}.zip
+        - pdi-ee-client-${platform.version}-hadoop-addon.zip
+        - pentaho-analysis-ee-${platform.version}.zip
+        - pentaho-big-data-ee-package-${platform.version}.zip
+        - pme-ee-${platform.version}.zip
+        - pme-ee-${platform.version}-hadoop-addon.zip
+        - prd-ee-${platform.version}.zip
+        - prd-ee-${platform.version}-hadoop-addon.zip
+        - psw-ee-${mondrian.version}.zip
     installers:
         - pentaho-business-analytics-${platform.version}-x64.app.tar.gz
         - pentaho-business-analytics-${platform.version}-x64.bin
@@ -28,62 +28,35 @@ ee:
         - pentaho-update-${platform.version}-Windows.zip
         - pentaho-update-${platform.version}-Linux.zip
     other:
-        - pentaho-operations-mart-${platform.version}-dist.zip
-        - pentaho-sdk-${platform.version}-dist.zip
-        - dock-maker-${platform.version}-public-dist.zip
-        - enterprise-local-license-server-${platform.version}-linux-dist.tar.gz
-        - enterprise-local-license-server-${platform.version}-windows-dist.zip
+        - pentaho-operations-mart-${platform.version}.zip
+        - pentaho-sdk-${platform.version}.zip
+        - dock-maker-${platform.version}-public.zip
+        - enterprise-local-license-server-${platform.version}-linux.tar.gz
+        - enterprise-local-license-server-${platform.version}-windows.zip
     patches:
-            windows:
-                - AggregationDesigner-SP-${platform.version}.exe
-                - PDIClient-SP-${platform.version}.exe
-                - MetadataEditor-SP-${platform.version}.exe
-                - PentahoServer-SP-${platform.version}.exe
-                - ReportDesigner-SP-${platform.version}.exe
-                - SchemaWorkbench-SP-${platform.version}.exe
-                - BDPlugin-SP-${platform.version}.zip
-                - SP-${platform.version}-Fixes.txt
-                - README-SP-${platform.version}.txt
-            mac:
-                - AggregationDesigner-SP-${platform.version}.zip
-                - PDIClient-SP-${platform.version}.zip
-                - MetadataEditor-SP-${platform.version}.zip
-                - ReportDesigner-SP-${platform.version}.zip
-                - SchemaWorkbench-SP-${platform.version}.zip
-                - BDPlugin-SP-${platform.version}.zip
-                - SP-${platform.version}-Fixes.txt
-                - README-SP-${platform.version}.txt
-            linux:
-                - AggregationDesigner-SP-${platform.version}.bin
-                - PDIClient-SP-${platform.version}.bin
-                - MetadataEditor-SP-${platform.version}.bin
-                - PentahoServer-SP-${platform.version}.bin
-                - ReportDesigner-SP-${platform.version}.bin
-                - SchemaWorkbench-SP-${platform.version}.bin
-                - BDPlugin-SP-${platform.version}.zip
-                - SP-${platform.version}-Fixes.txt
-                - README-SP-${platform.version}.txt
+        - SP-${platform.version}-Fixes.txt
+        - README-SP-${platform.version}.txt
     plugins:
-        - paz-plugin-ee-${platform.version}-dist.zip
-        - pdd-plugin-ee-${platform.version}-dist.zip
+        - paz-plugin-ee-${platform.version}.zip
+        - pdd-plugin-ee-${platform.version}.zip
         - pdi-ee-plugin-${platform.version}.zip
-        - pentaho-monitoring-plugin-mib-assembly-${platform.version}-dist.zip
-        - pir-plugin-ee-${platform.version}-dist.zip
-        - hierarchical-datatype-plugin-${platform.version}-dist.zip
-        - pentaho-streaming-kafka-plugin-zip-${platform.version}-dist.zip
-        - elasticsearch-rest-plugin-${platform.version}-dist.zip
-        - kafka-job-plugins-${platform.version}-dist.zip
-        - pdi-ga4-plugin-${platform.version}-dist.zip
+        - pentaho-monitoring-plugin-mib-assembly-${platform.version}.zip
+        - pir-plugin-ee-${platform.version}.zip
+        - hierarchical-datatype-plugin-${platform.version}.zip
+        - pentaho-streaming-kafka-plugin-zip-${platform.version}.zip
+        - elasticsearch-rest-plugin-${platform.version}.zip
+        - kafka-job-plugins-${platform.version}.zip
+        - pdi-ga4-plugin-${platform.version}.zip
     server:
-        - pentaho-server-ee-${platform.version}-dist.zip
-        - pentaho-server-manual-ee-${platform.version}-dist.zip
+        - pentaho-server-ee-${platform.version}.zip
+        - pentaho-server-manual-ee-${platform.version}.zip
     shims:
-        - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}-dist.zip
+        - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
     container-images:
         - pdi-carte-ee-aws-${platform.version}.tar.gz
         - pdi-carte-ee-bigdata-aws-${platform.version}.tar.gz
@@ -103,13 +76,6 @@ ee:
         - pdi-cli-ee-bigdata-gcp-${platform.version}.tar.gz
         - pdi-server-ee-gcp-${platform.version}.tar.gz
         - platform-server-ee-gcp-${platform.version}.tar.gz
-    upgrade:
-        - PentahoServer-UP-${platform.version}-Linux.zip
-        - PentahoServer-UP-${platform.version}-Mac.zip
-        - PentahoServer-UP-${platform.version}-Windows.zip
-        - pentaho-upgrade-utility-${platform.version}-ba.zip
-        - pentaho-upgrade-utility-${platform.version}-pdi.zip
-        - pentaho-upgrade-utility-${platform.version}-pentaho.zip
 
 #CE Stuff
 ce:
@@ -139,10 +105,4 @@ not-for-release:
     - pdi-ce-${platform.version}-osgi.zip
     - pme-ce-${platform.version}-osgi.zip
     - prd-ce-${platform.version}-osgi.zip
-    - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
     

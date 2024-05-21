@@ -32,34 +32,27 @@ ee:
         - pentaho-sdk-${platform.version}.zip
         - dock-maker-${platform.version}-internal.zip
         - dock-maker-${platform.version}-public.zip
-    patches:
-        - SP${SP_RELEASE_VERSION}-${platform.version}-Linux.zip
-        - SP${SP_RELEASE_VERSION}-${platform.version}-Mac.zip
-        - SP${SP_RELEASE_VERSION}-${platform.version}-Windows.zip
     plugins:
         - paz-plugin-ee-${platform.version}.zip
         - pdd-plugin-ee-${platform.version}.zip
         - pdi-ee-plugin-${platform.version}.zip
         - pentaho-monitoring-plugin-mib-assembly-${platform.version}.zip
         - pir-plugin-ee-${platform.version}.zip
-        - hierarchical-datatype-plugin-${platform.version}-dist.zip
-        - pentaho-streaming-kafka-plugin-zip-${platform.version}-dist.zip
-        - elasticsearch-rest-plugin-${platform.version}-dist.zip
-        - kafka-job-plugins-${platform.version}-dist.zip
+        - hierarchical-datatype-plugin-${platform.version}.zip
+        - pentaho-streaming-kafka-plugin-zip-${platform.version}.zip
+        - elasticsearch-rest-plugin-${platform.version}.zip
+        - kafka-job-plugins-${platform.version}.zip
     server:
         - pentaho-server-ee-${platform.version}.zip
         - pentaho-server-manual-ee-${platform.version}.zip
     shims:
-        - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}-dist.zip
-        - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}-dist.zip
-    upgrade:
-        - pentaho-upgrade-utility-${platform.version}-ba.zip
-        - pentaho-upgrade-utility-${platform.version}-pdi.zip
-        - pentaho-upgrade-utility-${platform.version}-pentaho.zip
+        - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
+
 
 #CE Stuff
 ce:
@@ -89,9 +82,3 @@ not-for-release:
     - pdi-ce-${platform.version}-osgi.zip
     - pme-ce-${platform.version}-osgi.zip
     - prd-ce-${platform.version}-osgi.zip
-    - pentaho-hadoop-shims-ee-cdh61-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-emr521-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-hdp30-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
-    - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
