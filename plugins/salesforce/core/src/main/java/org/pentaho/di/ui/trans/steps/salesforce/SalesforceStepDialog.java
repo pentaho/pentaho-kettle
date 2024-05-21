@@ -37,6 +37,8 @@ import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.util.ArrayList;
+
 public abstract class SalesforceStepDialog extends BaseStepDialog implements StepDialogInterface {
 
   private static final Class<?> PKG = SalesforceStepMeta.class;
@@ -44,10 +46,12 @@ public abstract class SalesforceStepDialog extends BaseStepDialog implements Ste
   protected static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
   private final Class<? extends SalesforceStepMeta> META_CLASS;
+  SalesforceStepMeta meta;
 
   public SalesforceStepDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
     META_CLASS = ( (SalesforceStepMeta) in ).getClass();
+    this.meta = (SalesforceStepMeta) in;
   }
 
   protected abstract void getInfo( SalesforceStepMeta meta ) throws KettleException;
@@ -59,11 +63,11 @@ public abstract class SalesforceStepDialog extends BaseStepDialog implements Ste
     String realUsername = null;
     try {
       Trans trans = new Trans( transMeta, null );
+      trans.rowsets = new ArrayList<>();
 
-      SalesforceStep step =
-        (SalesforceStep) stepMeta.getStepMetaInterface().getStep( stepMeta, null, 0, transMeta, trans );
-
-      SalesforceStepMeta meta = META_CLASS.newInstance();
+      getInfo( meta );
+      SalesforceStep step = (SalesforceStep) meta.getStep( stepMeta, meta.getStepData(), 0, transMeta, trans );
+      step.setStepMetaInterface( meta );
       realUsername = transMeta.environmentSubstitute( meta.getUsername() );
       successConnection = step.testConnection();
     } catch ( Exception e ) {
