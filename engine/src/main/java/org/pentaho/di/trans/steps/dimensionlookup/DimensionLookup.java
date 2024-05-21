@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -329,7 +329,7 @@ public class DimensionLookup extends BaseDatabaseStep implements StepInterface {
     }
   }
 
-  private synchronized Object[] lookupValues( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
+  synchronized Object[] lookupValues( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
     Object[] outputRow = new Object[ data.outputRowMeta.size() ];
 
     RowMetaInterface lookupRowMeta;
@@ -463,6 +463,9 @@ public class DimensionLookup extends BaseDatabaseStep implements StepInterface {
         if ( meta.getCacheSize() >= 0 ) { // need -oo to +oo as well...
           returnRow[ returnRow.length - 2 ] = data.min_date;
           returnRow[ returnRow.length - 1 ] = data.max_date;
+          if (!meta.isPreloadingCache()) {
+            addToCache( lookupRow, returnRow );
+          }
         }
       }
       // else {
@@ -1514,7 +1517,7 @@ public class DimensionLookup extends BaseDatabaseStep implements StepInterface {
 
     // store it in the cache if needed.
     byte[] keyPart = RowMeta.extractData( data.cacheKeyRowMeta, keyValues );
-    byte[] valuePart = RowMeta.extractData( data.cacheValueRowMeta, returnValues );
+    byte[] valuePart = returnValues == null ? null : RowMeta.extractData( data.cacheValueRowMeta, returnValues );
     data.cache.put( keyPart, valuePart );
 
     // check if the size is not too big...
