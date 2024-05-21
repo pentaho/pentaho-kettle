@@ -21,7 +21,7 @@ buildProperties:
   PARALLEL_SIZE_TEST    : 20
 
   JOB_ITEM_DEFAULTS:
-    dockerImage : jenkins-build/maven/open-jdk/11
+    dockerImage : jenkins-build/maven/open-jdk/17
     scmBranch   : master
     archivable  : false
 

@@ -42,7 +42,7 @@ buildProperties:
   JENKINS_FOLDER_NAME              : '10.2'
 
   JOB_ITEM_DEFAULTS:
-    dockerImage : jenkins-build/maven/open-jdk/11
+    dockerImage : jenkins-build/maven/open-jdk/17
     scmBranch   : master
 
   # We need to override this until this pipeline is the nightly
