@@ -23,6 +23,7 @@
 package org.pentaho.di.connections.vfs;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 
 import java.util.ArrayList;
@@ -39,6 +40,9 @@ public abstract class BaseVFSConnectionDetails implements VFSConnectionDetails {
   @MetaStoreAttribute
   private List<String> baRoles = new ArrayList<>();
 
+  @MetaStoreAttribute
+  private String rootPath;
+
   @NonNull
   @Override
   public List<String> getBaRoles() {
@@ -53,11 +57,31 @@ public abstract class BaseVFSConnectionDetails implements VFSConnectionDetails {
   }
 
   /**
+   * Gets if the VFS connection supports root path or not.
+   * @returns {@code true} if VFS connection supports root path; {@code false} otherwise.
+   * @default {@code true}
+   */
+  @Override
+  public boolean isSupportsRootPath() {
+    return true;
+  }
+
+  @Override
+  public String getRootPath() {
+    return rootPath;
+  }
+
+  public void setRootPath( String rootPath ) {
+    this.rootPath = StringUtils.isEmpty( rootPath ) ? null : rootPath;
+  }
+
+  /**
    * Adds base/default properties to properties of connection instance.
    * <p>
    * @param props The properties map
    */
   protected void fillProperties( Map<String, String> props ) {
     props.put( "baRoles", getBaRoles().toString() );
+    props.put( "rootPath", getRootPath() );
   }
 }
