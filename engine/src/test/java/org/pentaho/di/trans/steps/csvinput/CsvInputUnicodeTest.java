@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.ClassRule;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import org.junit.BeforeClass;
@@ -87,7 +87,7 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
     stepMockHelper = StepMockUtil
       .getStepMockHelper( CsvInputMeta.class, "CsvInputUnicodeTest" );
     Mockito.when(
-      stepMockHelper.logChannelInterfaceFactory.create( Matchers.any(), Matchers.any( LoggingObjectInterface.class ) ) )
+      stepMockHelper.logChannelInterfaceFactory.create( ArgumentMatchers.any(), ArgumentMatchers.any( LoggingObjectInterface.class ) ) )
       .thenReturn( stepMockHelper.logChannelInterface );
     Mockito.when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
@@ -192,7 +192,7 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
     csvInput.init( meta, data );
     csvInput.addRowListener( new RowAdapter() {
       @Override
-      public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+      public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) {
         for ( int i = 0; i < rowMeta.size(); i++ ) {
           Assert.assertEquals( "Value", row[ i ] );
         }

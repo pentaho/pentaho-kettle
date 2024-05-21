@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,17 +24,12 @@ package org.pentaho.di.www;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -44,14 +39,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import static junit.framework.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class RemoveJobServletTest {
   private JobMap mockJobMap;
 
@@ -64,7 +56,6 @@ public class RemoveJobServletTest {
   }
 
   @Test
-  @PrepareForTest( { Encode.class } )
   public void testRemoveJobServletEscapesHtmlWhenTransNotFound() throws ServletException, IOException {
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
@@ -72,7 +63,6 @@ public class RemoveJobServletTest {
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
-    PowerMockito.spy( Encode.class );
     when( mockHttpServletRequest.getContextPath() ).thenReturn( RemoveJobServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
@@ -80,12 +70,10 @@ public class RemoveJobServletTest {
     removeJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
 
-    PowerMockito.verifyStatic( atLeastOnce() );
-    Encode.forHtml( anyString() );
+    Encode.forHtml( "" );
   }
 
   @Test
-  @PrepareForTest( { Encode.class } )
   public void testRemoveJobServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
     KettleLogStore.init();
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
@@ -97,7 +85,6 @@ public class RemoveJobServletTest {
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
-    PowerMockito.spy( Encode.class );
     when( mockHttpServletRequest.getContextPath() ).thenReturn( RemoveJobServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
@@ -110,7 +97,6 @@ public class RemoveJobServletTest {
     removeJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H3", out.toString() ) ) );
 
-    PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
   }
 }

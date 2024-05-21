@@ -48,6 +48,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
 
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -83,11 +84,11 @@ public class JobExecutorMetaTest {
             "executionExitStatusField" );
 
     // executionResultTargetStepMeta -? (see for switch case meta)
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, String> getterMap = new HashMap<>();
+    Map<String, String> setterMap = new HashMap<>();
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<>();
 
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<>();
     loadSaveTester =
         new LoadSaveTester( JobExecutorMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
   }
@@ -98,7 +99,7 @@ public class JobExecutorMetaTest {
   }
 
   @Test
-  public void testRemoveHopFrom() throws Exception {
+  public void testRemoveHopFrom() {
     JobExecutorMeta jobExecutorMeta = new JobExecutorMeta();
     jobExecutorMeta.setExecutionResultTargetStepMeta( new StepMeta() );
     jobExecutorMeta.setResultRowsTargetStepMeta( new StepMeta() );
@@ -120,7 +121,7 @@ public class JobExecutorMetaTest {
 
     doReturn( jobMeta ).when( jobExecutorMeta ).loadJobMetaProxy( any( JobExecutorMeta.class ),
             any( Repository.class ), any( VariableSpace.class ) );
-    when( jobMeta.exportResources( any( JobMeta.class ), any( Map.class ), any( ResourceNamingInterface.class ),
+    when( jobMeta.exportResources( any( JobMeta.class ), anyMap(), any( ResourceNamingInterface.class ),
             any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
 
     jobExecutorMeta.exportResources( null, null, null, null, null );
@@ -146,7 +147,7 @@ public class JobExecutorMetaTest {
     meta.setVariable( param3, childValue3 );
 
     Mockito.doReturn( meta ).when( repository )
-      .loadJob( Mockito.eq( "test.kjb" ), Mockito.anyObject(), Mockito.anyObject(), Mockito.anyObject() );
+      .loadJob( Mockito.eq( "test.kjb" ), Mockito.any(), Mockito.any(), Mockito.any() );
 
     VariableSpace parentSpace = new Variables();
     parentSpace.setVariable( param1, parentValue1 );
@@ -161,7 +162,7 @@ public class JobExecutorMetaTest {
 
     jobExecutorMeta.getParameters().setInheritingAllVariables( false );
     jobMeta = JobExecutorMeta.loadJobMeta( jobExecutorMeta, repository, parentSpace );
-    Assert.assertEquals( null, jobMeta.getVariable( param1 ) );
+    assertNull( jobMeta.getVariable( param1 ) );
     Assert.assertEquals( parentValue2, jobMeta.getVariable( param2 ) );
     Assert.assertEquals( childValue3, jobMeta.getVariable( param3 ) );
 

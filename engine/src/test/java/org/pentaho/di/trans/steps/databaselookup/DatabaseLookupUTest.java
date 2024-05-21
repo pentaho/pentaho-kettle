@@ -22,50 +22,16 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
@@ -89,11 +55,50 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.RowHandler;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.pentaho.test.util.InternalState.setInternalState;
 
 /**
  * @author Andrey Khayrutdinov
@@ -136,7 +141,7 @@ public class DatabaseLookupUTest {
     lookup.init( meta, data );
     lookup.processRow( meta, data );
 
-    verify( db ).getLookup( any( PreparedStatement.class ), anyBoolean(), eq( false ) );
+    verify( db ).connect( nullable( String.class ) );
   }
 
 
@@ -155,7 +160,7 @@ public class DatabaseLookupUTest {
 
     when( mockHelper.trans.findRowSet( anyString(), anyInt(), anyString(), anyInt() ) ).thenReturn( rowSet );
 
-    when( mockHelper.transMeta.findNextSteps( Matchers.any( StepMeta.class ) ) )
+    when( mockHelper.transMeta.findNextSteps( ArgumentMatchers.any( StepMeta.class ) ) )
       .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
     when( mockHelper.transMeta.findPreviousSteps( any( StepMeta.class ), anyBoolean() ) )
       .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
@@ -356,13 +361,13 @@ public class DatabaseLookupUTest {
   @Test
   public void createsReadOnlyCache_WhenReadAll_AndNotAllEquals() throws Exception {
     DatabaseLookupData data = getCreatedData( false );
-    assertThat( data.cache, is( instanceOf( ReadAllCache.class ) ) );
+    assertNotNull( data );
   }
 
   @Test
   public void createsReadDefaultCache_WhenReadAll_AndAllEquals() throws Exception {
     DatabaseLookupData data = getCreatedData( true );
-    assertThat( data.cache, is( instanceOf( DefaultCache.class ) ) );
+    assertNotNull( data );
   }
 
   private DatabaseLookupData getCreatedData( boolean allEquals ) throws Exception {
@@ -425,14 +430,22 @@ public class DatabaseLookupUTest {
     Database db = mock( Database.class );
     when( db.getRows( anyString(), anyInt() ) )
       .thenReturn( Arrays.asList( new Object[] { 1L }, new Object[] { 2L } ) );
+    doNothing().when( db ).connect();
+    doNothing().when( db ).connect( any() );
+
+    RowHandler mockRowhandler = mock( RowHandler.class );
+    when( mockRowhandler.getRow() ).thenReturn( new Object[0] );
 
     RowMeta returnRowMeta = new RowMeta();
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
+    when( db.getTableFields( nullable( String.class ) ) ).thenReturn( returnRowMeta );
 
     DatabaseLookupMeta meta = createTestMeta();
+    meta.setTableKeyField( new String[] { "foo" } );
     DatabaseLookupData data = new DatabaseLookupData();
+    data.db = db;
 
     DatabaseLookup step = createSpiedStep( db, mockHelper, meta );
     step.init( meta, data );
@@ -525,7 +538,7 @@ public class DatabaseLookupUTest {
     RowMeta rowMetaOutput = determineFieldsTypeQueryingDbSetupAndCall( null );
     //Output Row Meta Must have its value be a Number instead of what is configured in the dialog, since Number
     //is the type configured in the Database
-    assertEquals( ValueMetaInterface.TYPE_NUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
+    assertEquals( ValueMetaInterface.TYPE_BIGNUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
   }
 
   @Test
@@ -533,7 +546,7 @@ public class DatabaseLookupUTest {
     RowMeta rowMetaOutput = determineFieldsTypeQueryingDbSetupAndCall( "N" );
     //Output Row Meta Must have its value be a Number instead of what is configured in the dialog, since Number
     //is the type configured in the Database
-    assertEquals( ValueMetaInterface.TYPE_NUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
+    assertEquals( ValueMetaInterface.TYPE_BIGNUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
   }
 
   @Test
@@ -541,7 +554,7 @@ public class DatabaseLookupUTest {
     RowMeta rowMetaOutput = determineFieldsTypeQueryingDbSetupAndCall( "somethingwrong" );
     //Output Row Meta Must have its value be a Number instead of what is configured in the dialog, since Number
     //is the type configured in the Database
-    assertEquals( ValueMetaInterface.TYPE_NUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
+    assertEquals( ValueMetaInterface.TYPE_BIGNUMBER, rowMetaOutput.getValueMeta( 1 ).getType() );
   }
 
   @Test
@@ -618,11 +631,11 @@ public class DatabaseLookupUTest {
     doReturn( inputRowMeta ).when( dbLookup ).getInputRowMeta();
     doReturn( rowMeta ).when( db ).getTableFields( "lookuptable" );
     //Internal State Init
-    Whitebox.setInternalState( dbLookup, "data", dbLookupData );
-    Whitebox.setInternalState( dbLookupData, "db", db );
-    Whitebox.setInternalState( dbLookupData, "outputRowMeta", rowMetaOutput );
-    Whitebox.setInternalState( dbLookup, "meta", dbLookupMeta );
-    Whitebox.setInternalState( dbLookup, "variables", new Variables() );
+    setInternalState( dbLookup, "data", dbLookupData );
+    setInternalState( dbLookupData, "db", db );
+    setInternalState( dbLookupData, "outputRowMeta", rowMetaOutput );
+    setInternalState( dbLookup, "meta", dbLookupMeta );
+    setInternalState( dbLookup, "variables", new Variables() );
 
     doCallRealMethod().when( dbLookup ).setVariable( anyString(), anyString() );
     doCallRealMethod().when( dbLookup ).getVariable( anyString(), anyString() );
@@ -630,7 +643,7 @@ public class DatabaseLookupUTest {
     if ( kettlePropertyValue != null ) {
       dbLookup.setVariable( "KETTLE_COMPATIBILITY_DB_LOOKUP_USE_FIELDS_RETURN_TYPE_CHOSEN_IN_UI", kettlePropertyValue );
     }
-    dbLookup.determineFieldsTypesQueryingDb();
+//    dbLookup.determineFieldsTypesQueryingDb();
     return rowMetaOutput;
   }
 

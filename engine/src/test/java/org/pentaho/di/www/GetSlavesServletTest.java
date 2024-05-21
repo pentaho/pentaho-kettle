@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -56,7 +56,6 @@ public class GetSlavesServletTest {
   }
 
   @Test
-  @SuppressWarnings( "ResultOfMethodCallIgnored" )
   public void testUpdateActivityStatusInDoGet() throws Exception {
     LogChannelInterface log = mock( LogChannelInterface.class );
     ServletOutputStream outputStream = mock( ServletOutputStream.class );
@@ -83,12 +82,12 @@ public class GetSlavesServletTest {
 
     verify( activeSlaveServer ).getStatus();
     verify( activeServerDetection, never() ).setActive( false );
-    verify( activeServerDetection, never() ).setLastInactiveDate( anyObject() );
+    verify( activeServerDetection, never() ).setLastInactiveDate( any() );
     verify( activeServerDetection ).getXML();
 
     verify( inactiveSlaveServer ).getStatus();
     verify( inactiveServerDetection ).setActive( false );
-    verify( inactiveServerDetection ).setLastInactiveDate( anyObject() );
+    verify( inactiveServerDetection ).setLastInactiveDate( any() );
     verify( inactiveServerDetection ).getXML();
   }
 }

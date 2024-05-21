@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,21 +22,8 @@
 
 package org.pentaho.di.trans.steps.loadfileinput;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
-import javax.tools.FileObject;
-
 import junit.framework.TestCase;
-
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -46,6 +33,16 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
+
+import javax.tools.FileObject;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for LoadFileInputMeta class
@@ -67,15 +64,13 @@ public class PDI_6976_Test {
     List<CheckResultInterface> validationResults = mock( List.class );
 
     // Check we do not get validation errors
-    doAnswer( new Answer<Object>() {
-      @Override
-      public Object answer( InvocationOnMock invocation ) throws Throwable {
-        if ( ( (CheckResultInterface) invocation.getArguments()[0] ).getType() != CheckResultInterface.TYPE_RESULT_OK ) {
-          TestCase.fail( "We've got validation error" );
-        }
-
-        return null;
+    doAnswer( (Answer<Object>) invocation -> {
+      if ( ( (CheckResultInterface) invocation.getArguments()[ 0 ] ).getType()
+        != CheckResultInterface.TYPE_RESULT_OK ) {
+        TestCase.fail( "We've got validation error" );
       }
+
+      return null;
     } ).when( validationResults ).add( any( CheckResultInterface.class ) );
 
     spy.check( validationResults, mock( TransMeta.class ), mock( StepMeta.class ), mock( RowMetaInterface.class ),

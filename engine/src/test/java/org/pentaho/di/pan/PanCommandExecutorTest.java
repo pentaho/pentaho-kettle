@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,12 +28,19 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.extension.ExtensionPointInterface;
+import org.pentaho.di.core.extension.ExtensionPointPluginType;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.repository.Repository;
@@ -42,38 +49,23 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.extension.ExtensionPointInterface;
-import org.pentaho.di.core.extension.ExtensionPointPluginType;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
 
 import java.io.File;
 import java.util.Base64;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyVararg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.when;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( BaseMessages.class )
 @Ignore( "Failing due to PowerMock" )
 public class PanCommandExecutorTest {
 
@@ -91,6 +83,7 @@ public class PanCommandExecutorTest {
   private IMetaStore repoMetaStore;
   private RepositoryDirectoryInterface directoryInterface;
   private PanCommandExecutor mockedPanCommandExecutor;
+  private MockedStatic<BaseMessages> baseMessageMockStatic;
   interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
 
@@ -113,15 +106,15 @@ public class PanCommandExecutorTest {
 
     // mock actions from PanCommandExecutor
     when( mockedPanCommandExecutor.getMetaStore() ).thenReturn( metastore );
-    when( mockedPanCommandExecutor.loadRepositoryDirectory( anyObject(), anyString(), anyString(), anyString(), anyString() ) )
+    when( mockedPanCommandExecutor.loadRepositoryDirectory( any(), anyString(), anyString(), anyString(), anyString() ) )
       .thenReturn( directoryInterface );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
-    when( mockedPanCommandExecutor.loadTransFromFilesystem( anyString(), anyString(), anyString(), anyObject() ) ).thenCallRealMethod();
-    when( mockedPanCommandExecutor.loadTransFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
-    when( mockedPanCommandExecutor.decodeBase64ToZipFile( anyObject(), anyBoolean() ) ).thenCallRealMethod();
-    when( mockedPanCommandExecutor.decodeBase64ToZipFile( anyObject(), anyString() ) ).thenCallRealMethod();
-
+    doCallRealMethod().when( mockedPanCommandExecutor ).loadTransFromFilesystem( anyString(), anyString(), anyString(), any() );
+    doCallRealMethod().when( mockedPanCommandExecutor ).loadTransFromRepository( any(), anyString(), anyString() );
+    doCallRealMethod().when( mockedPanCommandExecutor ).decodeBase64ToZipFile( any(), anyBoolean() );
+    doCallRealMethod().when( mockedPanCommandExecutor ).decodeBase64ToZipFile( any(), anyString() );
+    baseMessageMockStatic = mockStatic( BaseMessages.class );
   }
 
   @After
@@ -132,6 +125,7 @@ public class PanCommandExecutorTest {
     repoMetaStore = null;
     directoryInterface = null;
     mockedPanCommandExecutor = null;
+    baseMessageMockStatic.close();
   }
 
   @Test
@@ -139,7 +133,7 @@ public class PanCommandExecutorTest {
 
     // mock Trans loading from repo
     TransMeta t = new TransMeta( getClass().getResource( SAMPLE_KTR ).getPath() );
-    when( repository.loadTransformation( anyString(), anyObject(), anyObject(), anyBoolean(), anyString() ) ).thenReturn( t );
+    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), anyString() ) ).thenReturn( t );
 
     // test
     Trans trans = mockedPanCommandExecutor.loadTransFromRepository( repository, "", SAMPLE_KTR );
@@ -166,7 +160,7 @@ public class PanCommandExecutorTest {
     String fileName = "test.ktr";
     File zipFile = new File( getClass().getResource( "testKtrArchive.zip" ).toURI() );
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
-    Trans trans = mockedPanCommandExecutor.loadTransFromFilesystem( null, fileName, null, base64Zip );
+    Trans trans = mockedPanCommandExecutor.loadTransFromFilesystem( "", fileName, "", base64Zip );
     assertNotNull( trans );
   }
 
@@ -176,11 +170,10 @@ public class PanCommandExecutorTest {
     // Create Mock Objects
     Params params = mock( Params.class );
     PanCommandExecutor panCommandExecutor = new PanCommandExecutor( Kitchen.class );
-    PowerMockito.mockStatic( BaseMessages.class );
 
     // Mock returns
     when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
-    when( BaseMessages.getString( any( Class.class ), anyString(), anyVararg() ) ).thenReturn( "" );
+    when( BaseMessages.getString( any( Class.class ), anyString(), any() ) ).thenReturn( "" );
 
     try {
       Result result = panCommandExecutor.execute( params, null );

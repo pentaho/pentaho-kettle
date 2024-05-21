@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +79,7 @@ public class CsvInputTest extends CsvInputUnitTestBase {
   public void testFileIsReleasedAfterProcessing() throws Exception {
     // Create a file with some content to be processed
     TextFileInputField[] inputFileFields = createInputFileFields( "f1", "f2", "f3" );
-    String fileContents = "Something" + DELIMITER + "" + DELIMITER + "The former was empty!";
+    String fileContents = "Something" + DELIMITER + DELIMITER + "The former was empty!";
     File tmpFile = createTestFile( ENCODING, fileContents );
 
     // Create and configure the step

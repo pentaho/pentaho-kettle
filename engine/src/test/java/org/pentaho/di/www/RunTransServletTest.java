@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,11 +25,9 @@ package org.pentaho.di.www;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -53,16 +51,15 @@ import java.util.StringTokenizer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import static org.mockito.ArgumentMatchers.any;
 
-@RunWith( MockitoJUnitRunner.class )
 public class RunTransServletTest {
 
-  @Mock
+
   TransMeta transMeta;
-  @Mock
   Trans trans;
 
   List<StepMetaDataCombi> stepList;
@@ -82,6 +79,8 @@ public class RunTransServletTest {
 
   @Before
   public void setup() throws Exception {
+    transMeta = mock( TransMeta.class );
+    trans = mock( Trans.class );
     runTransServlet = new RunTransServlet();
     outData = new ByteArrayOutputStream();
     out = new PrintWriter( outData );
@@ -160,11 +159,11 @@ public class RunTransServletTest {
     Mockito.when( request.getParameterValues( testParameter ) ).thenReturn( new String[] { testValue } );
 
     RunTransServlet runTransServlet = Mockito.mock( RunTransServlet.class );
-    Mockito.doCallRealMethod().when( runTransServlet ).doGet( Mockito.anyObject(), Mockito.anyObject() );
+    Mockito.doCallRealMethod().when( runTransServlet ).doGet( any(), any() );
 
     Trans trans =
       new Trans( transMeta, new SimpleLoggingObject( RunTransServlet.CONTEXT_PATH, LoggingObjectType.CARTE, null ) );
-    Mockito.when( runTransServlet.createTrans( Mockito.anyObject(), Mockito.anyObject() ) ).thenReturn( trans );
+    Mockito.when( runTransServlet.createTrans( any(), any() ) ).thenReturn( trans );
     Mockito.when( transMeta.getParameterValue( Mockito.eq( testParameter ) ) ).thenReturn( testValue );
 
     runTransServlet.log = new LogChannel( "RunTransServlet" );

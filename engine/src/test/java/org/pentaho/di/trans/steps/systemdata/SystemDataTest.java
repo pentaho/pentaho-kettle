@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,10 @@
 
 package org.pentaho.di.trans.steps.systemdata;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -44,11 +35,19 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * User: Dzmitry Stsiapanau Date: 1/20/14 Time: 12:12 PM
  */
 public class SystemDataTest {
-  private class SystemDataHandler extends SystemData {
+  private static class SystemDataHandler extends SystemData {
 
     Object[] row = new Object[] { "anyData" };
     Object[] outputRow;
@@ -68,7 +67,7 @@ public class SystemDataTest {
      * have to copy the data to the alternate splits: rowsets 1 through n.
      */
     @Override
-    public Object[] getRow() throws KettleException {
+    public Object[] getRow() {
       return row;
     }
 
@@ -98,7 +97,7 @@ public class SystemDataTest {
   @Before
   public void setUp() throws Exception {
     stepMockHelper =
-      new StepMockHelper<SystemDataMeta, SystemDataData>( "SYSTEM_DATA TEST", SystemDataMeta.class,
+      new StepMockHelper<>( "SYSTEM_DATA TEST", SystemDataMeta.class,
         SystemDataData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       stepMockHelper.logChannelInterface );

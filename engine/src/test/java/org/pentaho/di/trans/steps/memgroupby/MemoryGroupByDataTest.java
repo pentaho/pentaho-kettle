@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,25 +26,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import java.util.HashMap;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by bmorrise on 2/11/16.
  */
-@RunWith( MockitoJUnitRunner.class ) public class MemoryGroupByDataTest {
-
-  private MemoryGroupByData data = new MemoryGroupByData();
+@RunWith( MockitoJUnitRunner.class )
+public class MemoryGroupByDataTest {
+  private final MemoryGroupByData data = new MemoryGroupByData();
 
   @Mock private RowMetaInterface groupMeta;
   @Mock private ValueMetaInterface valueMeta;
@@ -53,11 +51,9 @@ import static org.junit.Assert.assertEquals;
     data.groupMeta = groupMeta;
     when( groupMeta.size() ).thenReturn( 1 );
     when( groupMeta.getValueMeta( anyInt() ) ).thenReturn( valueMeta );
-    when( valueMeta.convertToNormalStorageType( anyObject() ) ).then( new Answer<Object>() {
-      @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
-        Object argument = invocation.getArguments()[0];
-        return new String( (byte[]) argument );
-      }
+    when( valueMeta.convertToNormalStorageType( any() ) ).then( invocation -> {
+      Object argument = invocation.getArguments()[0];
+      return new String( (byte[]) argument );
     } );
   }
 

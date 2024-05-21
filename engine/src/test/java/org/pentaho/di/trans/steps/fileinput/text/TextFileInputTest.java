@@ -68,7 +68,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -152,10 +152,8 @@ public class TextFileInputTest {
 
   @Test
   public void readWrappedInputWithoutHeaders() throws Exception {
-    final String content = new StringBuilder()
-      .append( "r1c1" ).append( '\n' ).append( ";r1c2\n" )
-      .append( "r2c1" ).append( '\n' ).append( ";r2c2" )
-      .toString();
+    final String content = "r1c1" + '\n' + ";r1c2\n"
+      + "r2c1" + '\n' + ";r2c2";
     final String virtualFile = createVirtualFile( "pdi-2607.txt", content );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ) );
@@ -225,11 +223,9 @@ public class TextFileInputTest {
   }
   @Test
   public void testErrorHandlerLineNumber() throws Exception {
-    final String content = new StringBuilder()
-      .append( "123" ).append( '\n' ).append( "333\n" )
-      .append( "345" ).append( '\n' ).append( "773\n" )
-      .append( "aaa" ).append( '\n' ).append( "444" )
-      .toString();
+    final String content = "123" + '\n' + "333\n"
+      + "345" + '\n' + "773\n"
+      + "aaa" + '\n' + "444";
     final String virtualFile = createVirtualFile( "pdi-2607.txt", content );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ) );
@@ -250,8 +246,7 @@ public class TextFileInputTest {
 
   @Test
   public void testHandleOpenFileException() throws Exception {
-    final String content = new StringBuilder()
-      .append( "123" ).append( '\n' ).append( "333\n" ).toString();
+    final String content = "123" + '\n' + "333\n";
     final String virtualFile = createVirtualFile( "pdi-16697.txt", content );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ) );
@@ -386,9 +381,9 @@ public class TextFileInputTest {
     String virtualFile = createVirtualFile( "pdi-17267.txt", null );
     TextFileInputData mockTFID = createDataObject( virtualFile, ";", null );
     mockTFID.lineBuffer = new ArrayList<>();
-    mockTFID.lineBuffer.add( new TextFileLine( null, 0l, null ) );
-    mockTFID.lineBuffer.add( new TextFileLine( null, 0l, null ) );
-    mockTFID.lineBuffer.add( new TextFileLine( null, 0l, null ) );
+    mockTFID.lineBuffer.add( new TextFileLine( null, 0L, null ) );
+    mockTFID.lineBuffer.add( new TextFileLine( null, 0L, null ) );
+    mockTFID.lineBuffer.add( new TextFileLine( null, 0L, null ) );
     mockTFID.filename = "";
 
     FileContent mockFileContent = mock( FileContent.class );
@@ -409,10 +404,9 @@ public class TextFileInputTest {
   @Test
   public void fieldsWithLineBreaksTest() throws Exception {
 
-    final String content = new StringBuilder()
-      .append( "aaa,\"b" ).append( '\n' )
-      .append( "bb\",ccc" ).append( '\n' )
-      .append( "zzz,yyy,xxx" ).toString();
+    final String content = "aaa,\"b" + '\n'
+      + "bb\",ccc" + '\n'
+      + "zzz,yyy,xxx";
     final String virtualFile = createVirtualFile( "pdi-18175.txt", content );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ), field( "col3" ) );
@@ -429,11 +423,10 @@ public class TextFileInputTest {
   @Test
   public void fieldsWithLineBreaksAndNoEmptyLinesTest() throws Exception {
 
-    final String content = new StringBuilder()
-      .append( "aaa,\"b" ).append( '\n' )
-      .append( "bb\",ccc" ).append( '\n' )
-      .append( '\n' )
-      .append( "zzz,yyy,xxx" ).toString();
+    final String content = "aaa,\"b" + '\n'
+      + "bb\",ccc" + '\n'
+      + '\n'
+      + "zzz,yyy,xxx";
     final String virtualFile = createVirtualFile( "pdi-18175.txt", content );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ), field( "col3" ) );
@@ -452,11 +445,10 @@ public class TextFileInputTest {
   @Test
   public void fieldsWithLineBreaksWithEmptyLinesTest() throws Exception {
 
-    final String content = new StringBuilder()
-      .append( "aaa,\"b" ).append( '\n' )
-      .append( "bb\",ccc" ).append( '\n' )
-      .append( '\n' )
-      .append( "zzz,yyy,xxx" ).toString();
+    final String content = "aaa,\"b" + '\n'
+      + "bb\",ccc" + '\n'
+      + '\n'
+      + "zzz,yyy,xxx";
     final String virtualFile = createVirtualFile( "pdi-18175.txt", content );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ), field( "col3" ) );

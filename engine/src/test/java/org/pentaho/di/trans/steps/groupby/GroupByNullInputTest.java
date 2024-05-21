@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.groupby;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,7 +38,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.util.Arrays;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class GroupByNullInputTest {

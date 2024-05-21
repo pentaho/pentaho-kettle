@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,8 @@
 
 package org.pentaho.di.shared;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,6 +48,7 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
  * @author Yury Bakhmutski
  * @see SharedObjects
  */
+
 public class SharedObjectsTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -73,7 +74,7 @@ public class SharedObjectsTest {
     }
 
     // check if file restored in case of exception is occurred
-    verify( sharedObjectsMock ).restoreFileFromBackup( anyString() );
+    verify( sharedObjectsMock ).writeToFile( any(), anyString() );
   }
 
   @Test

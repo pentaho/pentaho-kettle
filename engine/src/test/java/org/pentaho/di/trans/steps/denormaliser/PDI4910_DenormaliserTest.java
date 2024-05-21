@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,19 +39,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class PDI4910_DenormaliserTest {
 
   private StepMockHelper<DenormaliserMeta, DenormaliserData> mockHelper;
-  private Denormaliser denormaliser;
 
   @Before
   public void init() {
-    mockHelper = new StepMockHelper<DenormaliserMeta, DenormaliserData>( "Denormalizer", DenormaliserMeta.class, DenormaliserData.class );
+    mockHelper = new StepMockHelper<>( "Denormalizer", DenormaliserMeta.class, DenormaliserData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
   }
@@ -67,8 +65,8 @@ public class PDI4910_DenormaliserTest {
     // init step data
     DenormaliserData stepData = new DenormaliserData();
     stepData.keyFieldNr = 0;
-    stepData.keyValue = new HashMap<String, List<Integer>>();
-    stepData.keyValue.put( "1", Arrays.asList( new Integer[] { 0, 1 } ) );
+    stepData.keyValue = new HashMap<>();
+    stepData.keyValue.put( "1", Arrays.asList( 0, 1 ) );
     stepData.fieldNameIndex = new int[] { 1, 2 };
     stepData.inputRowMeta = new RowMeta();
     ValueMetaDate outDateField1 = new ValueMetaDate( "date_field[yyyy-MM-dd]" );
@@ -100,7 +98,7 @@ public class PDI4910_DenormaliserTest {
     Object[] rowData = new Object[] { 1L, "2000-10-20", "2000/10/20" };
 
     // init step
-    denormaliser = new Denormaliser( mockHelper.stepMeta, stepData,
+    Denormaliser denormaliser = new Denormaliser( mockHelper.stepMeta, stepData,
       0, mockHelper.transMeta, mockHelper.trans );
 
     // inject step meta

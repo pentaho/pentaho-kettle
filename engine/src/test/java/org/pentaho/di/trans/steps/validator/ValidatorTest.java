@@ -3,7 +3,7 @@
  *  *
  *  * Pentaho Data Integration
  *  *
- *  * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ *  * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *  *
  *  *******************************************************************************
  *  *
@@ -27,10 +27,9 @@ package org.pentaho.di.trans.steps.validator;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -68,7 +67,7 @@ public class ValidatorTest {
   @Before
   public void setUp() throws Exception {
     mockHelper =
-      new StepMockHelper<ValidatorMeta, ValidatorData>( "Validator", ValidatorMeta.class, ValidatorData.class );
+      new StepMockHelper<>( "Validator", ValidatorMeta.class, ValidatorData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
@@ -106,7 +105,7 @@ public class ValidatorTest {
 
     doReturn( new ValueMetaString( "field" ) ).when( validator ).createValueMeta( anyString(), anyInt() );
     doReturn( new ValueMetaString( "field" ) ).when( validator ).cloneValueMeta(
-      (ValueMetaInterface) anyObject(), anyInt() );
+      any(), anyInt() );
 
     validator.init( meta, data );
   }

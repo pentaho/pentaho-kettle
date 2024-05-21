@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,18 +27,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.TextFileInputFieldValidator;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,8 +51,6 @@ import static org.junit.Assert.assertTrue;
    * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 @Deprecated
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class TextFileInputMetaLoadSaveTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -130,7 +124,7 @@ public class TextFileInputMetaLoadSaveTest {
     List<String> xmlAttributes = Collections.emptyList();
     List<String> repoAttributes = Collections.emptyList();
 
-    Map<String, String> getters = new HashMap<String, String>(  );
+    Map<String, String> getters = new HashMap<>();
     getters.put( "header", "hasHeader" );
     getters.put( "footer", "hasFooter" );
     getters.put( "noEmptyLines", "noEmptyLines" );
@@ -147,7 +141,7 @@ public class TextFileInputMetaLoadSaveTest {
     getters.put( "extensionFieldName", "getExtensionField" );
     getters.put( "sizeFieldName", "getSizeField" );
 
-    Map<String, String> setters = new HashMap<String, String>(  );
+    Map<String, String> setters = new HashMap<>();
     setters.put( "fileName", "setFileNameForTest" );
     setters.put( "errorFilesExtension", "setErrorLineFilesExtension" );
     setters.put( "isaddresult", "setAddResultFile" );
@@ -162,15 +156,17 @@ public class TextFileInputMetaLoadSaveTest {
 
     Map<String, FieldLoadSaveValidator<?>> attributeValidators = Collections.emptyMap();
 
-    Map<String, FieldLoadSaveValidator<?>> typeValidators = new HashMap<String, FieldLoadSaveValidator<?>>(  );
-    typeValidators.put( TextFileFilter[].class.getCanonicalName(), new ArrayLoadSaveValidator<TextFileFilter>( new TextFileFilterValidator() ) );
-    typeValidators.put( TextFileInputField[].class.getCanonicalName(), new ArrayLoadSaveValidator<TextFileInputField>( new TextFileInputFieldValidator() ) );
+    Map<String, FieldLoadSaveValidator<?>> typeValidators = new HashMap<>();
+    typeValidators.put( TextFileFilter[].class.getCanonicalName(),
+      new ArrayLoadSaveValidator<>( new TextFileFilterValidator() ) );
+    typeValidators.put( TextFileInputField[].class.getCanonicalName(),
+      new ArrayLoadSaveValidator<>( new TextFileInputFieldValidator() ) );
 
     assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
     tester =
-        new LoadSaveTester<TextFileInputMeta>( TextFileInputMeta.class, commonAttributes, xmlAttributes,
-            repoAttributes, getters, setters, attributeValidators, typeValidators );
+      new LoadSaveTester<>( TextFileInputMeta.class, commonAttributes, xmlAttributes,
+        repoAttributes, getters, setters, attributeValidators, typeValidators );
   }
 
   @Test
