@@ -22,18 +22,6 @@
 
 package org.pentaho.di.repository.kdr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -44,6 +32,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -53,6 +42,18 @@ import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 public class KettleDatabaseRepositoryTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -318,5 +319,21 @@ public class KettleDatabaseRepositoryTest {
     assertEquals( ValueMetaInterface.TYPE_INTEGER, insertRecord.getValueMeta( 2 ).getType() );
     assertEquals( KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_CONDITION, insertRecord.getValueMeta( 2 ).getName() );
     assertEquals( Long.valueOf( 468 ), insertRecord.getInteger( 2 ) );
+  }
+
+  /**
+   * Regression for PDI-19730.
+   */
+  @Test(expected = IdNotFoundException.class )
+  public void getJobId_nullDirectory() throws KettleException {
+    repo.getJobId( "job1", null );
+  }
+
+  /**
+   * Regression for PDI-19730.
+   */
+  @Test(expected = IdNotFoundException.class)
+  public void getTransId_nullDirectory() throws KettleException {
+    repo.getTransformationID( "trans1", null );
   }
 }
