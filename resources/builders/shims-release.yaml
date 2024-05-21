@@ -17,7 +17,7 @@ buildProperties:
   ATTACH_LOGS                    : false
   USE_MINION_JOBS                : true
   JOB_ITEM_DEFAULTS              :
-    dockerImage                  : jenkins-build/maven/open-jdk/11
+    dockerImage                  : jenkins-build/maven/open-jdk/17
 
   # Maven
   MAVEN_DEFAULT_DIRECTIVES       : clean deploy
