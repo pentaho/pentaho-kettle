@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,7 +39,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -63,7 +63,7 @@ public class BaseCartePluginTest {
   public void before() {
     baseCartePlugin = spy( new BaseCartePlugin() {
       @Override
-      public void handleRequest( CarteRequest request ) throws IOException {
+      public void handleRequest( CarteRequest request ) {
       }
 
       @Override
@@ -151,7 +151,7 @@ public class BaseCartePluginTest {
   }
 
   @Test
-  public void testGetService() throws Exception {
+  public void testGetService() {
     when( baseCartePlugin.getContextPath() )
       .thenReturn( "/Path" );
     assertThat( baseCartePlugin.getService().startsWith( "/Path" ), is( true ) );

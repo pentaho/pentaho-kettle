@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,35 +22,12 @@
 
 package org.pentaho.di.trans.step;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.mockito.Matchers.any;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.QueueRowSet;
@@ -74,6 +51,34 @@ import org.pentaho.di.trans.BasePartitioner;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.www.SocketRepository;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
 public class BaseStepTest {
@@ -103,20 +108,16 @@ public class BaseStepTest {
    */
   @Test
   public void testBaseStepPutRowLocalSpecialPartitioning() throws KettleException {
-    List<StepMeta> stepMetas = new ArrayList<StepMeta>();
+    List<StepMeta> stepMetas = new ArrayList<>();
     stepMetas.add( mockHelper.stepMeta );
     stepMetas.add( mockHelper.stepMeta );
     StepPartitioningMeta stepPartitioningMeta = spy( new StepPartitioningMeta() );
     BasePartitioner partitioner = mock( BasePartitioner.class );
 
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenAnswer(
-      new Answer<LogChannelInterface>() {
-
-        @Override
-        public LogChannelInterface answer( InvocationOnMock invocation ) throws Throwable {
-          ( (BaseStep) invocation.getArguments()[ 0 ] ).getLogLevel();
-          return mockHelper.logChannelInterface;
-        }
+      (Answer<LogChannelInterface>) invocation -> {
+        ( (BaseStep) invocation.getArguments()[ 0 ] ).getLogLevel();
+        return mockHelper.logChannelInterface;
       } );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
     when( mockHelper.transMeta.findNextSteps( any( StepMeta.class ) ) ).thenReturn( stepMetas );
@@ -145,8 +146,7 @@ public class BaseStepTest {
 
     BlockingRowSet[] rowSet =
       { new BlockingRowSet( 2 ), new BlockingRowSet( 2 ), new BlockingRowSet( 2 ), new BlockingRowSet( 2 ) };
-    List<RowSet> outputRowSets = new ArrayList<RowSet>();
-    outputRowSets.addAll( Arrays.asList( rowSet ) );
+    List<RowSet> outputRowSets = new ArrayList<>( Arrays.asList( rowSet ) );
 
     BaseStep baseStep =
       new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
@@ -165,13 +165,9 @@ public class BaseStepTest {
   @Test
   public void testBaseStepGetLogLevelWontThrowNPEWithNullLog() {
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenAnswer(
-      new Answer<LogChannelInterface>() {
-
-        @Override
-        public LogChannelInterface answer( InvocationOnMock invocation ) throws Throwable {
-          ( (BaseStep) invocation.getArguments()[ 0 ] ).getLogLevel();
-          return mockHelper.logChannelInterface;
-        }
+      (Answer<LogChannelInterface>) invocation -> {
+        ( (BaseStep) invocation.getArguments()[ 0 ] ).getLogLevel();
+        return mockHelper.logChannelInterface;
       } );
     new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans )
       .getLogLevel();
@@ -185,17 +181,14 @@ public class BaseStepTest {
 
     // Create thread to dynamically add listeners
     final AtomicBoolean done = new AtomicBoolean( false );
-    Thread addListeners = new Thread() {
-      @Override
-      public void run() {
-        while ( !done.get() ) {
-          baseStep.addStepListener( mock( StepListener.class ) );
-          synchronized ( done ) {
-            done.notify();
-          }
+    Thread addListeners = new Thread( () -> {
+      while ( !done.get() ) {
+        baseStep.addStepListener( mock( StepListener.class ) );
+        synchronized ( done ) {
+          done.notify();
         }
       }
-    };
+    } );
 
     // Mark start and stop while listeners are being added
     try {
@@ -234,20 +227,18 @@ public class BaseStepTest {
     final AtomicBoolean complete = new AtomicBoolean( false );
 
     final int FILES_AMOUNT = 10 * 1000;
-    Thread filesProducer = new Thread( new Runnable() {
-      @Override public void run() {
-        try {
-          for ( int i = 0; i < FILES_AMOUNT; i++ ) {
-            step.addResultFile( new ResultFile( 0, new NonAccessibleFileObject( Integer.toString( i ) ), null, null ) );
-            try {
-              Thread.sleep( 1 );
-            } catch ( Exception e ) {
-              fail( e.getMessage() );
-            }
+    Thread filesProducer = new Thread( () -> {
+      try {
+        for ( int i = 0; i < FILES_AMOUNT; i++ ) {
+          step.addResultFile( new ResultFile( 0, new NonAccessibleFileObject( Integer.toString( i ) ), null, null ) );
+          try {
+            Thread.sleep( 1 );
+          } catch ( Exception e ) {
+            fail( e.getMessage() );
           }
-        } finally {
-          complete.set( true );
         }
+      } finally {
+        complete.set( true );
       }
     } );
 
@@ -294,15 +285,15 @@ public class BaseStepTest {
       assertTrue( meta.getName(), meta2.exists( meta ) );
     }
     // whereas instances differ
-    assertFalse( meta1 == meta2 );
+    assertNotSame( meta1, meta2 );
   }
 
   @Test
   public void testBuildLog() throws KettleValueException {
     BaseStep testObject = new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
       mockHelper.trans );
-    Date startDate = new Date( (long) 123 );
-    Date endDate = new Date( (long) 125 );
+    Date startDate = new Date( 123 );
+    Date endDate = new Date( 125 );
     RowMetaAndData result = testObject.buildLog( "myStepName", 13, 123, 234, 345, 456, 567, startDate, endDate );
 
     assertNotNull( result );
@@ -310,17 +301,17 @@ public class BaseStepTest {
     assertEquals( ValueMetaInterface.TYPE_STRING, result.getValueMeta( 0 ).getType() );
     assertEquals( "myStepName", result.getString( 0, "default" ) );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 1 ).getType() );
-    assertEquals( new Double( 13.0 ), Double.valueOf( result.getNumber( 1, 0.1 ) ) );
+    assertEquals( (Double) 13.0 , Double.valueOf( result.getNumber( 1, 0.1 ) ) );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 2 ).getType() );
-    assertEquals( new Double( 123 ), Double.valueOf( result.getNumber( 2, 0.1 ) ) );
+    assertEquals( (Double) 123.0 , Double.valueOf( result.getNumber( 2, 0.1 ) ) );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 3 ).getType() );
-    assertEquals( new Double( 234 ), Double.valueOf( result.getNumber( 3, 0.1 ) ) );
+    assertEquals( (Double) 234.0, Double.valueOf( result.getNumber( 3, 0.1 ) ) );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 4 ).getType() );
-    assertEquals( new Double( 345 ), Double.valueOf( result.getNumber( 4, 0.1 ) ) );
+    assertEquals( (Double) 345.0, Double.valueOf( result.getNumber( 4, 0.1 ) ) );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 5 ).getType() );
-    assertEquals( new Double( 456 ), Double.valueOf( result.getNumber( 5, 0.1 ) ) );
+    assertEquals( (Double) 456.0, Double.valueOf( result.getNumber( 5, 0.1 ) ) );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 6 ).getType() );
-    assertEquals( new Double( 567 ), Double.valueOf( result.getNumber( 6, 0.1 ) ) );
+    assertEquals( (Double) 567.0, Double.valueOf( result.getNumber( 6, 0.1 ) ) );
     assertEquals( ValueMetaInterface.TYPE_DATE, result.getValueMeta( 7 ).getType() );
     assertEquals( startDate, result.getDate( 7, Calendar.getInstance().getTime() ) );
     assertEquals( ValueMetaInterface.TYPE_DATE, result.getValueMeta( 8 ).getType() );
@@ -402,10 +393,10 @@ public class BaseStepTest {
     baseStep.setRowHandler( rowHandler );
     RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
     Object[] objects = new Object[] { "foo", "bar" };
-    baseStep.putError( rowMetaInterface, objects, 3l, "desc",
+    baseStep.putError( rowMetaInterface, objects, 3L, "desc",
       "field1,field2", "errorCode" );
     verify( rowHandler, times( 1 ) ).putError(
-      rowMetaInterface, objects, 3l, "desc",
+      rowMetaInterface, objects, 3L, "desc",
       "field1,field2", "errorCode" );
   }
 
@@ -437,16 +428,16 @@ public class BaseStepTest {
 
   private RowHandler rowHandlerWithDefaultMethods() {
     return new RowHandler() {
-      @Override public Object[] getRow() throws KettleException {
+      @Override public Object[] getRow() {
         return new Object[ 0 ];
       }
 
-      @Override public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+      @Override public void putRow( RowMetaInterface rowMeta, Object[] row ) {
 
       }
 
       @Override public void putError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
-                                      String fieldNames, String errorCodes ) throws KettleStepException {
+                                      String fieldNames, String errorCodes ) {
 
       }
     };
@@ -521,10 +512,10 @@ public class BaseStepTest {
     final Object[] row = new Object[] {};
     rowSet.putRow( rowMeta, row );
 
-    baseStepSpy.setInputRowSets( Arrays.asList( rowSet ) );
+    baseStepSpy.setInputRowSets( List.of( rowSet ) );
     doReturn( rowSet ).when( baseStepSpy ).currentInputStream();
 
     baseStepSpy.getRow();
-    verify( mockHelper.transMeta, times( 1 ) ).checkRowMixingStatically( any( StepMeta.class ), anyObject() );
+    verify( mockHelper.transMeta, times( 1 ) ).checkRowMixingStatically( any( StepMeta.class ), any() );
   }
 }

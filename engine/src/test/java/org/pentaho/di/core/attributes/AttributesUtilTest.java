@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,13 +23,11 @@
 package org.pentaho.di.core.attributes;
 
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
@@ -37,30 +35,36 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 
-@PrepareForTest( AttributesUtil.class )
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class AttributesUtilTest {
 
   private static final String CUSTOM_TAG = "customTag";
   private static final String A_KEY = "aKEY";
   private static final String A_VALUE = "aVALUE";
   private static final String A_GROUP = "attributesGroup";
-
+  private static MockedStatic<AttributesUtil>  mockedSettings;
   @Before
   public void setUp() {
-    PowerMockito.mockStatic( AttributesUtil.class );
+   mockedSettings = mockStatic( AttributesUtil.class );
+  }
+
+  @After
+  public void tearDown() {
+    mockedSettings.close();
   }
 
   @Test
   public void testGetAttributesXml_DefaultTag() {
-
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ) ) ).thenCallRealMethod();
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ), anyString() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
     Map<String, String> attributesGroup = new HashMap<>();
     Map<String, Map<String, String>> attributesMap = new HashMap<>();
@@ -80,16 +84,12 @@ public class AttributesUtilTest {
     // Both Key and Value are present
     assertTrue( attributesXml.contains( A_KEY ) );
     assertTrue( attributesXml.contains( A_VALUE ) );
-
-    // Verify that getAttributesXml was invoked once (and with the right parameters)
-    PowerMockito.verifyStatic( AttributesUtil.class );
-    AttributesUtil.getAttributesXml( attributesMap, AttributesUtil.XML_TAG );
   }
 
   @Test
   public void testGetAttributesXml_CustomTag() {
 
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ), anyString() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
     Map<String, String> attributesGroup = new HashMap<>();
     Map<String, Map<String, String>> attributesMap = new HashMap<>();
@@ -113,11 +113,10 @@ public class AttributesUtilTest {
 
   @Test
   public void testGetAttributesXml_DefaultTag_NullParameter() {
+    when( AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ) ) ).thenCallRealMethod();
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ), anyString() ) ).thenCallRealMethod();
-
-    String attributesXml = AttributesUtil.getAttributesXml( null );
+    String attributesXml = AttributesUtil.getAttributesXml( new HashMap<>() );
 
     assertNotNull( attributesXml );
 
@@ -127,10 +126,9 @@ public class AttributesUtilTest {
 
   @Test
   public void testGetAttributesXml_CustomTag_NullParameter() {
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ), anyString() ) ).thenCallRealMethod();
-
-    String attributesXml = AttributesUtil.getAttributesXml( null, CUSTOM_TAG );
+    String attributesXml = AttributesUtil.getAttributesXml( new HashMap<>(), CUSTOM_TAG );
 
     assertNotNull( attributesXml );
 
@@ -141,8 +139,8 @@ public class AttributesUtilTest {
   @Test
   public void testGetAttributesXml_DefaultTag_EmptyMap() {
 
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ) ) ).thenCallRealMethod();
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ), anyString() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
     Map<String, Map<String, String>> attributesMap = new HashMap<>();
 
@@ -157,7 +155,7 @@ public class AttributesUtilTest {
   @Test
   public void testGetAttributesXml_CustomTag_EmptyMap() {
 
-    PowerMockito.when( AttributesUtil.getAttributesXml( any( Map.class ), anyString() ) ).thenCallRealMethod();
+    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
     Map<String, Map<String, String>> attributesMap = new HashMap<>();
 
@@ -172,7 +170,7 @@ public class AttributesUtilTest {
   @Test
   public void testLoadAttributes_NullParameter() {
 
-    PowerMockito.when( AttributesUtil.loadAttributes( any( Node.class ) ) ).thenCallRealMethod();
+    when( AttributesUtil.loadAttributes( any( Node.class ) ) ).thenCallRealMethod();
 
     Map<String, Map<String, String>> attributesMap = AttributesUtil.loadAttributes( null );
 

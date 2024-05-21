@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,33 +23,28 @@
 package org.pentaho.di.core.logging;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doCallRealMethod;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { KettleLogStore.class, LoggingRegistry.class, Utils.class, Const.class } )
 public class BaseLogTableTest {
 
   @Test
@@ -65,7 +60,7 @@ public class BaseLogTableTest {
 
     LoggingRegistry lr = mock( LoggingRegistry.class );
     when( LoggingRegistry.getInstance() ).thenReturn( lr );
-    doReturn( Arrays.asList( "1" ) ).when( lr ).getLogChannelChildren( anyString() );
+    doReturn( List.of( "1" ) ).when( lr ).getLogChannelChildren( anyString() );
 
     Field privateLoggingRegistryField = LoggingBuffer.class.getDeclaredField( "loggingRegistry" );
     privateLoggingRegistryField.setAccessible( true );

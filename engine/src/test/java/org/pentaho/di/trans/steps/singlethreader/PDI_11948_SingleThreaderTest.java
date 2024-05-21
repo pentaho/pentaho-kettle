@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.singlethreader;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -40,7 +40,6 @@ import org.pentaho.di.trans.steps.PDI_11948_StepsTestsParent;
  * object is null and call or not setServletReponse( HttpServletResponse response ) method of appropriate Trans object.
  * 
  * @author Yury Bakhmutski
- * @see org.pentaho.di.trans.steps.simplemapping.SingleThreader
  */
 public class PDI_11948_SingleThreaderTest extends PDI_11948_StepsTestsParent<SingleThreader, SingleThreaderData> {
 
@@ -53,7 +52,7 @@ public class PDI_11948_SingleThreaderTest extends PDI_11948_StepsTestsParent<Sin
   }
 
   @Test
-  public void testMappingStep() throws KettleException {
+  public void testMappingStep() {
 
     when( stepMock.getData() ).thenReturn( stepDataMock );
     when( stepDataMock.getMappingTrans() ).thenReturn( transMock );

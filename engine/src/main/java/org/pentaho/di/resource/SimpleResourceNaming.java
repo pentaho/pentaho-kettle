@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -54,6 +55,11 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
   public SimpleResourceNaming( String fileSystemPrefix ) {
     super();
     this.fileSystemPrefix = fileSystemPrefix;
+  }
+
+  @VisibleForTesting
+  public static int getParameterNr() {
+    return parameterNr;
   }
 
   public String nameResource( FileObject fileObject, VariableSpace space, boolean includeFileName ) throws FileSystemException {

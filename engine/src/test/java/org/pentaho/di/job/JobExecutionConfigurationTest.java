@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,21 +22,8 @@
 
 package org.pentaho.di.job;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -56,6 +43,19 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JobExecutionConfigurationTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -79,35 +79,25 @@ public class JobExecutionConfigurationTest {
     when( mockRepositoryPlugin.getIds() ).thenReturn( new String[]{"mockRepo"} );
     when( mockRepositoryPlugin.matches( "mockRepo" ) ).thenReturn( true );
     when( mockRepositoryPlugin.getName() ).thenReturn( "mock-repository" );
-    when( mockRepositoryPlugin.getClassMap() ).thenAnswer( new Answer<Map<Class<?>, String>>() {
-      @Override
-      public Map<Class<?>, String> answer( InvocationOnMock invocation ) throws Throwable {
-        Map<Class<?>, String> dbMap = new HashMap<Class<?>, String>();
-        dbMap.put( Repository.class, repositoryMeta.getClass().getName() );
-        return dbMap;
-      }
+    when( mockRepositoryPlugin.getClassMap() ).thenAnswer( (Answer<Map<Class<?>, String>>) invocation -> {
+      Map<Class<?>, String> dbMap = new HashMap<>();
+      dbMap.put( Repository.class, repositoryMeta.getClass().getName() );
+      return dbMap;
     } );
     PluginRegistry.getInstance().registerPlugin( RepositoryPluginType.class, mockRepositoryPlugin );
 
     // Define valid connection criteria
-    when( repositoriesMeta.findRepository( anyString() ) ).thenAnswer( new Answer<RepositoryMeta>() {
-      @Override
-      public RepositoryMeta answer( InvocationOnMock invocation ) throws Throwable {
-        return mockRepo.equals( invocation.getArguments()[0] ) ? repositoryMeta : null;
-      }
-    } );
+    when( repositoriesMeta.findRepository( anyString() ) ).thenAnswer(
+      (Answer<RepositoryMeta>) invocation -> mockRepo.equals( invocation.getArguments()[0] ) ? repositoryMeta : null );
     when( mockRepositoryPlugin.loadClass( Repository.class ) ).thenReturn( repository );
-    doAnswer( new Answer() {
-      @Override
-      public Object answer( InvocationOnMock invocation ) throws Throwable {
-        if ( "username".equals( invocation.getArguments()[0] ) &&  "password".equals( invocation.getArguments()[1] ) ) {
-          connectionSuccess[0] = true;
-        } else {
-          connectionSuccess[0] = false;
-          throw new KettleException( "Mock Repository connection failed" );
-        }
-        return null;
+    doAnswer( invocation -> {
+      if ( "username".equals( invocation.getArguments()[0] ) &&  "password".equals( invocation.getArguments()[1] ) ) {
+        connectionSuccess[0] = true;
+      } else {
+        connectionSuccess[0] = false;
+        throw new KettleException( "Mock Repository connection failed" );
       }
+      return null;
     } ).when( repository ).connect( anyString(), anyString() );
 
     //Ignore repository not found in RepositoriesMeta
@@ -128,7 +118,7 @@ public class JobExecutionConfigurationTest {
   @Test
   public void testDefaultPassedBatchId() {
     JobExecutionConfiguration jec = new JobExecutionConfiguration();
-    assertEquals( "default passedBatchId value must be null", null, jec.getPassedBatchId() );
+    assertNull( "default passedBatchId value must be null", jec.getPassedBatchId() );
   }
 
   @Test
@@ -252,14 +242,14 @@ public class JobExecutionConfigurationTest {
   }
 
   @Test
-  public void testGetUsedVariablesWithNoPreviousExecutionConfigurationVariables() throws KettleException {
+  public void testGetUsedVariablesWithNoPreviousExecutionConfigurationVariables() {
     JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
     Map<String, String> variables0 =  new HashMap<>();
 
     executionConfiguration.setVariables( variables0 );
 
     JobMeta jobMeta0 = mock( JobMeta.class );
-    List<String> list0 =  new ArrayList<String>();
+    List<String> list0 = new ArrayList<>();
     list0.add( "var1" );
     when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
     // Const.INTERNAL_VARIABLE_PREFIX values
@@ -274,14 +264,14 @@ public class JobExecutionConfigurationTest {
   }
 
   @Test
-  public void testGetUsedVariablesWithSamePreviousExecutionConfigurationVariables() throws KettleException {
+  public void testGetUsedVariablesWithSamePreviousExecutionConfigurationVariables() {
     JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
     Map<String, String> variables0 =  new HashMap<>();
     variables0.put( "var1", "valueVar1" );
     executionConfiguration.setVariables( variables0 );
 
     JobMeta jobMeta0 = mock( JobMeta.class );
-    List<String> list0 =  new ArrayList<String>();
+    List<String> list0 = new ArrayList<>();
     list0.add( "var1" );
     when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
     when( jobMeta0.getVariable( anyString() ) ).thenReturn( "internalDummyValue" );
@@ -295,14 +285,14 @@ public class JobExecutionConfigurationTest {
   }
 
   @Test
-  public void testGetUsedVariablesWithDifferentPreviousExecutionConfigurationVariables() throws KettleException {
+  public void testGetUsedVariablesWithDifferentPreviousExecutionConfigurationVariables() {
     JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
     Map<String, String> variables0 =  new HashMap<>();
     variables0.put( "var2", "valueVar2" );
     executionConfiguration.setVariables( variables0 );
 
     JobMeta jobMeta0 = mock( JobMeta.class );
-    List<String> list0 =  new ArrayList<String>();
+    List<String> list0 = new ArrayList<>();
     list0.add( "var1" );
     when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
     when( jobMeta0.getVariable( anyString() ) ).thenReturn( "internalDummyValue" );

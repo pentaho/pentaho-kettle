@@ -126,6 +126,8 @@ REM ** Setup Karaf endorsed libraries directory     **
 REM **************************************************
 set JAVA_ENDORSED_DIRS=
 set JAVA_LOCALE_COMPAT=
+set JAVA_ADD_OPENS=
+
 IF NOT %ISJAVA8% == 1 GOTO :SKIPENDORSEDJARS
 
 if not "%_PENTAHO_JAVA_HOME%" == "" set JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;
@@ -135,6 +137,25 @@ GOTO :COLLECTARGUMENTS
 :SKIPENDORSEDJARS
 REM required for Java 11 date/time formatting backwards compatibility
 set JAVA_LOCALE_COMPAT=-Djava.locale.providers=COMPAT,SPI
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.io=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.net=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.security=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.util=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.net.www.protocol.file=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.net.www.protocol.ftp=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.net.www.protocol.http=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.reflect.misc=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.management/javax.management=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.management/javax.management.openmbean=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.naming/com.sun.jndi.ldap=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.math=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.lang.Object=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/sun.nio.ch=ALL-UNNAMED"
+set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens java.base/java.nio=ALL-UNNAMED"
 
 :COLLECTARGUMENTS
 REM **********************
@@ -179,6 +200,6 @@ REM Eventually call java instead of javaw and do not run in a separate window
 if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%
 
 @echo on
-%SPOON_START_OPTION% "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
+%SPOON_START_OPTION% "%_PENTAHO_JAVA%" %JAVA_ADD_OPENS% %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
 @echo off
 if "%SPOON_PAUSE%"=="1" pause

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,15 +24,12 @@ package org.pentaho.di.www;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entry.JobEntryCopy;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -43,25 +40,23 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class GetJobImageServletTest {
-  private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!
 
   private HttpServletRequest mockHttpServletRequest;
   private HttpServletResponse spyHttpServletResponse;
   private JobMap jobMap;
   private GetJobImageServlet spyGetJobImageServlet;
 
-  private static String JOB_ID = "123";
-  private static String JOB_NAME = "test";
-  private static String USE_XML = "Y";
+  private static final String JOB_ID = "123";
+  private static final String JOB_NAME = "test";
+  private static final String USE_XML = "Y";
 
   @Before
   public void setup() {
@@ -234,7 +229,7 @@ public class GetJobImageServletTest {
 
   private void mockOutputStream() throws IOException {
     doReturn( new ServletOutputStream() {
-      private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
       @Override public void write( int b ) {
         baos.write( b );

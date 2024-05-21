@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.denormaliser;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
@@ -58,8 +58,8 @@ public class DenormaliserAggregationsTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     mockHelper =
-        new StepMockHelper<DenormaliserMeta, DenormaliserData>( "Denormaliser", DenormaliserMeta.class,
-            DenormaliserData.class );
+      new StepMockHelper<>( "Denormaliser", DenormaliserMeta.class,
+        DenormaliserData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
@@ -84,7 +84,7 @@ public class DenormaliserAggregationsTest {
   @Test
   public void testDenormalizeSum100PlusNull() throws KettleValueException {
     // prevTargetData
-    Long sto = new Long( 100 );
+    Long sto = 100L;
     data.targetResult = new Object[] { sto };
 
     step.deNormalise( testSumPreconditions( "SUM" ), new Object[] { JUNIT, null } );
@@ -95,7 +95,7 @@ public class DenormaliserAggregationsTest {
   @Test
   public void testDenormalizeSumNullPlus100() throws KettleValueException {
     // prevTargetData
-    Long sto = new Long( 100 );
+    Long sto = 100L;
     data.targetResult = new Object[] { null };
 
     step.deNormalise( testSumPreconditions( "SUM" ), new Object[] { JUNIT, sto } );
@@ -112,7 +112,7 @@ public class DenormaliserAggregationsTest {
   public void testDenormalizeMinValueY() throws KettleValueException {
     step.setMinNullIsValued( true );
 
-    Long trinadzat = new Long( -13 );
+    Long trinadzat = -13L;
     data.targetResult = new Object[] { trinadzat };
 
     step.deNormalise( testSumPreconditions( "MIN" ), new Object[] { JUNIT, null } );
@@ -129,7 +129,7 @@ public class DenormaliserAggregationsTest {
   public void testDenormalizeMinValueN() throws KettleValueException {
     step.setVariable( Const.KETTLE_AGGREGATION_MIN_NULL_IS_VALUED, "N" );
 
-    Long sto = new Long( 100 );
+    Long sto = 100L;
     data.targetResult = new Object[] { sto };
 
     step.deNormalise( testSumPreconditions( "MIN" ), new Object[] { JUNIT, null } );
@@ -146,15 +146,15 @@ public class DenormaliserAggregationsTest {
 
     // create rmi for one string and 2 integers
     RowMetaInterface rmi = new RowMeta();
-    List<ValueMetaInterface> list = new ArrayList<ValueMetaInterface>();
+    List<ValueMetaInterface> list = new ArrayList<>();
     list.add( new ValueMetaString( "a" ) );
     list.add( new ValueMetaInteger( "b" ) );
     list.add( new ValueMetaInteger( "d" ) );
     rmi.setValueMetaList( list );
 
     // denormalizer key field will be String 'Junit'
-    data.keyValue = new HashMap<String, List<Integer>>();
-    List<Integer> listInt = new ArrayList<Integer>();
+    data.keyValue = new HashMap<>();
+    List<Integer> listInt = new ArrayList<>();
     listInt.add( 0 );
     data.keyValue.put( JUNIT, listInt );
 
@@ -190,7 +190,7 @@ public class DenormaliserAggregationsTest {
     data.removeNrs = new int[]{ 0 };
     Object[] outputRowData = step.buildResult( rmi, rowData );
 
-    Assert.assertEquals( "Output row: nulls are zeros", new Long( 0 ), outputRowData[2] );
+    Assert.assertEquals( "Output row: nulls are zeros", 0L, outputRowData[2] );
   }
 
   @Test

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.groupby;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -57,18 +57,18 @@ public class GroupByNewAggregateTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    mockHelper = new StepMockHelper<GroupByMeta, GroupByData>( "Group By", GroupByMeta.class, GroupByData.class );
+    mockHelper = new StepMockHelper<>( "Group By", GroupByMeta.class, GroupByData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
 
     // In this step we will distinct String aggregations from numeric ones
-    strings = new ArrayList<Integer>();
+    strings = new ArrayList<>();
     strings.add( GroupByMeta.TYPE_GROUP_CONCAT_COMMA );
     strings.add( GroupByMeta.TYPE_GROUP_CONCAT_STRING );
 
     // Statistics will be initialized with collections...
-    statistics = new ArrayList<Integer>();
+    statistics = new ArrayList<>();
     statistics.add( GroupByMeta.TYPE_GROUP_MEDIAN );
     statistics.add( GroupByMeta.TYPE_GROUP_PERCENTILE );
   }
@@ -117,7 +117,7 @@ public class GroupByNewAggregateTest {
 
   /**
    * PDI-6960 - Group by and Memory group by ignores NULL values ("sum" aggregation)
-   * 
+   * <p>
    * We do not assign 0 instead of null.
    */
   @Test

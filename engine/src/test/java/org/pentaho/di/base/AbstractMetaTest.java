@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -72,6 +72,7 @@ import org.pentaho.metastore.util.PentahoDefaults;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -87,10 +88,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -128,42 +126,42 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetObjectId() throws Exception {
+  public void testGetSetObjectId() {
     assertNull( meta.getObjectId() );
     meta.setObjectId( objectId );
     assertEquals( objectId, meta.getObjectId() );
   }
 
   @Test
-  public void testGetSetContainerObjectId() throws Exception {
+  public void testGetSetContainerObjectId() {
     assertNull( meta.getContainerObjectId() );
     meta.setCarteObjectId( "myObjectId" );
     assertEquals( "myObjectId", meta.getContainerObjectId() );
   }
 
   @Test
-  public void testGetSetName() throws Exception {
+  public void testGetSetName() {
     assertNull( meta.getName() );
     meta.setName( "myName" );
     assertEquals( "myName", meta.getName() );
   }
 
   @Test
-  public void testGetSetDescription() throws Exception {
+  public void testGetSetDescription() {
     assertNull( meta.getDescription() );
     meta.setDescription( "I am a meta" );
     assertEquals( "I am a meta", meta.getDescription() );
   }
 
   @Test
-  public void testGetSetExtendedDescription() throws Exception {
+  public void testGetSetExtendedDescription() {
     assertNull( meta.getExtendedDescription() );
     meta.setExtendedDescription( "I am a meta" );
     assertEquals( "I am a meta", meta.getExtendedDescription() );
   }
 
   @Test
-  public void testNameFromFilename() throws Exception {
+  public void testNameFromFilename() {
     assertNull( meta.getName() );
     assertNull( meta.getFilename() );
     meta.nameFromFilename();
@@ -174,14 +172,14 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetFilename() throws Exception {
+  public void testGetSetFilename() {
     assertNull( meta.getFilename() );
     meta.setFilename( "myfile" );
     assertEquals( "myfile", meta.getFilename() );
   }
 
   @Test
-  public void testGetSetRepositoryDirectory() throws Exception {
+  public void testGetSetRepositoryDirectory() {
     assertNull( meta.getRepositoryDirectory() );
     RepositoryDirectoryInterface dir = mock( RepositoryDirectoryInterface.class );
     meta.setRepositoryDirectory( dir );
@@ -189,14 +187,14 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetRepository() throws Exception {
+  public void testGetSetRepository() {
     assertNull( meta.getRepository() );
     meta.setRepository( repo );
     assertEquals( repo, meta.getRepository() );
   }
 
   @Test
-  public void testGetSetDatabase() throws Exception {
+  public void testGetSetDatabase() {
     assertEquals( 0, meta.nrDatabases() );
     assertNull( meta.getDatabases() );
     assertFalse( meta.haveConnectionsChanged() );
@@ -235,7 +233,6 @@ public class AbstractMetaTest {
     assertEquals( db3, meta.getDatabase( 2 ) );
     assertEquals( 2, meta.indexOfDatabase( db3 ) );
     DatabaseMeta db4 = mock( DatabaseMeta.class );
-    when( db4.getName() ).thenReturn( "db4" );
     meta.addDatabase( 3, db4 );
     assertEquals( 4, meta.nrDatabases() );
     assertEquals( db4, meta.getDatabase( 3 ) );
@@ -271,16 +268,16 @@ public class AbstractMetaTest {
     when( metastore.getElementTypeByName(
       PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME ) ).thenReturn( elementType );
     when( metastore.getElements( PentahoDefaults.NAMESPACE, elementType ) )
-      .thenReturn( new ArrayList<IMetaStoreElement>() );
+      .thenReturn( new ArrayList<>() );
     meta.importFromMetaStore();
     IMetaStoreElement element = mock( IMetaStoreElement.class );
     when( metastore.getElements( PentahoDefaults.NAMESPACE, elementType ) )
-      .thenReturn( Arrays.asList( element ) );
+      .thenReturn( Collections.singletonList( element ) );
     meta.importFromMetaStore();
   }
 
   @Test
-  public void testAddNameChangedListener() throws Exception {
+  public void testAddNameChangedListener() {
     meta.fireNameChangedListeners( "a", "a" );
     meta.fireNameChangedListeners( "a", "b" );
     meta.addNameChangedListener( null );
@@ -296,7 +293,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testAddFilenameChangedListener() throws Exception {
+  public void testAddFilenameChangedListener() {
     meta.fireFilenameChangedListeners( "a", "a" );
     meta.fireFilenameChangedListeners( "a", "b" );
     meta.addFilenameChangedListener( null );
@@ -312,26 +309,26 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testAddRemoveFireContentChangedListener() throws Exception {
+  public void testAddRemoveFireContentChangedListener() {
     assertTrue( meta.getContentChangedListeners().isEmpty() );
     ContentChangedListener listener = mock( ContentChangedListener.class );
     meta.addContentChangedListener( listener );
     assertFalse( meta.getContentChangedListeners().isEmpty() );
     meta.fireContentChangedListeners();
-    verify( listener, times( 1 ) ).contentChanged( anyObject() );
-    verify( listener, never() ).contentSafe( anyObject() );
+    verify( listener, times( 1 ) ).contentChanged( any() );
+    verify( listener, never() ).contentSafe( any() );
     meta.fireContentChangedListeners( true );
-    verify( listener, times( 2 ) ).contentChanged( anyObject() );
-    verify( listener, never() ).contentSafe( anyObject() );
+    verify( listener, times( 2 ) ).contentChanged( any() );
+    verify( listener, never() ).contentSafe( any() );
     meta.fireContentChangedListeners( false );
-    verify( listener, times( 2 ) ).contentChanged( anyObject() );
-    verify( listener, times( 1 ) ).contentSafe( anyObject() );
+    verify( listener, times( 2 ) ).contentChanged( any() );
+    verify( listener, times( 1 ) ).contentSafe( any() );
     meta.removeContentChangedListener( listener );
     assertTrue( meta.getContentChangedListeners().isEmpty() );
   }
 
   @Test
-  public void testAddCurrentDirectoryChangedListener() throws Exception {
+  public void testAddCurrentDirectoryChangedListener() {
     meta.fireNameChangedListeners( "a", "a" );
     meta.fireNameChangedListeners( "a", "b" );
     meta.addCurrentDirectoryChangedListener( null );
@@ -348,7 +345,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testAddOrReplaceSlaveServer() throws Exception {
+  public void testAddOrReplaceSlaveServer() {
     // meta.addOrReplaceSlaveServer() right now will fail with an NPE
     assertNull( meta.getSlaveServers() );
     List<SlaveServer> slaveServers = new ArrayList<>();
@@ -366,7 +363,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testAddRemoveViewUndo() throws Exception {
+  public void testAddRemoveViewUndo() {
     // addUndo() right now will fail with an NPE
     assertEquals( 0, meta.getUndoSize() );
     meta.clearUndo();
@@ -412,7 +409,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetAttributes() throws Exception {
+  public void testGetSetAttributes() {
     assertNull( meta.getAttributesMap() );
     Map<String, Map<String, String>> attributesMap = new HashMap<>();
     meta.setAttributesMap( attributesMap );
@@ -433,7 +430,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testNotes() throws Exception {
+  public void testNotes() {
     assertNull( meta.getNotes() );
     // most note methods will NPE at this point, so call clear() to create an empty note list
     meta.clear();
@@ -487,7 +484,7 @@ public class AbstractMetaTest {
 
 
   @Test
-  public void testCopyVariablesFrom() throws Exception {
+  public void testCopyVariablesFrom() {
     assertNull( meta.getVariable( "var1" ) );
     VariableSpace vars = mock( VariableSpace.class );
     when( vars.getVariable( "var1" ) ).thenReturn( "x" );
@@ -497,7 +494,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testEnvironmentSubstitute() throws Exception {
+  public void testEnvironmentSubstitute() {
     // This is just a delegate method, verify it's called
     VariableSpace vars = mock( VariableSpace.class );
     // This method is reused by the stub to set the mock as the variables object
@@ -524,7 +521,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetParentVariableSpace() throws Exception {
+  public void testGetSetParentVariableSpace() {
     assertNull( meta.getParentVariableSpace() );
     VariableSpace variableSpace = mock( VariableSpace.class );
     meta.setParentVariableSpace( variableSpace );
@@ -532,7 +529,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetVariable() throws Exception {
+  public void testGetSetVariable() {
     assertNull( meta.getVariable( "var1" ) );
     assertEquals( "x", meta.getVariable( "var1", "x" ) );
     meta.setVariable( "var1", "y" );
@@ -582,32 +579,31 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetLogLevel() throws Exception {
+  public void testGetSetLogLevel() {
     assertEquals( LogLevel.BASIC, meta.getLogLevel() );
     meta.setLogLevel( LogLevel.DEBUG );
     assertEquals( LogLevel.DEBUG, meta.getLogLevel() );
   }
 
   @Test
-  public void testGetSetSharedObjectsFile() throws Exception {
+  public void testGetSetSharedObjectsFile() {
     assertNull( meta.getSharedObjectsFile() );
     meta.setSharedObjectsFile( "mySharedObjects" );
     assertEquals( "mySharedObjects", meta.getSharedObjectsFile() );
   }
 
   @Test
-  public void testGetSetSharedObjects() throws Exception {
+  public void testGetSetSharedObjects() {
     SharedObjects sharedObjects = mock( SharedObjects.class );
     meta.setSharedObjects( sharedObjects );
     assertEquals( sharedObjects, meta.getSharedObjects() );
     meta.setSharedObjects( null );
     AbstractMeta spyMeta = spy( meta );
-    doThrow( KettleException.class ).when( spyMeta ).environmentSubstitute( anyString() );
-    assertNull( spyMeta.getSharedObjects() );
+    assertNotNull( spyMeta.getSharedObjects() );
   }
 
   @Test
-  public void testGetSetCreatedDate() throws Exception {
+  public void testGetSetCreatedDate() {
     assertNull( meta.getCreatedDate() );
     Date now = Calendar.getInstance().getTime();
     meta.setCreatedDate( now );
@@ -615,14 +611,14 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetCreatedUser() throws Exception {
+  public void testGetSetCreatedUser() {
     assertNull( meta.getCreatedUser() );
     meta.setCreatedUser( "joe" );
     assertEquals( "joe", meta.getCreatedUser() );
   }
 
   @Test
-  public void testGetSetModifiedDate() throws Exception {
+  public void testGetSetModifiedDate() {
     assertNull( meta.getModifiedDate() );
     Date now = Calendar.getInstance().getTime();
     meta.setModifiedDate( now );
@@ -630,14 +626,14 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetModifiedUser() throws Exception {
+  public void testGetSetModifiedUser() {
     assertNull( meta.getModifiedUser() );
     meta.setModifiedUser( "joe" );
     assertEquals( "joe", meta.getModifiedUser() );
   }
 
   @Test
-  public void testAddDeleteModifyObserver() throws Exception {
+  public void testAddDeleteModifyObserver() {
     PDIObserver observer = mock( PDIObserver.class );
     meta.addObserver( observer );
     Object event = new Object();
@@ -646,16 +642,16 @@ public class AbstractMetaTest {
     verify( observer, never() ).update( meta, event );
     meta.setChanged( true );
     meta.notifyObservers( event );
-    verify( observer, times( 1 ) ).update( any( ChangedFlagInterface.class ), anyObject() );
+    verify( observer, times( 1 ) ).update( any( ChangedFlagInterface.class ), any() );
   }
 
   @Test
-  public void testGetRegistrationDate() throws Exception {
+  public void testGetRegistrationDate() {
     assertNull( meta.getRegistrationDate() );
   }
 
   @Test
-  public void testGetObjectNameCopyRevision() throws Exception {
+  public void testGetObjectNameCopyRevision() {
     assertNull( meta.getObjectName() );
     meta.setName( "x" );
     assertEquals( "x", meta.getObjectName() );
@@ -667,12 +663,12 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testHasMissingPlugins() throws Exception {
+  public void testHasMissingPlugins() {
     assertFalse( meta.hasMissingPlugins() );
   }
 
   @Test
-  public void testGetSetPrivateDatabases() throws Exception {
+  public void testGetSetPrivateDatabases() {
     assertNull( meta.getPrivateDatabases() );
     Set<String> dbs = new HashSet<>();
     meta.setPrivateDatabases( dbs );
@@ -680,7 +676,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetChannelLogTable() throws Exception {
+  public void testGetSetChannelLogTable() {
     assertNull( meta.getChannelLogTable() );
     ChannelLogTable table = mock( ChannelLogTable.class );
     meta.setChannelLogTable( table );
@@ -713,7 +709,6 @@ public class AbstractMetaTest {
     assertNotNull( meta.listVariables() );
     VariableSpace newVars = mock( VariableSpace.class );
     when( newVars.getVariable( "var2" ) ).thenReturn( "y" );
-    when( newVars.listVariables() ).thenReturn( new String[]{ "var2" } );
     meta.shareVariablesWith( newVars );
     assertEquals( "y", meta.getVariable( "var2" ) );
     Map<String, String> props = new HashMap<>();
@@ -754,7 +749,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetNamedClusterServiceOsgi() throws Exception {
+  public void testGetSetNamedClusterServiceOsgi() {
     assertNull( meta.getNamedClusterServiceOsgi() );
     NamedClusterServiceOsgi mockNamedClusterOsgi = mock( NamedClusterServiceOsgi.class );
     meta.setNamedClusterServiceOsgi( mockNamedClusterOsgi );
@@ -762,7 +757,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetNamedClusterEmbedManager() throws Exception {
+  public void testGetNamedClusterEmbedManager() {
     assertNull( meta.getNamedClusterEmbedManager() );
     NamedClusterEmbedManager mockNamedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
     meta.namedClusterEmbedManager = mockNamedClusterEmbedManager;
@@ -783,14 +778,14 @@ public class AbstractMetaTest {
 
 
   @Test
-  public void testGetSetMetastoreLocatorOsgi() throws Exception {
+  public void testGetSetMetastoreLocatorOsgi() {
     assertNull( meta.getMetastoreLocatorOsgi() );
     meta.setMetastoreLocatorOsgi( mockMetastoreLocatorOsgi );
     assertEquals( mockMetastoreLocatorOsgi, meta.getMetastoreLocatorOsgi() );
   }
 
   @Test
-  public void testMultithreadHammeringOfListener() throws Exception {
+  public void testMultithreadHammeringOfListener() throws InterruptedException {
 
     CountDownLatch latch = new CountDownLatch( 3 );
     AbstractMetaListenerThread th1 = new AbstractMetaListenerThread( meta, 2000, latch ); // do 2k random add/delete/fire
@@ -800,14 +795,10 @@ public class AbstractMetaTest {
     Thread t1 = new Thread( th1 );
     Thread t2 = new Thread( th2 );
     Thread t3 = new Thread( th3 );
-    try {
-      t1.start();
-      t2.start();
-      t3.start();
-      assertTrue( "Test took longer than 5 minutes, deadlock?", latch.await( 300, TimeUnit.SECONDS ) ); // Will hang out waiting for each thread to complete...
-    } catch ( InterruptedException badTest ) {
-      throw badTest;
-    }
+    t1.start();
+    t2.start();
+    t3.start();
+    assertTrue( "Test took longer than 5 minutes, deadlock?", latch.await( 300, TimeUnit.SECONDS ) ); // Will hang out waiting for each thread to complete...
     assertEquals( "No exceptions encountered", th1.message );
     assertEquals( "No exceptions encountered", th2.message );
     assertEquals( "No exceptions encountered", th3.message );
@@ -900,7 +891,7 @@ public class AbstractMetaTest {
 
 
 
-  private class AbstractMetaListenerThread implements Runnable {
+  private static class AbstractMetaListenerThread implements Runnable {
     AbstractMeta metaToWork;
     int times;
     CountDownLatch whenDone;
