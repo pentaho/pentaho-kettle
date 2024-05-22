@@ -226,6 +226,7 @@ jobGroups:
        directives      :  += -Plinux_64
        versionProperty :  revenera-lic-validator.version
 
+  1300:
      - jobID           :  database-gwt
        scmUrl          :  https://github.com/pentaho/pentaho-commons-database.git
        directives      :  += -pl gwt
