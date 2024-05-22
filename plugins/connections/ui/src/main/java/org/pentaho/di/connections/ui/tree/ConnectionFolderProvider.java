@@ -41,10 +41,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 
 /**
@@ -115,20 +112,10 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
 
   public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level,
                                   boolean overridden ) {
-    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level );
-    childTreeNode.setLabel( name + " [" + level.getName() + "]" );
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, overridden );
     childTreeNode.setImage( image );
-    if ( overridden ) {
-      childTreeNode.setForeground( getDisabledColor() );
-    }
 
     parent.addChild( childTreeNode );
     return childTreeNode;
   }
-
-  private Color getDisabledColor() {
-    Device device = Display.getCurrent();
-    return new Color( device, 188, 188, 188 );
-  }
-
 }

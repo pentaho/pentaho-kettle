@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,26 +28,27 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class SelectionTreeExtension {
 
-  private TreeItem tiRootName = null;
+  private TreeItem treeItem = null;
   private AbstractMeta meta = null;
   private GUIResource guiResource = null;
   private Object selection = null;
   private String action = null;
 
-  public SelectionTreeExtension( Object selection, String action ) {
+  public SelectionTreeExtension( TreeItem treeItem, Object selection, String action ) {
+    this.treeItem = treeItem;
     this.selection = selection;
     this.action = action;
   }
 
-  public SelectionTreeExtension( TreeItem tiRootName, AbstractMeta meta, GUIResource guiResource, String action ) {
-    this.tiRootName = tiRootName;
+  public SelectionTreeExtension( TreeItem treeItem, AbstractMeta meta, GUIResource guiResource, String action ) {
+    this.treeItem = treeItem;
     this.meta = meta;
     this.guiResource = guiResource;
     this.action = action;
   }
 
-  public TreeItem getTiRootName() {
-    return this.tiRootName;
+  public TreeItem getTreeItem() {
+    return this.treeItem;
   }
 
   public AbstractMeta getMeta() {

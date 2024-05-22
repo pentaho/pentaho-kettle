@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,21 +22,33 @@
 
 package org.pentaho.di.connections.ui.tree;
 
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
+
 /**
  * Created by bmorrise on 2/4/19.
  */
 public class ConnectionTreeItem {
-  private String label;
+  private String name;
+  private LeveledTreeNode.LEVEL level;
 
-  public ConnectionTreeItem( String label ) {
-    this.label = label;
+  public ConnectionTreeItem( String name, LeveledTreeNode.LEVEL level ) {
+    this.name = name;
+    this.level = level;
   }
 
-  public String getLabel() {
-    return label;
+  public String getName() {
+    return name;
   }
 
-  public void setLabel( String label ) {
-    this.label = label;
+  public void setName( String name ) {
+    this.name = name;
+  }
+
+  public LeveledTreeNode.LEVEL getLevel() {
+    return level;
+  }
+
+  public void setLevel( LeveledTreeNode.LEVEL level ) {
+    this.level = level;
   }
 }

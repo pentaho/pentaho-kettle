@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -68,10 +68,10 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
   }
 
   private void refreshTree( SelectionTreeExtension selectionTreeExtension ) {
-    TreeItem tiRootName = selectionTreeExtension.getTiRootName();
+    TreeItem treeItem = selectionTreeExtension.getTreeItem();
     GUIResource guiResource = selectionTreeExtension.getGuiResource();
 
-    TreeItem tiEETitle = createTreeItem( tiRootName, TREE_LABEL, guiResource.getImageFolder(), 0 );
+    TreeItem tiEETitle = createTreeItem( treeItem, TREE_LABEL, guiResource.getImageFolder(), 0 );
 
     for ( RunConfiguration runConfiguration : runConfigurationDelegate.load() ) {
       String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
