@@ -23,11 +23,8 @@
 package org.pentaho.di.core.attributes;
 
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
@@ -35,13 +32,10 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 
 
 public class AttributesUtilTest {
@@ -50,131 +44,134 @@ public class AttributesUtilTest {
   private static final String A_KEY = "aKEY";
   private static final String A_VALUE = "aVALUE";
   private static final String A_GROUP = "attributesGroup";
-  private static MockedStatic<AttributesUtil>  mockedSettings;
-  @Before
-  public void setUp() {
-   mockedSettings = mockStatic( AttributesUtil.class );
-  }
-
-  @After
-  public void tearDown() {
-    mockedSettings.close();
-  }
 
   @Test
   public void testGetAttributesXml_DefaultTag() {
-    when( AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
-    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
+    try ( MockedStatic<AttributesUtil> attributesUtilMockedStatic = mockStatic( AttributesUtil.class ) ) {
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
 
-    Map<String, String> attributesGroup = new HashMap<>();
-    Map<String, Map<String, String>> attributesMap = new HashMap<>();
-    attributesGroup.put( A_KEY, A_VALUE );
-    attributesMap.put( A_GROUP, attributesGroup );
+      Map<String, String> attributesGroup = new HashMap<>();
+      Map<String, Map<String, String>> attributesMap = new HashMap<>();
+      attributesGroup.put( A_KEY, A_VALUE );
+      attributesMap.put( A_GROUP, attributesGroup );
 
-    String attributesXml = AttributesUtil.getAttributesXml( attributesMap );
+      String attributesXml = AttributesUtil.getAttributesXml( attributesMap );
 
-    assertNotNull( attributesXml );
+      assertNotNull( attributesXml );
 
-    // The default tag was used
-    assertTrue( attributesXml.contains( AttributesUtil.XML_TAG ) );
+      // The default tag was used
+      assertTrue( attributesXml.contains( AttributesUtil.XML_TAG ) );
 
-    // The group is present
-    assertTrue( attributesXml.contains( A_GROUP ) );
+      // The group is present
+      assertTrue( attributesXml.contains( A_GROUP ) );
 
-    // Both Key and Value are present
-    assertTrue( attributesXml.contains( A_KEY ) );
-    assertTrue( attributesXml.contains( A_VALUE ) );
+      // Both Key and Value are present
+      assertTrue( attributesXml.contains( A_KEY ) );
+      assertTrue( attributesXml.contains( A_VALUE ) );
+    }
   }
 
   @Test
   public void testGetAttributesXml_CustomTag() {
+    try ( MockedStatic<AttributesUtil> attributesUtilMockedStatic = mockStatic( AttributesUtil.class ) ) {
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap(), anyString() ) )
+        .thenCallRealMethod();
 
-    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
+      Map<String, String> attributesGroup = new HashMap<>();
+      Map<String, Map<String, String>> attributesMap = new HashMap<>();
+      attributesGroup.put( A_KEY, A_VALUE );
+      attributesMap.put( A_GROUP, attributesGroup );
 
-    Map<String, String> attributesGroup = new HashMap<>();
-    Map<String, Map<String, String>> attributesMap = new HashMap<>();
-    attributesGroup.put( A_KEY, A_VALUE );
-    attributesMap.put( A_GROUP, attributesGroup );
+      String attributesXml = AttributesUtil.getAttributesXml( attributesMap, CUSTOM_TAG );
 
-    String attributesXml = AttributesUtil.getAttributesXml( attributesMap, CUSTOM_TAG );
+      assertNotNull( attributesXml );
 
-    assertNotNull( attributesXml );
+      // The custom tag was used
+      assertTrue( attributesXml.contains( CUSTOM_TAG ) );
 
-    // The custom tag was used
-    assertTrue( attributesXml.contains( CUSTOM_TAG ) );
+      // The group is present
+      assertTrue( attributesXml.contains( A_GROUP ) );
 
-    // The group is present
-    assertTrue( attributesXml.contains( A_GROUP ) );
-
-    // Both Key and Value are present
-    assertTrue( attributesXml.contains( A_KEY ) );
-    assertTrue( attributesXml.contains( A_VALUE ) );
+      // Both Key and Value are present
+      assertTrue( attributesXml.contains( A_KEY ) );
+      assertTrue( attributesXml.contains( A_VALUE ) );
+    }
   }
 
   @Test
   public void testGetAttributesXml_DefaultTag_NullParameter() {
-    when( AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
-    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
+    try ( MockedStatic<AttributesUtil> attributesUtilMockedStatic = mockStatic( AttributesUtil.class ) ) {
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap(), anyString() ) )
+        .thenCallRealMethod();
 
-    String attributesXml = AttributesUtil.getAttributesXml( new HashMap<>() );
+      String attributesXml = AttributesUtil.getAttributesXml( new HashMap<>() );
 
-    assertNotNull( attributesXml );
+      assertNotNull( attributesXml );
 
-    // Check that it's not an empty XML fragment
-    assertTrue( attributesXml.contains( AttributesUtil.XML_TAG ) );
+      // Check that it's not an empty XML fragment
+      assertTrue( attributesXml.contains( AttributesUtil.XML_TAG ) );
+    }
   }
 
   @Test
   public void testGetAttributesXml_CustomTag_NullParameter() {
-    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
+    try ( MockedStatic<AttributesUtil> attributesUtilMockedStatic = mockStatic( AttributesUtil.class ) ) {
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap(), anyString() ) )
+        .thenCallRealMethod();
 
-    String attributesXml = AttributesUtil.getAttributesXml( new HashMap<>(), CUSTOM_TAG );
+      String attributesXml = AttributesUtil.getAttributesXml( new HashMap<>(), CUSTOM_TAG );
 
-    assertNotNull( attributesXml );
+      assertNotNull( attributesXml );
 
-    // Check that it's not an empty XML fragment
-    assertTrue( attributesXml.contains( CUSTOM_TAG ) );
+      // Check that it's not an empty XML fragment
+      assertTrue( attributesXml.contains( CUSTOM_TAG ) );
+    }
   }
 
   @Test
   public void testGetAttributesXml_DefaultTag_EmptyMap() {
+    try ( MockedStatic<AttributesUtil> attributesUtilMockedStatic = mockStatic( AttributesUtil.class ) ) {
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap(), anyString() ) )
+        .thenCallRealMethod();
 
-    when( AttributesUtil.getAttributesXml( anyMap() ) ).thenCallRealMethod();
-    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
+      Map<String, Map<String, String>> attributesMap = new HashMap<>();
 
-    Map<String, Map<String, String>> attributesMap = new HashMap<>();
+      String attributesXml = AttributesUtil.getAttributesXml( attributesMap );
 
-    String attributesXml = AttributesUtil.getAttributesXml( attributesMap );
+      assertNotNull( attributesXml );
 
-    assertNotNull( attributesXml );
-
-    // Check that it's not an empty XML fragment
-    assertTrue( attributesXml.contains( AttributesUtil.XML_TAG ) );
+      // Check that it's not an empty XML fragment
+      assertTrue( attributesXml.contains( AttributesUtil.XML_TAG ) );
+    }
   }
 
   @Test
   public void testGetAttributesXml_CustomTag_EmptyMap() {
+    try ( MockedStatic<AttributesUtil> attributesUtilMockedStatic = mockStatic( AttributesUtil.class ) ) {
+      attributesUtilMockedStatic.when( () -> AttributesUtil.getAttributesXml( anyMap(), anyString() ) )
+        .thenCallRealMethod();
+      Map<String, Map<String, String>> attributesMap = new HashMap<>();
 
-    when( AttributesUtil.getAttributesXml( anyMap(), anyString() ) ).thenCallRealMethod();
+      String attributesXml = AttributesUtil.getAttributesXml( attributesMap, CUSTOM_TAG );
 
-    Map<String, Map<String, String>> attributesMap = new HashMap<>();
+      assertNotNull( attributesXml );
 
-    String attributesXml = AttributesUtil.getAttributesXml( attributesMap, CUSTOM_TAG );
-
-    assertNotNull( attributesXml );
-
-    // Check that it's not an empty XML fragment
-    assertTrue( attributesXml.contains( CUSTOM_TAG ) );
+      // Check that it's not an empty XML fragment
+      assertTrue( attributesXml.contains( CUSTOM_TAG ) );
+    }
   }
 
   @Test
   public void testLoadAttributes_NullParameter() {
+    try ( MockedStatic<AttributesUtil> attributesUtilMockedStatic = mockStatic( AttributesUtil.class ) ) {
+      attributesUtilMockedStatic.when( () -> AttributesUtil.loadAttributes( any( Node.class ) ) ).thenCallRealMethod();
+      Map<String, Map<String, String>> attributesMap = AttributesUtil.loadAttributes( null );
 
-    when( AttributesUtil.loadAttributes( any( Node.class ) ) ).thenCallRealMethod();
-
-    Map<String, Map<String, String>> attributesMap = AttributesUtil.loadAttributes( null );
-
-    assertNotNull( attributesMap );
-    assertTrue( attributesMap.isEmpty() );
+      assertNotNull( attributesMap );
+      assertTrue( attributesMap.isEmpty() );
+    }
   }
 }

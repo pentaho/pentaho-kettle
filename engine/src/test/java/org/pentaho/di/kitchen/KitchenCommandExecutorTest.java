@@ -27,7 +27,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
@@ -66,8 +65,6 @@ public class KitchenCommandExecutorTest {
   private Result result;
   private LogChannelInterface logChannelInterface;
 
-  private MockedStatic<BaseMessages> baseMessageStaticMock;
-
   interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
   
@@ -77,8 +74,6 @@ public class KitchenCommandExecutorTest {
     mockedKitchenCommandExecutor = mock( KitchenCommandExecutor.class );
     result = mock( Result.class );
     logChannelInterface = mock( LogChannelInterface.class );
-    baseMessageStaticMock = mockStatic( BaseMessages.class );
-
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
     doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromFilesystem( anyString(), anyString(), any() );
     doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromRepository( any(), anyString(), anyString() );
@@ -92,7 +87,6 @@ public class KitchenCommandExecutorTest {
     mockedKitchenCommandExecutor = null;
     result = null;
     logChannelInterface = null;
-    baseMessageStaticMock.close();
   }
 
   @Test
@@ -113,11 +107,14 @@ public class KitchenCommandExecutorTest {
 
   @Test
   public void testReturnCodeWithErrors() {
-    when( result.getNrErrors() ).thenReturn( 1L );
-    when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
-    when( mockedKitchenCommandExecutor.getLog() ).thenReturn( logChannelInterface );
-    when( BaseMessages.getString( any(), anyString() ) ).thenReturn( "NoMessage" );
-    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+    try ( MockedStatic<BaseMessages> baseMessagesMockedStatic = mockStatic( BaseMessages.class ) ) {
+      baseMessagesMockedStatic.when( () -> BaseMessages.getString( any(), anyString() ) ).thenReturn( "" );
+      when( result.getNrErrors() ).thenReturn( 1L );
+      when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
+      when( mockedKitchenCommandExecutor.getLog() ).thenReturn( logChannelInterface );
+      assertEquals( mockedKitchenCommandExecutor.getReturnCode(),
+        CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+    }
   }
 
   @Test
@@ -132,15 +129,17 @@ public class KitchenCommandExecutorTest {
     Params params = mock( Params.class );
     KitchenCommandExecutor kitchenCommandExecutor = new KitchenCommandExecutor( Kitchen.class );
 
-    // Mock returns
-    when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
-    when( BaseMessages.getString( any( Class.class ), anyString(), any() ) ).thenReturn( "" );
+    try ( MockedStatic<BaseMessages> baseMessagesMockedStatic = mockStatic( BaseMessages.class ) ) {
+      // Mock returns
+      when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
+      baseMessagesMockedStatic.when( () -> BaseMessages.getString( any( Class.class ), anyString(), any() ) ).thenReturn( "" );
 
-    try {
-      Result result = kitchenCommandExecutor.execute( params, null );
-      Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
-    } catch ( Throwable throwable ) {
-      Assert.fail();
+      try {
+        Result result = kitchenCommandExecutor.execute( params, null );
+        Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
+      } catch ( Throwable throwable ) {
+        Assert.fail();
+      }
     }
   }
 

@@ -113,6 +113,8 @@ public class TableOutputTest {
     when( tableOutputMeta.truncateTable() ).thenReturn( true );
     when( tableOutputSpy.getCopy() ).thenReturn( 0 );
     when( tableOutputSpy.getUniqueStepNrAcrossSlaves() ).thenReturn( 0 );
+    when( tableOutputMeta.getTableName() ).thenReturn( "fooTable" );
+    when( tableOutputMeta.getSchemaName() ).thenReturn( "barSchema" );
 
     tableOutputSpy.truncateTable();
     verify( db ).truncateTable( any(), any() );
@@ -124,6 +126,8 @@ public class TableOutputTest {
     when( tableOutputSpy.getCopy() ).thenReturn( 1 );
     when( tableOutputSpy.getUniqueStepNrAcrossSlaves() ).thenReturn( 0 );
     when( tableOutputSpy.getPartitionID() ).thenReturn( "partition id" );
+    when( tableOutputMeta.getTableName() ).thenReturn( "fooTable" );
+    when( tableOutputMeta.getSchemaName() ).thenReturn( "barSchema" );
 
     tableOutputSpy.truncateTable();
     verify( db ).truncateTable( any(), any() );
@@ -173,6 +177,7 @@ public class TableOutputTest {
     Object[] row = new Object[]{};
     doReturn( row ).when( tableOutputSpy ).getRow();
     tableOutputSpy.first = false;
+    doNothing().when( tableOutputSpy ).putRow( any(), any() );
     doReturn( null ).when( tableOutputSpy ).writeToTable( any( RowMetaInterface.class ), any( row.getClass() ) );
 
     boolean result = tableOutputSpy.processRow( tableOutputMeta, tableOutputData );

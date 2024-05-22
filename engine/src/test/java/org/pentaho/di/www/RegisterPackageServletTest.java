@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,6 @@ package org.pentaho.di.www;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,29 +59,13 @@ import static org.mockito.Mockito.when;
 public class RegisterPackageServletTest {
 
   protected RegisterPackageServlet servlet;
-  private MockedStatic<IOUtils> ioUtilsMockedStatic;
-  private MockedStatic<FileUtils> fileUtilsMockedStatic;
-  private MockedStatic<XMLHandler> xmlHandlerMockedStatic;
-  private MockedStatic<KettleVFS> kettleVFSMockedStatic;
 
   @Rule
   public ExpectedException expectedEx = ExpectedException.none();
 
   @Before
   public void setup() {
-    ioUtilsMockedStatic = mockStatic( IOUtils.class );
-    fileUtilsMockedStatic = mockStatic( FileUtils.class );
-    xmlHandlerMockedStatic = mockStatic( XMLHandler.class );
-    kettleVFSMockedStatic = mockStatic( KettleVFS.class );
     servlet = new RegisterPackageServlet();
-  }
-
-  @After
-  public void tearDown() {
-    ioUtilsMockedStatic.close();
-    fileUtilsMockedStatic.close();
-    xmlHandlerMockedStatic.close();
-    kettleVFSMockedStatic.close();
   }
 
   @Test
@@ -158,21 +141,21 @@ public class RegisterPackageServletTest {
 
   @Test
   public void testGetConfigNode() throws Exception {
-    // Variables
-    String archiveUrl = "/tmp/dafajfkdh/somePath/sub";
-    String fileName = "execution_configuration__.xml";
-    String xmlTag = "execution_configuration";
-    String configUrl = applyFileSeperator( "/tmp/dafajfkdh/somePath/sub/execution_configuration__.xml" );
+    try( MockedStatic<XMLHandler> xmlHandlerMockedStatic = mockStatic( XMLHandler.class ) ) {
+      // Variables
+      String archiveUrl = "/tmp/dafajfkdh/somePath/sub";
+      String fileName = "execution_configuration__.xml";
+      String xmlTag = "execution_configuration";
+      String configUrl = applyFileSeperator( "/tmp/dafajfkdh/somePath/sub/execution_configuration__.xml" );
 
-    Document configDoc = Mockito.mock( Document.class );
-    Node node = Mockito.mock ( Node.class );
+      Document configDoc = Mockito.mock( Document.class );
+      Node node = Mockito.mock( Node.class );
 
-    // SETUP
-    when( XMLHandler.loadXMLFile( eq( configUrl) ) ).thenReturn( configDoc );
-    when( XMLHandler.getSubNode( configDoc, xmlTag) ).thenReturn( node );
-
-    assertEquals( node, servlet.getConfigNode( archiveUrl, fileName, xmlTag) );
-
+      // SETUP
+      xmlHandlerMockedStatic.when( () -> XMLHandler.loadXMLFile( eq( configUrl ) ) ).thenReturn( configDoc );
+      xmlHandlerMockedStatic.when( () -> XMLHandler.getSubNode( eq( configDoc ), eq( xmlTag ) ) ).thenReturn( node );
+      assertEquals( node, servlet.getConfigNode( archiveUrl, fileName, xmlTag ) );
+    }
   }
 
   @Test
@@ -228,36 +211,33 @@ public class RegisterPackageServletTest {
   @Test
   public void testCopyRequestToDirectory_Exception2() throws Exception {
 
-    expectedEx.expect( MockitoException.class );
+    try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
+      expectedEx.expect( MockitoException.class );
 
-    InputStream inputStream = Mockito.mock( InputStream.class);
+      InputStream inputStream = Mockito.mock( InputStream.class );
 
-    when( KettleVFS.getFileObject( anyString() ) ).thenThrow( IOException.class );
+      kettleVFSMockedStatic.when( () -> KettleVFS.getFileObject( anyString() ) ).thenThrow( IOException.class );
 
-    servlet.copyRequestToDirectory( inputStream, "/tmp/path");
-
+      servlet.copyRequestToDirectory( inputStream, "/tmp/path" );
+    }
   }
 
   @Test
   public void testCopyAndClose() throws Exception {
 
-    // Variables
-    InputStream inputStream = Mockito.mock( InputStream.class );
-    OutputStream outputStream = Mockito.mock( OutputStream.class );
-    int bytesCopied = 10;
+    try ( MockedStatic<IOUtils> ioUtilsMockedStatic1 = mockStatic( IOUtils.class ) ) {
+      int bytesCopied = 10;
+      ioUtilsMockedStatic1.when( () -> IOUtils.copy( any( InputStream.class ), any( OutputStream.class ) ) ).thenReturn( bytesCopied );
+      // Variables
+      InputStream inputStream = Mockito.mock( InputStream.class );
+      OutputStream outputStream = Mockito.mock( OutputStream.class );
 
-    // SETUP
-    when( IOUtils.copy( any( InputStream.class ), any( OutputStream.class ) ) ).thenReturn( bytesCopied );
+      // EXECUTE
+      servlet.copyAndClose( inputStream, outputStream );
 
-    // EXECUTE
-    servlet.copyAndClose( inputStream, outputStream );
-
-    // Verify
-//    PowerMockito.verifyStatic( IOUtils.class );
-    IOUtils.copy( inputStream, outputStream );
-
-//    PowerMockito.verifyStatic( IOUtils.class);
-    IOUtils.closeQuietly( outputStream );
+      ioUtilsMockedStatic1.verify( () -> IOUtils.copy( eq( inputStream ), eq( outputStream ) ) );
+      ioUtilsMockedStatic1.verify( () -> IOUtils.closeQuietly( eq( outputStream ) ) );
+    }
 
   }
 
@@ -289,18 +269,19 @@ public class RegisterPackageServletTest {
 
   @Test
   public void testDeleteArchive_String() {
+    try ( MockedStatic<FileUtils> fileUtilsMockedStatic1 = mockStatic( FileUtils.class ) ) {
 
-    String fileName = "someRandom.zip"; // a valid filepath is not necessary for test
+      String fileName = "someRandom.zip"; // a valid filepath is not necessary for test
 
-    File expectedFile = new File( fileName );
+      File expectedFile = new File( fileName );
 
-    when( FileUtils.deleteQuietly( any( File.class ) ) ).thenReturn( true );
+      fileUtilsMockedStatic1.when( () -> FileUtils.deleteQuietly( any( File.class ) ) ).thenReturn( true );
 
-    servlet.deleteArchive( fileName );
+      servlet.deleteArchive( fileName );
 
-//    PowerMockito.verifyStatic( FileUtils.class);
-    FileUtils.deleteQuietly( expectedFile );
-
+      fileUtilsMockedStatic1.verify( () -> FileUtils.deleteQuietly( eq( expectedFile ) ) );
+      FileUtils.deleteQuietly( expectedFile );
+    }
   }
 
   private String applyFileSeperator( String path ){

@@ -25,6 +25,7 @@ package org.pentaho.di.www;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -43,6 +44,7 @@ import static junit.framework.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 
@@ -59,47 +61,49 @@ public class StopJobServletTest {
 
   @Test
   public void testStopJobServletEscapesHtmlWhenTransNotFound() throws ServletException, IOException {
-    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
-    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+      HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
 
-    StringWriter out = new StringWriter();
-    PrintWriter printWriter = new PrintWriter( out );
+      StringWriter out = new StringWriter();
+      PrintWriter printWriter = new PrintWriter( out );
 
-    when( mockHttpServletRequest.getContextPath() ).thenReturn( StopJobServlet.CONTEXT_PATH );
-    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
-    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+      when( mockHttpServletRequest.getContextPath() ).thenReturn( StopJobServlet.CONTEXT_PATH );
+      when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
+      when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
-    stopJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
-
-    Encode.forHtml( "" );
+      stopJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+      assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ) );
+    }
   }
 
   @Test
   public void testStopJobServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
-    KettleLogStore.init();
-    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
-    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
-    Job mockJob = mock( Job.class );
-    JobMeta mockJobMeta = mock( JobMeta.class );
-    LogChannelInterface mockLogChannelInterface = mock( LogChannelInterface.class );
-    mockJob.setName( ServletTestUtils.BAD_STRING_TO_TEST );
-    StringWriter out = new StringWriter();
-    PrintWriter printWriter = new PrintWriter( out );
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      KettleLogStore.init();
+      HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+      HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+      Job mockJob = mock( Job.class );
+      JobMeta mockJobMeta = mock( JobMeta.class );
+      LogChannelInterface mockLogChannelInterface = mock( LogChannelInterface.class );
+      mockJob.setName( ServletTestUtils.BAD_STRING_TO_TEST );
+      StringWriter out = new StringWriter();
+      PrintWriter printWriter = new PrintWriter( out );
 
-    when( mockHttpServletRequest.getContextPath() ).thenReturn( StopJobServlet.CONTEXT_PATH );
-    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
-    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
-    when( mockJobMap.getJob( any( CarteObjectEntry.class ) ) ).thenReturn( mockJob );
-    when( mockJob.getLogChannelId() ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
-    when( mockJob.getLogChannel() ).thenReturn( mockLogChannelInterface );
-    when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
-    when( mockJobMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
+      when( mockHttpServletRequest.getContextPath() ).thenReturn( StopJobServlet.CONTEXT_PATH );
+      when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
+      when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+      when( mockJobMap.getJob( any( CarteObjectEntry.class ) ) ).thenReturn( mockJob );
+      when( mockJob.getLogChannelId() ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
+      when( mockJob.getLogChannel() ).thenReturn( mockLogChannelInterface );
+      when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
+      when( mockJobMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
-    stopJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+      stopJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+      assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
 
-//    PowerMockito.verifyStatic( atLeastOnce() );
-    Encode.forHtml( anyString() );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ) );
+    }
   }
 }

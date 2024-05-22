@@ -23,8 +23,7 @@
 package org.pentaho.di.core.logging;
 
 import org.junit.Test;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.springframework.util.ReflectionUtils;
 
@@ -43,55 +42,54 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class BaseLogTableTest {
 
   @Test
   public void testSecondJobExecutionDoesNotReturnLogFromFirstExecution() throws Exception {
-    mockStatic( KettleLogStore.class );
-    mockStatic( LoggingRegistry.class );
-    mockStatic( Utils.class );
-    mockStatic( Const.class );
+    try ( MockedStatic<KettleLogStore> kettleLogStoreMockedStatic = mockStatic( KettleLogStore.class );
+    MockedStatic<LoggingRegistry> loggingRegistryMockedStatic = mockStatic( LoggingRegistry.class ) ) {
 
-    LoggingBuffer lb = spy( new LoggingBuffer( 10 ) );
-    when( KettleLogStore.getAppender() ).thenReturn( lb );
-    doCallRealMethod().when( lb ).getBuffer( anyString(), anyBoolean(), anyInt() );
+      LoggingBuffer lb = spy( new LoggingBuffer( 10 ) );
+      kettleLogStoreMockedStatic.when( KettleLogStore::getAppender ).thenReturn( lb );
+      doCallRealMethod().when( lb ).getBuffer( anyString(), anyBoolean(), anyInt() );
 
-    LoggingRegistry lr = mock( LoggingRegistry.class );
-    when( LoggingRegistry.getInstance() ).thenReturn( lr );
-    doReturn( List.of( "1" ) ).when( lr ).getLogChannelChildren( anyString() );
+      LoggingRegistry lr = mock( LoggingRegistry.class );
+      loggingRegistryMockedStatic.when( LoggingRegistry::getInstance ).thenReturn( lr );
+      doReturn( List.of( "1" ) ).when( lr ).getLogChannelChildren( anyString() );
 
-    Field privateLoggingRegistryField = LoggingBuffer.class.getDeclaredField( "loggingRegistry" );
-    privateLoggingRegistryField.setAccessible( true );
-    ReflectionUtils.setField( privateLoggingRegistryField, lb, lr );
+      Field privateLoggingRegistryField = LoggingBuffer.class.getDeclaredField( "loggingRegistry" );
+      privateLoggingRegistryField.setAccessible( true );
+      ReflectionUtils.setField( privateLoggingRegistryField, lb, lr );
 
-    ConcurrentSkipListMap<Integer, BufferLine> bl = new ConcurrentSkipListMap<>();
-    Field privateLBufferField = LoggingBuffer.class.getDeclaredField( "buffer" );
-    privateLBufferField.setAccessible( true );
-    ReflectionUtils.setField( privateLBufferField, lb, bl );
+      ConcurrentSkipListMap<Integer, BufferLine> bl = new ConcurrentSkipListMap<>();
+      Field privateLBufferField = LoggingBuffer.class.getDeclaredField( "buffer" );
+      privateLBufferField.setAccessible( true );
+      ReflectionUtils.setField( privateLBufferField, lb, bl );
 
-    KettleLoggingEvent kLE1 = spy( KettleLoggingEvent.class );
-    LogMessage lm = new LogMessage( "First Job Execution Logging Event", "1", LogLevel.BASIC );
-    kLE1.setMessage( lm );
-    addToBuffer( bl, new BufferLine( kLE1 ) );
+      KettleLoggingEvent kLE1 = spy( KettleLoggingEvent.class );
+      LogMessage lm = new LogMessage( "First Job Execution Logging Event", "1", LogLevel.BASIC );
+      kLE1.setMessage( lm );
+      addToBuffer( bl, new BufferLine( kLE1 ) );
 
-    BaseLogTable baseLogTable = mock( BaseLogTable.class );
-    doCallRealMethod().when( baseLogTable ).getLogBuffer( any( VariableSpace.class ), anyString(), any( LogStatus.class ), anyString(), anyInt() );
+      BaseLogTable baseLogTable = mock( BaseLogTable.class );
+      doCallRealMethod().when( baseLogTable )
+        .getLogBuffer( any( VariableSpace.class ), anyString(), any( LogStatus.class ), anyString(), anyInt() );
 
-    VariableSpace vs = mock( VariableSpace.class );
+      VariableSpace vs = mock( VariableSpace.class );
 
-    String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 1 );
-    assertTrue( s1.contains( "First Job Execution Logging Event" ) );
+      String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 1 );
+      assertTrue( s1.contains( "First Job Execution Logging Event" ) );
 
-    KettleLoggingEvent kLE2 = spy( KettleLoggingEvent.class );
-    LogMessage lm2 = new LogMessage( "Second Job Execution Logging Event", "1", LogLevel.BASIC );
-    kLE2.setMessage( lm2 );
-    addToBuffer( bl, new BufferLine( kLE2 ) );
+      KettleLoggingEvent kLE2 = spy( KettleLoggingEvent.class );
+      LogMessage lm2 = new LogMessage( "Second Job Execution Logging Event", "1", LogLevel.BASIC );
+      kLE2.setMessage( lm2 );
+      addToBuffer( bl, new BufferLine( kLE2 ) );
 
-    String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 2 );
-    assertFalse( s2.contains( "First Job Execution Logging Event" ) );
-    assertTrue( s2.contains( "Second Job Execution Logging Event" ) );
+      String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 2 );
+      assertFalse( s2.contains( "First Job Execution Logging Event" ) );
+      assertTrue( s2.contains( "Second Job Execution Logging Event" ) );
+    }
   }
 
   private void addToBuffer( ConcurrentSkipListMap bl, BufferLine bufferLine ) {

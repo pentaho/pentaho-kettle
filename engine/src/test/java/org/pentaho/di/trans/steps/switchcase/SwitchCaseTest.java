@@ -22,37 +22,9 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.QueueRowSet;
@@ -97,10 +69,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-// todo Fix Me!!!
 
 public class SwitchCaseTest {
 
@@ -462,7 +433,7 @@ public class SwitchCaseTest {
 
       // call to convert value will returns same value.
       data.valueMeta = mock( ValueMetaInterface.class );
-      when( data.valueMeta.convertData( any( ValueMetaInterface.class ), any() ) ).thenAnswer(
+      when( data.valueMeta.convertData( nullable( ValueMetaInterface.class ), any() ) ).thenAnswer(
         new Answer<Object>() {
           @Override
           public Object answer( InvocationOnMock invocation ) throws Throwable {
@@ -471,8 +442,8 @@ public class SwitchCaseTest {
           }
         } );
       // same when call to convertDataFromString
-      when( data.valueMeta.convertDataFromString( Mockito.anyString(), any( ValueMetaInterface.class ),
-        Mockito.anyString(), Mockito.anyString(), Mockito.anyInt() ) ).thenAnswer(
+      when( data.valueMeta.convertDataFromString( nullable( String.class ), nullable( ValueMetaInterface.class ),
+        nullable( String.class ), nullable( String.class ), nullable( Integer.class ) ) ).thenAnswer(
         //CHECKSTYLE:Indentation:OFF
         new Answer<Object>() {
           public Object answer( InvocationOnMock invocation ) throws Throwable {

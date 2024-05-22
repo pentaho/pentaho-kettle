@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.owasp.encoder.Encode;
 
 import javax.servlet.ServletException;
@@ -36,8 +37,9 @@ import java.io.IOException;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public class ListServerSocketServletTest {
@@ -53,33 +55,32 @@ public class ListServerSocketServletTest {
 
   @Test
   public void testListServerSocketServletEncodesParametersForHmtlResponse() throws ServletException, IOException {
-    HttpServletRequest mockRequest = mock( HttpServletRequest.class );
-    HttpServletResponse mockResponse = mock( HttpServletResponse.class );
-    SocketPortAllocation mockSocketPortAllocation = mock( SocketPortAllocation.class );
-    final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    ServletOutputStream servletOutputStream = new ServletOutputStream() {
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      HttpServletRequest mockRequest = mock( HttpServletRequest.class );
+      HttpServletResponse mockResponse = mock( HttpServletResponse.class );
+      SocketPortAllocation mockSocketPortAllocation = mock( SocketPortAllocation.class );
+      final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+      ServletOutputStream servletOutputStream = new ServletOutputStream() {
 
-      @Override
-      public void write( int b ) {
-        byteArrayOutputStream.write( b );
-      }
-    };
+        @Override
+        public void write( int b ) {
+          byteArrayOutputStream.write( b );
+        }
+      };
 
-    spy( Encode.class );
-    when( mockRequest.getContextPath() ).thenReturn( ListServerSocketServlet.CONTEXT_PATH );
-    when( mockRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
-    when( mockResponse.getOutputStream() ).thenReturn( servletOutputStream );
-    when(
-      mockTransformationMap.allocateServerSocketPort(
-        anyInt(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
-        anyString(), anyString() ) ).thenReturn( mockSocketPortAllocation );
+      when( mockRequest.getContextPath() ).thenReturn( ListServerSocketServlet.CONTEXT_PATH );
+      when( mockRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
+      when( mockResponse.getOutputStream() ).thenReturn( servletOutputStream );
+      when(
+        mockTransformationMap.allocateServerSocketPort(
+          anyInt(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
+          anyString(), anyString() ) ).thenReturn( mockSocketPortAllocation );
 
-    listServerSocketServlet.doGet( mockRequest, mockResponse );
+      listServerSocketServlet.doGet( mockRequest, mockResponse );
 
-    String response = byteArrayOutputStream.toString();
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", response ) ) );
-
-//    PowerMockito.verifyStatic( atLeastOnce() );
-    Encode.forHtml( anyString() );
+      String response = byteArrayOutputStream.toString();
+      assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", response ) ) );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ), atLeastOnce() );
+    }
   }
 }
