@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2021 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2021-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -104,7 +104,7 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       editMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.Edit" ) );
       editMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          vfsConnectionDelegate.openDialog( vfsConnectionTreeItem.getLabel() );
+          vfsConnectionDelegate.openDialog( vfsConnectionTreeItem.getName(), vfsConnectionTreeItem.getLevel() );
         }
       } );
 
@@ -112,7 +112,7 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       deleteMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.Delete" ) );
       deleteMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          vfsConnectionDelegate.delete( vfsConnectionTreeItem.getLabel() );
+          vfsConnectionDelegate.delete( vfsConnectionTreeItem.getName(), vfsConnectionTreeItem.getLevel() );
         }
       } );
     }

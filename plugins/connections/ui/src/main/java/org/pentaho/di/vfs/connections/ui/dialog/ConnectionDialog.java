@@ -75,12 +75,12 @@ public class ConnectionDialog extends Dialog {
 
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final int MARGIN = Const.MARGIN;
-  private static final ConnectionManager connectionManager = ConnectionManager.getInstance();
   private static final int TEXT_VAR_FLAGS = SWT.SINGLE | SWT.LEFT | SWT.BORDER;
 
   Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private String connectionTypeKey;
   private ConnectionDetails connectionDetails;
+  private final ConnectionManager connectionManager;
   private final List<ConnectionManager.Type> connectionTypes;
   private final String[] connectionTypeChoices;
 
@@ -101,11 +101,12 @@ public class ConnectionDialog extends Dialog {
   private ScrolledComposite wScrolledComposite;
   private String originalName;
 
-  public ConnectionDialog( Shell shell, int width, int height ) {
+  public ConnectionDialog( Shell shell, int width, int height, ConnectionManager connectionManager ) {
     super( shell, SWT.NONE );
     this.width = width;
     this.height = height;
     props = PropsUI.getInstance();
+    this.connectionManager = connectionManager;
     connectionTypes = connectionManager.getItems();
     connectionTypeChoices =
       connectionTypes.stream().filter( connType -> !"other".equals( new String( connType.getValue() ) ) )

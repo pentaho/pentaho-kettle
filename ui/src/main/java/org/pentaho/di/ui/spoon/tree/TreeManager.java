@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,7 +69,7 @@ public class TreeManager {
   public void addRoot( String label, List<TreeFolderProvider> providers ) {
     RootNode treeNode = new RootNode( label, guiResource.getImageFolder(), true );
     treeNode.setLabel( label );
-    treeNode.setImage( GUIResource.getInstance().getImageFolder() );
+    treeNode.setImage( GUIResource.getInstance().getImageConfigurationsGrey() );
     treeNode.setExpanded( true );
     treeNode.addProviders( providers );
     rootNodes.add( treeNode );
@@ -128,12 +128,16 @@ public class TreeManager {
     this.filter = filter;
   }
 
-  public void reset( AbstractMeta abstractMeta ) {
-    rootNodes.forEach( rootNode -> rootNode.clearUpdates( abstractMeta ) );
+  public void reset() {
+    rootNodes.forEach( rootNode -> rootNode.clearUpdates() );
   }
 
   public void update( String name ) {
     rootNodes.forEach( rootNode -> rootNode.update( name ) );
+  }
+
+  public void updateAll() {
+    rootNodes.forEach( rootNode -> rootNode.updateAll() );
   }
 
   public boolean shouldUpdate( String name ) {

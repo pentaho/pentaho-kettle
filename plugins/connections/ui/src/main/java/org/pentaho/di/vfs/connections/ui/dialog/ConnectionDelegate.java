@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,9 +27,14 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ui.dialog.ConnectionDeleteDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.util.function.Supplier;
 
@@ -57,27 +62,75 @@ public class ConnectionDelegate {
   }
 
   public void openDialog() {
-    ConnectionDialog connectionDialog = new ConnectionDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
-    connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.new.title" ) );
-  }
-
-  public void openDialog( String label ) {
-    ConnectionDialog connectionDialog = new ConnectionDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
-    connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.edit.title" ), label );
-  }
-
-  public void delete( String label ) {
-    ConnectionDeleteDialog connectionDeleteDialog = new ConnectionDeleteDialog( spoonSupplier.get().getShell() );
-    if ( connectionDeleteDialog.open( label ) == SWT.YES ) {
-      ConnectionManager connectionManager = ConnectionManager.getInstance();
-      connectionManager.delete( label );
-      spoonSupplier.get().getShell().getDisplay().asyncExec( () -> spoonSupplier.get().refreshTree(
-        ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
-      EngineMetaInterface engineMetaInterface = spoonSupplier.get().getActiveMeta();
-      if ( engineMetaInterface instanceof AbstractMeta ) {
-        ( (AbstractMeta) engineMetaInterface ).setChanged();
-      }
+    try {
+      Spoon spoon = spoonSupplier.get();
+      Bowl bowl = spoon.getBowl();
+      ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT,
+                                                                bowl.getExplicitConnectionManager() );
+      connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.new.title" ) );
+      resetConnectionManagerIfNeeded( spoon );
+    } catch ( MetaStoreException e ) {
+      showError( e );
     }
   }
 
+  public void openDialog( String name, LeveledTreeNode.LEVEL level ) {
+    try {
+      Spoon spoon = spoonSupplier.get();
+      Bowl bowl = getBowl( spoon, level );
+      ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT,
+                                                                bowl.getExplicitConnectionManager() );
+      connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.edit.title" ), name );
+      resetConnectionManagerIfNeeded( spoon );
+    } catch ( MetaStoreException e ) {
+      showError( e );
+    }
+  }
+
+  public void delete( String name, LeveledTreeNode.LEVEL level ) {
+    try {
+      ConnectionDeleteDialog connectionDeleteDialog = new ConnectionDeleteDialog( spoonSupplier.get().getShell() );
+      if ( connectionDeleteDialog.open( name ) == SWT.YES ) {
+        Spoon spoon = spoonSupplier.get();
+        Bowl bowl = getBowl( spoon, level );
+        ConnectionManager connectionManager = bowl.getExplicitConnectionManager();
+        connectionManager.delete( name );
+        resetConnectionManagerIfNeeded( spoon );
+
+        spoonSupplier.get().getShell().getDisplay().asyncExec( () -> spoonSupplier.get().refreshTree(
+        ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
+        EngineMetaInterface engineMetaInterface = spoonSupplier.get().getActiveMeta();
+        if ( engineMetaInterface instanceof AbstractMeta ) {
+          ( (AbstractMeta) engineMetaInterface ).setChanged();
+        }
+      }
+    } catch ( MetaStoreException e ) {
+      showError( e );
+    }
+  }
+
+  private void resetConnectionManagerIfNeeded( Spoon spoon ) throws MetaStoreException {
+    // if an edit was made, and the current bowl isn't default, reset it's (non-explicit) ConnectionManager
+    Bowl bowl = spoon.getBowl();
+    if ( !bowl.equals( DefaultBowl.getInstance() ) ) {
+      bowl.getConnectionManager().reset();
+    }
+  }
+
+  private Bowl getBowl( Spoon spoon, LeveledTreeNode.LEVEL level ) {
+    if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
+      return spoon.getBowl();
+    } else {
+      return DefaultBowl.getInstance();
+    }
+  }
+
+  private void showError( Exception e ) {
+    new ErrorDialog( spoonSupplier.get().getShell(),
+                     BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+                     BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingVFSConnections" ),
+                     e
+                     );
+  }
 }
+

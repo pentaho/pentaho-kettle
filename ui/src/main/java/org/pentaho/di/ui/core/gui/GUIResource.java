@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -212,6 +212,10 @@ public class GUIResource {
   private SwtUniversalImage imageArrow;
 
   private SwtUniversalImage imageFolder;
+
+  private SwtUniversalImage imageConfigurations;
+
+  private SwtUniversalImage imageConfigurationsGrey;
 
   private SwtUniversalImage imageTransRepo;
 
@@ -622,6 +626,8 @@ public class GUIResource {
       imageSlaveTree.dispose();
       imageArrow.dispose();
       imageFolder.dispose();
+      imageConfigurations.dispose();
+      imageConfigurationsGrey.dispose();
       imageTransRepo.dispose();
       imageJobRepo.dispose();
       imageWizard.dispose();
@@ -1282,6 +1288,14 @@ public class GUIResource {
     // "ui/images/folder.png"
     imageFolder = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "Folder_image" ) );
+
+    // "ui/images/Configurations.png"
+    imageConfigurations = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "Configurations_image" ) );
+
+    // "ui/images/Configurations_grey.png"
+    imageConfigurationsGrey = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "Configurations_grey_image" ) );
 
     // "ui/images/transrepo.png"
     imageTransRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
@@ -1978,6 +1992,14 @@ public class GUIResource {
    */
   public Image getImageFolder() {
     return imageFolder.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  public Image getImageConfigurations() {
+    return imageConfigurations.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  public Image getImageConfigurationsGrey() {
+    return imageConfigurationsGrey.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   /**

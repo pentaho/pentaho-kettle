@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -170,6 +170,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.undo.TransAction;
+import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -377,6 +378,12 @@ import java.util.Objects;
 public class Spoon extends ApplicationWindow implements AddUndoPositionInterface, TabListener, SpoonInterface,
   OverwritePrompter, PDIObserver, LifeEventHandler, XulEventSource, XulEventHandler, PartitionSchemasProvider {
   private static final String userHomeDir = System.getProperty( "user.home" );
+  /**
+   * Separate VFS connection name variable is no longer needed.
+   * @deprecated
+   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public static final String CONNECTION = "connection";
   private static final String XML_EXTENSION = "xml";
   public static final String SPOON_DIALOG_PROMPT_OVERWRITE_FILE = "Spoon.Dialog.PromptOverwriteFile.";
@@ -902,6 +909,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       SpoonPerspectiveManager.getInstance().setStartupPerspective( startupPerspective );
       SpoonPerspectiveManager.getInstance().addPerspective( mainPerspective );
+
+      // plugins may need to use connections.
+      ConnectionUtil.init( null );
 
       SpoonPluginManager.getInstance().applyPluginsForContainer( "spoon", mainSpoonContainer );
 
@@ -2617,74 +2627,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  /**
-   * If you click in the tree, you might want to show the corresponding window.
-   */
-  public void showSelection() {
-    TreeSelection[] objects = getTreeObjects( selectionTree );
-    if ( objects.length != 1 ) {
-      return; // not yet supported, we can do this later when the OSX bug
-      // goes away
-    }
-
-    TreeSelection object = objects[0];
-
-    final Object selection = object.getSelection();
-    final Object parent = object.getParent();
-
-    TransMeta transMeta = null;
-    if ( selection instanceof TransMeta ) {
-      transMeta = (TransMeta) selection;
-    }
-    if ( parent instanceof TransMeta ) {
-      transMeta = (TransMeta) parent;
-    }
-
-    if ( transMeta != null ) {
-
-      TabMapEntry entry = delegates.tabs.findTabMapEntry( transMeta );
-      if ( entry != null ) {
-        int current = tabfolder.getSelectedIndex();
-        int desired = tabfolder.indexOf( entry.getTabItem() );
-        if ( current != desired ) {
-          tabfolder.setSelected( desired );
-        }
-        transMeta.setInternalKettleVariables();
-        if ( getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON ) {
-          // Switch the core objects in the lower left corner to the
-          // spoon trans types
-          refreshCoreObjects();
-        }
-      }
-    }
-
-    JobMeta jobMeta = null;
-    if ( selection instanceof JobMeta ) {
-      jobMeta = (JobMeta) selection;
-    }
-    if ( parent instanceof JobMeta ) {
-      jobMeta = (JobMeta) parent;
-    }
-    if ( jobMeta != null ) {
-
-      TabMapEntry entry = delegates.tabs.findTabMapEntry( jobMeta );
-      if ( entry != null ) {
-        int current = tabfolder.getSelectedIndex();
-        int desired = tabfolder.indexOf( entry.getTabItem() );
-        if ( current != desired ) {
-          tabfolder.setSelected( desired );
-        }
-        jobMeta.setInternalKettleVariables();
-        if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF ) {
-          // Switch the core objects in the lower left corner to the
-          // spoon job types
-          //
-          refreshCoreObjects();
-        }
-      }
-    }
-  }
-
   private Object selectionObjectParent = null;
 
   private Object selectionObject = null;
@@ -3213,7 +3155,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         editSlaveServer( (SlaveServer) selection );
       }
 
-      editSelectionTreeExtension( selection );
+      editSelectionTreeExtension( object.getTreeItem(), selection );
     }
   }
 
@@ -4599,6 +4541,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  /**
+   * Separate VFS connection name variable is no longer needed.
+   * @deprecated
+   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   private String lastFileOpenedConnection;
   private String lastFileOpenedProvider;
 
@@ -4652,7 +4600,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // We are able to find the index of forward or backward slash set the folder to be the path before slash
         String folder = lastFileOpened.substring( 0, parentIndex );
         fileDialogOperation.setPath( folder );
-        fileDialogOperation.setConnection( lastFileOpenedConnection );
+        fileDialogOperation.setConnection( null );
         fileDialogOperation.setProvider( lastFileOpenedProvider );
       } else {
         // We were unable to find the folder path from the last file opened. We will set the file open dialog to
@@ -4683,7 +4631,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         openFile( path, variables, importFile );
         lastFileOpened = path;
         props.setLastUsedLocalFile( path );
-        lastFileOpenedConnection = fileDialogOperation.getConnection();
+        lastFileOpenedConnection = null;
         lastFileOpenedProvider = fileDialogOperation.getProvider();
       }
     } catch ( KettleException e ) {
@@ -4776,7 +4724,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       setFileOperatioPathForNonRepositoryFile(fileDialogOperation, meta, export );
     }
     if ( meta instanceof VariableSpace ) {
-      fileDialogOperation.setConnection( ( (VariableSpace) meta ).getVariable( CONNECTION ) );
+      fileDialogOperation.setConnection( null );
     }
     boolean saved = false;
     try {
@@ -4791,7 +4739,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         String filename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
         lastFileOpened = filename;
         props.setLastUsedLocalFile( filename );
-        lastFileOpenedConnection = fileDialogOperation.getConnection();
+        lastFileOpenedConnection = null;
         lastFileOpenedProvider = fileDialogOperation.getProvider();
         if ( lastFileOpenedConnection != null && meta instanceof VariableSpace ) {
           ( (VariableSpace) meta ).setVariable( CONNECTION, lastFileOpenedConnection );
@@ -5811,7 +5759,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if (fileDialogOperation.getPath() != null && fileDialogOperation.getFilename() != null) {
         zipFilename = fileDialogOperation.getPath() + File.separator + fileDialogOperation.getFilename();
         lastFileOpened = zipFilename;
-        lastFileOpenedConnection = fileDialogOperation.getConnection();
+        lastFileOpenedConnection = null;
         lastFileOpenedProvider = fileDialogOperation.getProvider();
         FileObject zipFileObject = KettleVFS.getFileObject(zipFilename);
         if (zipFileObject.exists()) {
@@ -6553,7 +6501,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     selectionTree.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        showSelection();
+
       }
 
       @Override
@@ -6564,6 +6512,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // Set a listener on the tree
     addDragSourceToTree( selectionTree );
+  }
+
+  private void forceRefreshTree() {
+    if ( selectionTreeManager != null ) {
+      selectionTreeManager.updateAll();
+      refreshTree();
+    }
   }
 
   public void refreshTree( AbstractMeta abstractMeta ) {
@@ -6590,17 +6545,24 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     selectionTreeManager.showRoot( STRING_CONFIGURATIONS, true );
 
+    boolean hasMeta = false;
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       Object managedObject = entry.getObject().getManagedObject();
       if ( managedObject instanceof TransMeta ) {
+        hasMeta = true;
         showMetaTree( activeTransMeta, (TransMeta) managedObject, STRING_CONFIGURATIONS, true );
       }
     }
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       Object managedObject = entry.getObject().getManagedObject();
       if ( managedObject instanceof JobMeta ) {
+        hasMeta = true;
         showMetaTree( activeJobMeta, (JobMeta) managedObject, STRING_CONFIGURATIONS, true );
       }
+    }
+
+    if ( !hasMeta ) {
+      showMetaTree( null, null, STRING_CONFIGURATIONS, true );
     }
 
     selectionTreeManager.render();
@@ -6612,8 +6574,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private void showMetaTree( AbstractMeta activeMeta, AbstractMeta meta, String type, boolean showAll ) {
     if ( !props.isOnlyActiveFileShownInTree() || showAll || ( activeMeta != null && activeMeta.equals( meta ) ) ) {
-      selectionTreeManager.checkUpdate( Optional.of(meta), type );
-      selectionTreeManager.reset( meta );
+      selectionTreeManager.checkUpdate( Optional.ofNullable( meta ), type );
+      selectionTreeManager.reset();
     }
   }
 
@@ -6683,10 +6645,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  @VisibleForTesting void editSelectionTreeExtension( Object selection ) {
+  @VisibleForTesting void editSelectionTreeExtension( TreeItem treeItem, Object selection ) {
     try {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonViewTreeExtension.id,
-          new SelectionTreeExtension( selection, EDIT_SELECTION_EXTENSION ) );
+          new SelectionTreeExtension( treeItem, selection, EDIT_SELECTION_EXTENSION ) );
     } catch ( Exception e ) {
       log.logError( "Error handling menu right click on job entry through extension point", e );
     }
@@ -9517,6 +9479,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     getMenuBarManager().updateAll( true );
 
+    // refresh the left hand tree after loading providers
+    refreshTree();
+
     return parent;
   }
 
@@ -9560,6 +9525,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setBowl( Bowl bowl ) {
     this.bowl = Objects.requireNonNull( bowl );
+    forceRefreshTree();
   }
 
   private void onLoginError( Throwable t ) {

@@ -71,7 +71,6 @@ public abstract class BaseVFSConnectionDetails implements VFSConnectionDetails {
     return rootPath;
   }
 
-  @Override
   public void setRootPath( String rootPath ) {
     this.rootPath = StringUtils.isEmpty( rootPath ) ? null : rootPath;
   }
@@ -83,5 +82,6 @@ public abstract class BaseVFSConnectionDetails implements VFSConnectionDetails {
    */
   protected void fillProperties( Map<String, String> props ) {
     props.put( "baRoles", getBaRoles().toString() );
+    props.put( "rootPath", getRootPath() );
   }
 }
