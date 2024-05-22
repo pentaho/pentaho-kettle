@@ -24,8 +24,6 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
@@ -46,21 +44,10 @@ public class RunConfigurationManager implements RunConfigurationService {
 
   private RunConfigurationProvider defaultRunConfigurationProvider;
   private List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-  private static RunConfigurationManager instance;
 
-  public static RunConfigurationManager getInstance() {
-    if ( null == instance ) {
-      instance = new RunConfigurationManager();
-    }
-    return instance;
-  }
-
-  public static RunConfigurationManager getInstance( Bowl bowl ) {
-
-    CheckedMetaStoreSupplier bowlSupplier = () -> bowl != null ? bowl.getMetastore() :
-        DefaultBowl.getInstance().getMetastore();
-    RunConfigurationProvider provider = new DefaultRunConfigurationProvider( bowlSupplier );
-    return  new RunConfigurationManager( Collections.singletonList( provider ) );
+  public static RunConfigurationManager getInstance( CheckedMetaStoreSupplier supplier ) {
+    RunConfigurationProvider provider = new DefaultRunConfigurationProvider( supplier );
+    return new RunConfigurationManager( Collections.singletonList( provider ) );
   }
 
   public RunConfigurationManager( List<RunConfigurationProvider> runConfigurationProviders ) {

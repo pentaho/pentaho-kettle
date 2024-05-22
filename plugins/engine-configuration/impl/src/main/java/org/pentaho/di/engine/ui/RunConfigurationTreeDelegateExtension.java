@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -33,10 +33,12 @@ import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.TreeSelection;
 import org.pentaho.di.ui.spoon.delegates.SpoonTreeDelegateExtension;
 
 import java.util.List;
+import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * Created by bmorrise on 3/14/17.
@@ -44,8 +46,6 @@ import java.util.List;
 @ExtensionPoint( id = "RunConfigurationTreeDelegateExtension", description = "",
   extensionPointId = "SpoonTreeDelegateExtension" )
 public class RunConfigurationTreeDelegateExtension implements ExtensionPointInterface {
-
-  private RunConfigurationService runConfigurationManager = RunConfigurationManager.getInstance();
 
   @Override public void callExtensionPoint( LogChannelInterface log, Object extension ) throws KettleException {
     SpoonTreeDelegateExtension treeDelExt = (SpoonTreeDelegateExtension) extension;
@@ -63,9 +63,12 @@ public class RunConfigurationTreeDelegateExtension implements ExtensionPointInte
           break;
         case 3:
           try {
-            final String name = path[ 2 ];
+            TreeItem treeItem = treeDelExt.getTreeItem();
+            String name = LeveledTreeNode.getName( treeItem );
+            LeveledTreeNode.LEVEL level = LeveledTreeNode.getLevel( treeItem );
+
             if ( !name.equalsIgnoreCase( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
-              object = new TreeSelection( path[ 2 ], path[ 2 ] );
+              object = new TreeSelection( treeItem, name, new RunConfigurationTreeItem( name, level ) );
             }
           } catch ( Exception e ) {
             // Do Nothing

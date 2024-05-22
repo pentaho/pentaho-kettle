@@ -30,6 +30,8 @@ import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeItem;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -38,6 +40,7 @@ import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.SelectionTreeExtension;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -48,26 +51,30 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
   private static final Class<?> PKG = RunConfigurationViewTreeExtension.class;
   public static String TREE_LABEL = BaseMessages.getString( PKG, "RunConfigurationTree.Title" );
 
-  private RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance();
-
   @Override public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
     SelectionTreeExtension selectionTreeExtension = (SelectionTreeExtension) object;
-    if ( selectionTreeExtension.getAction().equals( Spoon.REFRESH_SELECTION_EXTENSION ) ) {
-      refreshTree( selectionTreeExtension );
-    }
     if ( selectionTreeExtension.getAction().equals( Spoon.EDIT_SELECTION_EXTENSION ) ) {
-      if ( selectionTreeExtension.getSelection() instanceof RunConfiguration ) {
-        RunConfiguration runConfiguration = (RunConfiguration) selectionTreeExtension.getSelection();
-        runConfigurationDelegate.edit( runConfiguration );
-      }
-      if ( selectionTreeExtension.getSelection() instanceof String ) {
-        runConfigurationDelegate.edit( runConfigurationDelegate.load( (String) selectionTreeExtension.getSelection()
-        ) );
+      if ( selectionTreeExtension.getSelection() instanceof RunConfigurationTreeItem ) {
+        TreeItem treeItem = selectionTreeExtension.getTreeItem();
+        String name = LeveledTreeNode.getName( treeItem );
+        LeveledTreeNode.LEVEL level = LeveledTreeNode.getLevel( treeItem );
+
+        Bowl bowl;
+        if ( level.equals( LeveledTreeNode.LEVEL.GLOBAL ) ) {
+          bowl = DefaultBowl.getInstance();
+        } else {
+          bowl = Spoon.getInstance().getBowl();
+        }
+        RunConfigurationDelegate runConfigurationDelegate =
+          RunConfigurationDelegate.getInstance( () -> bowl.getExplicitMetastore() );
+
+        runConfigurationDelegate.edit( runConfigurationDelegate.load( name ) );
       }
     }
   }
 
-  private void refreshTree( SelectionTreeExtension selectionTreeExtension ) {
+  private void refreshTree( RunConfigurationDelegate runConfigurationDelegate,
+                            SelectionTreeExtension selectionTreeExtension ) {
     TreeItem treeItem = selectionTreeExtension.getTreeItem();
     GUIResource guiResource = selectionTreeExtension.getGuiResource();
 

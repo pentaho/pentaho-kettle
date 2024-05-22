@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -29,6 +29,7 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
+import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +41,14 @@ import java.util.List;
   description = "" )
 public class RunConfigurationExtensionPoint implements ExtensionPointInterface {
 
-  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
-
   @SuppressWarnings( "unchecked" )
-  @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
+  @Override
+  public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     List<String> runConfigurations = (ArrayList) ( (Object[]) o )[ 0 ];
     String type = (String) ( (Object[]) o )[ 1 ];
+
+    RunConfigurationManager runConfigurationManager =
+      RunConfigurationManager.getInstance( () -> Spoon.getInstance().getBowl().getMetastore() );
 
     runConfigurations.addAll( runConfigurationManager.getNames( type ) );
   }

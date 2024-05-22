@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -43,6 +43,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.function.Function;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,12 +56,14 @@ import java.util.stream.Collectors;
   description = "" )
 public class RunConfigurationImportExtensionPoint implements ExtensionPointInterface {
 
-  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
+  private Function<AbstractMeta, RunConfigurationManager> rcmProvider =
+    am -> RunConfigurationManager.getInstance( () -> am.getBowl().getMetastore() );
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     AbstractMeta abstractMeta = (AbstractMeta) o;
 
     final EmbeddedMetaStore embeddedMetaStore = abstractMeta.getEmbeddedMetaStore();
+    RunConfigurationManager runConfigurationManager = getRunConfigurationManager( abstractMeta );
 
     RunConfigurationManager embeddedRunConfigurationManager =
       EmbeddedRunConfigurationManager.build( embeddedMetaStore );
@@ -129,6 +132,10 @@ public class RunConfigurationImportExtensionPoint implements ExtensionPointInter
 
   @VisibleForTesting
   void setRunConfigurationManager( RunConfigurationManager runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
+    this.rcmProvider = x -> runConfigurationManager;
+  }
+
+  private RunConfigurationManager getRunConfigurationManager( AbstractMeta meta) {
+    return rcmProvider.apply( meta );
   }
 }
