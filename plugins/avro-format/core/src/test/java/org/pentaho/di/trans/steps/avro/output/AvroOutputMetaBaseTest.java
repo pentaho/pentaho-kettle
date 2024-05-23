@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.trans.Trans;
@@ -50,6 +50,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -105,23 +106,23 @@ public class AvroOutputMetaBaseTest {
   @Test
   public void setCompressionType() {
     metaBase.setCompressionType( "snappy" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.SNAPPY.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.SNAPPY.toString() );
     metaBase.setCompressionType( "Snappy" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.SNAPPY.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.SNAPPY.toString() );
     metaBase.setCompressionType( "SNAPPY" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.SNAPPY.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.SNAPPY.toString() );
     metaBase.setCompressionType( "deflate" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.DEFLATE.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.DEFLATE.toString() );
     metaBase.setCompressionType( "Deflate" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.DEFLATE.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.DEFLATE.toString() );
     metaBase.setCompressionType( "DEFLATE" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.DEFLATE.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.DEFLATE.toString() );
     metaBase.setCompressionType( "DEFLATE124" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.NONE.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.NONE.toString() );
     metaBase.setCompressionType( "None" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.NONE.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.NONE.toString() );
     metaBase.setCompressionType( "NONE" );
-    Assert.assertTrue( metaBase.getCompressionType().equals( AvroOutputMetaBase.CompressionType.NONE.toString() ) );
+    Assert.assertEquals( metaBase.getCompressionType(), AvroOutputMetaBase.CompressionType.NONE.toString() );
   }
 
   @Test
@@ -136,7 +137,7 @@ public class AvroOutputMetaBaseTest {
   @Test
   public void getXmlTest() {
     metaBase.getXML();
-    verify( embedManager ).registerUrl( anyString() );
+    verify( embedManager ).registerUrl( nullable( String.class ) );
   }
 
   private void loadStepMeta( String resourceFile )

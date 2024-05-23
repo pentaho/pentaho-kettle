@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,12 +21,11 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.avro.input;
 
-import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -39,6 +38,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -57,12 +57,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -120,9 +120,6 @@ public class AvroInputMetaBaseTest {
 
     meta.setParentStepMeta( parentStepMeta );
     variableSpace = mock( VariableSpace.class );
-
-    doReturn( "<def>" ).when( variableSpace ).environmentSubstitute( anyString() );
-    doReturn( FILE_NAME_VALID_PATH ).when( variableSpace ).environmentSubstitute( FILE_NAME_VALID_PATH );
   }
 
   @Test
@@ -137,7 +134,7 @@ public class AvroInputMetaBaseTest {
     verify( field ).getAvroFieldName();
     verify( field, times( 3 ) ).getPentahoFieldName();
     verify( field ).getTypeDesc();
-    verify( embedManager ).registerUrl( anyString() );
+    verify( embedManager ).registerUrl( nullable( String.class ) );
   }
 
   @Test
