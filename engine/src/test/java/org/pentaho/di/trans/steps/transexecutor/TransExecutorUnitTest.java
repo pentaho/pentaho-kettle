@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
-import java.util.Arrays;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,6 +50,8 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.StepMockUtil;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -97,7 +98,7 @@ public class TransExecutorUnitTest {
 
     internalTrans = spy( new Trans() );
     internalTrans.setLog( mock( LogChannelInterface.class ) );
-    doNothing().when( internalTrans ).prepareExecution( any( String[].class ) );
+    doNothing().when( internalTrans ).prepareExecution( nullable( String[].class ) );
     doNothing().when( internalTrans ).startThreads();
     doNothing().when( internalTrans ).waitUntilFinished();
     doNothing().when( executor ).discardLogLines( any( TransExecutorData.class ) );
