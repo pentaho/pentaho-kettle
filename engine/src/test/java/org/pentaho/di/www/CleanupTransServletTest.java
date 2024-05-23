@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.trans.Trans;
 
@@ -38,6 +39,7 @@ import static junit.framework.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -55,36 +57,40 @@ public class CleanupTransServletTest {
 
   @Test
   public void testCleanupTransServletEscapesHtmlWhenTransNotFound() throws ServletException, IOException {
-    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
-    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
-    StringWriter out = new StringWriter();
-    PrintWriter printWriter = new PrintWriter( out );
-    spy( Encode.class );
-    when( mockHttpServletRequest.getContextPath() ).thenReturn( CleanupTransServlet.CONTEXT_PATH );
-    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
-    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+      HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+      StringWriter out = new StringWriter();
+      PrintWriter printWriter = new PrintWriter( out );
+      spy( Encode.class );
+      when( mockHttpServletRequest.getContextPath() ).thenReturn( CleanupTransServlet.CONTEXT_PATH );
+      when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
+      when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
-    cleanupTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+      cleanupTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
-    Encode.forHtml( "" );
+      assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ) );
+    }
   }
 
   @Test
   public void testCleanupTransServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
-    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
-    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
-    Trans mockTrans = mock( Trans.class );
-    StringWriter out = new StringWriter();
-    PrintWriter printWriter = new PrintWriter( out );
-    spy( Encode.class );
-    when( mockHttpServletRequest.getContextPath() ).thenReturn( CleanupTransServlet.CONTEXT_PATH );
-    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
-    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
-    when( mockTransformationMap.getTransformation( any( CarteObjectEntry.class ) ) ).thenReturn( mockTrans );
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+      HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+      Trans mockTrans = mock( Trans.class );
+      StringWriter out = new StringWriter();
+      PrintWriter printWriter = new PrintWriter( out );
+      spy( Encode.class );
+      when( mockHttpServletRequest.getContextPath() ).thenReturn( CleanupTransServlet.CONTEXT_PATH );
+      when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
+      when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+      when( mockTransformationMap.getTransformation( any( CarteObjectEntry.class ) ) ).thenReturn( mockTrans );
 
-    cleanupTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
-    Encode.forHtml( "" );
+      cleanupTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+      assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ) );
+    }
   }
 }

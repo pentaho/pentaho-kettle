@@ -66,8 +66,6 @@ public class HTTPTest {
   private final HttpClientManager manager = mock( HttpClientManager.class );
   private final CloseableHttpClient client = mock( CloseableHttpClient.class );
 
-  private MockedStatic<HttpClientManager> mockedClientManager;
-
   private final String DATA = "This is the description, there's some HTML here, like &lt;strong&gt;this&lt;/strong&gt;. "
     + "Sometimes this text is another language that might contain these characters:\n"
     + "&lt;p&gt;é, è, ô, ç, à, ê, â.&lt;/p&gt; They can, of course, come in uppercase as well: &lt;p&gt;É, È Ô, Ç, À,"
@@ -87,9 +85,6 @@ public class HTTPTest {
     BasicHttpEntity entity = new BasicHttpEntity();
     entity.setContent( new ByteArrayInputStream( DATA.getBytes() ) );
     doReturn( entity ).when( response ).getEntity();
-    mockedClientManager = mockStatic( HttpClientManager.class );
-
-    when( HttpClientManager.getInstance() ).thenReturn( manager );
 
     setInternalState( data, "realUrl", "http://pentaho.com" );
     setInternalState( data, "argnrs", new int[0] );
@@ -107,27 +102,31 @@ public class HTTPTest {
     setInternalState( http, "meta", meta );
   }
 
-  @After
-  public void tearDown() {
-    mockedClientManager.close();
-  }
-
   @Test
   public void callHttpServiceWithUTF8Encoding() throws Exception {
-    doReturn( "UTF-8" ).when( meta ).getEncoding();
-    assertEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[0] );
+    try ( MockedStatic<HttpClientManager> httpClientManagerMockedStatic = mockStatic( HttpClientManager.class ) ) {
+      httpClientManagerMockedStatic.when( HttpClientManager::getInstance ).thenReturn( manager );
+      doReturn( "UTF-8" ).when( meta ).getEncoding();
+      assertEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[ 0 ] );
+    }
   }
 
   @Test
   public void callHttpServiceWithoutEncoding() throws Exception {
-    doReturn( null ).when( meta ).getEncoding();
-    assertNotEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[0] );
+    try ( MockedStatic<HttpClientManager> httpClientManagerMockedStatic = mockStatic( HttpClientManager.class ) ) {
+      httpClientManagerMockedStatic.when( HttpClientManager::getInstance ).thenReturn( manager );
+      doReturn( null ).when( meta ).getEncoding();
+      assertNotEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[ 0 ] );
+    }
   }
 
   @Test
   public void testCallHttpServiceWasCalledWithContext() throws Exception {
-    doReturn( null ).when( meta ).getEncoding();
-    http.callHttpService( rmi, new Object[] { 0 } );
-    verify( client, times( 1 ) ).execute( any( HttpGet.class ), any( HttpClientContext.class ) );
+    try ( MockedStatic<HttpClientManager> httpClientManagerMockedStatic = mockStatic( HttpClientManager.class ) ) {
+      httpClientManagerMockedStatic.when( HttpClientManager::getInstance ).thenReturn( manager );
+      doReturn( null ).when( meta ).getEncoding();
+      http.callHttpService( rmi, new Object[] { 0 } );
+      verify( client, times( 1 ) ).execute( any( HttpGet.class ), any( HttpClientContext.class ) );
+    }
   }
 }

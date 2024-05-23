@@ -54,6 +54,8 @@ import java.util.concurrent.ExecutionException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -85,7 +87,6 @@ public class ExecuteJobServletTest {
 
   @Before
   public void setup() {
-    staticEncrMock = mockStatic( Encr.class );
     mockHttpServletRequest = mock( HttpServletRequest.class );
     spyHttpServletResponse = spy( HttpServletResponse.class );
     jobMap = new JobMap();
@@ -94,139 +95,138 @@ public class ExecuteJobServletTest {
     repository = mock( Repository.class );
   }
 
-  @After
-  public void tearDown() {
-    staticEncrMock.close();
-  }
-
-  @Ignore( "Test invalid due to removal of PowerMock")
   @Test
   public void testExecuteJobServletTest()
     throws ServletException, IOException, KettleException {
-    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
-    doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
-    doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
-    doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
-    doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
-    doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
+    try ( MockedStatic<Encr> encrMockedStatic = mockStatic( Encr.class ) ) {
+      encrMockedStatic.when( () -> Encr.decryptPasswordOptionallyEncrypted( eq( PASSWORD ) ) ).thenReturn( PASSWORD );
+      doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
+      doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
+      doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
+      doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
+      doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
+      doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
 
-    when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
+      doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
 
-    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
+      JobMeta jobMeta = buildJobMeta();
 
-    JobMeta jobMeta = buildJobMeta();
+      RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+      doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
+      doReturn( mock( RepositoryDirectoryInterface.class ) ).when( repositoryDirectoryInterface )
+        .findDirectory( anyString() );
+      doReturn( mock( ObjectId.class ) ).when( repository )
+        .getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
+      doReturn( jobMeta ).when( repository ).loadJob( any( ObjectId.class ), nullable( String.class ) );
+      doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
 
-    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
-    doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
-    doReturn( mock( RepositoryDirectoryInterface.class ) ).when( repositoryDirectoryInterface )
-      .findDirectory( anyString() );
-    doReturn( mock( ObjectId.class ) ).when( repository )
-      .getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
-    doReturn( jobMeta ).when( repository ).loadJob( any( ObjectId.class ), anyString() );
-    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
+      StringWriter out = mockWriter();
+      spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
-    StringWriter out = mockWriter();
-    spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
-
-    assertTrue( out.toString().contains( WebResult.STRING_OK ) );
-    assertTrue( out.toString().contains( "Job started" ) );
+      assertTrue( out.toString().contains( WebResult.STRING_OK ) );
+      assertTrue( out.toString().contains( "Job started" ) );
+    }
   }
 
   @Test
   public void testExecuteJobServletTestCantFindDirectory()
     throws ServletException, IOException, KettleException {
-    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
-    doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
-    doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
-    doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
-    doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
-    doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
+    try ( MockedStatic<Encr> encrMockedStatic = mockStatic( Encr.class ) ) {
+      encrMockedStatic.when( () -> Encr.decryptPasswordOptionallyEncrypted( eq( PASSWORD ) ) ).thenReturn( PASSWORD );
+      doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
+      doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
+      doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
+      doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
+      doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
+      doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
 
-    when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
+      doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
 
-    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
+      RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+      doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
+      doReturn( null ).when( repositoryDirectoryInterface ).findDirectory( anyString() );
+      doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
 
-    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
-    doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
-    doReturn( null ).when( repositoryDirectoryInterface ).findDirectory( anyString() );
-    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
+      StringWriter out = mockWriter();
+      spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
-    StringWriter out = mockWriter();
-    spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
-
-    String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.DirectoryPathNotFoundInRepository", "/" );
-    assertTrue( out.toString().contains( Encode.forHtml( message ) ) );
+      String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.DirectoryPathNotFoundInRepository", "/" );
+      assertTrue( out.toString().contains( Encode.forHtml( message ) ) );
+    }
   }
 
   @Test
   public void testExecuteJobServletTestJobNotFoundInDirectory()
     throws ServletException, IOException, KettleException {
-    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
-    doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
-    doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
-    doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
-    doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
-    doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
+    try ( MockedStatic<Encr> encrMockedStatic = mockStatic( Encr.class ) ) {
+      encrMockedStatic.when( () -> Encr.decryptPasswordOptionallyEncrypted( eq( PASSWORD ) ) ).thenReturn( PASSWORD );
+      doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
+      doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
+      doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
+      doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
+      doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
+      doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
 
-    when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
+      doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
 
-    doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
+      RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+      doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
+      doReturn( repositoryDirectoryInterface ).when( repositoryDirectoryInterface ).findDirectory( anyString() );
+      doReturn( null ).when( repository ).getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
+      doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
 
-    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
-    doReturn( repositoryDirectoryInterface ).when( repository ).loadRepositoryDirectoryTree();
-    doReturn( repositoryDirectoryInterface ).when( repositoryDirectoryInterface ).findDirectory( anyString() );
-    doReturn( null ).when( repository ).getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
-    doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
+      StringWriter out = mockWriter();
+      spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
-    StringWriter out = mockWriter();
-    spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
-
-    String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.JobNotFoundInDirectory", JOB_NAME, "/" );
-    assertTrue( out.toString().contains( Encode.forHtml( message ) ) );
+      String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.JobNotFoundInDirectory", JOB_NAME, "/" );
+      assertTrue( out.toString().contains( Encode.forHtml( message ) ) );
+    }
   }
 
   @Test
   public void testExecuteJobServletTestCantFindRepository() throws ServletException, IOException {
-    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
-    doReturn( "Unknown" ).when( mockHttpServletRequest ).getParameter( "rep" );
-    doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
-    doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
-    doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
-    doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
+    try ( MockedStatic<Encr> encrMockedStatic = mockStatic( Encr.class ) ) {
+      encrMockedStatic.when( () -> Encr.decryptPasswordOptionallyEncrypted( eq( PASSWORD ) ) ).thenReturn( PASSWORD );
+      doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
+      doReturn( "Unknown" ).when( mockHttpServletRequest ).getParameter( "rep" );
+      doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
+      doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
+      doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
+      doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
 
-    when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
+      KettleLogStore.init();
 
-    KettleLogStore.init();
+      StringWriter out = mockWriter();
+      spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
-    StringWriter out = mockWriter();
-    spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
-
-    String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.UnableToFindRepository", "Unknown" );
-    assertTrue( out.toString().contains( message ) );
+      String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.UnableToFindRepository", "Unknown" );
+      assertTrue( out.toString().contains( message ) );
+    }
   }
 
   @Test
   public void testExecuteJobServletTestWithUnauthorizedUser()
     throws KettleException, IOException, ServletException {
-    doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath( );
-    doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
-    doReturn( UNAUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
-    doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
-    doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
-    doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
+    try ( MockedStatic<Encr> encrMockedStatic = mockStatic( Encr.class ) ) {
+      encrMockedStatic.when( () -> Encr.decryptPasswordOptionallyEncrypted( eq( PASSWORD ) ) ).thenReturn( PASSWORD );
+      doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
+      doReturn( REPOSITORY_NAME ).when( mockHttpServletRequest ).getParameter( "rep" );
+      doReturn( UNAUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
+      doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
+      doReturn( JOB_NAME ).when( mockHttpServletRequest ).getParameter( "job" );
+      doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
+      KettleAuthenticationException kae = new KettleAuthenticationException();
+      ExecutionException ee = new ExecutionException( kae );
+      KettleException ke = new KettleException( ee );
+      doThrow( ke ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, UNAUTHORIZED_USER, PASSWORD );
 
-    when( Encr.decryptPasswordOptionallyEncrypted( PASSWORD ) ).thenReturn( PASSWORD );
+      StringWriter out = mockWriter();
+      spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
-    KettleAuthenticationException kae = new KettleAuthenticationException( );
-    ExecutionException ee = new ExecutionException( kae );
-    KettleException ke = new KettleException( ee );
-    doThrow( ke ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, UNAUTHORIZED_USER, PASSWORD );
-
-    StringWriter out = mockWriter();
-    spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
-
-    String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.Authentication", ExecuteJobServlet.CONTEXT_PATH );
-    assertTrue( out.toString().contains(  message ) );
+      String message =
+        BaseMessages.getString( PKG, "ExecuteJobServlet.Error.Authentication", ExecuteJobServlet.CONTEXT_PATH );
+      assertTrue( out.toString().contains( message ) );
+    }
   }
 
   private JobMeta buildJobMeta() {

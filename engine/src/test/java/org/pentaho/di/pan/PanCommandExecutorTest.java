@@ -58,6 +58,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
@@ -83,7 +84,6 @@ public class PanCommandExecutorTest {
   private IMetaStore repoMetaStore;
   private RepositoryDirectoryInterface directoryInterface;
   private PanCommandExecutor mockedPanCommandExecutor;
-  private MockedStatic<BaseMessages> baseMessageMockStatic;
   interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
 
@@ -114,7 +114,6 @@ public class PanCommandExecutorTest {
     doCallRealMethod().when( mockedPanCommandExecutor ).loadTransFromRepository( any(), anyString(), anyString() );
     doCallRealMethod().when( mockedPanCommandExecutor ).decodeBase64ToZipFile( any(), anyBoolean() );
     doCallRealMethod().when( mockedPanCommandExecutor ).decodeBase64ToZipFile( any(), anyString() );
-    baseMessageMockStatic = mockStatic( BaseMessages.class );
   }
 
   @After
@@ -125,7 +124,6 @@ public class PanCommandExecutorTest {
     repoMetaStore = null;
     directoryInterface = null;
     mockedPanCommandExecutor = null;
-    baseMessageMockStatic.close();
   }
 
   @Test
@@ -133,7 +131,7 @@ public class PanCommandExecutorTest {
 
     // mock Trans loading from repo
     TransMeta t = new TransMeta( getClass().getResource( SAMPLE_KTR ).getPath() );
-    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), anyString() ) ).thenReturn( t );
+    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), nullable( String.class ) ) ).thenReturn( t );
 
     // test
     Trans trans = mockedPanCommandExecutor.loadTransFromRepository( repository, "", SAMPLE_KTR );
@@ -167,21 +165,22 @@ public class PanCommandExecutorTest {
 
   @Test
   public void testExecuteWithInvalidRepository() {
-    // Create Mock Objects
-    Params params = mock( Params.class );
-    PanCommandExecutor panCommandExecutor = new PanCommandExecutor( Kitchen.class );
+    try ( MockedStatic<BaseMessages> baseMessagesMockedStatic = mockStatic( BaseMessages.class ) ) {
+      // Create Mock Objects
+      Params params = mock( Params.class );
+      PanCommandExecutor panCommandExecutor = new PanCommandExecutor( Kitchen.class );
 
-    // Mock returns
-    when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
-    when( BaseMessages.getString( any( Class.class ), anyString(), any() ) ).thenReturn( "" );
+      // Mock returns
+      when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
+      baseMessagesMockedStatic.when( () -> BaseMessages.getString( any( Class.class ), anyString(), any() ) ).thenReturn( "" );
 
-    try {
-      Result result = panCommandExecutor.execute( params, null );
-      Assert.assertEquals( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode(), result.getExitStatus() );
-    } catch ( Throwable throwable ) {
-      Assert.fail();
+      try {
+        Result result = panCommandExecutor.execute( params, null );
+        Assert.assertEquals( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode(), result.getExitStatus() );
+      } catch ( Throwable throwable ) {
+        Assert.fail();
+      }
     }
-
   }
 
   /**

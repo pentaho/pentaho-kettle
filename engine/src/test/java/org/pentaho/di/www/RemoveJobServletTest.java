@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -42,6 +43,7 @@ import static junit.framework.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public class RemoveJobServletTest {
@@ -67,10 +69,11 @@ public class RemoveJobServletTest {
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
-    removeJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
-
-    Encode.forHtml( "" );
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      removeJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ) );
+      assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+    }
   }
 
   @Test
@@ -94,9 +97,10 @@ public class RemoveJobServletTest {
     when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
     when( mockJobMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
-    removeJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H3", out.toString() ) ) );
-
-    Encode.forHtml( anyString() );
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      removeJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ) );
+      assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H3", out.toString() ) ) );
+    }
   }
 }

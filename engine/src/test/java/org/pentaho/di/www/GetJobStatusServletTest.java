@@ -24,7 +24,7 @@ package org.pentaho.di.www;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -45,14 +45,14 @@ import java.io.StringWriter;
 import static junit.framework.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
 
 public class GetJobStatusServletTest {
   private JobMap mockJobMap;
@@ -78,11 +78,12 @@ public class GetJobStatusServletTest {
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
-    getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ) );
 
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
-//    PowerMockito.verifyStatic( atLeastOnce() );
-    Encode.forHtml( anyString() );
+      assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+    }
 
   }
 
@@ -107,11 +108,11 @@ public class GetJobStatusServletTest {
     when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
     when( mockJobMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
-    getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( out.toString().contains( ServletTestUtils.BAD_STRING_TO_TEST ) );
-
-//    PowerMockito.verifyStatic( atLeastOnce() );
-    Encode.forHtml( anyString() );
+    try ( MockedStatic<Encode> encodeMockedStatic = mockStatic( Encode.class ) ) {
+      getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+      encodeMockedStatic.verify( () -> Encode.forHtml( anyString() ), atLeastOnce() );
+      assertFalse( out.toString().contains( ServletTestUtils.BAD_STRING_TO_TEST ) );
+    }
   }
 
   @Test
@@ -162,17 +163,18 @@ public class GetJobStatusServletTest {
   @Test
   public void doGetMissingMandatoryParameterNameUseXMLTest() throws Exception {
     KettleLogStore.init();
-    getJobStatusServlet.cache = CarteStatusCache.getInstance();
+    CarteStatusCache cacheMock = mock( CarteStatusCache.class );
+    getJobStatusServlet.cache = cacheMock;
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
-    doReturn( GetJobStatusServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath() ;
-    doReturn( "123" ).when( mockHttpServletRequest ).getParameter( "id" );
-    doReturn( "Y").when( mockHttpServletRequest).getParameter( "xml" );
-    doReturn( null ).when( mockHttpServletRequest ).getParameter( "name" );
-    doReturn( printWriter ).when( mockHttpServletResponse ).getWriter();
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( GetJobStatusServlet.CONTEXT_PATH );
+    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( "123" );
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "Y" );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( null );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
     getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
@@ -227,17 +229,19 @@ public class GetJobStatusServletTest {
   @Test
   public void doGetConflictingJobNamesUseHTMLTest() throws Exception {
     KettleLogStore.init();
-    getJobStatusServlet.cache = CarteStatusCache.getInstance();
+    CarteStatusCache cacheMock = mock( CarteStatusCache.class );
+    getJobStatusServlet.cache = cacheMock;
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
-    doReturn( GetJobStatusServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
-    doReturn( null ).when( mockHttpServletRequest ).getParameter( "id" );
-    doReturn( "dummy_job" ).when( mockHttpServletRequest ).getParameter( "name" );
-    doReturn( printWriter ).when( mockHttpServletResponse ).getWriter();
-    doThrow( new DuplicateKeyException() ).when( mockJobMap ).getUniqueCarteObjectEntry( any() );
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( GetJobStatusServlet.CONTEXT_PATH );
+    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( null );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( "dummy_job" );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockJobMap.getUniqueCarteObjectEntry( any() ) ).thenThrow( new DuplicateKeyException() );
+
     getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
     verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );

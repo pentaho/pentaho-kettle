@@ -40,6 +40,8 @@ import java.io.StringWriter;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -125,16 +127,16 @@ public class RunJobServletTest {
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
-    when( mockHttpServletRequest.getParameter( "job" ) ).thenReturn( "dummyJob" );
-    when( mockHttpServletRequest.getParameter( "level" ) ).thenReturn( "SomethingInvalid" );
+    when( mockHttpServletRequest.getParameter( eq( "job" ) ) ).thenReturn( "dummyJob" );
+    when( mockHttpServletRequest.getParameter( eq ("level" ) ) ).thenReturn( "SomethingInvalid" );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
     when( transformationMap.getSlaveServerConfig() ).thenReturn( slaveServerConfig );
     when( slaveServerConfig.getRepository() ).thenReturn( repository );
     when( repository.isConnected() ).thenReturn( true );
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( repDirInterface );
     when( repDirInterface.findDirectory( anyString() ) ).thenReturn( repDirInterface );
-    when( repository.getJobId( "dummyJob", repDirInterface ) ).thenReturn( objId );
-    when( repository.loadJob( objId, null ) ).thenReturn( jobMeta );
+    when( repository.getJobId( eq( "dummyJob" ), eq( repDirInterface ) ) ).thenReturn( objId );
+    when( repository.loadJob( eq( objId ), nullable( String.class ) ) ).thenReturn( jobMeta );
     when( mockHttpServletRequest.getParameterNames() ).thenReturn( Collections.enumeration( Collections.emptyList() ) );
     runJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 

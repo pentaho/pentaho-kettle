@@ -111,7 +111,6 @@ public class BaseStreamStepMetaTest {
   public void setUp() throws Exception {
     meta = new StuffStreamMeta();
     KettleLogStore.setLogChannelInterfaceFactory( logChannelFactory );
-    when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
     when( mappingMetaRetriever.get( any(), any(), any(), any() ) ).thenReturn( subTransMeta );
 
     when( subTransMeta.getPrevStepFields( anyString() ) ).thenReturn( prevRowMeta );
