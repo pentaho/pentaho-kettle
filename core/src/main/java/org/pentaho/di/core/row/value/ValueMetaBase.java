@@ -3602,12 +3602,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         return true;
       }
 
-      if ( value.equals( StringUtils.EMPTY ) && !emptyStringDiffersFromNull ) {
-        return true;
-      }
-      if ( value.equals( StringUtils.EMPTY ) && emptyStringDiffersFromNull ) {
-        return false;
-      }
+      return value.equals(StringUtils.EMPTY) && !emptyStringDiffersFromNull;
 
       // If it's a string and the string is empty, it's a null value as well
       //
