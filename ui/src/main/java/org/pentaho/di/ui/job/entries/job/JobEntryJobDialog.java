@@ -249,10 +249,15 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     return jobEntry.parameters;
   }
 
+  @VisibleForTesting
+  protected JobEntryJob newJobEntryJob() {
+    return new JobEntryJob();
+  }
+
   protected void getParameters( JobMeta inputJobMeta ) {
     try {
       if ( inputJobMeta == null ) {
-        JobEntryJob jej = new JobEntryJob();
+        JobEntryJob jej = newJobEntryJob();
         getSpecificationPath( jej );
         getInfo( jej );
         inputJobMeta = jej.getJobMeta( rep, metaStore, jobMeta );
