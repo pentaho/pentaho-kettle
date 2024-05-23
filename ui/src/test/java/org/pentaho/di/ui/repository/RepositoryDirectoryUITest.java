@@ -54,7 +54,7 @@ public class RepositoryDirectoryUITest {
     assertTrue( RepositoryDirectoryUI.loadRepositoryObjects( root, true, true, repo ).isEmpty() );
     assertEquals( 1, RepositoryDirectoryUI.loadRepositoryObjects( dir, true, true, repo ).size() );
 
-    verifyZeroInteractions( repo );
+    verifyNoMoreInteractions( repo );
   }
 
   @Test

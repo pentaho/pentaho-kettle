@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.pentaho.di.ui.core.widget.TableView;
 
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
