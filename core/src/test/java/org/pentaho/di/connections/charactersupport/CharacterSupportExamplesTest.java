@@ -32,6 +32,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Sample class to capture what characters to support for PVFS, VFS URI
@@ -100,6 +102,57 @@ public class CharacterSupportExamplesTest extends TestCase {
       "/segment1/segment2/this segment has spaces too!!!/ExtendedAscii_Æ_ß_€_ñ/file.txt",
       "file.txt",
       map );
+  }
+
+  @Test
+  public void test_PVFS_UTF_Character_Set_1() throws Exception {
+    // example of ASCII and UTF-8 characters
+    String pvfsUriWithSpaces = "pvfs://ABC導字會/segment1/segment2/this segment has spaces too!!!/ExtendedAscii_Æ_ß_€_ñ/file.txt";
+    // With some special characters have to encode before using URI library
+    String encodedPvfsURI = UriParser.encode( pvfsUriWithSpaces, new char[]{' ', '@', '$', '!'}  ); // NOTE can be more characters
+    Map<String, String> map = parseUsingJavaStandardLibraries( encodedPvfsURI );
+    assertEqualsPvfsMap( "pvfs",
+      "ABC導字會",
+      "/segment1/segment2/this segment has spaces too!!!/ExtendedAscii_Æ_ß_€_ñ/file.txt",
+      "file.txt",
+      map );
+  }
+
+  @Test
+  public void test_regex_UTF_Fail() throws Exception {
+    String engStr = "ABC";
+    String chinesStr = "導字會";
+    String engChinesStr = engStr + chinesStr;
+    Pattern patternASCII = Pattern.compile( "\\w+" ); // DID not set unicode
+
+    Matcher matcherASCII = patternASCII.matcher( engChinesStr );
+    assertTrue( matcherASCII.find() );
+    assertTrue( matcherASCII.group().contains( engStr )  );
+    assertEquals( engChinesStr, matcherASCII.group() ); // fails here
+  }
+
+  public void test_regex_UTF_Pass_1() throws Exception {
+    String engStr = "ABC";
+    String chinesStr = "導字會";
+    String engChinesStr = engStr + chinesStr;
+    Pattern patternUnicode = Pattern.compile( "\\w+", Pattern.UNICODE_CHARACTER_CLASS ); // setting unicode
+
+    Matcher matcherASCII = patternUnicode.matcher( engChinesStr );
+    assertTrue( matcherASCII.find() );
+    assertTrue( matcherASCII.group().contains( engStr )  );
+    assertEquals( engChinesStr, matcherASCII.group() );
+  }
+
+  public void test_regex_UTF_Pass_2() throws Exception {
+    String engStr = "ABC";
+    String chinesStr = "導字會";
+    String engChinesStr = engStr + chinesStr;
+    Pattern patternUnicode = Pattern.compile( "\\p{L}+", Pattern.UNICODE_CHARACTER_CLASS ); // setting unicode
+
+    Matcher matcherASCII = patternUnicode.matcher( engChinesStr );
+    assertTrue( matcherASCII.find() );
+    assertTrue( matcherASCII.group().contains( engStr )  );
+    assertEquals( engChinesStr, matcherASCII.group() );
   }
 
   protected Map<String, String> parseUsingJavaStandardLibraries( String uriString ) throws Exception {
