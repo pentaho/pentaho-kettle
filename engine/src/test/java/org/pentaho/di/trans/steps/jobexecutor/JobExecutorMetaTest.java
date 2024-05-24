@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,11 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.jobexecutor;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,14 +42,19 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * <p>
@@ -120,9 +120,9 @@ public class JobExecutorMetaTest {
     String testName = "test";
 
     doReturn( jobMeta ).when( jobExecutorMeta ).loadJobMetaProxy( any( JobExecutorMeta.class ),
-            any( Repository.class ), any( VariableSpace.class ) );
-    when( jobMeta.exportResources( any( JobMeta.class ), anyMap(), any( ResourceNamingInterface.class ),
-            any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
+            nullable( Repository.class ), nullable( VariableSpace.class ) );
+    when( jobMeta.exportResources( any( JobMeta.class ), nullable( Map.class ), nullable( ResourceNamingInterface.class ),
+      nullable( Repository.class ), nullable( IMetaStore.class ) ) ).thenReturn( testName );
 
     jobExecutorMeta.exportResources( null, null, null, null, null );
 
