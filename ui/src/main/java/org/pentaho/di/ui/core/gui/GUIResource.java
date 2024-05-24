@@ -215,7 +215,7 @@ public class GUIResource {
 
   private SwtUniversalImage imageConfigurations;
 
-  private SwtUniversalImage imageConfigurationsGrey;
+  private SwtUniversalImage imageMainConfigurations;
 
   private SwtUniversalImage imageTransRepo;
 
@@ -627,7 +627,7 @@ public class GUIResource {
       imageArrow.dispose();
       imageFolder.dispose();
       imageConfigurations.dispose();
-      imageConfigurationsGrey.dispose();
+      imageMainConfigurations.dispose();
       imageTransRepo.dispose();
       imageJobRepo.dispose();
       imageWizard.dispose();
@@ -1293,9 +1293,9 @@ public class GUIResource {
     imageConfigurations = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "Configurations_image" ) );
 
-    // "ui/images/Configurations_grey.png"
-    imageConfigurationsGrey = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
-      BasePropertyHandler.getProperty( "Configurations_grey_image" ) );
+    // "ui/images/Main_Configurations.png"
+    imageMainConfigurations = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "Main_Configurations_image" ) );
 
     // "ui/images/transrepo.png"
     imageTransRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
@@ -1998,8 +1998,8 @@ public class GUIResource {
     return imageConfigurations.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
-  public Image getImageConfigurationsGrey() {
-    return imageConfigurationsGrey.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  public Image getImageMainConfigurations() {
+    return imageMainConfigurations.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   /**
