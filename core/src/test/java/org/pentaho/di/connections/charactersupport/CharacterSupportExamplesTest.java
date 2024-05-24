@@ -118,6 +118,47 @@ public class CharacterSupportExamplesTest extends TestCase {
       map );
   }
 
+
+  @Test
+  public void test_regex_Extended_ASCII_Fail_1() throws Exception {
+    String fullAsciiStr = "ABCÆß€ñ"; // extended ascii alpha numeric and euro currency symbol
+    Pattern patternASCII = Pattern.compile( "\\w+" ); // DID not set unicode
+
+    Matcher matcherASCII = patternASCII.matcher( fullAsciiStr );
+    assertTrue( matcherASCII.find() );
+    assertEquals( fullAsciiStr, matcherASCII.group() ); // fails here
+  }
+
+  @Test
+  public void test_regex_Extended_ASCII_Fail_2() throws Exception {
+    String fullAsciiStr = "ABCÆß€ñ";  // extended ascii alpha numeric and euro currency symbol
+    Pattern patternASCII = Pattern.compile( "[A-Za-zÀ-ȕ0-9(),-_., ]+" ); // DID not set unicode
+
+    Matcher matcherASCII = patternASCII.matcher( fullAsciiStr );
+    assertTrue( matcherASCII.find() );
+    assertEquals( fullAsciiStr, matcherASCII.group() ); // fails here
+  }
+
+  @Test
+  public void test_regex_Extended_ASCII_Pass() throws Exception {
+    String fullAsciiStr = "ABCÆß€ñ";  // extended ascii alpha numeric and euro currency symbol
+    Pattern patternASCII = Pattern.compile( "[\\p{L}\\p{S}]+" ); // DID not set unicode
+
+    Matcher matcherASCII = patternASCII.matcher( fullAsciiStr );
+    assertTrue( matcherASCII.find() );
+    assertEquals( fullAsciiStr, matcherASCII.group() ); // fails here
+  }
+
+  @Test
+  public void test_regex_Extended_ASCII_Pass_wildcard() throws Exception {
+    String fullAsciiStr = "ABCÆß€ñ";  // extended ascii alpha numeric and euro currency symbol
+    Pattern patternASCII = Pattern.compile( ".+" ); // wild card match
+
+    Matcher matcherASCII = patternASCII.matcher( fullAsciiStr );
+    assertTrue( matcherASCII.find() );
+    assertEquals( fullAsciiStr, matcherASCII.group() ); // fails here
+  }
+
   @Test
   public void test_regex_UTF_Fail() throws Exception {
     String engStr = "ABC";
