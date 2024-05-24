@@ -24,10 +24,7 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
@@ -54,42 +51,59 @@ public class VFSFile extends BaseEntity implements File {
     return VFSFileProvider.TYPE;
   }
 
+  /**
+   * Separate VFS connection name variable is no longer needed.
+   * @deprecated
+   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public String getConnection() {
     return connection;
   }
 
+  /**
+   * Separate VFS connection name variable is no longer needed.
+   * @deprecated
+   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public void setConnection( String connection ) {
     this.connection = connection;
   }
 
+  /**
+   * Separate VFS connection name variable is no longer needed.
+   * @deprecated Use {@link #getPath()}.
+   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public String getConnectionPath() {
-    return getConnectionPath( getPath() );
+    return getPath();
   }
 
+  /**
+   * Separate VFS connection name variable is no longer needed.
+   * @deprecated Use {@link #getParent()}.
+   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public String getConnectionParentPath() {
-    return getConnectionPath( getParent() );
+    return  getParent();
   }
 
-  private String getConnectionPath( String root ) {
-    if ( root == null || connection == null ) {
-      return null;
-    }
-    if ( ConnectionFileProvider.SCHEME.equals( "pvfs") && root.startsWith( KettleVFS.SMB_SCHEME_COLON ) ) {
-      return root.replaceFirst( KettleVFS.SMB_SCHEME, "pvfs" );
-    } else {
-      String replacement = DOMAIN_ROOT + ( Utils.isEmpty( domain ) ? "" : domain );
-      StringBuilder path = new StringBuilder();
-      path.append( ConnectionFileProvider.SCHEME );
-      path.append( PROTOCOL_SEPARATOR );
-      path.append( connection );
-      if ( Utils.isEmpty( domain ) ) {
-        path.append( DELIMITER );
-      }
-      path.append( root.replaceAll( replacement, "" ) );
-      return path.toString();
-    }
-  }
 
+  /**
+   * Builder method to create an instance of  {@link VFSFile}.
+   * <p/>
+   * NOTE: logic for {@link #setRoot(String)} and {@link #setConnection(String)} is only used in
+   * {@link org.pentaho.di.plugins.fileopensave.dragdrop.ElementDragListener#dragSetData(org.eclipse.swt.dnd.DragSourceEvent)} for the
+   * scenario of "Recent Repository File".
+   * @param parent
+   * @param fileObject
+   * @param connection
+   * @param domain
+   * @return new instance with some populated values.
+   */
   public static VFSFile create( String parent, FileObject fileObject, String connection, String domain ) {
     VFSFile vfsFile = new VFSFile();
     String filename = null;
@@ -125,10 +139,22 @@ public class VFSFile extends BaseEntity implements File {
     return vfsFile;
   }
 
+  /**
+   * Separate VFS domain variable is no longer needed.
+   * @deprecated
+   * The domain handled is internally with the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public String getDomain() {
     return domain;
   }
 
+  /**
+   * Separate VFS domain variable is no longer needed.
+   * @deprecated
+   * The domain handled is internally with the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
+   */
+  @Deprecated
   public void setDomain( String domain ) {
     this.domain = domain;
   }

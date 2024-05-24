@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,7 +41,15 @@ import org.pentaho.ui.xul.containers.XulTree;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 /**
  * @author Andrey Khayrutdinov
@@ -212,7 +220,7 @@ public class ConnectionsControllerTest {
   }
 
   private void assertSaveWasNotInvoked() throws KettleException {
-    verify( repository, never() ).save( any( DatabaseMeta.class ), anyString(), any( ProgressMonitorListener.class ) );
+    verify( repository, never() ).save( any(), anyString(), any() );
   }
 
   private void assertShowedAlreadyExistsMessage() throws KettleException {
@@ -223,7 +231,7 @@ public class ConnectionsControllerTest {
 
   private void assertRepositorySavedDb() throws KettleException {
     // repository.save() was invoked
-    verify( repository ).save( any( DatabaseMeta.class ), anyString(), any( ProgressMonitorListener.class ) );
+    verify( repository ).save( any(), anyString(), any() );
   }
 
   @Test

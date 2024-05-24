@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,48 +24,38 @@ package org.pentaho.di.ui.trans.steps.fileinput.text;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LoggingObjectType;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.file.BaseFileErrorHandling;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
-import org.pentaho.metastore.api.IMetaStore;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.mockito.Mockito.mockStatic;
 import static org.powermock.reflect.Whitebox.setInternalState;
+import static org.mockito.ArgumentMatchers.any;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( FileInputList.class )
 public class TextFileInputTextCSVImportProgressDialogTest {
 
   private TextFileCSVImportProgressDialog textFileCSVImportProgressDialog;
@@ -78,10 +68,11 @@ public class TextFileInputTextCSVImportProgressDialogTest {
   private BaseFileInputFiles baseFileInputFiles;
   private BaseFileErrorHandling baseFileErrorHandling;
   private BaseFileInputAdditionalField baseFileInputAdditionalField;
+  private static MockedStatic<FileInputList> fileInputList;
 
   @Before
   public void setup() {
-    mockStatic( FileInputList.class );
+    fileInputList = mockStatic( FileInputList.class );
 
     shell = mock( Shell.class );
     meta = mock( TextFileInputMeta.class );
@@ -91,6 +82,11 @@ public class TextFileInputTextCSVImportProgressDialogTest {
     baseFileInputFiles =  mock( BaseFileInputFiles.class );
     baseFileErrorHandling = mock( BaseFileErrorHandling.class );
     baseFileInputAdditionalField = mock( BaseFileInputAdditionalField.class );
+  }
+
+  @After
+  public void cleanUp() {
+    fileInputList.close();
   }
 
   @BeforeClass
@@ -192,8 +188,7 @@ public class TextFileInputTextCSVImportProgressDialogTest {
       any( boolean[].class ) ) ).thenReturn( new String[]{""} );
     //meta
     when( meta.getInputFields() ).thenReturn( baseFileFields );
-    doCallRealMethod().when( meta ).getFields( any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ),
-      any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+    doCallRealMethod().when( meta ).getFields( any(), any(), any(), any(), any(), any(), any() );
     setInternalState( meta, "inputFields",  baseFileFields );
     setInternalState( meta, "content",  content );
     when( meta.clone() ).thenReturn( meta );

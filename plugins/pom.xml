@@ -19,6 +19,7 @@
     <!-- Test running configuration -->
     <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
+    <maven-surefire-plugin.argLine> --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED </maven-surefire-plugin.argLine>
   </properties>
 
   <profiles>

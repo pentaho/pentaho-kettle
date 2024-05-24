@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -58,12 +58,12 @@ public class MetaFileLoaderImplTest {
   private final String JOB_FILE = "one-step-job.kjb";
   private final String TRANS_FILE = "one-step-trans.ktr";
 
-  private Repository repository = mock( Repository.class );
-  private IMetaStore store = mock( IMetaStore.class );
+  private final Repository repository = mock( Repository.class );
+  private final IMetaStore store = mock( IMetaStore.class );
   private VariableSpace space;
   private CurrentDirectoryResolver resolver = mock( CurrentDirectoryResolver.class );
   private RepositoryDirectoryInterface directory = mock( RepositoryDirectoryInterface.class );
-  private NamedClusterEmbedManager namedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
+  private final NamedClusterEmbedManager namedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
 
   private String targetMetaName;
   private MetaFileCacheImpl metaFileCache;
@@ -199,7 +199,6 @@ public class MetaFileLoaderImplTest {
     LogChannelInterface logger = mock( LogChannelInterface.class );
     metaFileCache = new MetaFileCacheImpl( logger );
     parentJobMeta.setMetaFileCache( metaFileCache );
-    when( parentJobMeta.getNamedClusterEmbedManager() ).thenReturn( namedClusterEmbedManager );
     jobEntryJob.setParentJobMeta( parentJobMeta );
     keyPath = getClass().getResource( JOB_FILE ).getPath();
     jobEntryJob.setFileName( keyPath );
@@ -234,7 +233,6 @@ public class MetaFileLoaderImplTest {
     LogChannelInterface logger = mock( LogChannelInterface.class );
     metaFileCache = new MetaFileCacheImpl( logger );
     parentJobMeta.setMetaFileCache( metaFileCache );
-    when( parentJobMeta.getNamedClusterEmbedManager() ).thenReturn( namedClusterEmbedManager );
     jobEntryTrans.setParentJobMeta( parentJobMeta );
     keyPath = getClass().getResource( TRANS_FILE ).getPath();
     jobEntryTrans.setFileName( keyPath );
@@ -265,7 +263,6 @@ public class MetaFileLoaderImplTest {
     LogChannelInterface logger = mock( LogChannelInterface.class );
     metaFileCache = new MetaFileCacheImpl( logger );
     parentTransMeta.setMetaFileCache( metaFileCache );
-    when( parentTransMeta.getNamedClusterEmbedManager() ).thenReturn( namedClusterEmbedManager );
     StepMeta stepMeta = new StepMeta();
     stepMeta.setParentTransMeta( parentTransMeta );
     jobExecutorMeta.setParentStepMeta( stepMeta );
@@ -284,7 +281,6 @@ public class MetaFileLoaderImplTest {
     jobExecutorMeta.setJobObjectId( null );
     RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     when( repository.findDirectory( jobExecutorMeta.getDirectoryPath() ) ).thenReturn( rdi );
-    when( repository.loadRepositoryDirectoryTree() ).thenReturn( rdi );
     JobMeta jobMeta = new JobMeta();
     jobMeta.setName( stripExtension( JOB_FILE ) );
     when( repository.loadJob( JOB_FILE, rdi, null, null ) ).thenReturn( jobMeta );
@@ -297,14 +293,12 @@ public class MetaFileLoaderImplTest {
     LogChannelInterface logger = mock( LogChannelInterface.class );
     metaFileCache = new MetaFileCacheImpl( logger );
     parentTransMeta.setMetaFileCache( metaFileCache );
-    when( parentTransMeta.getNamedClusterEmbedManager() ).thenReturn( namedClusterEmbedManager );
     StepMeta stepMeta = new StepMeta();
     stepMeta.setParentTransMeta( parentTransMeta );
     transExecutorMeta.setParentStepMeta( stepMeta );
     keyPath = getClass().getResource( TRANS_FILE ).getPath();
     transExecutorMeta.setFileName( keyPath );
-    Job job = new Job();
-    space = job;
+    space = new Job();
 
     targetMetaName = TRANS_FILE;
     transExecutorMeta.setTransName( targetMetaName );
@@ -316,7 +310,6 @@ public class MetaFileLoaderImplTest {
     transExecutorMeta.setTransObjectId( null );
     RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     when( repository.findDirectory( transExecutorMeta.getDirectoryPath() ) ).thenReturn( rdi );
-    when( repository.loadRepositoryDirectoryTree() ).thenReturn( rdi );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( stripExtension( TRANS_FILE ) );
     when( repository.loadTransformation( TRANS_FILE, rdi, null, true, null ) ).thenReturn( transMeta );

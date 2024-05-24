@@ -58,6 +58,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
@@ -584,6 +585,12 @@ public class TransExecutorUnitTest {
 
   @Test
   public void testSafeStop() throws Exception {
+    TransExecutorData transExecutorDataMock = mock( TransExecutorData.class );
+    TransMeta transMetaMock = mock( TransMeta.class );
+    when( executor.getData() ).thenReturn( transExecutorDataMock );
+    when( transMetaMock.listVariables() ).thenReturn( new String[0] );
+    when( transMetaMock.listParameters() ).thenReturn( new String[0] );
+    when( transExecutorDataMock.getExecutorTransMeta() ).thenReturn( transMetaMock );
     prepareOneRowForExecutor();
     meta.setGroupSize( "1" );
     data.groupSize = 1;
@@ -591,7 +598,10 @@ public class TransExecutorUnitTest {
     internalResult.setSafeStop( true );
 
     Trans parent = Mockito.spy( new Trans() );
+
     Mockito.when( executor.getTrans() ).thenReturn( parent );
+    doNothing().when( executor ).initializeVariablesFromParent( any() );
+    doNothing().when( executor ).passParametersToTrans( any() );
 
     executor.init( meta, data );
     executor.setInputRowMeta( new RowMeta() );

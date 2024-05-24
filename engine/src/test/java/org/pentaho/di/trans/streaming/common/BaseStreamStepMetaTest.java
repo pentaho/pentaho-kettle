@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -73,11 +73,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
 public class BaseStreamStepMetaTest {
@@ -111,8 +111,6 @@ public class BaseStreamStepMetaTest {
   public void setUp() throws Exception {
     meta = new StuffStreamMeta();
     KettleLogStore.setLogChannelInterfaceFactory( logChannelFactory );
-    when( logChannelFactory.create( any(), any() ) ).thenReturn( logChannel );
-    when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
     when( mappingMetaRetriever.get( any(), any(), any(), any() ) ).thenReturn( subTransMeta );
 
     when( subTransMeta.getPrevStepFields( anyString() ) ).thenReturn( prevRowMeta );

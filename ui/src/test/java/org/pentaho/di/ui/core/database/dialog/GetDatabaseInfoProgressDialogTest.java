@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,29 +24,24 @@ package org.pentaho.di.ui.core.database.dialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.mockito.Mockito.spy;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { ProgressMonitorDialog.class, GetDatabaseInfoProgressDialog.class } )
 public class GetDatabaseInfoProgressDialogTest {
 
   @Test
   public void databaseProgressDialogNotifyStateTest() throws Exception {
     DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
     Shell shell = mock( Shell.class );
-    GetDatabaseInfoProgressDialog dialog = new GetDatabaseInfoProgressDialog( shell, dbMetaMock );
+    GetDatabaseInfoProgressDialog dialog = spy( new GetDatabaseInfoProgressDialog( shell, dbMetaMock ) );
     ProgressMonitorDialog progMonitorDialogMock = mock( ProgressMonitorDialog.class );
-    whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
+    doReturn( progMonitorDialogMock ).when( dialog ).newProgressMonitorDialog();
+
     boolean[] changeState = { false };
     //Add a progress listener to the dialog
     dialog.addDatabaseProgressListener( progressMonitor -> changeState[ 0 ] = true );
@@ -60,9 +55,10 @@ public class GetDatabaseInfoProgressDialogTest {
   public void databaseProgressDialogNotifyStateNoListenersTest() throws Exception {
     DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
     Shell shell = mock( Shell.class );
-    GetDatabaseInfoProgressDialog dialog = new GetDatabaseInfoProgressDialog( shell, dbMetaMock );
+    GetDatabaseInfoProgressDialog dialog = spy( new GetDatabaseInfoProgressDialog( shell, dbMetaMock ) );
     ProgressMonitorDialog progMonitorDialogMock = mock( ProgressMonitorDialog.class );
-    whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
+    doReturn( progMonitorDialogMock ).when( dialog ).newProgressMonitorDialog();
+
     boolean[] changeState = { false };
     DatabaseInfoProgressListener dbProgressListener = progressMonitor -> changeState[ 0 ] = true;
     //dialog will open and notify all listeners that the progress has finished.
@@ -75,9 +71,10 @@ public class GetDatabaseInfoProgressDialogTest {
   public void databaseProgressDialogNotifyStateAddAndRemoveListenersTest() throws Exception {
     DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
     Shell shell = mock( Shell.class );
-    GetDatabaseInfoProgressDialog dialog = new GetDatabaseInfoProgressDialog( shell, dbMetaMock );
+    GetDatabaseInfoProgressDialog dialog = spy( new GetDatabaseInfoProgressDialog( shell, dbMetaMock ) );
     ProgressMonitorDialog progMonitorDialogMock = mock( ProgressMonitorDialog.class );
-    whenNew( ProgressMonitorDialog.class ).withArguments( shell ).thenReturn( progMonitorDialogMock );
+    doReturn( progMonitorDialogMock ).when( dialog ).newProgressMonitorDialog();
+
     boolean[] changeState = { false };
     DatabaseInfoProgressListener dbProgressListener = progressMonitor -> changeState[ 0 ] = true;
     //Add a progress listener to the dialog

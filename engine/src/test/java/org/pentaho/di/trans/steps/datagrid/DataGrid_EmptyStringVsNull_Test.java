@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -37,19 +36,15 @@ import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.List;
 
 import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
  */
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class DataGrid_EmptyStringVsNull_Test {
   private StepMockHelper<DataGridMeta, StepDataInterface> helper;
 
@@ -107,7 +102,7 @@ public class DataGrid_EmptyStringVsNull_Test {
     List<List<String>> dataRows = Arrays.asList(
       Arrays.asList( " ", " ", " ", " ", " " ),
       Arrays.asList( "", "", "", "", "" ),
-      Arrays.asList( (String) null, null, null, null, null )
+      Arrays.asList( null, null, null, null, null )
     );
     meta.setDataLines( dataRows );
 

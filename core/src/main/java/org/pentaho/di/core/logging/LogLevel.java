@@ -83,7 +83,7 @@ public enum LogLevel {
    * @return true if the log level is visible compared to the filter log level specified
    */
   public boolean isVisible( LogLevel filterLogLevel ) {
-    return getLevel() <= filterLogLevel.getLevel();
+    return filterLogLevel != null && getLevel() <= filterLogLevel.getLevel();
   }
 
   /**
