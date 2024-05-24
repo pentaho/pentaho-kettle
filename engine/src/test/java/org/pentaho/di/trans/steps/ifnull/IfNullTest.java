@@ -22,18 +22,12 @@
 
 package org.pentaho.di.trans.steps.ifnull;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
+import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
@@ -53,9 +47,11 @@ import org.pentaho.di.trans.steps.ifnull.IfNullMeta.Fields;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
-import junit.framework.Assert;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for IfNull step
@@ -63,8 +59,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Ivan Pogodin
  * @see IfNull
  */
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
+
 public class IfNullTest {
   StepMockHelper<IfNullMeta, IfNullData> smh;
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();

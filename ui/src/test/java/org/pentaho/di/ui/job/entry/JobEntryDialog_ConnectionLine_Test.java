@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,8 +39,8 @@ import org.powermock.reflect.Whitebox;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -85,7 +85,7 @@ public class JobEntryDialog_ConnectionLine_Test {
 
   private void invokeAddConnectionListener( JobMeta jobMeta, String answeredName ) throws Exception {
     JobEntryDialog dialog = mock( JobEntryDialog.class );
-    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) )
+    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), any() ) )
       .thenAnswer( new PropsSettingAnswer( answeredName, INPUT_HOST ) );
 
     Supplier<Spoon> mockSupplier = mock( Supplier.class );

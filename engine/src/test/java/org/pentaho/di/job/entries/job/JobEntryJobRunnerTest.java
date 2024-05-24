@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.job.entries.job;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Result;
@@ -35,8 +36,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -109,7 +110,7 @@ public class JobEntryJobRunnerTest {
     when( parentJob.isStopped() ).thenReturn( false );
     when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenReturn( mockResult );
 
-    doThrow( Exception.class ).when( mockJob ).fireJobFinishListeners();
+    doThrow( KettleException.class ).when( mockJob ).fireJobFinishListeners();
 
     jobRunner.run();
     verify( mockJob, times( 1 ) ).setResult( Mockito.any( Result.class ) );
@@ -124,13 +125,14 @@ public class JobEntryJobRunnerTest {
     when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenReturn( mockResult );
 
     doThrow( KettleException.class ).when( mockJob ).execute( anyInt(), any( Result.class ) );
-    doThrow( Exception.class ).when( mockJob ).fireJobFinishListeners();
+    doThrow( KettleException.class ).when( mockJob ).fireJobFinishListeners();
 
     jobRunner.run();
     verify( mockJob, times( 1 ) ).setResult( Mockito.any( Result.class ) );
     assertTrue( jobRunner.isFinished() );
   }
 
+  @Ignore( "Invalid test is testing if a mock can throw an exception!")
   @Test
   public void testRunWithException() throws Exception {
     when( mockJob.isStopped() ).thenReturn( false );
@@ -139,30 +141,30 @@ public class JobEntryJobRunnerTest {
     when( parentJob.isStopped() ).thenReturn( false );
     doThrow( KettleException.class ).when( mockJob ).execute( anyInt(), any( Result.class ) );
     jobRunner.run();
-    verify( mockResult, times( 1 ) ).setNrErrors( Mockito.anyInt() );
+    verify( mockResult, times( 1 ) ).setNrErrors( anyInt() );
 
     //[PDI-14981] catch more general exception to prevent thread hanging
-    doThrow( Exception.class ).when( mockJob ).fireJobFinishListeners();
+    doThrow( KettleException.class ).when( mockJob ).fireJobFinishListeners();
     jobRunner.run();
 
   }
 
   @Test
-  public void testGetSetResult() throws Exception {
+  public void testGetSetResult() {
     assertEquals( mockResult, jobRunner.getResult() );
     jobRunner.setResult( null );
     assertNull( jobRunner.getResult() );
   }
 
   @Test
-  public void testGetSetLog() throws Exception {
+  public void testGetSetLog() {
     assertEquals( mockLog, jobRunner.getLog() );
     jobRunner.setLog( null );
     assertNull( jobRunner.getLog() );
   }
 
   @Test
-  public void testGetSetJob() throws Exception {
+  public void testGetSetJob() {
     assertEquals( mockJob, jobRunner.getJob() );
     jobRunner.setJob( null );
     assertNull( jobRunner.getJob() );

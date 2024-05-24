@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,8 +45,9 @@ import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -148,7 +149,7 @@ public class BrowseControllerTest {
     when( document.createElement( PROMPTBOX ) ).thenReturn( prompt );
 
     doNothing().when( controller ).confirm( anyString(), anyString() );
-    doReturn( prompt ).when( controller ).promptForName( any( UIRepositoryObject.class ) );
+    doReturn( prompt ).when( controller ).promptForName( nullable( UIRepositoryObject.class ) );
     prompt.setValue( "." );
     controller.createFolder();
 
@@ -163,7 +164,7 @@ public class BrowseControllerTest {
     when( document.createElement( PROMPTBOX ) ).thenReturn( prompt );
 
     doNothing().when( controller ).confirm( anyString(), anyString() );
-    doReturn( prompt ).when( controller ).promptForName( any( UIRepositoryObject.class ) );
+    doReturn( prompt ).when( controller ).promptForName( any() );
     prompt.setValue( ".." );
     controller.createFolder();
 

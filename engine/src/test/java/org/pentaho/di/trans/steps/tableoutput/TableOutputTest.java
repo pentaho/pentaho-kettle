@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.tableoutput;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -39,7 +40,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -112,9 +113,11 @@ public class TableOutputTest {
     when( tableOutputMeta.truncateTable() ).thenReturn( true );
     when( tableOutputSpy.getCopy() ).thenReturn( 0 );
     when( tableOutputSpy.getUniqueStepNrAcrossSlaves() ).thenReturn( 0 );
+    when( tableOutputMeta.getTableName() ).thenReturn( "fooTable" );
+    when( tableOutputMeta.getSchemaName() ).thenReturn( "barSchema" );
 
     tableOutputSpy.truncateTable();
-    verify( db ).truncateTable( anyString(), anyString() );
+    verify( db ).truncateTable( any(), any() );
   }
 
   @Test
@@ -123,9 +126,11 @@ public class TableOutputTest {
     when( tableOutputSpy.getCopy() ).thenReturn( 1 );
     when( tableOutputSpy.getUniqueStepNrAcrossSlaves() ).thenReturn( 0 );
     when( tableOutputSpy.getPartitionID() ).thenReturn( "partition id" );
+    when( tableOutputMeta.getTableName() ).thenReturn( "fooTable" );
+    when( tableOutputMeta.getSchemaName() ).thenReturn( "barSchema" );
 
     tableOutputSpy.truncateTable();
-    verify( db ).truncateTable( anyString(), anyString() );
+    verify( db ).truncateTable( any(), any() );
   }
 
   @Test
@@ -172,6 +177,7 @@ public class TableOutputTest {
     Object[] row = new Object[]{};
     doReturn( row ).when( tableOutputSpy ).getRow();
     tableOutputSpy.first = false;
+    doNothing().when( tableOutputSpy ).putRow( any(), any() );
     doReturn( null ).when( tableOutputSpy ).writeToTable( any( RowMetaInterface.class ), any( row.getClass() ) );
 
     boolean result = tableOutputSpy.processRow( tableOutputMeta, tableOutputData );

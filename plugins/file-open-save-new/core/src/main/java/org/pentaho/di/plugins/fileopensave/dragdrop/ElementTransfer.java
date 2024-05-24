@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2023-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -125,16 +125,12 @@ public class ElementTransfer extends ByteArrayTransfer {
      * (String) Complete path to entity and identifier.
      * (String) provider
      * (String) repositoryName
-     * (String) domain
-     * (String) connection
      */
     String name = dataIn.readUTF();
     EntityType entityType = EntityType.fromValue( dataIn.readInt() );
     String path = dataIn.readUTF();
     String provider = dataIn.readUTF();
     String repositoryName = dataIn.readUTF();
-    String domain = dataIn.readUTF();
-    String connection = dataIn.readUTF();
     // This handles the fact the repository files do not store their extension on the end of the name.  I guess we
     // corrupt our data in the name of cosmetics.  Anyway it will break everything downstream if we don't fix it.
     if ( entityType == EntityType.REPOSITORY_FILE && ( path.endsWith( ".ktr" ) || path.endsWith( ".kjb" ) )
@@ -142,7 +138,7 @@ public class ElementTransfer extends ByteArrayTransfer {
 
       name += path.substring( path.length() - 4 );
     }
-    return new Element( name, entityType, path, provider, repositoryName, domain, connection );
+    return new Element( name, entityType, path, provider, repositoryName );
   }
 
   protected byte[] toByteArray( Element[] elements ) {
@@ -190,7 +186,5 @@ public class ElementTransfer extends ByteArrayTransfer {
     dataOut.writeUTF( element.getPath() );
     dataOut.writeUTF( element.getProvider() );
     dataOut.writeUTF( element.getRepositoryName() == null ? "" : element.getRepositoryName() );
-    dataOut.writeUTF( element.getDomain() == null ? "" : element.getDomain() );
-    dataOut.writeUTF( element.getConnection() == null ? "" : element.getConnection() );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,8 @@ import org.mockito.Mockito;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.delegates.SpoonTabsDelegate;
 import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
+import static org.mockito.ArgumentMatchers.any;
 
 public class SpoonActiveJobGraphTest {
 
@@ -61,7 +61,7 @@ public class SpoonActiveJobGraphTest {
     TabMapEntry tabMapEntry = mock( TabMapEntry.class );
     JobGraph jobGraph = mock( JobGraph.class );
     Mockito.when( tabMapEntry.getObject() ).thenReturn( jobGraph );
-    Mockito.when( spoon.delegates.tabs.getTab( Mockito.any( TabItem.class ) ) ).thenReturn( tabMapEntry );
+    Mockito.when( spoon.delegates.tabs.getTab( any() ) ).thenReturn( tabMapEntry );
 
     JobGraph actualJobGraph = spoon.getActiveJobGraph();
     assertNotNull( actualJobGraph );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,13 +27,15 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 
+//import java.util.concurrent.TimeUnit;
+
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -61,7 +63,7 @@ public class RowProducerTest {
   }
 
   @Test
-  public void testPutRow2Arg() throws Exception {
+  public void testPutRow2Arg() {
     when( rowSet.putRowWait( any( RowMetaInterface.class ), any( Object[].class ), anyLong(), any( TimeUnit.class ) ) )
       .thenReturn( true );
     rowProducer.putRow( rowMeta, rowData );
@@ -70,7 +72,7 @@ public class RowProducerTest {
   }
 
   @Test
-  public void testPutRow3Arg() throws Exception {
+  public void testPutRow3Arg() {
     when( rowSet.putRowWait( any( RowMetaInterface.class ), any( Object[].class ), anyLong(), any( TimeUnit.class ) ) )
       .thenReturn( true );
 
@@ -79,19 +81,19 @@ public class RowProducerTest {
   }
 
   @Test
-  public void testPutRowWait() throws Exception {
+  public void testPutRowWait() {
     rowProducer.putRowWait( rowMeta, rowData, 1, TimeUnit.MILLISECONDS );
     verify( rowSet, times( 1 ) ).putRowWait( rowMeta, rowData, 1, TimeUnit.MILLISECONDS );
   }
 
   @Test
-  public void testFinished() throws Exception {
+  public void testFinished() {
     rowProducer.finished();
     verify( rowSet, times( 1 ) ).setDone();
   }
 
   @Test
-  public void testGetSetRowSet() throws Exception {
+  public void testGetSetRowSet() {
     assertEquals( rowSet, rowProducer.getRowSet() );
     rowProducer.setRowSet( null );
     assertNull( rowProducer.getRowSet() );
@@ -101,7 +103,7 @@ public class RowProducerTest {
   }
 
   @Test
-  public void testGetSetStepInterface() throws Exception {
+  public void testGetSetStepInterface() {
     assertEquals( stepInterface, rowProducer.getStepInterface() );
     rowProducer.setStepInterface( null );
     assertNull( rowProducer.getStepInterface() );

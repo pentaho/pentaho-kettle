@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,18 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.repository.kdr;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -53,6 +41,18 @@ import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 public class KettleDatabaseRepositoryTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -231,7 +231,7 @@ public class KettleDatabaseRepositoryTest {
 
     SlaveServer testSlave = new SlaveServer( "slave1", "fakelocal", "9081", "fakeuser", "fakepass" );
     testSlave.setObjectId( new LongObjectId( 864 ) );
-    ClusterSchema testSchema = new ClusterSchema( "schema1", Arrays.asList( testSlave ) );
+    ClusterSchema testSchema = new ClusterSchema( "schema1", List.of( testSlave ) );
     testSchema.setObjectId( new LongObjectId( 159 ) );
     ObjectId result = repo.insertClusterSlave( testSchema, testSlave );
 

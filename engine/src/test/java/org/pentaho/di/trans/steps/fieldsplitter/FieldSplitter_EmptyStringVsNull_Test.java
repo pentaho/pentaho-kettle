@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.RowMeta;
@@ -38,12 +37,10 @@ import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.List;
 
 import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -51,8 +48,6 @@ import static org.mockito.Mockito.when;
 /**
  * @author Andrey Khayrutdinov
  */
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
 public class FieldSplitter_EmptyStringVsNull_Test {
   private StepMockHelper<FieldSplitterMeta, StepDataInterface> helper;
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -121,7 +116,7 @@ public class FieldSplitter_EmptyStringVsNull_Test {
     TransTestingUtil.assertResult( expected, actual );
   }
 
-  private FieldSplitter createAndInitStep( FieldSplitterMeta meta, FieldSplitterData data ) throws Exception {
+  private FieldSplitter createAndInitStep( FieldSplitterMeta meta, FieldSplitterData data ) {
     when( helper.stepMeta.getStepMetaInterface() ).thenReturn( meta );
 
     FieldSplitter step = new FieldSplitter( helper.stepMeta, data, 0, helper.transMeta, helper.trans );

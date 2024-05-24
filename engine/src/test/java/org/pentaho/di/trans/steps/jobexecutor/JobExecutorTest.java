@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,7 +39,8 @@ import org.pentaho.di.trans.steps.StepMockUtil;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -66,7 +67,7 @@ public class JobExecutorTest {
     meta = new JobExecutorMeta();
     data = new JobExecutorData();
     Job job = mock( Job.class );
-    doReturn( job ).when( executor ).createJob( any( Repository.class ), any( JobMeta.class ),
+    doReturn( job ).when( executor ).createJob( nullable( Repository.class ), nullable( JobMeta.class ),
       any( LoggingObjectInterface.class ) );
     doReturn( ArrayUtils.EMPTY_STRING_ARRAY ).when( job ).listParameters();
 

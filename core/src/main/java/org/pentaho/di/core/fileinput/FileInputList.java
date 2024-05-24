@@ -402,7 +402,7 @@ public class FileInputList {
               try {
                 if ( fileObject instanceof LocalFile ) {
                   // fileObject.isReadable wrongly returns true in windows file system even if not readable
-                  return Files.isReadable( Paths.get( ( new File( fileObject.getName().getPath() ) ).toURI() ) );
+                  return Files.isReadable( Paths.get( ( new File( fileObject.getPath().toString() ) ).toURI() ) );
                 }
                 return fileObject.isReadable();
               } catch ( FileSystemException e ) {

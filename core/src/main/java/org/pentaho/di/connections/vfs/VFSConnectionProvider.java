@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,14 @@
 
 package org.pentaho.di.connections.vfs;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
-import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionProvider;
+import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.util.List;
@@ -57,4 +58,49 @@ public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends C
     return KettleVFS.getFileObject( pvfsUrl, new Variables(), getOpts( connectionDetails ) );
   }
 
+  /**
+   * Tests if a given VFS connection is valid, optionally, with certain testing options.
+   * <p>
+   * This method should first delegate to {@link ConnectionProvider#test(ConnectionDetails)} to perform basic
+   * validation, independent of the connection's root path, {@link VFSConnectionDetails#getRootPath}, if any,
+   * immediately returning {@code false}, when unsuccessful.
+   * <p>
+   * When base validation is successful, if {@code options} has a {@code true}
+   * {@link VFSConnectionTestOptions#isIgnoreRootPath()}, this method should immediately return {@code true}.
+   * <p>
+   * Otherwise, the method should validate that the connection's root folder path is valid, taking into account the
+   * values of {@link VFSConnectionDetails#isSupportsRootPath()}, {@link VFSConnectionDetails#isRootPathRequired()} and
+   * {@link VFSConnectionDetails#getRootPath()}.
+   * <p>
+   * The default implementation exists for backward compatibility reasons and simply delegates to
+   * {@link ConnectionProvider#test(ConnectionDetails)}.
+   * @param connectionDetails The VFS connection.
+   * @param options The testing options, or {@code null}. When {@code null}, a default instance of
+   * {@link VFSConnectionTestOptions} is constructed and used.
+   * @return {@code true} if the provided rootPath is valid; {@code false} otherwise.
+   */
+  default boolean test( @NonNull T connectionDetails, @NonNull VFSConnectionTestOptions options ) throws KettleException {
+    return test( connectionDetails );
+  }
+
+  /**
+   * Gets the resolved root path of a given connection.
+   *
+   * @param connectionDetails The VFS connection.
+   * @return The non-empty resolved root path, if any; {@code null}, if. none.
+   */
+  default String getResolvedRootPath( @NonNull T connectionDetails ) {
+    return connectionDetails.getRootPath();
+  }
+
+  /**
+   * Checks if a given connection uses buckets in its current configuration.
+   * <p>
+   * A connection is using buckets if it can have buckets, as determined by {@link ConnectionDetails#hasBuckets()}, and if its {@link #getResolvedRootPath() resolved root path} is empty.
+   * @param connectionDetails The VFS connection.
+   * @return {@code true} if a connection has buckets; {@code false} otherwise.
+   */
+  default boolean usesBuckets( @NonNull T connectionDetails ) {
+    return connectionDetails.hasBuckets() && getResolvedRootPath( connectionDetails ) == null;
+  }
 }

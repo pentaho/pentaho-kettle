@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
-import org.powermock.reflect.Whitebox;
+import static org.pentaho.test.util.InternalState.setInternalState;
 
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
@@ -46,7 +46,7 @@ public class MemoryGroupByTest {
     memGroupByData = new MemoryGroupByData();
     memGroupByData.aggMeta = new RowMeta(  );
     memGroupByData.outputRowMeta = new RowMeta(  );
-    Whitebox.setInternalState( memGroupBy, "data", memGroupByData );
+    setInternalState( memGroupBy, "data", memGroupByData );
   }
 
   @Test

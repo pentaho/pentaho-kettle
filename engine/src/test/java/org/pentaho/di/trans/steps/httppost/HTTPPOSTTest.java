@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,8 @@ import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 
@@ -38,7 +38,7 @@ public class HTTPPOSTTest {
   @Test
   public void getRequestBodyParametersAsStringWithNullEncoding() throws KettleException {
     HTTPPOST http = mock( HTTPPOST.class );
-    doCallRealMethod().when( http ).getRequestBodyParamsAsStr( any( NameValuePair[].class ), anyString() );
+    doCallRealMethod().when( http ).getRequestBodyParamsAsStr( any( NameValuePair[].class ), nullable( String.class ) );
 
     NameValuePair[] pairs = new NameValuePair[] {
       new BasicNameValuePair( "u", "usr" ),

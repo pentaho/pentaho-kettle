@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,25 +22,7 @@
 
 package org.pentaho.di.trans.steps.dimensionlookup;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
 import org.apache.commons.lang.StringUtils;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -51,7 +33,6 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -78,10 +59,26 @@ import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveVa
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
   Class<DimensionLookupMeta> testMetaClass = DimensionLookupMeta.class;
-  private ThreadLocal<DimensionLookupMeta> holdTestingMeta = new ThreadLocal<DimensionLookupMeta>();
+  private final ThreadLocal<DimensionLookupMeta> holdTestingMeta = new ThreadLocal<>();
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
@@ -97,17 +94,17 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
             "cacheSize", "usingStartDateAlternative", "startDateAlternative", "startDateFieldName", "preloadingCache", "keyStream",
             "keyLookup", "fieldStream", "fieldLookup", "fieldUpdate", "databaseMeta", "sequenceName" );
 
-    Map<String, String> getterMap = new HashMap<String, String>() {
+    Map<String, String> getterMap = new HashMap<>() {
       {
         put( "useBatchUpdate", "useBatchUpdate" );
       }
     };
-    Map<String, String> setterMap = new HashMap<String, String>();
+    Map<String, String> setterMap = new HashMap<>();
 
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+      new ArrayLoadSaveValidator<>( new StringLoadSaveValidator(), 5 );
 
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<>();
     attrValidatorMap.put( "keyStream", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "keyLookup", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "fieldStream", stringArrayLoadSaveValidator );
@@ -123,7 +120,7 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
     attrValidatorMap.put( "startDateAlternative", new IntLoadSaveValidator( DimensionLookupMeta.getStartDateAlternativeCodes().length ) );
     attrValidatorMap.put( "sequenceName", new SequenceNameLoadSaveValidator() );
 
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<>();
 
     loadSaveTester =
         new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
@@ -182,7 +179,7 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
     meta.setFieldLookup( new String[] { "field1" } );
     meta.setFieldStream( new String[] { "" } );
     meta.setDatabaseMeta( dbMeta );
-    doReturn( extraFields ).when( meta ).getDatabaseTableFields( (Database) anyObject(), anyString(), anyString() );
+    doReturn( extraFields ).when( meta ).getDatabaseTableFields( any(), anyString(), anyString() );
     doReturn( mock( LogChannelInterface.class ) ).when( meta ).getLog();
 
     RowMeta row = new RowMeta();
@@ -237,7 +234,7 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
   }
 
   @Test
-  public void testProvidesModelerMeta() throws Exception {
+  public void testProvidesModelerMeta() {
 
     final RowMeta rowMeta = Mockito.mock( RowMeta.class );
     final DimensionLookupMeta dimensionLookupMeta = new DimensionLookupMeta() {
@@ -245,8 +242,7 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
         return mock( Database.class );
       }
 
-      @Override protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName )
-        throws KettleDatabaseException {
+      @Override protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName ) {
         assertEquals( "aSchema", schemaName );
         assertEquals( "aDimTable", tableName );
         return rowMeta;

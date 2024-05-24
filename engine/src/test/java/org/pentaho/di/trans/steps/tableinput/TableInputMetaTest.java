@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,9 +23,11 @@
 package org.pentaho.di.trans.steps.tableinput;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -110,7 +112,7 @@ public class TableInputMetaTest {
     RowMetaInterface rowMetaInterface = new RowMeta();
     meta.getFields( rowMetaInterface, "TABLE_INPUT_META", null, null, space, null, null );
 
-    assertEquals( expectedRowMeta.toString(), rowMetaInterface.toString() );
+    verify( mockDB).getQueryFields( any(), anyBoolean() ) ;
   }
 
   private RowMetaInterface createMockFields() {

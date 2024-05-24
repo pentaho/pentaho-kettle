@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,31 +22,10 @@
 
 package org.pentaho.di.trans.steps.memgroupby;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import org.junit.Test;
-import org.junit.Before;
 import org.junit.After;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import static org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY;
-import static org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta.TYPE_GROUP_MAX;
-import static org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta.TYPE_GROUP_MIN;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -57,12 +36,27 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY;
+import static org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta.TYPE_GROUP_MAX;
+import static org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta.TYPE_GROUP_MIN;
+
 /**
  * @author Luis Martins
  */
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { ValueMetaFactory.class } )
 public class MemoryGroupByMetaGetFieldsTest {
 
   private MemoryGroupByMeta memoryGroupByMeta;
@@ -73,7 +67,6 @@ public class MemoryGroupByMetaGetFieldsTest {
   private VariableSpace mockSpace;
   private IMetaStore mockIMetaStore;
 
-
   @Before
   public void setup() throws KettlePluginException {
     mockSpace = mock( VariableSpace.class );
@@ -81,15 +74,6 @@ public class MemoryGroupByMetaGetFieldsTest {
 
     rowMeta = spy( new RowMeta() );
     memoryGroupByMeta = spy( new MemoryGroupByMeta() );
-
-    mockStatic( ValueMetaFactory.class );
-    when( ValueMetaFactory.createValueMeta( anyInt() ) ).thenCallRealMethod();
-    when( ValueMetaFactory.createValueMeta( anyString(), anyInt() ) ).thenCallRealMethod();
-    when( ValueMetaFactory.createValueMeta( "maxDate", 3, -1, -1 ) ).thenReturn( new ValueMetaDate( "maxDate" ) );
-    when( ValueMetaFactory.createValueMeta( "minDate", 3, -1, -1 ) ).thenReturn( new ValueMetaDate( "minDate" ) );
-    when( ValueMetaFactory.createValueMeta( "countDate", 5, -1, -1 ) ).thenReturn( new ValueMetaInteger( "countDate" ) );
-    when( ValueMetaFactory.getValueMetaName( 3 ) ).thenReturn( "Date" );
-    when( ValueMetaFactory.getValueMetaName( 5 ) ).thenReturn( "Integer" );
   }
 
   @After
@@ -98,59 +82,101 @@ public class MemoryGroupByMetaGetFieldsTest {
 
   @Test
   public void getFieldsWithSubject_WithFormat() {
-    ValueMetaDate valueMeta = new ValueMetaDate();
-    valueMeta.setConversionMask( "yyyy-MM-dd" );
-    valueMeta.setName( "date" );
+    try ( MockedStatic<ValueMetaFactory> valueMetaFactoryMockedStatic = mockStatic( ValueMetaFactory.class ) ) {
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( anyInt() ) ).thenCallRealMethod();
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( anyString(), anyInt() ) ).thenCallRealMethod();
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( eq( "maxDate" ), eq( 3 ), eq( -1 ), eq( -1 ) ) ).thenReturn( new ValueMetaDate( "maxDate" ) );
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( eq( "minDate" ), eq( 3 ), eq( -1 ), eq( -1 ) ) ).thenReturn( new ValueMetaDate( "minDate" ) );
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( eq( "countDate" ), eq( 5 ), eq( -1 ), eq( -1 ) ) ).thenReturn( new ValueMetaDate( "countDate" ) );
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.getValueMetaName( eq( 3 ) ) ).thenReturn( "Date" );
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.getValueMetaName( eq( 5 ) ) ).thenReturn( "Integer" );
+      ValueMetaDate valueMeta = new ValueMetaDate();
+      valueMeta.setConversionMask( "yyyy-MM-dd" );
+      valueMeta.setName( "date" );
 
-    doReturn( valueMeta ).when( rowMeta ).searchValueMeta( "date" );
+      doReturn( valueMeta ).when( rowMeta ).searchValueMeta( "date" );
 
-    memoryGroupByMeta.setSubjectField( new String[] { "date" } );
-    memoryGroupByMeta.setGroupField( new String[] {} );
-    memoryGroupByMeta.setAggregateField( new String[] { "maxDate" } );
-    memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_MAX } );
+      memoryGroupByMeta.setSubjectField( new String[] { "date" } );
+      memoryGroupByMeta.setGroupField( new String[] {} );
+      memoryGroupByMeta.setAggregateField( new String[] { "maxDate" } );
+      memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_MAX } );
 
-    memoryGroupByMeta.getFields( rowMeta, "Memory Group by", mockInfo, mockNextStep, mockSpace, null, mockIMetaStore );
+      memoryGroupByMeta.getFields( rowMeta, "Memory Group by", mockInfo, mockNextStep, mockSpace, null,
+        mockIMetaStore );
 
-    verify( rowMeta, times( 1 ) ).clear();
-    verify( rowMeta, times( 1 ) ).addRowMeta( any() );
-    assertEquals( "yyyy-MM-dd", rowMeta.searchValueMeta( "maxDate" ).getConversionMask() );
+      verify( rowMeta, times( 1 ) ).clear();
+      verify( rowMeta, times( 1 ) ).addRowMeta( any() );
+      assertEquals( "yyyy-MM-dd", rowMeta.searchValueMeta( "maxDate" ).getConversionMask() );
+    }
   }
 
   @Test
   public void getFieldsWithSubject_NoFormat() {
-    ValueMetaDate valueMeta = new ValueMetaDate();
-    valueMeta.setName( "date" );
+    try ( MockedStatic<ValueMetaFactory> valueMetaFactoryMockedStatic = mockStatic( ValueMetaFactory.class ) ) {
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( anyInt() ) ).thenCallRealMethod();
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( anyString(), anyInt() ) )
+        .thenCallRealMethod();
+      valueMetaFactoryMockedStatic.when(
+          () -> ValueMetaFactory.createValueMeta( eq( "maxDate" ), eq( 3 ), eq( -1 ), eq( -1 ) ) )
+        .thenReturn( new ValueMetaDate( "maxDate" ) );
+      valueMetaFactoryMockedStatic.when(
+          () -> ValueMetaFactory.createValueMeta( eq( "minDate" ), eq( 3 ), eq( -1 ), eq( -1 ) ) )
+        .thenReturn( new ValueMetaDate( "minDate" ) );
+      valueMetaFactoryMockedStatic.when(
+          () -> ValueMetaFactory.createValueMeta( eq( "countDate" ), eq( 5 ), eq( -1 ), eq( -1 ) ) )
+        .thenReturn( new ValueMetaDate( "countDate" ) );
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.getValueMetaName( eq( 3 ) ) ).thenReturn( "Date" );
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.getValueMetaName( eq( 5 ) ) ).thenReturn( "Integer" );
+      ValueMetaDate valueMeta = new ValueMetaDate();
+      valueMeta.setName( "date" );
 
-    doReturn( valueMeta ).when( rowMeta ).searchValueMeta( "date" );
+      doReturn( valueMeta ).when( rowMeta ).searchValueMeta( "date" );
 
-    memoryGroupByMeta.setSubjectField( new String[] { "date" } );
-    memoryGroupByMeta.setGroupField( new String[] {} );
-    memoryGroupByMeta.setAggregateField( new String[] { "minDate" } );
-    memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_MIN } );
+      memoryGroupByMeta.setSubjectField( new String[] { "date" } );
+      memoryGroupByMeta.setGroupField( new String[] {} );
+      memoryGroupByMeta.setAggregateField( new String[] { "minDate" } );
+      memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_MIN } );
 
-    memoryGroupByMeta.getFields( rowMeta, "Group by", mockInfo, mockNextStep, mockSpace, null, mockIMetaStore );
+      memoryGroupByMeta.getFields( rowMeta, "Group by", mockInfo, mockNextStep, mockSpace, null, mockIMetaStore );
 
-    verify( rowMeta, times( 1 ) ).clear();
-    verify( rowMeta, times( 1 ) ).addRowMeta( any() );
-    assertEquals( null, rowMeta.searchValueMeta( "minDate" ).getConversionMask() );
+      verify( rowMeta, times( 1 ) ).clear();
+      verify( rowMeta, times( 1 ) ).addRowMeta( any() );
+      assertNull( rowMeta.searchValueMeta( "minDate" ).getConversionMask() );
+    }
   }
 
   @Test
   public void getFieldsWithoutSubject() {
-    ValueMetaDate valueMeta = new ValueMetaDate();
-    valueMeta.setName( "date" );
+    try ( MockedStatic<ValueMetaFactory> valueMetaFactoryMockedStatic = mockStatic( ValueMetaFactory.class ) ) {
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( anyInt() ) ).thenCallRealMethod();
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.createValueMeta( anyString(), anyInt() ) )
+        .thenCallRealMethod();
+      valueMetaFactoryMockedStatic.when(
+          () -> ValueMetaFactory.createValueMeta( eq( "maxDate" ), eq( 3 ), eq( -1 ), eq( -1 ) ) )
+        .thenReturn( new ValueMetaDate( "maxDate" ) );
+      valueMetaFactoryMockedStatic.when(
+          () -> ValueMetaFactory.createValueMeta( eq( "minDate" ), eq( 3 ), eq( -1 ), eq( -1 ) ) )
+        .thenReturn( new ValueMetaDate( "minDate" ) );
+      valueMetaFactoryMockedStatic.when(
+          () -> ValueMetaFactory.createValueMeta( eq( "countDate" ), eq( 5 ), eq( -1 ), eq( -1 ) ) )
+        .thenReturn( new ValueMetaDate( "countDate" ) );
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.getValueMetaName( eq( 3 ) ) ).thenReturn( "Date" );
+      valueMetaFactoryMockedStatic.when( () -> ValueMetaFactory.getValueMetaName( eq( 5 ) ) ).thenReturn( "Integer" );
+      ValueMetaDate valueMeta = new ValueMetaDate();
+      valueMeta.setName( "date" );
 
-    doReturn( valueMeta ).when( rowMeta ).searchValueMeta( "date" );
+      doReturn( valueMeta ).when( rowMeta ).searchValueMeta( "date" );
 
-    memoryGroupByMeta.setSubjectField( new String[] { null } );
-    memoryGroupByMeta.setGroupField( new String[] { "date" } );
-    memoryGroupByMeta.setAggregateField( new String[] { "countDate" } );
-    memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_COUNT_ANY } );
+      memoryGroupByMeta.setSubjectField( new String[] { null } );
+      memoryGroupByMeta.setGroupField( new String[] { "date" } );
+      memoryGroupByMeta.setAggregateField( new String[] { "countDate" } );
+      memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_COUNT_ANY } );
 
-    memoryGroupByMeta.getFields( rowMeta, "Group by", mockInfo, mockNextStep, mockSpace, null, mockIMetaStore );
+      memoryGroupByMeta.getFields( rowMeta, "Group by", mockInfo, mockNextStep, mockSpace, null, mockIMetaStore );
 
-    verify( rowMeta, times( 1 ) ).clear();
-    verify( rowMeta, times( 1 ) ).addRowMeta( any() );
-    assertNotNull( rowMeta.searchValueMeta( "countDate" ) );
+      verify( rowMeta, times( 1 ) ).clear();
+      verify( rowMeta, times( 1 ) ).addRowMeta( any() );
+      assertNotNull( rowMeta.searchValueMeta( "countDate" ) );
+    }
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,13 @@
 package org.pentaho.di.ui.spoon;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,7 +139,7 @@ public class GraphTest {
     JobGraph jobGraph = mock( JobGraph.class );
     doCallRealMethod().when( jobGraph ).setJobMeta( any( JobMeta.class ) );
     doCallRealMethod().when( jobGraph ).setSpoon( any( Spoon.class ) );
-    doCallRealMethod().when( jobGraph ).delSelected( any( JobEntryCopy.class ) );
+    doCallRealMethod().when( jobGraph ).delSelected( any() );
     jobGraph.setJobMeta( jobMeta );
     jobGraph.setSpoon( spoon );
 

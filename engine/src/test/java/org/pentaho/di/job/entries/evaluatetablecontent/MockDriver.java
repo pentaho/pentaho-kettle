@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,7 @@
 
 package org.pentaho.di.job.entries.evaluatetablecontent;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.mockito.stubbing.Answer;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -34,17 +31,19 @@ import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.mockito.stubbing.Answer;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MockDriver implements Driver {
-  private static final List<MockDriver> drivers = new ArrayList<MockDriver>();
+  private static final List<MockDriver> drivers = new ArrayList<>();
 
   public static synchronized void registerInstance() throws SQLException {
     MockDriver driver = new MockDriver();
@@ -64,7 +63,7 @@ public class MockDriver implements Driver {
   }
 
   @Override
-  public boolean acceptsURL( String url ) throws SQLException {
+  public boolean acceptsURL( String url ) {
     return true;
   }
 
@@ -84,7 +83,7 @@ public class MockDriver implements Driver {
     when( rs.next() ).thenAnswer( new Answer<Boolean>() {
       private int count = 0;
 
-      public Boolean answer( org.mockito.invocation.InvocationOnMock invocation ) throws Throwable {
+      public Boolean answer( org.mockito.invocation.InvocationOnMock invocation ) {
         return count++ == 0;
       }
     } );
@@ -109,12 +108,12 @@ public class MockDriver implements Driver {
   }
 
   @Override
-  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+  public Logger getParentLogger() {
     return null;
   }
 
   @Override
-  public DriverPropertyInfo[] getPropertyInfo( String url, Properties info ) throws SQLException {
+  public DriverPropertyInfo[] getPropertyInfo( String url, Properties info ) {
     // TODO Auto-generated method stub
     return null;
   }

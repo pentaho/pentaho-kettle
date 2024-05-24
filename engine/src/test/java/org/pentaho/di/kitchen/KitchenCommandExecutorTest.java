@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Result;
@@ -42,31 +42,23 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.util.Base64;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyVararg;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( BaseMessages.class )
 public class KitchenCommandExecutorTest {
 
   private KitchenCommandExecutor mockedKitchenCommandExecutor;
@@ -82,13 +74,12 @@ public class KitchenCommandExecutorTest {
     mockedKitchenCommandExecutor = mock( KitchenCommandExecutor.class );
     result = mock( Result.class );
     logChannelInterface = mock( LogChannelInterface.class );
-
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
-    when( mockedKitchenCommandExecutor.loadJobFromFilesystem( anyString(), anyString(), anyObject() ) ).thenCallRealMethod();
-    when( mockedKitchenCommandExecutor.loadJobFromRepository( anyObject(), anyString(), anyString() ) ).thenCallRealMethod();
-    when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyBoolean() ) ).thenCallRealMethod();
-    when( mockedKitchenCommandExecutor.decodeBase64ToZipFile( anyObject(), anyString() ) ).thenCallRealMethod();
-    when( mockedKitchenCommandExecutor.getReturnCode() ).thenCallRealMethod();
+    doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromFilesystem( anyString(), anyString(), any() );
+    doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromRepository( any(), anyString(), anyString() );
+    doCallRealMethod().when( mockedKitchenCommandExecutor ).decodeBase64ToZipFile( any(), anyBoolean() );
+    doCallRealMethod().when( mockedKitchenCommandExecutor ).decodeBase64ToZipFile( any(), anyString() );
+    doCallRealMethod().when( mockedKitchenCommandExecutor).getReturnCode();
   }
 
   @After
@@ -103,7 +94,7 @@ public class KitchenCommandExecutorTest {
     String fileName = "hello-world.kjb";
     File zipFile = new File( getClass().getResource( "testKjbArchive.zip" ).toURI() );
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
-    Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( null, fileName, base64Zip );
+    Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( "", fileName, base64Zip );
     assertNotNull( job );
   }
 
@@ -116,12 +107,14 @@ public class KitchenCommandExecutorTest {
 
   @Test
   public void testReturnCodeWithErrors() {
-    mockStatic( BaseMessages.class );
-    when( result.getNrErrors() ).thenReturn( new Long( 1 ) );
-    when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
-    when( mockedKitchenCommandExecutor.getLog() ).thenReturn( logChannelInterface );
-    when( BaseMessages.getString( any(), anyString() ) ).thenReturn( "NoMessage" );
-    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+    try ( MockedStatic<BaseMessages> baseMessagesMockedStatic = mockStatic( BaseMessages.class ) ) {
+      baseMessagesMockedStatic.when( () -> BaseMessages.getString( any(), anyString() ) ).thenReturn( "" );
+      when( result.getNrErrors() ).thenReturn( 1L );
+      when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
+      when( mockedKitchenCommandExecutor.getLog() ).thenReturn( logChannelInterface );
+      assertEquals( mockedKitchenCommandExecutor.getReturnCode(),
+        CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+    }
   }
 
   @Test
@@ -135,17 +128,18 @@ public class KitchenCommandExecutorTest {
     // Create Mock Objects
     Params params = mock( Params.class );
     KitchenCommandExecutor kitchenCommandExecutor = new KitchenCommandExecutor( Kitchen.class );
-    PowerMockito.mockStatic( BaseMessages.class );
 
-    // Mock returns
-    when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
-    when( BaseMessages.getString( any( Class.class ), anyString(), anyVararg() ) ).thenReturn( "" );
+    try ( MockedStatic<BaseMessages> baseMessagesMockedStatic = mockStatic( BaseMessages.class ) ) {
+      // Mock returns
+      when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
+      baseMessagesMockedStatic.when( () -> BaseMessages.getString( any( Class.class ), anyString(), any() ) ).thenReturn( "" );
 
-    try {
-      Result result = kitchenCommandExecutor.execute( params, null );
-      Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
-    } catch ( Throwable throwable ) {
-      Assert.fail();
+      try {
+        Result result = kitchenCommandExecutor.execute( params, null );
+        Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
+      } catch ( Throwable throwable ) {
+        Assert.fail();
+      }
     }
   }
 
