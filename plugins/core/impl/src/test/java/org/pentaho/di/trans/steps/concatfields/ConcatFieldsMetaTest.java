@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,9 +51,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -124,7 +124,7 @@ public class ConcatFieldsMetaTest {
     StringObjectId id_transformation = new StringObjectId( "id_transformation" );
     StringObjectId id_step = new StringObjectId( "id_step" );
 
-    doNothing().when( rep ).saveStepAttribute( anyObject(), anyObject(), anyInt(), anyString(), anyString() );
+    doNothing().when( rep ).saveStepAttribute( any(), any(), anyInt(), anyString(), anyString() );
     concatFieldsMeta.saveRep( rep, metaStore, id_transformation, id_step );
     verify( rep ).saveStepAttribute( id_transformation, id_step, "fileNameInField", false );
     verify( rep ).saveStepAttribute( id_transformation, id_step, "file_name", StringUtil.EMPTY_STRING );
