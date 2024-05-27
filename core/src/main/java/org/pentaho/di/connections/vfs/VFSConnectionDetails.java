@@ -134,6 +134,18 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   }
 
   /**
+   * Sets the root folder path, given as a string.
+   * <p>
+   * An empty root folder path value should be converted to {@code null}.
+   * Further syntax validation is performed only after variable substitution.
+   * <p>
+   * The default interface implementation exists to ensure backward compatibility and does nothing.
+   *
+   * @param rootPath The root path.
+   */
+  default void setRootPath( String rootPath ) { }
+
+  /**
    * Gets the list of roles with access to the connection from the Business Analytics product.
    * <p>
    * Access control does not distinguish between types of access operations (such as read, write, delete).
