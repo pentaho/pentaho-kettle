@@ -26,11 +26,9 @@
   <servlet id="listSocket"> <description>Lists server socket allocation information</description> <classname>org.pentaho.di.www.ListServerSocketServlet</classname> </servlet>
   <servlet id="sniffStep"> <description>Sniff test a transformation step</description> <classname>org.pentaho.di.www.SniffStepServlet</classname> </servlet>
   <servlet id="executeTrans"> <description>Execute (prepare and start) a specific transformation and pass output to the servlet</description> <classname>org.pentaho.di.www.ExecuteTransServlet</classname> </servlet>
-  <servlet id="previewStepData"> <description>Preview data inside the step</description> <classname>org.pentaho.di.www.PreviewStepData</classname> </servlet>
   <servlet id="transImage"> <description>Generate a PNG image of a transformation</description> <classname>org.pentaho.di.www.GetTransImageServlet</classname> </servlet>
   <servlet id="runTrans"> <description>Run a transformation directly from a repository</description> <classname>org.pentaho.di.www.RunTransServlet</classname> </servlet>
-  <servlet id="databaseFeatureList"> <description>Feature List of a database connection</description> <classname>org.pentaho.di.www.DatabaseFeatureListServlet</classname> </servlet>
-  <servlet id="testDatabaseConnection"> <description>Test Database Connection</description> <classname>org.pentaho.di.www.TestDatabaseConnServlet</classname> </servlet>
+  
   <!-- The job handlers... -->
   
   <servlet id="startJob"> <description>Start a job</description> <classname>org.pentaho.di.www.StartJobServlet</classname> </servlet>
@@ -45,9 +43,8 @@
   <servlet id="registerJob"> <description>Add a job to the server</description> <classname>org.pentaho.di.www.RegisterJobServlet</classname> </servlet>
   <servlet id="registerTrans"> <description>Add a transformation to the server</description> <classname>org.pentaho.di.www.RegisterTransServlet</classname> </servlet>
   <servlet id="registerPackage"> <description>Upload a resources export file</description> <classname>org.pentaho.di.www.RegisterPackageServlet</classname> </servlet>
-  <servlet id="registeredDatabasePlugins"> <description>Get list of registered Database Plugins</description> <classname>org.pentaho.di.www.GetDatabaseDetailsServlet</classname> </servlet>
-  <servlet id="registeredSteps"> <description>Get list of registered Step Plugins</description> <classname>org.pentaho.di.www.GetRegisteredStepsServlet</classname> </servlet>
-
+  
+  
   <!-- The dynamic clustering ... -->
   
   <servlet id="registerSlave"> <description>Register a slave server</description> <classname>org.pentaho.di.www.RegisterSlaveServlet</classname> </servlet>
@@ -62,6 +59,5 @@
   <!-- Sequence generation ... -->
 
   <servlet id="nextSequence"> <description>Get the next block of values for a sequence</description> <classname>org.pentaho.di.www.NextSequenceValueServlet</classname> </servlet>
-  <servlet id="stepAction"> <description>Perform step specific action by taking in the ktr xml file</description> <classname>org.pentaho.di.www.StepActionServlet</classname> </servlet>
-
+  
 </servlets>
