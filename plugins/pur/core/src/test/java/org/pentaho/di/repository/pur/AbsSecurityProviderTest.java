@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,13 @@ public class AbsSecurityProviderTest {
   }
 
   @Test( expected = KettleException.class )
+  public void exceptionThrown_WhenOperationNotAllowed_ExecuteSchedulesOperation() throws Exception {
+
+    setOperationPermissions( IAbsSecurityProvider.SCHEDULER_EXECUTE_ACTION, false );
+    provider.validateAction( RepositoryOperation.SCHEDULER_EXECUTE );
+  }
+
+  @Test( expected = KettleException.class )
   public void exceptionThrown_WhenOperationNotAllowed_CreateOperation() throws Exception {
 
     setOperationPermissions( IAbsSecurityProvider.CREATE_CONTENT_ACTION, false );
@@ -61,7 +68,7 @@ public class AbsSecurityProviderTest {
 
   @Test( expected = KettleException.class )
   public void exceptionThrown_WhenOperationNotAllowed_DatasourcesOperation() throws Exception {
-    setOperationPermissions( IAbsSecurityProvider.MODIFY_DATABASE_ACTION, false);
+    setOperationPermissions( IAbsSecurityProvider.MODIFY_DATABASE_ACTION, false );
     provider.validateAction( RepositoryOperation.MODIFY_DATABASE );
   }
 
@@ -80,6 +87,13 @@ public class AbsSecurityProviderTest {
   }
 
   @Test
+  public void noExceptionThrown_WhenOperationIsAllowed_ExecuteSchedulesOperation() throws Exception {
+
+    setOperationPermissions( IAbsSecurityProvider.SCHEDULER_EXECUTE_ACTION, true );
+    provider.validateAction( RepositoryOperation.SCHEDULER_EXECUTE );
+  }
+
+  @Test
   public void noExceptionThrown_WhenOperationIsAllowed_ExecuteOperation() throws Exception {
 
     setOperationPermissions( IAbsSecurityProvider.CREATE_CONTENT_ACTION, true );
@@ -88,7 +102,7 @@ public class AbsSecurityProviderTest {
 
   @Test
   public void noExceptionThrown_WhenOperationNotAllowed_DatasourcesOperation() throws Exception {
-    setOperationPermissions( IAbsSecurityProvider.MODIFY_DATABASE_ACTION, true);
+    setOperationPermissions( IAbsSecurityProvider.MODIFY_DATABASE_ACTION, true );
     provider.validateAction( RepositoryOperation.MODIFY_DATABASE );
   }
 
