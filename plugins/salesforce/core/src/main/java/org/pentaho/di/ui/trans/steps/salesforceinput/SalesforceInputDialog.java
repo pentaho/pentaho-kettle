@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.trans.steps.salesforceinput;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -74,6 +75,7 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.steps.salesforce.SOQLValuesHighlight;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputField;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
@@ -1830,24 +1832,24 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
 
   private void getModulesList() {
     if ( !gotModule ) {
-      SalesforceConnection connection = null;
       String selectedField = wModule.getText();
       wModule.removeAll();
 
       try {
-        SalesforceInputMeta meta = new SalesforceInputMeta();
+        Trans trans = new Trans( transMeta, null );
+        trans.rowsets = new ArrayList<>();
+
         getInfo( meta );
-        String url = transMeta.environmentSubstitute( meta.getTargetURL() );
+        SalesforceStep step = (SalesforceStep) meta.getStep( stepMeta, meta.getStepData(), 0, transMeta, trans );
+        step.setStepMetaInterface( meta );
 
-        // Define a new Salesforce connection
-        connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUsername() ),
-            Utils.resolvePassword( transMeta, meta.getPassword() ) );
-        // connect to Salesforce
-        connection.connect();
+        if ( !Utils.isEmpty( selectedField ) ) {
+          wModule.setText( selectedField );
+        }
 
-        // retrieve modules list
-        String[] modules = connection.getAllAvailableObjects( true );
+        gotModule = true;
+        getModulesListError = false;
+        String[] modules = step.getModules();
         if ( modules != null && modules.length > 0 ) {
           // populate Combo
           wModule.setItems( modules );
@@ -1863,12 +1865,6 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       } finally {
         if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
-        }
-        if ( connection != null ) {
-          try {
-            connection.close();
-          } catch ( Exception e ) { /* Ignore */
-          }
         }
       }
     }

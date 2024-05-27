@@ -198,4 +198,45 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     }
     return successConnection;
   }
+
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject modulesAction() {
+    JSONObject response = new JSONObject();
+    try {
+      response.put( "modules", getModules() );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  public String[] getModules() throws Exception {
+
+    SalesforceConnection connection = null;
+    try {
+      SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
+      String realURL = getTransMeta().environmentSubstitute( salesforceStepMeta.getTargetURL() );
+      String realUsername = getTransMeta().environmentSubstitute( salesforceStepMeta.getUsername() );
+      String realPassword = Utils.resolvePassword( getTransMeta(), salesforceStepMeta.getPassword() );
+      int realTimeOut = Const.toInt( getTransMeta().environmentSubstitute( salesforceStepMeta.getTimeout() ), 0 );
+
+      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
+      connection.setTimeOut( realTimeOut );
+      connection.connect();
+
+      return connection.getAllAvailableObjects( false );
+
+    } catch ( Exception e ) {
+      throw new Exception( e );
+    } finally {
+      if ( connection != null ) {
+        try {
+          connection.close();
+        } catch ( Exception e ) { /* Ignore */
+        }
+      }
+    }
+  }
 }

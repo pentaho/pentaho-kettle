@@ -65,10 +65,12 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceinsert.SalesforceInsertMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -1070,15 +1072,16 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
 
   private void getModulesList() {
     if ( !gotModule ) {
-      SalesforceConnection connection = null;
-
       try {
+        Trans trans = new Trans( transMeta, null );
+        trans.rowsets = new ArrayList<>();
+
+        getInfo( meta );
+        SalesforceStep step = (SalesforceStep) meta.getStep( stepMeta, meta.getStepData(), 0, transMeta, trans );
+        step.setStepMetaInterface( meta );
         String selectedField = wModule.getText();
         wModule.removeAll();
-
-        connection = getConnection();
-        // return
-        wModule.setItems( connection.getAllAvailableObjects( false ) );
+        wModule.setItems( step.getModules() );
 
         if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
@@ -1092,13 +1095,6 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
           BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorRetrieveModules.DialogTitle" ),
           BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
-      } finally {
-        if ( connection != null ) {
-          try {
-            connection.close();
-          } catch ( Exception e ) { /* Ignore */
-          }
-        }
       }
     }
   }
