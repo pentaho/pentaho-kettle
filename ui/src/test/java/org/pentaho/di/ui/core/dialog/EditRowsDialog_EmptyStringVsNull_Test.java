@@ -55,14 +55,15 @@ public class EditRowsDialog_EmptyStringVsNull_Test {
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
-    executeAndAssertResults( new String[]{ "", null, null } );
+    executeAndAssertResults( new String[]{ "", "", "" } );
   }
 
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
-    executeAndAssertResults( new String[]{ "", "", "" } );
+    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "Y" );
+    executeAndAssertResults( new String[]{ "", "", null } );
   }
 
   private void executeAndAssertResults( String[] expected ) throws Exception {
