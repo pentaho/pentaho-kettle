@@ -46,7 +46,7 @@ public abstract class SalesforceStepDialog extends BaseStepDialog implements Ste
   protected static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
   private final Class<? extends SalesforceStepMeta> META_CLASS;
-  SalesforceStepMeta meta;
+  protected SalesforceStepMeta meta;
 
   public SalesforceStepDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );

@@ -51,9 +51,11 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforcedelete.SalesforceDeleteMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -62,6 +64,8 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
+
+import java.util.ArrayList;
 
 public class SalesforceDeleteDialog extends SalesforceStepDialog {
 
@@ -594,26 +598,16 @@ public class SalesforceDeleteDialog extends SalesforceStepDialog {
 
   private void getModulesList() {
     if ( !gotModule ) {
-      SalesforceConnection connection = null;
-
       try {
-        SalesforceDeleteMeta meta = new SalesforceDeleteMeta();
-        getInfo( meta );
-        String url = transMeta.environmentSubstitute( meta.getTargetURL() );
+        Trans trans = new Trans( transMeta, null );
+        trans.rowsets = new ArrayList<>();
 
+        getInfo( meta );
+        SalesforceStep step = (SalesforceStep) meta.getStep( stepMeta, meta.getStepData(), 0, transMeta, trans );
+        step.setStepMetaInterface( meta );
         String selectedField = wModule.getText();
         wModule.removeAll();
-
-        // Define a new Salesforce connection
-        connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUsername() ),
-            Utils.resolvePassword( transMeta, meta.getPassword() ) );
-        int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeout() ), 0 );
-        connection.setTimeOut( realTimeOut );
-        // connect to Salesforce
-        connection.connect();
-        // return
-        wModule.setItems( connection.getAllAvailableObjects( false ) );
+        wModule.setItems( step.getModules() );
 
         if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
@@ -627,13 +621,6 @@ public class SalesforceDeleteDialog extends SalesforceStepDialog {
           BaseMessages.getString( PKG, "SalesforceDeleteDialog.ErrorRetrieveModules.DialogTitle" ),
           BaseMessages.getString( PKG, "SalesforceDeleteDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
-      } finally {
-        if ( connection != null ) {
-          try {
-            connection.close();
-          } catch ( Exception e ) { /* Ignore */
-          }
-        }
       }
     }
   }
