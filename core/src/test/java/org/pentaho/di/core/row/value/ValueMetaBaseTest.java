@@ -390,17 +390,15 @@ public class ValueMetaBaseTest {
       + "Conversion from null string must return null", null, result );
 
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
-    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "N" );
     result =
-      outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y and KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY = N: "
-      + "Conversion from null string must return empty string", StringUtils.EMPTY, result );
+      outValueMetaString.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y: "
+      + "Conversion from empty string to string must return empty string", StringUtils.EMPTY, result );
 
-    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "Y" );
     result =
       outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y and KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY = Y: "
-      + "Conversion from null string must return null", null, result );
+    assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y: "
+      + "Conversion from null string must return empty string", StringUtils.EMPTY, result );
 
     // test KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY
     System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_SPACES_ONLY_STRING_TO_EMPTY, "Y" );
