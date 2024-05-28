@@ -40,6 +40,8 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TreeSelection;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 
 import java.util.function.Supplier;
 
@@ -116,6 +118,50 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
         }
       } );
     }
+
+    // clear old items
+    MenuItem[] items = itemMenu.getItems();
+    for ( int i = 2; i < items.length; i++ ) {
+      items[i].dispose();
+    }
+
+    // customize menu for specific item
+    if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
+      MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToGlobal" ) );
+      moveMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          vfsConnectionDelegate.moveToGlobal( vfsConnectionTreeItem.getName() );
+        }
+      } );
+      MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      copyMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.CopyToGlobal" ) );
+      copyMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          vfsConnectionDelegate.copyToGlobal( vfsConnectionTreeItem.getName() );
+        }
+      } );
+    }
+    if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL
+         && spoonSupplier.get().getBowl() != DefaultBowl.getInstance() ) {
+      MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToProject" ) );
+      moveMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          vfsConnectionDelegate.moveToProject( vfsConnectionTreeItem.getName() );
+        }
+      } );
+      MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      copyMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.CopyToProject" ) );
+      copyMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          vfsConnectionDelegate.copyToProject( vfsConnectionTreeItem.getName() );
+        }
+      } );
+    }
+
+
+
     return itemMenu;
   }
 }

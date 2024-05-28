@@ -24,8 +24,10 @@ package org.pentaho.di.vfs.connections.ui.dialog;
 
 import org.eclipse.swt.SWT;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ui.dialog.ConnectionDeleteDialog;
+import org.pentaho.di.connections.ui.dialog.ConnectionOverwriteDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
@@ -98,12 +100,55 @@ public class ConnectionDelegate {
         resetConnectionManagerIfNeeded( spoon );
 
         spoonSupplier.get().getShell().getDisplay().asyncExec( () -> spoonSupplier.get().refreshTree(
-        ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
+          ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
         EngineMetaInterface engineMetaInterface = spoonSupplier.get().getActiveMeta();
         if ( engineMetaInterface instanceof AbstractMeta ) {
           ( (AbstractMeta) engineMetaInterface ).setChanged();
         }
       }
+    } catch ( MetaStoreException e ) {
+      showError( e );
+    }
+  }
+
+  public void copyToGlobal( String name ) {
+    moveCopy( name, spoonSupplier.get().getBowl(), DefaultBowl.getInstance(), false );
+  }
+
+  public void copyToProject( String name ) {
+    moveCopy( name, DefaultBowl.getInstance(), spoonSupplier.get().getBowl(), false );
+  }
+
+  public void moveToGlobal( String name ) {
+    moveCopy( name, spoonSupplier.get().getBowl(), DefaultBowl.getInstance(), true );
+  }
+
+  public void moveToProject( String name ) {
+    moveCopy( name, DefaultBowl.getInstance(), spoonSupplier.get().getBowl(), true );
+  }
+
+  private void moveCopy( String name, Bowl sourceBowl, Bowl targetBowl, boolean deleteSource ) {
+    try {
+      ConnectionDetails targetConnection = targetBowl.getExplicitConnectionManager().getConnectionDetails( name );
+      if ( targetConnection != null ) {
+        ConnectionOverwriteDialog connectionOverwriteDialog =
+          new ConnectionOverwriteDialog( spoonSupplier.get().getShell() );
+        if ( !( connectionOverwriteDialog.open( name ) == SWT.YES ) ) {
+          return;
+        }
+      }
+
+      ConnectionDetails details = sourceBowl.getExplicitConnectionManager().getConnectionDetails( name );
+      if ( details == null ) {
+        throw new MetaStoreException( "Connection not found: " + name );
+      }
+      targetBowl.getExplicitConnectionManager().save( details );
+      if ( deleteSource ) {
+        sourceBowl.getExplicitConnectionManager().delete( name );
+      }
+      resetConnectionManagerIfNeeded( spoonSupplier.get() );
+      spoonSupplier.get().getShell().getDisplay().asyncExec( () -> spoonSupplier.get().refreshTree(
+        ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
     } catch ( MetaStoreException e ) {
       showError( e );
     }
