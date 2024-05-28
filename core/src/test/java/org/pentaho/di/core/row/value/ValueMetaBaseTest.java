@@ -394,7 +394,7 @@ public class ValueMetaBaseTest {
     result =
       outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
     assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y and KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY = N: "
-      + "Conversion from null string must return null ", null, result );
+      + "Conversion from null string must return empty string", StringUtils.EMPTY, result );
 
     System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "Y" );
     result =
