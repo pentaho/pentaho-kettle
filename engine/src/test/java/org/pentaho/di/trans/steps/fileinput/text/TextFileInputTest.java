@@ -30,7 +30,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
@@ -79,8 +78,6 @@ public class TextFileInputTest {
   @BeforeClass
   public static void initKettle() throws Exception {
     KettleEnvironment.init();
-    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
-    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "Y" );
   }
 
   private static BufferedInputStreamReader getInputStreamReader( String data ) throws UnsupportedEncodingException {
@@ -178,7 +175,6 @@ public class TextFileInputTest {
   @Test
   public void readInputWithMissedValues() throws Exception {
     final String virtualFile = createVirtualFile( "pdi-14172.txt", "1,1,1\n", "2,,2\n" );
-    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
 
     BaseFileField field2 = field( "col2" );
     field2.setRepeated( true );
@@ -196,7 +192,6 @@ public class TextFileInputTest {
 
   @Test
   public void readInputWithNonEmptyNullif() throws Exception {
-    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
     final String virtualFile = createVirtualFile( "pdi-14358.txt", "-,-\n" );
 
     BaseFileField col2 = field( "col2" );
@@ -457,7 +452,6 @@ public class TextFileInputTest {
   @Test
   public void fieldsWithLineBreaksWithEmptyLinesTest() throws Exception {
 
-    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
     final String content = new StringBuilder()
       .append( "aaa,\"b" ).append( '\n' )
       .append( "bb\",ccc" ).append( '\n' )

@@ -3602,16 +3602,17 @@ public class ValueMetaBase implements ValueMetaInterface {
         return true;
       }
 
-      if ( StringUtils.EMPTY.equals( value ) ) {
-        return !emptyStringDiffersFromNull;
+      if ( emptyStringDiffersFromNull ) {
+        return false;
       }
 
       // If it's a string and the string is empty, it's a null value as well
       //
-      if ( isString() && value.toString().isEmpty() ) {
-        return true;
+      if ( isString() ) {
+        if ( value.toString().length() == 0 ) {
+          return true;
+        }
       }
-
 
       // We tried everything else so we assume this value is not null.
       //
@@ -4063,7 +4064,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           // we have a match
           //
           if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
-            return isEmptyAndNullDiffer && pol.equalsIgnoreCase( "" ) ? emptyValue : null;
+            return emptyValue;
           }
         }
       } else {
