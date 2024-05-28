@@ -693,7 +693,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
         if ( fieldnr < strings.length ) {
           String pol = strings[ fieldnr ];
           try {
-            if ( valueMeta.isNull( pol ) ) {
+            if (  null == pol  || Utils.isEmpty( nullif ) && nullif.equals( pol ) ) {
               pol = null;
             }
             value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );

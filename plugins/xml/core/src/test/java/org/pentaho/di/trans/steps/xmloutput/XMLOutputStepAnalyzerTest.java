@@ -1,7 +1,7 @@
 /*
  * ******************************************************************************
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -42,10 +42,18 @@ import org.pentaho.metaverse.api.model.IExternalResourceInfo;
 import java.util.Collection;
 import java.util.Set;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class XMLOutputStepAnalyzerTest {
 
   private XMLOutputStepAnalyzer analyzer;
@@ -87,14 +95,14 @@ public class XMLOutputStepAnalyzerTest {
     analyzer.setDescriptor( descriptor );
     analyzer.setObjectFactory( metaverseObjectFactory );
 
-    when( mockXMLOutput.getStepDataInterface() ).thenReturn( data );
-    when( mockXMLOutput.getStepMeta() ).thenReturn( parentStepMeta );
+    lenient().when( mockXMLOutput.getStepDataInterface() ).thenReturn( data );
+    lenient().when( mockXMLOutput.getStepMeta() ).thenReturn( parentStepMeta );
 
-    when( meta.getParentStepMeta() ).thenReturn( parentStepMeta );
-    when( parentStepMeta.getStepMetaInterface() ).thenReturn( meta );
-    when( parentStepMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
-    when( parentStepMeta.getName() ).thenReturn( "test" );
-    when( parentStepMeta.getStepID() ).thenReturn( "XmlOutputStep" );
+    lenient().when( meta.getParentStepMeta() ).thenReturn( parentStepMeta );
+    lenient().when( parentStepMeta.getStepMetaInterface() ).thenReturn( meta );
+    lenient().when( parentStepMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
+    lenient().when( parentStepMeta.getName() ).thenReturn( "test" );
+    lenient().when( parentStepMeta.getStepID() ).thenReturn( "XmlOutputStep" );
   }
 
   @Test
@@ -147,7 +155,6 @@ public class XMLOutputStepAnalyzerTest {
 
     when( this.meta.getParentStepMeta() ).thenReturn( spyMeta );
     when( spyMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
-    when( this.meta.getFileName() ).thenReturn( null );
     String[] filePaths = { "/path/to/file1", "/another/path/to/file2" };
     when( this.meta.getFiles( Mockito.any( VariableSpace.class ) ) ).thenReturn( filePaths );
 
@@ -156,7 +163,7 @@ public class XMLOutputStepAnalyzerTest {
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
 
-    when( this.meta.getExtension() ).thenReturn( "txt" );
+    lenient().when( this.meta.getExtension() ).thenReturn( "txt" );
 
     assertEquals( XMLOutputMeta.class, consumer.getMetaClass() );
   }

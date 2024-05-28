@@ -152,10 +152,10 @@ public class ValueMetaStringTest {
 
   @Test
   public void testIsNull_emptyIsNotNull() throws KettleValueException {
-    meta.setNullsAndEmptyAreDifferent( true );
+    meta.setNullsAndEmptyAreDifferent( false );
 
     assertEquals( true, meta.isNull( null ) );
-    assertEquals( false, meta.isNull( "" ) );
+    assertEquals( true, meta.isNull( "" ) );
 
     assertEquals( false, meta.isNull( "1" ) );
 
@@ -178,10 +178,10 @@ public class ValueMetaStringTest {
 
   @Test
   public void testIsNull_emptyIsNull() throws KettleValueException {
-    meta.setNullsAndEmptyAreDifferent( false );
+    meta.setNullsAndEmptyAreDifferent( true );
 
     assertEquals( true, meta.isNull( null ) );
-    assertEquals( true, meta.isNull( "" ) );
+    assertEquals( false, meta.isNull( "" ) );
 
     assertEquals( false, meta.isNull( "1" ) );
 
@@ -195,7 +195,7 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
     // assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
     assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
-    assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
+    assertEquals( false, meta.isNull( meta.getString( "    " ) ) );
 
     assertEquals( false, meta.isNull( "  1  " ) );
     assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
@@ -203,7 +203,7 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
     // assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
     assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
-    assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
+    assertEquals( false, meta.isNull( meta.getString( "    " ) ) );
 
     assertEquals( false, meta.isNull( "  1  " ) );
     assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
@@ -211,7 +211,7 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
     // assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
     assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
-    assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
+    assertEquals( false, meta.isNull( meta.getString( "    " ) ) );
 
     assertEquals( false, meta.isNull( "  1  " ) );
     assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
@@ -271,19 +271,19 @@ public class ValueMetaStringTest {
 
   @Test
   public void testCompare_emptyIsNotNull() throws KettleValueException {
-    meta.setNullsAndEmptyAreDifferent( true );
+    meta.setNullsAndEmptyAreDifferent( false );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( -1, meta.compare( null, "" ) ); // null < ""
+    assertSignum( 0, meta.compare( null, "" ) ); // null < ""
     assertSignum( -1, meta.compare( null, " " ) ); // null < " "
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < " 1"
     assertSignum( -1, meta.compare( null, " 1 " ) ); // null < " 1 "
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1 "
 
-    assertSignum( 1, meta.compare( "", null ) ); // "" > null
+    assertSignum( 0, meta.compare( "", null ) ); // "" > null
     assertSignum( 0, meta.compare( "", "" ) ); // "" == ""
     assertSignum( -1, meta.compare( "", " " ) ); // "" < " "
     assertSignum( -1, meta.compare( "", " 1" ) ); // "" < " 1"
@@ -334,23 +334,23 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( -1, meta.compare( null, "" ) ); // null < ""
+    assertSignum( 0, meta.compare( null, "" ) ); // null < ""
     assertSignum( -1, meta.compare( null, " " ) ); // null < ""
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, " 1 " ) ); // null < "1 "
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1 "
 
-    assertSignum( 1, meta.compare( "", null ) ); // "" > null
+    assertSignum( 0, meta.compare( "", null ) ); // "" > null
     assertSignum( 0, meta.compare( "", "" ) ); // "" == ""
-    assertSignum( 0, meta.compare( "", " " ) ); // "" == ""
+    assertSignum( -1, meta.compare( "", " " ) ); // "" == ""
     assertSignum( -1, meta.compare( "", " 1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", " 1 " ) ); // "" < "1 "
     assertSignum( -1, meta.compare( "", "1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", "1 " ) ); // "" < "1 "
 
     assertSignum( 1, meta.compare( " ", null ) ); // "" > null
-    assertSignum( 0, meta.compare( " ", "" ) ); // "" == ""
+    assertSignum( 1, meta.compare( " ", "" ) ); // "" == ""
     assertSignum( 0, meta.compare( " ", " " ) ); // "" == ""
     assertSignum( -1, meta.compare( " ", " 1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( " ", " 1 " ) ); // "" < "1 "
@@ -392,23 +392,23 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( -1, meta.compare( null, "" ) ); // null < ""
+    assertSignum( 0, meta.compare( null, "" ) ); // null < ""
     assertSignum( -1, meta.compare( null, " " ) ); // null < ""
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < " 1"
     assertSignum( -1, meta.compare( null, " 1 " ) ); // null < " 1"
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1"
 
-    assertSignum( 1, meta.compare( "", null ) ); // "" > null
+    assertSignum( 0, meta.compare( "", null ) ); // "" > null
     assertSignum( 0, meta.compare( "", "" ) ); // "" == ""
-    assertSignum( 0, meta.compare( "", " " ) ); // "" == ""
+    assertSignum( -1, meta.compare( "", " " ) ); // "" == ""
     assertSignum( -1, meta.compare( "", " 1" ) ); // "" < " 1"
     assertSignum( -1, meta.compare( "", " 1 " ) ); // "" < " 1"
     assertSignum( -1, meta.compare( "", "1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", "1 " ) ); // "" < "1"
 
     assertSignum( 1, meta.compare( " ", null ) ); // "" > null
-    assertSignum( 0, meta.compare( " ", "" ) ); // "" == ""
+    assertSignum( 1, meta.compare( " ", "" ) ); // "" == ""
     assertSignum( 0, meta.compare( " ", " " ) ); // "" == ""
     assertSignum( -1, meta.compare( " ", " 1" ) ); // "" < " 1"
     assertSignum( -1, meta.compare( " ", " 1 " ) ); // "" < " 1"
@@ -450,23 +450,23 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( -1, meta.compare( null, "" ) ); // null < ""
+    assertSignum( 0, meta.compare( null, "" ) ); // null < ""
     assertSignum( -1, meta.compare( null, " " ) ); // null < ""
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, " 1 " ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1"
 
-    assertSignum( 1, meta.compare( "", null ) ); // "" > null
+    assertSignum( 0, meta.compare( "", null ) ); // "" > null
     assertSignum( 0, meta.compare( "", "" ) ); // "" == ""
-    assertSignum( 0, meta.compare( "", " " ) ); // "" == ""
+    assertSignum( -1, meta.compare( "", " " ) ); // "" == ""
     assertSignum( -1, meta.compare( "", " 1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", " 1 " ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", "1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", "1 " ) ); // "" < "1"
 
     assertSignum( 1, meta.compare( " ", null ) ); // "" > null
-    assertSignum( 0, meta.compare( " ", "" ) ); // "" == ""
+    assertSignum( 1, meta.compare( " ", "" ) ); // "" == ""
     assertSignum( 0, meta.compare( " ", " " ) ); // "" == ""
     assertSignum( -1, meta.compare( " ", " 1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( " ", " 1 " ) ); // "" < "1"
@@ -509,23 +509,23 @@ public class ValueMetaStringTest {
     meta.setIgnoreWhitespace( true );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( -1, meta.compare( null, "" ) ); // null < ""
+    assertSignum( 0, meta.compare( null, "" ) ); // null < ""
     assertSignum( -1, meta.compare( null, " " ) ); // null < ""
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, " 1 " ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1"
 
-    assertSignum( 1, meta.compare( "", null ) ); // "" > null
+    assertSignum( 0, meta.compare( "", null ) ); // "" > null
     assertSignum( 0, meta.compare( "", "" ) ); // "" == ""
-    assertSignum( 0, meta.compare( "", " " ) ); // "" == ""
+    assertSignum( -1, meta.compare( "", " " ) ); // "" == ""
     assertSignum( -1, meta.compare( "", " 1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", " 1 " ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", "1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( "", "1 " ) ); // "" < "1"
 
     assertSignum( 1, meta.compare( " ", null ) ); // "" > null
-    assertSignum( 0, meta.compare( " ", "" ) ); // "" == ""
+    assertSignum( 1, meta.compare( " ", "" ) ); // "" == ""
     assertSignum( 0, meta.compare( " ", " " ) ); // "" == ""
     assertSignum( -1, meta.compare( " ", " 1" ) ); // "" < "1"
     assertSignum( -1, meta.compare( " ", " 1 " ) ); // "" < "1"
@@ -567,19 +567,19 @@ public class ValueMetaStringTest {
 
   @Test
   public void testCompare_emptyIsNull() throws KettleValueException {
-    meta.setNullsAndEmptyAreDifferent( false );
+    meta.setNullsAndEmptyAreDifferent( true );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( 0, meta.compare( null, "" ) ); // null == null
+    assertSignum( -1, meta.compare( null, "" ) ); // null == null
     assertSignum( -1, meta.compare( null, " " ) ); // null < " "
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < " 1"
     assertSignum( -1, meta.compare( null, " 1 " ) ); // null < " 1 "
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1 "
 
-    assertSignum( 0, meta.compare( "", null ) ); // null > null
+    assertSignum( 1, meta.compare( "", null ) ); // null > null
     assertSignum( 0, meta.compare( "", "" ) ); // null == null
     assertSignum( -1, meta.compare( "", " " ) ); // null < " "
     assertSignum( -1, meta.compare( "", " 1" ) ); // null < " 1"
@@ -630,7 +630,7 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( 0, meta.compare( null, "" ) ); // null < null
+    assertSignum( -1, meta.compare( null, "" ) ); // null < null
     // assertSignum( 0, meta.compare( null, " " ) ); // null == null //TODO: Is it correct?
     assertSignum( -1, meta.compare( null, " " ) ); // null < null //TODO: Is it correct?
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < "1"
@@ -638,10 +638,10 @@ public class ValueMetaStringTest {
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1 "
 
-    assertSignum( 0, meta.compare( "", null ) ); // null == null
+    assertSignum( 1, meta.compare( "", null ) ); // null == null
     assertSignum( 0, meta.compare( "", "" ) ); // null == null
     // assertSignum( 0, meta.compare( "", " " ) ); // null == null //TODO: Is it correct?
-    assertSignum( -1, meta.compare( "", " " ) ); // null < null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( "", " " ) ); // null < null
     assertSignum( -1, meta.compare( "", " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( "", " 1 " ) ); // null < "1 "
     assertSignum( -1, meta.compare( "", "1" ) ); // null < "1"
@@ -649,7 +649,7 @@ public class ValueMetaStringTest {
 
     assertSignum( 1, meta.compare( " ", null ) ); // null > null
     // assertSignum( 0, meta.compare( " ", "" ) ); // null == null //TODO: Is it correct?
-    assertSignum( 1, meta.compare( " ", "" ) ); // null > null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( " ", "" ) ); // null > null
     assertSignum( 0, meta.compare( " ", " " ) ); // null == null
     assertSignum( -1, meta.compare( " ", " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( " ", " 1 " ) ); // null < "1 "
@@ -691,7 +691,7 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( 0, meta.compare( null, "" ) ); // null == null
+    assertSignum( -1, meta.compare( null, "" ) ); // null == null
     // assertSignum( 0, meta.compare( null, " " ) ); // null == null //TODO: Is it correct?
     assertSignum( -1, meta.compare( null, " " ) ); // null < null //TODO: Is it correct?
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < " 1"
@@ -699,10 +699,10 @@ public class ValueMetaStringTest {
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1"
 
-    assertSignum( 0, meta.compare( "", null ) ); // null == null
+    assertSignum( 1, meta.compare( "", null ) ); // null == null
     assertSignum( 0, meta.compare( "", "" ) ); // null == null
     // assertSignum( 0, meta.compare( "", " " ) ); // null == null //TODO: Is it correct?
-    assertSignum( -1, meta.compare( "", " " ) ); // null < null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( "", " " ) ); // null < null
     assertSignum( -1, meta.compare( "", " 1" ) ); // null < " 1"
     assertSignum( -1, meta.compare( "", " 1 " ) ); // null < " 1"
     assertSignum( -1, meta.compare( "", "1" ) ); // null < "1"
@@ -711,7 +711,7 @@ public class ValueMetaStringTest {
     // assertSignum( 0, meta.compare( " ", null ) ); // null == null //TODO: Is it correct?
     assertSignum( 1, meta.compare( " ", null ) ); // null > null //TODO: Is it correct?
     // assertSignum( 0, meta.compare( " ", "" ) ); // null == null //TODO: Is it correct?
-    assertSignum( 1, meta.compare( " ", "" ) ); // null > null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( " ", "" ) ); // null > null
     assertSignum( 0, meta.compare( " ", " " ) ); // null == null
     assertSignum( -1, meta.compare( " ", " 1" ) ); // null < " 1"
     assertSignum( -1, meta.compare( " ", " 1 " ) ); // null < " 1"
@@ -753,7 +753,7 @@ public class ValueMetaStringTest {
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( 0, meta.compare( null, "" ) ); // null == null
+    assertSignum( -1, meta.compare( null, "" ) ); // null == null
     // assertSignum( 0, meta.compare( null, " " ) ); // null == null //TODO: Is it correct?
     assertSignum( -1, meta.compare( null, " " ) ); // null < null //TODO: Is it correct?
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < "1"
@@ -761,10 +761,10 @@ public class ValueMetaStringTest {
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1"
 
-    assertSignum( 0, meta.compare( "", null ) ); // null == null
+    assertSignum( 1, meta.compare( "", null ) ); // null == null
     assertSignum( 0, meta.compare( "", "" ) ); // null == null
     // assertSignum( 0, meta.compare( "", " " ) ); // null == null //TODO: Is it correct?
-    assertSignum( -1, meta.compare( "", " " ) ); // null < null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( "", " " ) ); // null < null
     assertSignum( -1, meta.compare( "", " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( "", " 1 " ) ); // null < "1"
     assertSignum( -1, meta.compare( "", "1" ) ); // null < "1"
@@ -773,7 +773,7 @@ public class ValueMetaStringTest {
     // assertSignum( 0, meta.compare( " ", null ) ); // null == null //TODO: Is it correct?
     assertSignum( 1, meta.compare( " ", null ) ); // null > null //TODO: Is it correct?
     // assertSignum( 0, meta.compare( " ", "" ) ); // null == null //TODO: Is it correct?
-    assertSignum( 1, meta.compare( " ", "" ) ); // null > null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( " ", "" ) ); // null > null //TODO: Is it correct?
     assertSignum( 0, meta.compare( " ", " " ) ); // null == null
     assertSignum( -1, meta.compare( " ", " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( " ", " 1 " ) ); // null < "1"
@@ -816,23 +816,23 @@ public class ValueMetaStringTest {
     meta.setIgnoreWhitespace( true );
 
     assertSignum( 0, meta.compare( null, null ) ); // null == null
-    assertSignum( 0, meta.compare( null, "" ) ); // null == null
+    assertSignum( -1, meta.compare( null, "" ) ); // null == null
     assertSignum( -1, meta.compare( null, " " ) ); // null < null //TODO: Is it correct?
     assertSignum( -1, meta.compare( null, " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, " 1 " ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1"
 
-    assertSignum( 0, meta.compare( "", null ) ); // null == null
+    assertSignum( 1, meta.compare( "", null ) ); // null == null
     assertSignum( 0, meta.compare( "", "" ) ); // null == null
-    assertSignum( -1, meta.compare( "", " " ) ); // null < null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( "", " " ) ); // null < null
     assertSignum( -1, meta.compare( "", " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( "", " 1 " ) ); // null < "1"
     assertSignum( -1, meta.compare( "", "1" ) ); // null < "1"
     assertSignum( -1, meta.compare( "", "1 " ) ); // null < "1"
 
     assertSignum( 1, meta.compare( " ", null ) ); // null > null //TODO: Is it correct?
-    assertSignum( 1, meta.compare( " ", "" ) ); // null > null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( " ", "" ) ); // null > null
     assertSignum( 0, meta.compare( " ", " " ) ); // null == null
     assertSignum( -1, meta.compare( " ", " 1" ) ); // null < "1"
     assertSignum( -1, meta.compare( " ", " 1 " ) ); // null < "1"

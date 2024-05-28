@@ -14,10 +14,6 @@
   <name>PDI Metadata Injection Plugins Impl</name>
 
   <properties>
-    <mockito.version>1.10.19</mockito.version>
-    <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
-    <mockito.version>1.10.19</mockito.version>
-    <powermock.version>1.6.3</powermock.version>
     <platform.version>10.2.0.0-SNAPSHOT</platform.version>
   </properties>
 
@@ -79,19 +75,8 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
+            <artifactId>mockito-core</artifactId>
+          <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

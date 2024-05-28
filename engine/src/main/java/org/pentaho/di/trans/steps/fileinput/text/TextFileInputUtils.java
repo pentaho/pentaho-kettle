@@ -506,7 +506,7 @@ public class TextFileInputUtils {
         if ( fieldnr < strings.length ) {
           String pol = strings[ fieldnr ];
           try {
-            if ( valueMeta.isNull( pol ) || !Utils.isEmpty( nullif ) && nullif.equals( pol ) ) {
+            if ( null == pol  || Utils.isEmpty( nullif ) && nullif.equals( pol ) ) {
               pol = null;
             }
             value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -208,7 +209,7 @@ public class GroupByTest  {
 
     String userDir = System.getProperty( "user.dir" );
     String vfsFilePath = "file:///" + userDir;
-    when( groupBySpy.environmentSubstitute( anyString() ) ).thenReturn( vfsFilePath );
+    when( groupBySpy.environmentSubstitute( nullable( String.class ) ) ).thenReturn( vfsFilePath );
 
     Object[] row = { "abc" };
     // tested method itself

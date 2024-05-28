@@ -104,6 +104,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.www.CarteSingleton;
 import org.pentaho.di.www.RegisterJobServlet;
 import org.pentaho.di.www.RegisterPackageServlet;
 import org.pentaho.di.www.SocketRepository;
@@ -1925,6 +1926,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @return the socket repository
    */
   public SocketRepository getSocketRepository() {
+    if ( socketRepository == null ) {
+      return ( socketRepository = CarteSingleton.getInstance().getSocketRepository() );
+    }
     return socketRepository;
   }
 
