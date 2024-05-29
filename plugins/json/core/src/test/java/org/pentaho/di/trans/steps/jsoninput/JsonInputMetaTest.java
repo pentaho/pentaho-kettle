@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -40,12 +40,6 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Collections;
@@ -53,10 +47,20 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Created by bmorrise on 3/22/16.
  */
-@RunWith( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class JsonInputMetaTest {
   private static final List<DatabaseMeta> DATABASES_LIST = Collections.emptyList();
   public static final String DATA = "data";
@@ -116,10 +120,12 @@ public class JsonInputMetaTest {
   @Test
   public void verifyReadingRepoSetsAcceptFilenames() throws Exception {
     ObjectId objectId = () -> "id";
+    when( repository.getStepAttributeBoolean( eq(objectId), anyString() ) ).thenReturn( false );
+    when( repository.getStepAttributeBoolean( eq(objectId), anyInt(), anyString(), anyBoolean()) ).thenReturn( false );
     when( repository.getStepAttributeBoolean( objectId, "IsInFields" ) ).thenReturn( true );
     jsonInputMeta.readRep( repository, null, objectId, null );
-   assertTrue( jsonInputMeta.isInFields() );
-   assertTrue( jsonInputMeta.inputFiles.acceptingFilenames );
+    assertTrue( jsonInputMeta.isInFields() );
+    assertTrue( jsonInputMeta.inputFiles.acceptingFilenames );
   }
 
   @Test
