@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.any;
@@ -122,11 +122,14 @@ public class EESpoonPluginTest {
     return argThat( new EESpoonPluginTest.AnyClassMatcher() );
   }
 
-  private class AnyClassMatcher extends ArgumentMatcher<Class<? extends IRepositoryService>> {
+  private class AnyClassMatcher implements ArgumentMatcher<Class<? extends IRepositoryService>> {
 
-    @Override
-    public boolean matches( final Object arg ) {
+    @Override public boolean matches( Class<? extends IRepositoryService> argument ) {
       return true;
+    }
+
+    @Override public Class<?> type() {
+      return ArgumentMatcher.super.type();
     }
   }
 

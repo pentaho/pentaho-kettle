@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2021 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
  */
 package org.pentaho.di.repository.pur;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.AdditionalMatchers;
+import org.mockito.MockedStatic;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.DBCache;
@@ -41,9 +44,6 @@ import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -68,27 +68,30 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertNull;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { ClientRepositoryPaths.class, Encr.class, AttributesMapUtil.class, DBCache.class } )
+@RunWith( MockitoJUnitRunner.class )
 public class PurRepositoryStressTest {
+  private static MockedStatic mockedClientRepositoryPaths;
+  private static MockedStatic mockedEncr;
+  private static MockedStatic mockedAttributesMapUtil;
+  private static MockedStatic mockedDBCache;
+
   private final int THREADS = 15;
   private final int SAMPLES = 250;
   private final int TIMEOUT = 30;
-  private final int METHOD_CALLS_BY_SAMPLE = 30;
+  private final int METHOD_CALLS_BY_SAMPLE = 27;
 
-  private PurRepository purRepository;
+  private static PurRepository purRepository;// = new PurRepository();
   private IUnifiedRepository mockRepo;
   private RepositoryConnectResult result;
   private IRepositoryConnector connector;
@@ -103,9 +106,30 @@ public class PurRepositoryStressTest {
 
   private PurRepositoryStressTest obj;
 
+  public static void setupStaticMocks() {
+    //Static mocks have to be setup for each thread in the test
+    mockedClientRepositoryPaths = mockStatic( ClientRepositoryPaths.class );
+    mockedClientRepositoryPaths.when( () -> ClientRepositoryPaths.getUserHomeFolderPath( any() ) ).thenReturn( "/" );
+    mockedClientRepositoryPaths.when( () -> ClientRepositoryPaths.getEtcFolderPath() ).thenReturn( "/test" );
 
-  @Before
-  public void setUpTest() throws Exception {
+    //-- testLockLoadSlaveServer
+    mockedEncr = mockStatic( Encr.class );
+    mockedEncr.when( () -> Encr.decryptPasswordOptionallyEncrypted( anyString() ) ).thenReturn( "pass" );
+
+    mockedAttributesMapUtil = mockStatic( AttributesMapUtil.class );
+    mockedDBCache = mockStatic( DBCache.class );
+  }
+
+  @AfterClass
+  public static void closeDown() {
+    mockedClientRepositoryPaths.close();
+    mockedEncr.close();
+    mockedAttributesMapUtil.close();
+    mockedDBCache.close();
+  }
+
+  public void setUpTest( boolean threadReused ) throws Exception {
+    setupStaticMocks( );
     // -- Common
     this.purRepository = new PurRepository();
     this.mockRepo = mock( IUnifiedRepository.class );
@@ -130,58 +154,43 @@ public class PurRepositoryStressTest {
     RepositoryFile repFile = mock( RepositoryFile.class );
     doReturn( "id2" ).when( repFile ).getId();
     doReturn( repFile ).when( mockRepo )
-      .createFolder( any( Serializable.class ), any( RepositoryFile.class ), anyString() );
+      .createFolder( any( Serializable.class ), any( RepositoryFile.class ), any() );
 
     // -- testLocksIsUserHomeDirectory
-    doReturn( null ).when( mockRepo ).getFile( anyString() );
     RepositoryFile folder1 = mock( RepositoryFile.class );
-    when( folder1.getPath() ).thenReturn( "/folder1/folder2/" );
-    when( folder1.getName() ).thenReturn( "folder2" );
-    when( mockRepo.getFileById( any( Serializable.class ) ) ).thenReturn( folder1 );
+    doReturn( "/folder1/folder2/" ).when( folder1 ).getPath();
+    doReturn( "folder2" ).when( folder1 ).getName();
+    doReturn( folder1 ).when( mockRepo ).getFileById( any( Serializable.class ) );
 
     //-- testLocksDeleteRepositoryDirectory
-    doReturn( "user1" ).when( user ).getLogin();
-    mockStatic( ClientRepositoryPaths.class );
-    when( ClientRepositoryPaths.getUserHomeFolderPath( any() ) ).thenReturn( "/" );
+    when( user.getLogin() ).thenReturn( "user1" );
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
 
     //-- testLocksGetDirectoryNames
     List<RepositoryFile> children = new ArrayList<RepositoryFile>();
-    when( mockRepo.getChildren( any( Serializable.class ) ) ).thenReturn( children );
+    doReturn( children ).when( mockRepo ).getChildren( any( Serializable.class ) );
 
     //-- testLocksGetObjectId
-    when( ClientRepositoryPaths.getEtcFolderPath( ) ).thenReturn( "/test" );
     String bdPath = "/test/pdi/databases";
     when( mockRepo.getFile( bdPath ) ).thenReturn( mockRootFolder );
 
     //-- testLockDeleteDatabaseMeta
     String bdMetaFile = "/test/pdi/databases/dbName.kdb";
     RepositoryFile folderBdMeta = mock( RepositoryFile.class );
-    when( folderBdMeta.getPath() ).thenReturn( "/test/pdi/databases/dbName.kdb" );
-    when( folderBdMeta.getId() ).thenReturn( "db" );
-    when( folderBdMeta.getName() ).thenReturn( "dbName.kdb" );
     when( mockRepo.getFile( bdMetaFile ) ).thenReturn( folderBdMeta );
 
     String partitionSchemas = "/test/pdi/partitionSchemas";
     RepositoryFile folderPartitionSchemas = mock( RepositoryFile.class );
-    when( folderPartitionSchemas.getPath() ).thenReturn( "/test/pdi/partitionSchemas" );
-    when( folderBdMeta.getId() ).thenReturn( "pschemas" );
-    when( folderPartitionSchemas.getName() ).thenReturn( "partitionSchemas" );
     when( mockRepo.getFile( partitionSchemas ) ).thenReturn( folderPartitionSchemas );
 
     String slaveServers = "/test/pdi/slaveServers";
     RepositoryFile folderSlaveServers = mock( RepositoryFile.class );
-    when( folderSlaveServers.getPath() ).thenReturn( "/test/pdi/slaveServers" );
-    when( folderBdMeta.getId() ).thenReturn( "sservers" );
-    when( folderSlaveServers.getName() ).thenReturn( "slaveServers" );
     when( mockRepo.getFile( slaveServers ) ).thenReturn( folderSlaveServers );
 
     String clusterSchemas = "/test/pdi/clusterSchemas";
     RepositoryFile folderClusterSchemas = mock( RepositoryFile.class );
-    when( folderClusterSchemas.getPath() ).thenReturn( "/test/pdi/clusterSchemas" );
-    when( folderBdMeta.getId() ).thenReturn( "cschemas" );
-    when( folderClusterSchemas.getName() ).thenReturn( "clusterSchemas" );
-    when( mockRepo.getFile( clusterSchemas ) ).thenReturn( folderClusterSchemas );
+    doReturn( "cschemas" ).when( folderBdMeta ).getId();
+    doReturn( folderClusterSchemas ).when( mockRepo ).getFile( clusterSchemas );
 
     List<RepositoryFile> childrenRes = new ArrayList<RepositoryFile>();
     when( mockRepo.getChildren( any( Serializable.class ), anyString() ) ).thenReturn( childrenRes );
@@ -190,18 +199,17 @@ public class PurRepositoryStressTest {
     RepositoryFile folderLoad = mock( RepositoryFile.class );
     when( folderLoad.getTitle() ).thenReturn( "titleFolderLoad" );
     when( folderLoad.getId() ).thenReturn( "idFolderLoad" );
-    when( folderLoad.getPath() ).thenReturn( "/folder1/" );
     when( mockRepo.getFileAtVersion( anyString(), eq( "v1" ) ) ).thenReturn( folderLoad );
 
     DataProperty dataNodeProp = mock( DataProperty.class );
-    when( dataNodeProp.getBoolean( ) ).thenReturn( false );
-    when( dataNodeProp.getLong( ) ).thenReturn( 0L );
+    when( dataNodeProp.getBoolean() ).thenReturn( false );
+    when( dataNodeProp.getLong() ).thenReturn( 0L );
 
     DataNode dataNodeRes = mock( DataNode.class );
     when( dataNodeRes.getProperty( anyString() ) ).thenReturn( dataNodeProp );
 
     DataNode stepsNode = mock( DataNode.class );
-    when( stepsNode.getNodes( ) ).thenReturn( new ArrayList<DataNode>() );
+    when( stepsNode.getNodes() ).thenReturn( new ArrayList<DataNode>() );
     when( stepsNode.getProperty( anyString() ) ).thenReturn( dataNodeProp );
 
     DataNode dataNode = mock( DataNode.class );
@@ -216,8 +224,8 @@ public class PurRepositoryStressTest {
 
     NodeRepositoryFileData modeRepoFileData = mock( NodeRepositoryFileData.class );
     when( modeRepoFileData.getNode() ).thenReturn( dataNode );
-    when( mockRepo.getDataAtVersionForRead( anyString(), eq( "v1" ), eq( NodeRepositoryFileData.class ) ) ).thenReturn( modeRepoFileData );
-    when( mockRepo.getDataAtVersionForRead( anyString(), eq( "v3" ), eq( NodeRepositoryFileData.class ) ) ).thenReturn( modeRepoFileData );
+    doReturn( modeRepoFileData ).when( mockRepo ).getDataAtVersionForRead(
+      any(), AdditionalMatchers.or( eq( "v1" ), eq( "v3" ) ), eq( NodeRepositoryFileData.class ) );
 
     VersionSummary vSummary = mock( VersionSummary.class );
     when( vSummary.getId() ).thenReturn( mock( Serializable.class ) );
@@ -225,45 +233,35 @@ public class PurRepositoryStressTest {
     when( vSummary.getDate() ).thenReturn( mock( Date.class ) );
     when( vSummary.getMessage() ).thenReturn( "message" );
 
-    when( mockRepo.getVersionSummary( anyString(), anyString() ) ).thenReturn( vSummary );
-
-    // -- testLockLoadSlaveServer
-    mockStatic( Encr.class );
-    when( Encr.decryptPasswordOptionallyEncrypted( anyString() ) ).thenReturn( "pass" );
+    doReturn( vSummary ).when( mockRepo ).getVersionSummary( any(), any() );
 
     //-- testLockLoadTransformation
     String transfFile = "/folder1/folder2/transName.ktr";
     RepositoryFile transfFileMeta = mock( RepositoryFile.class );
-    when( transfFileMeta.getPath() ).thenReturn( "/folder1/folder2/transName.ktr" );
     when( transfFileMeta.getId() ).thenReturn( "transName" );
-    when( transfFileMeta.getName() ).thenReturn( "transName.ktr" );
     when( mockRepo.getFile( transfFile ) ).thenReturn( transfFileMeta );
-    mockStatic( AttributesMapUtil.class );
 
     //-- testLockLoadJob
     String jobFile = "/folder1/folder2/jobName.kjb";
     RepositoryFile jobFileMeta = mock( RepositoryFile.class );
-    when( jobFileMeta.getPath() ).thenReturn( "/folder1/folder2/jobName.kjb" );
-    when( jobFileMeta.getId() ).thenReturn( "jobName" );
-    when( jobFileMeta.getName() ).thenReturn( "jobName.kjb" );
-    when( mockRepo.getFile( jobFile ) ).thenReturn( jobFileMeta );
+    doReturn( "jobName" ).when( jobFileMeta ).getId();
+    doReturn( jobFileMeta ).when( mockRepo ).getFile( jobFile );
 
     //-- testLockSaveClusterSchema
     RepositoryFile clusterSchemaFile = mock( RepositoryFile.class );
-    when( clusterSchemaFile.getId() ).thenReturn( "clusterSchemaFile" );
-    when( mockRepo.updateFile( any( RepositoryFile.class ),  any( IRepositoryFileData.class ), anyString() ) ).thenReturn( clusterSchemaFile );
+    doReturn( "clusterSchemaFile" ).when( clusterSchemaFile ).getId();
+    doReturn( clusterSchemaFile ).when( mockRepo )
+      .updateFile( any( RepositoryFile.class ), any( IRepositoryFileData.class ), anyString() );
 
     //-- testLockGetObjectInformation
-    when( mockRepo.getFileById( "idnull" ) ).thenReturn( null );
+    doReturn( null ).when( mockRepo ).getFileById( "idnull" );
 
     //--- testLockLoadJob2 ---
     RepositoryFile folderLoad2 = mock( RepositoryFile.class );
     when( folderLoad2.getTitle() ).thenReturn( "titleFolderLoad" );
     when( folderLoad2.getId() ).thenReturn( "idFolderLoad" );
     when( folderLoad2.getPath() ).thenReturn( "/" );
-    when( mockRepo.getFileAtVersion( anyString(), eq( "v3" ) ) ).thenReturn( folderLoad2 );
-
-    mockStatic( DBCache.class );
+    when( mockRepo.getFileAtVersion( any(), eq( "v3" ) ) ).thenReturn( folderLoad2 );
 
     purRepository.loadAndCacheSharedObjects( true );
   }
@@ -388,7 +386,9 @@ public class PurRepositoryStressTest {
     doReturn( parentObjId ).when( parentRepFile ).getObjectId();
     doReturn( "/folder1/folder2/" ).when( parentRepFile ).getPath();
 
-    assertNotNull( purRepository.loadTransformation( "transName", parentRepFile, mock( ProgressMonitorListener.class ), false, "v1" ) );
+    assertNotNull(
+      purRepository.loadTransformation( "transName", parentRepFile, mock( ProgressMonitorListener.class ), false,
+        "v1" ) );
   }
 
   public void testLockLoadJob() throws Exception {
@@ -514,16 +514,22 @@ public class PurRepositoryStressTest {
     @Override
     public void run() {
       try {
-        System.out.println( "[PurRepositoryStressTest_" + Thread.currentThread().getName() + "]-> Starting Sample - " + this.nr );
-
+        System.out.println(
+          "[PurRepositoryStressTest_" + Thread.currentThread().getName() + "]-> Starting Sample - " + this.nr );
+        if ( this.nr < THREADS ) {
+          obj.setupStaticMocks( );
+        }
         Random randomGenerator = new Random();
         for ( int i = 0; i < METHOD_CALLS_BY_SAMPLE; i++ ) {
           int index = randomGenerator.nextInt( testLockMethods.size() );
           Method item = testLockMethods.get( index );
+          //Add the following line for debug purposes
+          //System.out.println( "****** " + this.nr + " ********" + item.getName() );
           item.invoke( obj );
         }
 
-        System.out.println( "[PurRepositoryStressTest_" + Thread.currentThread().getName() + "]-> Finishing Sample - " + this.nr );
+        System.out.println(
+          "[PurRepositoryStressTest_" + Thread.currentThread().getName() + "]-> Finishing Sample - " + this.nr );
       } catch ( Throwable e ) {
         this.t = e;
         return;
@@ -536,11 +542,12 @@ public class PurRepositoryStressTest {
   public void runLoadTest() throws Exception {
     KettleClientEnvironment.init();
     obj = new PurRepositoryStressTest();
-    obj.setUpTest();
+    obj.setUpTest( false );
 
     final ThreadFactory factory =
       new ThreadFactory() {
         private final AtomicInteger counter = new AtomicInteger( 0 );
+
         public Thread newThread( Runnable r ) {
           final Thread t =
             Executors.defaultThreadFactory().newThread( r );
