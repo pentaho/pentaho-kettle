@@ -288,6 +288,8 @@ import org.pentaho.di.ui.spoon.partition.processor.MethodProcessor;
 import org.pentaho.di.ui.spoon.partition.processor.MethodProcessorFactory;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.spoon.tree.TreeManager;
+import org.pentaho.di.ui.spoon.tree.extension.TreePaneExtension;
+import org.pentaho.di.ui.spoon.tree.extension.TreePaneManager;
 import org.pentaho.di.ui.spoon.tree.provider.ClustersFolderProvider;
 import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 import org.pentaho.di.ui.spoon.tree.provider.HopsFolderProvider;
@@ -633,6 +635,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public Text selectionFilter;
 
+  private TreePaneManager viewTabPanes = new TreePaneManager();
+
   // licensing related property so that Revenera can properly identify execution is triggered by spoon
   private static final String EXECUTION_TYPE_PROP = "system-property.pentaho.execution.type";
 
@@ -899,10 +903,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       mainSpoonContainer.getDocumentRoot().getElementById( "trans-job-canvas" );
       deck = (SwtDeck) mainSpoonContainer.getDocumentRoot().getElementById( "canvas-deck" );
 
-      final Composite tempSashComposite = new Composite( shell, SWT.None );
-      sashComposite = tempSashComposite;
+      sashComposite = new Composite( shell, SWT.None );
 
-      mainPerspective = new MainSpoonPerspective( tempSashComposite, tabfolder );
+      mainPerspective = new MainSpoonPerspective( sashComposite, tabfolder );
       if ( startupPerspective == null ) {
         startupPerspective = mainPerspective.getId();
       }
@@ -1975,8 +1978,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  private void addViewTab( CTabFolder tabFolder ) {
-    Composite viewComposite = new Composite( tabFolder, SWT.NONE );
+  /** Add a pane to the view tab */
+  public void registerViewTabPane( TreePaneExtension extension ) throws KettleException {
+    viewTabPanes.addPane( extension );
+  }
+
+  private Composite addViewTree( Composite parent ) {
+    Composite viewComposite = new Composite( parent, SWT.NONE );
     viewComposite.setLayout( new FormLayout()  );
     viewComposite.setBackground( GUIResource.getInstance().getColorDemoGray() );
 
@@ -2011,11 +2019,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     } );
 
-    view = new CTabItem( tabFolder, SWT.NONE );
-    view.setControl( viewComposite );
-    view.setText( STRING_SPOON_MAIN_TREE );
-    view.setImage( GUIResource.getInstance().getImageExploreSolutionSmall() );
-
     viewTreeComposite = new Composite( viewComposite, SWT.NONE );
     viewTreeComposite.setLayout( new FillLayout() );
 
@@ -2032,6 +2035,30 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     fdViewComposite.right = new FormAttachment( 100 );
     fdViewComposite.bottom = new FormAttachment( 100 );
     viewComposite.setLayoutData( fdViewComposite );
+
+    return viewComposite;
+  }
+
+  private void addViewTab( CTabFolder tabFolder ) {
+    try {
+      registerViewTabPane( ( Composite viewComposite, TreePaneExtension.ExpandController ignored ) -> {
+        viewComposite.setLayout( new FormLayout() );
+        addViewTree( viewComposite );
+        return true;
+      } );
+    } catch ( KettleException e ) {
+      // should never happen here
+      log.logError( e.getLocalizedMessage(), e );
+    }
+
+    SashForm mainViewComposite = new SashForm( tabFolder, SWT.VERTICAL | SWT.BORDER );
+    // build view along with any other registered extensions
+    viewTabPanes.buildPanes( mainViewComposite );
+
+    view = new CTabItem( tabFolder, SWT.NONE );
+    view.setControl( mainViewComposite );
+    view.setText( STRING_SPOON_MAIN_TREE );
+    view.setImage( GUIResource.getInstance().getImageExploreSolutionSmall() );
   }
 
   private void addDesignTab( CTabFolder tabFolder ) {

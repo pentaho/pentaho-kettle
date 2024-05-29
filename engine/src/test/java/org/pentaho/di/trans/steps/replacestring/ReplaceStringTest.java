@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,9 +40,8 @@ import java.util.regex.Pattern;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -57,9 +56,9 @@ public class ReplaceStringTest {
 
   private static final String INPUT_STRING = "This is String This Is String THIS IS STRING";
 
-  private Object[] row = new Object[] { "some data", "another data" };
+  private final Object[] row = new Object[] { "some data", "another data" };
 
-  private Object[] expectedRow = new Object[] { "some data", "1nother d1t1", "1no2her d121", null, null, null, null,
+  private final Object[] expectedRow = new Object[] { "some data", "1nother d1t1", "1no2her d121", null, null, null, null,
     null, null, null, null, null, null };
 
   private StepMockHelper<ReplaceStringMeta, ReplaceStringData> stepMockHelper;
@@ -71,7 +70,7 @@ public class ReplaceStringTest {
       stepMockHelper.logChannelInterface );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString() );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), any( Object[].class ) );
-    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), (Throwable) anyObject() );
+    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), (Throwable) any() );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -108,7 +107,7 @@ public class ReplaceStringTest {
 
   //PDI-16472
   @Test
-  public void testSynchronizeDifferentFieldsArraysLengths() throws Exception {
+  public void testSynchronizeDifferentFieldsArraysLengths() {
 
     ReplaceStringData data = new ReplaceStringData();
     ReplaceString replaceString =
@@ -155,7 +154,7 @@ public class ReplaceStringTest {
   }
 
   @Test
-  public void testBuildPatternWithLiteralParsingAndWholeWord() throws Exception {
+  public void testBuildPatternWithLiteralParsingAndWholeWord() {
     Pattern actualPattern = ReplaceString.buildPattern( true, true, true, LITERAL_STRING, false );
     Matcher matcher = actualPattern.matcher( INPUT_STRING );
     String actualString = matcher.replaceAll( "are" );
@@ -163,7 +162,7 @@ public class ReplaceStringTest {
   }
 
   @Test
-  public void testBuildPatternWithNonLiteralParsingAndWholeWord() throws Exception {
+  public void testBuildPatternWithNonLiteralParsingAndWholeWord() {
     Pattern actualPattern = ReplaceString.buildPattern( false, true, true, LITERAL_STRING, false );
     Matcher matcher = actualPattern.matcher( INPUT_STRING );
     String actualString = matcher.replaceAll( "are" );

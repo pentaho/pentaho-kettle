@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -42,8 +40,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +49,7 @@ public class SyslogMessageConcurrentTest {
 
   AtomicInteger numOfErrors = null;
   CountDownLatch countDownLatch = null;
-  private String testMessage = "message value";
+  private final String testMessage = "message value";
   int numOfTasks = 5;
   private StepMockHelper<SyslogMessageMeta, SyslogMessageData> stepMockHelper;
 
@@ -59,7 +57,7 @@ public class SyslogMessageConcurrentTest {
    public void setUp() throws Exception {
     numOfErrors = new AtomicInteger( 0 );
     countDownLatch = new CountDownLatch( 1 );
-    stepMockHelper = new StepMockHelper<SyslogMessageMeta, SyslogMessageData>( "SYSLOG_MESSAGE TEST", SyslogMessageMeta.class,
+    stepMockHelper = new StepMockHelper<>( "SYSLOG_MESSAGE TEST", SyslogMessageMeta.class,
       SyslogMessageData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       stepMockHelper.logChannelInterface );
@@ -76,7 +74,7 @@ public class SyslogMessageConcurrentTest {
 
   @Test
    public void concurrentSyslogMessageTest() throws Exception {
-    SyslogMessageTask syslogMessage = null;
+    SyslogMessageTask syslogMessage;
     ExecutorService service = Executors.newFixedThreadPool( numOfTasks );
     for ( int i = 0; i < numOfTasks; i++ ) {
       syslogMessage = createSyslogMessageTask();
@@ -85,13 +83,13 @@ public class SyslogMessageConcurrentTest {
     service.shutdown();
     countDownLatch.countDown();
     service.awaitTermination( 10000, TimeUnit.NANOSECONDS );
-    Assert.assertTrue( numOfErrors.get() == 0 );
+    Assert.assertEquals( 0, numOfErrors.get() );
   }
 
 
   private class SyslogMessageTask extends SyslogMessage implements Runnable {
 
-    SyslogMessageMeta syslogMessageMeta = null;
+    SyslogMessageMeta syslogMessageMeta;
 
     public SyslogMessageTask( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans, SyslogMessageMeta processRowsStepMetaInterface ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -117,14 +115,14 @@ public class SyslogMessageConcurrentTest {
     }
 
     @Override
-    public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+    public void putRow( RowMetaInterface rowMeta, Object[] row ) {
       Assert.assertNotNull( row );
-      Assert.assertTrue( row.length == 1 );
+      Assert.assertEquals( 1, row.length );
       Assert.assertEquals( testMessage, row[0] );
     }
 
     @Override
-     public Object[] getRow() throws KettleException {
+     public Object[] getRow() {
       return new Object[]{ testMessage };
     }
   }

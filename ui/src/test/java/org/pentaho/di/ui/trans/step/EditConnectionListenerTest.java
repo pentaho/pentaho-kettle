@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.ui.trans.step;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -107,7 +107,7 @@ public class EditConnectionListenerTest {
   public void replaceSharedConnectionReturnsFalse_on_error() throws IOException, KettleException {
     dialog.transMeta.addDatabase( createDefaultDatabase( false ) );
     SharedObjects sharedObjects = mock( SharedObjects.class );
-    doThrow( Exception.class ).when( sharedObjects ).saveToFile();
+    doThrow( KettleException.class ).when( sharedObjects ).saveToFile();
 
     boolean actualResult = editConnectionListener.replaceSharedConnection( anyDbMeta(), anyDbMeta() );
 

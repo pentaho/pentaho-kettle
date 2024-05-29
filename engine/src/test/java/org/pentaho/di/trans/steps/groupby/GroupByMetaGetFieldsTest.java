@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,30 +22,10 @@
 
 package org.pentaho.di.trans.steps.groupby;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import org.junit.Test;
-import org.junit.Before;
 import org.junit.After;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import static org.pentaho.di.trans.steps.groupby.GroupByMeta.TYPE_GROUP_COUNT_ANY;
-import static org.pentaho.di.trans.steps.groupby.GroupByMeta.TYPE_GROUP_MAX;
-import static org.pentaho.di.trans.steps.groupby.GroupByMeta.TYPE_GROUP_MIN;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -56,12 +36,25 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.pentaho.di.trans.steps.groupby.GroupByMeta.TYPE_GROUP_COUNT_ANY;
+import static org.pentaho.di.trans.steps.groupby.GroupByMeta.TYPE_GROUP_MAX;
+import static org.pentaho.di.trans.steps.groupby.GroupByMeta.TYPE_GROUP_MIN;
+
 /**
  * @author Luis Martins
  */
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { ValueMetaFactory.class } )
 public class GroupByMetaGetFieldsTest {
 
   private GroupByMeta groupByMeta;
@@ -72,12 +65,13 @@ public class GroupByMetaGetFieldsTest {
   private VariableSpace mockSpace;
   private IMetaStore mockIMetaStore;
 
+  private MockedStatic<ValueMetaFactory> valueMetaMock;
   @Before
   public void setup() throws KettlePluginException {
     rowMeta = spy( new RowMeta() );
     groupByMeta = spy( new GroupByMeta() );
 
-    mockStatic( ValueMetaFactory.class );
+    valueMetaMock = mockStatic( ValueMetaFactory.class );
     when( ValueMetaFactory.createValueMeta( anyInt() ) ).thenCallRealMethod();
     when( ValueMetaFactory.createValueMeta( anyString(), anyInt() ) ).thenCallRealMethod();
     when( ValueMetaFactory.createValueMeta( "maxDate", 3, -1, -1 ) ).thenReturn( new ValueMetaDate( "maxDate" ) );
@@ -85,6 +79,11 @@ public class GroupByMetaGetFieldsTest {
     when( ValueMetaFactory.createValueMeta( "countDate", 5, -1, -1 ) ).thenReturn( new ValueMetaInteger( "countDate" ) );
     when( ValueMetaFactory.getValueMetaName( 3 ) ).thenReturn( "Date" );
     when( ValueMetaFactory.getValueMetaName( 5 ) ).thenReturn( "Integer" );
+  }
+
+  @After
+  public void tearDown() {
+    valueMetaMock.close();;
   }
 
   @After
@@ -127,7 +126,7 @@ public class GroupByMetaGetFieldsTest {
 
     verify( rowMeta, times( 1 ) ).clear();
     verify( rowMeta, times( 1 ) ).addRowMeta( any() );
-    assertEquals( null, rowMeta.searchValueMeta( "minDate" ).getConversionMask() );
+    assertNull( rowMeta.searchValueMeta( "minDate" ).getConversionMask() );
   }
 
   @Test

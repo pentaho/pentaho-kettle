@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,7 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.joinrows;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 import static junit.framework.Assert.*;
 
 import java.util.Arrays;
@@ -32,7 +32,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.KettleEnvironment;

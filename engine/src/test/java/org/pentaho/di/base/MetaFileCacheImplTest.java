@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,13 +25,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -44,8 +44,8 @@ public class MetaFileCacheImplTest {
   private static final String JOB_NAME = "jobName";
 
   @Mock private LogChannelInterface logger;
-  private TransMeta transMeta = new TransMeta();
-  private JobMeta jobMeta = new JobMeta();
+  private final TransMeta transMeta = new TransMeta();
+  private final JobMeta jobMeta = new JobMeta();
 
   private MetaFileCacheImpl metaFileCacheImpl;
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,7 +38,6 @@ import org.hamcrest.Matcher;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
@@ -51,6 +50,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 public class HTTPProtocolTest {
 
@@ -81,7 +81,7 @@ public class HTTPProtocolTest {
       }
     };
     String urlAsString = "http://url/path";
-    when( httpClient.execute( Matchers.argThat( matchesGet() ) ) ).thenReturn( response );
+    when( httpClient.execute( argThat( matchesGet() ) ) ).thenReturn( response );
     StatusLine statusLine = new BasicStatusLine( new ProtocolVersion( "http", 2, 0 ), HttpStatus.SC_OK, "blah" );
     BasicHttpEntity entity = new BasicHttpEntity();
     String content = "plenty of mocks for this test";

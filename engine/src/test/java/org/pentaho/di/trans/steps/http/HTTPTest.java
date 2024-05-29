@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,50 +28,43 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.HttpClientManager;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.reflect.Whitebox.setInternalState;
+import static org.pentaho.test.util.InternalState.setInternalState;
 
 /**
  * @author Luis Martins
  * @since 14-Aug-2018
  */
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( HttpClientManager.class )
 public class HTTPTest {
 
-  private LogChannelInterface log = mock( LogChannelInterface.class );
-  private RowMetaInterface rmi = mock( RowMetaInterface.class );
-  private HTTPData data = mock( HTTPData.class );
-  private HTTPMeta meta = mock( HTTPMeta.class );
-  private HTTP http = mock( HTTP.class );
+  private final LogChannelInterface log = mock( LogChannelInterface.class );
+  private final RowMetaInterface rmi = mock( RowMetaInterface.class );
+  private final HTTPData data = mock( HTTPData.class );
+  private final HTTPMeta meta = mock( HTTPMeta.class );
+  private final HTTP http = mock( HTTP.class );
 
-  private HttpClientManager manager = mock( HttpClientManager.class );
-  private CloseableHttpClient client = mock( CloseableHttpClient.class );
+  private final HttpClientManager manager = mock( HttpClientManager.class );
+  private final CloseableHttpClient client = mock( CloseableHttpClient.class );
 
   private final String DATA = "This is the description, there's some HTML here, like &lt;strong&gt;this&lt;/strong&gt;. "
     + "Sometimes this text is another language that might contain these characters:\n"
@@ -93,9 +86,6 @@ public class HTTPTest {
     entity.setContent( new ByteArrayInputStream( DATA.getBytes() ) );
     doReturn( entity ).when( response ).getEntity();
 
-    mockStatic( HttpClientManager.class );
-    when( HttpClientManager.getInstance() ).thenReturn( manager );
-
     setInternalState( data, "realUrl", "http://pentaho.com" );
     setInternalState( data, "argnrs", new int[0] );
 
@@ -114,20 +104,29 @@ public class HTTPTest {
 
   @Test
   public void callHttpServiceWithUTF8Encoding() throws Exception {
-    doReturn( "UTF-8" ).when( meta ).getEncoding();
-    assertEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[0] );
+    try ( MockedStatic<HttpClientManager> httpClientManagerMockedStatic = mockStatic( HttpClientManager.class ) ) {
+      httpClientManagerMockedStatic.when( HttpClientManager::getInstance ).thenReturn( manager );
+      doReturn( "UTF-8" ).when( meta ).getEncoding();
+      assertEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[ 0 ] );
+    }
   }
 
   @Test
   public void callHttpServiceWithoutEncoding() throws Exception {
-    doReturn( null ).when( meta ).getEncoding();
-    assertNotEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[0] );
+    try ( MockedStatic<HttpClientManager> httpClientManagerMockedStatic = mockStatic( HttpClientManager.class ) ) {
+      httpClientManagerMockedStatic.when( HttpClientManager::getInstance ).thenReturn( manager );
+      doReturn( null ).when( meta ).getEncoding();
+      assertNotEquals( DATA, http.callHttpService( rmi, new Object[] { 0 } )[ 0 ] );
+    }
   }
 
   @Test
   public void testCallHttpServiceWasCalledWithContext() throws Exception {
-    doReturn( null ).when( meta ).getEncoding();
-    http.callHttpService( rmi, new Object[] { 0 } );
-    verify( client, times( 1 ) ).execute( any( HttpGet.class ), any( HttpClientContext.class ) );
+    try ( MockedStatic<HttpClientManager> httpClientManagerMockedStatic = mockStatic( HttpClientManager.class ) ) {
+      httpClientManagerMockedStatic.when( HttpClientManager::getInstance ).thenReturn( manager );
+      doReturn( null ).when( meta ).getEncoding();
+      http.callHttpService( rmi, new Object[] { 0 } );
+      verify( client, times( 1 ) ).execute( any( HttpGet.class ), any( HttpClientContext.class ) );
+    }
   }
 }

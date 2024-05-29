@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,8 +50,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -183,8 +184,8 @@ public class ConcatFieldsTest {
     when( stepMockHelper.processRowsStepMetaInterface.getTargetFieldName() ).thenCallRealMethod();
 
     doCallRealMethod().when( stepMockHelper.processRowsStepMetaInterface ).getFields(
-        any( RowMetaInterface.class ), any( String.class ), any(), any( StepMeta.class ),
-        any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+        any( RowMetaInterface.class ), any( String.class ), any(), nullable( StepMeta.class ),
+      nullable( VariableSpace.class ), nullable( Repository.class ), nullable( IMetaStore.class ) );
 
     stepMockHelper.processRowsStepMetaInterface.setTargetFieldName( "target_result" );
 

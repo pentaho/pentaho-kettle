@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import java.util.function.Function;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.logging.LogLevel.BASIC;
 import static org.pentaho.di.core.logging.LogLevel.ERROR;
@@ -80,8 +80,8 @@ public class Slf4jLoggingEventListenerTest {
     when( message.getLevel() ).thenReturn( ERROR );
     listener.eventAdded( logEvent );
     verify( diLogger ).error( messageSub + " " + msgText );
-    verifyZeroInteractions( transLogger );
-    verifyZeroInteractions( jobLogger );
+    verifyNoInteractions( transLogger );
+    verifyNoInteractions( jobLogger );
   }
 
   @Test
@@ -97,8 +97,8 @@ public class Slf4jLoggingEventListenerTest {
     when( message.getLevel() ).thenReturn( LogLevel.ERROR );
     listener.eventAdded( logEvent );
     verify( transLogger ).error( "[filename]  " + msgText );
-    verifyZeroInteractions( diLogger );
-    verifyZeroInteractions( jobLogger );
+    verifyNoInteractions( diLogger );
+    verifyNoInteractions( jobLogger );
   }
 
   @Test
@@ -115,8 +115,8 @@ public class Slf4jLoggingEventListenerTest {
     when( message.getLevel() ).thenReturn( LogLevel.ERROR );
     listener.eventAdded( logEvent );
     verify( jobLogger ).error( "[filename]  " + msgText );
-    verifyZeroInteractions( diLogger );
-    verifyZeroInteractions( transLogger );
+    verifyNoInteractions( diLogger );
+    verifyNoInteractions( transLogger );
   }
 
   @Test

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,16 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.fuzzymatch;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -51,6 +41,16 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * User: Dzmitry Stsiapanau Date: 10/16/13 Time: 6:23 PM
@@ -129,15 +129,28 @@ public class FuzzyMatchTest {
         new FuzzyMatchHandler( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
             mockHelper.trans );
     fuzzyMatch.init( mockHelper.initStepMetaInterface, mockHelper.initStepDataInterface );
-    fuzzyMatch.addRowSetToInputRowSets( mockHelper.getMockInputRowSet( rows ) );
-    fuzzyMatch.addRowSetToInputRowSets( mockHelper.getMockInputRowSet( lookupRows ) );
+    RowSet mockRows = mockHelper.getMockInputRowSet( rows );
+    RowMetaInterface rowMetaInterface = new RowMeta();
+    ValueMetaInterface valueMeta = new ValueMetaString( "field1" );
+    valueMeta.setStorageMetadata( new ValueMetaString( "field1" ) );
+    rowMetaInterface.addValueMeta( valueMeta );
+    when( mockRows.getRowMeta() ).thenReturn( rowMetaInterface );
+    fuzzyMatch.addRowSetToInputRowSets( mockRows );
+    RowSet mockLookupRows = mockHelper.getMockInputRowSet( lookupRows );
+    RowMetaInterface lookupRowMetaInterface = new RowMeta();
+    ValueMetaInterface valueMeta2 = new ValueMetaString( "field1" );
+    valueMeta2.setStorageMetadata( new ValueMetaString( "field1" ) );
+    lookupRowMetaInterface.addValueMeta( valueMeta2 );
+    when( mockLookupRows.getRowMeta() ).thenReturn( lookupRowMetaInterface );
+    fuzzyMatch.addRowSetToInputRowSets( mockLookupRows );
 
     when( mockHelper.processRowsStepMetaInterface.getAlgorithmType() ).thenReturn( 8 );
+    when(mockHelper.processRowsStepMetaInterface.getMainStreamField() ).thenReturn( "field1" );
     mockHelper.processRowsStepDataInterface.look = mock( HashSet.class );
     when( mockHelper.processRowsStepDataInterface.look.iterator() ).thenReturn( lookupRows.iterator() );
 
     fuzzyMatch.processRow( mockHelper.processRowsStepMetaInterface, mockHelper.processRowsStepDataInterface );
-    Assert.assertEquals( fuzzyMatch.resultRow[0], row3[0] );
+    Assert.assertEquals( row3[0], fuzzyMatch.resultRow[1] );
   }
 
   @Test

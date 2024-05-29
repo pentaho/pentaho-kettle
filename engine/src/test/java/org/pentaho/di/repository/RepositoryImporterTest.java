@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
@@ -221,7 +221,6 @@ public class RepositoryImporterTest {
       JobMeta createJobMetaForNode( Node jobnode ) throws KettleXMLException {
         JobMeta meta = mock( JobMeta.class );
         JobEntryCopy jec = mock( JobEntryCopy.class );
-        when( jec.isTransformation() ).thenReturn( true );
         when( jec.getEntry() ).thenReturn( jobEntryInterface );
         when( meta.getJobCopies() ).thenReturn( Collections.singletonList( jec ) );
         return meta;
@@ -231,7 +230,6 @@ public class RepositoryImporterTest {
       TransMeta createTransMetaForNode( Node transnode ) throws KettleMissingPluginsException, KettleXMLException {
         TransMeta meta = mock( TransMeta.class );
         StepMeta stepMeta = mock( StepMeta.class );
-        when( stepMeta.isMapping() ).thenReturn( true );
         when( stepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterface );
         when( meta.getSteps() ).thenReturn( Collections.singletonList( stepMeta ) );
         return meta;

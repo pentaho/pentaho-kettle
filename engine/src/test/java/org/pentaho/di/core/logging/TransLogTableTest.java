@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,7 +63,7 @@ public class TransLogTableTest {
       }
     }
     if ( !found ) {
-      fail( "Cound not find index with " + Arrays.toString( expected ) );
+      fail( "Could not find index with " + Arrays.toString( expected ) );
     }
   }
 }

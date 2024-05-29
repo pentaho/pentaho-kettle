@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,17 +21,20 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.avro.input;
 
-import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
-import org.pentaho.di.core.plugins.*;
+import org.pentaho.di.core.plugins.Plugin;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginMainClassType;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
@@ -46,9 +49,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
 public class AvroInputMetaTest {
@@ -88,7 +97,6 @@ public class AvroInputMetaTest {
   @Before
   public void setUp() throws KettlePluginException {
     meta = new AvroInputMeta( );
-    when( field.getAvroType() ).thenReturn( AvroSpec.DataType.STRING );
     when( field.getPentahoType() ).thenReturn( ValueMetaInterface.TYPE_STRING );
 
     Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
@@ -123,7 +131,7 @@ public class AvroInputMetaTest {
   public void testGetFields_theNameWasUpdatedByVariables() throws KettleStepException {
     meta.setInputFields( Arrays.asList( field ) );
     meta.getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
-    verify( space ).environmentSubstitute( anyString() );
+    verify( space ).environmentSubstitute( nullable( String.class) );
   }
 
   @Test

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
-import java.util.Arrays;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,12 +51,15 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.StepMockUtil;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
@@ -96,7 +98,7 @@ public class TransExecutorUnitTest {
 
     internalTrans = spy( new Trans() );
     internalTrans.setLog( mock( LogChannelInterface.class ) );
-    doNothing().when( internalTrans ).prepareExecution( any( String[].class ) );
+    doNothing().when( internalTrans ).prepareExecution( nullable( String[].class ) );
     doNothing().when( internalTrans ).startThreads();
     doNothing().when( internalTrans ).waitUntilFinished();
     doNothing().when( executor ).discardLogLines( any( TransExecutorData.class ) );
@@ -584,6 +586,12 @@ public class TransExecutorUnitTest {
 
   @Test
   public void testSafeStop() throws Exception {
+    TransExecutorData transExecutorDataMock = mock( TransExecutorData.class );
+    TransMeta transMetaMock = mock( TransMeta.class );
+    when( executor.getData() ).thenReturn( transExecutorDataMock );
+    when( transMetaMock.listVariables() ).thenReturn( new String[0] );
+    when( transMetaMock.listParameters() ).thenReturn( new String[0] );
+    when( transExecutorDataMock.getExecutorTransMeta() ).thenReturn( transMetaMock );
     prepareOneRowForExecutor();
     meta.setGroupSize( "1" );
     data.groupSize = 1;
@@ -591,7 +599,10 @@ public class TransExecutorUnitTest {
     internalResult.setSafeStop( true );
 
     Trans parent = Mockito.spy( new Trans() );
+
     Mockito.when( executor.getTrans() ).thenReturn( parent );
+    doNothing().when( executor ).initializeVariablesFromParent( any() );
+    doNothing().when( executor ).passParametersToTrans( any() );
 
     executor.init( meta, data );
     executor.setInputRowMeta( new RowMeta() );

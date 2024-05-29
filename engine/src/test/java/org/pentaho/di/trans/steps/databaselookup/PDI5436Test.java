@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,17 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.databaselookup;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -61,6 +50,17 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.Arrays;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for DatabaseLookup step
@@ -123,8 +123,8 @@ public class PDI5436Test {
     doReturn( new String[] { "=" } ).when( stepMeta ).getKeyCondition();
 
     doCallRealMethod().when( stepMeta ).getFields( any( RowMetaInterface.class ), anyString(),
-        any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
-        any( IMetaStore.class ) );
+      nullable( RowMetaInterface[].class ), nullable( StepMeta.class ), any( VariableSpace.class ), nullable( Repository.class ),
+      nullable( IMetaStore.class ) );
     doReturn( new String[] { "value" } ).when( stepMeta ).getReturnValueNewName();
     doReturn( new int[] { ValueMetaInterface.TYPE_STRING } ).when( stepMeta ).getReturnValueDefaultType();
     doReturn( true ).when( stepMeta ).isCached();
@@ -146,10 +146,10 @@ public class PDI5436Test {
     RowMeta databaseRowMeta = new RowMeta();
     databaseRowMeta.addValueMeta( new ValueMetaString( "id" ) );
     databaseRowMeta.addValueMeta( new ValueMetaString( "value" ) );
-    doReturn( databaseRowMeta ).when( databaseMock ).getTableFields( anyString() );
-    doReturn( databaseRowMeta ).when( databaseMock ).getTableFieldsMeta( anyString(), anyString() );
-    doReturn( Arrays.asList( new Object[][] { { "1", "value" } } ) ).when( databaseMock ).getRows( anyString(),
-        anyInt() );
+    doReturn( databaseRowMeta ).when( databaseMock ).getTableFields( nullable( String.class ) );
+    doReturn( databaseRowMeta ).when( databaseMock ).getTableFieldsMeta( nullable( String.class ), nullable( String.class )  );
+    doReturn( Arrays.asList( new Object[][] { { "1", "value" } } ) ).when( databaseMock ).getRows( nullable( String.class ),
+        nullable( Integer.class ) );
     doReturn( databaseRowMeta ).when( databaseMock ).getReturnRowMeta();
 
     return databaseMock;

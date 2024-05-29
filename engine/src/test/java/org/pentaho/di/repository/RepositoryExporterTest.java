@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,26 +22,11 @@
 
 package org.pentaho.di.repository;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
 import junit.framework.Assert;
-
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -57,14 +42,28 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.utils.TestUtils;
 import org.xml.sax.InputSource;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class RepositoryExporterTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
-  @Mock
   Repository repository;
-  @Mock
   LogChannelInterface log;
-  @Mock
   private RepositoryDirectoryInterface root;
 
   private FileObject fileObject;
@@ -72,54 +71,54 @@ public class RepositoryExporterTest {
 
   @Before
   public void beforeTest() throws IOException, KettleException {
-    MockitoAnnotations.initMocks( this );
-    Mockito.when( repository.getLog() ).thenReturn( log );
+    repository = mock( Repository.class );
+    log = mock( LogChannelInterface.class );
+    root = mock( RepositoryDirectoryInterface.class );
+    when( repository.getLog() ).thenReturn( log );
     ObjectId id = new ObjectId() {
       @Override
       public String getId() {
         return "1";
       }
     };
-    Mockito.when( root.getDirectoryIDs() ).thenReturn( new ObjectId[] { id } );
-    Mockito.when( root.findDirectory( Mockito.any( ObjectId.class ) ) ).thenReturn( root );
+    when( root.getDirectoryIDs() ).thenReturn( new ObjectId[] { id } );
+    when( root.findDirectory( any( ObjectId.class ) ) ).thenReturn( root );
 
-    Mockito.when( repository.getJobNames( Mockito.any( ObjectId.class ), Mockito.anyBoolean() ) ).thenReturn(
+    when( repository.getJobNames( any( ObjectId.class ), anyBoolean() ) ).thenReturn(
       new String[] { "job1" } );
-    Mockito.when( repository.getTransformationNames( Mockito.any( ObjectId.class ), Mockito.anyBoolean() ) )
+    when( repository.getTransformationNames( any( ObjectId.class ), anyBoolean() ) )
       .thenReturn( new String[] { "trans1" } );
 
-    Mockito.when( root.getPath() ).thenReturn( "path" );
+    when( root.getPath() ).thenReturn( "path" );
 
     // here we are stubbing load jobs from repository
     Answer<JobMeta> jobLoader = new Answer<JobMeta>() {
       @Override
       public JobMeta answer( InvocationOnMock invocation ) throws Throwable {
         String jobName = String.class.cast( invocation.getArguments()[ 0 ] );
-        JobMeta jobMeta = Mockito.mock( JobMeta.class );
-        Mockito.when( jobMeta.getXML() ).thenReturn( "<" + jobName + ">" + "found" + "</" + jobName + ">" );
-        Mockito.when( jobMeta.getName() ).thenReturn( jobName );
+        JobMeta jobMeta = mock( JobMeta.class );
+        when( jobMeta.getXML() ).thenReturn( "<" + jobName + ">" + "found" + "</" + jobName + ">" );
+        when( jobMeta.getName() ).thenReturn( jobName );
         return jobMeta;
       }
     };
 
-    Mockito.when(
-      repository.loadJob( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
-        .any( ProgressMonitorListener.class ), Mockito.anyString() ) ).thenAnswer( jobLoader );
+    when(
+      repository.loadJob( anyString(), any( RepositoryDirectoryInterface.class ), nullable( ProgressMonitorListener.class ), nullable( String.class ) ) ).thenAnswer( jobLoader );
 
     // and this is for transformation load
     Answer<TransMeta> transLoader = new Answer<TransMeta>() {
       @Override
       public TransMeta answer( InvocationOnMock invocation ) throws Throwable {
         String transName = String.class.cast( invocation.getArguments()[ 0 ] );
-        TransMeta transMeta = Mockito.mock( TransMeta.class );
-        Mockito.when( transMeta.getXML() ).thenReturn( "<" + transName + ">" + "found" + "</" + transName + ">" );
-        Mockito.when( transMeta.getName() ).thenReturn( transName );
+        TransMeta transMeta = mock( TransMeta.class );
+        when( transMeta.getXML() ).thenReturn( "<" + transName + ">" + "found" + "</" + transName + ">" );
+        when( transMeta.getName() ).thenReturn( transName );
         return transMeta;
       }
     };
-    Mockito.when(
-      repository.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
-        .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) ).thenAnswer( transLoader );
+    when(
+      repository.loadTransformation( anyString(), any( RepositoryDirectoryInterface.class ), nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ) ) ).thenAnswer( transLoader );
 
     // export file
     xmlFileName = TestUtils.createRamFile( getClass().getSimpleName() + "/export.xml" );

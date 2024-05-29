@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,10 +58,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -170,7 +169,7 @@ public class ExcelWriterStepTest {
     ValueMetaInterface vmi = mock( ValueMetaInteger.class );
     doReturn( ValueMetaInterface.TYPE_INTEGER ).when( vmi ).getType();
     doReturn( "name" ).when( vmi ).getName();
-    doReturn( 12.0 ).when( vmi ).getNumber( anyObject() );
+    doReturn( 12.0 ).when( vmi ).getNumber( any() );
 
     doReturn( path ).when( step ).buildFilename( 0 );
     doReturn( true ).when( metaMock ).isTemplateEnabled();
@@ -200,7 +199,7 @@ public class ExcelWriterStepTest {
     Object vObj = new Object();
     doReturn( ValueMetaInterface.TYPE_BIGNUMBER ).when( vmi ).getType();
     doReturn( "value_bigNumber" ).when( vmi ).getName();
-    doReturn( Double.MAX_VALUE ).when( vmi ).getNumber( anyObject() );
+    doReturn( Double.MAX_VALUE ).when( vmi ).getNumber( any() );
 
     testBaseXlsx( vmi, vObj, false, false );
   }
@@ -212,7 +211,7 @@ public class ExcelWriterStepTest {
     Object vObj = new Object();
     doReturn( ValueMetaInterface.TYPE_BINARY ).when( vmi ).getType();
     doReturn( "value_binary" ).when( vmi ).getName();
-    doReturn( "a1b2c3d4e5f6g7h8i9j0" ).when( vmi ).getString( anyObject() );
+    doReturn( "a1b2c3d4e5f6g7h8i9j0" ).when( vmi ).getString( any() );
 
     testBaseXlsx( vmi, vObj, false, false );
   }
@@ -224,7 +223,7 @@ public class ExcelWriterStepTest {
     Object vObj = new Object();
     doReturn( ValueMetaInterface.TYPE_BOOLEAN ).when( vmi ).getType();
     doReturn( "value_bool" ).when( vmi ).getName();
-    doReturn( Boolean.FALSE ).when( vmi ).getBoolean( anyObject() );
+    doReturn( Boolean.FALSE ).when( vmi ).getBoolean( any() );
 
     testBaseXlsx( vmi, vObj, false, false );
   }
@@ -236,7 +235,7 @@ public class ExcelWriterStepTest {
     Object vObj = new Object();
     doReturn( ValueMetaInterface.TYPE_DATE ).when( vmi ).getType();
     doReturn( "value_date" ).when( vmi ).getName();
-    doReturn( new Date() ).when( vmi ).getDate( anyObject() );
+    doReturn( new Date() ).when( vmi ).getDate( any() );
 
     testBaseXlsx( vmi, vObj, false, false );
   }
@@ -248,7 +247,7 @@ public class ExcelWriterStepTest {
     Object vObj = new Object();
     doReturn( ValueMetaInterface.TYPE_INTEGER ).when( vmi ).getType();
     doReturn( "value_integer" ).when( vmi ).getName();
-    doReturn( Double.MAX_VALUE ).when( vmi ).getNumber( anyObject() );
+    doReturn( Double.MAX_VALUE ).when( vmi ).getNumber( any() );
 
     testBaseXlsx( vmi, vObj, false, false );
   }
@@ -260,7 +259,7 @@ public class ExcelWriterStepTest {
     Object vObj = new Object();
     doReturn( ValueMetaInterface.TYPE_INET ).when( vmi ).getType();
     doReturn( "value_internetAddress" ).when( vmi ).getName();
-    doReturn( "127.0.0.1" ).when( vmi ).getString( anyObject() );
+    doReturn( "127.0.0.1" ).when( vmi ).getString( any() );
 
     testBaseXlsx( vmi, vObj, false, false );
   }
@@ -272,7 +271,7 @@ public class ExcelWriterStepTest {
     Object vObj = new Object();
     doReturn( ValueMetaInterface.TYPE_NUMBER ).when( vmi ).getType();
     doReturn( "value_number" ).when( vmi ).getName();
-    doReturn( Double.MIN_VALUE ).when( vmi ).getNumber( anyObject() );
+    doReturn( Double.MIN_VALUE ).when( vmi ).getNumber( any() );
 
     testBaseXlsx( vmi, vObj, false, false );
   }
@@ -284,7 +283,7 @@ public class ExcelWriterStepTest {
     Object vObj = new Object();
     doReturn( ValueMetaInterface.TYPE_STRING ).when( vmi ).getType();
     doReturn( "value_string" ).when( vmi ).getName();
-    doReturn( "a_string" ).when( vmi ).getString( anyObject() );
+    doReturn( "a_string" ).when( vmi ).getString( any() );
 
     testBaseXlsx( vmi, vObj, false, false );
   }

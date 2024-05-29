@@ -25,32 +25,28 @@
 package org.pentaho.di.connections.ui.tree;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
 import org.junit.Before;
 import java.util.Optional;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.mockito.MockedStatic;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { Spoon.class, GUIResource.class, ConnectionFolderProvider.class } )
+
 public class ConnectionFolderProviderTest {
   private ConnectionFolderProvider connectionFolderProvider;
   private Spoon mockSpoon;
@@ -59,17 +55,25 @@ public class ConnectionFolderProviderTest {
   private IUser mockUser;
   private MetastoreLocator mockMetastoreLocator;
 
+  private MockedStatic<Spoon> spoonMockedStatic;
+  private MockedStatic<GUIResource> guiResourceMockedStatic;
   @Before
   public void setup() {
     mockSpoon = mock( Spoon.class );
     mockGuiResource = mock( GUIResource.class );
-    PowerMockito.mockStatic( Spoon.class );
-    PowerMockito.mockStatic( GUIResource.class );
+    spoonMockedStatic = mockStatic( Spoon.class );
+    guiResourceMockedStatic = mockStatic( GUIResource.class );
     when( Spoon.getInstance() ).thenReturn( mockSpoon );
     when( GUIResource.getInstance() ).thenReturn( mockGuiResource );
     mockRepository = mock( Repository.class );
     mockUser = mock( IUser.class );
     mockMetastoreLocator = mock( MetastoreLocator.class );
+  }
+
+  @After
+  public void tearDown() {
+    spoonMockedStatic.close();
+    guiResourceMockedStatic.close();
   }
 
   @Test

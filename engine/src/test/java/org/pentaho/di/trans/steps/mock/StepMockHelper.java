@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,21 +22,6 @@
 
 package org.pentaho.di.trans.steps.mock;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -53,6 +38,21 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDataInterface> {
   public final StepMeta stepMeta;
@@ -98,7 +98,7 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
         return i < rows.size() ? rows.get( i ) : null;
       }
     };
-    when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenAnswer( answer );
+    lenient().when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenAnswer( answer );
     when( rowSet.getRow() ).thenAnswer( answer );
     when( rowSet.isDone() ).thenAnswer( new Answer<Boolean>() {
 
@@ -152,6 +152,6 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
         }
         return false;
       }
-    } ).when( log ).println( (LogMessageInterface) anyObject(), (LogLevel) anyObject() );
+    } ).when( log ).println( any( LogMessageInterface.class ), any( LogLevel.class ) );
   }
 }

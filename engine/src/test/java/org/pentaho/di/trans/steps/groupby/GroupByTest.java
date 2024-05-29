@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,6 @@
 
 package org.pentaho.di.trans.steps.groupby;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.vfs2.FileSystemException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,19 +39,22 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-import org.pentaho.metastore.api.IMetaStore;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -101,9 +97,9 @@ public class GroupByTest  {
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaInteger( "ROWNR" ) );
 
-    List<RowSet> outputRowSets = new ArrayList<RowSet>();
+    List<RowSet> outputRowSets = new ArrayList<>();
     BlockingRowSet rowSet = new BlockingRowSet( 1 );
-    rowSet.putRow( rowMeta, new Object[] { new Long( 0 ) } );
+    rowSet.putRow( rowMeta, new Object[] { 0L } );
     outputRowSets.add( rowSet );
     groupBySpy.setOutputRowSets( outputRowSets );
 
@@ -151,28 +147,28 @@ public class GroupByTest  {
       GroupByMeta.TYPE_GROUP_CONCAT_COMMA,
       GroupByMeta.TYPE_GROUP_CONCAT_STRING } );
 
-    meta.getFields( outputFields, "Group By Step", (RowMetaInterface[]) null, (StepMeta) null,
-      (Variables) null, (Repository) null, (IMetaStore) null );
+    meta.getFields( outputFields, "Group By Step", null, null,
+      null, null, null );
 
     assertEquals( outputFields.getValueMetaList().size(), 9 );
-    assertTrue( outputFields.getValueMeta( 0 ).getType() == ValueMetaInterface.TYPE_STRING );
-    assertTrue( outputFields.getValueMeta( 0 ).getName().equals( "group_by_field" ) );
-    assertTrue( outputFields.getValueMeta( 1 ).getType() == ValueMetaInterface.TYPE_NUMBER );
-    assertTrue( outputFields.getValueMeta( 1 ).getName().equals( "perc_field" ) );
-    assertTrue( outputFields.getValueMeta( 2 ).getType() == ValueMetaInterface.TYPE_NUMBER );
-    assertTrue( outputFields.getValueMeta( 2 ).getName().equals( "stddev_field" ) );
-    assertTrue( outputFields.getValueMeta( 3 ).getType() == ValueMetaInterface.TYPE_NUMBER );
-    assertTrue( outputFields.getValueMeta( 3 ).getName().equals( "median_field" ) );
-    assertTrue( outputFields.getValueMeta( 4 ).getType() == ValueMetaInterface.TYPE_INTEGER );
-    assertTrue( outputFields.getValueMeta( 4 ).getName().equals( "count_distinct_field" ) );
-    assertTrue( outputFields.getValueMeta( 5 ).getType() == ValueMetaInterface.TYPE_INTEGER );
-    assertTrue( outputFields.getValueMeta( 5 ).getName().equals( "count_any_field" ) );
-    assertTrue( outputFields.getValueMeta( 6 ).getType() == ValueMetaInterface.TYPE_INTEGER );
-    assertTrue( outputFields.getValueMeta( 6 ).getName().equals( "count_all_field" ) );
-    assertTrue( outputFields.getValueMeta( 7 ).getType() == ValueMetaInterface.TYPE_STRING );
-    assertTrue( outputFields.getValueMeta( 7 ).getName().equals( "concat_comma_field" ) );
-    assertTrue( outputFields.getValueMeta( 8 ).getType() == ValueMetaInterface.TYPE_STRING );
-    assertTrue( outputFields.getValueMeta( 8 ).getName().equals( "concat_custom_field" ) );
+    assertEquals( ValueMetaInterface.TYPE_STRING, outputFields.getValueMeta( 0 ).getType() );
+    assertEquals( "group_by_field", outputFields.getValueMeta( 0 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, outputFields.getValueMeta( 1 ).getType() );
+    assertEquals( "perc_field", outputFields.getValueMeta( 1 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, outputFields.getValueMeta( 2 ).getType() );
+    assertEquals( "stddev_field", outputFields.getValueMeta( 2 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, outputFields.getValueMeta( 3 ).getType() );
+    assertEquals( "median_field", outputFields.getValueMeta( 3 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, outputFields.getValueMeta( 4 ).getType() );
+    assertEquals( "count_distinct_field", outputFields.getValueMeta( 4 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, outputFields.getValueMeta( 5 ).getType() );
+    assertEquals( "count_any_field", outputFields.getValueMeta( 5 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, outputFields.getValueMeta( 6 ).getType() );
+    assertEquals( "count_all_field", outputFields.getValueMeta( 6 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, outputFields.getValueMeta( 7 ).getType() );
+    assertEquals( "concat_comma_field", outputFields.getValueMeta( 7 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, outputFields.getValueMeta( 8 ).getType() );
+    assertEquals( "concat_custom_field", outputFields.getValueMeta( 8 ).getName() );
   }
 
 
@@ -196,14 +192,13 @@ public class GroupByTest  {
   }
 
   @Test
-  public void testAddToBuffer() throws KettleException, FileSystemException {
+  public void testAddToBuffer() throws KettleException {
     GroupByData groupByData = new GroupByData();
     ArrayList listMock = mock( ArrayList.class );
     when( listMock.size() ).thenReturn( 5001 );
     groupByData.bufferList = listMock;
     groupByData.rowsOnFile = 0;
-    RowMetaInterface inputRowMetaMock = mock( RowMetaInterface.class );
-    groupByData.inputRowMeta = inputRowMetaMock;
+    groupByData.inputRowMeta = mock( RowMetaInterface.class );
 
     GroupBy groupBySpy = Mockito.spy(
         new GroupBy( mockHelper.stepMeta, groupByData, 0, mockHelper.transMeta, mockHelper.trans ) );
@@ -214,7 +209,7 @@ public class GroupByTest  {
 
     String userDir = System.getProperty( "user.dir" );
     String vfsFilePath = "file:///" + userDir;
-    when( groupBySpy.environmentSubstitute( anyString() ) ).thenReturn( vfsFilePath );
+    when( groupBySpy.environmentSubstitute( nullable( String.class ) ) ).thenReturn( vfsFilePath );
 
     Object[] row = { "abc" };
     // tested method itself

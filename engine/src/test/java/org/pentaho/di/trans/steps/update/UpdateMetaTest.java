@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,25 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.update;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.spy;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -72,13 +53,28 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
-  private StepMeta stepMeta;
   private Update upd;
-  private UpdateData ud;
   private UpdateMeta umi;
   LoadSaveTester loadSaveTester;
   Class<UpdateMeta> testMetaClass = UpdateMeta.class;
@@ -98,17 +94,17 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
     TransMeta transMeta = new TransMeta();
     transMeta.setName( "delete1" );
 
-    Map<String, String> vars = new HashMap<String, String>();
+    Map<String, String> vars = new HashMap<>();
     vars.put( "max.sz", "10" );
     transMeta.injectVariables( vars );
 
     umi = new UpdateMeta();
-    ud = new UpdateData();
+    UpdateData ud = new UpdateData();
 
     PluginRegistry plugReg = PluginRegistry.getInstance();
     String deletePid = plugReg.getPluginId( StepPluginType.class, umi );
 
-    stepMeta = new StepMeta( deletePid, "delete", umi );
+    StepMeta stepMeta = new StepMeta( deletePid, "delete", umi );
     Trans trans = new Trans( transMeta );
     transMeta.addStep( stepMeta );
     mockHelper = new StepMockHelper<>( "Update", UpdateMeta.class, UpdateData.class );
@@ -122,7 +118,7 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
             "skipLookup", "useBatchUpdate", "keyStream", "keyLookup", "keyCondition", "keyStream2",
             "updateLookup", "updateStream", "databaseMeta" );
 
-    Map<String, String> getterMap = new HashMap<String, String>() {
+    Map<String, String> getterMap = new HashMap<>() {
       {
         put( "schemaName", "getSchemaName" );
         put( "tableName", "getTableName" );
@@ -140,7 +136,7 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
         put( "databaseMeta", "getDatabaseMeta" );
       }
     };
-    Map<String, String> setterMap = new HashMap<String, String>() {
+    Map<String, String> setterMap = new HashMap<>() {
       {
         put( "schemaName", "setSchemaName" );
         put( "tableName", "setTableName" );
@@ -159,10 +155,10 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
       }
     };
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+      new ArrayLoadSaveValidator<>( new StringLoadSaveValidator(), 5 );
 
 
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<>();
     attrValidatorMap.put( "keyStream", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "keyLookup", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "keyCondition", stringArrayLoadSaveValidator );
@@ -171,7 +167,7 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
     attrValidatorMap.put( "updateStream", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
 
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<>();
 
     loadSaveTester =
         new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
@@ -186,13 +182,13 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
   @Test
   public void testCommitCountFixed() {
     umi.setCommitSize( "100" );
-    assertTrue( umi.getCommitSize( upd ) == 100 );
+    assertEquals( 100, umi.getCommitSize( upd ) );
   }
 
   @Test
   public void testCommitCountVar() {
     umi.setCommitSize( "${max.sz}" );
-    assertTrue( umi.getCommitSize( upd ) == 10 );
+    assertEquals( 10, umi.getCommitSize( upd ) );
   }
 
   @Test
@@ -201,7 +197,7 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
     try {
       umi.getCommitSize( upd );
       fail();
-    } catch ( Exception ex ) {
+    } catch ( Exception ignored ) {
     }
   }
 
@@ -236,7 +232,7 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
             mock( Repository.class ), mock( IMetaStore.class ) );
     String sql = sqlStatement.getSQL();
 
-    assertTrue( StringUtils.countMatches( sql, schemaTable ) == 2 );
+    assertEquals( 2, StringUtils.countMatches( sql, schemaTable ) );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
@@ -287,11 +283,7 @@ public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
   @Test
   public void testReadRepAllocatesSizeProperly() throws Exception {
     Repository rep = mock( Repository.class );
-    ObjectId objectId = new ObjectId() {
-      @Override public String getId() {
-        return "testId";
-      }
-    };
+    ObjectId objectId = () -> "testId";
     when( rep.countNrStepAttributes( objectId, "key_name" ) ).thenReturn( 2 );
     when( rep.countNrStepAttributes( objectId, "key_field" ) ).thenReturn( 2 );
     when( rep.countNrStepAttributes( objectId, "key_condition" ) ).thenReturn( 0 );

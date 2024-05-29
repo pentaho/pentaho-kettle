@@ -23,7 +23,6 @@
 
 package org.pentaho.di.core.row.value;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -4039,16 +4038,16 @@ public class ValueMetaBase implements ValueMetaInterface {
     boolean isStringValue = outValueType == Value.VALUE_TYPE_STRING;
     Object emptyValue = isStringValue ? Const.NULL_STRING : null;
 
-    boolean isEmptyAndNullDiffer = convertStringToBoolean(
+    Boolean isEmptyAndNullDiffer = convertStringToBoolean(
         Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
 
-    boolean normalizeNullStringToEmpty = !convertStringToBoolean(
+    Boolean normalizeNullStringToEmpty = !convertStringToBoolean(
       Const.NVL( System.getProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "N" ), "N" ) );
 
-    //the property KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY is only valid when KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y.
-    //the isEmptyAndNullDiffer means that null and empty string should be different. normalizeNullStringToEmpty stops pentaho from making this transaction.
-    if ( (isEmptyAndNullDiffer && pol == null && isStringValue && normalizeNullStringToEmpty) || (!isEmptyAndNullDiffer && pol == null && isStringValue ) ) {
-      pol = StringUtils.EMPTY;
+    if ( normalizeNullStringToEmpty ) {
+      if ( pol == null && isStringValue && isEmptyAndNullDiffer ) {
+        pol = Const.NULL_STRING;
+      }
     }
 
     if ( pol == null ) {
