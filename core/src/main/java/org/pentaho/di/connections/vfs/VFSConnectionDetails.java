@@ -39,6 +39,14 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   }
 
   /**
+   * Returns true if vfs connections supports buckets. Defaults to {@code true}
+   * @return true if has buckets, false otherwise
+   */
+  default boolean hasBuckets() {
+    return true;
+  }
+
+  /**
    * Returns true if vfs connection supports root path
    * Defaults to {@code false}.
    *
