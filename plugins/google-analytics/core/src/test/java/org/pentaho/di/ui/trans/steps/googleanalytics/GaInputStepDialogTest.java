@@ -33,9 +33,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.api.services.analytics.Analytics;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -52,7 +52,7 @@ import java.util.List;
 /**
  * @author Pavel Sakun
  */
-@RunWith( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class GaInputStepDialogTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Mock

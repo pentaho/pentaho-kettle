@@ -24,8 +24,8 @@ package org.pentaho.di.trans.steps.googleanalytics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -75,7 +75,7 @@ public class GaInputStepTest {
 
     Analytics.Data.Ga.Get mockQuery = prepareMockQuery( recordsCount );
     step = spy( step );
-    doReturn( mockQuery ).when( step ).getQuery( any( Analytics.class ) );
+    doReturn( mockQuery ).when( step ).getQuery( any() );
 
     for ( int i = 0; i < recordsCount; i++ ) {
       List<String> next = step.getNextDataEntry();
