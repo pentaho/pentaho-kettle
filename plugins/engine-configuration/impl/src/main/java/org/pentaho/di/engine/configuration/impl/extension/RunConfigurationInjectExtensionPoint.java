@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -39,6 +39,8 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 
+import java.util.function.Function;
+
 @ExtensionPoint(
     id = "RunConfigurationInjectExtensionPoint",
     description = "Inject run cofiguration before job entry start",
@@ -46,7 +48,8 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
   )
 public class RunConfigurationInjectExtensionPoint implements ExtensionPointInterface {
 
-  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
+  private Function<JobMeta, RunConfigurationManager> rcmProvider =
+    jm -> RunConfigurationManager.getInstance( () -> jm.getBowl().getMetastore() );
 
   @Override
   public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
@@ -65,18 +68,25 @@ public class RunConfigurationInjectExtensionPoint implements ExtensionPointInter
 
     //will load and save to meta all run configurations
     for ( JobEntryTrans trans : job.getActiveJobEntryTransformations().values() ) {
-      RunConfiguration loadedRunConfiguration = runConfigurationManager.load( jobMeta.environmentSubstitute( trans.getRunConfiguration() ) );
+      RunConfiguration loadedRunConfiguration = getRunConfigurationManager( jobMeta )
+          .load( jobMeta.environmentSubstitute( trans.getRunConfiguration() ) );
       embeddedRunConfigurationManager.save( loadedRunConfiguration );
     }
 
     for ( JobEntryJob subJob : job.getActiveJobEntryJobs().values() ) {
-      RunConfiguration loadedRunConfiguration = runConfigurationManager.load( jobMeta.environmentSubstitute( subJob.getRunConfiguration() ) );
+      RunConfiguration loadedRunConfiguration = getRunConfigurationManager( jobMeta )
+          .load( jobMeta.environmentSubstitute( subJob.getRunConfiguration() ) );
       embeddedRunConfigurationManager.save( loadedRunConfiguration );
     }
   }
 
   @VisibleForTesting
   void setRunConfigurationManager( RunConfigurationManager runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
+    this.rcmProvider = x -> runConfigurationManager;
   }
+
+  private RunConfigurationManager getRunConfigurationManager( JobMeta meta) {
+    return rcmProvider.apply( meta );
+  }
+
 }

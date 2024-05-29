@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -31,6 +31,7 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
+import org.pentaho.di.engine.configuration.impl.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.i18n.BaseMessages;
@@ -48,16 +49,16 @@ import java.util.function.Supplier;
 public class RunConfigurationDelegate {
 
   private static Class<?> PKG = RunConfigurationDelegate.class;
-  private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
+  private static Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
-  private RunConfigurationService configurationManager = RunConfigurationManager.getInstance();
-  private static RunConfigurationDelegate instance;
+  private RunConfigurationService configurationManager;
 
-  public static RunConfigurationDelegate getInstance() {
-    if ( null == instance ) {
-      instance = new RunConfigurationDelegate();
-    }
-    return instance;
+  private RunConfigurationDelegate( CheckedMetaStoreSupplier supplier ) {
+    configurationManager = RunConfigurationManager.getInstance( supplier );
+  }
+
+  public static RunConfigurationDelegate getInstance( CheckedMetaStoreSupplier supplier ) {
+    return new RunConfigurationDelegate( supplier );
   }
 
   public void edit( RunConfiguration runConfiguration ) {

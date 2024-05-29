@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -83,7 +84,7 @@ public class RunConfigurationDelegateTest {
     PowerMockito.mockStatic( Spoon.class );
     when( Spoon.getInstance() ).thenReturn( spoon );
 
-    delegate = spy( new RunConfigurationDelegate() );
+    delegate = spy( RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getExplicitMetastore() ) );
     service = mock( RunConfigurationManager.class );
     delegate.setRunConfigurationManager( service );
   }

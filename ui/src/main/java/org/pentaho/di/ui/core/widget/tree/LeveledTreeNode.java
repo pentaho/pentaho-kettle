@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.TreeItem;
 
 public class LeveledTreeNode extends TreeNode {
   public enum LEVEL {
+    DEFAULT( "Default" ),
     PROJECT( "Project" ),
     GLOBAL( "Global" ),
     LOCAL( "Local" );
@@ -48,7 +49,7 @@ public class LeveledTreeNode extends TreeNode {
   private static final String NAME_KEY = "name";
   private static final String LEVEL_KEY = "level";
 
-  public LeveledTreeNode( String name, LEVEL level, boolean overridden) {
+  public LeveledTreeNode( String name, LEVEL level, boolean overridden ) {
     setData( NAME_KEY, name );
     setData( LEVEL_KEY, level );
     setLabel( name + " [" + level.getName() + "]" );
@@ -57,9 +58,21 @@ public class LeveledTreeNode extends TreeNode {
     }
   }
 
-  Comparator<TreeNode> COMPARATOR = Comparator.<TreeNode, String>comparing( t -> (String)t.getData().get( NAME_KEY ),
-                                                                            String.CASE_INSENSITIVE_ORDER )
-                                              .thenComparing( t -> (LEVEL)t.getData().get( LEVEL_KEY ));
+  // first DEFAULT items, then alphabetical, then by level
+  public Comparator<TreeNode> COMPARATOR =
+    Comparator.<TreeNode, LEVEL>comparing( t -> (LEVEL)t.getData().get( LEVEL_KEY ),
+                                            ( o1, o2 ) -> {
+    if ( o1 == LEVEL.DEFAULT ) {
+      return -1;
+    } else if ( o2 == LEVEL.DEFAULT ) {
+      return 1;
+    }
+    return 0;
+  } )
+
+              .thenComparing( t -> (String)t.getData().get( NAME_KEY ),
+                              String.CASE_INSENSITIVE_ORDER )
+              .thenComparing( t -> (LEVEL)t.getData().get( LEVEL_KEY ) );
   @Override
   public int compareTo( TreeNode other ) {
     return COMPARATOR.compare( this, other );

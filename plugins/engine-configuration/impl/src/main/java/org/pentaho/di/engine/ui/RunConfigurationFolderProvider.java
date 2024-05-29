@@ -27,14 +27,21 @@ import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
+import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by bmorrise on 7/6/18.
@@ -44,22 +51,48 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
   private static final Class<?> PKG = RunConfigurationViewTreeExtension.class;
   public static String STRING_RUN_CONFIGURATIONS = BaseMessages.getString( PKG, "RunConfigurationTree.Title" );
 
-  private RunConfigurationDelegate runConfigurationDelegate;
-
-  public RunConfigurationFolderProvider( RunConfigurationDelegate runConfigurationDelegate ) {
-    this.runConfigurationDelegate = runConfigurationDelegate;
+  public RunConfigurationFolderProvider() {
   }
 
   @Override
   public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
     GUIResource guiResource = GUIResource.getInstance();
-    for ( RunConfiguration runConfiguration : runConfigurationDelegate.load() ) {
+    Set<String> bowlNames = new HashSet<>();
+    Bowl currentBowl = Spoon.getInstance().getBowl();
+    if ( !currentBowl.equals( DefaultBowl.getInstance() ) ) {
+      RunConfigurationDelegate bowlDelegate =
+        RunConfigurationDelegate.getInstance( () -> currentBowl.getExplicitMetastore() );
+      for ( RunConfiguration runConfiguration : bowlDelegate.load() ) {
+        if ( !filterMatch( runConfiguration.getName(), filter ) ) {
+          continue;
+        }
+        if ( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME.equals( runConfiguration.getName() ) ) {
+          continue;
+        }
+        bowlNames.add( runConfiguration.getName() );
+        String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
+        TreeNode childTreeNode = createChildTreeNode( treeNode, runConfiguration.getName(), getRunConfigurationImage(
+                guiResource, imageFile ), LeveledTreeNode.LEVEL.PROJECT, false );
+        if ( runConfiguration.isReadOnly() ) {
+          childTreeNode.setForeground( getDisabledColor() );
+        }
+      }
+    }
+
+    RunConfigurationDelegate globalDelegate =
+      RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getExplicitMetastore() );
+
+    for ( RunConfiguration runConfiguration : globalDelegate.load() ) {
       if ( !filterMatch( runConfiguration.getName(), filter ) ) {
         continue;
       }
+      LeveledTreeNode.LEVEL level = LeveledTreeNode.LEVEL.GLOBAL;
+      if ( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME.equals( runConfiguration.getName() ) ) {
+        level = LeveledTreeNode.LEVEL.DEFAULT;
+      }
       String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
       TreeNode childTreeNode = createChildTreeNode( treeNode, runConfiguration.getName(), getRunConfigurationImage(
-              guiResource, imageFile ) );
+              guiResource, imageFile ), level, bowlNames.contains( runConfiguration.getName() ) );
       if ( runConfiguration.isReadOnly() ) {
         childTreeNode.setForeground( getDisabledColor() );
       }
@@ -86,8 +119,13 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     return RunConfiguration.class;
   }
 
-  private TreeNode createChildTreeNode( TreeNode parent, String text, Image image ) {
-    return super.createTreeNode( parent, text, image );
+  public TreeNode createChildTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level,
+                                       boolean overridden ) {
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, overridden );
+    childTreeNode.setImage( image );
+
+    parent.addChild( childTreeNode );
+    return childTreeNode;
   }
 
   @Override
