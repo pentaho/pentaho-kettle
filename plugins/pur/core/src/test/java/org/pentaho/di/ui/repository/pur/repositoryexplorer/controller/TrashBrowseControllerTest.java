@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,10 +42,10 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.contains;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
  * 
  */
 
-@RunWith( org.mockito.junit.MockitoJUnitRunner.class )
+@RunWith( org.mockito.runners.MockitoJUnitRunner.class )
 public class TrashBrowseControllerTest {
 
   private TrashBrowseControllerSpy trBrController;
