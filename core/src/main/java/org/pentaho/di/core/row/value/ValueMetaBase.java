@@ -23,7 +23,6 @@
 
 package org.pentaho.di.core.row.value;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -3602,16 +3601,17 @@ public class ValueMetaBase implements ValueMetaInterface {
         return true;
       }
 
-      if ( StringUtils.EMPTY.equals( value ) ) {
-        return !emptyStringDiffersFromNull;
+      if ( emptyStringDiffersFromNull ) {
+        return false;
       }
 
       // If it's a string and the string is empty, it's a null value as well
       //
-      if ( isString() && value.toString().isEmpty() ) {
-        return true;
+      if ( isString() ) {
+        if ( value.toString().length() == 0 ) {
+          return true;
+        }
       }
-
 
       // We tried everything else so we assume this value is not null.
       //
@@ -4038,16 +4038,16 @@ public class ValueMetaBase implements ValueMetaInterface {
     boolean isStringValue = outValueType == Value.VALUE_TYPE_STRING;
     Object emptyValue = isStringValue ? Const.NULL_STRING : null;
 
-    boolean isEmptyAndNullDiffer = convertStringToBoolean(
+    Boolean isEmptyAndNullDiffer = convertStringToBoolean(
         Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
 
-    boolean normalizeNullStringToEmpty = !convertStringToBoolean(
+    Boolean normalizeNullStringToEmpty = !convertStringToBoolean(
       Const.NVL( System.getProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "N" ), "N" ) );
 
-    //the property KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY is only valid when KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y.
-    //the isEmptyAndNullDiffer means that null and empty string should be different. normalizeNullStringToEmpty stops pentaho from making this transaction.
-    if ( (isEmptyAndNullDiffer && pol == null && isStringValue && normalizeNullStringToEmpty) || (!isEmptyAndNullDiffer && pol == null && isStringValue ) ) {
-      pol = StringUtils.EMPTY;
+    if ( normalizeNullStringToEmpty ) {
+      if ( pol == null && isStringValue && isEmptyAndNullDiffer ) {
+        pol = Const.NULL_STRING;
+      }
     }
 
     if ( pol == null ) {
@@ -4063,7 +4063,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           // we have a match
           //
           if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
-            return isEmptyAndNullDiffer && pol.equalsIgnoreCase( "" ) ? emptyValue : null;
+            return emptyValue;
           }
         }
       } else {

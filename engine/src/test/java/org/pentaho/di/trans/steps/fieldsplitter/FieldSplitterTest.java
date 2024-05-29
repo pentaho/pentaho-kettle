@@ -141,7 +141,7 @@ public class FieldSplitterTest {
 
     RowSet outputRowSet = step.getOutputRowSets().get( 0 );
     Object[] actualRow = outputRowSet.getRow();
-    Object[] expectedRow = new Object[] { "before", "", "b=b", "after" };
+    Object[] expectedRow = new Object[] { "before", null, "b=b", "after" };
 
     assertEquals( "Output row is of an unexpected length", expectedRow.length, outputRowSet.getRowMeta().size() );
 
