@@ -33,13 +33,8 @@
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>1.3</version>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
