@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,13 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.avro.output;
 
-import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -45,9 +44,15 @@ import org.pentaho.reporting.libraries.base.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
 public class AvroOutputTest {
@@ -91,18 +96,9 @@ public class AvroOutputTest {
     avroOutputMeta.setOutputFields( avroOutputFields );
 
     avroOutputMeta.setParentStepMeta( mockStepMeta );
-    when( mockStepMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
     when( mockStepMeta.getName() ).thenReturn( OUTPUT_STEP_NAME );
     when( mockTransMeta.findStep( OUTPUT_STEP_NAME ) ).thenReturn( mockStepMeta );
-    when( mockTrans.isRunning() ).thenReturn( true );
 
-    try {
-      when( mockRowHandler.getRow() ).thenAnswer( answer -> returnNextAvroRow() );
-    } catch ( KettleException ke ) {
-      ke.printStackTrace();
-    }
-
-    when( mockPentahoAvroOutputFormat.createRecordWriter() ).thenReturn( mockPentahoAvroRecordWriter );
     avroOutput = spy( new AvroOutput( mockStepMeta, mockStepDataInterface, 0, mockTransMeta, mockTrans ) );
     avroOutput.setInputRowMeta( dataInputRowMeta );
     avroOutput.setRowHandler( mockRowHandler );
@@ -179,8 +175,6 @@ public class AvroOutputTest {
 
   private void setAvroOutputRows() {
     AvroOutputField avroOutputField = mock( AvroOutputField.class );
-    when( avroOutputField.getAvroType() ).thenReturn( AvroSpec.DataType.STRING );
-    when( avroOutputField.getPentahoFieldName() ).thenReturn( "StringName" );
     avroOutputFields =  new ArrayList<>();
     avroOutputFields.add( avroOutputField );
   }
