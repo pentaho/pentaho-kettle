@@ -146,13 +146,9 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
     String connectionName = ( (ConnectionFileName) this.getName() ).getConnection();
     StringBuilder connectionPath = new StringBuilder();
     connectionPath.append( ConnectionFileProvider.SCHEME );
-    if ( fileObject.getName().toString().toLowerCase().startsWith( KettleVFS.SMB_SCHEME_COLON ) ) {
-      connectionPath.append( ":/" );
-    } else {
-      connectionPath.append( "://" );
-      connectionPath.append( connectionName );
-      connectionPath.append( DELIMITER );
-    }
+    connectionPath.append( "://" );
+    connectionPath.append( connectionName );
+    connectionPath.append( DELIMITER );
     if ( domain == null || domain.equals( "" ) ) {
       // S3 does not return a URLFleName; but Google does hence the difference here
       if ( fileObject.getName() instanceof URLFileName ) {

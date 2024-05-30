@@ -65,8 +65,6 @@ import java.util.regex.Pattern;
  */
 public class KettleVFS {
   public static final String TEMP_DIR = System.getProperty( "java.io.tmpdir" );
-  public static final String SMB_SCHEME = "smb";
-  public static final String SMB_SCHEME_COLON = SMB_SCHEME + ":";
 
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
 
