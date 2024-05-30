@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public class StreamToNodeConvertersPrivateDatabasesTest {
     JobMeta jobMeta = new JobMeta();
 
     Repository repository = mock( Repository.class );
-    when( repository.loadTransformation( any( StringObjectId.class ), anyString() ) ).thenReturn( transMeta );
-    when( repository.loadJob( any( StringObjectId.class ), anyString() ) ).thenReturn( jobMeta );
+    when( repository.loadTransformation( any( StringObjectId.class ), any() ) ).thenReturn( transMeta );
+    when( repository.loadJob( any( StringObjectId.class ), any() ) ).thenReturn( jobMeta );
 
     StreamToTransNodeConverter transNodeConverter = new StreamToTransNodeConverter( pur );
     transNodeConverter = spy( transNodeConverter );
