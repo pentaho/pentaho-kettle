@@ -22,9 +22,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
-import org.pentaho.di.repository.pur.AttributesMapUtil;
 
 import java.util.Base64;
 
@@ -36,8 +34,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-//import static org.pentaho.test.util.InternalState.setInternalState;
-//import static org.pentaho.test.util.InternalState.getInternalState;
+import static org.pentaho.test.util.InternalState.setInternalState;
+import static org.pentaho.test.util.InternalState.getInternalState;
 
 public class RepositoryCleanupUtilTest {
 
@@ -46,9 +44,9 @@ public class RepositoryCleanupUtilTest {
     RepositoryCleanupUtil util = mock( RepositoryCleanupUtil.class );
     doCallRealMethod().when( util ).authenticateLoginCredentials();
 
-  //  setInternalState( util, "url", "http://localhost:8080/pentaho" );
-  //  setInternalState( util, "username", "admin" );
-  //  setInternalState( util, "password", "Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde" );
+    setInternalState( util, "url", "http://localhost:8080/pentaho" );
+    setInternalState( util, "username", "admin" );
+    setInternalState( util, "password", "Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde" );
 
     WebResource resource = mock( WebResource.class );
     doReturn( "true" ).when( resource ).get( String.class );
@@ -61,12 +59,12 @@ public class RepositoryCleanupUtilTest {
     try( MockedStatic<Client> mockedClient = mockStatic( Client.class) ) {
       mockedClient.when( () -> Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
 
-      //when( Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
+      when( Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
       util.authenticateLoginCredentials();
 
       // the expected value is: "Basic <base64 encoded username:password>"
-      //assertEquals( "Basic " + new String( Base64.getEncoder().encode( "admin:password".getBytes( "utf-8" ) ) ),
-      //  getInternalState( client.getHeadHandler(), "authentication" ) );
+      assertEquals( "Basic " + new String( Base64.getEncoder().encode( "admin:password".getBytes( "utf-8" ) ) ),
+      getInternalState( client.getHeadHandler(), "authentication" ) );
     }
   }
 }
