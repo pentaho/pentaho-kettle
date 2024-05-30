@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,8 +42,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
@@ -103,8 +103,8 @@ public abstract class LoadSaveBase<T> {
         ( (BaseStepMeta) meta ).setParentStepMeta( mockParentStepMeta );
         TransMeta mockTransMeta = mock( TransMeta.class );
         NamedClusterEmbedManager embedManager = mock( NamedClusterEmbedManager.class );
-        when( mockParentStepMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
-        when( mockTransMeta.getNamedClusterEmbedManager() ).thenReturn( embedManager );
+        lenient().when( mockParentStepMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
+        lenient().when( mockTransMeta.getNamedClusterEmbedManager() ).thenReturn( embedManager );
       }
       return meta;
     } catch ( Exception e ) {

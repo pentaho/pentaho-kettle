@@ -70,8 +70,8 @@ public class DataGrid_EmptyStringVsNull_Test {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
     List<Object[]> expected = Arrays.asList(
       new Object[] { "", "", " ", "", null },
-      new Object[] { "", "", "", "", null },
-      new Object[] { "", "", "", "", null }
+      new Object[] { null, "", null, "", null },
+      new Object[] { null, "", null, "", null }
     );
     executeAndAssertResults( expected );
   }

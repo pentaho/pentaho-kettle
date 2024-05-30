@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,9 @@
 package org.pentaho.di.trans.steps.mailinput;
 
 import org.mockito.AdditionalMatchers;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -111,7 +112,7 @@ public class ParseMailInputTest {
     MailConnection conn = mock( MailConnection.class );
     when( conn.getMessageBody( any( Message.class ) ) ).thenReturn( MSG_BODY );
     when( conn.getFolderName() ).thenReturn( FLD_NAME );
-    when( conn.getAttachedFilesCount( any( Message.class ), any( Pattern.class ) ) ).thenReturn( ATTCH_COUNT );
+    when( conn.getAttachedFilesCount( any(), any() ) ).thenReturn( ATTCH_COUNT );
     when( conn.getMessageBodyContentType( any( Message.class ) ) ).thenReturn( CNTNT_TYPE );
     data = mock( MailInputData.class );
     data.mailConn = conn;

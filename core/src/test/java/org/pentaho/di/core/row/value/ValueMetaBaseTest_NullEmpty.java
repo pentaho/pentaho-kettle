@@ -36,8 +36,8 @@ public class ValueMetaBaseTest_NullEmpty {
    */
   @Test
   public void convertDataFromStringWithDefaults() throws Exception {
-    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
-    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "Y" );
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
+    System.setProperty( Const.KETTLE_DO_NOT_NORMALIZE_NULL_STRING_TO_EMPTY, "N" );
 
     ValueMetaBase out = new ValueMetaString();
     ValueMetaBase value = new ValueMetaString();
