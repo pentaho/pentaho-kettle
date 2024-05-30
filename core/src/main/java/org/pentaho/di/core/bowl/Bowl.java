@@ -18,6 +18,8 @@ package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
@@ -72,6 +74,14 @@ public interface Bowl {
    * @return Set&lt;Bowl&gt; A set of Parent Bowls. Should not be null.
    */
   Set<Bowl> getParentBowls();
+
+  /**
+   * Get the SharedObjectIO instance that is responsible for reading/writing of
+   *  Shared Objects
+   * @return
+   *
+   */
+  SharedObjectsIO getSharedObjectsIO() ;
 
   /**
    * Get a default variable space using this Bowl's context. Everytime you will get a new instance.

@@ -26,6 +26,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.DatabaseConnectionManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,38 +38,54 @@ import java.util.Map;
  * @author Andrey Khayrutdinov
  */
 public class DatabasesCollector {
-  private final AbstractMeta meta;
+  private DatabaseConnectionManager dbManager;
   private final Repository repository;
-
+  private AbstractMeta meta;
   private List<String> dbNames;
-  private Map<String, DatabaseMeta> names2metas;
+  private Map<String, DatabaseMeta> dbMetaMap;
 
-  public DatabasesCollector( AbstractMeta meta, Repository repository ) {
+  public DatabasesCollector( DatabaseConnectionManager dbManager, Repository repository ) {
+    this( dbManager, null, repository );
+  }
+
+  public DatabasesCollector( DatabaseConnectionManager dbManager, AbstractMeta meta, Repository repository ) {
+    this.dbManager = dbManager;
     this.meta = meta;
     this.repository = repository;
   }
 
   public void collectDatabases() throws KettleException {
-    List<DatabaseMeta> dbsFromMeta = meta.getDatabases();
-    names2metas = new HashMap<String, DatabaseMeta>( dbsFromMeta.size() );
-    for ( DatabaseMeta db : dbsFromMeta ) {
-      names2metas.put( db.getName(), db );
+    dbMetaMap = new HashMap<String, DatabaseMeta>();
+    List<DatabaseMeta> dbMetaList;
+
+    // SharedObjects
+    if ( dbManager != null ) {
+      dbMetaList = dbManager.getDatabases();
+      addToMetaMap( dbMetaList );
     }
 
+    // local databases
+    if ( meta != null ) {
+      dbMetaList = meta.getLocalDbMetas();
+      addToMetaMap( dbMetaList );
+    }
+
+    //Repository
     if ( repository != null ) {
       List<DatabaseMeta> dbsFromRepo = repository.readDatabases();
       for ( DatabaseMeta db : dbsFromRepo ) {
-        if ( !names2metas.containsKey( db.getName() ) ) {
-          names2metas.put( db.getName(), db );
+        if ( !dbMetaMap.containsKey( db.getName() ) ) {
+          dbMetaMap.put( db.getName(), db );
         }
       }
     }
 
-    dbNames = new ArrayList<String>( names2metas.keySet() );
+    dbNames = new ArrayList<String>( dbMetaMap.keySet() );
     Collections.sort( dbNames, String.CASE_INSENSITIVE_ORDER );
   }
 
-  public List<String> getDatabaseNames() {
+  public List<String> getDatabaseNames() throws KettleException {
+    collectDatabases();
     if ( dbNames == null ) {
       throw exception();
     }
@@ -76,13 +93,19 @@ public class DatabasesCollector {
   }
 
   public DatabaseMeta getMetaFor( String dbName ) {
-    if ( names2metas == null ) {
+    if ( dbMetaMap == null ) {
       throw exception();
     }
-    return names2metas.get( dbName );
+    return dbMetaMap.get( dbName );
   }
 
   private static IllegalStateException exception() {
     return new IllegalStateException( "Call collectDatabases() first" );
+  }
+
+  private void addToMetaMap( List<DatabaseMeta> metaList ) {
+    for ( DatabaseMeta db : metaList ) {
+      dbMetaMap.put( db.getName(), db );
+    }
   }
 }

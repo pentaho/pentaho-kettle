@@ -41,6 +41,7 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
@@ -102,10 +103,16 @@ public class ConnectionFileProviderTest {
       @Override
       public VariableSpace getADefaultVariableSpace() {
         return null;
+
       }
       @Override
       public Set<Bowl> getParentBowls() {
         return Collections.emptySet();
+      }
+
+      @Override
+      public SharedObjectsIO getSharedObjectsIO() {
+        return null;
       }
     };
   }

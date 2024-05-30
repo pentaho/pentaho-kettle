@@ -39,6 +39,7 @@ import org.pentaho.di.core.bowl.HasBowlInterface;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -251,11 +252,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    **/
   protected Set<String> privateDatabases;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.pentaho.di.repository.RepositoryElementInterface#getObjectId()
-   */
+  /** Needed to display the local Database connections in configuration pane in UI*/
+  protected Map<String, DatabaseMeta> localDbMetas = new HashMap();
+
   @Override
   public ObjectId getObjectId() {
     return objectId;
@@ -2178,4 +2177,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     this.metaFileCache = metaFileCache;
   }
 
+  public List<DatabaseMeta> getLocalDbMetas() {
+    return new ArrayList<>( localDbMetas.values());
+  }
 }

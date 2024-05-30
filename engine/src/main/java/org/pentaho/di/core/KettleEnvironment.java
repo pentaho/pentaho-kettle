@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.core;
 import com.google.common.util.concurrent.SettableFuture;
 import org.pentaho.di.core.auth.AuthenticationConsumerPluginType;
 import org.pentaho.di.core.auth.AuthenticationProviderPluginType;
+import org.pentaho.di.core.bowl.BowlManagerFactoryRegistry;
 import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -47,6 +48,7 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.DatabaseConnectionManager;
 import org.pentaho.di.trans.step.RowDistributionPluginType;
 
 import java.util.Arrays;
@@ -152,6 +154,9 @@ public class KettleEnvironment {
         // Update Variables for LoggingRegistry
         LoggingRegistry.getInstance().updateFromProperties();
 
+        // Registering the Shared Objects Managers to Bowl
+        registerSharedObjectManagersWithBowl();
+
         // Schedule the purge timer task
         LoggingRegistry.getInstance().schedulePurgeTimer();
 
@@ -255,5 +260,13 @@ public class KettleEnvironment {
     KettleClientEnvironment.reset();
     LoggingRegistry.getInstance().reset();
     initialized.set( null );
+  }
+
+  /**
+   * Registers the SharedObject type specific factory with the Bowl factory registry.
+   */
+  private static void registerSharedObjectManagersWithBowl(){
+    BowlManagerFactoryRegistry.getInstance().registerManagerFactory( DatabaseConnectionManager.class,
+                        new DatabaseConnectionManager.DbConnectionManagerFactory() );
   }
 }

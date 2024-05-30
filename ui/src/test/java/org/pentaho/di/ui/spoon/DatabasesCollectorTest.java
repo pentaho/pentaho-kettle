@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,9 @@ package org.pentaho.di.ui.spoon;
 import org.junit.Test;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.DatabaseConnectionManager;
 
 import java.util.List;
 
@@ -42,7 +44,7 @@ public class DatabasesCollectorTest {
 
   @Test
   public void repositoryIsNull() throws Exception {
-    DatabasesCollector collector = new DatabasesCollector( prepareMeta( mockDb( "mysql" ) ), null );
+    DatabasesCollector collector = new DatabasesCollector( prepareDbManager( mockDb( "mysql" ) ), null );
     collector.collectDatabases();
 
     assertEquals( collector.getDatabaseNames().size(), 1 );
@@ -51,10 +53,10 @@ public class DatabasesCollectorTest {
 
   @Test
   public void repositoryDuplicates() throws Exception {
-    AbstractMeta meta = prepareMeta( mockDb( "mysql" ) );
+    DatabaseConnectionManager mgr = prepareDbManager( mockDb( "mysql" ) );
     Repository repository = mockRepository( mockDb( "mysql" ) );
 
-    DatabasesCollector collector = new DatabasesCollector( meta, repository );
+    DatabasesCollector collector = new DatabasesCollector( mgr, repository );
     collector.collectDatabases();
 
     assertEquals( collector.getDatabaseNames().size(), 1 );
@@ -63,15 +65,23 @@ public class DatabasesCollectorTest {
 
   @Test
   public void repositoryContainsUnique() throws Exception {
-    AbstractMeta meta = prepareMeta( mockDb( "mysql" ), mockDb( "oracle" ) );
+    DatabaseConnectionManager mgr = prepareDbManager( mockDb( "mysql" ), mockDb( "oracle" ) );
     Repository repository = mockRepository( mockDb( "h2" ) );
 
-    DatabasesCollector collector = new DatabasesCollector( meta, repository );
+    DatabasesCollector collector = new DatabasesCollector( mgr, repository );
     collector.collectDatabases();
 
     assertEquals( collector.getDatabaseNames().size(), 3 );
   }
 
+  @Test
+  public void collectDatabasesRepIsNullTest() throws Exception {
+    DatabaseConnectionManager mgr = prepareDbManager( mockDb( "mysql" ), mockDb( "oracle" ) );
+    AbstractMeta meta = prepareMeta( mockDb( "postgres" ) );
+    DatabasesCollector collector = new DatabasesCollector( mgr, meta, null );
+    collector.collectDatabases();
+    assertEquals( collector.getDatabaseNames().size(), 3 );
+  }
 
   private static AbstractMeta prepareMeta( DatabaseMeta... metas ) {
     if ( metas == null ) {
@@ -80,8 +90,19 @@ public class DatabasesCollectorTest {
 
     AbstractMeta meta = mock( AbstractMeta.class );
     List<DatabaseMeta> dbs = asList( metas );
-    when( meta.getDatabases() ).thenReturn( dbs );
+    when( meta.getLocalDbMetas() ).thenReturn( dbs );
     return meta;
+  }
+
+  private static DatabaseConnectionManager prepareDbManager( DatabaseMeta... metas ) throws KettleException {
+    if ( metas == null ) {
+      metas = new DatabaseMeta[ 0 ];
+    }
+
+    DatabaseConnectionManager mgr = mock( DatabaseConnectionManager.class );
+    List<DatabaseMeta> dbs = asList( metas );
+    when( mgr.getDatabases() ).thenReturn( dbs );
+    return mgr;
   }
 
   private static Repository mockRepository( DatabaseMeta... metas ) throws Exception {

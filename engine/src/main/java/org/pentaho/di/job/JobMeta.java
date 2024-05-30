@@ -1013,6 +1013,7 @@ public class JobMeta extends AbstractMeta
         dbcon.shareVariablesWith( this );
         if ( !dbcon.isShared() ) {
           privateDatabases.add( dbcon.getName() );
+          localDbMetas.put( dbcon.getName(), dbcon );
         }
 
         DatabaseMeta exist = findDatabase( dbcon.getName() );
