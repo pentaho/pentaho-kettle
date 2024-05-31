@@ -15,9 +15,6 @@
 
   <name>PDI Shape File Reader Plugin Core</name>
 
-  <properties>
-    <junit.version>4.4</junit.version>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -36,14 +33,14 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
     <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.eclipse</groupId>
       <artifactId>jface</artifactId>
