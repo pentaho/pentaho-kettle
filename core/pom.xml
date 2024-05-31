@@ -20,7 +20,7 @@
   <properties>
     <!-- Test running configuration -->
     <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
-
+    <maven-surefire-plugin.argLine> --add-opens=java.base/java.lang=ALL-UNNAMED</maven-surefire-plugin.argLine>
     <!-- Third-party dependencies -->
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <commons-collections.version>3.2.2</commons-collections.version>
