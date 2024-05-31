@@ -193,7 +193,6 @@ public class JobEntryDummy extends JobEntryBase implements Cloneable, JobEntryIn
       logError( toString(), "Error processing DummyJob : " + e.getMessage() );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

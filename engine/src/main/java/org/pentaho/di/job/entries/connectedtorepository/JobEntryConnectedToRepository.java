@@ -213,7 +213,6 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
     result.setResult( true );
     result.setNrErrors( 0 );
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

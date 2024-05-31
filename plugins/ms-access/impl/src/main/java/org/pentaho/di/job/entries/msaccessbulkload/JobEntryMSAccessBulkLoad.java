@@ -536,7 +536,6 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     }
 
     displayResults();
-    setLoggingObjectInUse( false );
     return result;
   }
 

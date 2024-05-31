@@ -220,7 +220,6 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
       }
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

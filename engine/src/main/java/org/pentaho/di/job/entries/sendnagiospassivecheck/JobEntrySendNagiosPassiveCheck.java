@@ -545,8 +545,6 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
       log.logError( BaseMessages.getString( PKG, "JobEntrySendNagiosPassiveCheck.ErrorGetting", e.toString() ) );
     }
 
-    setLoggingObjectInUse( false );
-
     return result;
   }
 
