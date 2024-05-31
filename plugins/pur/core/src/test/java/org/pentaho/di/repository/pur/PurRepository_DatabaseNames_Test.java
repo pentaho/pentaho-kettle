@@ -71,7 +71,7 @@ public class PurRepository_DatabaseNames_Test extends RepositoryTestLazySupport 
     purRepository.setTest( unifiedRepository );
   }
 
-  //@Test
+  @Test
   public void getDatabaseId_ExactMatch() throws Exception {
     ObjectId databaseID = purRepository.getDatabaseID( EXISTING_DB );
     assertEquals( EXISTING_DB, databaseID.getId() );
@@ -84,14 +84,14 @@ public class PurRepository_DatabaseNames_Test extends RepositoryTestLazySupport 
 
     List<RepositoryFile> files = Arrays.asList( file( "a" ), file( EXISTING_DB ), file( "b" ) );
     purRepository = spy( purRepository );
-    doReturn( files ).when( purRepository ).getAllFilesOfType( any( ObjectId.class ),
+    doReturn( files ).when( purRepository ).getAllFilesOfType( any(),
         eq( RepositoryObjectType.DATABASE ), anyBoolean() );
 
     ObjectId databaseID = purRepository.getDatabaseID( lookupName );
     assertEquals( EXISTING_DB, databaseID.getId() );
   }
 
-  //@Test( expected = KettleException.class )
+  @Test( expected = KettleException.class )
   public void getDatabaseId_FailsOnRepositoryException() throws Exception {
     when( unifiedRepository.getFile( getPathForDb( "non-existing" ) ) ).thenThrow( new RuntimeException() );
     purRepository.getDatabaseID( "non-existing" );

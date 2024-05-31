@@ -16,7 +16,7 @@
  */
 package org.pentaho.di.repository.utils;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -51,8 +51,8 @@ public class RepositoryFactoryTest {
     KettleEnvironment.init();
   }
 
-  @After
-  public void reset() {
+  @AfterClass
+  public static void reset() {
     PentahoSystem.clearObjectFactory();
   }
 

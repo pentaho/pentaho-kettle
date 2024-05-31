@@ -16,6 +16,8 @@
   </parent>
 
   <properties>
+    <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
+
     <!-- Kettle dependencies -->
     <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
 
