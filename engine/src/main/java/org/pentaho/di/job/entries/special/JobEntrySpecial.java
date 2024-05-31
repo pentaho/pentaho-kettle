@@ -194,7 +194,6 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
     } else if ( isDummy() ) {
       result = previousResult;
     }
-    setLoggingObjectInUse( false );
     return result;
   }
 

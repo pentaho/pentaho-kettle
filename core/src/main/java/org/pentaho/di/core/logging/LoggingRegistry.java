@@ -544,7 +544,7 @@ public class LoggingRegistry {
       String objId = obj.getLogChannelId();
 
       // Only Objects that are tied to a buffer can be purged.
-      if ( !channelsNotToRemove.contains( objId ) && !map.get(objId).isLoggingObjectInUse() ) {
+      if ( !channelsNotToRemove.contains( objId ) ) {
         // Object is safe to remove, but the counter for purged objects will only be incremented if it is really
         // removed from the map as it's possible for the object to not exist on the map.
         if ( null != map.remove( objId ) ) {

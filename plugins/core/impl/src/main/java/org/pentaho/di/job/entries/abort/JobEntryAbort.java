@@ -151,7 +151,6 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     // we fail so stop
     // job execution
     parentJob.stopAll();
-    setLoggingObjectInUse( false );
     return previousResult;
   }
 

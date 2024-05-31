@@ -132,7 +132,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private LogChannelInterface log;
 
-  private boolean loggingObjectInUse;
   private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 
   private int logBufferStartLine;
@@ -256,17 +255,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.log.setHooks( this );
   }
 
-  @Override
-  public boolean isLoggingObjectInUse() {
-    return loggingObjectInUse;
-  }
-
-  public void setLoggingObjectInUse( boolean inUse ) {
-    loggingObjectInUse = inUse;
-  }
-
   public void init() {
-    setLoggingObjectInUse( true );
     status = new AtomicInteger();
 
     jobListeners = new ArrayList<JobListener>();
@@ -639,7 +628,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @see JobListener#jobFinished(Job)
    */
   public void fireJobFinishListeners() throws KettleException {
-    setLoggingObjectInUse( false );
     synchronized ( jobListeners ) {
       for ( JobListener jobListener : jobListeners ) {
         jobListener.jobFinished( this );

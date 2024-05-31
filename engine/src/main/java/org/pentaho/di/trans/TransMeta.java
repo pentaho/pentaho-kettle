@@ -140,7 +140,7 @@ import java.util.stream.Collectors;
  */
 public class TransMeta extends AbstractMeta
     implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, Cloneable, ResourceExportInterface,
-    RepositoryElementInterface {
+    RepositoryElementInterface, LoggingObjectInterface {
 
   /** The package name, used for internationalization of messages. */
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!

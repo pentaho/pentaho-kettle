@@ -47,9 +47,6 @@ public class LoggingObject implements LoggingObjectInterface {
 
   private LoggingObjectInterface parent;
 
-  private LoggingObjectInterface loggingObject;
-
-  private boolean loggingObjectInUse;
   private Date registrationDate;
 
   private boolean gatheringMetrics;
@@ -61,7 +58,6 @@ public class LoggingObject implements LoggingObjectInterface {
     } else {
       grabObjectInformation( object );
     }
-    loggingObjectInUse = false;
   }
 
   @Override
@@ -157,7 +153,6 @@ public class LoggingObject implements LoggingObjectInterface {
     containerObjectId = loggingObject.getContainerObjectId();
     forcingSeparateLogging = loggingObject.isForcingSeparateLogging();
     gatheringMetrics = loggingObject.isGatheringMetrics();
-    this.loggingObject = loggingObject;
 
     if ( loggingObject.getParent() != null ) {
       getParentLoggingObject( loggingObject.getParent() );
@@ -169,17 +164,8 @@ public class LoggingObject implements LoggingObjectInterface {
   private void grabObjectInformation( Object object ) {
     objectType = LoggingObjectType.GENERAL;
     objectName = object.toString(); // name of class or name of object..
+
     parent = null;
-    loggingObject = null;
-  }
-
-  @Override
-  public boolean isLoggingObjectInUse() {
-    return loggingObject == null ? loggingObjectInUse : loggingObject.isLoggingObjectInUse() || loggingObjectInUse;
-  }
-
-  public void setLoggingObjectInUse( boolean loggingObjectInUse ) {
-    this.loggingObjectInUse = loggingObjectInUse;
   }
 
   private void getParentLoggingObject( Object parentObject ) {

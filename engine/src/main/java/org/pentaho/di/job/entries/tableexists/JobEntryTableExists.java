@@ -199,7 +199,6 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
       logError( BaseMessages.getString( PKG, "TableExists.Error.NoConnectionDefined" ) );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

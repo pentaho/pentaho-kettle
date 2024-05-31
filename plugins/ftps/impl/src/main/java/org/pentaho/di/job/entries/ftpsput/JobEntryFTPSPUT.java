@@ -611,7 +611,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
         }
       }
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

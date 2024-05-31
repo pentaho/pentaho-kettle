@@ -517,7 +517,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
     result.setResult( isSuccess() );
     result.setNrErrors( getNrError() );
     displayResults();
-    setLoggingObjectInUse( false );
+
     return result;
   }
 
