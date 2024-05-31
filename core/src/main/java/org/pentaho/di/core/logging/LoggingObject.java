@@ -60,7 +60,7 @@ public class LoggingObject implements LoggingObjectInterface {
     } else {
       grabObjectInformation( object );
     }
-    loggingObjectInUse = true;
+    loggingObjectInUse = false;
   }
 
   @Override
