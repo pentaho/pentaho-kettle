@@ -216,7 +216,6 @@ public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEn
       result.setResult( false );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

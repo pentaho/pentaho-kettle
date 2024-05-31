@@ -495,7 +495,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       // PDI-15437
       result.setNrErrors( 0 );
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

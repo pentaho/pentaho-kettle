@@ -278,7 +278,6 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 
     // return result
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

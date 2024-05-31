@@ -141,7 +141,7 @@ public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryI
     } finally {
       database.disconnect();
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

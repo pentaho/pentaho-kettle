@@ -169,7 +169,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
       result.setNrErrors( 1 );
       logError( BaseMessages.getString( PKG, "JobEntryTalendJobExec.ERROR_0005_No_Filename_Defined" ) );
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

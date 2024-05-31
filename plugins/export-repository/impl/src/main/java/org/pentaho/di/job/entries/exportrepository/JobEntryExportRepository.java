@@ -664,7 +664,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
       result.setResult( true );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 
