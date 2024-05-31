@@ -38,6 +38,7 @@
     <com.github.spotbugs.annotations.version>4.2.3</com.github.spotbugs.annotations.version>
   </properties>
 
+
   <dependencies>
     <!-- Pentaho Dependencies -->
     <dependency>
