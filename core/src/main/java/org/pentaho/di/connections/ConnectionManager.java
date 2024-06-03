@@ -22,12 +22,15 @@
 
 package org.pentaho.di.connections;
 
+import com.google.common.annotations.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.pentaho.di.connections.utils.EncryptUtils;
 import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionProvider;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
@@ -39,10 +42,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.Objects;
 
 import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 
@@ -58,13 +61,39 @@ public class ConnectionManager {
   private static final Logger logger = LoggerFactory.getLogger( ConnectionManager.class );
 
   private List<LookupFilter> lookupFilters = new ArrayList<>();
+
+  @NonNull
   private Supplier<IMetaStore> metaStoreSupplier;
+
+  @NonNull
+  private final Bowl bowl;
+
   private ConcurrentHashMap<String, ConnectionProvider<? extends ConnectionDetails>> connectionProviders =
     new ConcurrentHashMap<>();
 
   private Map<String, List<String>> namesByConnectionProvider = new ConcurrentHashMap<>();
   private Map<String, ConnectionDetails> detailsByName = new ConcurrentHashMap<>();
   private boolean initialized;
+
+  private ConnectionManager() {
+    // Must throw a RuntimeException on metastore error to not break compatibility.
+    this( getMetastoreSupplierUnchecked( DefaultBowl.getInstance() ), DefaultBowl.getInstance() );
+  }
+
+  @VisibleForTesting ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier, @NonNull Bowl bowl ) {
+    this.metaStoreSupplier = Objects.requireNonNull( metaStoreSupplier );
+    this.bowl = Objects.requireNonNull( bowl );
+  }
+
+  @NonNull
+  private static Supplier<IMetaStore> getMetastoreSupplierUnchecked( @NonNull Bowl bowl ) {
+    try {
+      IMetaStore metastore = bowl.getMetastore();
+      return () -> metastore;
+    } catch ( MetaStoreException e ) {
+      throw new MetaStoreInitializationException( e );
+    }
+  }
 
   // This isn't really a cache. We load *all* the connection information from the metastore, and then only
   // contact the metastore again when we write changes.
@@ -107,24 +136,24 @@ public class ConnectionManager {
    *
    * @return ConnectionManager
    */
+  @NonNull
   public static ConnectionManager getInstance() {
     return instance;
   }
 
   /**
-   * Construct a new instance of a ConnectionManager using the metastore from the supplier.
-   *
-   * Instances returned by this will not share in-memory state with any other instannces. If you need the
+   * Construct a new instance of a ConnectionManager associated with a given meta-store and bowl.
+   * <p>
+   * Instances returned by this will not share in-memory state with any other instances. If you need the
    * ConnectionManager for a Bowl, use Bowl.getConnectionManager() instead.
    *
-   *
-   * @param bowl
-   *
+   * @param metaStoreSupplier The meta-store supplier.
+   * @param bowl              The bowl.
    * @return ConnectionManager
    */
-  public static ConnectionManager getInstance( Supplier<IMetaStore> metastoreSupplier ) {
-    ConnectionManager newManager = new ConnectionManager();
-    newManager.setMetastoreSupplier( metastoreSupplier );
+  @NonNull
+  public static ConnectionManager getInstance( @NonNull Supplier<IMetaStore> metaStoreSupplier, @NonNull Bowl bowl ) {
+    ConnectionManager newManager = new ConnectionManager( metaStoreSupplier, bowl );
     // share the same set of connection providers and lookup filters. Everyone already registers with the one
     // from getInstance()
     newManager.connectionProviders = instance.connectionProviders;
@@ -159,8 +188,29 @@ public class ConnectionManager {
    *
    * @param metaStoreSupplier A meta store supplier
    */
-  public void setMetastoreSupplier( Supplier<IMetaStore> metaStoreSupplier ) {
-    this.metaStoreSupplier = metaStoreSupplier;
+  public void setMetastoreSupplier( @NonNull Supplier<IMetaStore> metaStoreSupplier ) {
+    this.metaStoreSupplier = Objects.requireNonNull( metaStoreSupplier );
+  }
+
+  /**
+   * Gets the default meta store supplier for the Connection Manager.
+   *
+   * @return A meta store supplier.
+   */
+  @VisibleForTesting
+  @NonNull
+  Supplier<IMetaStore> getMetastoreSupplier() {
+    return this.metaStoreSupplier;
+  }
+
+  /**
+   * Gets the bowl of the connection manager.
+   *
+   * @return A bowl.
+   */
+  @NonNull
+  public Bowl getBowl() {
+    return bowl;
   }
 
   /**
@@ -742,6 +792,17 @@ public class ConnectionManager {
 
     public void setLabel( String label ) {
       this.label = label;
+    }
+  }
+
+  public static class MetaStoreInitializationException extends RuntimeException {
+    public MetaStoreInitializationException( MetaStoreException cause ) {
+      super( cause );
+    }
+
+    @Override
+    public synchronized MetaStoreException getCause() {
+      return (MetaStoreException) super.getCause();
     }
   }
 }
