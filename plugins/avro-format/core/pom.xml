@@ -21,6 +21,7 @@
     <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
     <org.apache.avro.version>1.8.0</org.apache.avro.version>
     <jface.version>3.22.0</jface.version>
+    <commons-io.version>2.16.1</commons-io.version>
   </properties>
 
   <build>

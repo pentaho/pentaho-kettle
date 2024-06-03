@@ -28,6 +28,7 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
     <dependency.org.powermock.version>1.6.0</dependency.org.powermock.version>
+    <commons-io.version>2.16.1</commons-io.version>
   </properties>
 
   <dependencies>

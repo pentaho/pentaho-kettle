@@ -36,6 +36,7 @@
     <joda.version>2.10.2</joda.version>
     <encryption-support.version>10.2.0.0-SNAPSHOT</encryption-support.version>
     <com.github.spotbugs.annotations.version>4.2.3</com.github.spotbugs.annotations.version>
+    <commons-io.version>2.16.1</commons-io.version>
   </properties>
 
   <dependencies>

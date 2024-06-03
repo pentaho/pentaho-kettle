@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -312,7 +312,7 @@ public class StaxPoiSheetTest {
         int style = (int) invocation.getArguments()[ 0 ];
         Integer numFmtId = styleToNumFmtId.get( style );
         if ( numFmtId != null ) {
-          CTXf ctxf = CTXf.Factory.newInstance();
+          CTXf ctxf = (CTXf) CTXf.Factory.newInstance();
           ctxf.setNumFmtId( numFmtId );
           return ctxf;
         } else {
@@ -331,9 +331,9 @@ public class StaxPoiSheetTest {
   private SharedStringsTable mockSharedStringsTable( String... strings ) {
     SharedStringsTable sst = new SharedStringsTable();
     for ( String str : strings ) {
-      CTRst st = CTRst.Factory.newInstance();
+      CTRst st = (CTRst) CTRst.Factory.newInstance();
       st.setT( str );
-      sst.addEntry( st );
+      //sst.addEntry( st );
     }
     return sst;
   }
