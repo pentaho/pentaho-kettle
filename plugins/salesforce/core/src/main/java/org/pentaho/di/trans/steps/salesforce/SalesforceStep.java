@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.salesforce;
 
 import com.google.common.primitives.Ints;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -204,7 +205,12 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
   private JSONObject modulesAction() {
     JSONObject response = new JSONObject();
     try {
-      response.put( "modules", getModules() );
+      String[] modules = getModules();
+      JSONArray modulesList = new JSONArray();
+      for(String module:modules){
+        modulesList.add( module );
+      }
+      response.put( "modules", modulesList );
     } catch ( Exception e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
