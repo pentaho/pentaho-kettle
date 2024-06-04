@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.vfs.connections.ui.dialog;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -46,21 +47,29 @@ import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ui.dialog.ConnectionRenameDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
+import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
+import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.connections.ui.dialog.VFSDetailsCompositeHelper;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -77,6 +86,7 @@ public class ConnectionDialog extends Dialog {
   private static final int MARGIN = Const.MARGIN;
   private static final ConnectionManager connectionManager = ConnectionManager.getInstance();
   private static final int TEXT_VAR_FLAGS = SWT.SINGLE | SWT.LEFT | SWT.BORDER;
+  private final VariableSpace variableSpace = Variables.getADefaultVariableSpace();
 
   Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private String connectionTypeKey;
@@ -100,6 +110,7 @@ public class ConnectionDialog extends Dialog {
   private Composite wDetailsWrapperComp;
   private ScrolledComposite wScrolledComposite;
   private String originalName;
+  private TextVar wRootPath;
 
   public ConnectionDialog( Shell shell, int width, int height ) {
     super( shell, SWT.NONE );
@@ -290,6 +301,9 @@ public class ConnectionDialog extends Dialog {
       vfsDetailsComposite = (VFSDetailsComposite) connectionDetails.openDialog( wDetailsWrapperComp, props );
     }
 
+    //root path
+    addRootPathComponent();
+
     wScrolledComposite.setExpandHorizontal( false );
     wScrolledComposite.setExpandVertical( true );
     wScrolledComposite.setContent( wDetailsWrapperComp );
@@ -297,6 +311,52 @@ public class ConnectionDialog extends Dialog {
     wScrolledComposite.setMinSize(
       wDetailsWrapperComp.computeSize( wConnectionTypeComp.getClientArea().width, SWT.DEFAULT ) );
     wConnectionTypeComp.layout();
+  }
+
+  private void addRootPathComponent() {
+    VFSConnectionDetails vfsConnectionDetails = asVFSConnectionDetails( connectionDetails );
+    if ( vfsConnectionDetails != null && vfsConnectionDetails.isSupportsRootPath() ) {
+      Control control = getLastWidgetFromParentComposite( wDetailsWrapperComp );
+      Label wlRootPath =  helper.createLabel( wDetailsWrapperComp, SWT.LEFT | SWT.WRAP, "ConnectionDialog.RootFolderPath.Label", control );
+      wRootPath = helper.createTextVar( variableSpace, wDetailsWrapperComp, TEXT_VAR_FLAGS, wlRootPath, 0 );
+      wRootPath.setText( Const.NVL( vfsConnectionDetails.getRootPath(), "" ) );
+      wRootPath.addModifyListener( modifyEvent -> vfsConnectionDetails.setRootPath( wRootPath.getText() ) );
+
+      Object adapter = vfsDetailsComposite.getRootPathSelectionAdapter( wRootPath );
+      if ( adapter instanceof SelectionAdapterFileDialogTextVar ) {
+        SelectionAdapterFileDialogTextVar selectionAdapterFileDialogTextVar = (SelectionAdapterFileDialogTextVar) adapter;
+        addBrowseButtonForRootPathComponent( selectionAdapterFileDialogTextVar );
+      }
+    }
+  }
+
+  private void addBrowseButtonForRootPathComponent( SelectionAdapterFileDialogTextVar adapter ) {
+    Button wBrowseButton = new Button( wDetailsWrapperComp, SWT.PUSH );
+    wBrowseButton.setText( BaseMessages.getString( PKG, "ConnectionDialog.Browse.Label" ) );
+    props.setLook( wBrowseButton );
+    wBrowseButton.setLayoutData( helper.getFormDataLabel( wRootPath ) );
+    wBrowseButton.addSelectionListener( adapter );
+  }
+
+  private Control getLastWidgetFromParentComposite( Composite composite ) {
+    if ( composite != null && !isEmpty( composite.getChildren() ) ) {
+      Control[] controls = composite.getChildren();
+      int i = controls.length - 1;
+      while ( i >= 0 ) {
+        if ( !controls[i].getVisible() ) {
+          i--;
+          continue;
+        }
+        return controls[i];
+      }
+    }
+    return null;
+  }
+
+  private VFSConnectionDetails asVFSConnectionDetails( ConnectionDetails connectionDetails ) {
+    return ( connectionDetails instanceof VFSConnectionDetails )
+            ? (VFSConnectionDetails) connectionDetails
+            : null;
   }
 
   private void transferFieldsFromOldToNew( ConnectionDetails connectionDetails,
@@ -402,15 +462,24 @@ public class ConnectionDialog extends Dialog {
       return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.sameNameOnDifferentType",
         connectionDetails.getName(), convertKeyToTypeLabel( attemptReadDetails.getType() ) );
     }
+    VFSConnectionDetails vfsConnectionDetails = asVFSConnectionDetails( connectionDetails );
+    if ( vfsConnectionDetails != null && vfsConnectionDetails.isRootPathRequired() && isEmpty( vfsConnectionDetails.getRootPath() ) ) {
+      return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.rootPath" );
+    }
     return vfsDetailsComposite.validate();
   }
 
   private void test() {
     if ( validateEntries() ) {
-      boolean result = false;
+      boolean result;
       MessageBox mb;
       try {
-        result = connectionManager.test( connectionDetails );
+        VFSConnectionDetails vfsConnectionDetails = asVFSConnectionDetails( connectionDetails );
+        if ( vfsConnectionDetails != null && vfsConnectionDetails.isSupportsRootPath() ) {
+          result = connectionManager.test( vfsConnectionDetails, new VFSConnectionTestOptions( false ) );
+        } else {
+          result = connectionManager.test( connectionDetails );
+        }
         if ( !result ) {
           mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
           mb.setMessage( BaseMessages.getString( PKG, "ConnectionDialog.test.failure" ) );
