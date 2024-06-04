@@ -112,7 +112,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   /*
   * Fix for BACKLOG-33475 Upgrade bulkload support to include MySQL 8.0
   * Change necessary since the jdbc driver for MySQL 5.7 and 8.0 package name changed from
-  * org.gjt.mm.mysql.Driver to com.mysql.cj.jdbc.Driver
+  * com.mysql.jdbc.Driver to com.mysql.cj.jdbc.Driver
   * */
   @Override public String getDriverClass() {
     String driver = null;
@@ -130,7 +130,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         driverClass = "com.mysql.cj.jdbc.Driver";
         Class.forName( driverClass );
       } catch ( ClassNotFoundException e ) {
-        driverClass = "org.gjt.mm.mysql.Driver";
+        driverClass = "com.mysql.jdbc.Driver";
       }
     }
     return driverClass;
