@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,69 +24,108 @@ package org.pentaho.di.connections.vfs.provider;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.AbstractFileNameParser;
+import org.apache.commons.vfs2.provider.FileNameParser;
 import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.provider.VfsComponentContext;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.core.vfs.KettleVFSFileSystemException;
 
 import java.util.Objects;
 
+import static org.apache.commons.vfs2.FileName.SEPARATOR;
 import static org.apache.commons.vfs2.FileName.SEPARATOR_CHAR;
+import static org.apache.commons.vfs2.provider.UriParser.TRANS_SEPARATOR;
 
 /**
  * This class parses a PVFS URI. Parsed values are returned as {@link ConnectionFileName} instances.
  * <p>
  * The syntax of a PVFS URI is:
- * <code>pvfs://[(connection-name)/[(path)]]</code>.
+ * <code>pvfs://[(connection)/[(path)]]</code>.
  *
  * <p>
- * Unlike standard URLs or URIs, PVFS URIs can contain special characters in the connection name (authority) section.
- * Still, like with path segments, connection names cannot contain the characters "\" and "/", not even if
- * percent-encoded.
+ * Unlike standard URLs and URIs, PVFS URIs can contain special characters in the connection name (authority) section,
+ * without encoding. However, certain characters are still considered invalid in the connection name,
+ * {@link #CONNECTION_NAME_INVALID_CHARACTERS}.
  *
  * <p>
- * The path section is constituted by multiple segments separated by a "/" file separator:
- * <code>segment_1[/segment_2...[/segment_N[/]]]</code>, optionally terminated by a "/" character, to indicate
- * representing a folder. Alternatively, path segments may be separated by the "\" character.
+ * The path section is constituted by multiple segments separated by {@link FileName#SEPARATOR}:
+ * <code>segment_1[/segment_2...[/segment_N[/]]]</code>, optionally terminated by a {@link FileName#SEPARATOR}
+ * character, to indicate representing a folder. Alternatively, path segments may be separated by the
+ * {@link UriParser#TRANS_SEPARATOR} character. Path segments cannot contain the characters in
+ * {@link #INVALID_CHARACTERS}. Path segments can contain the percent character, "%", but only/always percent-encoded.
  *
  * <p>
  * Parsing a URI validates its syntax and transforms it into canonical form:
  * <ul>
  *   <li>validates the scheme is "pvfs" and is followed by "://"</li>
- *   <li>"\" file path separators in the path sections are transformed into the canonical file path separator, "/"</li>
+ *   <li>{@link UriParser#TRANS_SEPARATOR} file path separators in the path sections are transformed into the canonical
+ *       file path separator, {@link FileName#SEPARATOR}</li>
  *   <li>empty path segments, e.g. "//", are removed</li>
  *   <li>"." path segments are removed</li>
  *   <li>".." path segments are validated and resolved</li>
  *   <li>a path with a trailing slash is recognized as a folder</li>
- *   <li>any percent-encoded characters in path segments which are not reserved are decoded; currently, only the "%"
- *       character is reserved</li>
+ *   <li>any percent-encoded characters in path segments which are not {@link #encodeCharacter(char)}  reserved} are
+ *       decoded</li>
  * </ul>
  *
  * <p>
- * See {@link #SPECIAL_CHARACTERS_FULL_SET} for examples of special characters allowed (without encoding) in connection
+ * See {@link #SPECIAL_CHARACTERS} for examples of special characters allowed (without encoding) in connection
  * names and in path segments. Spaces and international characters are also supported.
+ *
+ * <p>
+ * See {@code AbstractFileName#RESERVED_URI_CHARS} for some more context on Apache VFS file names and reserved
+ * characters.
  *
  * @see VFSConnectionDetails#getRootPath()
  * @see org.pentaho.di.connections.vfs.VFSConnectionManagerHelper#getResolvedRootPath(VFSConnectionDetails)
  */
 public class ConnectionFileNameParser extends AbstractFileNameParser {
+  /**
+   * Helper array containing the single scheme accepted by PVFS file names, {@link ConnectionFileProvider#SCHEME}.
+   */
   private static final String[] SCHEMES = new String[] { ConnectionFileProvider.SCHEME };
 
-  private static final char[] RESERVED_CHARS = new char[] { '%' };
+  /**
+   * The characters which are invalid for both connection names and path segments.
+   */
+  public static final String INVALID_CHARACTERS = SEPARATOR + TRANS_SEPARATOR;
+
+  /**
+   * The characters which are invalid for connection names.
+   */
+  public static final String CONNECTION_NAME_INVALID_CHARACTERS = INVALID_CHARACTERS + "%";
+
+  // Overriding just to be able to add the custom doclet. Had to add `final` to quiet Sonar, for complaining about it.
+
+  /**
+   * Indicates if a character is reserved w.r.t. to percent-encoding, and is thus always encoded in canonical encoding
+   * form, as implemented by {@link UriParser#canonicalizePath(StringBuilder, int, int, FileNameParser)}.
+   * <p>
+   * Currently, only the "%" character — the URL-encoding escape character — is reserved.
+   *
+   * @param ch The character to test.
+   * @return {@code true} if the character is reserved; {@code false}, otherwise.
+   */
+  @Override
+  public final boolean encodeCharacter( char ch ) {
+    return super.encodeCharacter( ch );
+  }
 
   /**
    * Full set of special characters the connection name can be.
-   * Only excluding the character '/', '\' and '%', which are the file path delimiter, the alternative file path
-   * delimiter, and the URL-encoding escape character, respectively.
+   * Only excluding the characters: {@link FileName#SEPARATOR}, {@link UriParser#TRANS_SEPARATOR} and those which are
+   * {@link #encodeCharacter(char) reserved}.
    * <p/>
-   * Special characters in this context are characters that generally have to be encoded
-   * otherwise the use of {@link java.net.URI} will throw {@link java.net.URISyntaxException} when during
-   * object instantiation or subsequent method calls.
+   * Special characters in this context are characters that generally have to be encoded, otherwise the use of
+   * {@link java.net.URI} will throw {@link java.net.URISyntaxException} when during object instantiation or subsequent
+   * method calls.
    */
-  public static final String SPECIAL_CHARACTERS_FULL_SET = "!\"#$&'()*+,-.:;<=>?@[] \t\n\r^_`{|}~";
+  public static final String SPECIAL_CHARACTERS = "!\"#$&'()*+,-.:;<=>?@[] \t\n\r^_`{|}~";
 
   private static ConnectionFileNameParser instance;
 
@@ -110,24 +149,39 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
     return instance;
   }
 
-  /**
-   * Gets an array of reserved characters.
-   * <p>
-   * This list is in sync with the results of {@link #encodeCharacter(char)}.
-   * This is needed in this format for use by {@link UriParser#encode(String, char[])}.
-   * <p>
-   * Currently, only the "%" character is reserved.
-   *
-   * @return An array of characters.
-   */
-  @NonNull
-  public char[] getReservedChars() {
-    return RESERVED_CHARS;
-  }
-
   @NonNull
   protected ConnectionFileNameUtils getConnectionFileNameUtils() {
     return connectionFileNameUtils;
+  }
+
+  public void validateConnectionName( @Nullable String connectionName ) throws FileSystemException {
+    if ( StringUtils.isEmpty( connectionName ) ) {
+      throw new KettleVFSFileSystemException( "ConnectionFileNameParser.ConnectionNameEmpty" );
+    }
+
+    for ( char c : connectionName.toCharArray() ) {
+      if ( CONNECTION_NAME_INVALID_CHARACTERS.indexOf( c ) >= 0 ) {
+        throw new KettleVFSFileSystemException(
+          "ConnectionFileNameParser.ConnectionNameInvalidCharacter",
+          connectionName,
+          c );
+      }
+    }
+  }
+
+  public void validatePathSegment( @Nullable String pathSegment ) throws FileSystemException {
+    if ( StringUtils.isEmpty( pathSegment ) ) {
+      throw new KettleVFSFileSystemException( "ConnectionFileNameParser.PathSegmentEmpty" );
+    }
+
+    for ( char c : pathSegment.toCharArray() ) {
+      if ( CONNECTION_NAME_INVALID_CHARACTERS.indexOf( c ) >= 0 ) {
+        throw new KettleVFSFileSystemException(
+          "ConnectionFileNameParser.PathSegmentInvalidCharacter",
+          pathSegment,
+          c );
+      }
+    }
   }
 
   /**
@@ -182,11 +236,16 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
     // Extract the connection name.
     // May be null/empty, in case pvfsUri = "pvfs://".
     @Nullable
-    String encodedConnectionName = UriParser.extractFirstElement( name );
+    String connectionName = UriParser.extractFirstElement( name );
+
+    // A connection with a percent (as %25) would throw here.
+    if ( StringUtils.isNotEmpty( connectionName )) {
+      validateConnectionName( connectionName );
+    }
 
     // Examples
-    // - encodedConnectionName = null     /     name = ""
-    // - encodedConnectionName = "My Ligação"   name = "" | "Folder/Sub Folder/100%25"
+    // - connectionName = null     /     name = ""
+    // - connectionName = "My Ligação"   name = "" | "Folder/Sub Folder/100%25"
 
     // Normalize the path section:
     // - Remove empty or "." segments
@@ -203,7 +262,7 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
 
     String path = name.toString();
 
-    return new ConnectionFileName( encodedConnectionName, path, fileType );
+    return new ConnectionFileName( connectionName, path, fileType );
   }
 
   private void extractPvfsScheme( String uri, StringBuilder name ) throws FileSystemException {

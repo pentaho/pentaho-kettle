@@ -25,7 +25,6 @@ package org.pentaho.di.connections.vfs.provider;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.commons.vfs2.FileName;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class ConnectionFileNameTest {
 
   @Test
-  public void testPvfsRoot() throws Exception {
+  public void testPvfsRoot() {
     assertPvsRoot( new ConnectionFileName( null ) );
     assertPvsRoot( new ConnectionFileName( "" ) );
   }
@@ -48,24 +47,24 @@ public class ConnectionFileNameTest {
   }
 
   @Test
-  public void testConnectionRoot() throws Exception {
+  public void testConnectionRoot() {
     assertConnectionRoot( "someConnection" );
     assertConnectionRoot( "some_Connection" );
     assertConnectionRoot( "some-Connection" );
     assertConnectionRoot( "someConnection123" );
     assertConnectionRoot( "123someConnection123" );
     assertConnectionRoot( "Special Character name &#! <>" );
-    assertConnectionRoot( "Connection %25 With Percentage In Name", "Connection % With Percentage In Name" );
 
-    assertConnectionRoot( new ConnectionFileName( "connection", null, FileType.FOLDER ), "connection", "connection" );
-    assertConnectionRoot( new ConnectionFileName( "connection", "", FileType.FOLDER ), "connection", "connection" );
-    assertConnectionRoot( new ConnectionFileName( "connection", "/", FileType.FOLDER ), "connection", "connection" );
+    assertConnectionRoot( new ConnectionFileName( "connection", null, FileType.FOLDER ), "connection" );
+    assertConnectionRoot( new ConnectionFileName( "connection", "", FileType.FOLDER ), "connection" );
+    assertConnectionRoot( new ConnectionFileName( "connection", "/", FileType.FOLDER ), "connection" );
   }
 
   @Test
   public void testNonRoot() throws Exception {
-    assertNonRoot( "connection", "/file", FileType.FILE );
-    assertNonRoot( "connection", "/folder/file", FileType.FILE );
+    assertNonRoot( "connection1", "/file", FileType.FILE );
+    assertNonRoot( "connection2", "/folder/file", FileType.FILE );
+    assertNonRoot( "connection3", "/folder/folder", FileType.FOLDER );
 
     // Trims Trailing Path Separator
     assertComponents(
@@ -80,12 +79,11 @@ public class ConnectionFileNameTest {
     assertEquals( "/my folder % with special Character name &#! <>", fileName.getPathDecoded() );
   }
 
-  private static void assertPvsRoot( ConnectionFileName fileName ) throws FileSystemException {
+  private static void assertPvsRoot( ConnectionFileName fileName ) {
     assertTrue( fileName.isPvfsRoot() );
     assertFalse( fileName.isConnectionRoot() );
     assertEquals( ConnectionFileProvider.SCHEME, fileName.getScheme() );
     assertNull( fileName.getConnection() );
-    assertNull( fileName.getConnectionDecoded() );
     assertEquals( FileName.SEPARATOR, fileName.getPath() );
 
     assertEquals( "pvfs://", fileName.getRootURI() );
@@ -93,52 +91,41 @@ public class ConnectionFileNameTest {
     assertEquals( "pvfs://", fileName.getFriendlyURI() );
   }
 
-  private static void assertConnectionRoot( @NonNull String encodedConnectionName ) throws FileSystemException {
-    assertConnectionRoot( encodedConnectionName, encodedConnectionName );
+  private static void assertConnectionRoot( @NonNull String connectionName ) {
+    assertConnectionRoot( new ConnectionFileName( connectionName ), connectionName );
   }
 
-  private static void assertConnectionRoot( @NonNull String encodedConnectionName,
-                                            @NonNull String decodedConnectionName ) throws FileSystemException {
-    assertConnectionRoot(
-      new ConnectionFileName( encodedConnectionName ),
-      encodedConnectionName,
-      decodedConnectionName );
-  }
-
-  private static void assertConnectionRoot( @NonNull ConnectionFileName fileName,
-                                            @NonNull String encodedConnectionName,
-                                            @NonNull String decodedConnectionName ) throws FileSystemException {
-    assertComponents( fileName, encodedConnectionName, FileName.SEPARATOR, FileType.FOLDER );
+  private static void assertConnectionRoot( @NonNull ConnectionFileName fileName, @NonNull String connectionName ) {
+    assertComponents( fileName, connectionName, FileName.SEPARATOR, FileType.FOLDER );
     assertFalse( fileName.isPvfsRoot() );
     assertTrue( fileName.isConnectionRoot() );
-    assertEquals( decodedConnectionName, fileName.getConnectionDecoded() );
 
-    String uri = "pvfs://" + encodedConnectionName + "/";
+    String uri = "pvfs://" + connectionName + "/";
     assertEquals( uri, fileName.getURI() );
     assertEquals( uri, fileName.getFriendlyURI() );
   }
 
-  private static void assertNonRoot( @NonNull String encodedConnectionName,
+  private static void assertNonRoot( @NonNull String connectionName,
                                      @Nullable String encodedPath,
                                      @NonNull FileType fileType ) {
-    ConnectionFileName fileName = new ConnectionFileName( encodedConnectionName, encodedPath, fileType );
+    ConnectionFileName fileName = new ConnectionFileName( connectionName, encodedPath, fileType );
 
-    assertComponents( fileName, encodedConnectionName, encodedPath, fileType );
+    assertComponents( fileName, connectionName, encodedPath, fileType );
     assertFalse( fileName.isPvfsRoot() );
     assertFalse( fileName.isConnectionRoot() );
 
-    String uri = "pvfs://" + encodedConnectionName + encodedPath;
+    String uri = "pvfs://" + connectionName + encodedPath;
     assertEquals( uri, fileName.getURI() );
     assertEquals( uri, fileName.getFriendlyURI() );
   }
 
   private static void assertComponents( @NonNull ConnectionFileName fileName,
-                                        @NonNull String encodedConnectionName,
+                                        @NonNull String connectionName,
                                         @Nullable String encodedPath,
                                         @NonNull FileType fileType ) {
 
     assertEquals( ConnectionFileProvider.SCHEME, fileName.getScheme() );
-    assertEquals( encodedConnectionName, fileName.getConnection() );
+    assertEquals( connectionName, fileName.getConnection() );
     assertEquals( encodedPath, fileName.getPath() );
     assertEquals( fileType, fileName.getType() );
   }

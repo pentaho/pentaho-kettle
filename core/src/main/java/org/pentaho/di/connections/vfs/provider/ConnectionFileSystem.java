@@ -76,7 +76,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     ConnectionFileName pvfsFileName = (ConnectionFileName) fileName;
 
     // 1. pvfs:// has no associated connection, so no provider file object.
-    String connectionName = pvfsFileName.getConnectionDecoded();
+    String connectionName = pvfsFileName.getConnection();
     if ( connectionName == null ) {
       return new PvfsRootFileObject( pvfsFileName, this );
     }
@@ -110,7 +110,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     throws FileSystemException {
 
     @Nullable
-    String connectionName = parentFileObject.getName().getConnectionDecoded();
+    String connectionName = parentFileObject.getName().getConnection();
     if ( connectionName == null ) {
       throw new IllegalArgumentException( "Cannot create a resolved child file object for the PVFS root file" );
     }

@@ -38,7 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser.SPECIAL_CHARACTERS_FULL_SET;
+import static org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser.SPECIAL_CHARACTERS;
 
 public class ConnectionFileNameParserTest {
 
@@ -52,7 +52,7 @@ public class ConnectionFileNameParserTest {
    * Full set of accepted characters the connection name can be.
    */
   public static final String ACCEPTED_CHARACTERS_FULL_SET =
-    SPECIAL_CHARACTERS_FULL_SET + ALPHANUMERIC_CHARACTERS_FULL_SET;
+    SPECIAL_CHARACTERS + ALPHANUMERIC_CHARACTERS_FULL_SET;
 
   private ConnectionFileNameParser fileNameParser;
 
@@ -142,7 +142,10 @@ public class ConnectionFileNameParserTest {
       "Special Character name &#! <>" );
     assertParseUriComponentsConnectionRoot( fileNameParser, "pvfs://Special Character name &#! <>/",
       "Special Character name &#! <>" );
-    assertParseUriComponentsConnectionRoot( fileNameParser, "pvfs://Percentage%25 in name/", "Percentage%25 in name" );
+
+    // Connection name cannot have % in name, not even encoded
+    assertParseUriThrows( fileNameParser, "pvfs://Percentage% in name/" );
+    assertParseUriThrows( fileNameParser, "pvfs://Percentage%25 in name/" );
 
     // ---
 
@@ -160,13 +163,13 @@ public class ConnectionFileNameParserTest {
     // want to make sure it has a good representation of characters
     assertTrue( specialCharacterConnectionName.length() > 60 );
     // sanity checks and guard against changes to source code
-    assertTrue( specialCharacterConnectionName.contains( "<" ) && SPECIAL_CHARACTERS_FULL_SET.contains( "<" ) );
-    assertTrue( specialCharacterConnectionName.contains( "$" ) && SPECIAL_CHARACTERS_FULL_SET.contains( "$" ) );
-    assertTrue( specialCharacterConnectionName.contains( "-" ) && SPECIAL_CHARACTERS_FULL_SET.contains( "-" ) );
-    assertTrue( specialCharacterConnectionName.contains( "_" ) && SPECIAL_CHARACTERS_FULL_SET.contains( "_" ) );
-    assertTrue( specialCharacterConnectionName.contains( " " ) && SPECIAL_CHARACTERS_FULL_SET.contains( " " ) );
-    assertTrue( specialCharacterConnectionName.contains( "<" ) && SPECIAL_CHARACTERS_FULL_SET.contains( "<" ) );
-    assertTrue( specialCharacterConnectionName.contains( "!" ) && SPECIAL_CHARACTERS_FULL_SET.contains( "!" ) );
+    assertTrue( specialCharacterConnectionName.contains( "<" ) && SPECIAL_CHARACTERS.contains( "<" ) );
+    assertTrue( specialCharacterConnectionName.contains( "$" ) && SPECIAL_CHARACTERS.contains( "$" ) );
+    assertTrue( specialCharacterConnectionName.contains( "-" ) && SPECIAL_CHARACTERS.contains( "-" ) );
+    assertTrue( specialCharacterConnectionName.contains( "_" ) && SPECIAL_CHARACTERS.contains( "_" ) );
+    assertTrue( specialCharacterConnectionName.contains( " " ) && SPECIAL_CHARACTERS.contains( " " ) );
+    assertTrue( specialCharacterConnectionName.contains( "<" ) && SPECIAL_CHARACTERS.contains( "<" ) );
+    assertTrue( specialCharacterConnectionName.contains( "!" ) && SPECIAL_CHARACTERS.contains( "!" ) );
 
     assertParseUriComponentsConnectionRoot(
       fileNameParser,

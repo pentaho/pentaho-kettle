@@ -53,7 +53,7 @@ public class ConnectionFileProvider extends AbstractOriginatingFileProvider {
     Capability.WRITE_CONTENT, Capability.GET_LAST_MODIFIED, Capability.RANDOM_ACCESS_READ ) );
 
   public ConnectionFileProvider() {
-    setFileNameParser( new ConnectionFileNameParser() );
+    setFileNameParser( ConnectionFileNameParser.getInstance() );
   }
 
   @Override
@@ -66,8 +66,9 @@ public class ConnectionFileProvider extends AbstractOriginatingFileProvider {
     return new ConnectionFileSystem( rootName, fileSystemOptions, manager, vfsConnectionManagerHelper );
   }
 
-  @NonNull private VFSConnectionManagerHelper getVfsConnectionManagerHelper() {
-    return new VFSConnectionManagerHelper( getFileNameParser(), ConnectionFileNameUtils.getInstance() );
+  @NonNull
+  private VFSConnectionManagerHelper getVfsConnectionManagerHelper() {
+    return new VFSConnectionManagerHelper( ConnectionFileNameUtils.getInstance() );
   }
 
   @Override

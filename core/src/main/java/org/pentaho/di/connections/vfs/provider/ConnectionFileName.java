@@ -25,10 +25,8 @@ package org.pentaho.di.connections.vfs.provider;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.AbstractFileName;
-import org.apache.commons.vfs2.provider.UriParser;
 
 import java.util.Objects;
 
@@ -36,9 +34,6 @@ public class ConnectionFileName extends AbstractFileName {
 
   @Nullable
   private String connection;
-
-  @Nullable
-  private String decodedConnection;
 
   public ConnectionFileName( @Nullable String connection ) {
     this( connection, SEPARATOR, FileType.FOLDER );
@@ -107,28 +102,13 @@ public class ConnectionFileName extends AbstractFileName {
   }
 
   /**
-   * Gets the encoded connection name.
+   * Gets the connection name.
    *
-   * @return The encoded connection name.
+   * @return The connection name.
    */
   @Nullable
   public String getConnection() {
     return connection;
-  }
-
-  /**
-   * Gets the decoded connection name.
-   *
-   * @return The decoded connection name.
-   * @throws FileSystemException If an error occurs.
-   */
-  @Nullable
-  public String getConnectionDecoded() throws FileSystemException {
-    if ( connection != null && decodedConnection == null ) {
-      decodedConnection = UriParser.decode( getConnection() );
-    }
-
-    return decodedConnection;
   }
 
   /**
@@ -150,13 +130,12 @@ public class ConnectionFileName extends AbstractFileName {
   }
 
   /**
-   * Sets the encoded connection name.
+   * Sets the connection name.
    *
-   * @param encodedConnection The encoded connection name.
+   * @param connection The connection name.
    */
-  public void setConnection( @Nullable String encodedConnection ) {
-    this.connection = encodedConnection;
-    this.decodedConnection = null;
+  public void setConnection( @Nullable String connection ) {
+    this.connection = connection;
   }
 
   @Override

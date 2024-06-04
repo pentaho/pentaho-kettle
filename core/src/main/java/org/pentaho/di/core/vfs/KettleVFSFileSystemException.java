@@ -23,7 +23,7 @@
 package org.pentaho.di.core.vfs;
 
 import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.util.Messages;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * An exception class that extends and is otherwise identical to Apache's {@link FileSystemException},
@@ -32,6 +32,8 @@ import org.apache.commons.vfs2.util.Messages;
  * This exception class is useful in contexts where a {@code FileSystemException} is expected.
  */
 public class KettleVFSFileSystemException extends FileSystemException {
+  private static Class<?> PKG = KettleVFSFileSystemException.class; // for i18n purposes, needed by Translator2!!
+
   public KettleVFSFileSystemException( String code ) {
     super( code );
   }
@@ -62,6 +64,6 @@ public class KettleVFSFileSystemException extends FileSystemException {
 
   @Override
   public String getMessage() {
-    return Messages.getString(super.getMessage(), (Object[]) getInfo());
+    return BaseMessages.getString( PKG, super.getCode(), (Object[]) getInfo() );
   }
 }

@@ -34,7 +34,6 @@ import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ConnectionProvider;
 import org.pentaho.di.connections.LookupFilter;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
-import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileNameUtils;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
@@ -46,27 +45,19 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class VFSConnectionManagerHelper {
 
   private static VFSConnectionManagerHelper instance;
 
   @NonNull
-  private final ConnectionFileNameParser fileNameParser;
-
-  @NonNull
   private final ConnectionFileNameUtils vfsConnectionFileNameUtils;
 
   public VFSConnectionManagerHelper() {
-    // In practice, any ConnectionFileNameParser instance will do.
-    // Only used to extract the reserved chars by UriParser#canonicalizePath.
-    this( ConnectionFileNameParser.getInstance(), ConnectionFileNameUtils.getInstance() );
+    this( ConnectionFileNameUtils.getInstance() );
   }
 
-  public VFSConnectionManagerHelper( @NonNull ConnectionFileNameParser fileNameParser,
-                                     @NonNull ConnectionFileNameUtils vfsConnectionFileNameUtils ) {
-    this.fileNameParser = Objects.requireNonNull( fileNameParser );
+  public VFSConnectionManagerHelper( @NonNull ConnectionFileNameUtils vfsConnectionFileNameUtils ) {
     this.vfsConnectionFileNameUtils = Objects.requireNonNull( vfsConnectionFileNameUtils );
   }
 
@@ -191,7 +182,7 @@ public class VFSConnectionManagerHelper {
       throw new IllegalArgumentException( "Unnamed connection" );
     }
 
-    return new ConnectionFileName( encodeConnectionName( connectionName ) );
+    return new ConnectionFileName( connectionName );
   }
 
   @NonNull
@@ -221,52 +212,7 @@ public class VFSConnectionManagerHelper {
   }
   // endregion
 
-  /**
-   * Encodes the reserved characters in a given connection name.
-   *
-   * @param connectionName A connection name.
-   * @return A connection in canonical percent-encoding form.
-   * @see ConnectionFileNameParser#getReservedChars()
-   */
-  @NonNull
-  public String encodeConnectionName( @NonNull String connectionName ) {
-    return UriParser.encode( connectionName, fileNameParser.getReservedChars() );
-  }
-
-  /**
-   * Decodes the given encoded connection name.
-   *
-   * @param encodedConnectionName An encoded connection name.
-   * @return A decoded connection name.
-   * @see #encodeConnectionName(String)
-   */
-  @NonNull
-  public String decodeConnectionName( @NonNull String encodedConnectionName )
-    throws KettleException {
-    try {
-      return UriParser.decode( encodedConnectionName );
-    } catch ( FileSystemException e ) {
-      throw new KettleException( String.format( "Invalid encoded connection name '%s'", encodedConnectionName ), e );
-    }
-  }
-
-  /**
-   * Parses a given PVFS URI string.
-   * @param pvfsUri The PVFS URI string
-   * @return The connection file name.
-   * @throws KettleException When the given PVFS URI is not a valid PVFS URI.
-   */
-  @NonNull
-  public ConnectionFileName parsePvfsUri( @NonNull String pvfsUri ) throws KettleException {
-    try {
-      return fileNameParser.parseUri( pvfsUri );
-    } catch ( FileSystemException e ) {
-      throw new KettleException( String.format( "Failed to parse PVFS URI: '%s'", pvfsUri ), e );
-    }
-  }
-
   // region VFS Resolved Root Path
-
   /**
    * Gets the resolved root path of a given connection.
    * <p>

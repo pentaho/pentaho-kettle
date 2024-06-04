@@ -24,13 +24,11 @@ package org.pentaho.di.connections.vfs;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
-import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileNameUtils;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.bowl.Bowl;
@@ -70,7 +68,6 @@ public class VFSConnectionManagerHelperTest {
   VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider;
   ConnectionManager connectionManager;
   MemoryMetaStore memoryMetaStore;
-  ConnectionFileNameParser connectionFileNameParser;
   ConnectionFileNameUtils connectionFileNameUtils;
   VFSConnectionFileNameTransformer<VFSConnectionDetails> vfsConnectionFileNameTransformer;
   FileSystemOptions fileSystemOptions;
@@ -87,7 +84,6 @@ public class VFSConnectionManagerHelperTest {
     bowl = mock( Bowl.class );
     vfsConnectionFileNameTransformer = mock( VFSConnectionFileNameTransformer.class );
     fileSystemOptions = mock( FileSystemOptions.class );
-    connectionFileNameParser = new ConnectionFileNameParser();
     connectionFileNameUtils = ConnectionFileNameUtils.getInstance();
     kettleVFS = mock( IKettleVFS.class );
 
@@ -122,7 +118,7 @@ public class VFSConnectionManagerHelperTest {
 
     // ---
 
-    vfsConnectionManagerHelper = spy( new VFSConnectionManagerHelper( connectionFileNameParser, connectionFileNameUtils ) );
+    vfsConnectionManagerHelper = spy( new VFSConnectionManagerHelper( connectionFileNameUtils ) );
     when( vfsConnectionManagerHelper.getKettleVFS( bowl ) ).thenReturn( kettleVFS );
 
     // ---
@@ -315,46 +311,6 @@ public class VFSConnectionManagerHelperTest {
   public void testGetConnectionRootFileNameThrowsIllegalArgumentGivenConnectionHasEmptyName() {
     when( vfsConnectionDetails.getName() ).thenReturn( "" );
     vfsConnectionManagerHelper.getConnectionRootFileName( vfsConnectionDetails );
-  }
-
-  @Test
-  public void testGetConnectionRootFileNameEncodesConnectionNameWithReservedChars() throws FileSystemException {
-    String connectionName = "Connection%2";
-    String encodedConnectionName = "Connection%252";
-
-    when( vfsConnectionDetails.getName() ).thenReturn( connectionName );
-
-    ConnectionFileName fileName = vfsConnectionManagerHelper.getConnectionRootFileName( vfsConnectionDetails );
-
-    assertEquals( encodedConnectionName, fileName.getConnection() );
-    assertEquals( connectionName, fileName.getConnectionDecoded() );
-  }
-
-  @Test
-  public void testGetConnectionRootFileNameEncodesConnectionNamePreservingNonReservedChars()
-    throws FileSystemException {
-    // Currently, not assuming any other restrictions on connection name beyond / and \, which are not (easily)
-    // supported by Apache VFS, as these are used for path separation and are not properly respected when
-    // encoding/decoding by some of UriParser's methods.
-    String sampleNormalChars = "Connection0123456789";
-
-    // These would be percent/url encoded by blind URL encoders, but not for the "canonical" format,
-    // where only reserved chars are encoded.
-    // See AbstractFileName#RESERVED_URI_CHARS for some more context.
-    String samplePercentEncodedButNotReservedChars = "#$@!?=*+-^~&_`'\"|()[]{}<>;:,.";
-
-    String reservedChars = "%";
-    String encodedReservedChars = "%25";
-
-    String connectionName = sampleNormalChars + reservedChars + samplePercentEncodedButNotReservedChars;
-    String encodedConnectionName = sampleNormalChars + encodedReservedChars + samplePercentEncodedButNotReservedChars;
-
-    when( vfsConnectionDetails.getName() ).thenReturn( connectionName );
-
-    ConnectionFileName fileName = vfsConnectionManagerHelper.getConnectionRootFileName( vfsConnectionDetails );
-
-    assertEquals( encodedConnectionName, fileName.getConnection() );
-    assertEquals( connectionName, fileName.getConnectionDecoded() );
   }
   // endregion
 

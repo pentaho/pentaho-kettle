@@ -34,6 +34,7 @@ import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
 import org.pentaho.di.connections.vfs.VFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSRoot;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
@@ -78,20 +79,28 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
   private final VFSConnectionManagerHelper vfsConnectionManagerHelper;
 
+  private final ConnectionFileNameParser connectionFileNameParser;
+
   public VFSFileProvider() {
     this( DefaultBowl.getInstance() );
   }
 
   public VFSFileProvider( Bowl bowl ) {
-    this( bowl, new KettleVFSService( bowl ), VFSConnectionManagerHelper.getInstance() );
+    this(
+      bowl,
+      new KettleVFSService( bowl ),
+      VFSConnectionManagerHelper.getInstance(),
+      ConnectionFileNameParser.getInstance() );
   }
 
   public VFSFileProvider( Bowl bowl,
                           KettleVFSService kettleVFSService,
-                          VFSConnectionManagerHelper vfsConnectionManagerHelper ) {
+                          VFSConnectionManagerHelper vfsConnectionManagerHelper,
+                          ConnectionFileNameParser connectionFileNameParser ) {
     this.bowl = Objects.requireNonNull( bowl );
     this.kettleVFSService = Objects.requireNonNull( kettleVFSService );
     this.vfsConnectionManagerHelper = Objects.requireNonNull( vfsConnectionManagerHelper );
+    this.connectionFileNameParser = Objects.requireNonNull( connectionFileNameParser );
   }
 
   @Override public Class<VFSFile> getFileClass() {
@@ -123,9 +132,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
     boolean ret = false;
     try {
-      vfsConnectionManagerHelper.parsePvfsUri( filePath );
+      connectionFileNameParser.parseUri( filePath );
       ret = true;
-    } catch ( KettleException e ) {
+    } catch ( FileSystemException e ) {
       // DO NOTHING
     }
 
@@ -280,9 +289,9 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
   private VFSConnectionDetails getExistingDetails( ConnectionFileName fileName ) throws FileException {
     try {
-      String connectionName = fileName.getConnectionDecoded();
+      String connectionName = fileName.getConnection();
       return getConnectionManager().getExistingDetails( connectionName );
-    } catch ( FileSystemException | MetaStoreException | KettleException e ) {
+    } catch ( MetaStoreException | KettleException e ) {
       throw new FileException( e );
     }
   }
@@ -297,8 +306,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
   private ConnectionFileName getConnectionFileName( VFSFile file ) throws FileException {
     try {
-      return vfsConnectionManagerHelper.parsePvfsUri( file.getPath() );
-    } catch ( KettleException e ) {
+      return connectionFileNameParser.parseUri( file.getPath() );
+    } catch ( FileSystemException e ) {
       throw new FileException( e );
     }
   }
@@ -610,8 +619,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
     if ( vfsFile != null ) {
       try {
-        connectionName = getConnectionFileName( vfsFile ).getConnectionDecoded();
-      } catch ( NullPointerException | FileException | FileSystemException e ) {
+        connectionName = getConnectionFileName( vfsFile ).getConnection();
+      } catch ( NullPointerException | FileException e ) {
         // DO NOTHING
       }
     }

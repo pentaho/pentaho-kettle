@@ -25,6 +25,7 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
@@ -148,6 +149,9 @@ public class VFSFileProviderTest extends TestCase {
 
   public VFSFileProvider createTestInstance() {
     return new VFSFileProvider(
-      mock( Bowl.class ), mock( KettleVFSService.class ), new VFSConnectionManagerHelper() );
+      mock( Bowl.class ),
+      mock( KettleVFSService.class ),
+      new VFSConnectionManagerHelper(),
+      new ConnectionFileNameParser() );
   }
 }
