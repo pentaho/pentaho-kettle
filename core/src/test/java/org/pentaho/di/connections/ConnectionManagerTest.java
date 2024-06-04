@@ -25,24 +25,34 @@ package org.pentaho.di.connections;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.connections.common.bucket.TestConnectionDetails;
 import org.pentaho.di.connections.common.bucket.TestConnectionProvider;
 import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.connections.vfs.VFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
-import org.pentaho.di.connections.vfs.VFSConnectionProvider;
-import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 
 /**
@@ -61,13 +71,55 @@ public class ConnectionManagerTest {
 
   private ConnectionManager connectionManager;
 
-  private MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
+  private Bowl bowl;
+
+  private MemoryMetaStore memoryMetaStore;
+
+
+  @BeforeClass
+  public static void setupClass() throws Exception {
+    KettleClientEnvironment.init();
+    DefaultBowl defaultBowl = DefaultBowl.getInstance();
+    assertNotNull( defaultBowl );
+
+    // Make sure that the default bowl has a meta-store, as this is a requirement of the connection manager,
+    // and otherwise would affect the default connection manager.
+    IMetaStore defaultMemoryMetaStore = new MemoryMetaStore();
+    defaultBowl.setMetastoreSupplier( () -> defaultMemoryMetaStore );
+  }
 
   @Before
   public void setup() throws Exception {
-    KettleClientEnvironment.init();
-    connectionManager = new ConnectionManager();
-    connectionManager.setMetastoreSupplier( () -> memoryMetaStore );
+    bowl = mock( Bowl.class );
+    memoryMetaStore = new MemoryMetaStore();
+    connectionManager = new ConnectionManager( () -> memoryMetaStore, bowl );
+  }
+
+  @Test
+  public void testGetInstanceHasDefaultBowlAndMetaStore() {
+    DefaultBowl defaultBowl = DefaultBowl.getInstance();
+    assertNotNull( defaultBowl );
+
+    ConnectionManager defaultConnectionManager = ConnectionManager.getInstance();
+    assertNotNull( defaultConnectionManager );
+
+    assertSame( defaultBowl, defaultConnectionManager.getBowl() );
+
+    // Testing that the value is DefaultBowl.getInstance().getMetastore() wouldn't work due to tests running in
+    // parallel. The actual meta-store captured by the default connection manager instance can vary due to multiple
+    // threads calling the @BeforeClass method.
+    assertNotNull( defaultConnectionManager.getMetastoreSupplier().get() );
+  }
+
+  @Test
+  public void testGetInstanceOfBowlRespectsGivenBowlAndMetaStore() {
+    IMetaStore metaStore = mock( IMetaStore.class );
+    Bowl bowl = mock( Bowl.class );
+
+    ConnectionManager adhocConnectionManager = ConnectionManager.getInstance( () -> metaStore, bowl );
+
+    assertSame( bowl, adhocConnectionManager.getBowl() );
+    assertSame( metaStore, adhocConnectionManager.getMetastoreSupplier().get() );
   }
 
   @Test
@@ -77,7 +129,7 @@ public class ConnectionManagerTest {
     TestConnectionProvider testConnectionProvider1 =
       (TestConnectionProvider) connectionManager.getConnectionProvider( TestConnectionProvider.SCHEME );
 
-    Assert.assertNotNull( testConnectionProvider1 );
+    assertNotNull( testConnectionProvider1 );
   }
 
   @Test
@@ -208,7 +260,7 @@ public class ConnectionManagerTest {
   @Test
   public void testCreateConnectionDetails() {
     addProvider();
-    Assert.assertNotNull( connectionManager.createConnectionDetails( TestConnectionProvider.SCHEME ) );
+    assertNotNull( connectionManager.createConnectionDetails( TestConnectionProvider.SCHEME ) );
   }
 
   @Test
@@ -239,26 +291,30 @@ public class ConnectionManagerTest {
 
   @Test
   public void testNullConnectionName() throws Exception {
-    FileSystemOptions fileSystemOptions = VFSHelper.getOpts( DefaultBowl.getInstance(), "file://fakefile.ktr", null, null );
+    FileSystemOptions fileSystemOptions =
+      VFSHelper.getOpts( DefaultBowl.getInstance(), "file://fakefile.ktr", null, null );
     Assert.assertNull( fileSystemOptions );
   }
 
   @Test
   public void testBaRolesNotNull() {
     addOne();
-    TestConnectionDetails connectionDetails = (TestConnectionDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
-    Assert.assertNotNull( connectionDetails );
-    Assert.assertNotNull( connectionDetails.getBaRoles() );
+    TestConnectionDetails connectionDetails =
+      (TestConnectionDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
+    assertNotNull( connectionDetails );
+    assertNotNull( connectionDetails.getBaRoles() );
   }
 
   @Test
   public void testDefaultPropertiesNotNull() {
     addOne();
-    TestConnectionDetails connectionDetails = (TestConnectionDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
-    Assert.assertNotNull( connectionDetails );
-    Assert.assertNotNull( connectionDetails.getProperties() );
-    Assert.assertNotNull( connectionDetails.getProperties().get( "baRoles" ) );
+    TestConnectionDetails connectionDetails =
+      (TestConnectionDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
+    assertNotNull( connectionDetails );
+    assertNotNull( connectionDetails.getProperties() );
+    assertNotNull( connectionDetails.getProperties().get( "baRoles" ) );
   }
+
   @Test
   public void testConnection() throws KettleException {
 
@@ -270,7 +326,7 @@ public class ConnectionManagerTest {
     when( vfsConnectionDetails.getType() ).thenReturn( "test" );
 
     connectionManager.test( vfsConnectionDetails, vfsConnectionTestOptions );
-    verify( vfsConnectionProvider, times(1)).test( vfsConnectionDetails, vfsConnectionTestOptions );
+    verify( vfsConnectionProvider, times( 1 ) ).test( vfsConnectionDetails, vfsConnectionTestOptions );
   }
 
   @Test
@@ -282,7 +338,8 @@ public class ConnectionManagerTest {
     when( vfsConnectionDetails.getType() ).thenReturn( "test" );
     when( vfsConnectionProvider.test( vfsConnectionDetails ) ).thenReturn( true );
     connectionManager.test( vfsConnectionDetails, null );
-    verify( vfsConnectionProvider, times(1) ).test( eq( vfsConnectionDetails ), any( VFSConnectionTestOptions.class ) );
+    verify( vfsConnectionProvider, times( 1 ) ).test( eq( vfsConnectionDetails ),
+      any( VFSConnectionTestOptions.class ) );
   }
 
   private void addProvider() {

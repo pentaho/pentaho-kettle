@@ -39,6 +39,14 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   }
 
   /**
+   * Returns true if vfs connections supports buckets. Defaults to {@code true}
+   * @return true if has buckets, false otherwise
+   */
+  default boolean hasBuckets() {
+    return true;
+  }
+
+  /**
    * Returns true if vfs connection supports root path
    * Defaults to {@code false}.
    *
@@ -124,6 +132,18 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   default String getRootPath() {
     return null;
   }
+
+  /**
+   * Sets the root folder path, given as a string.
+   * <p>
+   * An empty root folder path value should be converted to {@code null}.
+   * Further syntax validation is performed only after variable substitution.
+   * <p>
+   * The default interface implementation exists to ensure backward compatibility and does nothing.
+   *
+   * @param rootPath The root path.
+   */
+  default void setRootPath( String rootPath ) { }
 
   /**
    * Gets the list of roles with access to the connection from the Business Analytics product.

@@ -66,8 +66,6 @@ public class KettleVFSImpl implements IKettleVFS {
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
   private static final int TIMEOUT_LIMIT = 9000;
   private static final int TIME_TO_SLEEP_STEP = 50;
-  private static final String PROVIDER_PATTERN_SCHEME = "^[\\w\\d]+://(.*)";
-  private static final Pattern SMB_PATTERN = Pattern.compile( "^[Ss][Mm][Bb]://[/]?([^:/]+)(?::([^/]+))?.*$" );
 
   private final Bowl bowl;
 
@@ -186,16 +184,10 @@ public class KettleVFSImpl implements IKettleVFS {
     configBuilder.setBowl( fsOptions, bowl );
 
     try {
-      if ( scheme.equals( KettleVFS.SMB_SCHEME ) ) {
-        Matcher matcher = SMB_PATTERN.matcher( vfsFilename );
-        if ( matcher.matches() ) {
-          return VFSHelper.getOpts( bowl, vfsFilename, matcher.group( 1 ), varSpace );
-        }
-      }
 
       String[] varList = varSpace.listVariables();
 
-      for (String var : varList) {
+      for ( String var : varList ) {
         if ( var.equalsIgnoreCase( CONNECTION ) && varSpace.getVariable( var ) != null ) {
           FileSystemOptions fileSystemOptions = VFSHelper.getOpts( bowl, vfsFilename, varSpace.getVariable( var ),
                                                                    varSpace );

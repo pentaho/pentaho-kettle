@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2020 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.internal.verification.VerificationModeFactory;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.Point;
@@ -33,10 +36,6 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,14 +45,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 
-@PrepareForTest( AttributesMapUtil.class )
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
+@RunWith( MockitoJUnitRunner.class )
 public class JobDelegateTest {
-
 
   private static final String MOCK_GROUP = "MOCK_GROUP";
   private static final String MOCK_PROPERTY = "MOCK_PROPERTY";
@@ -133,10 +131,12 @@ public class JobDelegateTest {
     DataNode dataNode = mock( DataNode.class );
     JobEntryCopy jobEntryCopy = mock( JobEntryCopy.class );
     when( dataNode.getNode( JobDelegate.PROP_ATTRIBUTES_JOB_ENTRY_COPY ) ).thenReturn( null );
-    PowerMockito.mockStatic( AttributesMapUtil.class );
-    JobDelegate.loadAttributesMap( dataNode, jobEntryCopy );
-    PowerMockito.verifyStatic( AttributesMapUtil.class, VerificationModeFactory.times( 1 ) );
-    AttributesMapUtil.loadAttributesMap( dataNode, jobEntryCopy );
+    try ( MockedStatic<AttributesMapUtil> dummyAttributesMapUtil = mockStatic( AttributesMapUtil.class ) ) {
+      JobDelegate.loadAttributesMap( dataNode, jobEntryCopy );
+      dummyAttributesMapUtil.verify( () -> AttributesMapUtil.loadAttributesMap( any( DataNode.class ),
+        any( AttributesInterface.class ) ), VerificationModeFactory.times( 1 ) );
+      AttributesMapUtil.loadAttributesMap( dataNode, jobEntryCopy );
+    }
   }
 
   @Test
@@ -144,10 +144,12 @@ public class JobDelegateTest {
     DataNode dataNode = mock( DataNode.class );
     JobEntryCopy jobEntryCopy = mock( JobEntryCopy.class );
     when( dataNode.getNode( JobDelegate.PROP_ATTRIBUTES_JOB_ENTRY_COPY ) ).thenReturn( dataNode );
-    PowerMockito.mockStatic( AttributesMapUtil.class );
-    JobDelegate.loadAttributesMap( dataNode, jobEntryCopy );
-    PowerMockito.verifyStatic( AttributesMapUtil.class, VerificationModeFactory.times( 1 ) );
-    AttributesMapUtil.loadAttributesMap( dataNode, jobEntryCopy, JobDelegate.PROP_ATTRIBUTES_JOB_ENTRY_COPY );
+    try ( MockedStatic<AttributesMapUtil> dummyAttributesMapUtil = mockStatic( AttributesMapUtil.class ) ) {
+      JobDelegate.loadAttributesMap( dataNode, jobEntryCopy );
+      dummyAttributesMapUtil.verify( () -> AttributesMapUtil.loadAttributesMap( any( DataNode.class ),
+        any( AttributesInterface.class ), any() ), VerificationModeFactory.times( 1 ) );
+      AttributesMapUtil.loadAttributesMap( dataNode, jobEntryCopy, JobDelegate.PROP_ATTRIBUTES_JOB_ENTRY_COPY );
+    }
   }
 
   private void setIds( DataNode node ) {

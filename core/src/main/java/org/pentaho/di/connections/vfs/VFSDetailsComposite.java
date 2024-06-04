@@ -33,4 +33,15 @@ public interface VFSDetailsComposite {
   default String validate() {
     return null;
   }
+
+  /**
+   * Gets the Object of SelectionAdapterFileDialogTextVar for the browse file dialog.
+   * <p>
+   * @param TextVar The TextVar object.
+   * @return Object of SelectionAdapterFileDialogTextVar or null otherwise.
+   * Defaults to {@code null}.
+   */
+  default Object getRootPathSelectionAdapter( Object textUiWidget ) {
+    return null;
+  }
 }

@@ -17,8 +17,8 @@
 package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 public abstract class BaseBowl implements Bowl {
 
@@ -34,7 +34,7 @@ public abstract class BaseBowl implements Bowl {
     synchronized( this ) {
       if ( connectionManager == null ) {
         IMetaStore metastore = getMetastore();
-        connectionManager = ConnectionManager.getInstance( () -> metastore );
+        connectionManager = ConnectionManager.getInstance( () -> metastore, this );
       }
       return connectionManager;
     }
