@@ -49,7 +49,7 @@ public abstract class BaseBowl implements Bowl {
     synchronized( this ) {
       if ( explicitConnectionManager == null ) {
         IMetaStore metastore = getExplicitMetastore();
-        explicitConnectionManager = ConnectionManager.getInstance( () -> metastore );
+        explicitConnectionManager = ConnectionManager.getInstance( () -> metastore, this );
       }
       return explicitConnectionManager;
     }
