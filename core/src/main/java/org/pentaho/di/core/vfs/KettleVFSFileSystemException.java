@@ -32,7 +32,7 @@ import org.pentaho.di.i18n.BaseMessages;
  * This exception class is useful in contexts where a {@code FileSystemException} is expected.
  */
 public class KettleVFSFileSystemException extends FileSystemException {
-  private static Class<?> PKG = KettleVFSFileSystemException.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = KettleVFSFileSystemException.class; // for i18n purposes, needed by Translator2!!
 
   public KettleVFSFileSystemException( String code ) {
     super( code );

@@ -25,7 +25,6 @@ package org.pentaho.di.connections.vfs;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
-import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ConnectionProvider;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.Variables;
