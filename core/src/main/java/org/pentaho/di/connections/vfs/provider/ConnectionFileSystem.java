@@ -105,6 +105,17 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     return new ResolvedConnectionFileObject( pvfsFileName, this, providerFileObject );
   }
 
+  /**
+   * Called by a {@link ConnectionFileObject}, {@code parentFileObject} to create a child connection file for a given
+   * child provider file.
+   * <p>
+   * As part of creating the child connection file object, this method performs the inverse translation of the URI, from
+   * provider to PVFS.
+   *
+   * @param parentFileObject The parent connection file object.
+   * @param childProviderFileObject The child provider file object.
+   * @return The child connection file object.
+   */
   ConnectionFileObject createChild( @NonNull ConnectionFileObject parentFileObject,
                                     @NonNull FileObject childProviderFileObject )
     throws FileSystemException {

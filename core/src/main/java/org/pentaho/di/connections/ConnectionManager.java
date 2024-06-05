@@ -146,7 +146,7 @@ public class ConnectionManager {
   /**
    * This getter should not generally be used because it is limited to the global scope. It would be better to have
    * almost all callers use Bowl.getConnectionManager().
-   *
+   * <p>
    * This instance may still be used to register ConnectionProviders and Lookup Filters.
    *
    * @return ConnectionManager
@@ -229,9 +229,8 @@ public class ConnectionManager {
   }
 
   /**
-   * Gets the VFS connection helper for the Connection Manager.
-   *
-   * @return A VFS connection helper.
+   * Gets the connection manager helper for VFS connections.
+   * @return A VFS connection manager helper.
    */
   @VisibleForTesting
   @NonNull
@@ -365,11 +364,11 @@ public class ConnectionManager {
     return success;
   }
 
-  // region test
   /**
    * Tests if a connection is valid, given its details, with default testing options.
    * <p>
-   * If the given connection details is a VFS connection, this method delegates to {@link #test(VFSConnectionDetails)}.
+   * If the given connection details is a VFS connection, this method delegates to
+   * {@link VFSConnectionManagerHelper#test(ConnectionManager, VFSConnectionDetails, VFSConnectionTestOptions)}.
    * Otherwise, this method delegates directly to {@link ConnectionProvider#test(ConnectionDetails)}.
    *
    * @param details The details of the connection to test.
@@ -382,7 +381,7 @@ public class ConnectionManager {
     // Instead, define VFSConnectionProvider#isBrowsable().
     ConnectionProvider<T> provider = (ConnectionProvider<T>) connectionProviders.get( details.getType() );
     if ( provider instanceof VFSConnectionProvider && details instanceof VFSConnectionDetails ) {
-      return test( (VFSConnectionDetails) details );
+      return vfsConnectionManagerHelper.test( this, (VFSConnectionDetails) details, null );
     }
 
     // The specified connection details may not exist saved in the meta-store,
@@ -393,46 +392,6 @@ public class ConnectionManager {
 
     return provider.test( details );
   }
-
-  /**
-   * Tests if a VFS connection is valid, given its details, with default testing options.
-   * <p>
-   * This method delegates to {@link #test(VFSConnectionDetails, VFSConnectionTestOptions)} with a {@code null}
-   * {@code options} argument.
-   *
-   * @param details The details of the VFS connection to test.
-   * @return {@code true} if the connection is valid; {@code false} otherwise.
-   */
-  public <T extends VFSConnectionDetails> boolean test( @NonNull T details )
-    throws KettleException {
-    return test( details, null );
-  }
-
-  /**
-   * Tests if a VFS connection is valid, given its details, optionally, with certain testing options.
-   * <p>
-   * This method first delegates to {@link ConnectionProvider#test(ConnectionDetails)} to perform basic
-   * validation, independent of the connection's root path, {@link VFSConnectionDetails#getRootPath()}, if any,
-   * immediately returning {@code false}, when unsuccessful.
-   * <p>
-   * When base validation is successful, if {@code options} has a {@code true}
-   * {@link VFSConnectionTestOptions#isIgnoreRootPath()}, this method should immediately return {@code true}.
-   * <p>
-   * Otherwise, the method should validate that the connection's root folder path is valid, taking into account the
-   * values of {@link VFSConnectionDetails#isSupportsRootPath()}, {@link VFSConnectionDetails#isRootPathRequired()} and
-   * {@link VFSConnectionDetails#getRootPath()}.
-   *
-   * @param details The details of the VFS connection to test.
-   * @param options The testing options, or {@code null}. When {@code null}, a default instance of
-   *                {@link VFSConnectionTestOptions} is constructed and used.
-   * @return {@code true} if the connection is valid; {@code false} otherwise.
-   */
-  public <T extends VFSConnectionDetails> boolean test( @NonNull T details,
-                                                        @Nullable VFSConnectionTestOptions options )
-    throws KettleException {
-    return vfsConnectionManagerHelper.test( this, details, options );
-  }
-  // endregion
 
   /**
    * Delete a connection by name from the default
@@ -690,6 +649,14 @@ public class ConnectionManager {
     return detailsByName.get( name );
   }
 
+  /* The following are sugar methods: `getDetails` and `getExistingDetails`. These perform casting of the result to the
+   * caller's result type. This removes the need for a lot of helper methods or casting code with unchecked warnings
+   * proliferating out there. The variant which assumes existence, returns non-null or throws, also adds to usage.
+   * Regarding the name simplification, from `getConnectionDetails` to `getDetails`, this is because changing the
+   * original `getConnectionDetails` signature to have a generic return type would be a breaking change. Also, arguably,
+   * in this context, it's clear that "details" and "provider" are of connections.
+   */
+
   /**
    * Gets a connection given its name, casting it to the type parameter.
    *
@@ -860,9 +827,9 @@ public class ConnectionManager {
   }
 
   /**
-   * Get a list of value/label pairs of named connection types of a given provider class.
+   * Get a list of value/label pairs of named connection types, optionally filtered to be of a given provider class.
    *
-   * @param providerClass The provider class.
+   * @param providerClass The provider class; when {@code null}, all providers are returned.
    * @return A list of value/label pairs of named connection types.
    */
   public <T extends ConnectionProvider<?>> List<Type> getItemsByType( @Nullable Class<T> providerClass ) {

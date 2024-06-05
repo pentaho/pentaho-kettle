@@ -33,7 +33,6 @@ import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelperTest;
 import org.pentaho.di.connections.vfs.VFSConnectionProvider;
-import org.pentaho.di.connections.vfs.VFSConnectionTestOptions;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -344,53 +343,6 @@ public class ConnectionManagerTest {
 
   // region test
   @Test
-  public void testTestVFSConnectionWithOptionsIsDelegatedToVFSConnectionManagerHelper() throws KettleException {
-
-    VFSConnectionTestOptions vfsConnectionTestOptions = new VFSConnectionTestOptions( true );
-
-    @SuppressWarnings( "unchecked" )
-    VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
-      (VFSConnectionProvider<VFSConnectionDetails>) mock( VFSConnectionProvider.class );
-
-    VFSConnectionDetails vfsConnectionDetails = mock( VFSConnectionDetails.class );
-
-    connectionManager.addConnectionProvider( "test", vfsConnectionProvider );
-    when( vfsConnectionDetails.getType() ).thenReturn( "test" );
-
-    when( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, vfsConnectionTestOptions ) )
-      .thenReturn( true );
-
-    boolean result = connectionManager.test( vfsConnectionDetails, vfsConnectionTestOptions );
-
-    assertTrue( result );
-
-    verify( vfsConnectionManagerHelper, times( 1 ) )
-      .test( connectionManager, vfsConnectionDetails, vfsConnectionTestOptions );
-  }
-
-  @Test
-  public void testTestVFSConnectionIsDelegatedToVFSConnectionManagerHelperWithNullOptions() throws KettleException {
-    @SuppressWarnings( "unchecked" )
-    VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
-      (VFSConnectionProvider<VFSConnectionDetails>) mock( VFSConnectionProvider.class );
-
-    VFSConnectionDetails vfsConnectionDetails = mock( VFSConnectionDetails.class );
-
-    connectionManager.addConnectionProvider( "test", vfsConnectionProvider );
-    when( vfsConnectionDetails.getType() ).thenReturn( "test" );
-
-    when( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, null ) )
-      .thenReturn( true );
-
-    boolean result = connectionManager.test( vfsConnectionDetails );
-
-    assertTrue( result );
-
-    verify( vfsConnectionManagerHelper, times( 1 ) )
-      .test( connectionManager, vfsConnectionDetails, null );
-  }
-
-  @Test
   public void testTestVFSConnectionIsDynamicallyDelegatedToVFSConnectionManagerHelperWithNullOptions()
     throws KettleException {
     @SuppressWarnings( "unchecked" )
@@ -405,7 +357,7 @@ public class ConnectionManagerTest {
     when( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, null ) )
       .thenReturn( true );
 
-    boolean result = connectionManager.test( (ConnectionDetails) vfsConnectionDetails );
+    boolean result = connectionManager.test( vfsConnectionDetails );
 
     assertTrue( result );
 

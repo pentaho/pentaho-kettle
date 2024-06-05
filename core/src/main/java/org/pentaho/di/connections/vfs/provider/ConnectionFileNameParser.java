@@ -185,12 +185,13 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
   }
 
   /**
-   * Parses a PVFS URI within a given Apache VFS context.
+   * Parses a PVFS URI under an Apache VFS context.
    *
    * @param vfsComponentContext The VFS component context.
    * @param baseFileName        The base file name.
    * @param pvfsUri             The PVFS URI to parse.
-   * @return The connection file name.
+   * @return The connection file name, never {@code null}.
+   * @throws FileSystemException When the given PVFS URI is not valid.
    */
   @Override
   public FileName parseUri( VfsComponentContext vfsComponentContext, FileName baseFileName, String pvfsUri )
@@ -202,10 +203,13 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
    * Parses a PVFS URI.
    *
    * @param pvfsUri The PVFS URI to parse.
-   * @return The connection file name.
+   * @return The corresponding connection file name.
+   * @throws FileSystemException When the given PVFS URI is not valid.
    */
   @NonNull
-  public ConnectionFileName parseUri( String pvfsUri ) throws FileSystemException {
+  public ConnectionFileName parseUri( @NonNull String pvfsUri ) throws FileSystemException {
+    Objects.requireNonNull( pvfsUri );
+
     // Examples
     // "Ligação" means "Connection" in Portuguese
     // "%20" = " "

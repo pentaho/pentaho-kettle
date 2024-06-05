@@ -46,6 +46,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * The {@link VFSConnectionManagerHelper} class contains connection management logic which is VFS-specific.
+ * <p>
+ * Specifically, this class contains logic which is common to all VFS providers. Logic which is VFS-provider-specific is
+ * instead handled by implementations of {@link VFSConnectionProvider<VFSConnectionDetails>}.
+ * <p>
+ * The {@link ConnectionManager} delegates certain operations to this helper class, for {@link VFSConnectionDetails}
+ * connections. For example, this is the case of {@link ConnectionManager#test(ConnectionDetails)}.
+ * <p>
+ * However, this class can also be used directly, to gain access to VFS-specific functionality, not exposed generically
+ * via {@link ConnectionManager}.
+ * <p>
+ * This pattern may work in the future if {@link ConnectionManager} is expanded to work with other connection types,
+ * such as database connections.
+ */
 public class VFSConnectionManagerHelper {
 
   private static VFSConnectionManagerHelper instance;

@@ -32,6 +32,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.RandomAccessContent;
 import org.apache.commons.vfs2.operations.FileOperations;
+import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.util.RandomAccessMode;
 import org.pentaho.di.core.vfs.AliasedFileObject;
@@ -46,6 +47,19 @@ import java.io.OutputStream;
  * {@code ConnectionFileObject} holds a reference to the resolved {@code ConnectionFileObject} and delegates metadata
  * calls to that reference object, but for other calls, such as getChildren, {@code ConnectionFileObject} resolves the
  * child file objects, but converts them to PVFS file objects to maintain named connection information.
+ * <p>
+ * The various subclasses clarify the cases for which connection file objects and {@link ConnectionFileName} are used,
+ * as well as allow providing more precise error messages to the user
+ * (see {@link ConnectionFileObject#requireResolvedFileObject()}).
+ * The subclasses are:
+ * <ul>
+ *   <li>{@link PvfsRootFileObject}</li>
+ *   <li>{@link UndefinedConnectionFileObject}</li>
+ *   <li>{@link ConnectionWithBucketsRootFileObject}</li>
+ *   <li>{@link ResolvedConnectionFileObject}</li>
+ * </ul>
+ * The de facto factory of connection file objects is the method
+ * {@link ConnectionFileSystem#createFile(AbstractFileName)}.
  */
 @SuppressWarnings( "resource" )
 public abstract class ConnectionFileObject extends AbstractFileObject<ConnectionFileSystem>
@@ -197,9 +211,22 @@ public abstract class ConnectionFileObject extends AbstractFileObject<Connection
     requireResolvedFileObject().refresh();
   }
 
+  /**
+   * Gets the resolved file object.
+   * @return The resolved file object, if one is available; {@code null}, otherwise.
+   */
   @Nullable
   public abstract FileObject getResolvedFileObject();
 
+  // see also BACKLOG-40732
+  /**
+   * Gets the resolved file object, throwing if it is not available.
+   * <p>
+   * Implementers of this method should throw an exception that makes it clear the reason for a resolved file object
+   * not being available, such as being the PVFS root or an undefined connection.
+   *
+   * @return The resolved file object.
+   */
   @NonNull
   protected abstract AbstractFileObject<?> requireResolvedFileObject() throws FileSystemException;
 

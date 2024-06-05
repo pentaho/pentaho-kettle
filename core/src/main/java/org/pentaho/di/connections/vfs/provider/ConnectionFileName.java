@@ -68,6 +68,8 @@ public class ConnectionFileName extends AbstractFileName {
   protected void appendRootUri( StringBuilder buffer, boolean addPassword ) {
     buffer.append( getScheme() );
     buffer.append( "://" );
+
+    // pvfs:// has no connection
     if ( connection != null ) {
       buffer.append( connection );
     }
